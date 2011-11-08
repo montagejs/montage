@@ -1,20 +1,20 @@
 /* <copyright>
-This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
-No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
-(c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
-</copyright> */
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
 /**
-	@module montage/data/context
-    @requires montage/core/core
-    @requires montage/data/store
-    @requires montage/data/blueprint
-    @requires montage/data/objectproperty
-    @requires montage/core/shim/weak-map
-    @requires montage/core/shim/structures
-    @requires montage/core/exception
-    @requires montage/core/promise
-    @requires montage/core/logger
-*/
+ @module montage/data/context
+ @requires montage/core/core
+ @requires montage/data/store
+ @requires montage/data/blueprint
+ @requires montage/data/objectproperty
+ @requires montage/core/shim/weak-map
+ @requires montage/core/shim/structures
+ @requires montage/core/exception
+ @requires montage/core/promise
+ @requires montage/core/logger
+ */
 var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
 var Blueprint = require("data/blueprint").Blueprint;
@@ -26,14 +26,14 @@ var Exception = require("core/exception").Exception;
 var Q = require("core/promise");
 var logger = require("core/logger").logger("context");
 /**
-    @class module:montage/data/context.Context
-    @extends module:montage/data/store.Store
-*/
-var Context = exports.Context = Montage.create(Store,/** @lends module:montage/data/context.Context# */ {
-/**
-  Description TODO
-  @private
-*/
+ @class module:montage/data/context.Context
+ @extends module:montage/data/store.Store
+ */
+var Context = exports.Context = Montage.create(Store, /** @lends module:montage/data/context.Context# */ {
+    /**
+     Collection of object inserted in this context since the last save.
+     @private
+     */
     _inserted: {
         value: new Set(50),
         serializable: true,
@@ -41,21 +41,21 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         enumerable: false,
         writable: false
     },
-/**
-  Description TODO
-  @private
-*/
-    _forgotten: {
+    /**
+     Collection of object deleted in this context since the last save.
+     @private
+     */
+    _deleted: {
         value: new Set(50),
         serializable: true,
         distinct: true,
         enumerable: false,
         writable: false
     },
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Collection of object modified in this context since the last save.
+     @private
+     */
     _modified: {
         value: new Set(50),
         serializable: true,
@@ -63,59 +63,61 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         enumerable: false,
         writable: false
     },
-    /*
-     * Table of fetched objects for uniquing. The key is the object ID the value the actual object or the pledge representing it.<br/>
-     * <b>Note:<b/> This is a weak map so that the context does not hold on the objects and they can be garbage collected if no one else hold on them.
+
+    /**
+     Table of fetched objects for uniquing. The key is the object ID the value the actual object or the pledge representing it.<br/>
+     <b>Note:<b/> This is a weak map so that the context does not hold on the objects and they can be garbage collected if no one else hold on them.
+     @private
      */
- /**
-  Description TODO
-  @private
-*/
     _objectMap: {
         value: new WeakMap(),
         serializable: true,
         enumerable: false,
         writable: false
     },
-/**
-    Description TODO
-    @function
-    @returns this._inserted
-    @default new Set(50)
-    */
+
+    /**
+     Collection of object inserted in this context since the last save.
+     @function
+     @returns this._inserted
+     @default empty set
+     */
     inserted: {
         get: function() {
             return this._inserted;
         }
     },
-/**
-    Description TODO
-    @function
-    @returns this._forgotten
-    @default new Set(50)
-    */
-    forgotten: {
+
+    /**
+     Collection of object deleted in this context since the last save.
+     @function
+     @returns this._deleted
+     @default empty set
+     */
+    deleted: {
         get: function() {
-            return this._forgotten;
+            return this._deleted;
         }
     },
-/**
-    Description TODO
-    @function
-    @returns this._modified
-    @default new Set(50)
-    */
+
+    /**
+     Collection of object modified in this context since the last save.
+     @function
+     @returns this._modified
+     @default empty set
+     */
     modified: {
         get: function() {
             return this._modified;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} id objectmap
-    @returns this._objectMap.get(id) | null
-    */
+
+    /**
+     Description TODO
+     @function
+     @param {String} id objectmap
+     @returns this._objectMap.get(id) | null
+     */
     objectForId: {
         value: function(id) {
             if (this._objectMap.has(id)) {
@@ -124,15 +126,13 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
             return null;
         }
     },
-    /*
-     * Inserts a newly created object in the context.
+
+    /**
+     Inserts a newly created object in the context.
+     @function
+     @param {Object} instance TODO
+     @returns initialized object
      */
-/**
-    Inserts a newly created object in the context.
-    @function
-    @param {Object} instance TODO
-    @returns initialized object
-    */
     insert: {
         value: function(instance) {
             if (instance !== null) {
@@ -161,16 +161,13 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         }
     },
 
-    /*
-     * Delete an object. A deleted object will be deleted from the backing store on the next save.
+    /**
+     Delete an object.<br>
+     A deleted object will be deleted from the backing store on the next save.
+     @function
+     @param {Object} instance TODO
+     @returns Q.ref(instance)
      */
-/**
-    Delete an object.<br>
-    A deleted object will be deleted from the backing store on the next save.
-    @function
-    @param {Object} instance TODO
-    @returns Q.ref(instance)
-    */
     'delete': {
         value: function(instance) {
             if (instance !== null) {
@@ -192,7 +189,7 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
                         this._modified.delete(instance);
                         instance = this._revertValues(instance);
                     }
-                    this._forgotten.add(instance);
+                    this._deleted.add(instance);
                 }
                 this._objectMap.delete(instance.objectId);
             } else {
@@ -202,15 +199,12 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         }
     },
 
-    /*
-     * Revert an object to it saved values.
+    /**
+     Revert an object to its saved values.
+     @function
+     @param {Object} instance TODO
+     @returns Q.ref(instance)
      */
-/**
-    Revert an object to its saved values.
-    @function
-    @param {Object} instance TODO
-    @returns Q.ref(instance)
-    */
     revert: {
         value: function(instance) {
             if (instance !== null) {
@@ -228,9 +222,9 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
                         instance = this._revertValues(instance);
                     }
                 } else {
-                    // Maybe that object was forgotten let retrieve it?
-                    if (this._forgotten.has(instance)) {
-                        this._forgotten.delete(instance);
+                    // Maybe that object was deleted let retrieve it?
+                    if (this._deleted.has(instance)) {
+                        this._deleted.delete(instance);
                         instance.context = this;
                         instance = this._revertValues(instance);
                     }
@@ -241,10 +235,11 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
             return  Q.ref(instance);
         }
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+     Description TODO
+     @private
+     */
     _revertValues: {
         value: function(instance) {
             // TODO [PJYF May 24 2011] We should restore the saved values
@@ -252,13 +247,10 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         }
     },
 
-    /*
-     * Saves all current changes and deletion to the backing store
+    /**
+     Saves all current changes and deletion to the backing store.
+     @function
      */
-/**
-    Saves all current changes and deletion to the backing store.
-    @function
-    */
     save: {
         value: function() {
             // TODO [PJYF Sept 4 2011] This is probably incomplete - we need to handle the callback
@@ -268,15 +260,12 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         }
     },
 
-    /*
-     * This method from the parent store is overwritten to handle the save from the child context.
+    /**
+     This method from the parent store is overwritten to handle the save from the child context.
+     @function
+     @param {Property} context The child context
+     @param {String} transactionID The transaction id
      */
-/**
-    This method from the parent store is overwritten to handle the save from the child context.
-    @function
-    @param {Property} context The child context
-    @param {String} transactionID The transaction id
-    */
     saveChangesInContext$Implementation: {
         value: function(context, transactionID) {
             if (context === this) {
@@ -285,7 +274,7 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
             }
             // The context has all the changes and we need to merge them with our own.
             var inserted = context.inserted;
-            var forgotten = context.forgotten;
+            var deleted = context.deleted;
             var modified = context.modified;
 
             var newUpdated = null;
@@ -318,23 +307,25 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
 
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} attribute TODO
-    @param {Object} instance TODO
-    */
+
+    /**
+     Description TODO
+     @function
+     @param {String} attribute TODO
+     @param {Object} instance TODO
+     */
     fulfillPropertyForInstance: {
         value: function(attribute, instance) {
 
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} attribute TODO
-    @param {Object} instance TODO
-    */
+
+    /**
+     Description TODO
+     @function
+     @param {String} attribute TODO
+     @param {Object} instance TODO
+     */
     willModifyPropertyForInstance:  {
         value: function(attribute, instance) {
             // TODO [PJYF Sep 30 2011] We should probably be smarter.
@@ -342,15 +333,12 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         }
     },
 
-    /*
-     * Fetch objects from the backing store
+    /**
+     Fetch objects from the backing store.
+     @function
+     @param {String} query TODO
+     @returns Q.ref(this.parent.queryInContext(query, this))
      */
-/**
-    Fetch objects from the backing store.
-    @function
-    @param {String} query TODO
-    @returns Q.ref(this.parent.queryInContext(query, this))
-    */
     query: {
         value: function(query) {
             // TODO [PJYF Sept 23 2011] This is probably incomplete - we need to handle the refresh
@@ -358,17 +346,13 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         }
     },
 
-    /*
-     *
-     *
+    /**
+     Reload all objects from the backing store and merges changes in the context with the new values.<br>
+     If the target passed is an Array each object will be refreshed.
+     @function
+     @param {Object} target The target to be refreshed.
+     @returns Q.ref(this.repledgeObject(target, this))
      */
-/**
-    Reload all objects from the backing store and merges changes in the context with the new values.<br>
-    If the target passed is an Array each object will be refreshed.
-    @function
-    @param {Object} target The target to be refreshed.
-    @returns Q.ref(this.repledgeObject(target, this))
-    */
     refresh: {
         value: function(target) {
             // TODO [PJYF May 10 2011] This is incorrect we need to merge the changes in the refaulted objects
@@ -376,17 +360,14 @@ var Context = exports.Context = Montage.create(Store,/** @lends module:montage/d
         }
     },
 
-    /*
-     * Check if there are unsaved changes in the context
+    /**
+     Check if there are unsaved changes in the context.
+     @function
+     @returns this._inserted.length > 0 or this._modified.length > 0 or this._deleted.length > 0
      */
-/**
-    Check if there are unsaved changes in the context.
-    @function
-    @returns this._inserted.length > 0 or this._modified.length > 0 or this._forgotten.length > 0
-    */
     hasChanges: {
         value: function() {
-            return this._inserted.length > 0 || this._modified.length > 0 || this._forgotten.length > 0;
+            return this._inserted.length > 0 || this._modified.length > 0 || this._deleted.length > 0;
         }
     }
 

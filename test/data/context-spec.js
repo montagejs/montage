@@ -57,7 +57,7 @@ describe("data/context-spec", function() {
         var context = Context.create().init();
 
         var louis = null;
-        it("should be forgotten by the context, and should not be associated with a context", function() {
+        it("should be deleted by the context, and should not be associated with a context", function() {
             var promise = context.requireStoreForBlueprintBinder(companyBinder).then(function(store) {
                 louis = Person.create();
                 return context.insert(louis).then(function(insertedObject) {

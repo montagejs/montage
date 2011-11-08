@@ -9,6 +9,8 @@
     @requires montage/core/logger
 */
 var Montage = require("montage").Montage;
+var Pledge = require("data/pledge").Pledge;
+var PledgedSortedSet = require("data/pledge").PledgedSortedSet;
 var logger = require("core/logger").logger("objectproperty");
 /**
   Description TODO
@@ -116,6 +118,9 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
                 return this._blueprint;
             }});
             Montage.defineProperty(prototype, "isPledge", { serializable: false, enumerable: true, value: false });
+            Montage.defineProperty(prototype, "withProperties", { serializable: false, enumerable: false, value: function() {
+                return null;
+            }});
             Montage.defineProperty(prototype, "willRead", { serializable: false, enumerable: false, value: this.willRead });
             Montage.defineProperty(prototype, "willModify", { serializable: false, enumerable: false, value: this.willModify });
             // Enable access to the 'inherited' get method for easy override.
