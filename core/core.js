@@ -108,7 +108,27 @@ Object.defineProperty(M, "defineProperty", {
     value: function(obj, prop, descriptor) {
         var dependencies = descriptor.dependencies;
         //reset defaults appropriately for framework.
-        descriptor.__proto__ = ("value" in descriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+        if ("__proto__" in descriptor) {
+            descriptor.__proto__ = ("value" in descriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+        } else {
+            var defaults;
+            if ("value" in descriptor) {
+                if (typeof descriptor.value === "function") {
+                    defaults = _defaultFunctionValueProperty;
+                } else {
+                    defaults = _defaultObjectValueProperty;
+                }
+            } else {
+                defaults = _defaultAccessorProperty;
+            }
+            for (var key in defaults) {
+                if (!(key in descriptor)) {
+                    descriptor[key] = defaults[key];
+                }
+            }
+        }
+        
+        
         if (!descriptor.hasOwnProperty("enumerable") && prop.charAt(0) === "_") {
             descriptor.enumerable = false;
         }
@@ -174,7 +194,7 @@ Object.defineProperty(M, "defineProperty", {
                         });
                     }
 
-                } else if (value.__proto__ === __cached__arrayProto) {
+                } else if ((value.__proto__ || Object.getPrototypeOf(value)) === __cached__arrayProto) {
                     // we have an array literal [...]
                     if (value.length !== 0) {
                         Object.defineProperty(obj, prop, {
@@ -237,7 +257,7 @@ Object.defineProperty(M, "defineProperty", {
                     Object.defineProperty(obj, prop, {
                         configurable: true,
                         get: function() {
-                            return this[internalProperty] || (this[internalProperty] = Object.create(value.__proto__));
+                            return this[internalProperty] || (this[internalProperty] = Object.create(value.__proto__ || Object.getPrototypeOf(value)));
                         },
                         set: function(value) {
                             this[internalProperty] = value;
@@ -295,7 +315,7 @@ var _defaultFunctionValueProperty = {
 /**
  @private
  */
-var __cached__arrayProto = [].__proto__;
+var __cached__arrayProto = Array.prototype;
 
 /**
      Private collection of dependencies for all dependent keys. The collection here is keyed by the dependent propertyName
@@ -610,7 +630,7 @@ var uuidGetGenerator = function() {
                 });
             }
             //This is really because re-defining the property on DOMWindow actually doesn't work, so the original property with the getter is still there and return this._uuid if there.
-            if (this instanceof Element || !info.isInstance || !("value" in Object.getOwnPropertyDescriptor(this, "uuid"))) {
+            if (this instanceof Element || !info.isInstance || !("value" in Object.getOwnPropertyDescriptor(this, "uuid")) || !("__proto__" in this /* lame way to detect IE */)) {
                 //This is needed to workaround some bugs in Safari where re-defining uuid doesn't work for DOMWindow.
                 this._uuid = uuid;
             }

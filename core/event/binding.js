@@ -762,7 +762,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
             // The listener for a change@ needs to be considered a propertyChangeBindingListener
             // TODO this does seem a little odd seeing as you could just be adding a "change@foo" eventListener outside of bindings
             // so the binding portion of this name is a little misleading
-            if (atSignIndex > 0 && listener.__proto__ !== PropertyChangeBindingListener) {
+            if (atSignIndex > 0 && (listener.__proto__ || Object.getPrototypeOf(listener)) !== PropertyChangeBindingListener) {
                 listener = this.propertyChangeBindingListener(type, listener, useCapture, atSignIndex);
             }
 
@@ -805,7 +805,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
 
         // If this is part of bindings, install the necessary listeners down the entire property path
         // Don't do anything special if it's jsut for "change" though. there's no need to traverse a path
-        if ("change" !== type && listener.__proto__ === PropertyChangeBindingListener) {
+        if ("change" !== type && (listener.__proto__ || Object.getPrototypeOf(listener)) === PropertyChangeBindingListener) {
 
             // Listening to Left side
             if (changePropertyPath === listener.bindingPropertyPath) {
@@ -1215,8 +1215,16 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
 
     // We want binding descriptors to know how to serialize themselves, that functionality is located on
     // BindingDescriptor, most users will have used an object literal as their descriptor though
-    if (bindingDescriptor.__proto__ !== BindingDescriptor) {
-        bindingDescriptor.__proto__ = BindingDescriptor;
+    if ((bindingDescriptor.__proto__ || Object.getPrototypeOf(bindingDescriptor)) !== BindingDescriptor) {
+        if ("__proto__" in bindingDescriptor) {
+            bindingDescriptor.__proto__ = BindingDescriptor;
+        } else {
+            var oldBindingDescriptor = bindingDescriptor;
+            bindingDescriptor = Object.create(BindingDescriptor);
+            for (var key in oldBindingDescriptor) {
+                bindingDescriptor[key] = oldBindingDescriptor[key];
+            }
+        }
     }
 
     currentBindingDescriptor = _bindingDescriptors[sourceObjectPropertyBindingPath];
