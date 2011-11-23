@@ -449,8 +449,13 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 requireStrings.push('var ' + objectName + ' = this._modules["' + moduleId + '"]["' + name + '"];');
             }
 
-            exportsStrings += 'var ' + label + ' = exports.' + label + ' = this._objectLabels["' + label + '"] || ' + objectName + '.create();\n';
-            exportsStrings += 'Montage.getInfoForObject(' + objectName +  ').label = ' + JSON.stringify(label) + ';\n';
+            exportsStrings += 'if (this._objectLabels["' + label + '"]) {\n';
+            exportsStrings += '  var ' + label + ' = exports. ' + label + ' = this._objectLabels["' + label + '"]\n';
+            exportsStrings += '} else {\n';
+            exportsStrings += '  var ' + label + ' = exports. ' + label + ' = ' + objectName + '.create();\n';
+            exportsStrings += '  Montage.getInfoForObject(' + label + ').label = "' + label + '";\n';
+            exportsStrings += '}\n';
+
             propertiesString = deserializeValue(properties);
             objectsStrings += 'this._deserializeProperties(' + label + ', ' + propertiesString + ');\n';
             if (deserialize) {
