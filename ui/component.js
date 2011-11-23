@@ -222,6 +222,62 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
         }
     },
+    
+    querySelectorComponent: {
+        value: function(selector) {
+            if (typeof selector !== "string") {
+                throw "querySelectorComponent: Selector needs to be a string.";
+            }
+            
+            // \s*@([^>\s]+)? leftHandOperand [<label>]
+            // \s*(>)?\s* operator [>] (if undefined it's a space)
+            // @([^>\s]+) rightHandOperand [<label>]
+            // (.*) rest
+            var matches = selector.match(/\s*@([^>\s]+)?(?:\s*(>)?\s*@([^>\s]+)(.*))?$/);
+            if (!matches) {
+                throw "querySelectorComponent: Syntax error \"" + selector + "\"";
+            }
+                
+            var childComponents = this.childComponents,
+                leftHandOperand = matches[1],
+                operator = matches[2] || " ",
+                rightHandOperand = matches[3],
+                rest = matches[4],
+                found;
+            
+            if (leftHandOperand) {
+                rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
+                
+                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                    if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
+                        if (rest) {
+                            return childComponent.querySelectorComponent(rest);
+                        } else {
+                            return childComponent;
+                        }
+                    } else {
+                        found = childComponent.querySelectorComponent(selector);
+                        if (found) {
+                            return found;
+                        }
+                    }
+                }
+            } else {
+                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                    if (rightHandOperand === Montage.getInfoForObject(childComponent).label) {
+                        if (rest) {
+                            return childComponent.querySelectorComponent(rest);
+                        } else {
+                            return childComponent;
+                        }
+                    }
+                }
+            }
+            
+            return null;
+        }
+    },
+    
 /**
         Description TODO
         @type {Property}
