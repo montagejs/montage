@@ -278,7 +278,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
     
-    querySelectorComponentAll: {
+    querySelectorAllComponent: {
         value: function(selector) {
             if (typeof selector !== "string") {
                 throw "querySelectorComponent: Selector needs to be a string.";
@@ -305,19 +305,19 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
                         if (rest) {
-                            found = found.concat(childComponent.querySelectorComponentAll(rest));
+                            found = found.concat(childComponent.querySelectorAllComponent(rest));
                         } else {
                             found.push(childComponent);
                         }
                     } else {
-                        found = found.concat(childComponent.querySelectorComponentAll(selector));
+                        found = found.concat(childComponent.querySelectorAllComponent(selector));
                     }
                 }
             } else {
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (rightHandOperand === Montage.getInfoForObject(childComponent).label) {
                         if (rest) {
-                            found = found.concat(childComponent.querySelectorComponentAll(rest));
+                            found = found.concat(childComponent.querySelectorAllComponent(rest));
                         } else {
                             found.push(childComponent);
                         }
