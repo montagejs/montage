@@ -430,6 +430,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     exports[label] = object = self._objectLabels[label];
                 } else {
                     exports[label] = object = modules[moduleId][name].create();
+                    Montage.getInfoForObject(object).label = label;
                 }
             } else {
                 // need to know if it has been already compiled
@@ -449,6 +450,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
 
             exportsStrings += 'var ' + label + ' = exports.' + label + ' = this._objectLabels["' + label + '"] || ' + objectName + '.create();\n';
+            exportsStrings += 'Montage.getInfoForObject(' + objectName +  ').label = ' + JSON.stringify(label) + ';\n';
             propertiesString = deserializeValue(properties);
             objectsStrings += 'this._deserializeProperties(' + label + ', ' + propertiesString + ');\n';
             if (deserialize) {
