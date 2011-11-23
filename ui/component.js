@@ -229,15 +229,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 throw "querySelectorComponent: Selector needs to be a string.";
             }
             
-            // \s*@([^>\s]+)? leftHandOperand [<label>]
+            // \s*(?:@([^>\s]+)) leftHandOperand [<label>]
             // \s*(>)?\s* operator [>] (if undefined it's a space)
             // @([^>\s]+) rightHandOperand [<label>]
             // (.*) rest
-            var matches = selector.match(/\s*@([^>\s]+)?(?:\s*(>)?\s*@([^>\s]+)(.*))?$/);
+            var matches = selector.match(/^\s*(?:@([^>\s]+))?(?:\s*(>)?\s*@([^>\s]+)(.*))?$/);
             if (!matches) {
                 throw "querySelectorComponent: Syntax error \"" + selector + "\"";
             }
-                
+            
             var childComponents = this.childComponents,
                 leftHandOperand = matches[1],
                 operator = matches[2] || " ",
@@ -275,6 +275,57 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
             
             return null;
+        }
+    },
+    
+    querySelectorComponentAll: {
+        value: function(selector) {
+            if (typeof selector !== "string") {
+                throw "querySelectorComponent: Selector needs to be a string.";
+            }
+            
+            // (@([^>\s]+)? leftHandOperand [<label>]
+            // \s*(>)?\s* operator [>] (if undefined it's a space)
+            // @([^>\s]+) rightHandOperand [<label>]
+            // (.*) rest
+            var matches = selector.match(/^\s*(?:@([^>\s]+))?(?:\s*(>)?\s*@([^>\s]+)(.*))?$/);
+            if (!matches) {
+                throw "querySelectorComponent: Syntax error \"" + selector + "\"";
+            }
+                
+            var childComponents = this.childComponents,
+                leftHandOperand = matches[1],
+                operator = matches[2] || " ",
+                rightHandOperand = matches[3],
+                rest = matches[4],
+                found = [];
+            
+            if (leftHandOperand) {
+                rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
+                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                    if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
+                        if (rest) {
+                            found = found.concat(childComponent.querySelectorComponentAll(rest));
+                        } else {
+                            found.push(childComponent);
+                        }
+                    } else {
+                        found = found.concat(childComponent.querySelectorComponentAll(selector));
+                    }
+                }
+            } else {
+                for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
+                    if (rightHandOperand === Montage.getInfoForObject(childComponent).label) {
+                        if (rest) {
+                            found = found.concat(childComponent.querySelectorComponentAll(rest));
+                        } else {
+                            found.push(childComponent);
+                        }
+                    }
+                }
+            }
+            
+            return found;
         }
     },
     
