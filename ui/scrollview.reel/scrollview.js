@@ -462,7 +462,7 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
             event.preventDefault();
 
             // If already scrolling the scrollview, ignore any new touchstarts
-            if (this._observedPointer !== null) {
+            if (this._observedPointer !== null && this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 return;
             }
 
