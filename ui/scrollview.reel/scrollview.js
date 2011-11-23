@@ -697,152 +697,47 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
         enumerable: false,
         value: function (event) {
 
-            var animateBouncingX = false,
-                animateBouncingY = false,
-                animateMomentum = false,
-                momentumX,
+            var momentumX,
                 momentumY,
-                startX = this._scrollX,
-                startY,
-                posX = startX,
+                posX,
                 posY,
-                endX = startX,
+                endX,
                 endY,
-                self = this,
-                startTimeBounceX = false,
-                startTimeBounceY = false,
-                startTime = new Date().getTime();
-
+                self = this;
+			this._startX = this._scrollX;
+			posX = this._startX;
+            this._startTimeBounceX = false;
+            this._startTimeBounceY = false;
+			this._endX = this._startX;
+			this._startTime = new Date().getTime();
+			this._animateBouncingX = false;
+			this._animateBouncingY = false;
+			this._animateMomentum = false;
             this._nativeScrollTop = this._element.scrollTop;
             this._scrollY = this._nativeScrollTop - this._translateY;
-            startY = this._scrollY;
-            posY = startY;
-            endY = startY;
+            this._startY = this._scrollY;
+            posY = this._startY;
+            this._endY = this._startY;
             if ((this._hasMomentum) && (event.velocity.speed > 40)) {
                 if (this._axis != "vertical") {
-                    momentumX = event.velocity.x;
+                    this._momentumX = event.velocity.x;
                 } else {
-                    momentumX = 0;
+                    this._momentumX = 0;
                 }
                 if (this._axis != "horizontal") {
-                    momentumY = event.velocity.y;
+                    this._momentumY = event.velocity.y;
                 } else {
-                    momentumY = 0;
+                    this._momentumY = 0;
                 }
-                endX = startX - (momentumX * this._momentumDuration / 2000);
-                endY = startY - (momentumY * this._momentumDuration / 2000);
-                animateMomentum = true;
+                this._endX = this._startX - (this._momentumX * this._momentumDuration / 2000);
+                this._endY = this._startY - (this._momentumY * this._momentumDuration / 2000);
+                this._animateMomentum = true;
             }
 
-            this._animationInterval = window.setInterval(function () {
-                var time = new Date().getTime(), t;
-
-                if (animateMomentum) {
-                    t = time - startTime;
-                    if (t < self._momentumDuration) {
-                        posX = startX - ((momentumX + momentumX * (self._momentumDuration - t) / self._momentumDuration) * t / 1000) / 2;
-                        posY = startY - ((momentumY + momentumY * (self._momentumDuration - t) / self._momentumDuration) * t / 1000) / 2;
-                    } else {
-                        animateMomentum = false;
-                    }
-                }
-
-                self._scrollX = posX;
-                self._scrollY = posY;
-
-                if (self._hasBouncing) {
-                    if (endX < 0) {
-                        if (self._scrollX < 0) {
-                            if (!startTimeBounceX) {
-                                animateBouncingX = true;
-                                startTimeBounceX = time;
-                            }
-                            t = time - startTimeBounceX;
-                            if ((t < self._bouncingDuration) || (animateMomentum)) {
-                                if (t > self._bouncingDuration) {
-                                    t = self._bouncingDuration;
-                                }
-                                self._scrollX = self._scrollX * (1 - self._bezierTValue(t / self._bouncingDuration, 0.17, 0.93, 0.19, 1));
-                            } else {
-                                self._scrollX = 0;
-                                animateBouncingX = false;
-                            }
-                        } else {
-                            animateBouncingX = false;
-                        }
-                    }
-
-                    if (endY < 0) {
-                        if (self._scrollY < 0) {
-                            if (!startTimeBounceY) {
-                                animateBouncingY = true;
-                                startTimeBounceY = time;
-                            }
-                            t = time - startTimeBounceY;
-                            if ((t < self._bouncingDuration) || (animateMomentum)) {
-                                if (t > self._bouncingDuration) {
-                                    t = self._bouncingDuration;
-                                }
-                                self._scrollY = self._scrollY * (1 - self._bezierTValue(t / self._bouncingDuration, 0.17, 0.93, 0.19, 1));
-                            } else {
-                                self._scrollY = 0;
-                                animateBouncingY = false;
-                            }
-                        } else {
-                            animateBouncingY = false;
-                        }
-                    }
-
-                    if (endX > self._maxScrollX) {
-                        if (self._scrollX > self._maxScrollX) {
-                            if (!startTimeBounceX) {
-                                animateBouncingX = true;
-                                startTimeBounceX = time;
-                            }
-                            t = time - startTimeBounceX;
-                            if ((t < self._bouncingDuration) || (animateMomentum)) {
-                                if (t > self._bouncingDuration) {
-                                    t = self._bouncingDuration;
-                                }
-                                self._scrollX = self._maxScrollX + (self._scrollX - self._maxScrollX) * (1 - self._bezierTValue(t / self._bouncingDuration, 0.17, 0.93, 0.19, 1));
-                            } else {
-                                self._scrollX = self._maxScrollX;
-                                animateBouncingX = false;
-                            }
-                        } else {
-                            animateBouncingX = false;
-                        }
-                    }
-
-                    if (endY > self._maxScrollY) {
-                        if (self._scrollY > self._maxScrollY) {
-                            if (!startTimeBounceY) {
-                                animateBouncingY = true;
-                                startTimeBounceY = time;
-                            }
-                            t = time - startTimeBounceY;
-                            if ((t < self._bouncingDuration) || (animateMomentum)) {
-                                if (t > self._bouncingDuration) {
-                                    t = self._bouncingDuration;
-                                }
-                                self._scrollY = self._maxScrollY + (self._scrollY - self._maxScrollY) * (1 - self._bezierTValue(t / self._bouncingDuration, 0.17, 0.93, 0.19, 1));
-                            } else {
-                                self._scrollY = self._maxScrollY;
-                                animateBouncingY = false;
-                            }
-                        } else {
-                            animateBouncingY = false;
-                        }
-                    }
-                }
-
-                if (!(animateMomentum || animateBouncingX || animateBouncingY)) {
-                    window.clearInterval(self._animationInterval);
-                    self._updateScrollbars = false;
-                    self._addNativeScroll = true;
-                }
-                self.needsDraw = true;
-            }, 16);
+			//We want to trigger a draw in case we need momentum
+			if( this._animateMomentum) {
+				this.needsDraw = true;
+			}
 
             this._releaseInterest();
         }
@@ -1086,7 +981,8 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
     */
     draw: {
         enumerable: false,
-        value: function () {
+        value: function (time) {
+	
             var size, pos, l,
                 drawVerticalScrollbar = false, drawHorizontalScrollbar = false;
             if (this._updateScrollbars) {
@@ -1207,7 +1103,127 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
                 y = scrollDelegateValue.y;
             }
             this._content.style.webkitTransform = "translate3d(" + x + "px, " + -y + "px, 0)";
+			
+			if( this._animateMomentum) {
+			
+	            var /*time = new Date().getTime(),*/ t,
+                // posX = this._scrollX,
+				momentumDurationPercent,
+				tFraction;
+				//console.log("time: "+time);
+                this._scrollY = y;
+
+	            if (this._animateMomentum) {
+	                t = time - this._startTime;
+					momentumDurationPercent = (this._momentumDuration - t) / this._momentumDuration;
+	                if (t < this._momentumDuration) {
+						tFraction = t / 1000;
+	                    this._scrollX = this._startX - ((this._momentumX + this._momentumX * momentumDurationPercent) * tFraction) / 2;
+	                    this._scrollY = this._startY - ((this._momentumY + this._momentumY *momentumDurationPercent) * tFraction) / 2;
+	                } else {
+	                    this._animateMomentum = false;
+	                }
+	            }
+
+	            // this._scrollX = posX;
+	            // this._scrollY = posY;
+
+	            if (this._hasBouncing) {
+	                if (this._endX < 0) {
+	                    if (this._scrollX < 0) {
+	                        if (!this._startTimeBounceX) {
+	                            this._animateBouncingX = true;
+	                            this._startTimeBounceX = time;
+	                        }
+	                        t = time - this._startTimeBounceX;
+	                        if ((t < this._bouncingDuration) || (this._animateMomentum)) {
+	                            if (t > this._bouncingDuration) {
+	                                t = this._bouncingDuration;
+	                            }
+	                            this._scrollX = this._scrollX * (1 - this._bezierTValue(t / this._bouncingDuration, 0.17, 0.93, 0.19, 1));
+	                        } else {
+	                            this._scrollX = 0;
+	                            this._animateBouncingX = false;
+	                        }
+	                    } else {
+	                        this._animateBouncingX = false;
+	                    }
+	                }
+
+	                if (this._endY < 0) {
+	                    if (this._scrollY < 0) {
+	                        if (!this._startTimeBounceY) {
+	                            this._animateBouncingY = true;
+	                            this._startTimeBounceY = time;
+	                        }
+	                        t = time - this._startTimeBounceY;
+	                        if ((t < this._bouncingDuration) || (this._animateMomentum)) {
+	                            if (t > this._bouncingDuration) {
+	                                t = this._bouncingDuration;
+	                            }
+	                            this._scrollY = this._scrollY * (1 - this._bezierTValue(t / this._bouncingDuration, 0.17, 0.93, 0.19, 1));
+	                        } else {
+	                            this._scrollY = 0;
+	                            this._animateBouncingY = false;
+	                        }
+	                    } else {
+	                        this._animateBouncingY = false;
+	                    }
+	                }
+
+	                if (this._endX > this._maxScrollX) {
+	                    if (this._scrollX > this._maxScrollX) {
+	                        if (!this._startTimeBounceX) {
+	                            this._animateBouncingX = true;
+	                            this._startTimeBounceX = time;
+	                        }
+	                        t = time - this._startTimeBounceX;
+	                        if ((t < this._bouncingDuration) || (this._animateMomentum)) {
+	                            if (t > this._bouncingDuration) {
+	                                t = this._bouncingDuration;
+	                            }
+	                            this._scrollX = this._maxScrollX + (this._scrollX - this._maxScrollX) * (1 - this._bezierTValue(t / this._bouncingDuration, 0.17, 0.93, 0.19, 1));
+	                        } else {
+	                            this._scrollX = this._maxScrollX;
+	                            this._animateBouncingX = false;
+	                        }
+	                    } else {
+	                        this._animateBouncingX = false;
+	                    }
+	                }
+
+	                if (this._endY > this._maxScrollY) {
+	                    if (this._scrollY > this._maxScrollY) {
+	                        if (!this._startTimeBounceY) {
+	                            this._animateBouncingY = true;
+	                            this._startTimeBounceY = time;
+	                        }
+	                        t = time - this._startTimeBounceY;
+	                        if ((t < this._bouncingDuration) || (this._animateMomentum)) {
+	                            if (t > this._bouncingDuration) {
+	                                t = this._bouncingDuration;
+	                            }
+	                            this._scrollY = this._maxScrollY + (this._scrollY - this._maxScrollY) * (1 - this._bezierTValue(t / this._bouncingDuration, 0.17, 0.93, 0.19, 1));
+	                        } else {
+	                            this._scrollY = this._maxScrollY;
+	                            this._animateBouncingY = false;
+	                        }
+	                    } else {
+	                        this._animateBouncingY = false;
+	                    }
+	                }
+	            }
+
+	            if (!(this._animateMomentum || this._animateBouncingX || this._animateBouncingY)) {
+	                //window.clearInterval(this._animationInterval);
+	                this._updateScrollbars = false;
+	                this._addNativeScroll = true;
+	            }
+	            this.needsDraw = true;
+	
+			}
         }
+
     },
 /**
     Description TODO
