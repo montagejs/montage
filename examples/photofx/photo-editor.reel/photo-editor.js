@@ -216,9 +216,15 @@ exports.PhotoEditor = Montage.create(Component, {
             this._needToRefreshImageData = true;
         }
     },
+
+    hasImage: {
+        value: false
+    },
+
     handleEditorImageLoad: {
         enumerable: false,
         value: function(event) {
+            this.hasImage = true;
             this.needsDraw = true;
         }
     },
@@ -356,7 +362,7 @@ exports.PhotoEditor = Montage.create(Component, {
             // canvas elements. Debugging points to some issue with adoptNode. Either way,
             // if we don't do this it takes two draw cycles to actually get the canvas rendering.
             var newCanvas = this._canvas.cloneNode(true);
-            this.element.replaceChild(newCanvas, this._canvas);
+            this._canvas.parentNode.replaceChild(newCanvas, this._canvas);
             this._canvas = newCanvas;
         }
     },
@@ -375,6 +381,12 @@ exports.PhotoEditor = Montage.create(Component, {
                 this.element.classList.add("pickingColor");
             } else {
                 this.element.classList.remove("pickingColor");
+            }
+
+            if (this.hasImage) {
+                this.element.classList.add("hasImage");
+            } else {
+                this.element.classList.remove("hasImage");
             }
 
             var canvas = this._canvas,

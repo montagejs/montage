@@ -24,8 +24,13 @@
 }
 
 .PhotoEditor canvas {
+    display: none;
     -webkit-user-select: none;
     box-shadow: 0 0 16px rgba(0,0,0,.6);
+}
+
+.PhotoEditor.hasImage canvas {
+    display: block;
 }
 
 .PhotoEditor.pickingColor {
