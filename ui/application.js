@@ -207,13 +207,14 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     getPopupSlot: {
         value: function(type, content, callback) {
 
+            var self = this;
             require.async("ui/slot.reel/slot", function(exports) {
                 Slot = Slot || exports.Slot;
 
                 type = type || "custom";
                 // type = custom|alert|confirm
-                this.popupSlots = this.popupSlots || {};
-                var popupSlot = this.popupSlots[type];
+                self.popupSlots = self.popupSlots || {};
+                var popupSlot = self.popupSlots[type];
                 // create a slot for this type of popup
                 if (!popupSlot) {
                     var slotEl = document.createElement('div'), zIndex;
@@ -238,13 +239,13 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                     document.body.appendChild(slotEl);
                     popupSlot = Slot.create();
                     popupSlot.element = slotEl;
-                    this.popupSlots[type] = popupSlot;
+                    self.popupSlots[type] = popupSlot;
                 }
 
                 popupSlot.content = content;
                 callback.call(this, popupSlot);
 
-            }.bind(this));
+            });
         }
     }
 
