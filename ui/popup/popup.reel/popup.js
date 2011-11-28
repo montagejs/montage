@@ -349,12 +349,13 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     show: {
         value: function() {
-            var type = this.type || "custom";
+            var type = this.type || "custom",
+                self = this;
             this.application.getPopupSlot(type, this, function(slot) {
-                this._popupSlot = slot;
-                this.displayed = true;
-                this._addEventListeners();
-            }.bind(this));
+                self._popupSlot = slot;
+                self.displayed = true;
+                self._addEventListeners();
+            });
         }
     },
 
@@ -362,10 +363,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             this._removeEventListeners();
 
-            var type = this.type || "custom";
+            var type = this.type || "custom",
+                self = this;
             this.application.getPopupSlot(type, null, function() {
-                this.displayed = false;
-            }.bind(this));
+                self.displayed = false;
+            });
         }
     },
 
@@ -399,9 +401,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this.content.element.setAttribute("tabindex", "0"); // Make the alert focusable
 
                 if (this.autoDismiss) {
+                    var self = this;
                     setTimeout(function() {
-                        this.hide();
-                    }.bind(this), this.autoDismiss);
+                        self.hide();
+                    }, this.autoDismiss);
                 }
             } else {
                 if (!this.element.classList.contains('montage-hide')) {
