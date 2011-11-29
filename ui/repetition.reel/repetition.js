@@ -93,7 +93,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             if (this._contentController) {
                 Object.deleteBinding(this, "objects");
-                //Object.deleteBinding(this, "selectedIndexes");
+                Object.deleteBinding(this, "selectedIndexes");
             }
 
             this._contentController = value;
@@ -106,7 +106,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 }
 
                 // And bind what we need from the new contentController
-                var objectsBindingDescriptor;
+                var objectsBindingDescriptor,
+                    selectedIndexesBindingDescriptor;
 
                 objectsBindingDescriptor = {
                     boundObject: this._contentController,
@@ -114,10 +115,16 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                     oneway: true
                 };
 
+                selectedIndexesBindingDescriptor = {
+                    boundObject: this._contentController,
+                    boundObjectPropertyPath: "selectedIndexes"
+                };
+
                 // If we're ready for bindings...go ahead an install
                 // TODO: Look at changing this once the new serialization has been implemented
                 if (this._hasBeenDeserialized) {
                     Object.defineBinding(this, "objects", objectsBindingDescriptor);
+                    Object.defineBinding(this, "selectedIndexes", selectedIndexesBindingDescriptor);
                 } else {
                     // otherwise we need to defer it until later; we haven't been deserialized yet
                     if (!this._controllerBindingsToInstall) {
@@ -125,6 +132,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                     }
 
                     this._controllerBindingsToInstall.objects = objectsBindingDescriptor;
+                    this._controllerBindingsToInstall.selectedIndexes = selectedIndexesBindingDescriptor;
                 }
             }
 
@@ -554,12 +562,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     selectedIndexes: {
         enumerable: false,
         get: function() {
-
-            if (this.contentController) {
-                return this.contentController.selectedIndexes;
-            } else {
-                return this._selectedIndexes;
-            }
+            return this._selectedIndexes;
         },
         set: function(value) {
 
@@ -574,11 +577,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 this._selectedIndexesToDeselectOnDraw = this._selectedIndexesToDeselectOnDraw.concat(this.selectedIndexes);
             }
 
-            if (this._contentController) {
-                this._contentController.selectedIndexes = value;
-            } else {
-                this._selectedIndexes = value;
-            }
+            this._selectedIndexes = value;
 
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
