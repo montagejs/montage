@@ -431,6 +431,10 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 } else {
                     exports[label] = object = modules[moduleId][name].create();
                     Montage.getInfoForObject(object).label = label;
+                    Object.defineProperty(object, "_suuid", {
+                        enumerable: false,
+                        value: self.uuid + "-" + label
+                    });
                 }
             } else {
                 // need to know if it has been already compiled
@@ -454,6 +458,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             exportsStrings += '} else {\n';
             exportsStrings += '  var ' + label + ' = exports. ' + label + ' = ' + objectName + '.create();\n';
             exportsStrings += '  Montage.getInfoForObject(' + label + ').label = "' + label + '";\n';
+            exportsStrings += '  Object.defineProperty(' + label + ', "_suuid", {enumerable: false, value: "' + self.uuid + '-' + label + '"});\n';
             exportsStrings += '}\n';
 
             propertiesString = deserializeValue(properties);
