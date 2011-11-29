@@ -214,6 +214,11 @@ exports.PhotoEditor = Montage.create(Component, {
             this._src = value;
 
             this._needToRefreshImageData = true;
+
+            if (!this._src) {
+                this.hasImage = false;
+                this.needsDraw = true;
+            }
         }
     },
 

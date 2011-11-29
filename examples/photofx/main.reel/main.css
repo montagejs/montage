@@ -38,7 +38,12 @@ html {
     right: 0;
     bottom: 0;
 
-    padding: 55px 10px 10px;
+    padding: 25px 10px 10px;
+    text-align: center;
+}
+
+.PhotoPanel #controlPanel .montage-button {
+    margin-bottom: 8px;
 }
 
 .EffectsPanel {

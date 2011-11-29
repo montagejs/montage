@@ -101,6 +101,44 @@
                 ]
             },
 
+            "removeSelectionCondition": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "removeSelectionCondition"}
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "photoController"},
+                        "boundObjectPropertyPath": "selectedObjects.0",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "removePhotoListener": {
+                "module": "montage/core/event/action-event-listener",
+                "name": "ActionEventListener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "removePhotoAction"
+                }
+            },
+            "removePhotoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "removePhotoButton"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "removePhotoListener"},
+                        "capture": false
+                    }
+                ]
+            },
+
             "searchPanel": {
                 "module": "search-panel.reel",
                 "name": "SearchPanel"
@@ -135,6 +173,9 @@
             </div>
             <div id="controlPanel">
                 <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
+                <div id="removeSelectionCondition">
+                    <div id="removePhotoButton" class="text RemovePhotosButton">Remove Photo</div>
+                </div>
             </div>
         </div>
 

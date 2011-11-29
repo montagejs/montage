@@ -23,11 +23,6 @@ exports.Main = Montage.create(Component, {
         value: null
     },
 
-    photo: {
-        enumerable: false,
-        value: null
-    },
-
     prepareForDraw: {
         value: function() {
             if (window.Touch) {
@@ -59,6 +54,19 @@ exports.Main = Montage.create(Component, {
             }
 
             popup.show();
+        }
+    },
+
+    removePhotoAction: {
+        value: function() {
+
+            var selectedPhoto = this.photoListController.getProperty("selectedObjects.0");
+
+            if (!selectedPhoto) {
+                return;
+            }
+
+            this.photoListController.removeObjects(selectedPhoto);
         }
     },
 
