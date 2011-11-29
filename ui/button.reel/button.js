@@ -135,7 +135,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
         enumerable: false,
         value: undefined
     },
-/**
+    /**
         Description TODO
         @type {Function}
         @default undefined
@@ -150,6 +150,16 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
             this.needsDraw = true;
         }
     },
+    
+    /**
+        The Montage converted used to convert or format values displayed by this Button instance.
+        @type {Property}
+        @default null
+    */
+    converter: {
+        value: null
+    },
+    
 /**
   Description TODO
   @private
@@ -579,6 +589,19 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
 
         }
     },
+    
+    /**
+      Retrieves the display value for the button, running it through a converter if needed
+      @private
+    */
+    _convertValue: {
+        value: function(value) {
+            if (this.converter) {
+                return this.converter.convert(value);
+            }
+            return value;
+        }
+    },
 /**
     Description TODO
     @function
@@ -606,74 +629,74 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
 
                 if (this._pressed === "true" && this.pressedValue) {
                     if (this._isElementInput) {
-                        this._valueNode.value = this.pressedValue;
+                        this._valueNode.value = this._convertValue(this.pressedValue);
                     }
                     else {
                         if (!this._pressedValueNode) {
                             this._pressedValueNode = document.createTextNode("");
-                            this._pressedValueNode.data = this.pressedValue;
+                            this._pressedValueNode.data = this._convertValue(this.pressedValue);
                         }
                         //TODO use replace now
-                        this._valueNode.data = this.pressedValue;
+                        this._valueNode.data = this._convertValue(this.pressedValue);
                     }
                 }
                 else if (this._pressed === "mixed" && this.mixedValue) {
                     if (this._isElementInput) {
-                        this._element.setAttribute("value", this.mixedValue);
+                        this._element.setAttribute("value", this._convertValue(this.mixedValue));
                     }
                     else {
-                        this._element.firstChild.data = this.mixedValue;
+                        this._element.firstChild.data = this._convertValue(this.mixedValue);
                     }
                 }
                 else if ((this._pressed === "false") && (typeof this.value !== "undefined")) {
                     if (this._isElementInput) {
-                        this._element.setAttribute("value", this.value);
+                        this._element.setAttribute("value", this._convertValue(this.value));
                     }
                     else {
-                        this._element.firstChild.data = this.value;
+                        this._element.firstChild.data = this._convertValue(this.value);
                     }
                 }
             } else {
                 if (this._isElementInput) {
-                    this._element.setAttribute("value", this.value);
+                    this._element.setAttribute("value", this._convertValue(this.value));
                 } else {
-                    this._element.firstChild.data = this.value;
+                    this._element.firstChild.data = this._convertValue(this.value);
                 }
             }
             if (this.valueActive) {
                 if (this.active) {
                     if (this._behavior === "transient" || this._pressed === "false") {
                         if (this._isElementInput) {
-                            this._element.setAttribute("value", this.valueActive);
+                            this._element.setAttribute("value", this._convertValue(this.valueActive));
                         }
                         else {
-                            this._element.firstChild.data = this.valueActive;
+                            this._element.firstChild.data = this._convertValue(this.valueActive);
                         }
                     }
                     else if (this._pressed === "true" && this.pressedValueActive) {
                         if (this._isElementInput) {
-                            this._element.setAttribute("value", this.pressedValueActive);
+                            this._element.setAttribute("value", this._convertValue(this.pressedValueActive));
                         }
                         else {
-                            this._element.firstChild.data = this.pressedValueActive;
+                            this._element.firstChild.data = this._convertValue(this.pressedValueActive);
                         }
                     }
                     else if (this._pressed === "mixed" && this.mixedValueActive) {
                         if (this._isElementInput) {
-                            this._element.setAttribute("value", this.mixedValueActive);
+                            this._element.setAttribute("value", this._convertValue(this.mixedValueActive));
                         }
                         else {
-                            this._element.firstChild.data = this.mixedValueActive;
+                            this._element.firstChild.data = this._convertValue(this.mixedValueActive);
                         }
                     }
                 }
                 /* Right now, we don't handle active-pressed */
                 else if (this._behavior === "transient") {
                     if (this._isElementInput) {
-                        this._element.setAttribute("value", this.value);
+                        this._element.setAttribute("value", this._convertValue(this.value));
                     }
                     else {
-                        this._element.firstChild.data = this.value;
+                        this._element.firstChild.data = this._convertValue(this.value);
                     }
                 }
             }
