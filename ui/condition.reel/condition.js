@@ -85,7 +85,15 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             this.needsDraw = true;
         }
     },
-/**
+
+    // TODO should this strategy be part of another class?
+    // TODO expose the options as an exported enum
+    removalStrategy: {
+        enumerable: false,
+        value: "remove"
+    },
+
+    /**
     Description TODO
     @function
     */
@@ -116,7 +124,7 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             this._slot.element = slotRoot;
         }
     },
-/**
+    /**
     Description TODO
     @function
     */
@@ -126,8 +134,13 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
 
             if (this.condition) {
                 this._slot.content = this.content;
+                this.element.classList.remove("montage-invisible");
             } else {
-                this._slot.content = null;
+                if ("hide" === this.removalStrategy) {
+                    this.element.classList.add("montage-invisible");
+                } else {
+                    this._slot.content = null;
+                }
             }
 
         }
