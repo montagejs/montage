@@ -61,6 +61,7 @@ exports.SearchPanel = Montage.create(Component, {
             }
 
             this.isSearching = true;
+            this.searchResults = null;
 
             var base = "http://picasaweb.google.com/data/feed/base/all?visibility=public&alt=json&max-results=" + this.resultCount + "&kind=photo&prettyprint=true&imgmax=720u&q="
 //            var base = "http://picasaweb.google.com/data/feed/base/featured?visibility=public&alt=json&max-results=" + this.resultCount + "&kind=photo&prettyprint=true"
