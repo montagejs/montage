@@ -429,6 +429,10 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 if (self._objectLabels[label]) {
                     exports[label] = object = self._objectLabels[label];
                 } else {
+                    if (!(name in modules[moduleId])) {
+                        console.log("Warning: Object \"" + name + "\" not found at \"" + moduleId + "\" referenced from " + self._origin + ".");
+                        return;
+                    }
                     exports[label] = object = modules[moduleId][name].create();
                     Montage.getInfoForObject(object).label = label;
                     Object.defineProperty(object, "_suuid", {
