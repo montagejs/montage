@@ -358,6 +358,10 @@ exports.PhotoEditor = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
+
+            // Allow cross origin image loading
+            this._image.element.crossOrigin = '';
+
             // TODO this is a workaround for a problem with our deserialization in iOS concerning
             // canvas elements. Debugging points to some issue with adoptNode. Either way,
             // if we don't do this it takes two draw cycles to actually get the canvas rendering.

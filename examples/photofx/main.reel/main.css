@@ -3,11 +3,11 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.PhotoFX {
+html {
     font-family: Helvetica, Arial, sans-serif;
 }
 
-.PhotoList {
+.PhotoPanel {
     position: absolute;
     right: 0;
     bottom: 0;
@@ -20,6 +20,25 @@
     border-top:  1px solid hsl(0,0%,62%);
 
     background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#fff));
+}
+
+.PhotoPanel .PhotoList {
+    position: absolute;
+    top: 0;
+    right: 200px;
+    bottom: 0;
+    left: 0;
+
+    border-right:  1px solid hsl(0,0%,60%);
+}
+
+.PhotoPanel #controlPanel {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+
+    padding: 55px 10px 10px;
 }
 
 .EffectsPanel {

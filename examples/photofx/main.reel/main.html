@@ -16,12 +16,13 @@
                 "module": "montage/ui/controller/array-controller",
                 "name": "ArrayController",
                 "properties": {
-                    "content": [
-                        "images/IMG_1337.jpg",
-                        "images/IMG_1375.jpg",
-                        "images/IMG_1414.jpg",
-                        "images/IMG_1416.jpg"
-                    ]
+                    "selectObjectsOnAddition": true
+                },
+                "bindings": {
+                    "content": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "photos"
+                    }
                 }
             },
             "gridMagnifier": {
@@ -77,12 +78,41 @@
                     "contentController": {"@": "photoController"}
                 }
             },
+            "addPhotosListener": {
+                "module": "montage/core/event/action-event-listener",
+                "name": "ActionEventListener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "addPhotosAction"
+                }
+            },
+            "addPhotosButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "addPhotosButton"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "addPhotosListener"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "searchPanel": {
+                "module": "search-panel.reel",
+                "name": "SearchPanel"
+            },
+
             "owner": {
                 "module": "main.reel",
                 "name": "Main",
                 "properties": {
                     "element": {"#": "main"},
-                    "photoListController": {"@": "photoController"}
+                    "photoListController": {"@": "photoController"},
+                    "searchPanel": {"@": "searchPanel"}
                 }
             }
         }
@@ -99,8 +129,13 @@
 
         <div id="effectsPanel"></div>
 
-        <div id="photoList" class="PhotoList">
-            <div id="photoThumb"></div>
+        <div class="PhotoPanel">
+            <div id="photoList" class="PhotoList">
+                <div id="photoThumb"></div>
+            </div>
+            <div id="controlPanel">
+                <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
+            </div>
         </div>
 
     </div>

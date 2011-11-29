@@ -1,0 +1,71 @@
+.SearchPanel {
+    margin: 10px;
+    background: hsl(0,0%,15%);
+}
+
+.SearchPanel .searchForm {
+    width: 486px;
+    padding: 7px;
+    border-bottom: 1px solid hsl(0,0%,10%);
+    background: hsl(120, 2%, 89%);
+}
+
+.SearchPanel .SearchResultsList .montage-list-scrollView {
+    height: 350px;
+}
+
+.SearchPanel.searching .SearchResultsList {
+    opacity: 0;
+}
+
+.SearchPanel .SearchResultsList {
+    opacity: 1;
+}
+
+.SearchPanel .SearchResult {
+    display: table-row;
+    min-height: 100px;
+
+    margin: 1px 0;
+    padding: 5px;
+
+    border-top: 1px solid hsl(0,0%,90%);
+    border-bottom: 1px solid hsl(0,0%,60%);
+
+    background: hsl(120, 2%, 89%);
+}
+
+.SearchPanel .SearchResult:nth-child(2n) {
+    background: hsl(0,0%,80%);
+}
+
+.SearchPanel .SearchResultImage,
+.SearchPanel .SearchResult .infoPanel,
+.SearchPanel .SearchResult .actionPanel {
+    display: table-cell;
+    vertical-align: middle;
+}
+
+.SearchPanel .SearchResultImage {
+    width: 120px;
+    height: 100px;
+    margin: 7px;
+    -webkit-box-shadow: 0 1px 2px hsla(0,0%,0%,0.9);
+}
+
+.SearchPanel .SearchResult .title {
+    display: inline-block;
+    font-style: italic;
+    width: 200px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.SearchPanel .SearchResult .author {
+    font-size: 12px;
+}
+
+.SearchPanel .SearchResult .actionPanel {
+    padding: 7px;
+}

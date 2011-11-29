@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>SearchPanel</title>
+    <link rel="stylesheet" href="search-panel.css">
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "search-panel.reel",
+                "name": "SearchPanel",
+                "properties": {
+                    "element": {"#": "searchPanel"},
+                    "searchForm": {"#": "searchForm"},
+                    "searchResultsList": {"@": "searchResultsList"}
+                },
+                "bindings": {
+                    "queryParameter": {
+                        "boundObject": {"@": "queryField"},
+                        "boundObjectPropertyPath": "value"
+                    }
+                }
+            },
+
+            "searchResultsController": {
+                "module": "montage/ui/controller/array-controller",
+                "name": "ArrayController",
+                "bindings": {
+                    "content": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "searchResults"
+                    }
+                }
+            },
+
+            "queryField": {
+                "module": "montage/ui/textfield.reel",
+                "name": "Textfield",
+                "properties": {
+                    "element": {"#": "queryField"}
+                }
+            },
+
+            "searchButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "searchButton"}
+                }
+            },
+
+            "searchResultsList": {
+                "module": "montage/ui/list.reel",
+                "name": "List",
+                "properties": {
+                    "element": {"#": "searchResultsList"},
+                    "contentController": {"@": "searchResultsController"},
+                    "axis": "vertical"
+                }
+            },
+
+            "searchResultImage": {
+                "module": "montage/ui/image.reel",
+                "name": "Image",
+                "properties": {
+                    "element": {"#": "searchResultImage"}
+                },
+                "bindings": {
+                    "src": {
+                        "boundObject": {"@": "searchResultsList"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.content.src",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "searchResultTitle": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "searchResultTitle"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "searchResultsList"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.title.$t",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "searchResultAuthor": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "searchResultAuthor"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "searchResultsList"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.author.0.gphoto$nickname.$t",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "addPhotoListener": {
+                "module": "montage/core/event/action-event-listener",
+                "name": "ActionEventListener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "addPhotoAction"
+                }
+            },
+
+            "addPhotoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "addPhotoButton"},
+                    "identifier": "addPhotoButton"
+                },
+                "bindings": {
+                    "photo": {
+                        "boundObject": {"@": "searchResultsList"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "addPhotoListener"},
+                        "capture": false
+                    }
+                ]
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="searchPanel" class="SearchPanel">
+
+        <form id="searchForm" class="searchForm">
+            <input type="text" id="queryField">
+            <input type="submit" id="searchButton" class="submit" value="Search">
+        </form>
+
+        <div id="searchResultsList" class="SearchResultsList">
+            <div id="searchResult" class="SearchResult">
+                <img src="" id="searchResultImage" class="SearchResultImage">
+                <div class="infoPanel">
+                    <a href="#" target="_blank" id="link"><span id="searchResultTitle" class="title"></span></a>
+                    <div id="searchResultAuthor" class="author"></div>
+                </div>
+                <div class="actionPanel">
+                    <div id="addPhotoButton" class="submit addPhotoButton">Add Photo</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>
