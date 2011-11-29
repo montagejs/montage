@@ -8,6 +8,14 @@ var Component = require("montage/ui/component").Component;
 
 exports.ColorPicker = Montage.create(Component, {
 
+    x: {
+        value: null
+    },
+
+    y: {
+        value: null
+    },
+
     _currentColor: {
         enumerable: false,
         value: null
@@ -32,27 +40,6 @@ exports.ColorPicker = Montage.create(Component, {
     colorWell: {
         enumerable: false,
         value: null
-    },
-
-    prepareForDraw: {
-        value: function() {
-            document.application.addEventListener("colorpick", this, false);
-        }
-    },
-
-    handleColorpick: {
-        value: function(event) {
-            var self = this;
-            this._deferredColor = event.color;
-
-            // Deferring accepting a color as a bit of a performance optimization to improve magnifier drawing
-            if (!this._colorPickTimeout) {
-                this._colorPickTimeout = setTimeout(function() {
-                    self.currentColor = self._deferredColor;
-                    self._colorPickTimeout = null;
-                }, 100);
-            }
-        }
     },
 
     draw: {

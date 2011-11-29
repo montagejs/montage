@@ -23,12 +23,19 @@
     left: -9999px;
 }
 
+.PhotoEditor .toolLayer {
+    display: none;
+    position: absolute;
+    pointer-events: none;
+}
+
 .PhotoEditor canvas {
     display: none;
     -webkit-user-select: none;
     box-shadow: 0 0 16px rgba(0,0,0,.6);
 }
 
+.PhotoEditor.hasImage .toolLayer,
 .PhotoEditor.hasImage canvas {
     display: block;
 }

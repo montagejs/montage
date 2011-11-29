@@ -7,6 +7,14 @@ html {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+.montage-hidden {
+    display: none;
+}
+
+.montage-invisible {
+    visibility: hidden;
+}
+
 .PhotoPanel {
     position: absolute;
     right: 0;

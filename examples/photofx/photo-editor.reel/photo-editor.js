@@ -7,6 +7,7 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var dom = require("montage/ui/dom");
 var Point = require("montage/core/geometry/point").Point;
+var PointMonitor = require("point-monitor").PointMonitor;
 var Effect = require("effect/effect").Effect;
 
 var DesaturateEffect = require("effect/desaturate-effect").DesaturateEffect;
@@ -195,6 +196,20 @@ exports.PhotoEditor = Montage.create(Component, {
         }
     },
 
+    dataAtPoint: {
+        value: function(x, y) {
+
+            if (!this.hasImage || !this._canvas || x < 0 || x > this._width || y < 0 || y > this._height) {
+                return null;
+            }
+
+            var canvas = this._canvas,
+                context = canvas.getContext('2d');
+
+            return context.getImageData(x, y, 1, 1).data;
+        }
+    },
+
     _src: {
         enumerable: false,
         value: null
@@ -213,8 +228,6 @@ exports.PhotoEditor = Montage.create(Component, {
 
             this._src = value;
 
-            this._needToRefreshImageData = true;
-
             if (!this._src) {
                 this.hasImage = false;
                 this.needsDraw = true;
@@ -229,6 +242,7 @@ exports.PhotoEditor = Montage.create(Component, {
     handleEditorImageLoad: {
         enumerable: false,
         value: function(event) {
+            this._imageDirty = true;
             this.hasImage = true;
             this.needsDraw = true;
         }
@@ -244,11 +258,9 @@ exports.PhotoEditor = Montage.create(Component, {
         value: null
     },
 
-    willDraw: {
-        value: function() {
-            this._width = this._image.element.offsetWidth;
-            this._height = this._image.element.offsetHeight;
-        }
+    currentColor: {
+        enumerable: false,
+        value: null
     },
 
     // TODO Eventually we need to maintain a stack of effects to apply to the image inside the editor
@@ -270,6 +282,7 @@ exports.PhotoEditor = Montage.create(Component, {
             }
 
             this._inverted = value;
+            this._imageDirty = true;
             this.needsDraw = true;
         }
     },
@@ -291,6 +304,7 @@ exports.PhotoEditor = Montage.create(Component, {
             }
 
             this._desaturated = value;
+            this._imageDirty = true;
             this.needsDraw = true;
         }
     },
@@ -312,6 +326,7 @@ exports.PhotoEditor = Montage.create(Component, {
             }
 
             this._sepiaToned = value;
+            this._imageDirty = true;
             this.needsDraw = true;
         }
     },
@@ -333,6 +348,7 @@ exports.PhotoEditor = Montage.create(Component, {
             }
 
             this._multiplyEffect = value;
+            this._imageDirty = true;
             this.needsDraw = true;
         }
     },
@@ -356,6 +372,7 @@ exports.PhotoEditor = Montage.create(Component, {
             this._multiplyMultiplier = value;
 
             if (this.multiplyEffect) {
+                this._imageDirty = true;
                 this.needsDraw = true;
             }
         }
@@ -376,16 +393,77 @@ exports.PhotoEditor = Montage.create(Component, {
         }
     },
 
+    pointMonitorController: {
+        enumerable: false,
+        value: null
+    },
+
+    _pointMonitors: {
+        enumerable: false,
+        value: null
+    },
+
+    pointMonitors: {
+        enumerable: false,
+        get: function() {
+            if (!this._pointMonitors) {
+                this._pointMonitors = [PointMonitor.create(), PointMonitor.create(), PointMonitor.create(), PointMonitor.create()];
+            }
+
+            return this._pointMonitors;
+        }
+    },
+
+    _isShowingPointMonitors: {
+        enumerable: false,
+        value: null
+    },
+
+    isShowingPointMonitors: {
+        enumerable: false,
+        get: function() {
+            return this._isShowingPointMonitors;
+        },
+        set: function(value) {
+            if (value === this._isShowingPointMonitors) {
+                return;
+            }
+
+            this._isShowingPointMonitors = value;
+            this.needsDraw = true;
+        }
+    },
+
+    willDraw: {
+        value: function() {
+            this._width = this._image.element.offsetWidth;
+            this._height = this._image.element.offsetHeight;
+        }
+    },
+
     draw: {
         value: function() {
-
             // Don't draw unless we have something to actually draw
             if (!this._width || !this._height) {
                 return;
             }
 
-            // TODO should only draw the canvas if the canvas data is dirty
-            // flipping classnames should be cheap
+            var width = this._width,
+                height = this._height,
+                canvas,
+                image,
+                context;
+
+
+            this._toolLayer.style.width = width + "px";
+            this._toolLayer.style.height = height + "px";
+
+            if (this._isShowingPointMonitors) {
+                this.element.classList.add("isShowingPointMonitors");
+            } else {
+                this.element.classList.remove("isShowingPointMonitors");
+            }
+
             if (this._pointerIdentifier) {
                 this.element.classList.add("pickingColor");
             } else {
@@ -398,17 +476,22 @@ exports.PhotoEditor = Montage.create(Component, {
                 this.element.classList.remove("hasImage");
             }
 
-            var canvas = this._canvas,
-                image = this._image.element,
-                context;
+            // Only do expensive drawing if the canvas data is dirty
+            if (!this._imageDirty) {
+                return;
+            }
 
-            canvas.width = this._width;
-            canvas.height = this._height;
+            canvas = this._canvas;
+            image = this._image.element;
+            context;
+
+            canvas.width = width;
+            canvas.height = height;
 
             context = canvas.getContext('2d');
             context.drawImage(image, 0, 0);
 
-            var imgd = context.getImageData(0, 0, this._width, this._height),
+            var imgd = context.getImageData(0, 0, width, height),
                 pixels = imgd.data,
                 pixelCount = pixels.length;
 
@@ -430,7 +513,31 @@ exports.PhotoEditor = Montage.create(Component, {
 
             context.putImageData(imgd, 0, 0);
         }
+    },
 
+    didDraw: {
+        value: function() {
+            if (this._imageDirty) {
+
+                var context,
+                    imageData;
+
+                if (this.hasImage) {
+                    context = this._canvas.getContext('2d');
+                    imageData = context.getImageData(0, 0, this._width, this._height);
+                } else {
+                    imageData = null;
+                }
+
+                var imageModifiedEvent = document.createEvent("CustomEvent");
+                imageModifiedEvent.initCustomEvent("imagemodified", true, true, {
+                    editor: this
+                });
+                document.application.dispatchEvent(imageModifiedEvent);
+
+                this._imageDirty = false;
+            }
+        }
     }
 
 });

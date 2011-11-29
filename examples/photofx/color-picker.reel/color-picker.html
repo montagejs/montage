@@ -16,13 +16,36 @@
                 "module": "montage/ui/condition.reel",
                 "name": "Condition",
                 "properties": {
-                    "element": {"#": "colorCondition"}
+                    "element": {"#": "colorCondition"},
+                    "removalStrategy": "hide"
                 },
                 "bindings": {
                     "condition": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "currentColor",
                         "oneway": true
+                    }
+                }
+            },
+
+            "validNumberConverter": {
+                "module": "valid-number-converter",
+                "name": "ValidNumberConverter"
+            },
+
+            "pointCondition": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "pointCondition"},
+                    "removalStrategy": "hide"
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "x",
+                        "oneway": true,
+                        "converter": {"@": "validNumberConverter"}
                     }
                 }
             },
@@ -69,6 +92,34 @@
                     }
                 }
             },
+            "xValue": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "xValue"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "x",
+                        "oneway": true
+                    }
+                }
+            },
+            "yValue": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "yValue"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "y",
+                        "oneway": true
+                    }
+                }
+            },
             "owner": {
                 "module": "color-picker.reel",
                 "name": "ColorPicker",
@@ -85,11 +136,22 @@
 
     <div id="ColorPicker" class="ColorPicker">
         <div id="colorWell" class="colorWell"></div>
-        <dl id="colorCondition" class="colorValues">
-            <dt>R</dt><dd id="redValue"></dd>
-            <dt>G</dt><dd id="greenValue"></dd>
-            <dt>B</dt><dd id="blueValue"></dd>
-        </dl>
+
+        <div id="colorCondition" class="colorCondition">
+            <dl class="colorValues valueList">
+                <dt>R</dt><dd id="redValue"></dd>
+                <dt>G</dt><dd id="greenValue"></dd>
+                <dt>B</dt><dd id="blueValue"></dd>
+            </dl>
+        </div>
+
+        <div id="pointCondition" class="pointCondition">
+            <dl class="pointValues valueList">
+                <dt>X</dt><dd id="xValue"></dd>
+                <dt>Y</dt><dd id="yValue"></dd>
+            </dl>
+        </div>
+
     </div>
 
 </body>

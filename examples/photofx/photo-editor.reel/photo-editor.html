@@ -26,13 +26,57 @@
                     }
                 }
             },
+
+            "pointMonitorController": {
+                "module": "montage/ui/controller/array-controller",
+                "name": "ArrayController",
+                "bindings": {
+                    "content": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "pointMonitors"
+                    }
+                }
+            },
+
+            "pointMonitorRepetition": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "pointMonitors"},
+                    "isSelectionEnabled": true,
+                    "contentController": {"@": "pointMonitorController"}
+                }
+            },
+
+            "pointMarker": {
+                "module": "point-marker.reel",
+                "name": "PointMarker",
+                "properties": {
+                    "element": {"#": "pointMarker"}
+                },
+                "bindings": {
+                    "x": {
+                        "boundObject": {"@": "pointMonitorRepetition"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.x",
+                        "oneway": true
+                    },
+                    "y": {
+                        "boundObject": {"@": "pointMonitorRepetition"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.y",
+                        "oneway": true
+                    }
+                }
+            },
+
             "owner": {
                 "module": "photo-editor.reel",
                 "name": "PhotoEditor",
                 "properties": {
                     "element": {"#": "editor"},
                     "_image": {"@": "image"},
-                    "_canvas": {"#": "canvas"}
+                    "_canvas": {"#": "canvas"},
+                    "_toolLayer": {"#": "toolLayer"},
+                    "pointMonitorController": {"@": "pointMonitorController"}
                 }
             }
         }
@@ -43,7 +87,15 @@
 
     <div id="editor" class="PhotoEditor">
         <img id="image" class="image">
-        <canvas id="canvas" class="canvas"></canvas>
+
+        <div>
+            <div id="toolLayer" class="toolLayer">
+                <div id="pointMonitors">
+                    <div id="pointMarker"></div>
+                </div>
+            </div>
+            <canvas id="canvas" class="canvas"></canvas>
+        </div>
     </div>
 
 </body>

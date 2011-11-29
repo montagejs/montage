@@ -59,11 +59,17 @@
                     }
                 }
             },
-            "colorPicker": {
-                "module": "color-picker.reel",
-                "name": "ColorPicker",
+            "colorInfoPanel": {
+                "module": "color-info-panel.reel",
+                "name": "ColorInfoPanel",
                 "properties": {
-                    "element": {"#": "colorPicker"}
+                    "element": {"#": "colorInfoPanel"}
+                },
+                "bindings": {
+                    "pointMonitorController": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "editor.pointMonitorController"
+                    }
                 }
             },
             "owner": {
@@ -85,7 +91,7 @@
             <li><span id="desaturateToggle"></span>Desaturate</li>
             <li><div id="multiplyControl"></div></li>
         </ul>
-        <div id="colorPicker"></div>
+        <div id="colorInfoPanel"></div>
     </div>
 
 </body>
