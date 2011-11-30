@@ -398,7 +398,8 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this.element.classList.remove('montage-hide');
                 this.content.element.style.display = 'block';
                 this.content.element.classList.remove('montage-hide');
-                this.content.element.setAttribute("tabindex", "0"); // Make the alert focusable
+                // TODO do we want the panel to be focusable?
+                // this.content.element.setAttribute("tabindex", "0"); // Make the alert focusable
 
                 if (this.autoDismiss) {
                     var self = this;
