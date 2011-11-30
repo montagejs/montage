@@ -3,14 +3,9 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-#repetition {
-    display: table;
-    padding: 10px;
-}
-
 .PhotoThumb {
     display: table-cell;
-    height: 150px;
+    height: 130px;
 
     margin:  10px;
     padding:  10px;

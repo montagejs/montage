@@ -40,6 +40,11 @@ html {
     border-right:  1px solid hsl(0,0%,60%);
 }
 
+.PhotoPanel .PhotoList .montage-list-scrollView {
+    display: table;
+    margin-top: 10px;
+}
+
 .PhotoPanel #controlPanel {
     position: absolute;
     top: 0;
