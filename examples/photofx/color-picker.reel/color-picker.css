@@ -34,5 +34,5 @@
     margin: 0 3px 0 1px;
     width: 2em;
     font-weight: bold;
+    -webkit-user-select: text;
 }
-

@@ -10,8 +10,10 @@
 
 .PhotoInfoPanel .title {
     margin: 0;
+    -webkit-user-select: text;
 }
 
 .PhotoInfoPanel .author {
     margin-top: 0;
+    -webkit-user-select: text;
 }

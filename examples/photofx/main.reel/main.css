@@ -7,6 +7,10 @@ html {
     font-family: Helvetica, Arial, sans-serif;
 }
 
+* {
+    -webkit-user-select: none;
+}
+
 .montage-hidden {
     display: none;
 }
