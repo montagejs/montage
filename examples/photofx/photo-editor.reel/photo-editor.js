@@ -407,7 +407,11 @@ exports.PhotoEditor = Montage.create(Component, {
         enumerable: false,
         get: function() {
             if (!this._pointMonitors) {
-                this._pointMonitors = [PointMonitor.create(), PointMonitor.create(), PointMonitor.create(), PointMonitor.create()];
+                if (window.Touch) {
+                    this._pointMonitors = [PointMonitor.create(), PointMonitor.create()];
+                } else {
+                    this._pointMonitors = [PointMonitor.create(), PointMonitor.create(), PointMonitor.create(), PointMonitor.create()];
+                }
             }
 
             return this._pointMonitors;
