@@ -12,10 +12,12 @@ exports.PointMonitor = Montage.create(Montage, {
     },
 
     x: {
+        serializable: true,
         value: null
     },
 
     y: {
+        serializable: true,
         value: null
     }
 
