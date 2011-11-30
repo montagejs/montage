@@ -210,25 +210,25 @@ exports.PhotoEditor = Montage.create(Component, {
         }
     },
 
-    _src: {
+    _photo: {
         enumerable: false,
         value: null
     },
 
-    src: {
+    photo: {
         enumerable: false,
         get: function() {
-            return this._src;
+            return this._photo;
         },
         set: function(value) {
 
-            if (value === this._src) {
+            if (value === this._photo) {
                 return;
             }
 
-            this._src = value;
+            this._photo = value;
 
-            if (!this._src) {
+            if (!this._photo) {
                 this.hasImage = false;
                 this.needsDraw = true;
             }

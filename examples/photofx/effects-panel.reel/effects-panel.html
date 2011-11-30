@@ -72,6 +72,21 @@
                     }
                 }
             },
+
+            "photoInfoPanel": {
+                "module": "photo-info-panel.reel",
+                "name": "PhotoInfoPanel",
+                "properties": {
+                    "element": {"#": "photoInfoPanel"}
+                },
+                "bindings": {
+                    "photo": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "editor.photo"
+                    }
+                }
+            },
+
             "owner": {
                 "module": "effects-panel.reel",
                 "name": "EffectsPanel",
@@ -92,6 +107,7 @@
             <li><div id="multiplyControl"></div></li>
         </ul>
         <div id="colorInfoPanel"></div>
+        <div id="photoInfoPanel"></div>
     </div>
 
 </body>

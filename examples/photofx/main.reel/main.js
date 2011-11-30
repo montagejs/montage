@@ -1,4 +1,3 @@
-
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
@@ -10,12 +9,19 @@ var Popup = require("montage/ui/popup/popup.reel").Popup;
 
 exports.Main = Montage.create(Component, {
 
+    templateDidLoad: {
+        value: function() {
+            this.photos = [
+                {src: "images/IMG_1337.jpg", title: "Piston", authors: ["mike"]},
+                {src: "images/IMG_1375.jpg", title: "Big Sky", authors: ["mike"]},
+                {src: "images/IMG_1414.jpg", title: "5771", authors: ["mike"]},
+                {src: "images/IMG_1416.jpg", title: "Horizon", authors: ["mike"]}
+            ];
+        }
+    },
+
     photos: {
-        value: ["images/IMG_1337.jpg",
-                "images/IMG_1375.jpg",
-                "images/IMG_1414.jpg",
-                "images/IMG_1416.jpg"],
-        distinct: true
+        value: null
     },
 
     photoListController: {
@@ -73,7 +79,7 @@ exports.Main = Montage.create(Component, {
 
     handleAddphoto: {
         value: function(evt) {
-            this.photoListController.addObjects(evt.detail.photo.src);
+            this.photoListController.addObjects(evt.detail.photo);
         }
     }
 

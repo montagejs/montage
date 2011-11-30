@@ -24,7 +24,7 @@ exports.Image = Montage.create(Component, /** @lends module:"montage/ui/image.re
   Description TODO
   @private
 */
-    _src: {
+    _photo: {
         enumerable: false,
         value: null
     },
@@ -35,13 +35,13 @@ exports.Image = Montage.create(Component, /** @lends module:"montage/ui/image.re
     */
     src: {
         get: function() {
-            return this._src;
+            return this._photo;
         },
         set: function(value) {
-            if (this._src !== value) {
+            if (this._photo !== value) {
                 this.needsDraw = true;
             }
-            this._src = value;
+            this._photo = value;
         }
     },
 /**
@@ -58,7 +58,7 @@ exports.Image = Montage.create(Component, /** @lends module:"montage/ui/image.re
     */
     draw: {
         value: function() {
-            this.element.src = this._src != null ? this._src : this.defaultSrc;
+            this.element.src = this._photo != null ? this._photo : this.defaultSrc;
         }
     }
 

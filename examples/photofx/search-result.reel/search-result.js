@@ -25,7 +25,7 @@ exports.SearchResult = Montage.create(Component, {
                     link: photo.id.$t,
                     title: photo.title.$t,
                     source: "Picasa",
-                    author: photo.author[0].gphoto$nickname
+                    authors: [photo.author[0].gphoto$nickname.$t]
                 }
             });
             addPhotoEvent.type = "addphoto";

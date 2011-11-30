@@ -1,0 +1,17 @@
+.PhotoInfoPanel {
+    padding: 10px;
+}
+
+.PhotoInfoPanel .text {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.PhotoInfoPanel .title {
+    margin: 0;
+}
+
+.PhotoInfoPanel .author {
+    margin-top: 0;
+}
