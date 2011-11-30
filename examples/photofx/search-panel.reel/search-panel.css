@@ -21,3 +21,28 @@
 .SearchPanel .SearchResultsList {
     opacity: 1;
 }
+
+.SearchPanel .searchArea {
+    background-image: -webkit-linear-gradient(top, hsl(0,0%,12%), hsla(0,0%,12%,0) 4px);
+}
+
+.SearchPanel.searching .searchArea {
+    display: -webkit-box;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+}
+
+.SearchPanel .loadingIndicator {
+    display: none;
+    opacity: 0;
+    color: hsl(0,0%,86%);
+    font-size: 20px;
+    font-weight: bold;
+    text-shadow: 0 1px 2px hsl(0,0%,12%);
+}
+
+.SearchPanel.searching .loadingIndicator {
+    display: block;
+    opacity: 1;
+}
+
