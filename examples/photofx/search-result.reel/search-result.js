@@ -18,8 +18,6 @@ exports.SearchResult = Montage.create(Component, {
         value: function(evt) {
             var photo = this.result;
 
-            console.log("photo!", photo)
-
             var addPhotoEvent = document.createEvent("CustomEvent");
             addPhotoEvent.initCustomEvent("addphoto", true, true, {
                 photo: {
