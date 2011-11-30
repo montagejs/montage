@@ -65,82 +65,22 @@
                 }
             },
 
-            "searchResultImage": {
-                "module": "montage/ui/image.reel",
-                "name": "Image",
+            "searchResult": {
+                "module": "search-result.reel",
+                "name": "SearchResult",
                 "properties": {
-                    "element": {"#": "searchResultImage"}
+                    "element": {"#": "searchResult"},
+                    "searchPanel": {"@": "owner"}
                 },
                 "bindings": {
-                    "src": {
-                        "boundObject": {"@": "searchResultsList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.content.src",
-                        "oneway": true
-                    }
-                }
-            },
-
-            "searchResultTitle": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
-                "properties": {
-                    "element": {"#": "searchResultTitle"}
-                },
-                "bindings": {
-                    "value": {
-                        "boundObject": {"@": "searchResultsList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.title.$t",
-                        "oneway": true
-                    }
-                }
-            },
-
-            "searchResultAuthor": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
-                "properties": {
-                    "element": {"#": "searchResultAuthor"}
-                },
-                "bindings": {
-                    "value": {
-                        "boundObject": {"@": "searchResultsList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.author.0.gphoto$nickname.$t",
-                        "oneway": true
-                    }
-                }
-            },
-
-            "addPhotoListener": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "addPhotoAction"
-                }
-            },
-
-            "addPhotoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "addPhotoButton"},
-                    "identifier": "addPhotoButton"
-                },
-                "bindings": {
-                    "photo": {
+                    "result": {
                         "boundObject": {"@": "searchResultsList"},
                         "boundObjectPropertyPath": "objectAtCurrentIteration",
                         "oneway": true
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "addPhotoListener"},
-                        "capture": false
-                    }
-                ]
+                }
             }
+
         }
     </script>
 
@@ -155,16 +95,7 @@
         </form>
 
         <div id="searchResultsList" class="SearchResultsList">
-            <div id="searchResult" class="SearchResult">
-                <div class="infoPanel">
-                    <span id="searchResultTitle" class="title"></span>
-                    <span id="searchResultAuthor" class="author"></span>
-                </div>
-                <img src="" id="searchResultImage" class="SearchResultImage">
-                <div class="actionPanel">
-                    <div id="addPhotoButton" class="submit addPhotoButton">Add Photo</div>
-                </div>
-            </div>
+            <div id="searchResult"></div>
         </div>
 
     </div>

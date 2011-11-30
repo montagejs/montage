@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>SearchPanel</title>
+    <link rel="stylesheet" href="search-result.css">
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "search-result.reel",
+                "name": "SearchResult",
+                "properties": {
+                    "element": {"#": "searchResult"}
+                }
+            },
+
+            "searchResultImage": {
+                "module": "montage/ui/image.reel",
+                "name": "Image",
+                "properties": {
+                    "element": {"#": "searchResultImage"}
+                },
+                "bindings": {
+                    "src": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "result.content.src",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "addPhotoListener": {
+                "module": "montage/core/event/action-event-listener",
+                "name": "ActionEventListener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "addPhotoAction"
+                }
+            },
+
+            "addPhotoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "addPhotoButton"},
+                    "identifier": "addPhotoButton"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "addPhotoListener"},
+                        "capture": false
+                    }
+                ]
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="searchResult" class="SearchResult">
+        <div class="imagePanel">
+            <img src="" id="searchResultImage" class="SearchResultImage">
+        </div>
+        <div class="actionPanel">
+            <div id="addPhotoButton" class="submit addPhotoButton">Add Photo</div>
+        </div>
+    </div>
+
+</body>
+</html>
+
+

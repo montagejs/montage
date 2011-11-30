@@ -25,6 +25,9 @@ exports.Main = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
+
+            this.application.addEventListener('addphoto', this, false);
+
             if (window.Touch) {
                 this.element.classList.add("touch");
             }
@@ -49,8 +52,6 @@ exports.Main = Montage.create(Component, {
                 popup = Popup.create();
                 popup.content = this.searchPanel;
                 this.searchPopup = popup;
-
-                this.searchPanel.addEventListener('addphoto', this, false);
             }
 
             popup.show();
