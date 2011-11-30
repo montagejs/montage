@@ -17,6 +17,10 @@ exports.ColorInfoPanel = Montage.create(Component, {
         value: function() {
             document.application.addEventListener("colorpick", this, false);
             document.application.addEventListener("imagemodified", this, false);
+
+            if (this.pointMonitorController && null == this.pointMonitorController.selectedIndexes) {
+                this.pointMonitorController.selectedIndexes = [0];
+            }
         }
     },
 
