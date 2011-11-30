@@ -33,7 +33,7 @@ html {
 .PhotoPanel .PhotoList {
     position: absolute;
     top: 0;
-    right: 200px;
+    right: 270px;
     bottom: 0;
     left: 0;
 
@@ -50,7 +50,6 @@ html {
     top: 0;
     right: 0;
     bottom: 0;
-
     padding: 25px 10px 10px;
     text-align: center;
 }
@@ -59,13 +58,16 @@ html {
     margin-bottom: 8px;
 }
 
+.EffectsPanel,
+.PhotoPanel #controlPanel {
+    width: 270px
+}
+
 .EffectsPanel {
     position: absolute;
     top: 0;
     right: 0;
     bottom: 177px;
-
-    width: 300px;
 
     border-left:  1px solid hsl(0,0%,62%);
 
@@ -77,5 +79,5 @@ html {
     top: 0;
     left: 0;
     bottom: 177px;
-    right: 301px;
+    right: 270px;
 }

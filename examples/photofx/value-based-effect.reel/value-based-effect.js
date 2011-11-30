@@ -15,7 +15,7 @@ exports.ValueBasedEffect = Montage.create(Component, {
 
     defaultValue: {
         enumerable: false,
-        value: 0
+        value: null
     },
 
     value: {
@@ -36,6 +36,26 @@ exports.ValueBasedEffect = Montage.create(Component, {
     reset: {
         value: function() {
             this.value = this.defaultValue;
+        }
+    }
+
+});
+
+var Converter = require("montage/core/converter/converter").Converter;
+
+exports.ResetAvailableConverter = Montage.create(Converter, {
+
+    defaultValue: {
+        value: null
+    },
+
+    convert: {
+        value: function(value) {
+            if (null == this.defaultValue) {
+                return false;
+            } else {
+                return (value !== this.defaultValue);
+            }
         }
     }
 

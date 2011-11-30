@@ -1,0 +1,14 @@
+.ValueBasedEffect .valueControl {
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+}
+
+.ValueBasedEffect .valueControl .slider {
+    -webkit-box-flex: 1;
+}
+
+.ValueBasedEffect .valueControl .value {
+    width: 3em;
+}

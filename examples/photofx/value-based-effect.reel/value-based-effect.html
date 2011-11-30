@@ -8,6 +8,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>ValueBasedEffect</title>
+    <link rel="stylesheet" href="value-based-effect.css">
 
     <script type="text/montage-serialization">
         {
@@ -81,6 +82,35 @@
                     "action": "reset"
                 }
             },
+
+            "resetAvailableConverter": {
+                "module": "value-based-effect.reel",
+                "name": "ResetAvailableConverter",
+                "bindings": {
+                    "defaultValue": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "defaultValue",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "resetCondition": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "resetCondition"}
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "value",
+                        "oneway": true,
+                        "converter": {"@": "resetAvailableConverter"}
+                    }
+                }
+            },
+
             "resetButton": {
                 "module": "montage/ui/button.reel",
                 "name": "Button",
@@ -109,11 +139,16 @@
 </head>
 <body>
 
-    <div id="control">
+    <div id="control" class="ValueBasedEffect">
         <span id="toggle"></span> <span id="effectName"></span>
-        <div id="valueSlider"></div>
-        <div id="resetButton" class="text"></div>
-        <span id="valueDisplay"></span>
+        <div class="valueControl">
+            <div id="valueSlider" class="slider"></div>
+            <div id="valueDisplay" class="value"></div>
+        </div>
+
+        <div id="resetCondition">
+            <div id="resetButton" class="text"></div>
+        </div>
     </div>
 
 </body>
