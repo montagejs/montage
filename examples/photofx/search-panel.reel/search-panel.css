@@ -4,7 +4,6 @@
 }
 
 .SearchPanel .searchForm {
-    width: 486px;
     padding: 7px;
     border-bottom: 1px solid hsl(0,0%,10%);
     background: hsl(120, 2%, 89%);
@@ -40,15 +39,13 @@
 }
 
 .SearchPanel .SearchResultImage,
-.SearchPanel .SearchResult .infoPanel,
 .SearchPanel .SearchResult .actionPanel {
     display: table-cell;
     vertical-align: middle;
 }
 
 .SearchPanel .SearchResultImage {
-    width: 120px;
-    height: 100px;
+    height: 80px;
     margin: 7px;
     -webkit-box-shadow: 0 1px 2px hsla(0,0%,0%,0.9);
 }
@@ -56,7 +53,7 @@
 .SearchPanel .SearchResult .title {
     display: inline-block;
     font-style: italic;
-    width: 200px;
+    max-width: 15em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -66,6 +63,11 @@
     font-size: 12px;
 }
 
-.SearchPanel .SearchResult .actionPanel {
+.SearchPanel .SearchResult .actionPanel,
+.SearchPanel .SearchResult .infoPanel {
     padding: 7px;
+}
+
+.SearchPanel .SearchResult .infoPanel {
+    padding-bottom: 0;
 }
