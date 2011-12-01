@@ -724,7 +724,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
                 }
             }
             
-            this._element.setAttribute("title", this.title);
+            this._element.setAttribute("title", this.title || "");
         }
     }
 
