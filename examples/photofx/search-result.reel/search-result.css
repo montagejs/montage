@@ -27,6 +27,10 @@
     -webkit-box-flex: 1;
 }
 
+.SearchResult .actionPanel {
+    min-width: 200px;
+}
+
 .SearchResult .actionPanel,
 .SearchResult .imagePanel {
     display: -webkit-box;

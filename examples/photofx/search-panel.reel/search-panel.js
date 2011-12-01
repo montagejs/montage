@@ -8,6 +8,11 @@ var Component = require("montage/ui/component").Component;
 
 exports.SearchPanel = Montage.create(Component, {
 
+    photoListController: {
+        enumerable: false,
+        value: null
+    },
+
     queryParameter: {
         enumerable: false,
         value: null
@@ -95,26 +100,6 @@ exports.SearchPanel = Montage.create(Component, {
     searchResults: {
         enumerable: false,
         value: null
-    },
-
-    addPhotoAction: {
-        enumerable: false,
-        value: function(evt) {
-            var photo = evt.target.photo;
-
-            var addPhotoEvent = document.createEvent("CustomEvent");
-            addPhotoEvent.initCustomEvent("addphoto", true, true, {
-                photo: {
-                    src: photo.content.src,
-                    link: photo.id.$t,
-                    title: photo.title.$t,
-                    source: "Picasa",
-                    author: photo.author[0].gphoto$nickname
-                }
-            });
-            addPhotoEvent.type = "addphoto";
-            this.dispatchEvent(addPhotoEvent);
-        }
     },
 
     draw: {

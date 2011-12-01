@@ -64,7 +64,6 @@ exports.Main = Montage.create(Component, {
     prepareForDraw: {
         value: function() {
 
-            this.application.addEventListener('addphoto', this, false);
             window.addEventListener('beforeunload', this, false);
 
             if (window.Touch) {
@@ -129,12 +128,6 @@ exports.Main = Montage.create(Component, {
             }
 
             this.photoListController.removeObjects(selectedPhoto);
-        }
-    },
-
-    handleAddphoto: {
-        value: function(evt) {
-            this.photoListController.addObjects(evt.detail.photo);
         }
     }
 

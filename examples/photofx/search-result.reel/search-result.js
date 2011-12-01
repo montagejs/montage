@@ -8,30 +8,66 @@ var Component = require("montage/ui/component").Component;
 
 exports.SearchResult = Montage.create(Component, {
 
+    photoListController: {
+        enumerable: false,
+        value: null
+    },
+
     result: {
         enumerable: false,
         value: null
     },
 
+    resultAlreadyImported: {
+        dependencies: ["result", "photoListController.content.count()"],
+        get: function() {
+
+            if (!this.result) {
+                return false;
+            }
+
+            var importedIdList = this.photoListController.content.getProperty("id");
+            return importedIdList.indexOf(this.result.gphoto$id.$t) >= 0;
+        }
+    },
+
     addPhotoAction: {
         enumerable: false,
-        value: function(evt) {
-            var photo = this.result;
+        value: function() {
 
-            var addPhotoEvent = document.createEvent("CustomEvent");
-            addPhotoEvent.initCustomEvent("addphoto", true, true, {
-                photo: {
-                    src: photo.content.src,
-                    link: photo.id.$t,
-                    title: photo.title.$t,
-                    source: "Picasa",
-                    authors: [photo.author[0].gphoto$nickname.$t]
-                }
-            });
-            addPhotoEvent.type = "addphoto";
-            this.application.dispatchEvent(addPhotoEvent);
+            if (this.resultAlreadyImported) {
+                return;
+            }
+
+            var result = this.result,
+                photo;
+
+            // TODO preserve all the original picasa data
+            photo = {
+                id: result.gphoto$id.$t,
+                src: result.content.src,
+                thumbnailSrc: result.getProperty("media$group.media$thumbnail.0.url"),
+                link: result.id.$t,
+                title: result.title.$t,
+                source: "Picasa",
+                authors: [result.author[0].gphoto$nickname.$t]
+            }
+
+            this.photoListController.addObjects(photo);
         }
     }
 
+
+});
+
+var Converter = require("montage/core/converter/converter").Converter;
+
+exports.ActionSwitchValueConverter = Montage.create(Converter, {
+
+    convert: {
+        value: function(value) {
+            return value ? "oldPhoto" : "newPhoto";
+        }
+    }
 
 });

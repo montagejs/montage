@@ -69,13 +69,17 @@
                 "module": "search-result.reel",
                 "name": "SearchResult",
                 "properties": {
-                    "element": {"#": "searchResult"},
-                    "searchPanel": {"@": "owner"}
+                    "element": {"#": "searchResult"}
                 },
                 "bindings": {
                     "result": {
                         "boundObject": {"@": "searchResultsList"},
                         "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    },
+                    "photoListController": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "photoListController",
                         "oneway": true
                     }
                 }
