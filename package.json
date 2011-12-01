@@ -1,0 +1,16 @@
+{
+    "name": "montage",
+    "version": "0.3.1",
+    "description": "A UI Framework",
+    "main": "core/core.js",
+    "exclude": [
+        "lab/benchmarks",
+        "lab/sandbox",
+        "examples",
+        "require/test",
+        "require/tests"
+    ],
+    "devDependencies": {
+        "test": ">=0.2.1"
+    }
+}

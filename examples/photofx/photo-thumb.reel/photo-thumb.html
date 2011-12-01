@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PhotoThumb</title>
+    <link rel="stylesheet" type="text/css" href="photo-thumb.css">
+
+    <script type="text/montage-serialization">
+        {
+            "image": {
+                "module": "montage/ui/image.reel",
+                "name": "Image",
+                "properties": {
+                    "element": {"#": "image"}
+                },
+                "bindings": {
+                    "src": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "photo",
+                        "oneway": true
+                    }
+                }
+            },
+            "owner": {
+                "module": "photo-thumb.reel",
+                "name": "PhotoThumb",
+                "properties": {
+                    "element": {"#": "photoThumb"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="photoThumb" class="PhotoThumb">
+        <img id="image" class="image">
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>EffectsPanel</title>
+    <link rel="stylesheet" type="text/css" href="effects-panel.css">
+
+    <script type="text/montage-serialization">
+        {
+            "invertToggle": {
+                "module": "montage/ui/toggle.reel",
+                "name": "Toggle",
+                "properties": {
+                    "element": {"#": "invertToggle"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "editor.inverted"
+                    }
+                }
+            },
+            "desaturateToggle": {
+                "module": "montage/ui/toggle.reel",
+                "name": "Toggle",
+                "properties": {
+                    "element": {"#": "desaturateToggle"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "editor.desaturated"
+                    }
+                }
+            },
+            "multiplyControl": {
+                "module": "value-based-effect.reel",
+                "name": "ValueBasedEffect",
+                "properties": {
+                    "element": {"#": "multiplyControl"},
+                    "name": "Multiply",
+                    "defaultValue": 1,
+                    "minValue": 0,
+                    "maxValue": 20
+                },
+                "bindings": {
+                    "enabled": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "editor.multiplyEffect"
+                    },
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "editor.multiplyMultiplier"
+                    }
+                }
+            },
+            "colorPicker": {
+                "module": "color-picker.reel",
+                "name": "ColorPicker",
+                "properties": {
+                    "element": {"#": "colorPicker"}
+                }
+            },
+            "owner": {
+                "module": "effects-panel.reel",
+                "name": "EffectsPanel",
+                "properties": {
+                    "element": {"#": "EffectsPanel"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="EffectsPanel" class="EffectsPanel">
+        <ul class="effectsList">
+            <li><span id="invertToggle"></span>Invert Colors</li>
+            <li><span id="desaturateToggle"></span>Desaturate</li>
+            <li><div id="multiplyControl"></div></li>
+        </ul>
+        <div id="colorPicker"></div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,43 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+#repetition {
+    display: table;
+    padding: 10px;
+}
+
+.PhotoThumb {
+    display: table-cell;
+    height: 150px;
+
+    margin:  10px;
+    padding:  10px;
+
+    white-space: nowrap;
+    background: hsl(0, 0%, 100%);
+    -webkit-box-shadow: 0 1px 1px hsl(120,2%,39%);
+    -webkit-transform: scale(0.9);
+
+    -webkit-transition-property: -webkit-transform, background-color;
+    -webkit-transition-duration: 200ms;
+    -webkit-transition-timing-function: ease-in-out;
+}
+
+.PhotoThumb.selected {
+    background: hsl(195,96%,53%);
+    -webkit-transform: scale(1.0);
+    -webkit-box-shadow: 0 2px 5px hsla(120,2%,39%, 0.3);
+    border:  1px solid hsl(0,0%,56%);
+}
+
+.PhotoThumb.active {
+    background: hsl(195,66%,73%);
+}
+
+.PhotoThumb .image {
+    height: 100%;
+
+    border:  1px solid hsl(120,2%,79%);
+}

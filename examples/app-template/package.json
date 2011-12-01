@@ -1,0 +1,10 @@
+{
+    "name": "loader",
+    "version": "0.0.0",
+    "mappings": {
+        "montage": "../../"
+    },
+    "directories": {
+        "lib": ""
+    }
+}

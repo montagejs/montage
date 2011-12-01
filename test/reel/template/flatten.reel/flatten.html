@@ -1,0 +1,67 @@
+<!doctype html>
+<html>
+<head>
+    <script type="text/montage-serialization">
+{
+    "textfield1": {
+        "module": "reel/template/textfield.reel",
+        "name": "TextField",
+        "properties": {
+            "element": {"#": "textfield0"},
+            "text": "here"
+        }
+    },
+    "componenty1": {
+        "module": "reel/template/componenty.reel",
+        "name": "ComponentY",
+        "properties": {
+            "element": {"#": "content1"}
+        }
+    },
+    "componenty2": {
+        "module": "reel/template/componenty.reel",
+        "name": "ComponentY",
+        "properties": {
+            "element": {"#": "content1a"}
+        }
+    },
+    "textfield2": {
+        "module": "reel/template/textfield.reel",
+        "name": "TextField",
+        "properties": {
+            "element": {"#": "textfield3"},
+            "text": "X here"
+        }
+    },
+    "componentx1": {
+        "module": "reel/template/componentx.reel",
+        "name": "ComponentX",
+        "properties": {
+            "element": {"#": "content2"},
+            "textfield": {"@": "textfield2"}
+        }
+    },
+    "owner": {
+        "module": "reel/template/flatten.reel",
+        "name": "Flatten",
+        "properties": {
+            "element": {"#": "flatten"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <div id="flatten">
+        <span id="textfield0"></span>
+        
+        <span id="content1"></span>
+        <span id="content1a"></span>
+        
+        <span id="content2">
+            <span id="textfield3"></span>
+        </span>
+    </div>
+</body>
+</html>

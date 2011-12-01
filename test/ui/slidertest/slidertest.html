@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+{
+    "slider1": {
+        "module": "montage/ui/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "element": {"#": "testSlider"}
+        }
+    },
+    "textfield1": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "sliderValue"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "slider1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "slider2": {
+        "module": "montage/ui/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "element": {"#": "testSlider2"}
+        }
+    },
+    "textfield2": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "sliderValue2"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "slider2"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "slidertest1": {
+        "module": "ui/slidertest/slidertest",
+        "name": "SliderTest",
+        "properties": {
+            "testSlider": {"@": "slider1"},
+            "sliderValue": {"@": "textfield1"},
+            "testSlider2": {"@": "slider2"},
+            "sliderValue2": {"@": "textfield2"}
+        }
+    },
+    "owner": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "components": [
+                {"@": "slider1"},
+                {"@": "textfield1"},
+                {"@": "slider2"},
+                {"@": "textfield2"}
+            ],
+            "delegate": {"@": "slidertest1"}
+        }
+    }
+}
+    </script>
+
+
+    <style type="text/css">
+        body {
+            position:relative;
+            -webkit-user-select: none;
+        }
+
+        .testSlider {
+            width:400px;
+            height:40px;
+            margin: 50px 50px 50px 50px;
+        }
+
+        .shiftRight {
+            position:absolute;
+            left:0%;
+            -webkit-transform: translateX(50px);
+        }
+    </style>
+
+</head>
+<body>
+    <div id="testSlider" class="testSlider"></div>
+    <input type="text" id="sliderValue"/>
+    <div class="shiftRight">
+        <div id="testSlider2" class="testSlider"></div>
+        <input id="sliderValue2" type="text"/>
+    </div>
+</body>
+</html>

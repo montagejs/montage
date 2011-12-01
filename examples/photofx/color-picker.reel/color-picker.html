@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ColorPicker</title>
+    <link rel="stylesheet" type="text/css" href="color-picker.css">
+
+    <script type="text/montage-serialization">
+        {
+            "colorCondition": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "colorCondition"}
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "currentColor",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "redValue": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "redValue"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "currentColor.0",
+                        "oneway": true
+                    }
+                }
+            },
+            "greenValue": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "greenValue"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "currentColor.1",
+                        "oneway": true
+                    }
+                }
+            },
+            "blueValue": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "blueValue"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "currentColor.2",
+                        "oneway": true
+                    }
+                }
+            },
+            "owner": {
+                "module": "color-picker.reel",
+                "name": "ColorPicker",
+                "properties": {
+                    "element": {"#": "ColorPicker"},
+                    "colorWell": {"#": "colorWell"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="ColorPicker" class="ColorPicker">
+        <div id="colorWell" class="colorWell"></div>
+        <dl id="colorCondition" class="colorValues">
+            <dt>R</dt><dd id="redValue"></dd>
+            <dt>G</dt><dd id="greenValue"></dd>
+            <dt>B</dt><dd id="blueValue"></dd>
+        </dl>
+    </div>
+
+</body>
+</html>

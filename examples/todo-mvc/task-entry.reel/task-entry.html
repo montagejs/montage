@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" type="text/css" href="task-entry.css">
+
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "module": "task-entry.reel",
+                    "name": "TaskEntry",
+                    "properties": {
+                        "element": {"#": "taskEntry"},
+                        "completedCheckbox": {"#": "completedCheckbox"}
+                    }
+                },
+
+                "note": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "note"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "task.note",
+                            "oneway": true
+                        }
+                    }
+                },
+
+                "completedCheckbox": {
+                    "module": "montage/ui/checkbox.reel",
+                    "name": "Checkbox",
+                    "properties": {
+                        "element": {"#": "completedCheckbox"}
+                    },
+                    "bindings": {
+                        "checked": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "task.completed"
+                        }
+                    }
+                }
+            }
+        </script>
+
+    </head>
+    <body>
+        <div id="taskEntry" class="taskEntry">
+            <form>
+                <div>
+                    <label class="completionField"><span class="labelText">Completed</span><input id="completedCheckbox" type="checkbox">
+                        <span id="note" class="text"></span>
+                    </label>
+
+                </div>
+            </form>
+        </div>
+    </body>
+</html>

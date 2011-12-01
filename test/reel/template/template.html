@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+    <title>Template</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "externalserialization": {
+                "module": "reel/template/externalserialization.reel",
+                "name": "ExternalSerialization",
+                "properties": {
+                    "element": {"#": "externalserialization"}
+                }
+            },
+            "componentslowstyle1": {
+                "module": "reel/template/componentslowstyle.reel",
+                "name": "ComponentSlowStyle",
+                "properties": {
+
+                }
+            },
+            "reeltest1": {
+                "module": "reel/template/template-test",
+                "name": "TemplateTest",
+                "properties": {
+                    "text": "This is some text",
+                    "array": [
+                        "This",
+                        "is",
+                        "an",
+                        "array"
+                    ],
+                    "slowstyle": {"@": "componentslowstyle1"},
+                    "script": {"@": "componentscript1"}
+                }
+            },
+            "actioneventlistener1": {
+                "module": "montage/core/event/action-event-listener",
+                "name": "ActionEventListener",
+                "properties": {
+                    "handler": {"@": "reeltest1"},
+                    "action": "listener"
+                }
+            },
+            "textfield1": {
+                "module": "reel/template/textfield.reel",
+                "name": "TextField",
+                "properties": {
+                    "element": {"#": "textfield0"}
+                },
+                "bindings": {
+                    "text": {
+                        "boundObject": {"@": "reeltest1"},
+                        "boundObjectPropertyPath": "text"
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "actioneventlistener1"},
+                        "capture": false
+                    }
+                ]
+            },
+            "componenty1": {
+                "module": "reel/template/componenty.reel",
+                "name": "ComponentY",
+                "properties": {
+                    "element": {"#": "content1"}
+                }
+            },
+            "textfield2": {
+                "module": "reel/template/textfield.reel",
+                "name": "TextField",
+                "properties": {
+                    "element": {"#": "textfield3"},
+                    "text": "X here"
+                }
+            },
+            "componentx1": {
+                "module": "reel/template/componentx.reel",
+                "name": "ComponentX",
+                "properties": {
+                    "element": {"#": "content2"},
+                    "textfield": {"@": "textfield2"}
+                }
+            },
+            "componentstyle1": {
+                "module": "reel/template/componentstyle.reel",
+                "name": "ComponentStyle",
+                "properties": {
+                    "element": {"#": "componentstyle"}
+                }
+            },
+            "componentscript1": {
+                "module": "reel/template/componentscript.reel",
+                "name": "ComponentScript",
+                "properties": {
+                    "element": {"#": "componentscript1"}
+                }
+            },
+            "componentscript2": {
+                "module": "reel/template/componentscript.reel",
+                "name": "ComponentScript",
+                "properties": {
+                    "element": {"#": "componentscript2"}
+                }
+            },
+            "owner": {
+                "module": "montage/ui/application",
+                "name": "Application",
+                "properties": {
+                    "delegate": {"@": "reeltest1"},
+                    "components": [
+                        {"@": "textfield1"},
+                        {"@": "componenty1"},
+                        {"@": "componentx1"},
+                        {"@": "componentstyle1"},
+                        {"@": "componentscript1"},
+                        {"@": "componentscript2"},
+                        {"@": "externalserialization"}
+                    ]
+                }
+            }
+        }
+    </script>
+
+    <style>
+        h2 {
+            border-bottom: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h2>Component</h2>
+    <span id="textfield0" class="textfield0"></span>
+
+    <h2>Static Component Composition (SCC)</h2>
+    <div id="content1" class="content1"></div>
+
+    <h2>Dynamic Component Composition (DCC)</h2>
+    <div id="content2" class="content2">
+        <span id="textfield3" class="textfield3"></span>
+    </div>
+
+    <h2>Styled Component</h2>
+    <div id="componentstyle" class="componentstyle"></div>
+
+    <h2>Slow Styled Component</h2>
+    <div id="componentslowstyle" class="componentslowstyle"></div>
+
+    <div id="componentscript1" class="componentscript1"></div>
+    <div id="componentscript2" class="componentscript2"></div>
+
+    <div id="externalserialization" class="externalserialization"></div>
+</body>
+</html>

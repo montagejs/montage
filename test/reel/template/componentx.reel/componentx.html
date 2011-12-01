@@ -1,0 +1,30 @@
+<html>
+<head>
+    <script type="text/montage-serialization">
+    {
+        "componentplaceholder1": {
+            "module": "montage/ui/component-placeholder.reel",
+            "name": "ComponentPlaceHolder",
+            "properties": {
+                "ownerComponent": {"@": "owner"},
+                "name": "textfield",
+                "element": {"#": "textfield2"}
+            }
+        },
+        "owner": {
+            "module": "reel/template/componentx.reel",
+            "name": "ComponentX",
+            "properties": {
+                "element": {"#": "componentx"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div id="componentx">
+        <h3>Component X</h3>
+        <div id="textfield2" class="placeholderClassName"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PhotoFX Main</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+        {
+            "photoController": {
+                "module": "montage/ui/controller/array-controller",
+                "name": "ArrayController",
+                "properties": {
+                    "content": [
+                        "images/IMG_1337.jpg",
+                        "images/IMG_1375.jpg",
+                        "images/IMG_1414.jpg",
+                        "images/IMG_1416.jpg"
+                    ]
+                }
+            },
+            "gridMagnifier": {
+                "module": "grid-magnifier.reel",
+                "name": "GridMagnifier",
+                "properties": {
+                    "element": {"#": "gridMagnifier"}
+                }
+            },
+            "photoEditor": {
+                "module": "photo-editor.reel",
+                "name": "PhotoEditor",
+                "properties": {
+                    "element": {"#": "editor"}
+                },
+                "bindings": {
+                    "src": {
+                        "boundObject": {"@": "photoController"},
+                        "boundObjectPropertyPath": "selectedObjects.0",
+                        "oneway": true
+                    }
+                }
+            },
+            "effectsPanel": {
+                "module": "effects-panel.reel",
+                "name": "EffectsPanel",
+                "properties": {
+                    "element": {"#": "effectsPanel"},
+                    "editor": {"@": "photoEditor"}
+                }
+            },
+            "photoThumb": {
+                "module": "photo-thumb.reel",
+                "name": "PhotoThumb",
+                "properties": {
+                    "element": {"#": "photoThumb"}
+                },
+                "bindings": {
+                    "photo": {
+                        "boundObject": {"@": "photoList"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    }
+                }
+            },
+            "photoList": {
+                "module": "montage/ui/list.reel",
+                "name": "List",
+                "properties": {
+                    "element": {"#": "photoList"},
+                    "axis": "horizontal",
+                    "isSelectionEnabled": true,
+                    "contentController": {"@": "photoController"}
+                }
+            },
+            "owner": {
+                "module": "main.reel",
+                "name": "Main",
+                "properties": {
+                    "element": {"#": "main"},
+                    "photoListController": {"@": "photoController"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="main" class="PhotoFX main">
+        <div style="display: table">
+            <div id="gridMagnifier"></div>
+            <div id="editor"></div>
+        </div>
+
+        <div id="effectsPanel"></div>
+
+        <div id="photoList" class="PhotoList">
+            <div id="photoThumb"></div>
+        </div>
+
+    </div>
+
+</body>
+</html>

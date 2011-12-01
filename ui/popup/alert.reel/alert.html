@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="alert.css">
+        <script type="text/montage-serialization">
+{
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {
+                "#": "title"
+            }
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {
+                    "@": "owner"
+                },
+                "boundObjectPropertyPath": "title",
+                "oneway": true
+            }
+        }
+    },
+    "dynamictext2": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {
+                "#": "msg"
+            }
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {
+                    "@": "owner"
+                },
+                "boundObjectPropertyPath": "msg",
+                "oneway": true
+            }
+        }
+    },
+    "dynamictext3": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {
+                "#": "msg-detail"
+            }
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {
+                    "@": "owner"
+                },
+                "boundObjectPropertyPath": "details",
+                "oneway": true
+            }
+        }
+    },
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "Ok",
+            "element": {
+                "#": "action-ok"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "owner"
+                }
+            }
+        ]
+    },
+    "owner": {
+        "module": "montage/ui/popup/alert.reel",
+        "name": "Alert",
+        "properties": {
+            "element": {
+                "#": "alert-container"
+            },
+            "headerEl": {
+                "#": "header"
+            },
+            "titleEl": {
+                "#": "title"
+            },
+            "msgEl": {
+                "#": "alert-msg"
+            }
+        }
+    }
+}
+    </script>
+
+
+    </head>
+    <body>
+        <div id="alert-container" class="montage-alert-dialog">
+            <div id="header" class="header">
+                <h4 id="title" class="title"></h4>
+            </div>
+            <div class="content">
+                <div class="msg-container">
+                    <div id="msg" class="msg"></div>
+                    <div id="msg-detail" class="msg-detail"></div>
+                </div>
+                <div class="action-container">
+                    <div class="submit" id="action-ok">OK</div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+
+    <script src="../../montage.js"></script>
+    <script type="text/montage-serialization">
+        {
+            "appdelegate1": {
+                "module": "app-delegate",
+                "name": "AppDelegate",
+                "properties": {
+                    "generateUUIDForm": {"#": "generateUUIDForm"}
+                }
+            },
+            "textfield1": {
+                "module": "montage/ui/textfield.reel",
+                "name": "Textfield",
+                "properties": {
+                    "element": {"#": "uuid"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "repetition1"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    }
+                }
+            },
+            "repetition1": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "testList"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "appdelegate1"},
+                        "boundObjectPropertyPath": "uuids",
+                        "oneway": true
+                    }
+                }
+            }
+        }
+    </script>
+
+
+</head>
+<body>
+
+    <form id="generateUUIDForm">
+        <input class="submitButton" type="submit" value="Generate UUID" />
+    </form>
+
+    <ul id="testList">
+        <li><input type="text" id="uuid" readonly /></li>
+    </ul>
+
+</body>
+</html>

@@ -1,0 +1,139 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+html {
+	height: 100%;
+}
+body {
+    font: 12px "Lucida Grande", "Lucida Sans Unicode", Arial, Verdana, sans-serif;
+    background-color: #fdf6e3;
+    color: #839496;
+    -webkit-font-smoothing: antialiased;
+    height: 90%;
+}
+
+pre {
+    margin:  0px;
+    line-height:  0px;
+    height: 100%;
+}
+
+@media all and (min-width: 601px) {
+    pre {
+        -webkit-column-count: 3;
+    }
+
+    pre span.fileRow:nth-of-type(2) {
+        border-right-width: 1px;
+    }
+}
+
+@media all and (max-width: 600px) and (min-width: 401px) {
+    pre {
+        -webkit-column-count: 2;
+    }
+
+    pre span.fileRow:nth-of-type(2) {
+        border-right-width: 1px;
+    }
+}
+
+@media all and (max-width: 200px){
+    pre {
+        -webkit-column-count: 1;
+    }
+}
+
+
+a {
+    font: 12px "Lucida Grande", "Lucida Sans Unicode", Arial, Verdana, sans-serif;
+    color: #839496;
+    -webkit-font-smoothing: antialiased;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+hr {
+    display: none;
+}
+
+.fileRow {
+    position: relative;
+    display: block;
+}
+
+.fileRow a {
+    cursor: pointer;
+    padding: 7px 22px 7px 25px;
+    display: block;
+    border: 0px solid #268bd2;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+}
+
+.fileRow a[href$="/"] {
+    color: #586e75;
+    font-weight: 600;
+    padding: 7px 22px 7px 15px;
+}
+
+.fileRow a:active {
+    background-color: #eee8d5;
+}
+
+.fileRow a:hover {
+    background-color: #eee8d5;
+}
+
+.fileRow img {
+    display: none;
+
+    position: absolute;
+    top: 8px;
+    left: 10px;
+    margin: 0px;
+    width: 10px;
+    height: 11px;
+}
+
+.fileRow img[alt="Icon "] {
+    display: none;
+}
+
+.fileRow a[href="?C=N;O=D"] {
+    display: none;
+}
+
+.fileRow a[href="?C=M;O=A"] {
+    display: none;
+}
+
+.fileRow a[href="?C=S;O=A"] {
+    display: none;
+}
+
+.fileRow a[href="?C=D;O=A"] {
+    display: none;
+}
+
+.fileRow hr {
+    display: none;
+}
+
+.fileRow img[alt="[DIR]"] {
+    display: none;
+}
+
+pre span:nth-of-type(2) {
+    margin-bottom: 5px;
+    border: 0 solid #839496;
+    border-bottom-width: 1px;
+    background-color: #eee8d5;
+}
+
+pre span:nth-of-type(2) a:before {
+    content: ".. ";
+}

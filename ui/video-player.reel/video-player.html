@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" type="text/css" href="video-player.css">
+
+    <script type="text/montage-serialization">
+{
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {
+                "#": "duration"
+            }
+        }
+    },
+    "dynamictext2": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {
+                "#": "position"
+            }
+        }
+    },
+    "mediacontroller1": {
+        "module": "montage/ui/controller/media-controller",
+        "name": "MediaController",
+        "properties": {
+            "mediaElement": {
+                "#": "video-tag"
+            }
+        },
+        "bindings": {
+            "mediaSrc": {
+                "boundObject": {
+                    "@": "owner"
+                },
+                "boundObjectPropertyPath": "src",
+                "oneway": true
+            }
+        }
+    },
+    "slider1": {
+        "module": "montage/ui/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "element": {
+                "#": "durationSlider"
+            },
+            "minValue": 0,
+            "hasTapBarToScroll": true
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {
+                    "@": "owner"
+                },
+                "boundObjectPropertyPath": "controller.position",
+                "oneway": false
+            }
+        }
+    },
+    "actioneventlistener1": {
+        "module": "montage/core/event/action-event-listener",
+        "name": "ActionEventListener",
+        "properties": {
+            "handler": {
+                "@": "mediacontroller1"
+            },
+            "action": "playPause"
+        }
+    },
+    "togglebutton1": {
+        "module": "montage/ui/button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {
+                "#": "playButton"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "actioneventlistener1"
+                },
+                "capture": false
+            }
+        ]
+    },
+    "actioneventlistener2": {
+        "module": "montage/core/event/action-event-listener",
+        "name": "ActionEventListener",
+        "properties": {
+            "handler": {
+                "@": "mediacontroller1"
+            },
+            "action": "rewind"
+        }
+    },
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {
+                "#": "rewindButton"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "actioneventlistener2"
+                },
+                "capture": false
+            }
+        ]
+    },
+    "actioneventlistener3": {
+        "module": "montage/core/event/action-event-listener",
+        "name": "ActionEventListener",
+        "properties": {
+            "handler": {
+                "@": "mediacontroller1"
+            },
+            "action": "fastForward"
+        }
+    },
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {
+                "#": "ffButton"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "actioneventlistener3"
+                },
+                "capture": false
+            }
+        ]
+    },
+    "actioneventlistener4": {
+        "module": "montage/core/event/action-event-listener",
+        "name": "ActionEventListener",
+        "properties": {
+            "handler": {
+                "@": "mediacontroller1"
+            },
+            "action": "volumeDecrease"
+        }
+    },
+    "button3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {
+                "#": "decreaseVolume"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "actioneventlistener4"
+                },
+                "capture": false
+            }
+        ]
+    },
+    "actioneventlistener5": {
+        "module": "montage/core/event/action-event-listener",
+        "name": "ActionEventListener",
+        "properties": {
+            "handler": {
+                "@": "mediacontroller1"
+            },
+            "action": "volumeIncrease"
+        }
+    },
+    "button4": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {
+                "#": "increaseVolume"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "actioneventlistener5"
+                },
+                "capture": false
+            }
+        ]
+    },
+    "actioneventlistener6": {
+        "module": "montage/core/event/action-event-listener",
+        "name": "ActionEventListener",
+        "properties": {
+            "handler": {
+                "@": "mediacontroller1"
+            },
+            "action": "toggleMute"
+        }
+    },
+    "button5": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {
+                "#": "muteButton"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "actioneventlistener6"
+                },
+                "capture": false
+            }
+        ]
+    },
+    "actioneventlistener7": {
+        "module": "montage/core/event/action-event-listener",
+        "name": "ActionEventListener",
+        "properties": {
+            "handler": {
+                "@": "mediacontroller1"
+            },
+            "action": "toggleRepeat"
+        }
+    },
+    "button6": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {
+                "#": "repeatButton"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "actioneventlistener7"
+                },
+                "capture": false
+            }
+        ]
+    },
+    "actioneventlistener8": {
+        "module": "montage/core/event/action-event-listener",
+        "name": "ActionEventListener",
+        "properties": {
+            "handler": {
+                "@": "owner"
+            },
+            "action": "toggleFullScreen"
+        }
+    },
+    "button7": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {
+                "#": "fullScreenButton"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "actioneventlistener8"
+                },
+                "capture": false
+            }
+        ]
+    },
+    "owner": {
+        "module": "montage/ui/video-player.reel",
+        "name": "VideoPlayer",
+        "properties": {
+            "element": {
+                "#": "video-player"
+            },
+            "playButton": {
+                "#": "playButton"
+            },
+            "repeatButton": {
+                "#": "repeatButton"
+            },
+            "volumeLevel": {
+                "#": "volumeLevel"
+            },
+            "controls": {
+                "#": "controlWrapper"
+            },
+            "fullScreenPanel": {
+                "#": "fullScreenPanel"
+            },
+            "fullScreenButton": {
+                "#": "fullScreenButton"
+            },
+            "slider": {
+                "@": "slider1"
+            },
+            "durationText": {
+                "@": "dynamictext1"
+            },
+            "positionText": {
+                "@": "dynamictext2"
+            },
+            "controller": {
+                "@": "mediacontroller1"
+            }
+        }
+    }
+}
+    </script>
+
+
+</head>
+<body>
+
+<div id="video-player" class="montage-video-player">
+    <video id="video-tag" class="video"></video>
+
+    <div id="controlWrapper" class="control-wrapper">
+        <div id="controller" class="controller">
+            <div class="controller-button-panel">
+                <div id="repeatButton" class="repeat controller-button" title="Repeat Video"></div>
+                <div id="rewindButton" class="rw controller-button" title="Rewind"> </div>
+                <div id="playButton" class="play controller-button" title="Play/Pause"> </div>
+                <div id="ffButton" class="ff controller-button" title="Fast Forward"> </div>
+            </div>
+            <div class="controller-scrubber-panel">
+                <div id="position" class="position controller-text"></div>
+                <div id="durationSlider" class="scrubber dark"></div>
+                <div id="duration" class="duration controller-text"></div>
+            </div>
+            <div class="controller-volume-panel">
+                <div id="muteButton" class="mute controller-button" title="Mute"></div>
+                <div id="decreaseVolume" class="volume-minus controller-button" title="Decrease Volume"> </div>
+                <div class="volume controller-progress"><div id="volumeLevel" class="volume-progress"></div></div>
+                <div id="increaseVolume" class="volume-plus controller-button" title="Increase Volume"> </div>
+            </div>
+            <div id="fullScreenPanel" class="controller-fullscreen-panel">
+                <div id="fullScreenButton" class="fullscreen controller-button" title="Toggle Fullscreen"> </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+</body>
+</html>

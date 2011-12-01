@@ -1,0 +1,83 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+
+#testList { visibility: hidden; } /* Hide to avoid initial appearing */
+
+html {
+    background-color: hsl(0,0%,94%);
+    height: 100%;
+}
+
+body {
+    margin: 50px;
+    text-align: center;
+}
+
+ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+#generateUUIDForm {
+    margin-bottom: 20px;
+}
+
+#generateUUIDForm .submitButton {
+    border: none;
+    padding: 10px;
+    border-radius: 8px;
+
+    font-size: 20px;
+    text-shadow: hsl(0,0%,100%) 0 1px 0;
+
+    background-image: -webkit-linear-gradient(top, hsl(0,0%,98%), hsl(0,0%,97%) );
+
+    -webkit-box-shadow: inset 0 2px 0px hsla(0,0%,100%,1),
+                        0 2px 2px hsla(0,0%,0%,.15);
+}
+#generateUUIDForm .submitButton:active {
+    background-image: -webkit-linear-gradient(top, hsl(0,0%,97%), hsl(0,0%,95%) );
+    -webkit-box-shadow: inset 0 2px 0px hsla(0,0%,100%,1),
+                        0 1px 1px hsla(0,0%,0%,.1);
+    -webkit-transform: translateY(1px);
+}
+
+
+.montage-textfield {
+    width: 400px;
+    padding: 10px 0;
+    margin-bottom: 10px;
+    text-align: center;
+    -webkit-box-sizing: border-box;
+    text-shadow: hsl(0,0%,95%) 0 1px 0;
+    padding: 10px;
+    border-radius: 8px;
+
+    border: 1px solid hsl(0,0%,70%);
+    background-color: hsl(0,0%,90%);
+    -webkit-box-shadow: inset 0px 1px 2px hsla(0,0%,0%,.1),
+                        0 1px 0 hsla(0,0%,97%,1);
+
+    -webkit-animation: fadeIn .3s cubic-bezier(.05,.5,.2,1);
+}
+
+.montage-textfield:focus {
+    outline: none;
+
+    border: 1px solid hsl(200,100%,50%);
+    background-color: hsl(200,50%,95%);
+    -webkit-box-shadow: inset 0px 1px 2px hsla(200,50%,30%,.3),
+                        0 1px 0 hsla(0,0%,97%,1);
+}
+
+
+
+@-webkit-keyframes fadeIn {
+    0% { opacity: 0; -webkit-transform: translate3d(0,-20px,0); }
+  100% { opacity: 1; -webkit-transform: translate3d(0,0,0); }
+}

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+    <title></title>
+    <script type="text/montage-serialization">
+{
+    "repetition1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "repetition"
+            }
+        }
+    },
+    "scrollview1": {
+        "module": "montage/ui/scrollview.reel",
+        "name": "Scrollview",
+        "properties": {
+            "element": {
+                "#": "scrollView"
+            }
+        }
+    },
+    "owner": {
+        "module": "montage/ui/list.reel",
+        "name": "List",
+        "properties": {
+            "element": {
+                "#": "EA5D3E95-BA4E-4696-BBBE-B4DE2F6ED6C9"
+            },
+            "_repetition": {
+                "@": "repetition1"
+            },
+            "_scrollview": {
+                "@": "scrollview1"
+            }
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <div id="EA5D3E95-BA4E-4696-BBBE-B4DE2F6ED6C9">
+        <div id="scrollView" class="montage-list-scrollView">
+            <div id="repetition"></div>
+        </div>
+    </div>
+</body>
+</html>

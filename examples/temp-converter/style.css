@@ -1,0 +1,86 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+
+html {
+    background-color: hsl(0,0%,90%);
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+
+.converter {
+   padding: 20px;
+   width: 280px;
+
+   text-shadow: #fff 0 1px 0;
+
+   border-radius: 8px;
+   background-color: hsl(0,0%,98%);
+   -webkit-box-shadow: 	inset 0px 1px 2px 1px hsla(0,0%,100%,1),
+                        0px 2px 5px hsla(0,0%,0%,.1);
+}
+
+.converter #title {
+   margin-bottom: 15px;
+   padding-bottom: 5px;
+
+   font: 24px "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+   border-bottom: 1px dotted hsl(0,0%,85%);
+}
+
+.converter label {
+    display: block;
+    text-align: right;
+    margin-bottom: 15px;
+    font: 18px/1.4em "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
+.converter label:last-child {
+    margin-bottom: 0px;
+}
+
+.converter input {
+    display: inline-block;
+    width: 163px;
+    -webkit-box-sizing: border-box;
+    text-shadow: hsl(0,0%,95%) 0 1px 0;
+    padding: 10px;
+    border-radius: 8px;
+
+    border: 1px solid hsl(0,0%,70%);
+    background-color: hsl(0,0%,90%);
+    -webkit-box-shadow: inset 0px 1px 2px hsla(0,0%,0%,.2),
+                        0 2px 0 hsla(0,0%,100%,1);
+}
+.converter input:focus {
+    outline: none;
+
+    border: 1px solid hsl(200,100%,50%);
+    background-color: hsl(200,50%,95%);
+    -webkit-box-shadow: inset 0px 1px 2px hsla(200,50%,30%,.3),
+                        0 2px 0 hsla(0,0%,100%,1);
+}
+
+/* Spin button */
+.converter input::-webkit-outer-spin-button {
+    margin-left: 10px;
+    -webkit-transform: scale(1.4) translateY(-1px);
+}
+.converter input::-webkit-inner-spin-button {
+    margin-left: 3px;
+    -webkit-transform: scale(1.4) translateY(-1px);
+}
+
+
+

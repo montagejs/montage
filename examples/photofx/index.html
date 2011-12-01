@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PhotoFX</title>
+    <script src="../../montage.js" data-package="."></script>
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "montage/ui/loader.reel",
+                "name": "Loader"
+            },
+
+            "loadingPanel": {
+                "module": "montage/ui/loading-panel.reel",
+                "name": "LoadingPanel",
+                "properties": {
+                    "element": {"#": "loadingPanel"}
+                },
+                "bindings": {
+                    "initializedModuleCount": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "initializedModules.count()",
+                        "oneway": true
+                    },
+                    "requiredModuleCount": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "requiredModules.count()",
+                        "oneway": true
+                    }
+                }
+            }
+
+        }
+    </script>
+
+    <style type="text/css">
+
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+        }
+
+        html,
+        .montage-app-loaded {
+            -webkit-transition: background-color 500ms ease-in-out;
+            background-color: hsl(0,0%,80%);
+        }
+
+        .montage-app-loaded {
+            -webkit-transition: none;
+        }
+
+        .montage-app-bootstrapping,
+        .montage-app-loading {
+            color: hsl(0,0%,100%);
+            background-color: hsl(0,0%,0%);
+        }
+
+        .montage-app-bootstrapping {
+            text-align: center;
+            font: 16px/400px "Lucida Grande", Lucida, Verdana, sans-serif;
+            text-shadow: 0 0px 6px hsla(200,100%,50%,.6);
+        }
+
+        #montage-app-bootstrapper {
+            display: none;
+        }
+
+        .montage-app-bootstrapping #montage-app-bootstrapper {
+            display: block;
+        }
+
+        #montage-app-loader {
+            display: none;
+        }
+
+        .montage-app-loading #montage-app-loader {
+            display: block;
+        }
+
+        .main {
+            display: none;
+        }
+
+        .montage-app-loaded .main {
+            display: block;
+        }
+
+    </style>
+
+</head>
+<body>
+    <div id="montage-app-bootstrapper">
+        <h1>PhotoFX</h1>
+    </div>
+    <div id="montage-app-loader">
+        <div id="loadingPanel"></div>
+    </div>
+</body>
+</html>

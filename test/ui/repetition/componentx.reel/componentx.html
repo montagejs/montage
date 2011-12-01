@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <script type="text/montage-serialization">
+        {
+            "componentplaceholder1": {
+                "module": "montage/ui/component-placeholder.reel",
+                "name": "ComponentPlaceHolder",
+                "properties": {
+                    "ownerComponent": {"@": "owner"},
+                    "name": "textfield",
+                    "element": {"#": "textfield2"}
+                }
+            },
+            "owner": {
+                "module": "ui/repetition/componentx.reel",
+                "name": "ComponentX",
+                "properties": {
+                    "element": {"#": "componentx"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="componentx">
+        <h3>Component X</h3>
+        <div id="textfield2" class="placeholderClassName"></div>
+    </div>
+</body>
+</html>

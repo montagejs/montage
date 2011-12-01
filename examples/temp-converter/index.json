@@ -1,0 +1,30 @@
+{
+    "owner": {
+        "module": "temp-converter",
+        "name": "TempConverter"
+    },
+
+    "celsiusTextfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "celsius"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "fahrenheitTextfield"},
+                "boundObjectPropertyPath": "value",
+                "converter": {"@": "owner"}
+            }
+        }
+    },
+
+    "fahrenheitTextfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "fahrenheit"},
+            "value": "32"
+        }
+    }
+}

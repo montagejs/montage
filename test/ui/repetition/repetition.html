@@ -1,0 +1,537 @@
+<!doctype html>
+<html>
+<head>
+    <title>Repetition Spec</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "montage/ui/application",
+                "name": "Application",
+                "properties": {
+                    "delegate": {"@": "repetitiontest1"},
+                    "components": [
+                        {"@": "repetition1"},
+                        {"@": "repetition2"},
+                        {"@": "repetition4"},
+                        {"@": "repetition5"},
+                        {"@": "repetition7"},
+                        {"@": "componentrep1"},
+                        {"@": "componentrep2"},
+                        {"@": "repetition9"},
+                        {"@": "repetition10"},
+                        {"@": "repetition11"},
+                        {"@": "repetition12"},
+                        {"@": "componentz1"},
+                        {"@": "componentz2"},
+                        {"@": "repetition13"},
+                        {"@": "repetitionController"},
+                        {"@": "repetitionControllerText"}
+                    ]
+                }
+            },
+            "repetitiontest1": {
+                "module": "ui/repetition/repetition-test",
+                "name": "RepetitionTest",
+                "properties": {
+                    "list1Objects": [
+
+                    ],
+                    "list2Objects": [
+                        {
+                            "text": "This"
+                        }
+                    ],
+                    "list3Objects": [
+
+                    ],
+                    "list4Objects": [
+
+                    ],
+                    "list5Objects": [
+
+                    ],
+                    "list6Objects": [
+
+                    ],
+                    "list7Objects": [
+                        1,
+                        2
+                    ],
+                    "list8Objects": [
+                        1,
+                        2
+                    ],
+                    "list9Objects": [
+
+                    ],
+                    "list10Objects": [
+
+                    ],
+                    "text": "Hello",
+                    "simpleArrayController": {"@": "simpleArrayController"},
+                    "simpleArrayControllerContent": ["one", "two", "three"]
+                }
+            },
+            "repetition1": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list1"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list1Objects"
+                    }
+                }
+            },
+            "textfield1": {
+                "module": "ui/repetition/textfield.reel",
+                "name": "TextField",
+                "properties": {
+                    "element": {"#": "textfield1"}
+                },
+                "bindings": {
+                    "text": {
+                        "boundObject": {"@": "repetition2"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.text"
+                    }
+                }
+            },
+            "repetition2": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list2"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list2Objects"
+                    }
+                }
+            },
+            "textfield2": {
+                "module": "ui/repetition/textfield.reel",
+                "name": "TextField",
+                "properties": {
+                    "element": {"#": "textfield2"}
+                },
+                "bindings": {
+                    "text": {
+                        "boundObject": {"@": "repetition3"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.text"
+                    }
+                }
+            },
+            "repetition3": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list3a"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetition4"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration"
+                    }
+                }
+            },
+            "repetition4": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list3"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list3Objects"
+                    }
+                }
+            },
+            "componenty1": {
+                "module": "ui/repetition/componenty.reel",
+                "name": "ComponentY",
+                "properties": {
+                    "element": {"#": "content3"}
+                }
+            },
+            "repetition6": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list4a"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetition5"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration"
+                    }
+                }
+            },
+            "repetition5": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list4"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list4Objects"
+                    }
+                }
+            },
+            "textfield3": {
+                "module": "ui/repetition/textfield.reel",
+                "name": "TextField",
+                "properties": {
+                    "element": {"#": "textfield4"},
+                    "text": "X here"
+                }
+            },
+            "componentx1": {
+                "module": "ui/repetition/componentx.reel",
+                "name": "ComponentX",
+                "properties": {
+                    "element": {"#": "content4"},
+                    "textfield": {"@": "textfield3"}
+                }
+            },
+            "repetition8": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list5a"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetition7"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration"
+                    }
+                }
+            },
+            "repetition7": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list5"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list5Objects"
+                    }
+                }
+            },
+            "componentrep1": {
+                "module": "ui/repetition/componentrep.reel",
+                "name": "ComponentRep",
+                "properties": {
+                    "element": {"#": "componentrep1"}
+                }
+            },
+            "componentrep2": {
+                "module": "ui/repetition/componentrep.reel",
+                "name": "ComponentRep",
+                "properties": {
+                    "element": {"#": "componentrep2"}
+                }
+            },
+            "componentrep3": {
+                "module": "ui/repetition/componentrep.reel",
+                "name": "ComponentRep",
+                "properties": {
+                    "element": {"#": "list6comp1"}
+                },
+                "bindings": {
+                    "listObjects": {
+                        "boundObject": {"@": "repetition9"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.elements1"
+                    }
+                }
+            },
+            "componentrep4": {
+                "module": "ui/repetition/componentrep.reel",
+                "name": "ComponentRep",
+                "properties": {
+                    "element": {"#": "list6comp2"}
+                },
+                "bindings": {
+                    "listObjects": {
+                        "boundObject": {"@": "repetition9"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.elements2"
+                    }
+                }
+            },
+            "repetition9": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list6"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list6Objects"
+                    }
+                }
+            },
+            "textfield4": {
+                "module": "ui/repetition/textfield.reel",
+                "name": "TextField",
+                "properties": {
+                    "element": {"#": "textfield5"}
+                },
+                "bindings": {
+                    "text": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "text"
+                    }
+                }
+            },
+            "componentx2": {
+                "module": "ui/repetition/componentx.reel",
+                "name": "ComponentX",
+                "properties": {
+                    "element": {"#": "content5"},
+                    "textfield": {"@": "textfield4"}
+                }
+            },
+            "repetition10": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list7"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list7Objects"
+                    }
+                }
+            },
+            "actioneventlistener1": {
+                "module": "montage/core/event/action-event-listener",
+                "name": "ActionEventListener",
+                "properties": {
+                    "handler": {"@": "repetitiontest1"},
+                    "action": "listener"
+                }
+            },
+            "textfield5": {
+                "module": "ui/repetition/textfield.reel",
+                "name": "TextField",
+                "properties": {
+                    "element": {"#": "textfield6"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "actioneventlistener1"},
+                        "capture": false
+                    }
+                ]
+            },
+            "repetition11": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list8"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list8Objects"
+                    }
+                }
+            },
+            "textfield6": {
+                "module": "ui/repetition/textfield.reel",
+                "name": "TextField",
+                "properties": {
+                    "element": {"#": "textfield7"}
+                }
+            },
+            "repetition12": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list9"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list9Objects"
+                    }
+                }
+            },
+            "componentz1": {
+                "module": "ui/repetition/componentz.reel",
+                "name": "ComponentZ",
+                "properties": {
+                    "element": {"#": "componentz1"},
+                    "text": "o1"
+                }
+            },
+            "componentz2": {
+                "module": "ui/repetition/componentz.reel",
+                "name": "ComponentZ",
+                "properties": {
+                    "element": {"#": "componentz2"},
+                    "text": "o2"
+                }
+            },
+            "componentslowload1": {
+                "module": "ui/repetition/componentslowload",
+                "name": "ComponentSlowLoad",
+                "properties": {
+                    "element": {"#": "componentslowload1"}
+                }
+            },
+            "repetition13": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list10"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "list10Objects"
+                    }
+                }
+            },
+            "repetitionController": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "repetitionController"},
+                    "contentController": {"@": "simpleArrayController"}
+                }
+            },
+            "simpleArrayController": {
+                "module": "montage/ui/controller/array-controller",
+                "name": "ArrayController",
+                "properties": {
+                    "automaticallyOrganizeObjects": true
+                },
+                "bindings": {
+                    "content": {
+                        "boundObject": {"@": "repetitiontest1"},
+                        "boundObjectPropertyPath": "simpleArrayControllerContent"
+                    }
+                }
+             },
+            "repetitionControllerText": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "repetitionControllerText"},
+                    "value": "foo"
+                }
+            }
+         }
+    </script>
+</head>
+<body>
+    <h2>Static Repetition</h2>
+    <ul id="list1" class="list1">
+        <li>Hello Friend!</li>
+    </ul>
+
+    <h2>Component Repetition</h2>
+    <ul id="list2" class="list2">
+        <li>Name: <span id="textfield1" class="textfield1"></span></li>
+    </ul>
+
+    <h2>Nested Repetition</h2>
+    <ul id="list3" class="list3">
+        <li>
+            Inner List:
+            <ul id="list3a" class="list3a">
+                <li><span id="textfield2" class="textfield2"></span></li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>SCC Nested Repetition</h2>
+    <ul id="list4" class="list4">
+        <li>
+            <ul id="list4a" class="list4a">
+                <li><div id="content3" class="content3"></div></li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>DCC Nested Repetition</h2>
+    <ul id="list5" class="list5">
+        <li>
+            <ul id="list5a" class="list5a">
+                <li>
+                    <div id="content4" class="content4">
+                        <span id="textfield4" class="textfield4"></span>
+                    </div>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+    <h2>Component Repetition 1</h2>
+    <div id="componentrep1" class="componentrep1"></div>
+
+    <h2>Component Repetition 2</h2>
+    <div id="componentrep2" class="componentrep2"></div>
+
+    <h2>Repetition With Components That Have Repetitions</h2>
+    <ul id="list6" class="list6">
+        <li>
+            Iteration
+            <span id="list6comp1" class="list6comp1"></span>
+            <span id="list6comp2" class="list6comp2"></span>
+        </li>
+    </ul>
+
+    <h2>Binding Repetitions</h2>
+    <ul id="list7" class="list7">
+        <li>
+            <div id="content5" class="content5">
+                <span id="textfield5" class="textfield5"></span>
+            </div>
+        </li>
+    </ul>
+
+    <h2>ActionEventListener Repetitions</h2>
+    <ul id="list8" class="list8">
+        <li>
+            Iteration
+            <span id="textfield6" class="textfield6"></span>
+        </li>
+    </ul>
+
+    <h2>Repetitions With Direct Components</h2>
+    <div id="list9" class="list9">
+        <span id="textfield7" class="textfield7"></span>
+    </div>
+
+    <h2>Repetitions in the same Component but with different external objects</h2>
+    <div id="componentz1" class="componentz1"></div>
+    <div id="componentz2" class="componentz2"></div>
+
+    <h2>Repetitions with async loadComponentTree components</h2>
+    <ul id="list10" class="list10">
+        <li>
+            <span id="componentslowload1" class="componentslowload1"></span>
+        </li>
+    </ul>
+
+    <h2>Repetitions with content controller</h2>
+    <ul id="repetitionController" class="repetitionController">
+        <li id="repetitionControllerText" class="repetitionControllerText"></li>
+    </ul>
+
+
+</body>
+</html>

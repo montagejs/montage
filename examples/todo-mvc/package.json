@@ -1,0 +1,10 @@
+{
+    "name": "todo-mvc",
+    "version": "0.0.0",
+    "directories": {
+        "lib": "."
+    },
+    "mappings": {
+        "montage": "../../"
+    }
+}

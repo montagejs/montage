@@ -1,0 +1,34 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+.PhotoEditor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 197px;
+    right: 301px;
+    display: -webkit-box;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    overflow: hidden;
+    background-color: #777;
+    -webkit-user-select: none;
+}
+
+.PhotoEditor .image {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
+.PhotoEditor canvas {
+    -webkit-user-select: none;
+    box-shadow: 0 0 16px rgba(0,0,0,.6);
+}
+
+.PhotoEditor.pickingColor {
+    cursor: none;
+    -webkit-user-select: none;
+}

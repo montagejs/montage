@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "completedConditional": {
+                    "module": "montage/ui/condition.reel",
+                    "name": "Condition",
+                    "properties": {
+                        "element": {"#": "completedConditional"}
+                    },
+                    "bindings": {
+                        "condition": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "tasksController.organizedObjects.any(completed)",
+                            "oneway": true
+                        }
+                    }
+                },
+
+                "owner": {
+                    "module": "task-list-controls.reel",
+                    "name": "TaskListControls",
+                    "properties": {
+                        "element": {"#": "taskListControls"},
+                        "clearCompletedForm": {"#": "clearCompletedForm"}
+                    }
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <div id="taskListControls">
+
+            <div id="completedConditional">
+                <form id="clearCompletedForm">
+                    <div>
+                        <input type="submit" value="Clear Completed" />
+                    </div>
+                </form>
+            </div>
+
+        </div>
+    </body>
+</html>

@@ -1,0 +1,78 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+@-webkit-keyframes montage-loading {
+    0% {
+        opacity: 0;
+    }
+    20% {
+        opacity: .9;
+    }
+    40% {
+        opacity: .27;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+.montage-loading {
+    position: relative;
+    width: 30px;
+    height: 35px;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.montage-loading.animate {
+    background-image: url(loading-bg.svg);
+}
+
+.montage-loading .section {
+    display: none;
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.montage-loading.animate .section {
+    display: block;
+    -webkit-transform: translateZ(0);
+    -webkit-animation-name: montage-loading;
+    -webkit-animation-duration: 1200ms;
+    -webkit-animation-iteration-count: infinite;
+}
+
+.montage-loading .l0 {
+    background-image: url(loading-0.svg);
+    -webkit-animation-delay: -1000ms;
+}
+
+.montage-loading .l1 {
+    background-image: url(loading-1.svg);
+    -webkit-animation-delay: -800ms;
+}
+
+.montage-loading .l2 {
+    background-image: url(loading-2.svg);
+    -webkit-animation-delay: -600ms;
+}
+
+.montage-loading .l3 {
+    background-image: url(loading-3.svg);
+    -webkit-animation-delay: -400ms;
+}
+
+.montage-loading .l4 {
+    background-image: url(loading-4.svg);
+    -webkit-animation-delay: -200ms;
+}
+
+.montage-loading .l5 {
+    background-image: url(loading-5.svg);
+}

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ValueBasedEffect</title>
+
+    <script type="text/montage-serialization">
+        {
+            "enabledToggle": {
+                "module": "montage/ui/toggle.reel",
+                "name": "Toggle",
+                "properties": {
+                    "element": {"#": "toggle"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "enabled"
+                    }
+                }
+            },
+            "effectName": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "effectName"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "name"
+                    }
+                }
+            },
+            "valueSlider": {
+                "module": "montage/ui/slider.reel",
+                "name": "Slider",
+                "properties": {
+                    "element": {"#": "valueSlider"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "value"
+                    },
+                    "minValue": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "minValue"
+                    },
+                    "maxValue": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "maxValue"
+                    }
+                }
+            },
+            "valueDisplay": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "valueDisplay"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "value",
+                        "oneway": true,
+                        "boundValueMutator": {"->": {"arguments": ["n"], "body": "\n                                        return n.toFixed(2);\n                                    "}}
+                    }
+                }
+            },
+            "resetListener": {
+                "module": "montage/core/event/action-event-listener",
+                "name": "ActionEventListener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "reset"
+                }
+            },
+            "resetButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "resetButton"},
+                    "value": "Reset"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "resetListener"},
+                        "capture": false
+                    }
+                ]
+            },
+            "owner": {
+                "module": "value-based-effect.reel",
+                "name": "ValueBasedEffect",
+                "properties": {
+                    "element": {"#": "control"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="control">
+        <span id="toggle"></span> <span id="effectName"></span>
+        <div id="valueSlider"></div>
+        <div id="resetButton" class="text"></div>
+        <span id="valueDisplay"></span>
+    </div>
+
+</body>
+</html>

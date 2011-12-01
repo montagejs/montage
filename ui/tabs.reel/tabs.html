@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <title></title>
+        <link rel="stylesheet" type="text/css" href="tabs.css">
+        <script type="text/montage-serialization">
+{
+    "navController": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "tabs",
+                "oneway": true
+            }
+        }
+    },
+    
+    "repetition1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "tab-list"                
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "navController"}
+        }
+    },
+    
+    "owner": {
+        "module": "montage/ui/tabs.reel",
+        "name": "Tabs",
+        "properties": {
+            "element": {
+                "#": "tabs-nav"
+            },
+            "navController": {
+                "@": "navController"
+            },
+            "_repetition": {
+                "@": "repetition1"
+            },
+            "_indicator": {
+                "#": "montage-tabs-indicator"
+            }
+        },
+        "bindings": {
+            "selectedTabs": {
+                "boundObject": {"@": "navController"},
+                "boundObjectPropertyPath": "selectedObjects",
+                "oneway": true
+            }
+        }
+    }
+}
+    </script>
+
+    </head>
+<body>
+
+    <div id='tabs-nav' class='montage-tabs montage-container'>
+        <div id="montage-tabs-indicator" class="montage-tabs-indicator" style="display: none;"></div>
+        <ul id="tab-list" class='montage-tabs-list montage-clearfix'>
+            <li></li> 
+        </ul>
+    </div>
+
+</body>
+</html>

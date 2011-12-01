@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Loading Panel</title>
+
+    <link rel="stylesheet" href="loading-panel.css">
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "montage/ui/loading-panel.reel",
+                "name": "LoadingPanel",
+                "properties": {
+                    "element": {"#": "loadingPanel"}
+                }
+            },
+
+            "loadingIndicator": {
+                "module": "montage/ui/progress.reel",
+                "name": "Progress",
+                "properties": {
+                    "element": {"#": "loadingIndicator"},
+                    "loading": true
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "initializedModuleCount",
+                        "oneway": true
+                    },
+                    "maximumValue": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "requiredModuleCount",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "loadedCount": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "loadedCount"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "initializedModuleCount",
+                        "oneway": true
+                    }
+                }
+            },
+
+             "requiredCount": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "requiredCount"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "requiredModuleCount",
+                        "oneway": true
+                    }
+                }
+            }
+
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="loadingPanel" class="montage-loading-panel">
+        <div id="loadingIndicator" class="loadingIndicator"></div>
+        <div id="loadingCount" class="loadingCount">
+            <span id="loadedCount" class="loadedCount">0</span><span class="divider">/</span><span id="requiredCount" class="requiredCount">0</span>
+        </div>
+    </div>
+
+</body>
+</html>

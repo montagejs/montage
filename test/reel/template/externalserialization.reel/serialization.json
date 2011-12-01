@@ -1,0 +1,9 @@
+{
+    "owner": {
+        "module": "reel/template/externalserialization.reel",
+        "name": "ExternalSerialization",
+        "properties": {
+            "element": {"#": "main"}
+        }
+    }
+}

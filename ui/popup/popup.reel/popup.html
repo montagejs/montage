@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="popup.css">
+        <script type="text/montage-serialization">
+{
+    "slot1": {
+        "module": "montage/ui/slot.reel",
+        "name": "Slot",
+        "properties": {
+            "element": {
+                "#": "popup-content"
+            }
+        }
+    },
+    "owner": {
+        "module": "montage/ui/popup/popup.reel",
+        "name": "Popup",
+        "properties": {
+            "element": {
+                "#": "popup-container"
+            },
+            "slot": {
+                "@": "slot1"
+            },
+            "tipEl": {
+                "#": "montage-tooltip-pointer"
+            },
+            "contentEl": {
+                "#": "popup-content"
+            },
+            "containerEl": {
+                "#": "popup-wrapper"
+            }
+        }
+    }
+}
+    </script>
+
+    </head>
+    <body>
+        <div id="popup-container" class="montage-hide">
+            <div id="popup-wrapper" class="montage-popup-tooltip">
+                <div id="montage-tooltip-pointer" class="montage-popup-tooltip-pointer-up">
+                	<div class="montage-popup-tooltip-pointer-up-inner"></div>
+                </div>
+                <div id="popup-content" class="montage-popup-content"></div>
+            </div>
+        </div>
+
+
+
+    </body>
+</html>

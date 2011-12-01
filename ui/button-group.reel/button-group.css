@@ -1,0 +1,100 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+.montage-button-group {
+
+}
+
+.montage-button-group.small > .montage-button,
+.montage-button-group.small > .montage-button:before {
+    font-size: 12px;
+    border-radius: 16px;
+    padding: 1px 18px 0 18px;
+    height: 26px;
+    line-height: 26px;
+}
+
+.montage-button-group.small > .montage-button.submit,
+.montage-button-group.small > .montage-button.cancel {
+    height: 22px;
+    line-height: 22px;
+}
+
+.montage-button-group > .montage-button.submit,
+.montage-button-group > .montage-button.cancel {
+    height: 42px;
+    line-height: 42px;
+}
+
+.montage-button-group > .montage-button:not(:first-child):not(:last-child),
+.montage-button-group > .montage-button.submit:not(:first-child):not(:last-child),
+.montage-button-group > .montage-button.cancel:not(:first-child):not(:last-child),
+.montage-button-group > .montage-button:not(:first-child):not(:last-child):before,
+.montage-button-group > .montage-button:not(:first-child):not(:last-child):after {
+    border-radius: 0;
+}
+
+.montage-button-group > .montage-button:first-child:not(:last-child),
+.montage-button-group > .montage-button.submit:first-child:not(:last-child),
+.montage-button-group > .montage-button.cancel:first-child:not(:last-child),
+.montage-button-group > .montage-button:first-child:not(:last-child):before,
+.montage-button-group > .montage-button:first-child:not(:last-child):after {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.montage-button-group > .montage-button:last-child:not(:first-child),
+.montage-button-group > .montage-button.submit:last-child:not(:first-child),
+.montage-button-group > .montage-button.cancel:last-child:not(:first-child),
+.montage-button-group > .montage-button:last-child:not(:first-child):before,
+.montage-button-group > .montage-button:last-child:not(:first-child):after {
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+}
+
+.montage-button-group > .montage-button:not(:first-child) {
+    margin-left: -3px;
+}
+
+/* Icon handling */
+
+.montage-button-group.small > .montage-button.text.icon > img,
+.montage-button-group.small > .montage-button.submit.icon > img,
+.montage-button-group.small > .montage-button.cancel.icon > img {
+    float: left;
+    margin-left: -4px;
+    margin-right: 4px;
+    margin-top: 0;
+    height: 20px;
+    width: 20px;
+}
+
+.montage-button-group.small > .montage-button.text.icon > img {
+    margin-top: 2px;
+}
+
+.montage-button-group.iconic > .montage-button.text.icon,
+.montage-button-group.iconic > .montage-button.submit.icon,
+.montage-button-group.iconic > .montage-button.cancel.icon {
+    text-indent: -9999px;
+    width: 26px;
+    padding-left: 14px;
+    padding-right: 14px;
+}
+
+.montage-button-group.small.iconic > .montage-button.text.icon,
+.montage-button-group.small.iconic > .montage-button.submit.icon,
+.montage-button-group.small.iconic > .montage-button.cancel.icon {
+    width: 20px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.montage-button-group.iconic > .montage-button.text.icon > img,
+.montage-button-group.iconic > .montage-button.submit.icon > img,
+.montage-button-group.iconic > .montage-button.cancel.icon > img {
+    margin-left: 0;
+    margin-right: 0;
+}

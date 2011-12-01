@@ -1,0 +1,193 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+/* these need to be moved to montage.css when that is created */
+.montage-hide {
+    display: none;
+}
+
+.montage-off-left {
+    position: absolute;
+    top: 0px;
+    left: -10000px;
+}
+
+/*
+.montage-popup-container {
+    position: absolute;
+    border: 1px solid #e6e6e6;
+    border-radius: 5px;
+    -moz-box-shadow: 0 0 5px 5px #999;
+    -webkit-box-shadow: 0 0 5px 5px#999;
+    box-shadow: 0 0 5px 5px #999;
+
+    background-color: #333;
+	padding: 5px;
+}
+*/
+
+.montage-popup-modal-mask {
+    position: absolute;
+    background-color: #333;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+}
+
+.montage-popup-tooltip .montage-popup-content {
+}
+
+/*Tooltip and Pointer CSS*/
+/* See http://www.filamentgroup.com/lab/image_free_css_tooltip_pointers_a_use_for_polygonal_css/ */
+
+.montage-popup-tooltip {
+    border-width: 2px !important;
+    /*position: absolute;
+     z-index: 9999;
+     width: auto;*/
+    background-color: #333;
+    padding: 5px;
+
+    border-radius: 5px;
+    -webkit-box-shadow: 0 0 5px 5px #999;
+    box-shadow: 0 0 5px 5px #999;
+}
+
+.montage-popup-tooltip .montage-popup-tooltip-pointer-down, .montage-popup-tooltip .montage-popup-tooltip-pointer-down-inner {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-bottom-width: 0;
+    background: none;
+}
+
+.montage-popup-tooltip .montage-popup-tooltip-pointer-down {
+    border-left: 7px dotted transparent;
+    border-right: 7px dotted transparent;
+    border-top-width: 14px;
+    bottom: -14px;
+    right: auto;
+    left: 50%;
+    margin-left: -7px;
+}
+
+.montage-popup-tooltip .montage-popup-tooltip-pointer-down-inner {
+    border-left: 5px dotted transparent;
+    border-right: 5px dotted transparent;
+    border-top: 10px solid #fff;
+    bottom: auto;
+    top: -14px;
+    left: -5px;
+}
+
+/*pointer alignment*/
+.montage-popup-tooltip-left .montage-popup-tooltip-pointer-down {
+    border-left: 0;
+    border-right: 17px dotted transparent;
+    border-top-width: 14px;
+    bottom: -14px;
+    right: auto;
+    left: 1em;
+    margin: 0;
+}
+
+.montage-popup-tooltip-left .montage-popup-tooltip-pointer-down-inner {
+    border-left: 0;
+    border-right: 12px dotted transparent;
+    border-top: 10px solid #fff;
+    bottom: auto;
+    top: -14px;
+    left: 2px;
+}
+
+.montage-popup-tooltip-right .montage-popup-tooltip-pointer-down {
+    border-left: 17px dotted transparent;
+    border-right: 0;
+    border-top-width: 14px;
+    bottom: -14px;
+    right: 1em;
+    left: auto;
+    margin: 0;
+}
+
+.montage-popup-tooltip-right .montage-popup-tooltip-pointer-down-inner {
+    border-left: 12px dotted transparent;
+    border-right: 0;
+    border-top: 10px solid #fff;
+    bottom: auto;
+    top: -14px;
+    right: 2px;
+    left: auto;
+}
+
+/* top */
+.montage-popup-tooltip .montage-popup-tooltip-pointer-up, .montage-popup-tooltip .montage-popup-tooltip-pointer-up-inner {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-bottom-width: 0;
+    background: none;
+}
+
+.montage-popup-tooltip .montage-popup-tooltip-pointer-up {
+    border-left: 14px dotted transparent;
+    border-right: 14px dotted transparent;
+    border-bottom-width: 28px;
+    top: -28px;
+    right: auto;
+    left: 50%;
+    margin-left: -14px;
+}
+
+.montage-popup-tooltip .montage-popup-tooltip-pointer-up-inner {
+    border-left: 10px dotted transparent;
+    border-right: 10px dotted transparent;
+    border-bottom: 20px solid #333;
+    top: auto;
+    bottom: -28px;
+    left: -10px;
+}
+
+/*pointer alignment*/
+.montage-popup-tooltip-left .montage-popup-tooltip-pointer-up {
+    border-left: 0;
+    border-right: 17px dotted transparent;
+    border-bottom-width: 28px;
+    top: -28px;
+    right: auto;
+    left: 1em;
+    margin: 0;
+}
+
+.montage-popup-tooltip-left .montage-popup-tooltip-pointer-up-inner {
+    border-left: 0;
+    border-right: 12px dotted transparent;
+    border-bottom: 20px solid #333;
+    top: auto;
+    bottom: -28px;
+    left: 2px;
+}
+
+.montage-popup-tooltip-right .montage-popup-tooltip-pointer-up {
+    border-left: 17px dotted transparent;
+    border-right: 0;
+    border-bottom-width: 28px;
+    top: -28px;
+    right: 1em;
+    left: auto;
+    margin: 0;
+}
+
+.montage-popup-tooltip-right .montage-popup-tooltip-pointer-up-inner {
+    border-left: 12px dotted transparent;
+    border-right: 0;
+    border-bottom: 20px solid #333;
+    top: auto;
+    bottom: -28px;
+    right: 2px;
+    left: auto;
+}

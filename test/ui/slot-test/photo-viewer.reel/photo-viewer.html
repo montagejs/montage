@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title>PhotoViewer</title>
+    <script type="text/montage-serialization">
+{
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "description"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "photo.description",
+                "oneway": true
+            }
+        }
+    },
+    "dynamictext2": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "location"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "photo.location",
+                "oneway": true
+            }
+        }
+    },
+    "owner": {
+        "module": "ui/slot-test/photo-viewer.reel",
+        "name": "PhotoViewer",
+        "properties": {
+            "element": {"#": "PhotoViewer"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body id="PhotoViewer">
+
+    <h1>Photo</h1>
+    Description: <span id="description"></span><br>
+    Location: <span id="location"></span>
+
+</body>
+</html>

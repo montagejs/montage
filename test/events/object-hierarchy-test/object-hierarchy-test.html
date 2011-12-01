@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>ObjectHierarchyTest</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+{
+    "component1": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "hasTemplate": false,
+            "element": {"#": "drawTrigger"}
+        }
+    },
+    "objecthierarchytest1": {
+        "module": "events/object-hierarchy-test/object-hierarchy-test",
+        "name": "ObjectHierarchyTest",
+        "properties": {
+
+        }
+    },
+    "owner": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "components": [
+                {"@": "component1"}
+            ],
+            "delegate": {"@": "objecthierarchytest1"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <div id="drawTrigger"></div>
+    ObjectHierarchy…
+</body>
+</html>

@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title></title>
+    <script type="text/montage-serialization">
+{
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "dynamictext"},
+            "value": "Custom Test Value"
+        }
+    },
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "montage-button"},
+            "behavior": "toggle",
+            "value": "Button",
+            "valueActive": "Button Active!",
+            "pressedValue": "Button Pressed",
+            "pressedValueActive": "Button Pressed Active"
+        }
+    },
+    "owner": {
+        "module": "ui/drawing/component/custom.reel",
+        "name": "Custom",
+        "properties": {
+            "element": {"#": "custom"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+<div id="custom">
+    <div class="text" id="montage-button"></div>
+    <div id="dynamictext" class="dynamictext"></div>
+</div>
+</body>
+</html>

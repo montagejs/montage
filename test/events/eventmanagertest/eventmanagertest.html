@@ -1,0 +1,34 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>EventManager</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+{
+    "eventmanagertest1": {
+        "module": "events/eventmanagertest/eventmanagertest",
+        "name": "EventManagerTest",
+        "properties": {
+
+        }
+    },
+    "owner": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "delegate": {"@": "eventmanagertest1"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <div id="parent">
+        <div id="element"></div>
+        Testing EventManager…
+        </div>
+    </div>
+</body>
+</html>

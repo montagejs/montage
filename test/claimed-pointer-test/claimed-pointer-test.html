@@ -1,0 +1,53 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>ClaimedPointerTest</title>
+    <script type="text/javascript" src="../../montage.js" data-package="../"></script>
+    <script type="text/montage-serialization">
+{
+    "component1": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentA"},
+            "hasTemplate": false
+        }
+    },
+    "component2": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentB"},
+            "hasTemplate": false
+        }
+    },
+    "claimedpointertest1": {
+        "module": "claimed-pointer-test/claimed-pointer-test",
+        "name": "ClaimedPointerTest",
+        "properties": {
+            "componentA": {"@": "component1"},
+            "componentB": {"@": "component2"}
+        }
+    },
+    "owner": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "components": [
+                {"@": "component1"},
+                {"@": "component2"}
+            ],
+            "delegate": {"@": "claimedpointertest1"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <div id="componentA"></div>
+    <div id="componentB"></div>
+    ClaimedPointerTest…
+</body>
+</html>

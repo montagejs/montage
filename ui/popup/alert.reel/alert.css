@@ -1,0 +1,50 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+.montage-alert-dialog {
+    font-family: "AG Buch BQ Regular", "AG Buch BQ", Helvetica, Arial, sans-serif;
+    background-color: #333;
+    border: 1px solid #333;
+    border-radius: 5px;
+    margin: 0;
+    padding: 0px 3px;
+}
+
+.montage-alert-dialog .header {
+    height: 25px;
+    color: #fff;
+}
+
+.montage-alert-dialog .header h4 {
+    margin: 10px 0;
+    font-weight: normal;
+}
+
+.montage-alert-dialog .content {
+    text-align: center;
+    margin: 5px 0;
+    background-color: #e6e6e6;
+    padding: 10px;
+}
+
+.montage-alert-dialog .msg-container {
+    padding: 10px 0;
+    border-bottom: 1px solid #ccc;
+}
+
+.montage-alert-dialog .msg {
+    font-size: 18pt;
+    font-weight: normal;
+}
+
+.montage-alert-dialog .msg-detail {
+    font-size: 12pt;
+    font-weight: normal;
+    color: #cccccc;
+}
+
+.montage-alert-dialog .action-container {
+    padding: 10px 0;
+}

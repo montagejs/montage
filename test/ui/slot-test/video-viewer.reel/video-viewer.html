@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title>Video Viewer</title>
+    <script type="text/montage-serialization">
+{
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "description"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "video.description",
+                "oneway": true
+            }
+        }
+    },
+    "dynamictext2": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "duration"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "video.duration",
+                "oneway": true
+            }
+        }
+    },
+    "owner": {
+        "module": "video-viewer",
+        "name": "VideoViewer",
+        "properties": {
+            "element": {"#": "VideoViewer"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body id="VideoViewer">
+
+    <h1>Video</h1>
+    Description: <span id="description"></span><br>
+    Duration: <span id="duration"></span>
+
+</body>
+</html>

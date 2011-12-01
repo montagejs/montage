@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Slot Test</title>
+    <script src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+{
+    "slot1": {
+        "module": "montage/ui/slot.reel",
+        "name": "Slot",
+        "properties": {
+            "element": {"#": "slot"}
+        }
+    },
+    "slider1": {
+        "module": "montage/ui/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "element": {"#": "slider"}
+        }
+    },
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "componentInPageWithElement"},
+            "value": "This is a component in the page with an element"
+        }
+    },
+    "dynamictext2": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "sliderValue"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "slider1"},
+                "boundObjectPropertyPath": "value",
+                "oneway": true
+            }
+        }
+    },
+    "dynamictext3": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Hey there, I'm the foo component!"
+        }
+    },
+    "photoviewer1": {
+        "module": "ui/slot-test/photo-viewer.reel",
+        "name": "PhotoViewer",
+        "properties": {
+
+        },
+        "bindings": {
+            "photo": {
+                "boundObject": {"@": "slottest1"},
+                "boundObjectPropertyPath": "currentMedia",
+                "oneway": true
+            }
+        }
+    },
+    "videoviewer1": {
+        "module": "ui/slot-test/video-viewer.reel",
+        "name": "VideoViewer",
+        "properties": {
+
+        },
+        "bindings": {
+            "video": {
+                "boundObject": {"@": "slottest1"},
+                "boundObjectPropertyPath": "currentMedia",
+                "oneway": true
+            }
+        }
+    },
+    "slider2": {
+        "module": "montage/ui/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "value": 20
+        }
+    },
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "componentWithNoElementButton"},
+            "identifier": "componentWithNoElementButton"
+        }
+    },
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "componentInPageWithElementButton"},
+            "identifier": "componentInPageWithElementButton"
+        }
+    },
+    "button3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "barButton"},
+            "identifier": "barButton"
+        }
+    },
+    "button4": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "bazButton"},
+            "identifier": "bazButton"
+        }
+    },
+    "button5": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "quxButton"},
+            "identifier": "quxButton"
+        }
+    },
+    "button6": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "emptyButton"},
+            "identifier": "emptyButton"
+        }
+    },
+    "button7": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "videoButton"},
+            "identifier": "videoButton"
+        }
+    },
+    "button8": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "photoButton"},
+            "identifier": "photoButton"
+        }
+    },
+    "slottest1": {
+        "module": "ui/slot-test/slot-test",
+        "name": "SlotTest",
+        "properties": {
+            "element": {"#": "slotChooser"},
+            "componentWithNoElement": {"@": "dynamictext3"},
+            "componentInPageWithElement": {"@": "dynamictext1"},
+            "photoViewer": {"@": "photoviewer1"},
+            "videoViewer": {"@": "videoviewer1"},
+            "barContent": {"@": "slider2"},
+            "bazContent": {"#": "bazContent"},
+            "quxContent": {"#": "quxContent"},
+            "slot": {"@": "slot1"},
+            "componentWithNoElementButton": {"@": "button1"},
+            "componentInPageWithElementButton": {"@": "button2"},
+            "barButton": {"@": "button3"},
+            "bazButton": {"@": "button4"},
+            "quxButton": {"@": "button5"},
+            "emptyButton": {"@": "button6"},
+            "videoButton": {"@": "button7"},
+            "photoButton": {"@": "button8"}
+        }
+    },
+    "owner": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "components": [
+                {"@": "slot1"},
+                {"@": "slider1"},
+                {"@": "dynamictext1"},
+                {"@": "dynamictext2"},
+                {"@": "slottest1"}
+            ],
+            "delegate": {"@": "slottest1"}
+        }
+    }
+}
+    </script>
+
+
+    <style type="text/css">
+
+        #slot {
+            margin: 1em;
+            padding: 2em;
+            border: 1px dotted silver;
+        }
+
+    </style>
+
+</head>
+<body>
+
+<div id="slotChooser">
+    <button class="button" id="componentWithNoElementButton">Show Component With No Element (DynamicText)</button>
+    <button class="button" id="barButton">Show Bar Component in Slot</button>
+    <button class="button" id="componentInPageWithElementButton">Show Component In Page With Element</button>
+    <button class="button" id="bazButton">Show Baz Element in Slot</button>
+    <button class="button" id="quxButton">Show Qux Element in Slot</button>
+    <button class="button" id="emptyButton">Show Nothing in Slot</button>
+
+    <button class="button" id="videoButton">Switch to "video"</button>
+    <button class="button" id="photoButton">Switch to "photo"</button>
+</div>
+
+<div id="slot">
+    <div>Content inside the slot from the template</div>
+</div>
+
+<div id="componentInPageWithElement"></div>
+
+<div id="bazContent">This is some content initially outside the slot, but available to put inside the slot</div>
+
+<div id="quxContent">
+    <p>This is some content initially outside the slot, with a component inside, but available to put inside the slot</p>
+
+    <div id="slider"></div>
+</div>
+
+<div id="sliderValue"></div>
+
+</body>
+</html>

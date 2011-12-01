@@ -1,0 +1,41 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+.GridMagnifier, .GridMagnifier canvas {
+    -webkit-border-radius: 200px;
+    pointer-events: none;
+}
+
+.GridMagnifier {
+    position: absolute;
+    z-index: 100;
+
+    opacity: 0;
+    width: 200px;
+    height: 200px;
+    border: 1px solid hsl(0,0%,80%);
+
+    -webkit-transition: opacity 200ms linear;
+    -webkit-transition-delay: 70ms;
+
+    -webkit-box-shadow: 0 4px 6px hsla(0,0%,0%, 0.4);
+}
+
+.touch .GridMagnifier {
+    -webkit-box-shadow: none;
+}
+
+.GridMagnifier.active {
+    opacity: 1;
+}
+
+.GridMagnifier canvas {
+    position: static;
+    background: white;
+}
+
+.touch .GridMagnifier {
+    margin-top: -50px;
+}

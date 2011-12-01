@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="confirm.css">
+        <script type="text/montage-serialization">
+{
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {
+                "#": "msg"
+            }
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {
+                    "@": "owner"
+                },
+                "boundObjectPropertyPath": "msg",
+                "oneway": true
+            }
+        }
+    },
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "Ok",
+            "element": {
+                "#": "action-ok"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "owner"
+                }
+            }
+        ]
+    },
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "Cancel",
+            "element": {
+                "#": "action-cancel"
+            }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {
+                    "@": "owner"
+                }
+            }
+        ]
+    },
+    "owner": {
+        "module": "montage/ui/popup/confirm.reel",
+        "name": "Confirm",
+        "properties": {
+            "element": {
+                "#": "confirm-container"
+            }
+        }
+    }
+}
+    </script>
+
+
+    </head>
+    <body>
+        <div id="confirm-container" class="montage-confirm-dialog">
+            <div class="content">
+                <div class="msg-container">
+                    <div id="msg" class="msg"></div>
+                </div>
+                <div class="action-container">
+                    <div class="cancel" id="action-cancel">Cancel</div>
+                    <div class="submit" id="action-ok">OK</div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

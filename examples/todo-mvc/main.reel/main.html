@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main Component</title>
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script type="text/montage-serialization">
+        {
+            "tasksController": {
+                "module": "montage/ui/controller/array-controller",
+                "name": "ArrayController",
+                "properties": {
+
+                },
+                "bindings": {
+                    "content": {
+                        "boundObject": {
+                            "@": "owner"
+                        },
+                        "boundObjectPropertyPath": "tasks"
+                    }
+                }
+            },
+            "taskNoteField": {
+                "module": "montage/ui/textfield.reel",
+                "name": "Textfield",
+                "properties": {
+                    "element": {
+                        "#": "taskNoteField"
+                    }
+                }
+            },
+            "taskEntry": {
+                "module": "task-entry.reel",
+                "name": "TaskEntry",
+                "properties": {
+                    "element": {
+                        "#": "task"
+                    }
+                },
+                "bindings": {
+                    "task": {
+                        "boundObject": {
+                            "@": "taskRepetition"
+                        },
+                        "boundObjectPropertyPath": "objectAtCurrentIteration"
+                    }
+                }
+            },
+            "taskRepetition": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {
+                        "#": "taskList"
+                    },
+                    "contentController": {
+                        "@": "tasksController"
+                    }
+                }
+            },
+            "unfinishedCount": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {
+                        "#": "unfinishedCount"
+                    },
+                    "converter": {"@": "itemCountConverter"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {
+                            "@": "owner"
+                        },
+                        "boundObjectPropertyPath": "unfinishedTasks.count()",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "itemCountConverter": {
+                "module": "item-count-converter",
+                "name": "ItemCountConverter"
+            },
+
+            "taskListControls": {
+                "module": "task-list-controls.reel",
+                "name": "TaskListControls",
+                "properties": {
+                    "element": {
+                        "#": "taskListControls"
+                    }
+                },
+                "bindings": {
+                    "tasksController": {
+                        "boundObject": {
+                            "@": "owner"
+                        },
+                        "boundObjectPropertyPath": "tasksController",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "markAllCompleteConditional": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "markAllCompleteForm"}
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "tasksController.organizedObjects.count()",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "markAllCompleteButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "markAllCompleteButton"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "unfinishedTasks",
+                        "oneway": true,
+                        "converter": {"@": "markAllReadValueConverter"}
+                    }
+                }
+            },
+
+            "markAllReadValueConverter": {
+                "module": "mark-all-read-value-converter",
+                "name": "MarkAllReadValueConverter"
+            },
+
+            "owner": {
+                "module": "main.reel",
+                "name": "Main",
+                "properties": {
+                    "element": {
+                        "#": "main"
+                    },
+                    "tasksController": {
+                        "@": "tasksController"
+                    },
+                    "taskForm": {
+                        "#": "taskForm"
+                    },
+                    "markAllCompleteForm": {
+                        "#": "markAllCompleteForm"
+                    },
+                    "taskNoteField": {
+                        "@": "taskNoteField"
+                    }
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="main" class="main">
+        <h1>Todos</h1>
+
+        <form id="taskForm">
+            <div>
+                <label><span>Task</span><input id="taskNoteField" type="text" placeholder="What needs to be done?" size="64"></label>
+                <input type="submit" value="Add">
+            </div>
+        </form>
+
+        <form id="markAllCompleteForm">
+            <div><input type="submit" value="Mark all as complete" id="markAllCompleteButton"></div>
+        </form>
+
+        <ul id="taskList" class="taskList">
+            <li>
+                <div id="task"></div>
+            </li>
+        </ul>
+
+        <div class="taskStats">
+            <span id="unfinishedCount"></span> left
+            <div id="taskListControls"></div>
+        </div>
+    </div>
+
+</body>
+</html>
