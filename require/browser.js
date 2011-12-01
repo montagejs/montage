@@ -94,28 +94,42 @@ function HACK_checkFirefoxFileURL(url) {
 
 CJS.overlays = ["browser"];
 
+// Due to crazy variabile availability of new and old XHR APIs across
+// platforms, this implementation registers every known name for the event
+// listeners.  The promise library ascertains that the returned promise
+// is resolved only by the first event.
+// http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 CJS.read = function (url, options) {
     var request = new XMLHttpRequest();
     var response = Q.defer();
+
+    function onload() {
+        if (xhrSuccess(request)) {
+            response.resolve(request.responseText);
+        } else {
+            response.reject("Can't XHR " + JSON.stringify(url));
+        }
+    }
+
+    function onerror() {
+        response.reject("Can't XHR " + JSON.stringify(url));
+    }
+
     try {
         request.open("GET", url, true);
         options && options.overrideMimeType && request.overrideMimeType &&
             request.overrideMimeType(options.overrideMimeType);
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
-                if (xhrSuccess(request)) {
-                    response.resolve(request.responseText);
-                } else {
-                    response.reject("Can't XHR " + JSON.stringify(url));
-                }
+                onload();
             }
         };
-        request.onerror = function (error) {
-            response.reject("Can't XHR " + JSON.stringify(url));
-        };
+        request.onload = request.load = onload;
+        request.onerror = request.error = onerror;
     } catch (exception) {
         response.reject(exception.message, exception);
     }
+
     request.send();
     return response.promise;
 };
