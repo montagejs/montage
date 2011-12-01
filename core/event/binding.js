@@ -1167,6 +1167,7 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
         serializer.set("boundObjectPropertyPath", this.boundObjectPropertyPath);
         serializer.set("oneway", this.oneway);
         serializer.set("deferred", this.deferred);
+        serializer.set("converter", this.converter);
     }}
 });
 
