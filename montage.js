@@ -159,7 +159,7 @@ window.addEventListener("DOMContentLoaded", function() {
      */
     exports.TemplateCompiler = function(config, compiler) {
         return function(def) {
-            var root = def.path.match(/(.*\.reel\/)(?=.*\.html$)/);
+            var root = def.path.match(/(.*\/)?(?=[^\/]+\.html$)/);
             if (root) {
                 def.dependencies = def.dependencies || [];
                 var originalFactory = def.factory;
