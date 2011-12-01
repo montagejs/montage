@@ -160,6 +160,29 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
         value: null
     },
     
+    /**
+     * @private
+     */
+    _title: {
+        enumerable: false,
+        value: undefined
+    },
+    /**
+        Description Text to show in the tooltip displayed by hovering over this button
+        @type {Function}
+        @default undefined
+    */
+    title: {
+        serializable: true,
+        get: function () {
+            return this._title;
+        },
+        set: function (value) {
+            this._title = value;
+            this.needsDraw = true;
+        }
+    },
+    
 /**
   Description TODO
   @private
@@ -700,7 +723,8 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
                     }
                 }
             }
-
+            
+            this._element.setAttribute("title", this.title);
         }
     }
 
