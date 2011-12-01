@@ -1,5 +1,5 @@
 {
-    "owner": {
+    "converter": {
         "module": "temp-converter",
         "name": "TempConverter"
     },
@@ -14,7 +14,7 @@
             "value": {
                 "boundObject": {"@": "fahrenheitTextfield"},
                 "boundObjectPropertyPath": "value",
-                "converter": {"@": "owner"}
+                "converter": {"@": "converter"}
             }
         }
     },
