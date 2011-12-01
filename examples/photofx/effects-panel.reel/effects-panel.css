@@ -22,8 +22,7 @@
     border-bottom-color: hsl(0,0%,62%);
 }
 
-.EffectsPanel .effectsList .toggle {
-    position: static;
+.EffectsPanel .effectsList .montage-toggle {
     display: inline-block;
     margin-right: 10px;
     margin-bottom: -4px;
