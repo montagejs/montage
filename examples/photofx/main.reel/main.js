@@ -64,11 +64,44 @@ exports.Main = Montage.create(Component, {
     prepareForDraw: {
         value: function() {
 
+            document.addEventListener("mousedown", this, false);
+
             window.addEventListener('beforeunload', this, false);
 
             if (window.Touch) {
                 this.element.classList.add("touch");
             }
+        }
+    },
+
+    handleMousedown: {
+        value: function(evt) {
+            if (evt.button === 1) {
+                this.toggleShowControlsAction();
+            }
+        }
+    },
+    toggleShowControlsAction: {
+        value: function() {
+            this.showControls = !this.showControls;
+        }
+    },
+
+    _showControls: {
+        enumerable: false,
+        value: true
+    },
+
+    showControls: {
+        get: function() {
+            return this._showControls;
+        },
+        set: function(value) {
+            if (value === this._showControls) {
+                return;
+            }
+            this._showControls = value;
+            this.needsDraw = true;
         }
     },
 
@@ -128,6 +161,16 @@ exports.Main = Montage.create(Component, {
             }
 
             this.photoListController.removeObjects(selectedPhoto);
+        }
+    },
+
+    draw: {
+        value: function() {
+            if (this.showControls) {
+                this.element.classList.add("showControls");
+            } else {
+                this.element.classList.remove("showControls");
+            }
         }
     }
 

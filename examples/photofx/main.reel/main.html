@@ -156,7 +156,31 @@
                     "searchPanel": {"@": "searchPanel"},
                     "photoEditor": {"@": "photoEditor"}
                 }
+            },
+
+            "toggleControlsListener": {
+                "module": "montage/core/event/action-event-listener",
+                "name": "ActionEventListener",
+                "properties": {
+                    "handler": {"@": "owner"},
+                    "action": "toggleShowControlsAction"
+                }
+            },
+            "toggleControlsButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "toggleControlsButton"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "toggleControlsListener"},
+                        "capture": false
+                    }
+                ]
             }
+
         }
     </script>
 
@@ -164,14 +188,17 @@
 <body>
 
     <div id="main" class="PhotoFX main">
-        <div style="display: table">
+
+        <div id="toggleControlsButton" class="text ToggleControlsButton">✎</div>
+
+        <div class="editArea">
             <div id="gridMagnifier"></div>
             <div id="editor"></div>
         </div>
 
-        <div id="effectsPanel"></div>
+        <div id="effectsPanel" class="floatingPanel"></div>
 
-        <div class="PhotoPanel">
+        <div class="PhotoPanel floatingPanel">
             <div id="photoList" class="PhotoList">
                 <div id="photoThumb"></div>
             </div>

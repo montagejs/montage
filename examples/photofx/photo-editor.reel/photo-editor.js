@@ -69,6 +69,11 @@ exports.PhotoEditor = Montage.create(Component, {
 
     handleMousedown: {
         value: function(event) {
+
+            if (event.button !== 0) {
+                return;
+            }
+
             event.preventDefault();
             this._pointerIdentifier = "mouse";
             this._canvas.addEventListener("mousemove", this, false);
@@ -100,7 +105,12 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     handleMouseup: {
-        value: function() {
+        value: function(event) {
+
+            if (event.button !== 0) {
+                return;
+            }
+
             this._pointerIdentifier = null;
             this._canvas.removeEventListener("mousemove", this, false);
             document.removeEventListener("mouseup", this, false);
