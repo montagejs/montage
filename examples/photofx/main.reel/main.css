@@ -11,6 +11,10 @@ html {
     -webkit-user-select: none;
 }
 
+input {
+    -webkit-user-select: text;
+}
+
 .montage-hidden {
     display: none;
 }
