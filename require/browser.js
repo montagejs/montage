@@ -136,39 +136,19 @@ CJS.read = function (url, options) {
 
 function XHRLoader(options) {
     return function(url, callback) {
-        if (callback) {
-            CJS.read(url, {
-                overrideMimeType: "application/javascript"
-            }).then(function (content) {
-                if (/^\s*define\s*\(/.test(content)) {
-                    CJS.console.log("Detected async module definition, load with script loader instead.");
-                    callback(null);
-                } else {
-                    callback(options.compiler({ text : content, path : url }));
-                }
-            }, function (error) {
-                console.warn(error);
+        CJS.read(url, {
+            overrideMimeType: "application/javascript"
+        }).then(function (content) {
+            if (/^\s*define\s*\(/.test(content)) {
+                CJS.console.log("Detected async module definition, load with script loader instead.");
                 callback(null);
-            });
-        } else {
-            if (options.allowSyncXhr) {
-                try {
-                    var req = new XMLHttpRequest();
-                    req.open("GET", url, false);
-                    req.overrideMimeType && req.overrideMimeType("application/javascript");
-                    req.send();
-                    if (xhrSuccess(req)) {
-                        return options.compiler({ text : req.responseText, path : url });
-                    }
-                    return null;
-                } catch (e) {
-                    CJS.console.warn(e);
-                    return null;
-                }
             } else {
-                throw new Error("Cannot load modules with synchronous XHR.");
+                callback(options.compiler({ text : content, path : url }));
             }
-        }
+        }, function (error) {
+            console.warn(error);
+            callback(null);
+        });
     }
 }
 
