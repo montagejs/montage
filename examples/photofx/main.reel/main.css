@@ -98,3 +98,7 @@ input {
     border-left:  1px solid hsl(0,0%,62%);
     background-color: hsl(120,2%,89%)
 }
+
+.acceptsDrop {
+    border: 5px solid hsl(195,96%,43%);
+}

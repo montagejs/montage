@@ -68,6 +68,12 @@ exports.Main = Montage.create(Component, {
 
             window.addEventListener('beforeunload', this, false);
 
+            this.element.addEventListener("dragenter", this, false);
+            this.element.addEventListener("dragleave", this, false);
+            this.element.addEventListener("dragover", this, false);
+            this.element.addEventListener("drop", this, false);
+            this.element.addEventListener("dragend", this, false);
+
             if (window.Touch) {
                 this.element.classList.add("touch");
             }
@@ -101,6 +107,94 @@ exports.Main = Montage.create(Component, {
                 return;
             }
             this._showControls = value;
+            this.needsDraw = true;
+        }
+    },
+
+    handleDragenter: {
+        value: function(evt) {
+            if (evt.dataTransfer.types.indexOf("Files") >= 0) {
+                this.willingToAcceptDrop = true;
+            } else {
+                evt.dataTransfer.effectAllowed = "none";
+                evt.dataTransfer.dropEffect = "none";
+            }
+        }
+    },
+
+    handleDragleave: {
+        value: function(evt) {
+            this.willingToAcceptDrop = false;
+        }
+    },
+
+    handleDragover: {
+        value: function(evt) {
+            evt.preventDefault(); //TODO this may be unnecessary, tutorial says we need ti to prevent redirecting
+        }
+    },
+
+    handleDrop: {
+        value: function(evt) {
+            evt.stopPropagation(); // TODO this may be unnecessary, same as above, but I'd guess preventDefault would stop the browser from...doing the default action
+            evt.preventDefault();
+
+            if (!this.willingToAcceptDrop) {
+                // Don't bother processing this if we don't handle it
+                // that said we still wanted to preventDefaults so we act more like a native application
+                // and don't simply let the browser handle opening the dropped content
+                return;
+            }
+
+            var files = evt.dataTransfer.files,
+                i,
+                iFile;
+
+            for (i = 0; iFile = files[i]; i++) {
+
+                if (!iFile.type.match(/image.*/)) {
+                    continue;
+                }
+
+                var reader = new FileReader();
+
+                reader.onload =  (function(self, file) {
+                    return function(evt) {
+
+                        var photo = {
+                            src: evt.target.result,
+                            title: file.name
+                        }
+                        self.photoListController.addObjects(photo);
+
+                    };
+                })(this, iFile);
+
+                reader.readAsDataURL(iFile);
+            }
+        }
+    },
+
+    handleDragend: {
+        value: function(evt) {
+            this.willingToAcceptDrop = false;
+        }
+    },
+
+    _willingToAcceptDrop: {
+        enumerable: false,
+        value: false
+    },
+
+    willingToAcceptDrop: {
+        get: function() {
+            return this._willingToAcceptDrop;
+        },
+        set: function(value) {
+            if (value === this._willingToAcceptDrop) {
+                return;
+            }
+            this._willingToAcceptDrop = value;
             this.needsDraw = true;
         }
     },
@@ -170,6 +264,12 @@ exports.Main = Montage.create(Component, {
                 this.element.classList.add("showControls");
             } else {
                 this.element.classList.remove("showControls");
+            }
+
+            if (this.willingToAcceptDrop) {
+                this.element.classList.add("acceptsDrop");
+            } else {
+                this.element.classList.remove("acceptsDrop");
             }
         }
     }
