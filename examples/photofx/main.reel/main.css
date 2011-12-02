@@ -40,10 +40,12 @@ input {
     position: fixed;
     opacity: 0;
     -webkit-transition: opacity 200ms ease-in-out;
+    pointer-events: none;
 }
 
 .PhotoFX.showControls .floatingPanel {
     opacity: 1;
+    pointer-events: auto;
 }
 
 .PhotoFX .ToggleControlsButton.text {
