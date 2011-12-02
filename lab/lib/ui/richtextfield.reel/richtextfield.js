@@ -104,6 +104,30 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             }
         }
     },
+    
+    /**
+      Description TODO
+      @private
+    */
+    _textValue: {
+        enumerable: false,
+        value: ""
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    textValue: {
+        enumerable: true,
+        get: function() {
+            if (this._hasChanged) {
+                var tempValue = this.value; // Force the hasChanged state to sync up
+                this._textValue = this.element.innerText;
+            }
+            return this._textValue;
+        }
+    },
 
     /**
       Description TODO
