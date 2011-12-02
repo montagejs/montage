@@ -48,12 +48,11 @@ input {
     pointer-events: auto;
 }
 
-.PhotoFX .ToggleControlsButton.text {
+.PhotoFX .mainMenu {
     position: absolute;
     top: 10px;
     left: 10px;
     opacity: 0.2;
-    background-color: hsla(0,0%,70%,0.2);
 }
 
 .PhotoPanel {

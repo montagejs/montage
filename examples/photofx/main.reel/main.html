@@ -78,27 +78,20 @@
                     "contentController": {"@": "photoController"}
                 }
             },
-            "addPhotosListener": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "addPhotosAction"
-                }
-            },
+
             "addPhotosButton": {
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "addPhotosButton"}
                 },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "addPhotosListener"},
-                        "capture": false
+                "bindings": {
+                    "action": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "addPhotosAction",
+                        "oneway": true
                     }
-                ]
+                }
             },
 
             "removeSelectionCondition": {
@@ -116,27 +109,19 @@
                 }
             },
 
-            "removePhotoListener": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "removePhotoAction"
-                }
-            },
             "removePhotoButton": {
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "removePhotoButton"}
                 },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "removePhotoListener"},
-                        "capture": false
+                "bindings": {
+                    "action": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "removePhotoAction",
+                        "oneway": true
                     }
-                ]
+                }
             },
 
             "searchPanel": {
@@ -158,27 +143,19 @@
                 }
             },
 
-            "toggleControlsListener": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
-                "properties": {
-                    "handler": {"@": "owner"},
-                    "action": "toggleShowControlsAction"
-                }
-            },
             "toggleControlsButton": {
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "toggleControlsButton"}
                 },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "toggleControlsListener"},
-                        "capture": false
+                "bindings": {
+                    "action": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "toggleShowControlsAction",
+                        "oneway": true
                     }
-                ]
+                }
             }
 
         }
@@ -189,7 +166,9 @@
 
     <div id="main" class="PhotoFX main">
 
-        <div id="toggleControlsButton" class="text ToggleControlsButton">✎</div>
+        <div class="mainMenu">
+            <div id="toggleControlsButton" class="text ToggleControlsButton">✎</div>
+        </div>
 
         <div class="editArea">
             <div id="gridMagnifier"></div>
