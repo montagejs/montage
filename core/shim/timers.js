@@ -23,9 +23,7 @@
     @global
 */
 
-(function () {
-
-var global = typeof global !== "undefined" ? global : window;
+(function (global) {
 
 var nextTick;
 if (typeof process !== "undefined") {
@@ -86,4 +84,4 @@ if (typeof bootstrap !== "undefined") {
     bootstrap("core/shim/timers", function () {});
 }
 
-})();
+})(typeof global === "undefined" ? window : global);
