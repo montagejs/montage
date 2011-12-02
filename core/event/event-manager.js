@@ -422,8 +422,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             Object.defineProperty(aWindow, "addEventListener", {
                 enumerable: false,
-                value: (XMLHttpRequest.prototype.addEventListener = 
-                        Element.prototype.addEventListener = 
+                value: (XMLHttpRequest.prototype.addEventListener =
+                        Element.prototype.addEventListener =
                             Object.getPrototypeOf(aWindow.document).addEventListener =
                                 function(eventType, listener, useCapture) {
                                     return defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
@@ -432,8 +432,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             Object.defineProperty(aWindow, "removeEventListener", {
                 enumerable: false,
-                value: (XMLHttpRequest.prototype.removeEventListener = 
-                        Element.prototype.removeEventListener = 
+                value: (XMLHttpRequest.prototype.removeEventListener =
+                        Element.prototype.removeEventListener =
                             Object.getPrototypeOf(aWindow.document).removeEventListener =
                                 function(eventType, listener, useCapture) {
                                     return defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
@@ -818,7 +818,10 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 // We install all native event listeners on the document, except for a few special event types
                 // TODO this may be problematic for some events in some browsers, I'm afraid there will be too
                 // many exceptions to do this in a generic manner
-                if ((/*isDocument*/!!target.defaultView) || "load" === eventType || "resize" === eventType || "message" === eventType || "orientationchange" === eventType || "beforeunload" === eventType || "unload" === eventType) {
+                var nonDelegateableEventTypes = ["load", "resize", "message", "orientationchange",
+                    "beforeunload", "unload", "dragenter", "dragleave", "drop", "dragover", "dragend"];
+
+                if ((/*isDocument*/!!target.defaultView) || nonDelegateableEventTypes.indexOf(eventType) >= 0) {
                     return target;
                 } else {
                     return /* isWindow*/target.screen ? target.document : target.ownerDocument;
