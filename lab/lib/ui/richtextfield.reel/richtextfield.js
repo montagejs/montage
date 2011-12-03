@@ -9,7 +9,9 @@
     @requires montage/ui/editable-text
 */
 var Montage = require("montage").Montage,
+    MutableEvent = require("core/event/mutable-event").MutableEvent,
     Component = require("ui/component").Component;
+
 /**
     @class module:"montage/ui/richtextfield.reel".RichTextfield
     @extends module:montage/ui/component.Component
@@ -34,6 +36,15 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
         value: false
     },
     
+    /**
+      Description TODO
+      @private
+    */
+    _selectionChangeTimer: {
+        enumerable: false,
+        value: null
+    },
+
     /**
       Description TODO
       @private
@@ -122,8 +133,8 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
         enumerable: true,
         get: function() {
             if (this._hasChanged) {
-                var tempValue = this.value; // Force the hasChanged state to sync up
                 this._textValue = this.element.innerText;
+                this.__lookupGetter__("value").call(this); // Force the hasChanged state to sync up
             }
             return this._textValue;
         }
@@ -133,10 +144,78 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
       Description TODO
       @private
     */
-    _commands: {
+    _statesDirty: {
         enumerable: false,
-        value: {"bold": true, "italic": true, "underline": true, "strikethrough": true, "indent": true, "outdent": true,
-            "insertorderedlist": true, "insertunorderedlist": true}
+        value: false
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _states: {
+        enumerable: false,
+        value: null
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    states: {
+        enumerable: true,
+        get: function() {
+            var actions = this._actions,
+                key,
+                action,
+                states,
+                state,
+                statesChanged = false;
+
+            if (this._states == null || this._statesDirty) {
+                states = this._states || {};
+                for (key in actions) {
+                    action = actions[key];
+                    state = "false";
+                    if (action.enabled && action.status) {
+                        state = (document.queryCommandState(key) ? "true" : "false");
+                    }
+
+                    if (states[key] !== state) {
+                        states[key] = state;
+                        statesChanged = true;
+                    }
+                }
+                this._states = states;
+
+                if (statesChanged) {
+                    // As we do not have a setter, we need to manually dispatch a change event
+                    this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("states" , this._states));
+                }
+            }
+
+
+            return this._states;
+
+        }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _actions: {
+        enumerable: false,
+        value: {
+            bold: {enabled: true, status: true},
+            italic: {enabled: true, status: true},
+            underline: {enabled: true, status: true},
+            strikethrough: {enabled: true, status: true},
+            indent: {enabled: true, status: false},
+            outdent: {enabled: true, status: false},
+            insertorderedlist: {enabled: true, status: true},
+            insertunorderedlist: {enabled: true, status: true}
+        }
     },
 
     /**
@@ -146,7 +225,7 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
     actions: {
         enumerable: false,
         get: function() {
-            return this._commands;
+            return this._actions;
         }
     },
 
@@ -157,23 +236,21 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
     enabledActions: {
         enumerable: true,
         set: function(enabledActions) {
-            var actions = this._commands,
+            var actions = this._actions,
                 nbrEnabledActions = enabledActions.length,
                 action,
                 i;
 
-            for (action in this._commands) {
-                this._commands[action] = false;
+            for (action in actions) {
+                actions[action].enabled = false;
             }
 
             for (i = 0; i < nbrEnabledActions; i ++) {
                 action = enabledActions[i];
                 if (actions[action] !== undefined) {
-                    actions[action] = true;
+                    actions[action].enabled = true;
                 }
             }
-
-            console.log("COMMANDS:", this._commands);
         }
     },
 
@@ -280,6 +357,12 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
 
             this._hasFocus = false;
 
+            if (this._selectionChangeTimer) {
+                clearTimeout(this._selectionChangeTimer);
+                this._selectionChangeTimer = null;
+            }
+
+
             el.removeEventListener("blur", this);
             el.removeEventListener("input", this);
             el.removeEventListener("keypress", this);
@@ -304,8 +387,8 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
-            // JFD TODO: We might want to use a timer to avoid doing too much processing when the user type...
-            this.callDelegateMethod("didValueChanged", this);
+//            this.callDelegateMethod("didValueChanged", this);
+            this._dispatchEditorEvent("editorChange");
         }
     },
 
@@ -320,7 +403,8 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
-            this.callDelegateMethod("didValueChanged", this);
+//            this.callDelegateMethod("didValueChanged", this);
+            this._dispatchEditorEvent("editorChange");
         }
     },
 
@@ -331,11 +415,20 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
     handleSelectionchange: {
         enumerable: false,
         value: function() {
+            var thisRef = this;
+
             if (this._hasSelectionChangeEvent == null) {
                 this._hasSelectionChangeEvent = true;
             }
 
-            this.callDelegateMethod("didSelectionChanged", this);
+            if (this._selectionChangeTimer) {
+                clearTimeout(this._selectionChangeTimer);
+            }
+
+            this._statesDirty = true;    // clear the cached states to force qyery it again
+            this._selectionChangeTimer = setTimeout(function() {
+                thisRef._dispatchEditorEvent("editorSelect");
+            }, 50);
         }
     },
 
@@ -347,7 +440,7 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
     handleAction: {
         enumerable: false,
         value: function(event) {
-            var action = event.currentTarget.identifier;
+            var action = event.currentTarget.action || event.currentTarget.identifier;
             if (action) {
                 this.doAction(action);
             }
@@ -363,17 +456,30 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
         value: function(action) {
 
             // Check if the action is valid and enabled
-            if (this._commands[action] === true) {
+            if (this._actions[action] && this._actions[action].enabled === true) {
                 document.execCommand("styleWithCSS", false, true);
                 document.execCommand(action, false, false);
                 document.execCommand("styleWithCSS", false, false);
 
-                if (this._hasSelectionChangeEvent === false) {
-                    this.handleSelectionchange();
-                }
+                this.handleSelectionchange();
             }
         }
-    }
+    },
 
+    // Private methods
+    /**
+      Description TODO
+      @private
+     @function
+    */
+    _dispatchEditorEvent: {
+        enumerable: true,
+        value: function(type, value) {
+            var editorEvent = document.createEvent("CustomEvent");
+            editorEvent.initCustomEvent(type, true, false, value === undefined ? null : value);
+            editorEvent.type = type;
+            this.dispatchEvent(editorEvent);
+        }
+    }
 });
 
