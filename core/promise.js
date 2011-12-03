@@ -242,7 +242,20 @@ DeferredPromise.prototype.free = function () {
 var errors = [];
 // Live console objects are not handled on tablets
 if (!window.Touch) {
-    console.log("Unhandled errors:", errors);
+
+    /*
+    * This promise library consumes exceptions thrown in callbacks so
+    * that they can be handled asynchronously.  The exceptions get
+    * added to ``errors`` when they are consumed, and removed when
+    * they are handled.  In many debuggers, the view of the reported
+    * array will update to reflect its current contents so you can
+    * always see if you have missed an error.
+    *
+    * This log will appear once for every time this module gets
+    * instantiated.  That should be once per frame.
+    */
+    console.log("Should be empty:", errors);
+
 }
 
 function RejectedPromise(reason, error) {
