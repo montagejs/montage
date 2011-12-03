@@ -7,11 +7,12 @@ bootstrap("require/browser", function (require) {
 
 var CJS = require("require/require");
 var Q = require("core/promise");
+var URL = require("core/url");
 
 var global = typeof global !== "undefined" ? global : window;
 
 CJS.pwd = function() {
-    return CJS.dirname(window.location.toString());
+    return URL.resolve(window.location, ".");
 };
 
 function ScriptLoader(options) {
@@ -40,8 +41,8 @@ function ScriptLoader(options) {
             return;
         }
 
-        var canonicalURI = CJS.canonicalURI(url);
-        pendingScripts[canonicalURI] = true;
+        var normalUrl = URL.resolve(url, "");
+        pendingScripts[normalUrl] = true;
 
         var script = document.createElement("script");
         script.onload = function() {
@@ -68,7 +69,7 @@ function ScriptLoader(options) {
         document.getElementsByTagName("head")[0].appendChild(script);
 
         function finish(result) {
-            pendingScripts[canonicalURI] = false;
+            pendingScripts[normalUrl] = false;
             script.parentNode.removeChild(script);
             callback(result);
         }

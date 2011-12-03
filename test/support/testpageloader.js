@@ -2,7 +2,8 @@
  * @see https://developer.mozilla.org/en/DOM/HTMLIFrameElement
  */
 var Montage = require("montage").Montage,
-    dom = require("montage/ui/dom");
+    dom = require("montage/ui/dom"),
+    URL = require("montage/core/url");
 
 var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     init: {
@@ -89,7 +90,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             if (test.src) {
                 this.iframe.src = "../test/" + test.src;
             } else {
-                this.iframe.src = test.directory + "/" +(testName.indexOf("/") > -1 ? testName : testName + "/" + testName) + ".html";
+                this.iframe.src = URL.resolve(test.directory, (testName.indexOf("/") > -1 ? testName : testName + "/" + testName) + ".html");
             }
             var theTestPage = this;
 

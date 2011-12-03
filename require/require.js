@@ -6,6 +6,7 @@
 bootstrap("require/require", function (require, CJS) {
 
     var Q = require("core/promise");
+    var URL = require("core/url");
 
     var global = (function () {return this})();
     var globalEval = eval; // reassigning causes eval to not use lexical scope.
@@ -19,8 +20,8 @@ bootstrap("require/require", function (require, CJS) {
     CJS.Sandbox = function(config) {
         // Configuration defaults:
         config = config || {};
-        config.location = CJS.normal(CJS.canonicalURI(config.location || "" + CJS.pwd()));
-        config.lib = config.lib || config.location;
+        config.location = URL.resolve(config.location || CJS.pwd(), ".");
+        config.lib = URL.resolve(config.location, config.lib || ".");
         config.paths = config.paths || [config.lib];
         config.mappings = config.mappings || {}; // EXTENSION
         config.definitions = config.definitions || {};
@@ -180,18 +181,19 @@ bootstrap("require/require", function (require, CJS) {
                 if (definitions[topId] && typeof definitions[topId].factory === "function") {
                     // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
                     // TODO: Handle this at higher level?
-                    var uri = CJS.canonicalURI(definitions[topId].path);
+                    var uri = URL.resolve(definitions[topId].path, "");
                     if (has(urisToIds, uri)) {
                         var canonicalId = urisToIds[uri];
                         modules[topId] = modules[canonicalId];
                     } else {
                         urisToIds[uri] = topId;
+
                         var module = modules[topId] = {
-                            exports : {},
-                            id : topId,
-                            path : definitions[topId].path,
-                            directory : CJS.dirname(definitions[topId].path),
-                            uri : uri // EXTENSION
+                            exports: {},
+                            id: topId,
+                            path: definitions[topId].path,
+                            directory: URL.resolve(definitions[topId].path, "."),
+                            uri: uri // EXTENSION
                         };
 
                         var requireArg = makeRequire(topId);
@@ -374,7 +376,7 @@ bootstrap("require/require", function (require, CJS) {
     }
 
     CJS.PackageSandbox = function (location, config) {
-        location = CJS.normal(CJS.canonicalURI(location));
+        location = URL.resolve(location, ".");
         config = config || {};
         var packages = config.packages = config.packages || {};
         var loadedPackages = {};
@@ -458,7 +460,7 @@ bootstrap("require/require", function (require, CJS) {
         // lib
         config.lib = location + "/" + lib;
         var packageRoot = description.directories.packages || "node_modules";
-        packageRoot = CJS.normal(location + "/" + packageRoot);
+        packageRoot = URL.resolve(location, packageRoot + "/");
 
         // name, creates an alias for the module name within
         // its package.  For example, in the "q" package, one
@@ -475,7 +477,7 @@ bootstrap("require/require", function (require, CJS) {
         // only its path. makeRequire goes through special effort
         // in deepLoad to re-initialize this definition with the
         // loaded definition from the given path.
-        definitions[""] = {"path": CJS.normal(location + "/" + description.main)};
+        definitions[""] = {"path": URL.resolve(location, description.main)};
 
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};
@@ -485,13 +487,13 @@ bootstrap("require/require", function (require, CJS) {
             var versionPredicateString = dependencies[name];
             // TODO (version presently ignored for debug mode)
             if (!mappings[name]) {
-                mappings[name] = {"location": CJS.normal(packageRoot + "/" + name)};
+                mappings[name] = {"location": URL.resolve(packageRoot, name)};
             }
         });
         Object.keys(mappings).forEach(function (name) {
             var mapping = mappings[name] = Dependency(mappings[name]);
             if (!CJS.isAbsolute(mapping.location))
-                mapping.location = CJS.normal(CJS.canonicalURI(location + "/" + mapping.location));
+                mapping.location = URL.resolve(location + '/', mapping.location);
         });
 
         config.mappings = mappings;
@@ -509,9 +511,9 @@ bootstrap("require/require", function (require, CJS) {
     function resolve(id, baseId) {
         id = String(id);
         if (id.charAt(0) == ".") {
-            id = CJS.dirname(baseId) + "/" + id;
+            id = URL.resolve(URL.resolve(baseId, "."), id);
         }
-        return CJS.normal(id).replace(/\\/g, "/");
+        return URL.resolve(id, "");
     };
 
     // ES5 shim:
@@ -535,85 +537,17 @@ bootstrap("require/require", function (require, CJS) {
         };
     }
 
-    // Wraps a path manipulation function (dirname, basename, etc) to support URLs
-    // TODO: better URL parsing? Windows path support?
-    function urlifyPathFunction(func, stripOrigin) {
-        return function(pathOrURL, noURL) {
-            var path = String(pathOrURL), origin = "", match;
-            if (!noURL && (match = path.match(/^([a-zA-Z][A-Za-z0-9+.-]*:\/\/[^\/]*)(\/[^\?]*|)(?:\?.*)?$/))) {
-                path = match[2];
-                origin = stripOrigin ? "" : match[1];
-            }
-            return origin + func(path);
-        }
-    };
-
-    function dirnameUnix(path) {
-        // matches Unix dirname, except in the case of trailing slashes,
-        // in which case the dirname is the full path without the slash.
-        // in URLs the trailing slash is significant.
-        // 1) strip the last component if it doesn't end in a slash
-        // 2) strip the trailing slash
-        // 3) if result is empty string return "/" if absolute, "." if relative
-        return String(path).replace(/(\/?[^\/]+$)/, "").replace(/\/+$/, "") || (path.charAt(0) === "/" ? "/" : ".");
-    };
-
-    function basenameUnix(path) {
+    CJS.base = function (path) {
         // matches Unix basename
-        return String(path).replace(/(.+?)\/+$/, "$1").match(/([^\/]+$|^\/$|^$)/)[1];
+        return String(path)
+            .replace(/(.+?)\/+$/, "$1")
+            .match(/([^\/]+$|^\/$|^$)/)[1];
     };
-
-    function normalUnix(path) {
-        var oldPath, newPath = String(path);
-        do {
-            oldPath = newPath;
-            newPath = oldPath.replace(/^\.\/|\/+\.?$|(\/)(?:\/+|\.\/)|[^\/]*[^\.\/]\/\.\.(\/|$)/, "$1");
-            //  ^\.\/                    => leading "./"
-            //  \/+\.?$                  => trailing "/" or "/."
-            //  (\/)(?:\/+|\.\/)         => "//" and "/./" => "/"
-            //  [^\/]*[^\.\/]\/\.\.(?:\/|$) => "foo/../" or trailing "x/.." (but not "../../")
-        } while (oldPath !== newPath);
-        return newPath;
-    };
-
-    // All of the following path functions ideally will work on all platforms, but can be overriden.
-    // FIXME: Windows
-
-    // Returns a normalized (equivalent but simplified) version of the path
-    CJS.normal = urlifyPathFunction(normalUnix);
-
-    // Returns the directory of the path or URL
-    CJS.dirname = urlifyPathFunction(dirnameUnix);
-
-    // Returns the basename part of the path or URL
-    CJS.basename = urlifyPathFunction(basenameUnix, true);
 
     // Tests whether the path or URL is a absolute.
     CJS.isAbsolute = function(path) {
-        // starts with a protocol or forward slash
-        return (/^([A-Za-z][A-Za-z0-9+.-]*:|\/)/).test(path);
-    };
-
-    // Returns an absolute URL for the path, including a protocol
-    CJS.canonicalURI = function(path) {
-        path = String(path);
-
-        // make absolute
-        if (!CJS.isAbsolute(path)) {
-            var pwd = CJS.pwd();
-            path = pwd + (/\/$/.test(pwd) ? "" : "/") + path;
-        }
-
-        // check for the prototcol
-        if (/^[A-Za-z][A-Za-z0-9+.-]*:/.test(path)) {
-            return path;
-        } else {
-            if (typeof window !== "undefined" && window && window.location) {
-                return window.location.protocol + "//" + window.location.host + window.location.port + path;
-            } else {
-                return "file://" + path;
-            }
-        }
+        var parsed = URL.parse(path);
+        return parsed.authorityRoot || parsed.root;
     };
 
     // Attempts to return a standardized error object.
@@ -784,7 +718,7 @@ bootstrap("require/require", function (require, CJS) {
             var paths = CJS.isAbsolute(id) ?
                 [id] :
                 config.paths.map(function(path) {
-                    return CJS.normal(path + "/" + id);
+                    return URL.resolve(path, id);
                 });
 
             return tryEachSyncOrAsync(paths, function(path, resultCallback) {
@@ -852,7 +786,7 @@ bootstrap("require/require", function (require, CJS) {
     CJS.Extensions = function(config, loader) {
         var extensions = config.extensions || ["js"];
         return function(id, callback) {
-            var needsExtension = CJS.basename(id).indexOf(".") < 0;
+            var needsExtension = CJS.base(id).indexOf(".") < 0;
             return tryEachSyncOrAsync(extensions, function(extension, resultCallback) {
                 if (needsExtension)
                     return loader(id + "." + extension, resultCallback);
@@ -892,7 +826,7 @@ bootstrap("require/require", function (require, CJS) {
         var cache = {};
         var pending = {};
         return function(url, callback) {
-            url = CJS.canonicalURI(url);
+            url = URL.resolve(url, "");
 
             if (has(cache, url)) {
                 return callback ? callback(cache[url]) : cache[url];

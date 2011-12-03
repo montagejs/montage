@@ -15,6 +15,9 @@
 // TODO note the comps/promiseSend/sendPromise and argument order
 //      changes from Q
 
+// This module is used during the boot-strapping, so it can be required as
+// a normal CommonJS module, but alternately bootstraps Montage if there
+// is a bootstrap global variable.
 (function (definition) {
     if (typeof bootstrap !== "undefined") {
         bootstrap("core/promise", definition);

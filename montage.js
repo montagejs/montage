@@ -54,7 +54,7 @@ window.addEventListener("DOMContentLoaded", function() {
         var config = platform.getConfig();
 
         // Platform dependent
-        platform.loadCJS(function (CJS, Q) {
+        platform.loadCJS(function (CJS, Q, URL) {
 
             // setup the reel loader
             config.makeLoader = function (config) {
@@ -69,11 +69,12 @@ window.addEventListener("DOMContentLoaded", function() {
                         CJS.DefaultCompilerConstructor(config)));
             };
 
-            var location = CJS.canonicalURI(CJS.dirname(params["package"] || "."));
+            var location = URL.resolve(window.location, params["package"] || ".");
 
             CJS.PackageSandbox(params.montageBase, config)
             .then(function (montageRequire) {
                 montageRequire.config.modules["core/promise"] = {exports: Q};
+                montageRequire.config.modules["core/url"] = {exports: URL};
                 montageRequire.config.modules["core/shim/timers"] = {exports: {}};
                 return montageRequire.loadPackage(location)
                 .then(function (applicationRequire) {
@@ -239,7 +240,7 @@ window.addEventListener("DOMContentLoaded", function() {
         },
 
         loadCJS: function (callback) {
-            var base, CJS, DOM, Q;
+            var base, CJS, DOM, Q, URL;
 
             var params = this.getParams();
 
@@ -264,6 +265,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 "require/require",
                 "require/browser",
                 "core/promise",
+                "core/url",
                 "core/jshint"
             ];
             if (typeof setImmediate === "undefined")
@@ -306,6 +308,7 @@ window.addEventListener("DOMContentLoaded", function() {
             // execute bootstrap scripts
             function allModulesLoaded() {
                 Q = bootRequire("core/promise");
+                URL = bootRequire("core/url");
                 CJS = bootRequire("require/require");
                 bootRequire("require/browser");
                 delete global.bootstrap;
@@ -314,7 +317,7 @@ window.addEventListener("DOMContentLoaded", function() {
 
             function callbackIfReady() {
                 if (DOM && CJS) {
-                    callback(CJS, Q);
+                    callback(CJS, Q, URL);
                 }
             }
 
