@@ -19,6 +19,8 @@
 // https://raw.github.com/280north/narwhal/master/packages/narwhal-lib/lib/uri.js
 // from Chiron's HTTP module:
 // http://code.google.com/p/chironjs/source/browse/trunk/src/http.js
+// in turn, based on Steve Levithan's work
+// http://blog.stevenlevithan.com/archives/parseuri
 
 var urlKeys = [
     "url",
@@ -51,7 +53,7 @@ var urlExpression = new RegExp( /* url */
                 "(" + /* userInfo */
                     "([^:@]*)" + /* user */
                     ":?" +
-                    "([^:@]*)" + /* password */
+                    "([^@]*)" + /* password */
                 ")?" +
                 "@" +
             ")?" +
@@ -65,7 +67,8 @@ var urlExpression = new RegExp( /* url */
         "([^?#]*)" + /* file */
     ")" +
     "(\\?([^#]*))?" + /* search, query */
-    "(?:#(.*))?" /* hash */
+    "(?:#(.*))?" + /* hash */
+    "$"
 );
 
 exports.parse = function (url) {
