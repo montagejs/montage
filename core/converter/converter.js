@@ -94,7 +94,6 @@ var truncate = exports.truncate = function(str, chars, opt_protectEscapedCharact
  */
 var Validator = exports.Validator = Montage.create(Montage, /** @lends module:montage/core/converter.Validator# */{
 /**
-        Description TODO
         @type {Object}
         @default null
     */
@@ -126,7 +125,6 @@ var Converter = exports.Converter = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-        Description TODO
         @type {Property}
         @default null
     */
@@ -135,7 +133,6 @@ var Converter = exports.Converter = Montage.create(Montage, /** @lends module:mo
         value: null
     },
 /**
-        Description TODO
         @type {Property}
         @default null
     */

@@ -42,9 +42,8 @@ var wrapProperty = function(obj, key) {
 */
 var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends module:montage/core/event/mutable-event.MutableEvent# */ {
     /**
-     The event from which this comes!
      @function
-     @param {Event} event The original event. 
+     @param {Event} event The original event.
      @returns newEvent
      */
     fromEvent: {
@@ -63,8 +62,10 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
             return newEvent;
         }
     },
+
+    //    Same arguments as initEvent & initCustomEvent
+
     /**
-    Same arguments as initEvent & initCustomEvent
     @function
     @param {Event} type TODO
     @param {Event} canBubbleArg TODO
@@ -81,7 +82,6 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
     },
 
    /**
-    Description TODO
     @function
     @returns new _changeEventConstructor()
     */
@@ -90,14 +90,13 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
             return new _changeEventConstructor();
         }
     },
-     
+
 /**
-    Description TODO
     @function
     @param {Event} key TODO
     @param {Event} minus TODO
     @returns changeEvent
-    */    
+    */
     changeEventForKeyAndValue: {
         value: function(key, minus) {
             var changeEvent = new _changeEventConstructor();
@@ -109,8 +108,7 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
     },
 
     /**
-     Description TODO
-     @function
+      @function
      @param {String} plus TODO
      @returns itself
      */
@@ -159,7 +157,6 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     */
     preventDefault: {
@@ -168,7 +165,6 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     */
     stopImmediatePropagation: {
@@ -179,31 +175,27 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-        Description TODO
-        @type {Property}
+            @type {Property}
         @default {Boolean} false
     */
     propagationStopped: {
         value: false
     },
 /**
-        Description TODO
-        @type {Property}
+            @type {Property}
         @default {Boolean} true
     */
     mutable: {
         value: true
     },
 /**
-        Description TODO
-        @type {Property}
+            @type {Property}
         @default {Element} null
     */
     target: {
         value: null
     },
 /**
-    Description TODO
     @function
     */
     stopPropagation: {
@@ -214,7 +206,6 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     */
     stop: {

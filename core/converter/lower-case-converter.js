@@ -17,9 +17,6 @@ var Converter = require("core/converter/converter").Converter;
  */
 exports.LowerCaseConverter = Montage.create(Converter, /** @lends module:montage/core/converter/lower-case-converter.LowerCaseConverter# */{
 
-    /**
-     @private
-     */
     _convert: {
         value: function(v) {
             if (v && typeof v === 'string') {
@@ -30,7 +27,6 @@ exports.LowerCaseConverter = Montage.create(Converter, /** @lends module:montage
     },
 
     /**
-    Description TODO
     @function
     @param {String} v Case format
     @returns this._convert(v)
@@ -40,7 +36,6 @@ exports.LowerCaseConverter = Montage.create(Converter, /** @lends module:montage
     }},
 
    /**
-    Description TODO
     @function
     @param {String} v Case format
     @returns this._convert(v)

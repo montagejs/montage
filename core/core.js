@@ -38,7 +38,7 @@ if (!Object.create) {
 var M = exports.Montage = Object.create(Object.prototype);
 
 /**
-     Creates a new Montage object. TODO improve description
+     Creates a new Montage object.
      @function module:montage/core/core.Montage.create
      @param {Object} aPrototype The prototype object to create the new object from. If not specified, the prototype is the Montage prototype.
      @param {Object} [propertyDescriptor] An object that contains the initial properties and values for the new object.
@@ -127,8 +127,8 @@ Object.defineProperty(M, "defineProperty", {
                 }
             }
         }
-        
-        
+
+
         if (!descriptor.hasOwnProperty("enumerable") && prop.charAt(0) === "_") {
             descriptor.enumerable = false;
         }
@@ -480,7 +480,6 @@ M.defineProperty(M, "getPropertyAttribute", {value: function(anObject, propertyN
 
 
  /**
-     TODO getPropertyAttributes - needs description, better parameter descriptions.
      @function module:montage/core/core.Montage.getPropertyAttributes
      @param {Object} anObject An object.
      @param {String} attributeName The attribute name.
@@ -502,18 +501,10 @@ M.defineProperty(M, "getPropertyAttributes", {value: function(anObject, attribut
     return attributeValues;
 }});
 
-/**
-  Description TODO
-  @private
-*/
 var _instanceMetadataDescriptor = {
     isInstance: {value: true}
 };
 
-/**
-  Description TODO
-  @private
-*/
 var _functionInstanceMetadataDescriptor = {
     objectName: {value: "Function"},
     isInstance: {value: true}
@@ -554,7 +545,6 @@ M.defineProperty(M, "getInfoForObject", {
     }
 });
 /**
-    Description TODO
     @function module:montage/core/core.Montage.doNothing
     @default function
     */
@@ -565,7 +555,6 @@ Object.defineProperty(M, "doNothing", {
 });
 
 /**
-    Description TODO
     @function module:montage/core/core.Montage#self
     @default function
     @returns itself
@@ -725,13 +714,12 @@ Object.defineProperty(M, "callDelegateMethod", {
 });
 
 /**
-Description TODO
 @function external:Object#getProperty
-@param {Object} aPropertyPath TODO
-@param {Property} unique TODO
-@param {Property} preserve TODO
-@param {Function} visitedComponentCallback TODO
-@param {Array} currentIndex TODO
+@param {Object} aPropertyPath
+@param {Property} unique
+@param {Property} preserve
+@param {Function} visitedComponentCallback
+@param {Array} currentIndex
 @returns result
 */
 Object.defineProperty(Object.prototype, "getProperty", {
@@ -787,11 +775,11 @@ Object.defineProperty(M, "_propertySetterByName", {
 });
 
 /**
-Description TODO
+Description
 @member external:Object#setProperty
 @function
-@param {Object} aPropertyPath TODO
-@param {Object} value TODO
+@param {Object} aPropertyPath
+@param {Object} value
 @returns itself
 */
 Object.defineProperty(Object.prototype, "setProperty", {
@@ -876,14 +864,14 @@ Object.defineProperty(Object.prototype, "setProperty", {
 });
 
 /**
-Description TODO
+Description
 @member external:Array#getProperty
 @function
-@param {Object} aPropertyPath TODO
-@param {Property} unique TODO
-@param {Property} preserve TODO
-@param {Function} visitedComponentCallback TODO
-@param {Array} currentIndex TODO
+@param {Object} aPropertyPath
+@param {Property} unique
+@param {Property} preserve
+@param {Function} visitedComponentCallback
+@param {Array} currentIndex
 */
 Object.defineProperty(Array.prototype, "getProperty", {
     value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
@@ -1008,10 +996,10 @@ Object.defineProperty(Array.prototype, "getProperty", {
 });
 
 /**
-Description TODO
+Description
 @function external:Array#sum
-@param {Object} propertyPath TODO
-@param {Function} visitedCallback TODO
+@param {Object} propertyPath
+@param {Function} visitedCallback
 @returns sum
 */
 Object.defineProperty(Array.prototype, "sum", {
@@ -1040,11 +1028,11 @@ Object.defineProperty(Array.prototype, "sum", {
 });
 
 /**
-Description TODO
+Description
 @member external:Array#any
 @function
-@param {Object} propertyPath TODO
-@param {Function} visitedCallback TODO
+@param {Object} propertyPath
+@param {Function} visitedCallback
 @returns result
 */
 Object.defineProperty(Array.prototype, "any", {
@@ -1064,7 +1052,6 @@ Object.defineProperty(Array.prototype, "any", {
 });
 
 /**
-Description TODO
 @member external:Array#count
 @function
 @returns this.length
@@ -1075,7 +1062,7 @@ Object.defineProperty(Array.prototype, "count", {
     }
 });
 /**
- Description TODO
+
  @function module:montage/core/core.Montage#undefinedGet
  @param {Object} aPropertyName The object property name.
  */
@@ -1087,7 +1074,6 @@ Object.defineProperty(M, "undefinedGet", {
 });
 
 /**
-Description TODO
 @member external:Array#undefinedGet
 */
 Object.defineProperty(Array.prototype, "undefinedGet", {
@@ -1096,7 +1082,7 @@ Object.defineProperty(Array.prototype, "undefinedGet", {
 });
 
 /**
- Description TODO
+
  @function module:montage/core/core.Montage#undefinedSet
  @param {Object} aPropertyName The object property name.
  */
@@ -1108,7 +1094,6 @@ Object.defineProperty(M, "undefinedSet", {
 });
 
 /**
-Description TODO
 @member external:Array#undefinedSet
 */
 Object.defineProperty(Array.prototype, "undefinedSet", {
@@ -1117,7 +1102,6 @@ Object.defineProperty(Array.prototype, "undefinedSet", {
 });
 
 /**
-Description TODO
 @member external:Object#parentProperty
 @default null
 */

@@ -22,7 +22,6 @@ exports.Enum = Montage.create(Montage, /** @lends module:montage/core/enum.Enum#
         value: 0
     },
 /**
-    Description TODO
     @function
     @returns itself
     */
@@ -35,7 +34,6 @@ exports.Enum = Montage.create(Montage, /** @lends module:montage/core/enum.Enum#
         }
     },
 /**
-    Description TODO
     @function
     @returns {Object} Object.seal(this)
     */
@@ -57,7 +55,6 @@ exports.Enum = Montage.create(Montage, /** @lends module:montage/core/enum.Enum#
         }
     },
 /**
-    Description TODO
     @function
     @param {String} member The member to be added.
     */
@@ -76,7 +73,6 @@ exports.Enum = Montage.create(Montage, /** @lends module:montage/core/enum.Enum#
         }
     },
 /**
-    Description TODO
     @function
     @returns {Object} Object.seal(this)
     */

@@ -14,19 +14,16 @@ var Montage = require("montage").Montage;
     @extends module:montage/core/core.Montage
 */
 var State = exports.State = Montage.create(Montage, /** @lends module:montage/core/state-chart.State# */{
-/**
-  Description TODO
-  @private
-*/
+
     _stateChart: {
         enumerable: false,
         value: null
     },
 /**
-    Description TODO
+    Initializes a State object with a set of options.
     @function
-    @param {String} options TODO
-    @returns itself
+    @param {String} options The options for the new State.
+    @returns {State}
     */
     init: {
         value: function(options) {
@@ -63,7 +60,7 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         }
     },
 /**
-        Description TODO
+        The name of the state.
         @type {Property}
         @default {String} null
     */
@@ -71,15 +68,13 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         enumerable: false,
         value: null
     },
-/**
-  @private
-*/
     _initialSubstate: {
         enumerable: false,
         value: null
     },
+
 /**
-        Description TODO
+        The intitial substate.
         @type {Function}
         @default {String} null
     */
@@ -95,7 +90,7 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         }
     },
 /**
-        Description TODO
+        The set of substates.
         @type {Property}
         @default {String} null
     */
@@ -104,7 +99,7 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         value: null
     },
 /**
-       Description TODO
+       The state's parent state.
         @type {Property}
         @default {String} null
     */
@@ -112,15 +107,13 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         enumerable: false,
         value: null
     },
-/**
-  @private
-*/
+
     _path: {
         enumerable: false,
         value: null
     },
+
 /**
-        Description TODO
         @type {Function}
         @default {String} null
     */
@@ -140,7 +133,6 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         }
     },
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -149,7 +141,6 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         value: null
     },
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -158,9 +149,8 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         value: null
     },
 /**
-    Description TODO
     @function
-    @param {String} otherState TODO
+    @param {String} otherState
     @returns !!this.path.match(new RegExp(".?" + otherState + ".?"))
     */
     isInState: {
@@ -186,10 +176,9 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         }
     },
 /**
-    Description TODO
     @function
-    @param {Property} state TODO
-    @param {Property} owner TODO
+    @param {Property} state
+    @param {Property} owner
     @returns this._stateChart._gotoState(state, owner)
     */
     gotoState: {
@@ -219,7 +208,6 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
         }
     },
 /**
-    Description TODO
     @function
     @returns "[State " + this.path + " ]"
     */
@@ -236,7 +224,6 @@ var State = exports.State = Montage.create(Montage, /** @lends module:montage/co
 */
 var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:montage/core/state-chart.StateChart# */ {
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -251,7 +238,6 @@ var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:m
     // When this is set, the statechart itself is completely stateless and an object must take ownership of it
     // prior to performing any actions
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -260,7 +246,6 @@ var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:m
         value: null
     },
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -268,17 +253,15 @@ var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:m
         enumerable: false,
         value: null
     },
-/**
-  @private
-*/
+
     _currentState: {
         enumerable: false,
         value: null
     },
 /**
-    Description TODO
+    The current state.
     @function
-    @returns this.ownerStateProperty ? null : this._currentState
+    @returns The current state.
     */
     currentState: {
         get: function() {
@@ -286,10 +269,10 @@ var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:m
         }
     },
 /**
-    Description TODO
+    Initializes a StateChart with a State object, and returns the StateChart.
     @function
     @param {String} state TODO
-    @returns itself
+    @returns {StateChart}
     */
     initWithState: {
         value: function(state) {
@@ -305,15 +288,13 @@ var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:m
             return this;
         }
     },
-/**
-  @private
-*/
+
     _defaultState: {
         enumerable: false,
         value: null
     },
 /**
-    Description TODO
+    The default state.
     @function
     @returns this._defaultState
     */
@@ -336,7 +317,6 @@ var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:m
         }
     },
 /**
-    Description TODO
     @function
     @returns this.defaultState
     */
@@ -414,7 +394,6 @@ var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:m
         value: null
     },
 /**
-    Description TODO
     @function
     @param {Property} stateName TODO
     @returns {Array} this._states[stateName]
@@ -426,7 +405,6 @@ var StateChart = exports.StateChart = Montage.create(Montage,/** @lends module:m
         }
     },
 /**
-    Description TODO
     @function
     @param {String} action TODO
     @param {String} owner TODO

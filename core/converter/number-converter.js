@@ -216,7 +216,6 @@ var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @l
     },
 
     /**
-        Description TODO
         @type {Property}
         @default {Boolean} true
     */
@@ -261,7 +260,6 @@ var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @l
 var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @lends montage/core/converter/number-converter.NumberConverter# */ {
 
     /**
-        Description TODO
         @type {Property}
         @default {Boolean} false
     */
@@ -270,7 +268,6 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         value: false
     },
     /**
-        Description TODO
         @type {Function}
         @default {attribute} NumberValidator Uses this object.
     */
@@ -279,7 +276,6 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
     },
 
    /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -288,7 +284,6 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         value: null
     },
     /**
-        Description TODO
         @type {Property}
         @default {Number} 2
     */
@@ -297,7 +292,6 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
     },
 
     /**
-        Description TODO
         @type {Property}
         @default {Number} null
     */
@@ -313,7 +307,6 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
     },
 
    /**
-        Description TODO
         @type {Property}
         @default {Boolean} true
     */
@@ -321,7 +314,6 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         value: true
     },
    /**
-        Description TODO
         @type {Property}
         @default {Boolean} true
     */
@@ -347,7 +339,6 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         }
     },
     /**
-     Description TODO
      @function
      @param {Value} v The value to convert.
      @returns this._makeReadable(num)
@@ -373,7 +364,6 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
     },
 
     /**
-     Description TODO
      @function
      @param {String} stringValue The value of the string.
      */

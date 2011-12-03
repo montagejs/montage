@@ -17,7 +17,6 @@ var Point = require("core/geometry/point").Point;
 
 var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends module:montage/core/geometry/cubic-bezier.CubicBezier# */{
 /**
-    Description TODO
     @function
     @param {Array} controlPoints Control points.
     @returns itself
@@ -40,7 +39,6 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
         }
     },
 /**
-    Description TODO
     @function
     @param {Number} t Control point.
     @returns itself or Montage.create(Point).init(this.p0.x * b1 + this.p1.x * b2 + this.p2.x * b3 + this.p3.x * b4,
@@ -64,7 +62,6 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
         }
     },
 /**
-    Description TODO
     @function
     @param {Number} t Control point.
     @returns CubicBezier.create(CubicBezier).init([this.p0, this.p01, this.p012, this.p0123])
@@ -77,7 +74,6 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
         }
     },
 /**
-    Description TODO
     @function
     @param {Number} t Control point.
     @returns CubicBezier.create(CubicBezier).init([Montage.create(Point).init(this.p01.x / xScale, this.p01.y / yScale), Montage.create(Point).init(this.p012.x / xScale, this.p012.y / yScale)])
@@ -93,7 +89,6 @@ var CubicBezier = exports.CubicBezier = Montage.create(Montage, /** @lends modul
         }
     },
 /**
-    Description TODO
     @function
     @param {Number} t Control point.
     */

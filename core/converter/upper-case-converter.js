@@ -32,8 +32,8 @@ exports.UpperCaseConverter = Montage.create(Converter, /** @lends module:montage
     /**
      Converts the specified string to all upper case letters.
      @function
-     @param {String} v The specified string.
-     @returns {String} this._convert(v)
+     @param {String} v The string to convert.
+     @returns {String} The converted string.
      */
     convert: {value: function(v) {
         return this._convert(v);
@@ -43,7 +43,7 @@ exports.UpperCaseConverter = Montage.create(Converter, /** @lends module:montage
      Reverts the specified string.
      @function
      @param {String} v The specified string.
-     @returns {String} this._convert(v)
+     @returns {String}
      */
     revert: {value: function(v) {
         return this._convert(v);

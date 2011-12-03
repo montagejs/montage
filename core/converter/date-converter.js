@@ -150,9 +150,8 @@ var Montage = require("montage").Montage,
     };
 
    /**
-    Description TODO
     @function
-    @param {Number} offset TODO
+    @param {Number} offset
     @returns null
     */
     $D.getTimezoneAbbreviation = function (offset) {
@@ -165,9 +164,8 @@ var Montage = require("montage").Montage,
         return null;
     };
      /**
-    Description TODO
     @function
-    @param {String} name TODO
+    @param {String} name
     @returns null
     */
     $D.getTimezoneOffset = function (name) {
@@ -466,7 +464,6 @@ var Montage = require("montage").Montage,
 
     // private
 /**
-  Description TODO
   @private
 */
     var validate = function (n, min, max, name) {
@@ -691,9 +688,8 @@ var Montage = require("montage").Montage,
         return $D.getTimezoneAbbreviation(this.getUTCOffset());
     };
     /**
-        Description TODO
         @function
-        @param {Number} offset TODO
+        @param {Number} offset
         @return {Number} this.addMinutes(there - here)
      */
     $P.setTimezoneOffset = function (offset) {
@@ -701,9 +697,8 @@ var Montage = require("montage").Montage,
         return this.addMinutes(there - here);
     };
     /**
-        Description TODO
         @function
-        @param {Number} offset TODO
+        @param {Number} offset
         @return {Number} this.setTimezoneOffset($D.getTimezoneOffset(offset))
      */
     $P.setTimezone = function (offset) {
@@ -777,7 +772,6 @@ var Montage = require("montage").Montage,
 
     // private
     /**
-  Description TODO
   @private
 */
     $P._toString = $P.toString;
@@ -1179,10 +1173,9 @@ var Montage = require("montage").Montage,
      * short               short
      */
 /**
-    Description TODO
     @function
-    @param {String} s TODO
-    @param {Number} 1 TODO
+    @param {String} s
+    @param {Number} 1
     @returns ("000" + s).slice(l * -1)
     */
     var p = function (s, l) {
@@ -2311,7 +2304,6 @@ var Montage = require("montage").Montage,
     ]);
 
    /**
-  Description TODO
   @private
 */
     // starting rule for general purpose grammar
@@ -2321,10 +2313,8 @@ var Montage = require("montage").Montage,
     // real starting rule: tries selected formats first,
     // then general purpose rule
 /**
-    Description TODO
     @function
-    @param {String} s TODO
-    @returns g._start.call({}, s)
+    @param {String} s
     */
     g.start = function (s) {
         try {
@@ -2337,7 +2327,6 @@ var Montage = require("montage").Montage,
         return g._start.call({}, s);
     };
 /**
-  Description TODO
   @private
 */
     $D._parse = $D.parse;
@@ -2549,7 +2538,6 @@ var formatDate = function(v, format) {
 var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends module:montage/core/converter/date-converter.DateValidator# */ {
 
     /**
-        Description TODO
         @type {Property}
         @default {Date} 'MM/dd/yyyy'
     */
@@ -2557,7 +2545,6 @@ var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends 
         value: 'MM/dd/yyyy'
     },
    /**
-    Description TODO
     @function
     @param {Date} v Value.
     @returns {message: 'Unable to parse date - ' + v + ' in the format - ' + this.pattern} || new Date(result)
@@ -2587,7 +2574,6 @@ var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends 
 */
 var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends module:montage/core/converter/date-converter.DateConverter# */ {
 /**
-        Description TODO
         @type {Property}
         @default {Function} Montage.create(DateValidator)
     */
@@ -2597,7 +2583,6 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
 
     // valid fn values are:
 /**
-        Description TODO
         @type {Property}
         @default {Date} 'MM/dd/yyyy'
     */
@@ -2605,7 +2590,6 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
         value: 'MM/dd/yyyy'
     },
     /**
-    Description TODO
     @function
     @param {Date} v Value.
     @returns v
@@ -2619,7 +2603,6 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
         }
     },
 /**
-    Description TODO
     @function
     @param {Date} v Value.
     */

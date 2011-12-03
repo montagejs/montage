@@ -41,7 +41,6 @@ exports.NewLineToBrConverter = Montage.create(Converter, /** @lends module:monta
         }
     },
     /**
-    Description TODO
     @function
     @param {String} v Case format
     @returns this._convert(v)
@@ -51,7 +50,6 @@ exports.NewLineToBrConverter = Montage.create(Converter, /** @lends module:monta
     }},
 
     /**
-    Description TODO
     @function
     @param {String} v Case format
     @returns this._convert(v)

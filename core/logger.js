@@ -20,7 +20,6 @@ var Montage = require("montage").Montage,
 loggers = exports.loggers = {};
 
 /**
- Description TODO
  @function
  @param {Object} montageObject TODO
  @returns aFunctionName
@@ -37,7 +36,6 @@ getFunctionName = function(montageObject) {
 };
 
 /**
-	Description TODO
 	@function
     @param {Date} date TODO
     @returns length hours, minutes, seconds, date.getMilliseconds()
@@ -52,14 +50,12 @@ toTimeString = function(date) {
     }
 };
 /**
-	Description TODO
 	@function
     @private
 */
 emptyLoggerFunction = function() {
 };
 /**
-	Description TODO
 	@function
     @private
 */
@@ -67,7 +63,6 @@ consoleLog = function() {
     console.log(arguments);
 };
 /**
-	Description TODO
 	@function
     @private
 */
@@ -100,7 +95,6 @@ consoleLogMontage = function() {
  */
 Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/logger.Logger# */ {
    /**
-    Description TODO
     @function
     @param {String} name The name to be logged.
     @param {State} dontStoreState The state in which the name is to be stored.
@@ -121,7 +115,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -129,7 +122,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         value: null
     },
 /**
-        Description TODO
         @type {Property}
         @default {Array} []
     */
@@ -138,7 +130,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         distinct: true
     },
 /**
-        Description TODO
         @type {Property}
         @default {Boolean} false
     */
@@ -146,7 +137,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         value: false
     },
 /**
-    Description TODO
     @function
     */
     flush: {
@@ -160,7 +150,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-        Description TODO
         @type {Function}
     */
     isDebug: {
@@ -177,7 +166,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
 
     },
 /**
-        Description TODO
         @type {Function}
     */
     isError: {
@@ -193,7 +181,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-        Description TODO
         @type {Property}
         @default {Function} emptyLoggerFunction
     */
@@ -201,7 +188,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         value: emptyLoggerFunction
     },
 /**
-        Description TODO
         @type {Property}
         @default {Function} emptyLoggerFunction
     */
@@ -209,7 +195,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         value: emptyLoggerFunction
     },
 /**
-        Description TODO
         @type {Property}
         @default {Function} toTimeString
     */
@@ -225,7 +210,6 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
 });
 
 /**
-    Description TODO
     @function module:montage/core/logger.#logger
     */
 exports.logger = function(loggerName, dontStoreState) {
@@ -244,7 +228,6 @@ exports.logger = function(loggerName, dontStoreState) {
 */
 LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerUI# */{
     /**
-    Description TODO
     @function
     @returns itself
     */
@@ -261,7 +244,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         }
     },
 /**
-        Description TODO
         @type {Property}
         @default {Function} null
     */
@@ -269,7 +251,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         value: null
     },
 /**
-        Description TODO
         @type {Property}
         @default {Function} null
     */
@@ -277,7 +258,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         value: null
     },
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -285,7 +265,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         value: null
     },
 /**
-        Description TODO
         @type {Property}
         @default {Boolean} false
     */
@@ -293,7 +272,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         value: false
     },
 /**
-        Description TODO
         @type {Property}
         @default {Boolean} false
     */
@@ -301,7 +279,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         value: false
     },
 /**
-        Description TODO
         @type {Property}
         @default {Boolean} false
     */
@@ -310,7 +287,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
     },
 
 /**
-    Description TODO
     @function
     @param {Event} event TODO
     */
@@ -326,7 +302,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
     },
 
 /**
-    Description TODO
     @function
     @param {Event} event TODO
     @returns {Boolean} false
@@ -351,7 +326,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
     },
 
 /**
-    Description TODO
     @function
     @param {Event} event TODO
     */
@@ -367,7 +341,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         }
     },
 /**
-    Description TODO
     @function
     @param {Event} event TODO
     */
@@ -377,7 +350,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         }
     },
 /**
-    Description TODO
     @function
     */
     showInspector: {
@@ -477,7 +449,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         }
     },
 /**
-    Description TODO
     @function
     */
     hideInspector: {
@@ -491,7 +462,6 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
         }
     },
 /**
-    Description TODO
     @function
     @param {Event} event TODO
     */
@@ -512,7 +482,6 @@ var setupUI = function() {
     LoggerUI.create().init();
 }
 /**
-        Description TODO
         @type {Statement}
         @default window
     */

@@ -16,10 +16,10 @@ var NumberConverter = require("core/converter/number-converter").NumberConverter
 /**
  Formats a number as a human-readable currency value.
  @function module:montage/core/converter/currency-converter.#formatCurrency
- @param {Property} value TODO
- @param {String} currency TODO
- @param {Number} decimals TODO
- @param {String} useParensForNegative TODO
+ @param {Property} value
+ @param {String} currency
+ @param {Number} decimals
+ @param {String} useParensForNegative
  @returns stringValue
 */
 var formatCurrency = function(value, currency, decimals, useParensForNegative) {
@@ -40,7 +40,6 @@ var formatCurrency = function(value, currency, decimals, useParensForNegative) {
 exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:montage/core/converter.CurrencyConverter# */ {
 
     /**
-        Description TODO
         @type {Property}
         @default {String} '$'
     */
@@ -49,7 +48,6 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
     },
 
     /**
-        Description TODO
         @type {Property}
         @default {Number} 2
     */
@@ -58,7 +56,6 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
     },
 
     /**
-        Description TODO
         @type {Property}
         @default {Boolean} false
     */
@@ -67,10 +64,9 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
     },
 
     /**
-     Description TODO
      @function
-     @param {String} v TODO
-     @returns formatCurrency(v, this.currency, this.decimals, this.useParensForNegative)
+     @param {String} v
+     @returns {string} The formatted currency value.
      */
     convert: {
         value: function(v) {

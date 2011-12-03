@@ -39,7 +39,6 @@ function Map(ignored, options) {
 
 Object.defineProperties(Map.prototype, /** @lends module:montage/core/shim/structures.Map# */ {
 /**
-    Description TODO
     @function
     @returns this._set.empty()
     */
@@ -177,7 +176,7 @@ Object.defineProperties(Set.prototype, /** @lends module:montage/core/shim/struc
     /**
      Determines if the set contains a specified item.
      @function
-     @param {Number} value TODO
+     @param {Number} value
      @returns {Object} The value of the set element.
      */
     has: {
@@ -238,10 +237,9 @@ Object.defineProperties(Set.prototype, /** @lends module:montage/core/shim/struc
     }
 });
 /**
-    Description TODO
     @class module:montage/core/shim/structures.OrderedSet
-    @param {type-TODO} ignored
-    @param {type-TODO} options
+    @param {boolean} ignored
+    @param {object} options
 */
 exports.OrderedSet = OrderedSet;
 function OrderedSet(ignored, options) {
@@ -293,7 +291,6 @@ Object.defineProperties(OrderedSet.prototype, /** @lends module:montage/core/shi
     },
 
     /**
-    Description TODO
     @function
     @returns {boolean} Returns <code>true</code> if empty, otherwise returns <code>false</code>
     */
@@ -304,9 +301,8 @@ Object.defineProperties(OrderedSet.prototype, /** @lends module:montage/core/shi
         }
     },
     /**
-    Description TODO
     @function
-    @param {Number} value TODO
+    @param {Number} value
     @returns !!this._find(value)
     */
     has: {
@@ -315,9 +311,8 @@ Object.defineProperties(OrderedSet.prototype, /** @lends module:montage/core/shi
         }
     },
     /**
-    Description TODO
     @function
-    @param {Number} value TODO
+    @param {Number} value
     @returns found.data
     */
     get: {
@@ -329,9 +324,8 @@ Object.defineProperties(OrderedSet.prototype, /** @lends module:montage/core/shi
         }
     },
    /**
-    Description TODO
     @function
-    @param {Number} value TODO
+    @param {Number} value
     */
     add: { // née insert
         value: function (value) {
@@ -343,9 +337,8 @@ Object.defineProperties(OrderedSet.prototype, /** @lends module:montage/core/shi
         }
     },
   /**
-    Description TODO
     @function
-    @param {Number} value TODO
+    @param {Number} value
     */
     "delete": { // née remove
         value: function (value) {
@@ -356,7 +349,6 @@ Object.defineProperties(OrderedSet.prototype, /** @lends module:montage/core/shi
         }
     },
    /**
-    Description TODO
     @function
     @param {Function} callback The callback function.
     @param {String} context The context string.
@@ -379,9 +371,8 @@ Set.eq =
     };
 
 /**
-    Description TODO
     @function
-    @param {String} value TODO
+    @param {String} value
     @returns "~"
     */
 Set.hash = function (value) {
@@ -404,11 +395,10 @@ Set.hash = function (value) {
 // if the former is not available.
 
 /**
-    Description TODO
     @exports CacheMap
     @function
-    @param {Boolean} ignored TODO
-    @param {String} options TODO
+    @param {Boolean} ignored
+    @param {String} options
     @returns new CacheMap(ignored, options)
     */
 exports.CacheMap = CacheMap;
@@ -431,8 +421,7 @@ function CacheMap(ignored, options) {
 */
 CacheMap.prototype = Object.create(Object.prototype,/** @lends module:montage/core/shim/structures.CacheMap# */ {
     /**
-        Description TODO
-        @type {Constructor}
+            @type {Constructor}
         @default CacheMap
     */
     constructor: {
@@ -470,7 +459,6 @@ CacheMap.prototype = Object.create(Object.prototype,/** @lends module:montage/co
         }
     },
  /**
-    Description TODO
     @function
     @returns this._set.empty()
     */
@@ -480,9 +468,8 @@ CacheMap.prototype = Object.create(Object.prototype,/** @lends module:montage/co
         }
     },
    /**
-    Description TODO
     @function
-    @param {Function} key TODO
+    @param {Function} key
     @returns node.value
     */
     get: {
@@ -498,9 +485,8 @@ CacheMap.prototype = Object.create(Object.prototype,/** @lends module:montage/co
         }
     },
     /**
-    Description TODO
     @function
-    @param {String} key TODO
+    @param {String} key
     @param {Number} value
     */
     set: {
@@ -519,9 +505,8 @@ CacheMap.prototype = Object.create(Object.prototype,/** @lends module:montage/co
         }
     },
     /**
-    Description TODO
     @function
-    @param {String} key TODO
+    @param {String} key
     */
     "delete": {
         value: function (key) {
@@ -532,9 +517,8 @@ CacheMap.prototype = Object.create(Object.prototype,/** @lends module:montage/co
         }
     },
     /**
-    Description TODO
     @function
-    @param {String} key TODO
+    @param {String} key
     @returns this._map.has(key)
     */
     has: {
@@ -543,9 +527,8 @@ CacheMap.prototype = Object.create(Object.prototype,/** @lends module:montage/co
         }
     },
    /**
-    Description TODO
     @function
-    @returns {Array} keys TODO
+    @returns {Array} keys
     */
     keys: {
         value: function () {
@@ -557,7 +540,6 @@ CacheMap.prototype = Object.create(Object.prototype,/** @lends module:montage/co
         }
     },
     /**
-    Description TODO
     @function
     @returns this._set.forEach.apply(this._set, arguments)
     */

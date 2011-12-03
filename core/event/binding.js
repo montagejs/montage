@@ -1125,7 +1125,7 @@ Object.defineProperty(Object.prototype, "removeEventListener", {
 var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** @lends module:montage/core/event/binding.BindingDescriptor */ {
 
 /**
- boundObject: the object sourceObject will be bound to
+ The object sourceObject will be bound to
 */
     boundObject: {
         enumerable: false,
@@ -1134,7 +1134,8 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
     },
 
 /**
- boundObjectPropertyPath: the key path of boundObject which sourceObject's sourceObjectBindingPath is bound to
+
+ The key path of boundObject which sourceObject's sourceObjectBindingPath is bound to
 
 */
     boundObjectPropertyPath: {
@@ -1144,7 +1145,7 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
     },
 
 /**
- oneway: whether the source Object will push value back to it's boundObject's boundObjectPropertyPath or not. Default is false.
+ Specifies whether the source Object will push value back to it's boundObject's boundObjectPropertyPath or not. Default is false.
 */
     oneway: {
         enumerable: false,
@@ -1153,8 +1154,7 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
     },
 
 /**
-     deferred: default is false, binding values propagate immediately. If true, PropertyChangeBindingListener will buffer the value until it's told to execute binding. Setting this value to false allows for some runtime optimizations.
-
+     If true, PropertyChangeBindingListener will buffer the value until it's told to execute binding. Setting this value to false allows for some runtime optimizations.deferred. Default is false, binding values propagate immediately.
 */
     deferred: {
         enumerable: false,

@@ -25,7 +25,7 @@ var Montage = require("montage").Montage,
 /**
     Returns a univerally unique ID (UUID).
     @function
-    @param {Property} argument TODO
+    @param {Property} argument
     @returns {String} The UUID.
     */
         generate: {

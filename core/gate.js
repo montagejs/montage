@@ -16,7 +16,6 @@ var Montage = require("montage").Montage,
  */
 var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/gate.Gate# */ {
 /**
-    Description TODO
     @function
     @returns {Gate} A new Gate instance.
     */
@@ -28,7 +27,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-    Description TODO
     @function
     @param {String} delegate The delegate to be initialized.
     @returns itself
@@ -42,7 +40,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-    Description TODO
     @function
     @param {String} propertyDescriptor The propertyDescriptor to be initialized.
     @returns itself
@@ -59,7 +56,7 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-        Description TODO
+
         @type {Property}
         @default {Number} 0
     */
@@ -67,7 +64,7 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         value: 0
     },
 /**
-        Description TODO
+
         @type {Property}
         @default {String} null
     */
@@ -75,7 +72,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         value: null
     },
 /**
-    Description TODO
     @function
     @param {Array} aFieldName The aFieldName array.
     @returns !table or table[aFieldName]
@@ -88,7 +84,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-    Description TODO
     @function
     @param {Array} aFieldName The aFieldName array.
     @param {Number} value The count on the array.
@@ -125,7 +120,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-    Description TODO
     @function
     @param {Array} aFieldName The aFieldName array to be removed.
     */
@@ -141,7 +135,7 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-        Description TODO
+
         @type {Property}
         @default {String} null
     */
@@ -150,7 +144,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         value: null
     },
 /**
-    Description TODO
     @function
     @param {Number} value The value to be called.
     */
@@ -164,7 +157,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         enumerable: false
     },
 /**
-    Description TODO
     @type {Function}
     @returns this.count === 0
     */
@@ -175,7 +167,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-    Description TODO
     @function
     */
     reset: {
@@ -186,7 +177,6 @@ var Gate = exports.Gate = Montage.create(Montage,/** @lends module:montage/core/
         }
     },
 /**
-    Description TODO
     @function
     @returns {String} result
     */

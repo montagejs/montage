@@ -115,7 +115,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         this._origin = origin;
         return this;
     }},
-    
+
     /**
      Defines a deserialization unit for an object.
      @function
@@ -147,7 +147,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         return objectsArray;
     }},
     /**
-     <i>This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.</i>
+     This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.
      It reads an entry from the "properties" serialization unit of the object being deserialized.
      @function
      @param {string} name The name of the entry to be read.
@@ -161,7 +161,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     }},
 
     /**
-    <i>This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.</i>
+    This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.
      It deserializes all the named properties of a serialized object into the object given.
     @function
     @param {Object} object The target of the properties.
@@ -725,7 +725,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             });
         }
     },
-    
+
     /**
       @private
     */
@@ -744,7 +744,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
         }
     }},
-    
+
 /**
   @private
 */
@@ -759,7 +759,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         }
         delete object.isDeserializing;
     }},
-    
+
 /**
   @private
 */

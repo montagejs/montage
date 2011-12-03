@@ -120,7 +120,6 @@ var BitField = exports.BitField = Montage.create(Montage, /** @lends module:mont
     },
 
     /**
-     Description TODO
      @function
      @returns Nothing
      */
@@ -134,7 +133,6 @@ var BitField = exports.BitField = Montage.create(Montage, /** @lends module:mont
         enumerable: false
     },
 /**
-        Description TODO
         @type {Function}
         @default {Number} 0
     */
@@ -167,7 +165,6 @@ var BitField = exports.BitField = Montage.create(Montage, /** @lends module:mont
         value: 0
     },
 /**
-    Description TODO
     @function
     */
     reset: {
@@ -184,7 +181,6 @@ var BitField = exports.BitField = Montage.create(Montage, /** @lends module:mont
         value: {}
     },
 /**
-    Description TODO
     @function
     @returns result
     */

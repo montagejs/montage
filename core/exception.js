@@ -16,7 +16,6 @@ var logger = require("core/logger").logger("exception");
 */
 var Exception = exports.Exception = Montage.create(Montage,/** @lends module:montage/core/exception.Exception# */ {
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -25,7 +24,6 @@ var Exception = exports.Exception = Montage.create(Montage,/** @lends module:mon
         serializable: true
     },
 /**
-        Description TODO
         @type {Property}
         @default {String} null
     */
@@ -34,7 +32,6 @@ var Exception = exports.Exception = Montage.create(Montage,/** @lends module:mon
         serializable: true
     },
 /**
-        Description TODO
         @type {Property}
         @default {Function} null
     */
@@ -43,7 +40,6 @@ var Exception = exports.Exception = Montage.create(Montage,/** @lends module:mon
         serializable: true
     },
    /**
-    Description TODO
     @function
     @param {String} message The message to be initialized.
     @returns this.initWithMessageTargetAndMethod(message, null, null)
@@ -55,7 +51,6 @@ var Exception = exports.Exception = Montage.create(Montage,/** @lends module:mon
         }
     },
 /**
-    Description TODO
     @function
     @param {String} message The message to be initialized.
     @param {String} target The target to be initialized.
@@ -68,7 +63,6 @@ var Exception = exports.Exception = Montage.create(Montage,/** @lends module:mon
         }
     },
 /**
-    Description TODO
     @function
     @param {String} message The message to be initialized.
     @param {String} target The target to be initialized.
@@ -88,7 +82,6 @@ var Exception = exports.Exception = Montage.create(Montage,/** @lends module:mon
         }
     },
 /**
-    Description TODO
     @function
     @returns The exception
     */

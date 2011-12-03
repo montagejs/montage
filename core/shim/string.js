@@ -14,7 +14,6 @@
  */
 Object.defineProperties(String.prototype, /** @lends external:String.prototype#*/{
     /**
-    Description TODO
     @function external:String.addEventListener
     @param {Listener} type The type of event listener.
     @param {Listener} listener The event listener.

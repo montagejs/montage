@@ -59,7 +59,6 @@ Montage.defineProperty(Element.prototype, "controller", {
 
 
 /**
- HTML element event handler UUID
  @function external:Object#dispatchEvent
  */
 Montage.defineProperty(Object.prototype, "dispatchEvent", {
@@ -267,7 +266,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         enumerable: false
     },
 /**
-        Description TODO
         @type {String}
         @default null
     */
@@ -288,9 +286,9 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         enumerable: false
     },
 /**
-        Description TODO
-        @type {String}
-        @default null
+    The application object associated with the event manager.
+    @type {String}
+    @default null
     */
     application: {
         enumerable: false,
@@ -305,7 +303,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     @param {String} composer Event composer.
     @param {Array} eventType Event type array.
@@ -351,7 +348,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
     // Initialization
 /**
-    Description TODO
     @function
     @param {Window} aWindow
     @returns this registerWindow(aWindow)
@@ -370,7 +366,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     @param {Window} aWindow
     */
@@ -493,7 +488,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     @param {Window} aWindow
     */
@@ -514,7 +508,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     */
     unregisterWindows: {
@@ -545,9 +538,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         enumerable: false,
         value: {}
     },
-
-    // Returns a dictionary of all listeners registered for the specified
-    // eventType, regardless of the target being observed
 
   /**
     Returns a dictionary of all listeners registered for the specified eventType, regardless of the target being observed.
@@ -581,8 +571,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 
-    // Returns the dictionary of all listeners registered for the specified
-    // eventType, on the specified target
     /**
     Returns the dictionary of all listeners registered for the specified eventType, on the specified target.
     @function
@@ -607,8 +595,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 
-    // Returns the dictionary of all listeners registered on the specified
-    // target, keyed by eventType
 
     /**
     Returns the dictionary of all listeners registered on the specified target, keyed by eventType.
@@ -928,7 +914,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     */
     reset: {
@@ -954,7 +939,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     */
     unload: {
@@ -964,7 +948,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     */
     methodNameForBubblePhaseOfEventType_: {
@@ -1125,7 +1108,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         value: false
     },
  /**
-        Description TODO
         @type {Function}
         @default {Boolean} false
     */
@@ -1164,7 +1146,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     },
 
 /**
-        Description TODO
         @type {Function}
         @default {Boolean} true
     */
@@ -1541,7 +1522,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     @param {attribute} identifier
     */
@@ -1647,7 +1627,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     },
     // Event Handling
     /**
-    Description TODO
     @function
     @param {Event} event The handled event.
     */
@@ -2005,7 +1984,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         value: {}
     },
 /**
-    Description TODO
     @function
     @param {Event} anElementEventHandler
     @param {Element} anElement
@@ -2023,7 +2001,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     @param {Element} anElement
     */
@@ -2035,7 +2012,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 /**
-    Description TODO
     @function
     @param {Element} anElement
     @returns this._elementEventHandlerByUUID[anElement.eventHandlerUUID]

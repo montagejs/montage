@@ -111,7 +111,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     },
 
     /**
-     <i>This function is to be used in the context of serializeSelf delegate used for custom object serializations.</i>
+     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
      It adds an entry to the "properties" serialization unit of the object being serialized.
      @function
      @param {string} name The name of the entry to be added.
@@ -124,7 +124,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }},
 
     /**
-     <i>This function is to be used in the context of serializeSelf delegate used for custom object serializations.</i>
+     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
      It adds an entry to the "properties" serialization unit of the object being serialized. The value for this entry will be stored as a reference only and not the value itself.
      @function
      @param {string} name The name of the entry to be added.
@@ -145,7 +145,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }},
 
     /**
-     <i>This function is to be used in the context of serializeSelf delegate used for custom object serializations.</i>
+     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
      It serializes all properties specified as part of the "properties" serialization unit.
      @function
      @param {array} propertyNames The array with the property names to be serialized.
@@ -169,7 +169,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }},
 
     /**
-     <i>This function is to be used in the context of serializeSelf delegate used for custom object serializations.</i>
+     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
      It adds an object to be serialized into the current serialization.
      @function
      @param {object} object The object to be serialized.
