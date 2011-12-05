@@ -1296,7 +1296,7 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
 }});
 
 // Using Montage's defineProperty as it knows how to handle the serializable property
-Montage.defineProperty(Object.prototype, "_bindingDescriptors", {enumerable: false, serializable: true, value: null, writable: true});
+Montage.defineProperty(Object.prototype, "_bindingDescriptors", {enumerable: false, value: null, writable: true});
 
 Object.defineProperty(Object.prototype, "_deserializeProperty_bindingDescriptors", {
     enumerable: false,

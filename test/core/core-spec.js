@@ -60,12 +60,6 @@ function() {
             it("should have a collection of binding descriptors", function() {
                 expect(Object.getPropertyDescriptor(object, "_bindingDescriptors")).toBeTruthy();
             });
-
-            it("should have a collection of binding descriptors that is serializable", function() {
-                expect(Montage.getSerializablePropertyNames(object).length).not.toBe(0);
-            });
-
-
         });
 
         describe("Montage objects", function() {
@@ -124,11 +118,7 @@ function() {
             it("should have a collection of binding descriptors", function() {
                 expect(Object.getPropertyDescriptor(Montage, "_bindingDescriptors")).toBeTruthy();
             });
-
-            it("should have a collection of binding descriptors that is serializable", function() {
-                expect(Montage.getSerializablePropertyNames(A).length).not.toBe(0);
-            });
-
+            
             describe("defineProperty",
             function() {
                 var foo;

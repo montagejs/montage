@@ -156,10 +156,6 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
 
         for (var i = 0, l = propertyNames.length; i < l; i++) {
             var propertyName = propertyNames[i];
-            // TODO: remove this later when old serialization is gone
-            if (propertyName === "_bindingDescriptors" || propertyName === "_eventListenerDescriptors") {
-                continue;
-            }
             if (Montage.getPropertyAttribute(object, propertyName, "serializable") === "reference") {
                 this.setReference(propertyName, object[propertyName]);
             } else {
