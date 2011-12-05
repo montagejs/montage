@@ -376,7 +376,7 @@ bootstrap("require/require", function (require, CJS) {
     }
 
     CJS.PackageSandbox = function (location, config) {
-        location = URL.resolve(location, ".");
+        location = URL.resolve(location + "/", ".");
         config = config || {};
         var packages = config.packages = config.packages || {};
         var loadedPackages = {};
@@ -493,7 +493,7 @@ bootstrap("require/require", function (require, CJS) {
         Object.keys(mappings).forEach(function (name) {
             var mapping = mappings[name] = Dependency(mappings[name]);
             if (!CJS.isAbsolute(mapping.location))
-                mapping.location = URL.resolve(location + '/', mapping.location);
+                mapping.location = URL.resolve(location + "/", mapping.location + "/");
         });
 
         config.mappings = mappings;
