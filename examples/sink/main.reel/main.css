@@ -55,18 +55,10 @@
 }
 
 /* Montage components CSS Override */
-.montage-button.text, .montage-button.submit, .montage-button.cancel {
-    line-height: 32px;
-    padding: 2px 24px 0 24px;
-    font-size: 1.1em;
-    height: 32px;
-}
 
-.montage-button-group > .montage-button.submit,
-.montage-button-group > .montage-button.cancel {
-    height: 32px;
-    line-height: 32px;
-}
+
+
+
 
 /* Spin button */
 input::-webkit-outer-spin-button {

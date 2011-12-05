@@ -5,12 +5,20 @@
 
 .sidebar .sidebar-list-item {
     border-bottom: 1px solid #eee;
+    cursor: default;
+    
+}
+.sidebar .sidebar-list-item:hover{
+    opacity: 0.3;
+    cursor: pointer;
 }
 .sidebar .sidebar-list .selected {
     background-color: #fff;
     margin-left: -35px;
     padding-left: 10px;
     border-left: 21px solid #FE4365;
+    opacity: 1.0;
+    cursor: default;
 }
 .sidebar .sidebar-list .selected h4 {
 }
