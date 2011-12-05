@@ -90,22 +90,22 @@
                     "properties": {
                         "element": {"#": "tabs1-nav"},
                         "tabs": [
+                        {
+                            "text": "Photos",
+                            "value": "tabs1-three",
+                            "icon": "images/photos.png"
+                        },
+
                             {
-                                "text": "Tab One",
+                                "text": "Music",
+                                "value": "tabs1-two",
+                                "icon": "images/music.png"
+                            },
+                            {
+                                "text": "Videos",
                                 "value": "tabs1-one",
                                 "icon": "images/film-roll.png"
-                            },
-                            {
-                                "text": "Tab Two",
-                                "value": "tabs1-two",
-                                "icon": "images/ipod.png"
-                            },
-                            {
-                                "text": "Tab Three",
-                                "value": "tabs1-three",
-                                "icon": "images/photos.png"
-                            }
-                        ],
+                            }                        ],
                         "content": {"@": "tabs1-content"}
                     }
                 },
@@ -169,20 +169,21 @@
                     "properties": {
                         "element": {"#": "tabs2-nav"},            
                         "tabs": [
+                        {
+                            "text": "Photos",
+                            "value": "tabs2-three",
+                            "icon": "images/photos.png"
+                        },
+
                             {
-                                "text": "Tab One",
+                                "text": "Music",
+                                "value": "tabs2-two",
+                                "icon": "images/music.png"
+                            },
+                            {
+                                "text": "Videos",
                                 "value": "tabs2-one",
                                 "icon": "images/film-roll.png"
-                            },
-                            {
-                                "text": "Tab Two",
-                                "value": "tabs2-two",
-                                "icon": "images/ipod.png"
-                            },
-                            {
-                                "text": "Tab Three",
-                                "value": "tabs2-three",
-                                "icon": "images/photos.png"
                             }
                         ],
                         "selectedTab": "tabs2-three",
@@ -194,12 +195,17 @@
         </script>
         
         <style>
-            .tab-view .tabs-content > * {
+            .tab-view .tabs-content {
                 width: 400px;
                 padding: 10px;
                 height: 200px;
                 background-color: whitesmoke;
                 margin: 3px 0;
+            }
+            
+            .tab-view .tabs-content img {
+                width: 390px;
+                height: 180px;
             }
 
 
@@ -269,20 +275,21 @@
         "properties": {
             "element": {"#": "tabs2-nav"},            
             "tabs": [
+            {
+                "text": "Photos",
+                "value": "tabs2-three",
+                "icon": "images/photos.png"
+            },
+                
                 {
-                    "text": "Tab One",
+                    "text": "Music",
+                    "value": "tabs2-two",
+                    "icon": "images/music.png"
+                },
+                {
+                    "text": "Videos",
                     "value": "tabs2-one",
                     "icon": "images/film-roll.png"
-                },
-                {
-                    "text": "Tab Two",
-                    "value": "tabs2-two",
-                    "icon": "images/ipod.png"
-                },
-                {
-                    "text": "Tab Three",
-                    "value": "tabs2-three",
-                    "icon": "images/photos.png"
                 }
             ],
             "selectedTab": "tabs2-three",
