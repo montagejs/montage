@@ -177,11 +177,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                     } else { // the root object is something else, need to create an application to "wrap" it or use "this" in case of an instance (vs static) call
                         self = isInstance ? self : Application.create();
                         self.components = [rootObject];
-                        if(Component.isPrototypeOf(rootObject)) {
-                            rootObject.needsDraw = true;
-                        } else {
-                            require("ui/component").__root__.needsDraw = true;
-                        }
+                        require("ui/component").__root__.needsDraw = true;
                     }
                 }
 
