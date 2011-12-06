@@ -101,6 +101,19 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
             this.needsDraw = true;
         }
     },
+
+    //TODO we should prefer positive properties like enabled vs disabled, get rid of disabled
+
+    enabled: {
+        dependencies: ["disabled"],
+        get: function () {
+            return !!this._disabled;
+        },
+        set: function (value) {
+            this.disabled = !value;
+        }
+    },
+
     /**
      * When behavior is toggle, @link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed
      * the pressed property contains the equivalent of the aria-pressed attribute: "true"||"false"||"mixed"
