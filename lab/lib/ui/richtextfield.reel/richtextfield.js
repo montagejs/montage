@@ -165,6 +165,21 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
     states: {
         enumerable: true,
         get: function() {
+            if (this._states == null || this._statesDirty) {
+                this.updateStates();
+            }
+
+            return this._states;
+        }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    updateStates: {
+        enumerable: true,
+        value: function() {
             var actions = this._actions,
                 key,
                 action,
@@ -172,33 +187,52 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
                 state,
                 statesChanged = false;
 
-            if (this._states == null || this._statesDirty) {
-                states = this._states || {};
-                for (key in actions) {
-                    action = actions[key];
-                    state = "false";
-                    if (action.enabled && action.status) {
-                        state = (document.queryCommandState(key) ? "true" : "false");
-                    }
-
-                    if (states[key] !== state) {
-                        states[key] = state;
-                        statesChanged = true;
-                    }
+            states = this._states || {};
+            for (key in actions) {
+                action = actions[key];
+                state = "false";
+                if (action.enabled && action.status) {
+                    state = (document.queryCommandState(key) ? "true" : "false");
                 }
-                this._states = states;
 
-                if (statesChanged) {
-                    // As we do not have a setter, we need to manually dispatch a change event
-                    this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("states" , this._states));
+                if (states[key] !== state) {
+                    states[key] = state;
+                    statesChanged = true;
                 }
             }
-
+            if (statesChanged) {
+                this._states = states;
+                // As we do not use a setter, we need to manually dispatch a change event
+                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("states" , this._states));
+            }
 
             return this._states;
-
         }
     },
+
+    /**
+      Description TODO
+      @private
+    */
+    _allowDrop: {
+        enumerable: false,
+        value: true
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    allowDrop: {
+        enumerable: true,
+        get: function() {
+            return this._allowDrop;
+        },
+        set: function(value) {
+            this._allowDrop = value;
+        }
+    },
+
 
     /**
       Description TODO
@@ -268,6 +302,11 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             el.setAttribute("contentEditable", "true");
 
             el.addEventListener("focus", this);
+
+            el.addEventListener("dragstart", this, false);
+            el.addEventListener("dragend", this, false);
+            el.addEventListener("dragover", this, false);
+            el.addEventListener("drop", this, false);
         }
     },
 
@@ -287,27 +326,6 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
     Description TODO
     @function
     */
-    handleEvent: {
-        value: function(event) {
-
-            var handlerName = "handle" + event.type.toCapitalized();
-
-            if (typeof this[handlerName] === "function") {
-                this[handlerName](event);
-            } else {
-                if (this._hasSelectionChangeEvent === false) {
-                    var type = event.type;
-                    if (type == "keyup" || type == "mouseup" || type == "touchend") {
-                        this.handleSelectionchange();
-                    }
-                }
-            }
-        }
-    },
-    /**
-    Description TODO
-    @function
-    */
     handleFocus: {
         enumerable: false,
         value: function() {
@@ -322,6 +340,7 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             el.addEventListener("blur", this);
             el.addEventListener("input", this);
             el.addEventListener("keypress", this);
+            document.addEventListener(window.Touch ? "touchend" : "mouseup", this);
 
             document.addEventListener("selectionchange", this, false);
             // Check if the browser does not supports the DOM event selectionchange
@@ -335,7 +354,6 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             }
             if (this._hasSelectionChangeEvent === false) {
                 // We need to listen to more event in order to simulate a selectionchange event
-                el.addEventListener(window.Touch ? "touchend" : "mouseup", this);
                 el.addEventListener("keydup", this);
             }
 
@@ -366,12 +384,12 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             el.removeEventListener("blur", this);
             el.removeEventListener("input", this);
             el.removeEventListener("keypress", this);
-            
+            document.removeEventListener(window.Touch ? "touchend" : "mouseup", this);
+
             document.removeEventListener("selectionchange", this);
 
             if (this._hasSelectionChangeEvent === false) {
-                el.addEventListener(window.Touch ? "touchend" : "mouseup", this);
-                el.addEventListener("keydup", this);
+                el.removeEventListener("keydup", this);
             }
         }
     },
@@ -387,7 +405,6 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
-//            this.callDelegateMethod("didValueChanged", this);
             this._dispatchEditorEvent("editorChange");
         }
     },
@@ -398,13 +415,56 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
     */
     handleInput: {
         enumerable: false,
-        value: function() {
+        value: function(event) {
             this._hasChanged = true;
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
-//            this.callDelegateMethod("didValueChanged", this);
+            this.handleDragend(event);
             this._dispatchEditorEvent("editorChange");
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleKeyup: {
+        enumerable: false,
+        value: function() {
+            if (this._hasSelectionChangeEvent === false) {
+                this.handleSelectionchange();
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleMouseup: {
+        enumerable: false,
+        value: function(event) {
+            if (this._hasSelectionChangeEvent === false) {
+                this.handleSelectionchange();
+            }
+            this.handleDragend(event);
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleTouchend: {
+        enumerable: false,
+        value: function() {
+            if (this._hasSelectionChangeEvent === false) {
+                this.handleSelectionchange();
+            }
+            if (this._dragSourceElement) {
+                this.handleDragend();
+            }
         }
     },
 
@@ -417,6 +477,10 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
         value: function() {
             var thisRef = this;
 
+            if (this._ignoreSelectionchange) {
+                return;
+            }
+
             if (this._hasSelectionChangeEvent == null) {
                 this._hasSelectionChangeEvent = true;
             }
@@ -425,10 +489,185 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
                 clearTimeout(this._selectionChangeTimer);
             }
 
-            this._statesDirty = true;    // clear the cached states to force qyery it again
+            this._statesDirty = true;    // clear the cached states to force query it again
             this._selectionChangeTimer = setTimeout(function() {
                 thisRef._dispatchEditorEvent("editorSelect");
             }, 50);
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleDragstart: {
+        enumerable: false,
+        value: function(event) {
+            // let's remember which element we are dragging
+            this._dragSourceElement = event.srcElement;
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleDragend: {
+        enumerable: false,
+        value: function(event) {
+            delete this._dragSourceElement;
+            delete this._dragOverX;
+            delete this._dragOverY;
+
+            this.handleSelectionchange();
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleDragover: {
+        enumerable: false,
+        value: function(event) {
+            var range;
+
+            // If we are moving an element from within the ourselves, let the browser deal with it...
+            if (this._dragSourceElement) {
+                return;
+            }
+
+            // JFD TODO: check if drop type is acceptable...
+            event.dataTransfer.dropEffect = this._allowDrop ? "copy" : "none";
+            
+            event.preventDefault();
+            if (event.cancelBubble) {
+                event.cancelBubble = true;
+            } else {
+                event.stopPropagation();
+            }
+
+            // Update the caret
+
+            if (event.x !== this._dragOverX || event.y !== this._dragOverY) {
+                this._dragOverX = event.x;
+                this._dragOverY = event.y;
+
+                this._ignoreSelectionchange = true;
+                if (document.caretRangeFromPoint) {
+                    range = document.caretRangeFromPoint(event.x, event.y);
+                } else if (event.rangeParent && event.rangeOffset) {
+                    range = document.createRange();
+                    range.setStart(event.rangeParent, event.rangeOffset);
+                    range.setEnd(event.rangeParent, event.rangeOffset);
+                }
+
+                if (range) {
+                    if (window.getSelection) {
+                        var selection = window.getSelection();
+                        selection.removeAllRanges();
+                        selection.addRange(range);
+                    } else {
+                        range.select();
+                    }
+                }
+                delete this._ignoreSelectionchange;
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleDrop: {
+        enumerable: false,
+        value: function(event) {
+            var files = event.dataTransfer.files,
+                fileLength = files.length,
+                file,
+                data,
+                reader,
+                i,
+                delegateMethod,
+                response;
+
+            if (this._dragSourceElement) {
+                // Let the browser do the job for us, just make sure we cleanup after us
+                this.handleDragend(event);
+                this.handleSelectionchange();
+                return;
+            }
+
+            event.preventDefault();
+            if (event.cancelBubble) {
+                event.cancelBubble = true;
+            } else {
+                event.stopPropagation();
+            }
+
+            if (fileLength) {
+                for (i = 0; i < fileLength; i ++) {
+                    file = files[i];
+                    delegateMethod = this._delegateMethod("fileDrop");
+                    response = true;
+
+                    if (window.FileReader) {
+                        reader = new FileReader();
+                        reader.onload = function() {
+                            data = reader.result;
+
+                            if (delegateMethod) {
+                                response = delegateMethod.call(this.delegate, this, file, data);
+                            }
+                            if (response === true) {
+                                if (file.type.match(/^image\//i)) {
+                                    document.execCommand("insertimage", false, data);
+                                }
+                            }
+                        }
+                        reader.onprogress = function(e) {
+                        }
+                        reader.onerror = function(e) {
+                        }
+                        reader.readAsDataURL(file);
+                    } else {
+                        // JFD: This browser does not support the File API, we cannot do a preview...
+                        if (delegateMethod) {
+                            response = delegateMethod.call(this.delegate, this, file);
+                        }
+                        if (response === true) {
+                            // JFD TODO: write me!
+                        }
+                    }
+                }
+            } else {
+                data = event.dataTransfer.getData("text/html");
+                if (data) {
+                    var delegateMethod = this._delegateMethod("drop"),
+                        response;
+
+                    if (delegateMethod) {
+                        response = delegateMethod.call(this.delegate, this, data, "text/html");
+                        if (response === true) {
+                            data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
+                        } else {
+                            data = response === false ? null : response ;
+                        }
+                    }
+                    if (data && data.length) {
+                        document.execCommand("inserthtml", false, data);
+                    }
+                } else {
+                    data = event.dataTransfer.getData("text/plain") || event.dataTransfer.getData("text");
+                    if (data) {
+                        var div = document.createElement('div');
+                        div.innerText = data;
+                        document.execCommand("inserthtml", false, div.innerHTML);
+                    }
+                }
+            }
+            this.handleDragend(event);
         }
     },
 
@@ -480,6 +719,21 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             editorEvent.type = type;
             this.dispatchEvent(editorEvent);
         }
+    },
+
+    _delegateMethod: {
+        value: function(name) {
+            var delegate, delegateFunctionName, delegateFunction;
+            if (typeof this.identifier === "string") {
+                delegateFunctionName = this.identifier + name.toCapitalized();
+            } else {
+                delegateFunctionName = name;
+            }
+            if ((delegate = this.delegate) && typeof (delegateFunction = delegate[delegateFunctionName]) === "function") {
+                return delegateFunction;
+            }
+
+            return null;
+        }
     }
 });
-
