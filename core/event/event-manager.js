@@ -28,18 +28,15 @@ var Montage = require("montage").Montage,
 //if(TouchEvent && typeof window.Touch === "undefined") {
 // HACK: The commented expression fails because Chrome on the desktop also has TouchEvent and in the code we're either registering touch events OR mouse events on most components.
 if (typeof window.Touch === "undefined" && /Xoom|TouchPad/.test(navigator.userAgent)) {
-    window.Touch = function() {
-    };
-}
-
-if (window.Touch) {
-    var onFirstTouchstart;
-    
-    document.addEventListener("touchstart", onFirstTouchstart = function (event) {
-        window.Touch = event.touches[0].constructor;
-        document.removeEventListener("touchstart", onFirstTouchstart, true);
-        delete onFirstTouchstart;
-    }, true);
+   window.Touch = function() {
+   };
+   (function() {
+       var onFirstTouchstart;
+       document.addEventListener("touchstart", onFirstTouchstart = function (event) {
+           window.Touch = event.touches[0].constructor;
+           document.removeEventListener("touchstart", onFirstTouchstart, true);
+       }, true);
+   })();
 }
 
 /**
