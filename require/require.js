@@ -487,7 +487,10 @@ bootstrap("require/require", function (require, CJS) {
             var versionPredicateString = dependencies[name];
             // TODO (version presently ignored for debug mode)
             if (!mappings[name]) {
-                mappings[name] = {"location": URL.resolve(packageRoot, name)};
+                mappings[name] = {"location": URL.resolve(
+                    packageRoot,
+                    name + "/"
+                )};
             }
         });
         Object.keys(mappings).forEach(function (name) {
