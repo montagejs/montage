@@ -32,6 +32,16 @@ if (typeof window.Touch === "undefined" && /Xoom|TouchPad/.test(navigator.userAg
     };
 }
 
+if (window.Touch) {
+    var onFirstTouchstart;
+    
+    document.addEventListener("touchstart", onFirstTouchstart = function (event) {
+        window.Touch = event.touches[0].constructor;
+        document.removeEventListener("touchstart", onFirstTouchstart, true);
+        delete onFirstTouchstart;
+    }, true);
+}
+
 /**
  @external Element
  */
