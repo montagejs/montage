@@ -125,6 +125,14 @@ var Person = Montage.create(Montage, {
 
 });
 
+var Department = Montage.create(Montage, {
+
+    manager: {
+        value: null
+    }
+
+});
+
 describe("binding/dependent-properties-spec", function() {
 
     describe("an object with dependent properties", function() {
@@ -359,6 +367,50 @@ describe("binding/dependent-properties-spec", function() {
             });
 
         });
+
+        describe("when an object with dependent properties is encountered along a property path", function() {
+
+            var department,
+                personInformation;
+
+            beforeEach(function() {
+                person.firstName = "Alice";
+                person.lastName = "Allman";
+
+                department = Department.create();
+                personInformation = {};
+            });
+
+
+            it("should correctly react to changes to the dependent property when the bath was fully populated when the binding was defined", function() {
+                department.manager = person;
+
+                Object.defineBinding(personInformation, "name", {
+                    "boundObject": department,
+                    "boundObjectPropertyPath": "manager.name",
+                    "oneway": true
+                });
+
+                person.lastName = "Somebody";
+
+                expect(personInformation.name).toBe("Alice Somebody");
+            });
+
+            it("should correctly react to changes to the dependent property when the bath was a dead-end when the binding was defined", function() {
+                Object.defineBinding(personInformation, "name", {
+                    "boundObject": department,
+                    "boundObjectPropertyPath": "manager.name",
+                    "oneway": true
+                });
+
+                department.manager = person;
+
+                person.lastName = "Somebody";
+
+                expect(personInformation.name).toBe("Alice Somebody");
+            });
+
+        })
 
     });
 

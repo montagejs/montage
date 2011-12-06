@@ -774,33 +774,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
 
             changePropertyPath = type.replace("change@", "");
 
-            // now that somebody is interested, install any listeners if this key is dependent on other keys
-            if (this._dependenciesForProperty) {
 
-                // From the full path being observed, figure out if this property have dependencies
-                firstDotIndex = changePropertyPath.indexOf(".");
-                dependencyPropertyPath = firstDotIndex < 0 ? changePropertyPath : changePropertyPath.substring(0, firstDotIndex);
-                dependencies = this._dependenciesForProperty[dependencyPropertyPath];
-
-                if (dependencies) {
-
-                    // if we're already listening for changes on this dependency for this dependent path, don't do it again
-                    // TODO keep track of how many times we legitimately need to observe the property so we know when we can remove it
-                    if (!this._dependencyListeners[dependencyPropertyPath]) {
-
-                        this._dependencyListeners[dependencyPropertyPath] = function(event) {
-                            var anEvent = document.createEvent("CustomEvent");
-                            anEvent.initCustomEvent("change@" + dependencyPropertyPath, true, false, null);
-                            anEvent.propertyName = dependencyPropertyPath;
-                            this.dispatchEvent(anEvent);
-                        };
-
-                        for (i = 0; (independentProperty = dependencies[i]); i++) {
-                            this.addEventListener("change@" + independentProperty, this._dependencyListeners[dependencyPropertyPath], true);
-                        }
-                    }
-                }
-            }
         }
 
         // If this is part of bindings, install the necessary listeners down the entire property path
@@ -833,6 +807,32 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                     // if we're trying to observe the length of a string (we'll get that from the listener on the string)
 
                     return;
+                }
+
+                if (currentObject._dependenciesForProperty) {
+
+                    dependencies = currentObject._dependenciesForProperty[key];
+
+                    if (dependencies) {
+
+                        // if we're already listening for changes on this dependency for this dependent path, don't do it again
+                        // TODO keep track of how many times we legitimately need to observe the property so we know when we can remove it
+                        if (!currentObject._dependencyListeners[key]) {
+
+                            currentObject._dependencyListeners[key] = (function(self, key) {
+                                    return function(event) {
+                                        var anEvent = document.createEvent("CustomEvent");
+                                        anEvent.initCustomEvent("change@" + key, true, false, null);
+                                        anEvent.propertyName = key;
+                                        self.dispatchEvent(anEvent);
+                                    }
+                                })(currentObject, key);
+
+                            for (i = 0; (independentProperty = dependencies[i]); i++) {
+                                currentObject.addEventListener("change@" + independentProperty, currentObject._dependencyListeners[key], true);
+                            }
+                        }
+                    }
                 }
 
                 // Operators aren't to be stored
