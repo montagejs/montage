@@ -376,7 +376,7 @@ bootstrap("require/require", function (require, CJS) {
     }
 
     CJS.PackageSandbox = function (location, config) {
-        location = URL.resolve(location + "/", ".");
+        location = URL.resolve(location, ".");
         config = config || {};
         var packages = config.packages = config.packages || {};
         var loadedPackages = {};
@@ -393,9 +393,9 @@ bootstrap("require/require", function (require, CJS) {
         config.loadPackage = function (dependency) {
             dependency = Dependency(dependency);
             // TODO handle other kinds of dependency
-            var location = dependency.location;
+            var location = URL.resolve(dependency.location, ".");
             if (!packages[location]) {
-                var jsonPath = location + '/package.json';
+                var jsonPath = URL.resolve(location, 'package.json');
                 packages[location] = CJS.read(jsonPath)
                 .then(function (json) {
                     var packageDescription = JSON.parse(json);
