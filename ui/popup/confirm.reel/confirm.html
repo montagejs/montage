@@ -37,6 +37,15 @@
                 "#": "action-ok"
             }
         },
+        "bindings": {
+            "value": {
+                "boundObject": {
+                    "@": "owner"
+                },
+                "boundObjectPropertyPath": "okValue",
+                "oneway": true
+            }
+        },
         "listeners": [
             {
                 "type": "action",
@@ -53,6 +62,15 @@
             "identifier": "Cancel",
             "element": {
                 "#": "action-cancel"
+            }
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {
+                    "@": "owner"
+                },
+                "boundObjectPropertyPath": "cancelValue",
+                "oneway": true
             }
         },
         "listeners": [
@@ -92,8 +110,8 @@
             
             <div class="montage-popup-footer">
                 <div class="montage-confirm-actions">
-                    <div class="cancel" id="action-cancel">Cancel</div>
-                    <div class="submit" id="action-ok">OK</div>
+                    <div class="cancel" id="action-cancel"></div>
+                    <div class="submit" id="action-ok"></div>
                 </div>
                 <div class="clearfix"></div>
             </div>

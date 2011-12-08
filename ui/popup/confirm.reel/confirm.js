@@ -26,14 +26,33 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
     title: {
         value: 'Confirm'
     },
-/**
-        Description TODO
+    /**
+        Text of message to display on the confirm popup
         @type {Property}
         @default {String} 'Are you sure?'
     */
     msg: {
         value: 'Are you sure?'
     },
+    
+    /**
+        Text to display on the OK button
+        @type {Property}
+        @default {String} 'OK'
+    */
+    okValue: {
+        value: 'OK'
+    },
+    
+    /**
+        Text to display on the Cancel button
+        @type {Property}
+        @default {String} 'Cancel'
+    */
+    cancelValue: {
+        value: 'Cancel'
+    },
+    
 /**
   Description TODO
   @private
@@ -131,8 +150,9 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
      ...
      */
     show: {
-        value: function(msg, okCallback, cancelCallback) {
-            var popup = this.application._confirmPopup, confirm;
+        value: function(options, okCallback, cancelCallback) {
+            var popup = this.application._confirmPopup, confirm,
+                msg, okValue, cancelValue;
             if(!popup) {
                 popup = Popup.create();
                 this.popup = popup;
@@ -145,8 +165,19 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
                 confirm = Confirm.create();
                 popup.content = confirm;
             }
+            
+            if (typeof(options) === "string") {
+                msg = options;
+            } else {
+                msg = options.message;
+                okValue = options.okValue;
+                cancelValue = options.cancelValue;
+            }
+            
             confirm = popup.content;
             confirm.msg = msg;
+            confirm.okValue = okValue || "OK";
+            confirm.cancelValue = cancelValue || "Cancel";
             confirm.okCallback = okCallback || null;
             confirm.cancelCallback = cancelCallback || null;
 
