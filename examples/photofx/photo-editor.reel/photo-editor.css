@@ -35,7 +35,48 @@
     display: block;
 }
 
+.PhotoEditor .canvasFrame {
+    position: relative;
+}
+
 .PhotoEditor.pickingColor {
     cursor: none;
     -webkit-user-select: none;
+}
+
+.PhotoEditor .ruler {
+    display: none;
+    position: absolute;
+    color: hsl(0,0%,56%);
+
+    height: 1em;
+}
+
+.PhotoEditor.hasImage .ruler {
+    display: block;
+}
+
+.PhotoEditor .ruler .positionText {
+    border-color: hsl(0,0%,66%);
+}
+
+.PhotoEditor .ruler .savedPositionText {
+    border-color: hsl(0,0%,36%);
+    color: hsl(0,0%,36%);
+}
+
+.PhotoEditor .ruler .distanceText {
+    color: hsl(0,0%,36%);
+    border-color: hsla(0,0%,36%, 0.4);
+}
+
+.PhotoEditor .horizontalRuler {
+    top: -1.5em;
+}
+
+.PhotoEditor .verticalRuler {
+    left: -0.5em;
+
+    -webkit-transform-origin: left top;
+    -webkit-transform: rotate(90deg);
 }

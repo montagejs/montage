@@ -68,6 +68,48 @@
                 }
             },
 
+            "horizontalRuler": {
+                "module": "ruler.reel",
+                "name": "Ruler",
+                "properties": {
+                    "element": {"#": "horizontalRuler"},
+                    "axis": "x"
+                },
+                "bindings": {
+                    "container": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "_canvas",
+                        "oneway": true
+                    },
+                    "rangeEnd": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "_width",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "verticalRuler": {
+                "module": "ruler.reel",
+                "name": "Ruler",
+                "properties": {
+                    "element": {"#": "verticalRuler"},
+                    "axis": "y"
+                },
+                "bindings": {
+                    "container": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "_canvas",
+                        "oneway": true
+                    },
+                    "rangeEnd": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "_height",
+                        "oneway": true
+                    }
+                }
+            },
+
             "owner": {
                 "module": "photo-editor.reel",
                 "name": "PhotoEditor",
@@ -76,7 +118,9 @@
                     "_image": {"@": "image"},
                     "_canvas": {"#": "canvas"},
                     "_toolLayer": {"#": "toolLayer"},
-                    "pointMonitorController": {"@": "pointMonitorController"}
+                    "pointMonitorController": {"@": "pointMonitorController"},
+                    "horizontalRuler": {"@": "horizontalRuler"},
+                    "verticalRuler": {"@": "verticalRuler"}
                 }
             }
         }
@@ -88,7 +132,10 @@
     <div id="editor" class="PhotoEditor">
         <img id="image" class="image">
 
-        <div>
+        <div class="canvasFrame">
+            <div id="horizontalRuler" class="horizontalRuler ruler"></div>
+            <div id="verticalRuler" class="verticalRuler ruler"></div>
+
             <div id="toolLayer" class="toolLayer">
                 <div id="pointMonitors">
                     <div id="pointMarker"></div>

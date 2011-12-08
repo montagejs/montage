@@ -81,6 +81,15 @@ exports.PhotoEditor = Montage.create(Component, {
 
             this._pickColor(event.clientX, event.clientY);
 
+            //update rulers
+            var canvasPoint = dom.convertPointFromPageToNode(this._canvas, Point.create().init(event.clientX, event.clientY));
+            if (this.horizontalRuler) {
+                this.horizontalRuler.savedPosition = canvasPoint.x;
+            }
+            if (this.verticalRuler) {
+                this.verticalRuler.savedPosition = canvasPoint.y;
+            }
+
             this.needsDraw = true;
         }
     },
@@ -118,6 +127,13 @@ exports.PhotoEditor = Montage.create(Component, {
             var colorPickEvent = document.createEvent("CustomEvent");
             colorPickEvent.initCustomEvent("colorpickend", true, true, null);
             document.application.dispatchEvent(colorPickEvent);
+
+            if (this.horizontalRuler) {
+                this.horizontalRuler.savedPosition = null;
+            }
+            if (this.verticalRuler) {
+                this.verticalRuler.savedPosition = null;
+            }
 
             this.needsDraw = true;
         }

@@ -53,6 +53,7 @@ input {
     top: 10px;
     left: 10px;
     opacity: 0.2;
+    z-index: 5000;
 }
 
 .PhotoPanel {

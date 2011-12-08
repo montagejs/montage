@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Ruler</title>
+    <link rel="stylesheet" type="text/css" href="ruler.css">
+
+    <script type="text/montage-serialization">
+        {
+
+            "positionText": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "positionText"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "position",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "savedPositionText": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "savedPositionText"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "savedPosition",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "distanceText": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "distanceText"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "distance",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "owner": {
+                "module": "ruler.reel",
+                "name": "Ruler",
+                "properties": {
+                    "element": {"#": "ruler"},
+                    "positionText": {"@": "positionText"},
+                    "savedPositionText": {"@": "savedPositionText"},
+                    "distanceText": {"@": "distanceText"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+
+    <div id="ruler" class="Ruler">
+        <span id="savedPositionText" class="savedPositionText"></span>
+        <span id="distanceText" class="distanceText"></span>
+        <span id="positionText" class="positionText"></span>
+    </div>
+
+</body>
+</html>
