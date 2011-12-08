@@ -23,6 +23,51 @@ exports.ValueBasedEffect = Montage.create(Component, {
         value: 0
     },
 
+    _originalSliderValue: {
+        enumerable: false,
+        value: null
+    },
+
+    handleValueSliderMontageinteractionstart: {
+        value: function() {
+            this._originalSliderValue = this.sliderValue;
+        }
+    },
+
+    handleValueSliderMontageinteractionend: {
+        value: function() {
+            this._commitSliderValue();
+            this._originalSliderValue = null;
+        }
+    },
+
+    _commitSliderValue: {
+        enumerable: false,
+        value: function(value) {
+            var undoneValue = this._originalSliderValue ? this._originalSliderValue : this.sliderValue;
+            document.application.undoManager.add(this.name.toLowerCase() + " change", this._commitSliderValue, this, undoneValue);
+
+            if (typeof value !== "undefined") {
+                this.sliderValue = value;
+            }
+        }
+    },
+
+    sliderValue: {
+        dependencies: ["value"],
+        enumerable: false,
+        get: function() {
+            return this.value;
+        },
+        set: function(value) {
+            if (value === this._value) {
+                return;
+            }
+
+            this.value = value;
+        }
+    },
+
     minValue: {
         enumerable: false,
         value: 0

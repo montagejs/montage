@@ -8,6 +8,7 @@ var Montage = require("montage").Montage,
     Popup = require("montage/ui/popup/popup.reel").Popup,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
+    UndoManager = require("montage/core/undo-manager").UndoManager,
     LOCAL_STORAGE_KEY = "montage_photofx_state";
 
 exports.Main = Montage.create(Component, {
@@ -49,6 +50,8 @@ exports.Main = Montage.create(Component, {
                 ];
             }
 
+            // Install an undomanager for the application to use
+            this.undoManager = document.application.undoManager = UndoManager.create();
         }
     },
 
@@ -254,7 +257,32 @@ exports.Main = Montage.create(Component, {
                 return;
             }
 
-            this.photoListController.removeObjects(selectedPhoto);
+            var index = this.photoListController.content.indexOf(selectedPhoto);
+            this.removePhotoAtIndex(index);
+        }
+    },
+
+    removePhotoAtIndex: {
+        value: function(index) {
+
+            var photo = this.photoListController.content[index];
+            var undoLabel = 'remove photo "' + photo.title + '"';
+
+            this.undoManager.add(undoLabel, this.addPhotoAtIndex, this, photo, index);
+
+            this.photoListController.removeObjects(photo);
+        }
+    },
+
+    addPhotoAtIndex: {
+        value: function(photo, index) {
+
+            var undoLabel = 'add photo "' + photo.title + '"';
+
+            this.undoManager.add(undoLabel, this.removePhotoAtIndex, this, index);
+
+            this.photoListController.content.splice(index, 0, photo);
+            this.photoListController.selectedObjects = [photo];
         }
     },
 

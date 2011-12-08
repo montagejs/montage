@@ -156,6 +156,56 @@
                         "oneway": true
                     }
                 }
+            },
+
+            "undoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "undoButton"}
+                },
+                "bindings": {
+                    "action": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.undo",
+                        "oneway": true
+                    },
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.undoLabel",
+                        "oneway": true
+                    },
+                    "enabled": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.canUndo",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "redoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "redoButton"}
+                },
+                "bindings": {
+                    "action": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.redo",
+                        "oneway": true
+                    },
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.redoLabel",
+                        "oneway": true
+                    },
+                    "enabled": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.canRedo",
+                        "oneway": true
+                    }
+                }
             }
 
         }
@@ -168,6 +218,8 @@
 
         <div class="mainMenu">
             <div id="toggleControlsButton" class="text ToggleControlsButton">✎</div>
+            <div id="undoButton" class="text UndoButton">⤺</div>
+            <div id="redoButton" class="text RedoButton">⤻</div>
         </div>
 
         <div class="editArea">

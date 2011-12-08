@@ -16,6 +16,7 @@ exports.ColorInfoPanel = Montage.create(Component, {
     prepareForDraw: {
         value: function() {
             document.application.addEventListener("colorpick", this, false);
+            document.application.addEventListener("colorpickend", this, false);
             document.application.addEventListener("imagemodified", this, false);
 
             if (this.pointMonitorController && null == this.pointMonitorController.selectedIndexes) {
@@ -39,19 +40,62 @@ exports.ColorInfoPanel = Montage.create(Component, {
                 this._colorPickTimeout = setTimeout(function() {
 
                     var selectedObject = self.pointMonitorController.getProperty("selectedObjects.0");
-
-                    if (!selectedObject) {
-                        // TODO update some non-pointMonitor-backed color picker
-                        // self.color = self._deferredColor;
-                    } else {
-                        selectedObject.color = self._deferredColor;
-                        selectedObject.x = self._deferredCanvasX;
-                        selectedObject.y = self._deferredCanvasY;
-                    }
+                    self.pickColor(selectedObject, self._deferredCanvasX, self._deferredCanvasY, self._deferredColor, false);
 
                     self._colorPickTimeout = null;
                 }, 100);
             }
+        }
+    },
+
+    handleColorpickend: {
+        value: function(event) {
+            clearTimeout(this._colorPickTimeout);
+            this._colorPickTimeout = null;
+
+            var selectedObject = this.pointMonitorController.getProperty("selectedObjects.0");
+            this.pickColor(selectedObject, event.canvasX, event.canvasY, event.color, true);
+        }
+    },
+
+    _undoColorPickInfo: {
+        enumerable: false,
+        value: null
+    },
+
+    pickColor: {
+        value: function(monitor, x, y, color, undoable) {
+
+            // Store the coordinates of the monitor right now, before we pick a color, regardless of whether
+            // we want to commit the picked color or not
+            if (!this._undoColorPickInfo) {
+                this._undoColorPickInfo = {x: monitor.x, y: monitor.y};
+            }
+
+            monitor.x = x;
+            monitor.y = y;
+
+            if (!color && (null != x || null != y)) {
+                color = this.editor.dataAtPoint(x, y);
+            }
+            monitor.color = color;
+
+            // if the color pick is intended to be undoable, add the inverse to the stack
+            if (undoable) {
+                var originalX = this._undoColorPickInfo.x,
+                    originalY = this._undoColorPickInfo.y;
+
+                // Don't bother undoing a color pick that really wasn't a change
+                if (originalX !== x || originalY !== y) {
+
+                    // If the new x and y were null, this pickColor cleared a marker, label it as such
+                    var undoLabel = (null == x || null == y) ? "clear color marker" : "set color marker"
+                    document.application.undoManager.add(undoLabel, this.pickColor, this, monitor, originalX, originalY, null, true);
+                }
+
+                this._undoColorPickInfo = null;
+            }
+
         }
     },
 

@@ -124,9 +124,7 @@ exports.PhotoEditor = Montage.create(Component, {
             this._canvas.removeEventListener("mousemove", this, false);
             document.removeEventListener("mouseup", this, false);
 
-            var colorPickEvent = document.createEvent("CustomEvent");
-            colorPickEvent.initCustomEvent("colorpickend", true, true, null);
-            document.application.dispatchEvent(colorPickEvent);
+            this._pickColor(event.clientX, event.clientY, true);
 
             if (this.horizontalRuler) {
                 this.horizontalRuler.savedPosition = null;
@@ -192,14 +190,12 @@ exports.PhotoEditor = Montage.create(Component, {
             }
 
             this._pointerIdentifier = null;
-            var colorPickEvent = document.createEvent("CustomEvent");
-            colorPickEvent.initCustomEvent("colorpickend", true, true, null);
-            document.application.dispatchEvent(colorPickEvent);
+            this._pickColor(foundTouch.clientX, foundTouch.clientY, true);
         }
     },
 
     _pickColor: {
-        value: function(x, y) {
+        value: function(x, y, end) {
             var gridExtent = 20,
                 halfGridExtent = 10,
                 canvas = this._canvas,
@@ -210,7 +206,7 @@ exports.PhotoEditor = Montage.create(Component, {
                 colorPickEvent;
 
             colorPickEvent = document.createEvent("CustomEvent");
-            colorPickEvent.initCustomEvent("colorpick", true, true, null);
+            colorPickEvent.initCustomEvent(end ? "colorpickend" : "colorpick", true, true, null);
             colorPickEvent.color = pickedPixel.data;
             colorPickEvent.focusGrid = focusGrid;
             colorPickEvent.clientX = x;
