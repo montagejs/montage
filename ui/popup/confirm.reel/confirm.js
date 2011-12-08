@@ -40,7 +40,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
         @type {Property}
         @default {String} 'OK'
     */
-    okValue: {
+    okLabel: {
         value: 'OK'
     },
     
@@ -49,7 +49,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
         @type {Property}
         @default {String} 'Cancel'
     */
-    cancelValue: {
+    cancelLabel: {
         value: 'Cancel'
     },
     
@@ -151,8 +151,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
      */
     show: {
         value: function(options, okCallback, cancelCallback) {
-            var popup = this.application._confirmPopup, confirm,
-                msg, okValue, cancelValue;
+            var popup = this.application._confirmPopup, confirm;
             if(!popup) {
                 popup = Popup.create();
                 this.popup = popup;
@@ -166,18 +165,18 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
                 popup.content = confirm;
             }
             
+            confirm = popup.content;
+            
             if (typeof(options) === "string") {
-                msg = options;
+                confirm.msg = options;
+                confirm.okLabel = "OK";
+                confirm.cancelLabel = "Cancel";
             } else {
-                msg = options.message;
-                okValue = options.okValue;
-                cancelValue = options.cancelValue;
+                confirm.msg = options.message;
+                confirm.okLabel = options.okLabel || "OK";
+                confirm.cancelLabel = options.cancelLabel || "Cancel";
             }
             
-            confirm = popup.content;
-            confirm.msg = msg;
-            confirm.okValue = okValue || "OK";
-            confirm.cancelValue = cancelValue || "Cancel";
             confirm.okCallback = okCallback || null;
             confirm.cancelCallback = cancelCallback || null;
 
