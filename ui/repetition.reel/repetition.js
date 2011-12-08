@@ -667,8 +667,12 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (repetitionChild === this.element) {
                 return itemIndex;
             }
-            while (repetitionChild.parentNode !== this.element) {
+            while (repetitionChild && repetitionChild.parentNode !== this.element) {
                 repetitionChild = repetitionChild.parentNode;
+            }
+
+            if (!repetitionChild) {
+                return null;
             }
 
             // figure out what index that node is inside the repetitionElement's.childNodes collection
