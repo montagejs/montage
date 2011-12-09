@@ -16,7 +16,9 @@
                 "module": "photo-info-panel.reel",
                 "name": "PhotoInfoPanel",
                 "properties": {
-                    "element": {"#": "photoInfoPanel"}
+                    "element": {"#": "photoInfoPanel"},
+                    "_dragProxy": {"#": "dragProxy"},
+                    "_canvas": {"#": "canvas"}
                 }
             },
             "title": {
@@ -44,6 +46,21 @@
                         "boundObjectPropertyPath": "photo.authors.0"
                     }
                 }
+            },
+
+            "thumbnailCondition": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "thumbnailCondition"},
+                    "removalStrategy": "hide"
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "photo"
+                    }
+                }
             }
         }
     </script>
@@ -52,6 +69,10 @@
 <body>
 
     <div id="photoInfoPanel" class="PhotoInfoPanel">
+        <div id="thumbnailCondition" class="thumbnail">
+            <img id="dragProxy" class="dragProxy">
+            <canvas id="canvas" class="canvas"></canvas>
+        </div>
         <h2 id="title" class="title text"></h2>
         <p id="author" class="author text"></p>
     </div>

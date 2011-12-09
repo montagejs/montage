@@ -17,3 +17,31 @@
     margin-top: 0;
     -webkit-user-select: text;
 }
+
+.PhotoInfoPanel .thumbnail,
+.PhotoInfoPanel .thumbnail img,
+.PhotoInfoPanel .canvas {
+    width: 4em;
+}
+
+.PhotoInfoPanel .thumbnail {
+    position: relative;
+    float: left;
+
+    min-height: 3em;
+
+    margin: 0 0.5em 0.5em 0;
+}
+
+.PhotoInfoPanel .canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    pointer-events: none;
+    -webkit-box-shadow: 0 1px 1px hsl(120,2%,39%);
+}
+
+.PhotoInfoPanel .thumbnail img {
+    opacity: 0;
+}
