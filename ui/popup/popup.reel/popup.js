@@ -231,7 +231,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 if(anchor) {
                     anchorPosition = this._getPosition(anchor);
                 }
-                pos = delegate.positionPopup(popup, anchor, anchorPosition);
+                pos = delegate.positionPopup(this, anchor, anchorPosition);
             } else {
                 // @todo - advanced positioning support
                 var $el = this.contentEl || this.content.element;
