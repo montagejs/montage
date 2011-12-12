@@ -1,5 +1,6 @@
 .montage-richtextfield {
-/    line-height: 1em;
+    /* need to be relative else the element resizer wont be positioned correctly */
+    position: relative;
     z-index: 1;
 /*
     cursor: pointer;
@@ -32,5 +33,59 @@
 }
 
 /*
- JFD TODO: Style the scrollbars (vertical & horizontal)
+ Resizer
 */
+.montage-editor-resizer {
+    display: inline-block;
+}
+
+div.montage-richtextfield ::selection {
+    background: pink !important;
+}
+.montage-resizer-frame {
+    position: absolute;
+    border: 1px solid black;
+    z-index: 30;
+}
+
+.montage-resizer-handle {
+    position: absolute;
+    border: 1px solid black;
+    background-color: white;
+    width: 6px;
+    height: 6px;
+    z-index: 31;
+}
+
+.dragged .montage-resizer-handle {
+    display: none;
+}
+
+div.montage-resizer-handle:hover {
+    background-color: black;
+}
+
+.montage-resizer-n {
+    cursor: n-resize;
+}
+.montage-resizer-ne {
+    cursor: ne-resize;
+}
+.montage-resizer-e {
+    cursor: e-resize;
+}
+.montage-resizer-se {
+    cursor: se-resize;
+}
+.montage-resizer-s {
+    cursor: s-resize;
+}
+.montage-resizer-sw {
+    cursor: sw-resize;
+}
+.montage-resizer-w {
+    cursor: w-resize;
+}
+.montage-resizer-nw {
+    cursor: nw-resize;
+}
