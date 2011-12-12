@@ -7,5 +7,10 @@ var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.SliderExample = Montage.create(Component, {
-
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
+        }
+    }
 });

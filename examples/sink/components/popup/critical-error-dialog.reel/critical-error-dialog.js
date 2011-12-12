@@ -34,6 +34,12 @@ var CriticalErrorDialog = exports.CriticalErrorDialog = Montage.create(Component
             anEvent.initCustomEvent("message_restart", true, true, 'Restart Device');
             this.dispatchEvent(anEvent);
         }
+    },
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
+        }
     }
 
 });

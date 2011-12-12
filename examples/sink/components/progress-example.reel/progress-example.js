@@ -7,21 +7,21 @@ var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.ProgressExample = Montage.create(Component, {
-    
+
     _uploadProgress: {value: null},
     uploadProgress: {
         set: function(value) {this._uploadProgress = value; this.needsDraw = true;},
         get: function() {return this._uploadProgress;}
     },
-    
+
     _intervalId: {value: null},
-    
+
     draw: {
         value: function() {
             console.log('draw DynamicTextExample');
         }
     },
-    
+
     didBecomeInactiveInSlot: {
         value: function() {
             if(this._intervalId) {
@@ -30,7 +30,7 @@ exports.ProgressExample = Montage.create(Component, {
             }
         }
     },
-    
+
     didBecomeActiveInSlot: {
         value: function() {
             var self = this;
@@ -43,6 +43,13 @@ exports.ProgressExample = Montage.create(Component, {
                     self.uploadProgress = 0;
                 }
             }, 1000);
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
         }
     }
 

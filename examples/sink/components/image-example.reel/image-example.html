@@ -19,7 +19,7 @@
             }
         }
     },
-    
+
     "images": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
@@ -35,20 +35,20 @@
             }
         }
     },
-    
+
     "list1": {
         "module": "montage/ui/list.reel",
         "name": "List",
         "properties": {
             "element": {
-                "#": "thumbs-list"                
+                "#": "thumbs-list"
             },
             "isSelectionEnabled": true,
             "contentController": {"@": "images"},
-            "orientation": "horizontal"
+            "axis": "horizontal"
         }
     },
-    
+
     "thumb": {
         "module": "montage/ui/image.reel",
         "name": "Image",
@@ -63,7 +63,7 @@
             }
         }
     },
-    
+
     "owner": {
         "module": "components/image-example.reel",
         "name": "ImageExample",
@@ -73,12 +73,12 @@
             {"src": "images/IMG_1.jpg"},
             {"src": "images/IMG_2.jpg"},
             {"src": "images/IMG_3.jpg"}
-            ]      
+            ]
         }
     }
 }
     </script>
-    
+
     <style>
         .thumb {
             width: 48px;
@@ -102,17 +102,18 @@
             <div class="span8">
                 <h3>Image</h3>
                 <p>
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc volutpat nisi et ante consequat sit amet feugiat nisl vehicula. In fringilla felis vitae dolor dictum et faucibus quam pellentesque. Aenean in enim mi, et volutpat urna. Nunc ac orci nec mi euismod cursus id in odio.
+                    The Image component wraps an &lt;img> element and exposes a <code>src</code> property to set the image's URL source.
                     </p>
             </div>
         </div>
-        
+
         <div class="row">
             <div class="span12">
                 <img id="img-main" class="img-main"/>
             </div>
         </div>
-        
+
+        <p>Select an image from the list:</p>
         <div class="row">
             <div class="span12">
                 <div id="thumbs-list" class="thumbs-list">
@@ -120,32 +121,32 @@
                 </div>
             </div>
         </div>
-        
+
         <section>
             <h6>Serialization</h6>
-            
+
             <p>Bind the main image's "src" property to the selected value of the ArrayController.</p>
-            
+
 <pre class="prettyprint linenums">
-    "main-image": {
-        "module": "montage/ui/image.reel",
-        "name": "Image",
-        "properties": {
-            "element": {"#": "img-main"}
-        },
-        "bindings": {
-            "src": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.src",
-                "oneway": true
-            }
-        }
+"main-image": {
+    "module": "montage/ui/image.reel",
+    "name": "Image",
+    "properties": {
+        "element": {"#": "img-main"}
     },
+    "bindings": {
+        "src": {
+            "boundObject": {"@": "images"},
+            "boundObjectPropertyPath": "selectedObjects.0.src",
+            "oneway": true
+        }
+    }
+}
 </pre>
-            
+
         </section>
-        
-        
+
+
     </div>
 
 </body>

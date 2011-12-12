@@ -20,8 +20,8 @@
             }
         ]
     },
-    
-    
+
+
     "button2": {
         "module": "montage/ui/button.reel",
         "name": "Button",
@@ -35,7 +35,7 @@
             }
         ]
     },
-    
+
     "button3": {
         "module": "montage/ui/button.reel",
         "name": "Button",
@@ -51,7 +51,7 @@
         ]
     },
 
-    
+
     "owner": {
         "module": "components/button-example.reel",
         "name": "ButtonExample",
@@ -62,16 +62,20 @@
     }
 }
     </script>
-    
+
     <style>
-    
+
         .button-example .montage-button.text, .button-example .montage-button.submit, .button-example .montage-button.cancel {
             line-height: 32px;
             padding: 2px 24px 0 24px;
             font-size: 1.1em;
             height: 32px;
         }
-        
+
+        .eventlog {
+            margin-top: 10px;
+        }
+
     </style>
 
 
@@ -82,46 +86,96 @@
             <div class="span8">
                 <h3>Button</h3>
                 <p class="">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc volutpat nisi et ante consequat sit amet feugiat nisl vehicula. In fringilla felis vitae dolor dictum et faucibus quam pellentesque. Aenean in enim mi, et volutpat urna. Nunc ac orci nec mi euismod cursus id in odio.
+                        The Button component converts a &lt;div&gt; or &lt;input&gt; element into a styled, clickable button. It supports three behavior modes (transient, toggle, and mixed) for different uses. You can different assign labels to different button states.
                     </p>
             </div>
         </div>
-        
+
         <section>
-        
+
         <section>
-            <div id="event-log" class="eventlog alert-message block-message info">
-                <h6>Event Log</h6>
-            </div>
-            
+
             <p>Default Button with an identifier to link it to an action handler</p>
             <div class="text" id="button1">Button One</div>
-            
-            <p>Submit Button with no identifier</p>
-            <div class="submit" id="button2">I am a Submit Button</div>
-            
-            <p>Cancel Button with an identifier</p>
-            <div class="cancel" id="button3">I am a Cancel Button</div>
-        </section>
-        
-        <section>
-            <h6>Handling Button Click/Touch Events</h6>
-            <p>To setup a handler for a Button, implement a function with the following naming convention:
-            <pre>"handle" + < button Identifier capitalized > + "Action"</pre>
-            </p>
-            <p>   
-                Eg: for button with identifier = "button1":
-            </p>
-            
-<pre class="prettyprint linenums">
+            <h6>Serialization</h6>
+            <pre class="prettyprint">
+"button1": {
+    "module": "montage/ui/button.reel",
+    "name": "Button",
+    "properties": {
+        "element": {"#": "button1"},
+        "identifier": "button1"
+    },
+    "listeners": [
+        {
+            "type": "action",
+            "listener": {"@": "owner"}
+        }
+    ]
+}
+            </pre>
+
+            <h6>HTML</h6>
+            <pre class="prettyprint">
+&lt;div class="text" id="button1"&gt;Button One&lt;/div&gt;</pre>
+
+            <h6>Controller code (partial)</h6>
+            <p>The controller for this example defines an event handler for this button. The name of the handler that Montage invokes is derived from a concatenation of three strings:
+                <dl>
+                    <dt>"handle"</dt><dd>The phase that the event is being observed for on the button target.</dd>
+                    <dt>"Button1"</dt><dd>The value of the <code>identifier</code> property assigned to the button (see serialization above), with its first letter capitalized.</dd>
+                    <dt>"Action"</dt><dd>The event type that was registered.</dd>
+                </dl>
+              </p>
+
+            <pre class="prettyprint">
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.ButtonExample = Montage.create(Component, {
+
     handleButton1Action: {
         value: function() {
             this.log("Button - button1 - clicked");
         }
     },
 
+});
+            </pre>
+
+            <p>Submit Button with no identifier</p>
+            <div class="submit" id="button2">I am a Submit Button</div>
+            <h6>Serialization</h6>
+            <pre class="prettyprint">&lt;div class="submit" id="button2"&gt;I am a Submit Button&lt;/div&gt;</pre>
+
+
+            <p>Cancel Button with an identifier</p>
+            <div class="cancel" id="button3">I am a Cancel Button</div>
+            <h6>Serialization</h6>
+            <pre class="prettyprint">&lt;div class="cancel" id="button3"&gt;I am a Cancel Button&lt;/div&gt;</pre>
+
+            <div id="event-log" class="eventlog alert-message block-message info">
+                <h6>Event Log</h6>
+            </div>
+        </section>
+
+        <section>
+            <h6>Handling Button Click/Touch Events</h6>
+            <p>To setup a handler for a Button, implement a function with the following naming convention:
+            <pre class="prettyprint">"handle" + < button Identifier capitalized > + "Action"</pre>
+            </p>
+            <p>
+                Eg: for button with identifier = "button1":
+            </p>
+
+<pre class="prettyprint linenums">
+handleButton1Action: {
+    value: function() {
+        this.log("Button - button1 - clicked");
+    }
+}
 </pre>
-            
+
         </section>
 
     </div>

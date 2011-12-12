@@ -55,8 +55,8 @@
                 }
             }
         </script>
-        
-        <style> 
+
+        <style>
             .progress-example .progress {
                 margin: 10px 0;
             }
@@ -78,46 +78,46 @@
                 <div class="span8">
                     <h3>Progress</h3>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc volutpat nisi et ante consequat sit amet feugiat nisl vehicula. In fringilla felis vitae dolor dictum et faucibus quam pellentesque. Aenean in enim mi, et volutpat urna. Nunc ac orci nec mi euismod cursus id in odio.
+                        A styled, animated progress bar.
                         </p>
                 </div>
             </div>
-            
+
             <div>
                 <h5>Progress bar bound to ProgressExample.uploadProgress property</h5>
                 <div class="progress montage-progress" id="progress1"></div>
-                
+
                 <h5>Progress bar with 'dark' theme. Bound to the value in the textfield</h5>
-                
+
                 <div class="progress progress2 montage-progress dark" id="progress2"></div>
-                
+
                 <input id="text1" type="number" />
             </div>
-            
+
             <h6>Serialization</h6>
             <pre class="prettyprint linenums">
-    "progress1": {
-        "module": "montage/ui/progress.reel",
-        "name": "Progress",
-        "properties": {
-            "element": {"#": "progress1"},
-            "value": 30
-        },
-        "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "uploadProgress"
-            }
-        }
+"progress1": {
+    "module": "montage/ui/progress.reel",
+    "name": "Progress",
+    "properties": {
+        "element": {"#": "progress1"},
+        "value": 30
     },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "uploadProgress"
+        }
+    }
+}
             </pre>
-            
+
             <h6>HTML Markup</h6>
             Define the Progress Component and bind the "value" property of this Component to the "uploadProgress" property of the example Object.
 <pre class="prettyprint linenums">
     &lt;div class=&quot;progress montage-progress&quot; id=&quot;progress1&quot; /&gt;
 </pre>
-            
+
         </div>
     </body>
 </html>

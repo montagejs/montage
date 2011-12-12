@@ -67,7 +67,7 @@
                             "oneway": true
                         }
                     }
-                }, 
+                },
 
                 "tabs1-nav-icon": {
                     "module": "montage/ui/image.reel",
@@ -82,7 +82,7 @@
                             "oneway": true
                         }
                     }
-                },   
+                },
 
                 "tabs1-nav": {
                     "module": "montage/ui/tabs.reel",
@@ -167,7 +167,7 @@
                     "module": "montage/ui/tabs.reel",
                     "name": "Tabs",
                     "properties": {
-                        "element": {"#": "tabs2-nav"},            
+                        "element": {"#": "tabs2-nav"},
                         "tabs": [
                         {
                             "text": "Photos",
@@ -193,7 +193,7 @@
 
             }
         </script>
-        
+
         <style>
             .tab-view .tabs-content {
                 width: 400px;
@@ -202,7 +202,7 @@
                 background-color: whitesmoke;
                 margin: 3px 0;
             }
-            
+
             .tab-view .tabs-content img {
                 width: 390px;
                 height: 180px;
@@ -214,8 +214,8 @@
             }
             /* display tabs2's navigation as a vertical tab */
             #tabs2 .tabs2-nav .montage-tabs-list li {
-                display: block;  
-                padding: 2px 0;          
+                display: block;
+                padding: 2px 0;
             }
 
             #tabs2 .tabs2-nav {
@@ -235,11 +235,10 @@
                 <div class="span8">
                     <h3>Tabs</h3>
                     <p>
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc volutpat nisi et ante consequat sit amet feugiat nisl vehicula. In fringilla felis vitae dolor dictum et faucibus quam pellentesque. Aenean in enim mi, et volutpat urna. Nunc ac orci nec mi euismod cursus id in odio.
-                        </p>
+                        Presents a list of labels and optional image icons in a vertical or horizontal tab format.</p>
                 </div>
             </div>
-            
+
             <div id="tabs1" class="tab-view">
                 <div id="tabs1-nav">
                     <img id="tabs1-nav-icon" />
@@ -266,43 +265,54 @@
                 </div>
 
             </div>
-            
+
             <h6>Serialization</h6>
             <pre class="prettyprint linenums">
-    "tabs2-nav": {
-        "module": "montage/ui/tabs.reel",
-        "name": "Tabs",
-        "properties": {
-            "element": {"#": "tabs2-nav"},            
-            "tabs": [
+"tabs2-nav": {
+    "module": "montage/ui/tabs.reel",
+    "name": "Tabs",
+    "properties": {
+        "element": {"#": "tabs2-nav"},
+        "tabs": [
+        {
+            "text": "Photos",
+            "value": "tabs2-three",
+            "icon": "images/photos.png"
+        },
+
             {
-                "text": "Photos",
-                "value": "tabs2-three",
-                "icon": "images/photos.png"
+                "text": "Music",
+                "value": "tabs2-two",
+                "icon": "images/music.png"
             },
-                
-                {
-                    "text": "Music",
-                    "value": "tabs2-two",
-                    "icon": "images/music.png"
-                },
-                {
-                    "text": "Videos",
-                    "value": "tabs2-one",
-                    "icon": "images/film-roll.png"
-                }
-            ],
-            "selectedTab": "tabs2-three",
-            "content": {"@": "tabs2-content"}
-        }
+            {
+                "text": "Videos",
+                "value": "tabs2-one",
+                "icon": "images/film-roll.png"
+            }
+        ],
+        "selectedTab": "tabs2-three",
+        "content": {"@": "tabs2-content"}
     }
+}
             </pre>
-            
+
             <h6>HTML Markup</h6>
  <pre class="prettyprint linenums">
-&lt;div id=&quot;tabs2&quot; class=&quot;tab-view&quot;&gt;<br/><br/>                &lt;div id=&quot;tabs2-nav&quot; class=&quot;tabs2-nav&quot;&gt;<br/>                    &lt;img id=&quot;tabs2-nav-icon&quot; /&gt;<br/>                &lt;/div&gt;<br/><br/>                &lt;div id=&quot;tabs2-content&quot; class=&quot;tabs2-content tabs-content&quot;&gt;<br/>                    &lt;div id=&quot;tabs2-one&quot;&gt;One&lt;/div&gt;<br/>                    &lt;div id=&quot;tabs2-two&quot;&gt;Two&lt;/div&gt;<br/>                    &lt;img id=&quot;tabs2-three&quot; /&gt;<br/>                &lt;/div&gt;<br/><br/>&lt;/div&gt;
+&lt;div id="tabs2" class="tab-view"&gt;
+
+    &lt;div id="tabs2-nav" class="tabs2-nav"&gt;
+        &lt;img id="tabs2-nav-icon" /&gt;
+    &lt;/div&gt;
+
+    &lt;div id="tabs2-content" class="tabs2-content tabs-content"&gt;
+        &lt;div id="tabs2-one"&gt;One&lt;/div&gt;
+        &lt;div id="tabs2-two"&gt;Two&lt;/div&gt;
+        &lt;img id="tabs2-three" /&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
  </pre>
-            
         </div>
     </body>
 </html>
