@@ -3,35 +3,15 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.montage-confirm-dialog {
-    font-family: "AG Buch BQ Regular", "AG Buch BQ", Helvetica, Arial, sans-serif;
-    margin: 0;
-    padding: 0;
-}
+ 
+ .montage-confirm-dialog {
+     min-width: 300px;
+ }
+ .montage-confirm-dialog .montage-confirm-content {
+     font-size: 1.3em;
+     padding: 15px;
+ }
+ .montage-confirm-dialog .montage-confirm-actions {
+     float: right;
+ }
 
-.montage-confirm-dialog .content {
-    text-align: center;
-    margin: 0;
-    background-color: #e6e6e6;
-    padding: 10px;
-}
-
-.montage-confirm-dialog .msg-container {
-    padding: 10px 0;
-    border-bottom: 1px solid #ccc;
-}
-
-.montage-confirm-dialog .msg {
-    font-size: 18pt;
-    font-weight: normal;
-}
-
-.montage-confirm-dialog .msg-detail {
-    font-size: 12pt;
-    font-weight: normal;
-    color: #cccccc;
-}
-
-.montage-confirm-dialog .action-container {
-    padding: 10px 0;
-}

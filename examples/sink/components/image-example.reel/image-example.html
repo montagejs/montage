@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Image Example</title>
+    <script type="text/montage-serialization">
+{
+    "main-image": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "img-main"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "images"},
+                "boundObjectPropertyPath": "selectedObjects.0.src",
+                "oneway": true
+            }
+        }
+    },
+    
+    "images": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "images",
+                "oneway": true
+            }
+        }
+    },
+    
+    "list1": {
+        "module": "montage/ui/list.reel",
+        "name": "List",
+        "properties": {
+            "element": {
+                "#": "thumbs-list"                
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "images"},
+            "orientation": "horizontal"
+        }
+    },
+    
+    "thumb": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+    
+    "owner": {
+        "module": "components/image-example.reel",
+        "name": "ImageExample",
+        "properties": {
+            "element": {"#": "example-root"},
+            "images": [
+            {"src": "images/IMG_1.jpg"},
+            {"src": "images/IMG_2.jpg"},
+            {"src": "images/IMG_3.jpg"}
+            ]      
+        }
+    }
+}
+    </script>
+    
+    <style>
+        .thumb {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #fff;
+        }
+        .thumbs-list .selected {
+            border: 5px solid #FE4365;
+        }
+        .img-main {
+            width: 480px;
+            height: 480px;
+        }
+    </style>
+
+
+</head>
+<body>
+    <div id="example-root">
+        <div class="row">
+            <div class="span8">
+                <h3>Image</h3>
+                <p>
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc volutpat nisi et ante consequat sit amet feugiat nisl vehicula. In fringilla felis vitae dolor dictum et faucibus quam pellentesque. Aenean in enim mi, et volutpat urna. Nunc ac orci nec mi euismod cursus id in odio.
+                    </p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="span12">
+                <img id="img-main" class="img-main"/>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="span12">
+                <div id="thumbs-list" class="thumbs-list">
+                    <img id="thumb" class="thumb" />
+                </div>
+            </div>
+        </div>
+        
+        <section>
+            <h6>Serialization</h6>
+            
+            <p>Bind the main image's "src" property to the selected value of the ArrayController.</p>
+            
+<pre class="prettyprint linenums">
+    "main-image": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "img-main"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "images"},
+                "boundObjectPropertyPath": "selectedObjects.0.src",
+                "oneway": true
+            }
+        }
+    },
+</pre>
+            
+        </section>
+        
+        
+    </div>
+
+</body>
+</html>

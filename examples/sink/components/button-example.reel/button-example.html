@@ -1,0 +1,118 @@
+<html>
+<head>
+	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+
+    <script type="text/montage-serialization">
+{
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1"},
+            "identifier": "button1"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    
+    
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button2"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    
+    "button3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button3"},
+            "identifier": "button3"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    
+    "owner": {
+        "module": "components/button-example.reel",
+        "name": "ButtonExample",
+        "properties": {
+            "element": {"#": "buttontest"},
+            "logger": {"#": "event-log"}
+        }
+    }
+}
+    </script>
+
+
+</head>
+<body>
+    <div id="buttontest">
+        <div class="row">
+            <div class="span8">
+                <h3>Button</h3>
+                <p class="">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc volutpat nisi et ante consequat sit amet feugiat nisl vehicula. In fringilla felis vitae dolor dictum et faucibus quam pellentesque. Aenean in enim mi, et volutpat urna. Nunc ac orci nec mi euismod cursus id in odio.
+                    </p>
+            </div>
+        </div>
+        
+        <section>
+        
+        <section>
+            <div id="event-log" class="eventlog alert-message block-message info">
+                <h6>Event Log</h6>
+            </div>
+            
+            <p>Default Button with an identifier to link it to an action handler</p>
+            <div class="text" id="button1">Button One</div>
+            
+            <p>Submit Button with no identifier</p>
+            <div class="submit" id="button2">I am a Submit Button</div>
+            
+            <p>Cancel Button with an identifier</p>
+            <div class="cancel" id="button3">I am a Cancel Button</div>
+        </section>
+        
+        <section>
+            <h6>Handling Button Click/Touch Events</h6>
+            <p>To setup a handler for a Button, implement a function with the following naming convention:
+            <pre>"handle" + < button Identifier capitalized > + "Action"</pre>
+            </p>
+            <p>   
+                Eg: for button with identifier = "button1":
+            </p>
+            
+<pre class="prettyprint linenums">
+    handleButton1Action: {
+        value: function() {
+            this.log("Button - button1 - clicked");
+        }
+    },
+
+</pre>
+            
+        </section>
+
+    </div>
+</body>
+</html>

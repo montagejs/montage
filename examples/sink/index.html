@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Montage Kitchen Sink</title>
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <link rel="stylesheet" href="prettify.css" />
+    
+    
+    <script src="../../montage.js" data-package="."></script>
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "montage/ui/loader.reel",
+                "name": "Loader"
+            }
+        }
+    </script>
+
+    <style type="text/css">
+        html, body {
+          background-color: #eee;
+        }
+        body {
+          padding-top: 40px; /* 40px to make the container go all the way to the bottom of the topbar */
+        }
+        
+        #montage-bootstrapper {
+            display: none;
+            color: red;
+        }
+
+        .montage-bootstrapping #montage-bootstrapper {
+            display: block;
+        }
+
+        #montage-loader {
+            color: green;
+            display: none;
+        }
+
+        .montage-loading #montage-loader {
+            display: block;
+        }
+
+        .main {
+            display: block;
+        }
+
+        .montage-loaded .main {
+            display: block;
+        }
+
+    </style>
+
+</head>
+<body>
+
+    <p>
+        <center>
+            <img src="montage-logo.png" />
+        </center>
+    </p>
+
+    <div id="montage-bootstrapper">
+        <p>This is the bootstrapper content which will now be shown for at least 1500ms.</p>
+    </div>
+    <div id="montage-loader">
+        <p>This is the loader content which will now be shown for at least 2000ms.</p>
+    </div>
+    
+    
+</body>
+</html>
