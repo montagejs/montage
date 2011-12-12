@@ -4,9 +4,8 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module "montage/ui/richtextfield.reel"
+	@module "montage/ui/rich-text-editor.reel"
     @requires montage/core/core
-    @requires montage/ui/editable-text
 */
 var Montage = require("montage").Montage,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
@@ -15,10 +14,10 @@ var Montage = require("montage").Montage,
     Point = require("core/geometry/point").Point;
 
 /**
-    @class module:"montage/ui/richtextfield.reel".RichTextfield
+    @class module:"montage/ui/rich-text-editor.reel".RichTextEditor
     @extends module:montage/ui/component.Component
 */
-exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/richtextfield.reel".RichTextfield# */ {
+exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/rich-text-editor.reel".RichTextEditor# */ {
 
     /**
       Description TODO
@@ -311,7 +310,7 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
         enumerable: false,
         value: function() {
             var el = this.element;
-            el.classList.add('montage-richtextfield');
+            el.classList.add('montage-editor');
             el.setAttribute("contentEditable", "true");
 
             el.addEventListener("focus", this);
@@ -1079,7 +1078,7 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
                 h  = element.offsetHeight -1,
                 l  = element.offsetLeft,
                 t  = element.offsetTop,
-                resizerFrameHtml = '<div id="montage-editor-resizer" class="montage-editor-resizer">' +
+                resizerFrameHtml = '<div id="montage-resizer" class="montage-resizer">' +
                     '<div id="editor-resizer-frame" class="montage-resizer-frame" style="width:'+ w + 'px; height:' + h + 'px; left:' + l + 'px; top:' + t + 'px"></div>' +
                     '<div id="editor-resizer-nw" class="montage-resizer-handle montage-resizer-nw" style="left:' + (l - 4) + 'px; top:' + (t - 4) + 'px"></div>' +
                     '<div id="editor-resizer-n" class="montage-resizer-handle montage-resizer-n" style="left:' + (l-3+ (w/2)) + 'px; top:' + (t-4)+ 'px"></div>' +
@@ -1093,11 +1092,11 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
                 handles,
                 i;
             // sanity check: make sure we don't already have a frame
-            if (!nextSibling || nextSibling.tagName !== "DIV" || !nextSibling.classList.contains("montage-editor-resizer")) {
+            if (!nextSibling || nextSibling.tagName !== "DIV" || !nextSibling.classList.contains("montage-resizer")) {
                 frame = document.createElement("DIV");
                 frame.innerHTML = resizerFrameHtml;
                 parentNode.insertBefore(frame.firstChild, nextSibling);
-                element.classList.add("montage-editor-resizer-element");
+                element.classList.add("montage-resizer-element");
             }
         }
     },
@@ -1115,14 +1114,14 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
             }
             var resizer = element.nextSibling;
 
-            if (resizer && resizer.tagName === "DIV" && resizer.classList.contains("montage-editor-resizer")) {
+            if (resizer && resizer.tagName === "DIV" && resizer.classList.contains("montage-resizer")) {
                 element.parentNode.removeChild(resizer)
-                element.classList.remove("montage-editor-resizer-element");
+                element.classList.remove("montage-resizer-element");
             } else {
                 // Handle case where the element has been removed from the DOM or the resizer is not in sync with the
                 // element anymore (hapen after an undo)
-                resizer = document.getElementById("montage-editor-resizer");
-                if (resizer && resizer.tagName === "DIV" && resizer.classList.contains("montage-editor-resizer")) {
+                resizer = document.getElementById("montage-resizer");
+                if (resizer && resizer.tagName === "DIV" && resizer.classList.contains("montage-resizer")) {
                     resizer.parentNode.removeChild(resizer);
                     return false;
                 }

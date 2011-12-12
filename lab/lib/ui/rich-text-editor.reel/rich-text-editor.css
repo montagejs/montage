@@ -1,47 +1,23 @@
-.montage-richtextfield {
+.montage-editor {
     /* need to be relative else the element resizer wont be positioned correctly */
     position: relative;
     z-index: 1;
-/*
-    cursor: pointer;
-    background-color: hsl(0, 0%, 80%);
-    border: 1px solid hsl(0, 0%, 40%);
-    padding: 5px;
-    width: 300px;
-*/
     overflow: auto;
     font-size: 1.0em;
 }
 
-.montage-richtextfield:focus {
-/    background-color: hsl(0, 100%, 99%);
-/    border: 2px solid hsl(0, 0%, 40%);
-}
-
-.montage-richtext-invalid {
-    border: 2px solid #E73525;
-    border-style: dashed;
-}
-
-.montage-error-richtext {
-    /*color: #E73525;
-    margin: 2px 0;
-    background-image: url(dialog_warning.png);
-    background-repeat: no-repeat;
-    padding: 5px 0 5px 32px;
-    */
+div.montage-editor ::selection {
+    background: pink !important;
+    /* TODO: please fix me! */
 }
 
 /*
  Resizer
 */
-.montage-editor-resizer {
+.montage-resizer {
     display: inline-block;
 }
 
-div.montage-richtextfield ::selection {
-    background: pink !important;
-}
 .montage-resizer-frame {
     position: absolute;
     border: 1px solid black;
@@ -57,7 +33,7 @@ div.montage-richtextfield ::selection {
     z-index: 31;
 }
 
-.dragged .montage-resizer-handle {
+.montage-resizer-handle.dragged {
     display: none;
 }
 
