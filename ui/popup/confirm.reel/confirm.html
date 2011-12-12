@@ -80,14 +80,22 @@
     </head>
     <body>
         <div id="confirm-container" class="montage-confirm-dialog">
-            <div class="content">
-                <div class="msg-container">
+            
+            <div class="montage-popup-header">
+                <h3 id="title" class="title">Confirmation</h3>
+            </div>
+            
+            <div class="montage-confirm-content">
                     <div id="msg" class="msg"></div>
-                </div>
-                <div class="action-container">
+                    <div id="msg-detail" class="msg-detail"></div>                
+            </div>
+            
+            <div class="montage-popup-footer">
+                <div class="montage-confirm-actions">
                     <div class="cancel" id="action-cancel">Cancel</div>
                     <div class="submit" id="action-ok">OK</div>
                 </div>
+                <div class="clearfix"></div>
             </div>
         </div>
     </body>

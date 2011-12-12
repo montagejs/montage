@@ -88,15 +88,6 @@
         "properties": {
             "element": {
                 "#": "alert-container"
-            },
-            "headerEl": {
-                "#": "header"
-            },
-            "titleEl": {
-                "#": "title"
-            },
-            "msgEl": {
-                "#": "alert-msg"
             }
         }
     }
@@ -107,18 +98,23 @@
     </head>
     <body>
         <div id="alert-container" class="montage-alert-dialog">
-            <div id="header" class="header">
-                <h4 id="title" class="title"></h4>
+            
+            <div class="montage-popup-header">
+                <h3 id="title" class="title"></h3>
             </div>
-            <div class="content">
-                <div class="msg-container">
+            
+            <div class="montage-alert-content">
                     <div id="msg" class="msg"></div>
-                    <div id="msg-detail" class="msg-detail"></div>
-                </div>
-                <div class="action-container">
+                    <div id="msg-detail" class="msg-detail"></div>                
+            </div>
+            
+            <div class="montage-popup-footer">
+                <div class="montage-alert-actions">
                     <div class="submit" id="action-ok">OK</div>
                 </div>
+                <div class="clearfix"></div>
             </div>
+            
         </div>
     </body>
 </html>

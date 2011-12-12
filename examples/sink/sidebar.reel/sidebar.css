@@ -1,0 +1,16 @@
+
+.sidebar {
+    background-color: whitesmoke;
+}
+
+.sidebar .sidebar-list-item {
+    border-bottom: 1px solid #eee;
+}
+.sidebar .sidebar-list .selected {
+    background-color: #fff;
+    margin-left: -35px;
+    padding-left: 10px;
+    border-left: 21px solid #FE4365;
+}
+.sidebar .sidebar-list .selected h4 {
+}

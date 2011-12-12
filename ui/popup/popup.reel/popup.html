@@ -29,9 +29,6 @@
             "slot": {
                 "@": "slot1"
             },
-            "tipEl": {
-                "#": "montage-tooltip-pointer"
-            },
             "contentEl": {
                 "#": "popup-content"
             },
@@ -45,11 +42,8 @@
 
     </head>
     <body>
-        <div id="popup-container" class="montage-hide">
-            <div id="popup-wrapper" class="montage-popup-tooltip">
-                <div id="montage-tooltip-pointer" class="montage-popup-tooltip-pointer-up">
-                	<div class="montage-popup-tooltip-pointer-up-inner"></div>
-                </div>
+        <div id="popup-container" class="montage-hide montage-popup-container">
+            <div id="popup-wrapper" class="montage-popup-tooltip montage-popup-wrapper montage-popup-border">
                 <div id="popup-content" class="montage-popup-content"></div>
             </div>
         </div>

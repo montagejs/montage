@@ -1,0 +1,67 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" type="text/css" href="critical-error-dialog.css">
+        <script type="text/montage-serialization">
+{
+    "dynamictext2": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "msg-detail"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "details",
+                "oneway": true
+            }
+        }
+    },
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "Restart",
+            "element": {"#": "action-restart"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "owner": {
+        "module": "components/popup/critical-error-dialog.reel",
+        "name": "CriticalErrorDialog",
+        "properties": {
+            "element": {"#": "dialog-container"}
+        }
+    }
+}
+    </script>
+
+
+    </head>
+    <body>
+        <div id="dialog-container" class="dialog-container">
+            
+            <div class="montage-popup-header">
+                <h3 id="title" class="title">Critical Error</h3>
+            </div>
+            
+            <div class="dialog-content">
+                    <div id="msg-detail" class="msg-detail"></div>                
+            </div>
+            
+            <div class="montage-popup-footer">
+                <div class="dialog-actions">
+                    <div class="submit action-restart" id="action-restart">Restart</div>
+                </div>
+                <div class="clearfix"></div>
+            </div>
+        </div>
+    </body>
+</html>

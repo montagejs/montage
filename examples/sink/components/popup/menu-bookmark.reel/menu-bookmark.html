@@ -1,0 +1,78 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" type="text/css" href="menu-bookmark.css">
+        <script type="text/montage-serialization">
+{
+    "textfield1": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "txt-label"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "label",
+                "oneway": false
+            }
+        }
+    },
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "action-bookmark"},
+            "identifier": "Addbookmark"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "Addandfavorite",
+            "element": {"#": "action-bookmark-fav"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "owner": {
+        "module": "components/popup/menu-bookmark.reel",
+        "name": "MenuBookmark",
+        "properties": {
+            "element": {"#": "menu-container"}
+        }
+    }
+}
+    </script>
+
+    
+    </head>
+    <body>
+        <div id="menu-container" class="menu-container" >
+            <h3 class="title">Bookmark</h3>
+            <div class="content">
+                <div class="action-container">
+                    <div class="submit action" id="action-bookmark" style="margin: 10px 0;">Add Bookmark</div>
+                    <div class="text action" id="action-bookmark-fav">Bookmark &amp; Favorite</div>
+                </div>
+                <div class="msg-container">
+                    <label>Add a custom label</label>
+                    <input id="txt-label" type="text" class="textfield" value="The New York Times - Breaking News" />
+                </div>
+                
+            </div>
+        </div>
+    </body>
+</html>

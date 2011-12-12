@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Button Group Sandbox</title>
+        <script type="text/montage-serialization">
+{
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1_1"}
+        }
+    },
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1_2"}
+        }
+    },
+    "button3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1_3"}
+        }
+    },
+    "button4": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1_4"}
+        }
+    },
+    "buttongroup1": {
+        "module": "montage/ui/button-group.reel",
+        "name": "ButtonGroup",
+        "properties": {
+            "element": {"#": "buttonGroup1"}
+        },
+        "bindings": {
+            "iconic": {
+                "boundObject": {"@": "toggle1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "button5": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button2_1"}
+        }
+    },
+    "button6": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button2_2"}
+        }
+    },
+    "button7": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button2_3"}
+        }
+    },
+    "button8": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button2_4"}
+        }
+    },
+    "buttongroup2": {
+        "module": "montage/ui/button-group.reel",
+        "name": "ButtonGroup",
+        "properties": {
+            "element": {"#": "buttonGroup2"}
+        },
+        "bindings": {
+            "iconic": {
+                "boundObject": {"@": "toggle1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "toggle1": {
+        "module": "montage/ui/toggle.reel",
+        "name": "Toggle",
+        "properties": {
+            "element": {"#": "iconicToggle"}
+        }
+    },
+    "owner": {
+        "module": "components/button-group-example.reel",
+        "name": "ButtonGroupExample",
+        "properties": {
+            "element": {"#": "button-group-example"}
+        }
+    }
+}
+    </script>
+
+    </head>
+
+    <body>
+        <div id="button-group-example">
+            <div class="row ">
+                <div class="span8">
+                    <h3>Button Group</h3>
+                    <p class="">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc volutpat nisi et ante consequat sit amet feugiat nisl vehicula. In fringilla felis vitae dolor dictum et faucibus quam pellentesque. Aenean in enim mi, et volutpat urna. Nunc ac orci nec mi euismod cursus id in odio.
+                    </p>
+                </div>
+            </div>
+            
+            <div id="buttonGroup1">
+                <div id="button1_1" class="submit icon"><img src="images/play.png"/>Run</div>
+                <div id="button1_2" class="text icon"><img src="images/upload.png" />Save</div>
+                <div id="button1_3" class="text disabled">Delete</div>
+                <div id="button1_4" class="cancel">Cancel</div>
+            </div>
+            <br/>
+            <div id="buttonGroup2" class="small">
+                <div id="button2_1" class="submit icon"><img src="images/play.png"/>Run</div>
+                <div id="button2_2" class="text icon"><img src="images/upload.png" />Save</div>
+                <div id="button2_3" class="text disabled">Delete</div>
+                <div id="button2_4" class="cancel">Cancel</div>
+            </div>
+            <br/>
+            Iconic: 
+            <div id="iconicToggle"></div>
+        </div>
+    </body>
+</html>

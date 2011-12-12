@@ -276,7 +276,6 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
     handleInput: {
         enumerable: false,
         value: function() {
-            event.target = this;
             if (this.converter) {
                 if (this.converter.allowPartialConversion === true && this.updateOnInput === true) {
                     this._setValue();
@@ -284,8 +283,6 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
             } else {
                 this._setValue();
             }
-
-            this.dispatchEvent(event);
         }
     },
 /**
@@ -296,11 +293,8 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
     handleChange: {
         enumerable: false,
         value: function(event) {
-            event.target = this;
             this._setValue();
-
             this._hasFocus = false;
-            this.dispatchEvent(event);
         }
     },
 /**
@@ -311,9 +305,7 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
     handleBlur: {
         enumerable: false,
         value: function(event) {
-            event.target = this;
             this._hasFocus = false;
-            this.dispatchEvent(event);
         }
     },
 /**
@@ -324,9 +316,7 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
     handleFocus: {
         enumerable: false,
         value: function(event) {
-            event.target = this;
             this._hasFocus = true;
-            this.dispatchEvent(event);
         }
     }
 
