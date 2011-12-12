@@ -524,6 +524,7 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
 
             el.addEventListener("blur", this);
             el.addEventListener("input", this);
+            el.addEventListener("keydown", this);
             el.addEventListener("keypress", this);
             el.addEventListener(window.Touch ? "touchstart" : "mousedown", this);
             document.addEventListener(window.Touch ? "touchend" : "mouseup", this);
@@ -561,11 +562,6 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
 
             this._hasFocus = false;
 
-/*            if (this._selectionChangeTimer) {
-                clearTimeout(this._selectionChangeTimer);
-                this._selectionChangeTimer = null;
-            }
-*/
             // Force a selectionchange when we lose the focus
             this.handleSelectionchange();
 
@@ -625,11 +621,34 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
     Description TODO
     @function
     */
-    handleKeyup: {
+    handleKeydown: {
         enumerable: false,
-        value: function() {
-            if (this._hasSelectionChangeEvent === false) {
-                this.handleSelectionchange();
+        value: function(event) {
+            var keychar = String.fromCharCode(event.keyCode),
+                stopEvent = false;
+
+            if (event.metaKey || event.ctrlKey) {
+                var SHIFT = 1, CTRL = 2, ALT = 4, META = 8,
+                    COMMAND = window.navigator.userAgent.match(/\bmacintosh\b/i) ? META : CTRL;
+                    modifiers = event.shiftKey + (event.ctrlKey << 1) + (event.altKey << 2) + (event.metaKey << 3);
+
+                if (modifiers == COMMAND) {
+                    if (keychar == "B") {
+                        this.doAction("bold");
+                        stopEvent = true;
+                    } else if (keychar == "U") {
+                        this.doAction("underline");
+                        stopEvent = true;
+                    } else if (keychar == "I") {
+                        this.doAction("italic");
+                        stopEvent = true;
+                    }
+                }
+            }
+
+            if (stopEvent) {
+                event.preventDefault();
+                event.stopPropagation();
             }
         }
     },
@@ -1169,35 +1188,6 @@ exports.RichTextfield = Montage.create(Component,/** @lends module:"montage/ui/r
                 }
             }
             return 0;
-        }
-    },
-
-    _selectionRange: {
-        enumerable: false,
-        value: function(node) {
-            var userSelection,
-                range;
-
-            if (window.getSelection) {
-                userSelection = window.getSelection();
-            } else if (document.selection) { // Opera!
-                userSelection = document.selection.createRange();
-            }
-
-            if (userSelection.getRangeAt) {
-                if (userSelection.rangeCount) {
-                    return userSelection.getRangeAt(0);
-                } else {
-                    // return an empty selection
-                    return document.createRange();
-                }
-            }
-            else { // Safari!
-                var range = document.createRange();
-                range.setStart(userSelection.anchorNode, userSelection.anchorOffset);
-                range.setEnd(userSelection.focusNode, userSelection.focusOffset);
-                return range;
-            }
         }
     }
 });
