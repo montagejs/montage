@@ -4,47 +4,53 @@
         <title>Button Group Sandbox</title>
         <script type="text/montage-serialization">
 {
-    "button1": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
-        "properties": {
-            "element": {"#": "button1_1"}
-        }
+"button1": {
+    "module": "montage/ui/button.reel",
+    "name": "Button",
+    "properties": {
+        "element": {"#": "button1_1"}
     },
-    "button2": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
-        "properties": {
-            "element": {"#": "button1_2"}
+    "listeners": [
+        {
+            "type": "action",
+            "listener": {"@": "owner"}
         }
+    ]
+},
+"button2": {
+    "module": "montage/ui/button.reel",
+    "name": "Button",
+    "properties": {
+        "element": {"#": "button1_2"}
+    }
+},
+"button3": {
+    "module": "montage/ui/button.reel",
+    "name": "Button",
+    "properties": {
+        "element": {"#": "button1_3"}
+    }
+},
+"button4": {
+    "module": "montage/ui/button.reel",
+    "name": "Button",
+    "properties": {
+        "element": {"#": "button1_4"}
+    }
+},
+"buttongroup1": {
+    "module": "montage/ui/button-group.reel",
+    "name": "ButtonGroup",
+    "properties": {
+        "element": {"#": "buttonGroup1"}
     },
-    "button3": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
-        "properties": {
-            "element": {"#": "button1_3"}
+    "bindings": {
+        "iconic": {
+            "boundObject": {"@": "toggle1"},
+            "boundObjectPropertyPath": "value"
         }
-    },
-    "button4": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
-        "properties": {
-            "element": {"#": "button1_4"}
-        }
-    },
-    "buttongroup1": {
-        "module": "montage/ui/button-group.reel",
-        "name": "ButtonGroup",
-        "properties": {
-            "element": {"#": "buttonGroup1"}
-        },
-        "bindings": {
-            "iconic": {
-                "boundObject": {"@": "toggle1"},
-                "boundObjectPropertyPath": "value"
-            }
-        }
-    },
+    }
+},
     "button5": {
         "module": "montage/ui/button.reel",
         "name": "Button",
@@ -111,11 +117,11 @@
                 <div class="span8">
                     <h3>Button Group</h3>
                     <p class="">
-                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc volutpat nisi et ante consequat sit amet feugiat nisl vehicula. In fringilla felis vitae dolor dictum et faucibus quam pellentesque. Aenean in enim mi, et volutpat urna. Nunc ac orci nec mi euismod cursus id in odio.
+                        The ButtonGroup presents a styled list of Button components in a row. It supports icon-only mode for buttons with image icons.
                     </p>
                 </div>
             </div>
-            
+
             <div id="buttonGroup1">
                 <div id="button1_1" class="submit icon"><img src="images/play.png"/>Run</div>
                 <div id="button1_2" class="text icon"><img src="images/upload.png" />Save</div>
@@ -130,8 +136,86 @@
                 <div id="button2_4" class="cancel">Cancel</div>
             </div>
             <br/>
-            Iconic: 
+            Iconic:
             <div id="iconicToggle"></div>
+
+            <h6>HTML</h6>
+            <pre class="prettyprint">
+&lt;div id="buttonGroup1"&gt;
+    &lt;div id="button1_1" class="submit icon"&gt;&lt;img src="images/play.png"/&gt;Run&lt;/div&gt;
+    &lt;div id="button1_2" class="text icon"&gt;&lt;img src="images/upload.png" /&gt;Save&lt;/div&gt;
+    &lt;div id="button1_3" class="text disabled"&gt;Delete&lt;/div&gt;
+    &lt;div id="button1_4" class="cancel"&gt;Cancel&lt;/div&gt;
+&lt;/div&gt;
+&lt;br/&gt;
+&lt;div id="buttonGroup2" class="small"&gt;
+    &lt;div id="button2_1" class="submit icon"&gt;&lt;img src="images/play.png"/&gt;Run&lt;/div&gt;
+    &lt;div id="button2_2" class="text icon"&gt;&lt;img src="images/upload.png" /&gt;Save&lt;/div&gt;
+    &lt;div id="button2_3" class="text disabled"&gt;Delete&lt;/div&gt;
+    &lt;div id="button2_4" class="cancel"&gt;Cancel&lt;/div&gt;
+&lt;/div&gt;
+&lt;br/&gt;
+Iconic:
+&lt;div id="iconicToggle"&gt;&lt;/div&gt;
+
+            </pre>
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint">
+{
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1_1"}
+        }
+    },
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1_2"}
+        }
+    },
+    "button3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1_3"}
+        }
+    },
+    "button4": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button1_4"}
+        }
+    },
+    "buttongroup1": {
+        "module": "montage/ui/button-group.reel",
+        "name": "ButtonGroup",
+        "properties": {
+            "element": {"#": "buttonGroup1"}
+        },
+        "bindings": {
+            "iconic": {
+                "boundObject": {"@": "toggle1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    }
+}
+         </pre>
+
+         <h6>CSS</h6>
+        The ButtonGroup supports a compact mode that you can enable by adding "small" to the ButtonGroup element's CSS class list.
+        <pre class="prettyprint">
+&lt;div id="buttonGroup2" class="small"&gt;
+    &lt;div id="button2_1" class="submit icon"&gt;&lt;img src="images/play.png"/&gt;Run&lt;/div&gt;
+    &lt;div id="button2_2" class="text icon"&gt;&lt;img src="images/upload.png" /&gt;Save&lt;/div&gt;
+&lt;/div&gt;
+            </pre>
+
         </div>
     </body>
 </html>

@@ -7,14 +7,18 @@ var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.ImageExample = Montage.create(Component, {
-    
+
     images: {
         value: null
     },
-    
+
     selected: {
         value: null
-    }
-    
+    },
 
+    prepareForDraw: {
+    	value: function() {
+    		prettyPrint();
+    	}
+    }
 });

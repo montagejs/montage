@@ -26,7 +26,7 @@ exports.MenuBookmark = Montage.create(Component, {
             var anEvent = document.createEvent("CustomEvent");
             anEvent.initCustomEvent("addbookmark", true, true, 'Bookmark Added - ' + this.label);
 
-            this.dispatchEvent(anEvent);                       
+            this.dispatchEvent(anEvent);
             Notifier.show('Bookmark Added', 2000, {top: 1, right: 10});
         }
     },
@@ -40,6 +40,13 @@ exports.MenuBookmark = Montage.create(Component, {
             this.dispatchEvent(anEvent);
 
             Notifier.show('Bookmark Added and favorited', 2000, {top: 1, right: 10});
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
         }
     }
 

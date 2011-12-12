@@ -22,7 +22,7 @@ exports.PopupExample = Montage.create(Component, {
     },
     handleAddAndFavBookmark: {
         value: function(e) {
-            this.log('Bookmark added and favorited = ' + this.bookmarkMenu.label);            
+            this.log('Bookmark added and favorited = ' + this.bookmarkMenu.label);
             this._bookmarkMenuPopup.hide();
         }
     },
@@ -31,15 +31,15 @@ exports.PopupExample = Montage.create(Component, {
         value: function(evt) {
             var popup = this._bookmarkMenuPopup;
             if(!popup) {
-                popup = Popup.create();            
+                popup = Popup.create();
                 popup.content = this.bookmarkMenu;
                 popup.anchor = this.btnBookmark;
                 this._bookmarkMenuPopup = popup;
-                
+
                 this.bookmarkMenu.addEventListener('addbookmark', this);
                 this.bookmarkMenu.addEventListener('addAndFavBookmark', this);
             }
-            popup.show();             
+            popup.show();
             evt.stopPropagation();
         }
     },
@@ -64,13 +64,13 @@ exports.PopupExample = Montage.create(Component, {
                 popup = Popup.create();
                 popup.content = this.customMessage;
                 popup.anchor = this.btnShowMessage;
-                
+
                 this.messagePopup = popup;
-                
+
                 this.customMessage.addEventListener('message_reply', this);
                 this.customMessage.addEventListener('message_close', this);
             }
-             
+
             popup.show();
             evt.stopPropagation();
         }
@@ -96,34 +96,34 @@ exports.PopupExample = Montage.create(Component, {
                 popup.anchor = this.btnCriticalError;
                 popup.modal = true;
                 this._criticalErrorPopup = popup;
-                
+
                 this.criticalError.addEventListener('message_restart', this);
             }
-             
+
             popup.show();
             evt.stopPropagation();
         }
     },
 
 
-    // Default Alert 
+    // Default Alert
     handleShowAlertAction: {
         value: function(evt) {
-            
+
             var self = this;
             Alert.show('We were unable to process your request. Please try again later.', function() {
                 self.log("User clicked OK on the alert dialog");
             });
-            
+
         }
     },
-    
+
     startLoading: {
         value: function() {
             Notifier.show('Loading ... please wait', null, {top: 1, right: 10});
         }
     },
-    
+
     stopLoading: {
         value: function() {
             Notifier.hide();
@@ -139,7 +139,7 @@ exports.PopupExample = Montage.create(Component, {
                 self.log('.. and we are done.');
                 self.stopLoading();
             }, 3000);
-            
+
             evt.stopPropagation();
         }
     },
@@ -149,7 +149,7 @@ exports.PopupExample = Montage.create(Component, {
             var self = this,
             app = this.application,
             msg = 'Unable to reach the server. Retrying in ';
-            
+
             Notifier.show(msg + ' 5s');
 
             var count = 5;
@@ -172,14 +172,14 @@ exports.PopupExample = Montage.create(Component, {
         value: function(evt) {
             var logger = this.logger;
             var self = this;
-                        
+
             Confirm.show('Are you sure?', function() {
                 self.log("User clicked on OK");
                 Notifier.show('Item deleted from List', 2000);
             }, function() {
                 self.log("User clicked on Cancel");
             });
-            
+
             evt.stopPropagation();
         }
     },
@@ -203,15 +203,15 @@ exports.PopupExample = Montage.create(Component, {
                 eventManager.addEventListener('message.reply', log);
 
                 // ActionSheet
-                
+
                 var btnMenu = document.querySelector('.action-show-settings-menu');
-                
+
                 var menuPopup = Popup.create();
                 menuPopup.content = this.bookmarkMenu2;
-                menuPopup.anchor = btnMenu;                
-                                
+                menuPopup.anchor = btnMenu;
+
                 btnMenu.addEventListener('click', function(evt) {
-                    evt.preventDefault();                    
+                    evt.preventDefault();
                     menuPopup.show();
                 }, false);
 
@@ -223,17 +223,24 @@ exports.PopupExample = Montage.create(Component, {
                     evt.preventDefault();
                     asPopup.show();
                 }, false);
-                
+
                 this.firstDraw = true;
 
             }
 
         }
     },
-    
+
     deserializedFromTemplate: {
         value: function() {
             this.addEventListener("action", this);
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
         }
     }
 

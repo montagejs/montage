@@ -39,5 +39,13 @@ exports.ActionSheet = Montage.create(Component, {
             console.log('call');
             Notifier.show('Voice mail left for user', 2000);
         }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
+        }
     }
+
 });

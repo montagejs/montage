@@ -8,7 +8,7 @@ var Montage = require("montage/core/core").Montage,
     Converter = require("montage/core/converter/converter").Converter;
 
 exports.Converters = Montage.create(Component, {
-    
+
     _number: {
         value: 9990.09
     },
@@ -78,6 +78,13 @@ exports.Converters = Montage.create(Component, {
             var value = this.$currencyValue.value;
             this.currencyCmp.value = value;
         }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
+        }
     }
 
 });
@@ -88,7 +95,7 @@ exports.TempConverter = Montage.create(Converter, {
     allowPartialConversion: {
         value: true
     },
-    
+
     // convert fahrenheit to celsius (showing our non-metric heritage here)
     convert: {
         value: function(value) {
