@@ -5,9 +5,7 @@
  </copyright> */
 var Montage = require("montage").Montage;
 var Selector = require("montage/data/selector").Selector;
-var Q = require("montage/core/promise");
 var logger = require("montage/core/logger").logger("selector-spec");
-
 
 var CustomSelector = exports.CustomSelector = Montage.create(Selector, {
 
@@ -71,7 +69,7 @@ describe("data/selector/selector-spec", function() {
             });
 
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
             runs(function() {
                 var result = promise.valueOf();

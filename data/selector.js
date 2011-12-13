@@ -21,7 +21,7 @@ var Exception = require("core/exception").Exception;
 var Map = require("core/shim/structures").Map;
 var Set = require("core/shim/structures").Set;
 var OrderedSet = require("core/shim/structures").OrderedSet;
-var Q = require("core/promise");
+var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("selector");
 /**
     @class module:montage/data/selector.SelectorRegistry
@@ -330,7 +330,7 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
     filterArray: {
         value: function(array, parameters) {
             if (!this.isArray(array) || (array.length === 0)) {
-                return Q.ref(array);
+                return Promise.ref(array);
             }
 
             // First we need a clone of the array object to store the results.
@@ -342,15 +342,15 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
 
             // this promise will be rejected when the *first* selector is rejected
             // or fulfilled with the results array when *all* selectors are fulfilled
-            var result = Q.defer();
+            var result = Promise.defer();
             var self = this;
 
             var allSelectorsDone = array.reduce(function(previousSelectorDone, element) {
                 // get all selector evaluation running in parallel
 
                 var include = self.accept(InMemorySelectorEvaluator.create().initWithTargetAndParameters(element, parameters));
-                return Q.when(include, function (include) {
-                    return Q.when(previousSelectorDone, function () {
+                return Promise.when(include, function (include) {
+                    return Promise.when(previousSelectorDone, function () {
                         if (include) {
                             results.add(element);
                         }
@@ -361,11 +361,11 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
                 // the initial value of "previousSelectorDone" is a fulfilled promise for undefined:
             }, undefined);
 
-            Q.when(allSelectorsDone, function () {
+            Promise.when(allSelectorsDone, function () {
                 result.resolve(results);
             });
 
-            return Q.when(result.promise, function () {
+            return Promise.when(result.promise, function () {
                 return results;
             });
         }
@@ -374,7 +374,7 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
     Description TODO
     @function
     @param {Object} evaluator The acceptance evaluator.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     accept: {
         value: function(evaluator) {
@@ -384,7 +384,7 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
             } else {
                 logger.error("The visitor does not implement the method for the selector: " + this.visitorMethodName);
             }
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 
@@ -420,7 +420,7 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
         value: function(evaluatorID) {
             // This is a token do nothing method.
             var method = function(selector) {
-                return Q.ref(null);
+                return Promise.ref(null);
             };
             return method;
         }
@@ -564,53 +564,53 @@ var SelectorEvaluator = exports.SelectorEvaluator = Montage.create(Montage,/** @
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Boolean} Q.ref(false)
+    @returns {Boolean} Promise.ref(false)
     */
     visit: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(false);
+            return Promise.ref(false);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitProperty: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Boolean} Q.ref(true)
+    @returns {Boolean} Promise.ref(true)
     */
     visitTrue: {
         value: function(selector) {
-            return Q.ref(true);
+            return Promise.ref(true);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Boolean} Q.ref(false)
+    @returns {Boolean} Promise.ref(false)
     */
     visitFalse: {
         value: function(selector) {
-            return Q.ref(false);
+            return Promise.ref(false);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(value)
+    @returns Promise.ref(value)
     */
     visitParameter: {
         value: function(selector) {
@@ -618,295 +618,295 @@ var SelectorEvaluator = exports.SelectorEvaluator = Montage.create(Montage,/** @
             if (typeof value === 'undefined') {
                 value = null;
             }
-            return Q.ref(value);
+            return Promise.ref(value);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitEqualComparison: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitNotEqualComparison: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitLessComparison: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitLessOrEqualComparison: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitGreaterComparison: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitGreaterOrEqualComparison: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitAndBoolean: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitOrBoolean: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitXorBoolean: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitNotBoolean: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitContainsString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitCaseInsensitiveContainsString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitLikeString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitCaseInsensitiveLikeString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitStartsWithString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitCaseInsensitiveStartsWithString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitEndsWithString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitCaseInsensitiveEndsWithString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitFilterArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitFilteredArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitFirstArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitLastArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitOneArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitRequiredOneArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     }
 
@@ -946,7 +946,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(target.getProperty(selector.propertyPath))
+    @returns Promise.ref(target.getProperty(selector.propertyPath))
     */
     visitProperty: {
         value: function(selector) {
@@ -957,9 +957,9 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 target.forEach(function(object, index) {
                     res[index] = object.getProperty(propPath);
                 });
-                return Q.ref(res);
+                return Promise.ref(res);
             }
-            return Q.ref(target.getProperty(selector.propertyPath));
+            return Promise.ref(target.getProperty(selector.propertyPath));
         }
     },
 
@@ -967,7 +967,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0] == values[1])
+    @returns {Array} Promise.ref(values[0] == values[1])
     */
     visitEqualComparison: {
         value: function(selector) {
@@ -975,8 +975,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.rightHand == null;
             }
             var right = Selector.isSelector(selector.rightHand) ? selector.rightHand.accept(selector) : selector.rightHand;
-            return Q.all([this._leftHand(selector), right]).then(function(values) {
-                return Q.ref(values[0] == values[1]);
+            return Promise.all([this._leftHand(selector), right]).then(function(values) {
+                return Promise.ref(values[0] == values[1]);
             });
         }
     },
@@ -984,7 +984,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0] != values[1])
+    @returns {Array} Promise.ref(values[0] != values[1])
     */
     visitNotEqualComparison: {
         value: function(selector) {
@@ -992,8 +992,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.rightHand == null;
             }
             var right = Selector.isSelector(selector.rightHand) ? selector.rightHand.accept(selector) : selector.rightHand;
-            return Q.all([this._leftHand(selector), right]).then(function(values) {
-                return Q.ref(values[0] != values[1]);
+            return Promise.all([this._leftHand(selector), right]).then(function(values) {
+                return Promise.ref(values[0] != values[1]);
             });
         }
     },
@@ -1001,7 +1001,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0] < values[1])
+    @returns {Array} Promise.ref(values[0] < values[1])
     */
     visitLessComparison: {
         value: function(selector) {
@@ -1009,8 +1009,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.rightHand == null;
             }
             var right = Selector.isSelector(selector.rightHand) ? selector.rightHand.accept(selector) : selector.rightHand;
-            return Q.all([this._leftHand(selector), right]).then(function(values) {
-                return Q.ref(values[0] < values[1]);
+            return Promise.all([this._leftHand(selector), right]).then(function(values) {
+                return Promise.ref(values[0] < values[1]);
             });
         }
     },
@@ -1018,7 +1018,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0] <= values[1])
+    @returns {Array} Promise.ref(values[0] <= values[1])
     */
     visitLessOrEqualComparison: {
         value: function(selector) {
@@ -1026,8 +1026,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.rightHand == null;
             }
             var right = Selector.isSelector(selector.rightHand) ? selector.rightHand.accept(selector) : selector.rightHand;
-            return Q.all([this._leftHand(selector), right]).then(function(values) {
-                return Q.ref(values[0] <= values[1]);
+            return Promise.all([this._leftHand(selector), right]).then(function(values) {
+                return Promise.ref(values[0] <= values[1]);
             });
         }
     },
@@ -1035,7 +1035,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0] > values[1])
+    @returns {Array} Promise.ref(values[0] > values[1])
     */
     visitGreaterComparison: {
         value: function(selector) {
@@ -1043,8 +1043,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.rightHand == null;
             }
             var right = Selector.isSelector(selector.rightHand) ? selector.rightHand.accept(selector) : selector.rightHand;
-            return Q.all([this._leftHand(selector), right]).then(function(values) {
-                return Q.ref(values[0] > values[1]);
+            return Promise.all([this._leftHand(selector), right]).then(function(values) {
+                return Promise.ref(values[0] > values[1]);
             });
         }
     },
@@ -1052,7 +1052,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0] >= values[1])
+    @returns {Array} Promise.ref(values[0] >= values[1])
     */
     visitGreaterOrEqualComparison: {
         value: function(selector) {
@@ -1060,8 +1060,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.rightHand == null;
             }
             var right = Selector.isSelector(selector.rightHand) ? selector.rightHand.accept(selector) : selector.rightHand;
-            return Q.all([this._leftHand(selector), right]).then(function(values) {
-                return Q.ref(values[0] >= values[1]);
+            return Promise.all([this._leftHand(selector), right]).then(function(values) {
+                return Promise.ref(values[0] >= values[1]);
             });
         }
     },
@@ -1069,7 +1069,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(result)
+    @returns Promise.ref(result)
     */
     visitAndBoolean: {
         value: function(selector) {
@@ -1080,11 +1080,11 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 promises[index] = Selector.isSelector(item.leftHand) ? item.leftHand.accept(selector) : item.leftHand;
             }
             var result = true;
-            return Q.all(promises).then(function(values) {
+            return Promise.all(promises).then(function(values) {
                 for (index = 0; typeof (item = values[index]) !== "undefined"; index++) {
                     result = result & values[index];
                 }
-                return Q.ref(result);
+                return Promise.ref(result);
             });
         }
     },
@@ -1092,7 +1092,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(result)
+    @returns Promise.ref(result)
     */
     visitOrBoolean: {
         value: function(selector) {
@@ -1103,11 +1103,11 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 promises[index] = Selector.isSelector(item.leftHand) ? item.leftHand.accept(selector) : item.leftHand;
             }
             var result = false;
-            return Q.all(promises).then(function(values) {
+            return Promise.all(promises).then(function(values) {
                 for (index = 0; typeof (item = values[index]) !== "undefined"; index++) {
                     result = result | values[index];
                 }
-                return Q.ref(result);
+                return Promise.ref(result);
             });
         }
     },
@@ -1115,31 +1115,31 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitXorBoolean: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitNotBoolean: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0].match(values[1]))
+    @returns {Array} Promise.ref(values[0].match(values[1]))
     */
     visitContainsString: {
         value: function(selector) {
@@ -1147,9 +1147,9 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.stringFragment == null;
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
-            return Q.all([this._leftHand(selector), fragment]).then(function(values) {
+            return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
                 /* Returns an array of all matches in the string*/
-                return Q.ref(values[0].match(values[1]));
+                return Promise.ref(values[0].match(values[1]));
             });
         }
     },
@@ -1157,7 +1157,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0].toLowerCase().match(values[1].toLowerCase()))
+    @returns {Array} Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()))
     */
     visitCaseInsensitiveContainsString: {
         value: function(selector) {
@@ -1165,8 +1165,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.stringFragment == null;
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
-            return Q.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Q.ref(values[0].toLowerCase().match(values[1].toLowerCase()));
+            return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
+                return Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()));
             });
         }
     },
@@ -1174,31 +1174,31 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitLikeString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitCaseInsensitiveLikeString: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0].match("^"+values[1]))
+    @returns {Array} Promise.ref(values[0].match("^"+values[1]))
     */
     visitStartsWithString: {
         value: function(selector) {
@@ -1206,8 +1206,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.stringFragment == null;
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
-            return Q.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Q.ref(values[0].match("^"+values[1]));
+            return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
+                return Promise.ref(values[0].match("^"+values[1]));
             });
         }
     },
@@ -1215,7 +1215,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0].toLowerCase().match("^"+values[1].toLowerCase()))
+    @returns {Array} Promise.ref(values[0].toLowerCase().match("^"+values[1].toLowerCase()))
     */
     visitCaseInsensitiveStartsWithString: {
         value: function(selector) {
@@ -1223,8 +1223,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.stringFragment == null;
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
-            return Q.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Q.ref(values[0].toLowerCase().match("^"+values[1].toLowerCase()));
+            return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
+                return Promise.ref(values[0].toLowerCase().match("^"+values[1].toLowerCase()));
             });
         }
     },
@@ -1232,7 +1232,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0].match(values[1]+"$"))
+    @returns {Array} Promise.ref(values[0].match(values[1]+"$"))
     */
     visitEndsWithString: {
         value: function(selector) {
@@ -1240,8 +1240,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.stringFragment == null;
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
-            return Q.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Q.ref(values[0].match(values[1]+"$"));
+            return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
+                return Promise.ref(values[0].match(values[1]+"$"));
             });
         }
     },
@@ -1249,7 +1249,7 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns {Array} Q.ref(values[0].toLowerCase().match(values[1].toLowerCase()+"$"))
+    @returns {Array} Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()+"$"))
     */
     visitCaseInsensitiveEndsWithString: {
         value: function(selector) {
@@ -1257,8 +1257,8 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
                 return selector.stringFragment == null;
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
-            return Q.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Q.ref(values[0].toLowerCase().match(values[1].toLowerCase()+"$"));
+            return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
+                return Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()+"$"));
             });
         }
     },
@@ -1266,72 +1266,72 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitFilterArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitFilteredArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitFirstArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitLastArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitOneArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     },
 /**
     Description TODO
     @function
     @param {Object} selector The selector object.
-    @returns Q.ref(null)
+    @returns Promise.ref(null)
     */
     visitRequiredOneArray: {
         value: function(selector) {
             // Placeholder.
-            return Q.ref(null);
+            return Promise.ref(null);
         }
     }
 
