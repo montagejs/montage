@@ -204,7 +204,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 action = actions[key];
                 state = "false";
                 if (action.enabled && action.status) {
-                    state = (document.queryCommandState(key) ? "true" : "false");
+                    state = document.queryCommandValue(key);
+                    if (typeof state == "boolean") {
+                        state = state ? "true" : "false";
+                    }
+                    // JFD TODO: We might need to do some conversion for fontsize, fontname and colors
                 }
 
                 if (states[key] !== state) {
@@ -253,14 +257,18 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     _actions: {
         enumerable: false,
         value: {
-            bold: {enabled: true, status: true},
-            italic: {enabled: true, status: true},
-            underline: {enabled: true, status: true},
-            strikethrough: {enabled: true, status: true},
-            indent: {enabled: true, status: false},
-            outdent: {enabled: true, status: false},
-            insertorderedlist: {enabled: true, status: true},
-            insertunorderedlist: {enabled: true, status: true}
+            bold: {enabled: true, needsValue:false, status: true},
+            italic: {enabled: true, needsValue:false, status: true},
+            underline: {enabled: true, needsValue:false, status: true},
+            strikethrough: {enabled: true, needsValue:false, status: true},
+            indent: {enabled: true, needsValue:false, status: false},
+            outdent: {enabled: true, needsValue:false, status: false},
+            insertorderedlist: {enabled: true, needsValue:false, status: true},
+            insertunorderedlist: {enabled: true, needsValue:false, status: true},
+            fontname: {enabled: true, needsValue:true, status: true},
+            fontsize: {enabled: true, needsValue:true, status: true},
+            hilitecolor: {enabled: true, needsValue:true, status: true},
+            forecolor: {enabled: true, needsValue:true, status: true}
         }
     },
 
@@ -1035,9 +1043,26 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleAction: {
         enumerable: false,
         value: function(event) {
-            var action = event.currentTarget.action || event.currentTarget.identifier;
+            var target = event.currentTarget,
+                action = target.action || target.identifier,
+                value = false;
             if (action) {
-                this.doAction(action);
+                if (this._actions[action].needsValue) {
+                    value = target.actionValue;
+                    if (value !== undefined) {
+                        value = target[value];
+                        if (value === undefined) {
+                            value = target.actionValue;
+                        }
+                    } else {
+                        value = target.value;
+                    }
+
+                    if (value === undefined) {
+                        value = false;
+                    }
+                }
+                this.doAction(action, value);
             }
         }
     },
@@ -1048,12 +1073,15 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     */
     doAction: {
         enumerable: true,
-        value: function(action) {
-
+        value: function(action, value) {
             // Check if the action is valid and enabled
             if (this._actions[action] && this._actions[action].enabled === true) {
+                if (value === undefined) {
+                    value = false;
+                }
+
                 document.execCommand("styleWithCSS", false, true);
-                document.execCommand(action, false, false);
+                document.execCommand(action, false, value);
                 document.execCommand("styleWithCSS", false, false);
 
                 this.handleSelectionchange();
