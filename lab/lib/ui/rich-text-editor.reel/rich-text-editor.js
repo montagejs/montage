@@ -308,6 +308,60 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         }
     },
 
+    /**
+      Description TODO
+     @type {Function}
+    */
+    setActionShortcut: {
+        enumerable: true,
+        value: function(action, shortcut) {
+
+            var modifiersMap,
+                keys,
+                nbrKeys,
+                modifiers,
+                modifier,
+                i;
+
+            if (this._actions[action]) {
+                modifiersMap = {SHIFT: 1, CTRL: 2, ALT: 4, META: 8};
+                modifiersMap.CMD = window.navigator.userAgent.match(/\bmacintosh\b/i) ? modifiersMap.META : modifiersMap.CTRL;
+                keys = shortcut.split("+");
+                nbrKeys = keys.length;
+                modifiers = 0;
+
+                for (i = 0; i < nbrKeys - 1; i ++) {
+                    modifier = keys[i].toUpperCase();
+                    if (modifiersMap[modifier]) {
+                        modifiers += modifiersMap[modifier];
+                    }
+                }
+
+                this._actions[action].shortcut = {modifiers: modifiers, keyChar: keys[nbrKeys - 1]};
+            }
+
+            // generate a shortcut map
+            var action,
+                charCode,
+                shortcutMap = {};
+            for (i in this._actions) {
+                action = this._actions[i];
+                if (action.shortcut) {
+                    modifiers = action.shortcut.modifiers;
+                    keyChar = action.shortcut.keyChar;
+                    if (shortcutMap[modifiers] === undefined) {
+                        shortcutMap[modifiers] = {};
+                    }
+                    if (shortcutMap[modifiers][keyChar] === undefined) {
+                        shortcutMap[modifiers][keyChar] = [i];
+                    } else {
+                        shortcutMap[modifiers][keyChar].push(i);
+                    }
+                }
+            }
+            this._shortcutMap = shortcutMap;
+        }
+    },
 
     // Component Callbacks
     /**
@@ -631,24 +685,25 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleKeydown: {
         enumerable: false,
         value: function(event) {
-            var keychar = String.fromCharCode(event.keyCode),
+            var keyChar = String.fromCharCode(event.keyCode),
+                shortcutMap = this._shortcutMap;
+                SHIFT = 1, CTRL = 2, ALT = 4, META = 8,
+                modifiers = event.shiftKey + (event.ctrlKey << 1) + (event.altKey << 2) + (event.metaKey << 3),
                 stopEvent = false;
 
-            if (event.metaKey || event.ctrlKey) {
-                var SHIFT = 1, CTRL = 2, ALT = 4, META = 8,
-                    COMMAND = window.navigator.userAgent.match(/\bmacintosh\b/i) ? META : CTRL;
-                    modifiers = event.shiftKey + (event.ctrlKey << 1) + (event.altKey << 2) + (event.metaKey << 3);
+            // Check the shortcut map
+            if (this._shortcutMap[modifiers] && this._shortcutMap[modifiers][keyChar]) {
+                var actions = this._shortcutMap[modifiers][keyChar],
+                    action,
+                    i;
 
-                if (modifiers == COMMAND) {
-                    if (keychar == "B") {
-                        this.doAction("bold");
+                // execute only the first enable command
+                for (i in actions) {
+                    action = actions[i];
+                    if (this._actions[action].enabled) {
+                        this.doAction(action);
                         stopEvent = true;
-                    } else if (keychar == "U") {
-                        this.doAction("underline");
-                        stopEvent = true;
-                    } else if (keychar == "I") {
-                        this.doAction("italic");
-                        stopEvent = true;
+                        break;
                     }
                 }
             }
