@@ -639,7 +639,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
     isResolved: {
         value: function () {
-            return !Promise.isPromise(this.valueOf());
+            return this.isFulfilled() || this.isRejected();
         }
     },
 
@@ -654,7 +654,8 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
     isRejected: {
         value: function () {
-            return !!this.valueOf().promiseRejected;
+            var value = this.valueOf();
+            return !!(value && value.promiseRejected);
         }
     },
 
