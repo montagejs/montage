@@ -5,7 +5,7 @@
  </copyright> */
 var Montage = require("montage").Montage;
 var Selector = require("montage/data/selector").Selector;
-var Q = require("montage/core/promise");
+var Promise = require("montage/core/promise").Promise;
 var logger = require("montage/core/logger").logger("property-spec");
 
 var Manager = exports.Manager = Montage.create(Montage, {
@@ -64,7 +64,7 @@ describe("data/selector/property-spec", function() {
                 return result;
             });
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
             runs(function() {
                 var result = promise.valueOf();
@@ -79,7 +79,7 @@ describe("data/selector/property-spec", function() {
                 return result;
             });
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
             runs(function() {
                 var result = promise.valueOf();
@@ -91,7 +91,7 @@ describe("data/selector/property-spec", function() {
                 return result;
             });
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
             runs(function() {
                 var result = promise.valueOf();

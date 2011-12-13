@@ -5,7 +5,6 @@
  </copyright> */
 var Montage = require("montage").Montage;
 var Selector = require("montage/data/selector").Selector;
-var Q = require("montage/core/promise");
 var logger = require("montage/core/logger").logger("property-spec");
 
 var Company = exports.Company = Montage.create(Montage, {
@@ -73,7 +72,7 @@ describe("data/selector/string-selector-spec", function() {
             var promise = company.employees.filterWithSelector(Selector.contains("Adam"));
 
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
 
             runs(function() {
@@ -87,7 +86,7 @@ describe("data/selector/string-selector-spec", function() {
             var promise = company.employees.filterWithSelector(Selector.caseInsensitiveContains("Adam"));
 
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
 
             runs(function() {
@@ -101,7 +100,7 @@ describe("data/selector/string-selector-spec", function() {
             var promise = company.employees.filterWithSelector(Selector.endsWith("James"));
 
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
 
             runs(function() {
@@ -115,7 +114,7 @@ describe("data/selector/string-selector-spec", function() {
             var promise = company.employees.filterWithSelector(Selector.caseInsensitiveEndsWith("James"));
 
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
 
             runs(function() {
@@ -129,7 +128,7 @@ describe("data/selector/string-selector-spec", function() {
             var promise = company.employees.filterWithSelector(Selector.startsWith("Aiken"));
 
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
 
             runs(function() {
@@ -143,7 +142,7 @@ describe("data/selector/string-selector-spec", function() {
             var promise = company.employees.filterWithSelector(Selector.caseInsensitiveStartsWith("Aiken"));
 
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
 
             runs(function() {
