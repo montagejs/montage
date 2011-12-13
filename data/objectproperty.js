@@ -4,29 +4,32 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module montage/data/objectproperty
-    @requires montage/core/core
-    @requires montage/core/logger
-*/
+ @module montage/data/objectproperty
+ @requires montage/data/pledge
+ @requires montage/core/core
+ @requires montage/core/event/mutable-event
+ @requires montage/core/logger
+ */
 var Montage = require("montage").Montage;
+var MutableEvent = require("core/event/mutable-event").MutableEvent;
 var Pledge = require("data/pledge").Pledge;
 var PledgedSortedSet = require("data/pledge").PledgedSortedSet;
 var logger = require("core/logger").logger("objectproperty");
 /**
-  Description TODO
-  @private
-*/
+ Description TODO
+ @private
+ */
 var _objectPropertyManager = null;
 /**
-    @class module:montage/data/objectproperty.ObjectProperty
-    @extends module:montage/core/core.Montage
-*/
-var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends module:montage/data/objectproperty.ObjectProperty# */ {
-/**
-    Description TODO
-    @function
-    @returns itself
-    */
+ @class module:montage/data/objectproperty.ObjectProperty
+ @extends module:montage/core/core.Montage
+ */
+var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends module:montage/data/objectproperty.ObjectProperty# */ {
+    /**
+     Description TODO
+     @function
+     @returns itself
+     */
     init: {
         serializable: false,
         enumerable: false,
@@ -35,13 +38,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
         }
     },
 
-/**
-    Add all the properties defined in the blueprint to the target prototype.<br>
-    If the blueprint is null, this method will make a best attempt to locate it.
-    @function
-    @param {Property} prototype TODO
-    @param {Object} blueprint TODO
-    */
+    /**
+     Add all the properties defined in the blueprint to the target prototype.<br>
+     If the blueprint is null, this method will make a best attempt to locate it.
+     @function
+     @param {Property} prototype TODO
+     @param {Object} blueprint TODO
+     */
     apply: {
         value: function(prototype, blueprint) {
             if (! prototype.hasOwnProperty("blueprint")) {
@@ -60,12 +63,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
         }
     },
 
-/**
-    Add all the properties defined in the blueprint to the target prototype.
-    @function
-    @param {Property} prototype TODO
-    @param {Object} blueprint TODO
-    */
+    /**
+     Add all the properties defined in the blueprint to the target prototype.<br/>
+     <b>Note:<b/>This method will explore the blueprint hierarchy recursively.
+     @function
+     @param {Property} prototype TODO
+     @param {Object} blueprint TODO
+     */
     applyWithBlueprint: {
         value: function(prototype, blueprint) {
             if (blueprint != null) {
@@ -76,12 +80,12 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
             }
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Property} prototype TODO
-    @param {Object} blueprint TODO
-    */
+    /**
+     Add all the properties defined in the blueprint to the target prototype.
+     @function
+     @param {Property} prototype TODO
+     @param {Object} blueprint TODO
+     */
     addProperties: {
         value: function(prototype, blueprint) {
             //for loop over attributes
@@ -89,6 +93,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
             for (i = 0; attribute = blueprint.attributes[i]; i++) {
                 if (attribute.isDerived) {
                     this.addDerivedProperty(prototype, attribute);
+                } else if (attribute.isRelationship) {
+                    this.addRelationship(prototype, attribute);
                 } else {
                     this.addProperty(prototype, attribute);
                 }
@@ -131,12 +137,12 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
             Montage.defineProperty(prototype, "_opaqueAccessState", { serializable: false, enumerable: false, value: null});
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Property} prototype TODO
-    @param {Object} attribute TODO
-    */
+    /**
+     Add one property defined in the attribute to the target prototype.
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute TODO
+     */
     addProperty: {
         value: function(prototype, attribute) {
             this.addPropertyStorage(prototype, attribute);
@@ -144,12 +150,12 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
             this.addPropertyStoredValue(prototype, attribute);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Property} prototype TODO
-    @param {Object} attribute TODO
-    */
+    /**
+     Description TODO
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute TODO
+     */
     addPropertyStorage: {
         value: function(prototype, attribute) {
             var storageKey = "_" + attribute.name,
@@ -175,12 +181,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
             }
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Property} prototype TODO
-    @param {Object} attribute TODO
-    */
+
+    /**
+     Description TODO
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute TODO
+     */
     addPropertyDefinition: {
         value : function(prototype, attribute) {
             var propertyKey = attribute.name,
@@ -204,12 +211,13 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
             }
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Property} prototype TODO
-    @param {Object} attribute TODO
-    */
+
+    /**
+     Description TODO
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute TODO
+     */
     addPropertyStoredValue: {
         value: function(prototype, attribute) {
             var storedValueKey = attribute.name + "$Storage",
@@ -235,22 +243,59 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
             }
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Property} prototype TODO
-    @param {Object} attribute TODO
-    */
+
+    /**
+     Adds a relationship management methods to the managed object.
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute relationship to add
+     */
+    addRelationship: {
+        value: function(prototype, attribute) {
+            this.addPropertyStorage(prototype, attribute);
+            this.addRelationshipDefinition(prototype, attribute);
+            this.addPropertyStoredValue(prototype, attribute);
+        }
+    },
+
+
+    /**
+     Description TODO
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute TODO
+     */
+    addRelationshipDefinition: {
+        value : function(prototype, attribute) {
+            var relationshipKey = attribute.name.toCapitalized();
+            Montage.defineProperty(prototype, "addTo" + relationshipKey, { serializable: false, enumerable: false, value: function() {
+                return null;
+            }});
+            Montage.defineProperty(prototype, "removeFrom" + relationshipKey, { serializable: false, enumerable: false, value: function() {
+                return null;
+            }});
+            Montage.defineProperty(prototype, "clear" + relationshipKey, { serializable: false, enumerable: false, value: function() {
+                return null;
+            }});
+        }
+    },
+
+    /**
+     Adds a derived attribute to the managed object.
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute TODO
+     */
     addDerivedProperty: {
         value: function(prototype, attribute) {
         }
     },
 
-/**
-    Description TODO
-    @function
-    @param {Object} attribute TODO
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} attribute TODO
+     */
     willRead: {
         value: function(attribute) {
             var storageKey = "_" + attribute.name;
@@ -263,17 +308,21 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
             }
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} attribute TODO
-    @param {Property} value TODO
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} attribute TODO
+     @param {Property} value TODO
+     */
     willModify: {
         value: function(attribute, value) {
             var storageKey = "_" + attribute.name;
             var previousValue = this[storageKey];
             if ((typeof previousValue === 'undefined') || (previousValue !== value)) {
+                // Dispatch a change event. This will be listened by the context.
+                var modifyEvent = MutableEvent.changeEventForKeyAndValue(attribute.name, previousValue);
+                this.dispatchEvent(modifyEvent.withPlusValue(value));
+                //
                 if ((typeof this.context !== 'undefined') && (this.context !== null)) {
                     this.context.willModifyPropertyForInstance(attribute, this);
                 }
@@ -281,11 +330,11 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage,/** @lends 
         }
     },
     /**
-    Returns the transaction manager.<br>
-    The transaction manager is a unique object in charge of openning and closing transactions.
-    @function
-    @returns object
-    */
+     Returns the transaction manager.<br>
+     The transaction manager is a unique object in charge of opening and closing transactions.
+     @function
+     @returns object
+     */
     manager: {
         get: function() {
             if (_objectPropertyManager === null) {

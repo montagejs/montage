@@ -10,7 +10,7 @@ var ToOneRelationship = require("montage/data/blueprint").ToOneRelationship;
 var ToManyRelationship = require("montage/data/blueprint").ToManyRelationship;
 var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
-var Context = require("montage/data/context").Context;
+var ChangeContext = require("montage/data/changecontext").ChangeContext;
 
 var Serializer = require("montage/core/serializer").Serializer;
 var Deserializer = require("montage/core/deserializer").Deserializer;
@@ -107,8 +107,8 @@ describe("Blueprint", function() {
             addMontageMetadataToProto("Person", "mymodule", Person);
 
             louis = Person.create();
-            // context = Montage.create(Context).init();
-            context = Context.create().init();
+            // context = Montage.create(ChangeContext).init();
+            context = ChangeContext.create().init();
             //temporary
             context.addBlueprintBinder(binder);
 
@@ -139,7 +139,7 @@ describe("Blueprint", function() {
             binder.addBlueprint(personBlueprint);
             var Shape = Montage.create(Montage);
             addMontageMetadataToProto("Shape", "mymodule", Shape);
-            context = Context.create().init();
+            context = ChangeContext.create().init();
             //temporary
             context.addBlueprintBinder(binder);
             circle = Shape.create();

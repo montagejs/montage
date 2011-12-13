@@ -4,15 +4,15 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module montage/data/selector
-    @requires montage/core/core
-    @requires montage/data/controllistener
-    @requires montage/data/pledge
-    @requires montage/core/exception
-    @requires montage/core/shim/structures
-    @requires montage/core/promise
-    @requires montage/core/logger
-*/
+ @module montage/data/selector
+ @requires montage/core/core
+ @requires montage/data/controllistener
+ @requires montage/data/pledge
+ @requires montage/core/exception
+ @requires montage/core/shim/structures
+ @requires montage/core/promise
+ @requires montage/core/logger
+ */
 var Montage = require("montage").Montage;
 var ControlListener = require("data/controllistener").ControlListener;
 var Pledge = require("data/pledge").Pledge;
@@ -24,14 +24,14 @@ var OrderedSet = require("core/shim/structures").OrderedSet;
 var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("selector");
 /**
-    @class module:montage/data/selector.SelectorRegistry
-    @classdesc The selector registry provides a documented way to extend the list of selectors.<br>
-    By default, selector should provide an in-memory evaluator.
-    @extends module:montage/core/core.Montage
-*/
+ @class module:montage/data/selector.SelectorRegistry
+ @classdesc The selector registry provides a documented way to extend the list of selectors.<br>
+ By default, selector should provide an in-memory evaluator.
+ @extends module:montage/core/core.Montage
+ */
 
 var _selectorRegistry = null;
-var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @lends module:montage/data/selector.SelectorRegistry# */ {
+var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage, /** @lends module:montage/data/selector.SelectorRegistry# */ {
 
     _selectorTable: {
         value: new Map(),
@@ -40,10 +40,10 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
         distinct: true,
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     _evaluatorTable: {
         value: new Map(),
         writable: false,
@@ -51,11 +51,11 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
         distinct: true,
         enumerable: false
     },
-/**
-    Description TODO
-    @function
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @returns itself
+     */
     init: {
         serializable: false,
         enumerable: false,
@@ -69,13 +69,13 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
     /*
      *
      */
-/**
-    Register a new selector.<br>
-    This method creates a new property on the Selector prototype for each of the names returned by the aliases method of the selector being registered.
-    @function
-    @param {Prototype} selector The selector prototype.
-    @returns {Prototype} selector
-    */
+    /**
+     Register a new selector.<br>
+     This method creates a new property on the Selector prototype for each of the names returned by the aliases method of the selector being registered.
+     @function
+     @param {Prototype} selector The selector prototype.
+     @returns {Prototype} selector
+     */
     registerSelector: {
         value: function(selector) {
             if ((selector != null) && (typeof selector.evaluate === 'function') && (typeof selector.aliases != null)) {
@@ -93,10 +93,10 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     __registerSelector: {
         enumerable: false,
         value: function(alias, selector) {
@@ -128,12 +128,12 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
             }
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} key TODO
-    @returns {Selector} type
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} key TODO
+     @returns {Selector} type
+     */
     selectorForKey: {
         value: function(key) {
             var selector = this._selectorTable.get(key);
@@ -144,12 +144,12 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
     /*
      * Remove a previously registered selector
      */
- /**
-    Remove a previously registered selector.
-    @function
-    @param {Prototype} selector To be deregistered.
-    @returns selector
-    */
+    /**
+     Remove a previously registered selector.
+     @function
+     @param {Prototype} selector To be deregistered.
+     @returns selector
+     */
     deregisterSelector: {
         value: function(selector) {
             if ((selector == null) || (typeof selector.aliases == null)) {
@@ -168,10 +168,10 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     __deregisterSelector: {
         enumerable: false,
         value: function(alias, selector) {
@@ -179,12 +179,12 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
             this._selectorTable.delete(alias);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Prototype} evaluator To be registered.
-    @returns evaluator
-    */
+    /**
+     Description TODO
+     @function
+     @param {Prototype} evaluator To be registered.
+     @returns evaluator
+     */
     registerEvaluator: {
         value: function(evaluator) {
             this._evaluatorTable.set(evaluator.evaluatorId, evaluator);
@@ -200,11 +200,11 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
             return evaluator;
         }
     },
-/**
-    Description TODO
-    @function
-    @returns evaluatorIds
-    */
+    /**
+     Description TODO
+     @function
+     @returns evaluatorIds
+     */
     evaluatorIds: {
         get: function() {
             var evaluatorIds = new Array();
@@ -214,12 +214,12 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
             return evaluatorIds;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} evaluatorId The evaluator id
-    @returns value
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} evaluatorId The evaluator id
+     @returns value
+     */
     evaluatorForId: {
         value: function(evaluatorId) {
             var value = this._evaluatorTable.get(evaluatorId);
@@ -229,12 +229,12 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
             return value;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Prototype} evaluator The evaluator to be deregistered.
-    @returns evaluator
-    */
+    /**
+     Description TODO
+     @function
+     @param {Prototype} evaluator The evaluator to be deregistered.
+     @returns evaluator
+     */
     deregisterEvaluator: {
         value: function(evaluator) {
             this._evaluatorTable.delete(evaluator.evaluatorId);
@@ -261,14 +261,14 @@ var SelectorRegistry = exports.SelectorRegistry = Montage.create(Montage,/** @le
  *
  */
 /**
-    @class module:montage/data/selector.Selector
-*/
-var Selector = exports.Selector = Montage.create(Montage,/** @lends module:montage/data/selector.Selector# */ {
-/**
-        Description TODO
-        @type {String}
-        @default null
-    */
+ @class module:montage/data/selector.Selector
+ */
+var Selector = exports.Selector = Montage.create(Montage, /** @lends module:montage/data/selector.Selector# */ {
+    /**
+     Description TODO
+     @type {String}
+     @default null
+     */
     leftHand: {
         enumerable: true,
         serializable: true,
@@ -278,13 +278,13 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
     /*
      * Returns the selector registry. The selector registry is a unique object in charge of registering selectors to use in memory or in access modules.
      */
-/**
-    Returns the selector registry.<br>
-    The selector registry is a unique object in charge of registering selectors to use in memory or in access modules.
-    @function
-    @returns  _selectorRegistry
-    */
-   registry: {
+    /**
+     Returns the selector registry.<br>
+     The selector registry is a unique object in charge of registering selectors to use in memory or in access modules.
+     @function
+     @returns  _selectorRegistry
+     */
+    registry: {
         get: function() {
             if (_selectorRegistry === null) {
                 _selectorRegistry = SelectorRegistry.create().init();
@@ -292,13 +292,13 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
             return _selectorRegistry;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The object
-    @param {Function} declaredArguments TODO
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The object
+     @param {Function} declaredArguments TODO
+     @returns itself
+     */
     initWithSelector: {
         enumerable: false,
         value: function(selector, declaredArguments) {
@@ -307,26 +307,26 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
         }
     },
 
- /**
-    Returns the result of the evaluation of this selector with the object.
-    @function
-    @param {Object} object The object being evaluated; input object on which in memory evaluation will be performed.
-    @param {Parameters} parameters The evaluation measures.
-    @returns The result of the selector evaluation.
-    */
+    /**
+     Returns the result of the evaluation of this selector with the object.
+     @function
+     @param {Object} object The object being evaluated; input object on which in memory evaluation will be performed.
+     @param {Parameters} parameters The evaluation measures.
+     @returns The result of the selector evaluation.
+     */
     evaluate: {
         value: function(object, parameters) {
             return this.accept(InMemorySelectorEvaluator.create().initWithTargetAndParameters(object, parameters));
         }
     },
 
- /**
-    Filters the array passed on argument by applying the selector to each element of the array and returning a new array.
-    @function
-    @param {Array} array The array passed on argument.
-    @param {Parameter} parameters Measures applied to each element.
-    @returns results
-    */
+    /**
+     Filters the array passed on argument by applying the selector to each element of the array and returning a new array.
+     @function
+     @param {Array} array The array passed on argument.
+     @param {Parameter} parameters Measures applied to each element.
+     @returns results
+     */
     filterArray: {
         value: function(array, parameters) {
             if (!this.isArray(array) || (array.length === 0)) {
@@ -370,12 +370,12 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} evaluator The acceptance evaluator.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} evaluator The acceptance evaluator.
+     @returns Promise.ref(null)
+     */
     accept: {
         value: function(evaluator) {
             var visitorMethod = evaluator[this.visitorMethodName];
@@ -388,34 +388,34 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
         }
     },
 
-/**
-        Aliases are elements of the selector vocabulary.<br>
-        The property can return a string or an array of strings.
-        @type {Property}
-        @default null
-    */
+    /**
+     Aliases are elements of the selector vocabulary.<br>
+     The property can return a string or an array of strings.
+     @type {Property}
+     @default null
+     */
     aliases: {
         value: null,
         writable: false
     },
 
-/**
-        Returns the name of the method called by the accept method.
-        @type {String}
-        @default "visit"
-    */
+    /**
+     Returns the name of the method called by the accept method.
+     @type {String}
+     @default "visit"
+     */
     visitorMethodName: {
         value: "visit",
         writable: false
     },
 
-/**
-    This should return the evaluator method for the target selector and the type of evaluator.<br>
-    The visitor method should take the selector as parameter and return a promise result of the visit.
-    @function
-    @param {String} evaluatorID The evaluator id.
-    @returns method
-    */
+    /**
+     This should return the evaluator method for the target selector and the type of evaluator.<br>
+     The visitor method should take the selector as parameter and return a promise result of the visit.
+     @function
+     @param {String} evaluatorID The evaluator id.
+     @returns method
+     */
     visitorMethodForEvaluatorID: {
         value: function(evaluatorID) {
             // This is a token do nothing method.
@@ -426,12 +426,12 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
         }
     },
 
-/**
-    This is a convenience function to enable the redefinition of what an array is.
-    @function
-    @param {Object} object The object to be redefined.
-    @returns {Boolean} false
-    */
+    /**
+     This is a convenience function to enable the redefinition of what an array is.
+     @function
+     @param {Object} object The object to be redefined.
+     @returns {Boolean} false
+     */
     isArray: {
         value: function(object) {
             if (object == null) {
@@ -449,12 +449,12 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
             return false;
         }
     },
-/**
-    Definition TODO
-    @function
-    @param {Object} object The object to be selected.
-    @returns object
-    */
+    /**
+     Definition TODO
+     @function
+     @param {Object} object The object to be selected.
+     @returns object
+     */
     isSelector: {
         value: function(object) {
             if (object == null) {
@@ -463,20 +463,20 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
             return  (typeof object == 'object') && Object.getPrototypeOf(object)["isSelector"];
         }
     },
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     __collectionsPrototypesToPatch: {
         enumerable: false,
         serializable: false,
         writable: false,
         value: [Array.prototype, Set, OrderedSet]
     },
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     _patchCollections: {
         value: function() {
             var filterWithSelector, collectionPrototype, index;
@@ -509,48 +509,48 @@ var Selector = exports.Selector = Montage.create(Montage,/** @lends module:monta
 })
 
 /**
-    @class module:montage/data/selector.SelectorEvaluator
-    @classdesc Selector evaluator uses a visitor pattern.
-*/
-var SelectorEvaluator = exports.SelectorEvaluator = Montage.create(Montage,/** @lends module:montage/data/selector.SelectorEvaluator# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+ @class module:montage/data/selector.SelectorEvaluator
+ @classdesc Selector evaluator uses a visitor pattern.
+ */
+var SelectorEvaluator = exports.SelectorEvaluator = Montage.create(Montage, /** @lends module:montage/data/selector.SelectorEvaluator# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     target: {
         enumerable: true,
         serializable: true,
         value: null
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} null
+     */
     parameters: {
         enumerable: true,
         serializable: true,
         value: null
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "evaluator"
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "evaluator"
+     */
     evaluatorId: {
         enumerable: true,
         serializable: true,
         value: "evaluator"
     },
 
- /**
-    Create a new evaluator.
-    @function
-    @param {Object} target Object target of the selector.
-    @param {Value} parameters Values for selector parameters.
-    @returns itself
-*/
+    /**
+     Create a new evaluator.
+     @function
+     @param {Object} target Object target of the selector.
+     @param {Value} parameters Values for selector parameters.
+     @returns itself
+     */
     initWithTargetAndParameters: {
         value: function(targetObject, parameters) {
             this.target = targetObject;
@@ -560,58 +560,58 @@ var SelectorEvaluator = exports.SelectorEvaluator = Montage.create(Montage,/** @
             return this;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Boolean} Promise.ref(false)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Boolean} Promise.ref(false)
+     */
     visit: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(false);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitProperty: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Boolean} Promise.ref(true)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Boolean} Promise.ref(true)
+     */
     visitTrue: {
         value: function(selector) {
             return Promise.ref(true);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Boolean} Promise.ref(false)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Boolean} Promise.ref(false)
+     */
     visitFalse: {
         value: function(selector) {
             return Promise.ref(false);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(value)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(value)
+     */
     visitParameter: {
         value: function(selector) {
             var value = this.parameters[selector.propertyPath];
@@ -621,288 +621,288 @@ var SelectorEvaluator = exports.SelectorEvaluator = Montage.create(Montage,/** @
             return Promise.ref(value);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitEqualComparison: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitNotEqualComparison: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitLessComparison: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitLessOrEqualComparison: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitGreaterComparison: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitGreaterOrEqualComparison: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitAndBoolean: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitOrBoolean: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitXorBoolean: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitNotBoolean: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitContainsString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitCaseInsensitiveContainsString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitLikeString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitCaseInsensitiveLikeString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitStartsWithString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitCaseInsensitiveStartsWithString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitEndsWithString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitCaseInsensitiveEndsWithString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitFilterArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitFilteredArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitFirstArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitLastArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitOneArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitRequiredOneArray: {
         value: function(selector) {
             // Placeholder.
@@ -912,23 +912,23 @@ var SelectorEvaluator = exports.SelectorEvaluator = Montage.create(Montage,/** @
 
 })
 /**
-    @class module:montage/data/selector.InMemorySelectorEvaluator
-*/
-var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.create(SelectorEvaluator,/** @lends module:montage/data/selector.InMemorySelectorEvaluator# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "inMemory"
-    */
+ @class module:montage/data/selector.InMemorySelectorEvaluator
+ */
+var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.create(SelectorEvaluator, /** @lends module:montage/data/selector.InMemorySelectorEvaluator# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "inMemory"
+     */
     evaluatorId: {
         enumerable: true,
         serializable: true,
         value: "inMemory"
     },
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     _leftHand: {
         enumerable: false,
         serializable: false,
@@ -942,12 +942,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             return left;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(target.getProperty(selector.propertyPath))
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(target.getProperty(selector.propertyPath))
+     */
     visitProperty: {
         value: function(selector) {
             var target = this.target,
@@ -963,12 +963,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
         }
     },
 
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0] == values[1])
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0] == values[1])
+     */
     visitEqualComparison: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -980,12 +980,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0] != values[1])
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0] != values[1])
+     */
     visitNotEqualComparison: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -997,12 +997,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0] < values[1])
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0] < values[1])
+     */
     visitLessComparison: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1014,12 +1014,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0] <= values[1])
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0] <= values[1])
+     */
     visitLessOrEqualComparison: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1031,12 +1031,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0] > values[1])
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0] > values[1])
+     */
     visitGreaterComparison: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1048,12 +1048,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0] >= values[1])
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0] >= values[1])
+     */
     visitGreaterOrEqualComparison: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1065,12 +1065,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(result)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(result)
+     */
     visitAndBoolean: {
         value: function(selector) {
             var promises = new Array(selector.rightHandSelectors.length + 1);
@@ -1088,12 +1088,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(result)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(result)
+     */
     visitOrBoolean: {
         value: function(selector) {
             var promises = new Array(selector.rightHandSelectors.length + 1);
@@ -1111,36 +1111,36 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitXorBoolean: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitNotBoolean: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0].match(values[1]))
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0].match(values[1]))
+     */
     visitContainsString: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1153,12 +1153,12 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()))
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()))
+     */
     visitCaseInsensitiveContainsString: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1170,36 +1170,36 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitLikeString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitCaseInsensitiveLikeString: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0].match("^"+values[1]))
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0].match("^"+values[1]))
+     */
     visitStartsWithString: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1207,16 +1207,16 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
             return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Promise.ref(values[0].match("^"+values[1]));
+                return Promise.ref(values[0].match("^" + values[1]));
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0].toLowerCase().match("^"+values[1].toLowerCase()))
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0].toLowerCase().match("^"+values[1].toLowerCase()))
+     */
     visitCaseInsensitiveStartsWithString: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1224,16 +1224,16 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
             return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Promise.ref(values[0].toLowerCase().match("^"+values[1].toLowerCase()));
+                return Promise.ref(values[0].toLowerCase().match("^" + values[1].toLowerCase()));
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0].match(values[1]+"$"))
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0].match(values[1]+"$"))
+     */
     visitEndsWithString: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1241,16 +1241,16 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
             return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Promise.ref(values[0].match(values[1]+"$"));
+                return Promise.ref(values[0].match(values[1] + "$"));
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns {Array} Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()+"$"))
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns {Array} Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()+"$"))
+     */
     visitCaseInsensitiveEndsWithString: {
         value: function(selector) {
             if (selector.leftHand == null) {
@@ -1258,76 +1258,76 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
             }
             var fragment = Selector.isSelector(selector.stringFragment) ? selector.stringFragment.accept(selector) : selector.stringFragment;
             return Promise.all([this._leftHand(selector), fragment]).then(function(values) {
-                return Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase()+"$"));
+                return Promise.ref(values[0].toLowerCase().match(values[1].toLowerCase() + "$"));
             });
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitFilterArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitFilteredArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitFirstArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitLastArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitOneArray: {
         value: function(selector) {
             // Placeholder.
             return Promise.ref(null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @returns Promise.ref(null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @returns Promise.ref(null)
+     */
     visitRequiredOneArray: {
         value: function(selector) {
             // Placeholder.
@@ -1339,27 +1339,27 @@ var InMemorySelectorEvaluator = exports.InMemorySelectorEvaluator = Montage.crea
 
 Selector.registry.registerEvaluator(InMemorySelectorEvaluator);
 /**
-    @class module:montage/data/selector.Property
-*/
-var Property = exports.Property = Montage.create(Selector,/** @lends module:montage/data/selector.Property# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Function} null
-    */
+ @class module:montage/data/selector.Property
+ */
+var Property = exports.Property = Montage.create(Selector, /** @lends module:montage/data/selector.Property# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Function} null
+     */
     propertyPath: {
         enumerable: true,
         serializable: true,
         value: null
     },
 
- /**
-    Description TODO
-    @function
-    @param {Object} selector The selector object.
-    @param {Function} declaredArguments Declared arguments for initialization.
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The selector object.
+     @param {Function} declaredArguments Declared arguments for initialization.
+     @returns itself
+     */
     initWithSelector: {
         enumerable: false,
         value: function(selector, declaredArguments) {
@@ -1368,20 +1368,20 @@ var Property = exports.Property = Montage.create(Selector,/** @lends module:mont
             return self;
         }
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["property", "where"]
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["property", "where"]
+     */
     aliases: {
         value: ["property", "where"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "visitProperty"
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "visitProperty"
+     */
     visitorMethodName: {
         value: "visitProperty",
         writable: false
@@ -1390,23 +1390,23 @@ var Property = exports.Property = Montage.create(Selector,/** @lends module:mont
 });
 Selector.registry.registerSelector(Property);
 /**
-    @class module:montage/data/selector.TRUE
-*/
-var TRUE = Object.freeze(Montage.create(Property,/** @lends module:montage/data/selector.TRUE# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["true", "yes"]
-    */
+ @class module:montage/data/selector.TRUE
+ */
+var TRUE = Object.freeze(Montage.create(Property, /** @lends module:montage/data/selector.TRUE# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["true", "yes"]
+     */
     aliases: {
         value: ["true", "yes"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "visitTrue"
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "visitTrue"
+     */
     visitorMethodName: {
         value: "visitTrue",
         writable: false
@@ -1415,23 +1415,23 @@ var TRUE = Object.freeze(Montage.create(Property,/** @lends module:montage/data/
 }));
 Selector.registry.registerSelector(TRUE);
 /**
-    @class module:montage/data/selector.FALSE
-*/
-var FALSE = Object.freeze(Montage.create(Property,/** @lends module:montage/data/selector.FALSE# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["false", "no"]
-    */
+ @class module:montage/data/selector.FALSE
+ */
+var FALSE = Object.freeze(Montage.create(Property, /** @lends module:montage/data/selector.FALSE# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["false", "no"]
+     */
     aliases: {
         value: ["false", "no"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "visitFalse"
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "visitFalse"
+     */
     visitorMethodName: {
         value: "visitFalse",
         writable: false
@@ -1440,27 +1440,27 @@ var FALSE = Object.freeze(Montage.create(Property,/** @lends module:montage/data
 }));
 Selector.registry.registerSelector(FALSE);
 /**
-    @class module:montage/data/selector.SelectorParameter
-*/
-var SelectorParameter = exports.SelectorParameter = Montage.create(Selector,/** @lends module:montage/data/selector.SelectorParameter# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Function} null
-    */
+ @class module:montage/data/selector.SelectorParameter
+ */
+var SelectorParameter = exports.SelectorParameter = Montage.create(Selector, /** @lends module:montage/data/selector.SelectorParameter# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Function} null
+     */
     propertyPath: {
         enumerable: true,
         serializable: true,
         value: null
     },
 
- /**
-    Description TODO
-    @function
-    @param {Object} selector The object
-    @param {Function} declaredArguments TODO
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The object
+     @param {Function} declaredArguments TODO
+     @returns itself
+     */
     initWithSelector: {
         enumerable: false,
         value: function(selector, declaredArguments) {
@@ -1469,20 +1469,20 @@ var SelectorParameter = exports.SelectorParameter = Montage.create(Selector,/** 
             return self;
         }
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["parameter", "param"]
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["parameter", "param"]
+     */
     aliases: {
         value: ["parameter", "param"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "visitParameter"
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "visitParameter"
+     */
     visitorMethodName: {
         value: "visitParameter",
         writable: false
@@ -1491,15 +1491,15 @@ var SelectorParameter = exports.SelectorParameter = Montage.create(Selector,/** 
 });
 Selector.registry.registerSelector(SelectorParameter);
 /**
-    @class module:montage/data/selector.ComparisonSelector
-    @classdesc The Comparison Selector
-*/
-var ComparisonSelector = exports.ComparisonSelector = Montage.create(Selector,/** @lends module:montage/data/selector.ComparisonSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+ @class module:montage/data/selector.ComparisonSelector
+ @classdesc The Comparison Selector
+ */
+var ComparisonSelector = exports.ComparisonSelector = Montage.create(Selector, /** @lends module:montage/data/selector.ComparisonSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     rightHand: {
         enumerable: true,
         serializable: true,
@@ -1513,13 +1513,13 @@ var ComparisonSelector = exports.ComparisonSelector = Montage.create(Selector,/*
      *  @param rightHandExpression
      *  @constructor
      */
-/**
-    Description TODO
-    @function
-    @param {Object} selector The object
-    @param {Function} declaredArguments TODO
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The object
+     @param {Function} declaredArguments TODO
+     @returns itself
+     */
     initWithSelector: {
         enumerable: false,
         value: function(selector, declaredArguments) {
@@ -1531,23 +1531,23 @@ var ComparisonSelector = exports.ComparisonSelector = Montage.create(Selector,/*
 
 });
 /**
-    @class module:montage/data/selector.EqualComparisonSelector
-*/
-var EqualComparisonSelector = exports.EqualComparisonSelector = Montage.create(ComparisonSelector,/** @lends module:montage/data/selector.EqualComparisonSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["eq", "equal"]
-    */
+ @class module:montage/data/selector.EqualComparisonSelector
+ */
+var EqualComparisonSelector = exports.EqualComparisonSelector = Montage.create(ComparisonSelector, /** @lends module:montage/data/selector.EqualComparisonSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["eq", "equal"]
+     */
     aliases: {
         value: ["eq", "equal"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitEqualComparison"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitEqualComparison"
+     */
     visitorMethodName: {
         value: "visitEqualComparison",
         writable: false
@@ -1556,23 +1556,23 @@ var EqualComparisonSelector = exports.EqualComparisonSelector = Montage.create(C
 });
 Selector.registry.registerSelector(EqualComparisonSelector);
 /**
-    @class module:montage/data/selector.NotEqualComparisonSelector
-*/
-var NotEqualComparisonSelector = exports.NotEqualComparisonSelector = Montage.create(ComparisonSelector,/** @lends module:montage/data/selector.NotEqualComparisonSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["ne", "notEqual"]
-    */
+ @class module:montage/data/selector.NotEqualComparisonSelector
+ */
+var NotEqualComparisonSelector = exports.NotEqualComparisonSelector = Montage.create(ComparisonSelector, /** @lends module:montage/data/selector.NotEqualComparisonSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["ne", "notEqual"]
+     */
     aliases: {
         value: ["ne", "notEqual"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitNotEqualComparison"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitNotEqualComparison"
+     */
     visitorMethodName: {
         value: "visitNotEqualComparison",
         writable: false
@@ -1581,23 +1581,23 @@ var NotEqualComparisonSelector = exports.NotEqualComparisonSelector = Montage.cr
 });
 Selector.registry.registerSelector(NotEqualComparisonSelector);
 /**
-    @class module:montage/data/selector.LessComparisonSelector
-*/
-var LessComparisonSelector = exports.LessComparisonSelector = Montage.create(ComparisonSelector,/** @lends module:montage/data/selector.LessComparisonSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["lt", "less"]
-    */
+ @class module:montage/data/selector.LessComparisonSelector
+ */
+var LessComparisonSelector = exports.LessComparisonSelector = Montage.create(ComparisonSelector, /** @lends module:montage/data/selector.LessComparisonSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["lt", "less"]
+     */
     aliases: {
         value: ["lt", "less"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitLessComparison"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitLessComparison"
+     */
     visitorMethodName: {
         value: "visitLessComparison",
         writable: false
@@ -1606,23 +1606,23 @@ var LessComparisonSelector = exports.LessComparisonSelector = Montage.create(Com
 });
 Selector.registry.registerSelector(LessComparisonSelector);
 /**
-    @class module:montage/data/selector.LessOrEqualComparisonSelector
-*/
-var LessOrEqualComparisonSelector = exports.LessOrEqualComparisonSelector = Montage.create(ComparisonSelector,/** @lends module:montage/data/selector.LessOrEqualComparisonSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["le", "lessOrEqual"]
-    */
+ @class module:montage/data/selector.LessOrEqualComparisonSelector
+ */
+var LessOrEqualComparisonSelector = exports.LessOrEqualComparisonSelector = Montage.create(ComparisonSelector, /** @lends module:montage/data/selector.LessOrEqualComparisonSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["le", "lessOrEqual"]
+     */
     aliases: {
         value: ["le", "lessOrEqual"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitLessOrEqualComparison"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitLessOrEqualComparison"
+     */
     visitorMethodName: {
         value: "visitLessOrEqualComparison",
         writable: false
@@ -1631,23 +1631,23 @@ var LessOrEqualComparisonSelector = exports.LessOrEqualComparisonSelector = Mont
 });
 Selector.registry.registerSelector(LessOrEqualComparisonSelector);
 /**
-    @class module:montage/data/selector.GreaterComparisonSelector
-*/
-var GreaterComparisonSelector = exports.GreaterComparisonSelector = Montage.create(ComparisonSelector,/** @lends module:montage/data/selector.GreaterComparisonSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["gt", "greater"]
-    */
+ @class module:montage/data/selector.GreaterComparisonSelector
+ */
+var GreaterComparisonSelector = exports.GreaterComparisonSelector = Montage.create(ComparisonSelector, /** @lends module:montage/data/selector.GreaterComparisonSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["gt", "greater"]
+     */
     aliases: {
         value: ["gt", "greater"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitGreaterComparison"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitGreaterComparison"
+     */
     visitorMethodName: {
         value: "visitGreaterComparison",
         writable: false
@@ -1656,23 +1656,23 @@ var GreaterComparisonSelector = exports.GreaterComparisonSelector = Montage.crea
 });
 Selector.registry.registerSelector(GreaterComparisonSelector);
 /**
-    @class module:montage/data/selector.GreaterOrEqualComparisonSelector
-*/
-var GreaterOrEqualComparisonSelector = exports.GreaterOrEqualComparisonSelector = Montage.create(ComparisonSelector,/** @lends module:montage/data/selector.GreaterOrEqualComparisonSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} ["ge", "greaterOrEqual"]
-    */
+ @class module:montage/data/selector.GreaterOrEqualComparisonSelector
+ */
+var GreaterOrEqualComparisonSelector = exports.GreaterOrEqualComparisonSelector = Montage.create(ComparisonSelector, /** @lends module:montage/data/selector.GreaterOrEqualComparisonSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} ["ge", "greaterOrEqual"]
+     */
     aliases: {
         value: ["ge", "greaterOrEqual"],
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitGreaterOrEqualComparison"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitGreaterOrEqualComparison"
+     */
     visitorMethodName: {
         value: "visitGreaterOrEqualComparison",
         writable: false
@@ -1682,27 +1682,27 @@ var GreaterOrEqualComparisonSelector = exports.GreaterOrEqualComparisonSelector 
 Selector.registry.registerSelector(GreaterOrEqualComparisonSelector);
 
 /**
-    @class module:montage/data/selector.BooleanSelector
-    @classdesc The Boolean Selector
-*/
-var BooleanSelector = exports.BooleanSelector = Montage.create(Selector,/** @lends module:montage/data/selector.BooleanSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Function} null
-    */
+ @class module:montage/data/selector.BooleanSelector
+ @classdesc The Boolean Selector
+ */
+var BooleanSelector = exports.BooleanSelector = Montage.create(Selector, /** @lends module:montage/data/selector.BooleanSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Function} null
+     */
     rightHandSelectors: {
         enumerable: true,
         serializable: true,
         value: null
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The object
-    @param {Function} declaredArguments TODO
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The object
+     @param {Function} declaredArguments TODO
+     @returns itself
+     */
     initWithSelector: {
         enumerable: false,
         value: function(selector, declaredArguments) {
@@ -1714,23 +1714,23 @@ var BooleanSelector = exports.BooleanSelector = Montage.create(Selector,/** @len
 
 });
 /**
-    @class module:montage/data/selector.AndBooleanSelector
-*/
-var AndBooleanSelector = exports.AndBooleanSelector = Montage.create(BooleanSelector,/** @lends module:montage/data/selector.AndBooleanSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "and"
-    */
+ @class module:montage/data/selector.AndBooleanSelector
+ */
+var AndBooleanSelector = exports.AndBooleanSelector = Montage.create(BooleanSelector, /** @lends module:montage/data/selector.AndBooleanSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "and"
+     */
     aliases: {
         value: "and",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitAndBoolean"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitAndBoolean"
+     */
     visitorMethodName: {
         value: "visitAndBoolean",
         writable: false
@@ -1739,23 +1739,23 @@ var AndBooleanSelector = exports.AndBooleanSelector = Montage.create(BooleanSele
 });
 Selector.registry.registerSelector(AndBooleanSelector);
 /**
-    @class module:montage/data/selector.OrBooleanSelector
-*/
-var OrBooleanSelector = exports.OrBooleanSelector = Montage.create(BooleanSelector,/** @lends module:montage/data/selector.OrBooleanSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "or"
-    */
+ @class module:montage/data/selector.OrBooleanSelector
+ */
+var OrBooleanSelector = exports.OrBooleanSelector = Montage.create(BooleanSelector, /** @lends module:montage/data/selector.OrBooleanSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "or"
+     */
     aliases: {
         value: "or",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitOrBoolean"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitOrBoolean"
+     */
     visitorMethodName: {
         value: "visitOrBoolean",
         writable: false
@@ -1764,23 +1764,23 @@ var OrBooleanSelector = exports.OrBooleanSelector = Montage.create(BooleanSelect
 });
 Selector.registry.registerSelector(OrBooleanSelector);
 /**
-    @class module:montage/data/selector.XorBooleanSelector
-*/
-var XorBooleanSelector = exports.XorBooleanSelector = Montage.create(BooleanSelector,/** @lends module:montage/data/selector.XorBooleanSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "xor"
-    */
+ @class module:montage/data/selector.XorBooleanSelector
+ */
+var XorBooleanSelector = exports.XorBooleanSelector = Montage.create(BooleanSelector, /** @lends module:montage/data/selector.XorBooleanSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "xor"
+     */
     aliases: {
         value: "xor",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitXorBoolean"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitXorBoolean"
+     */
     visitorMethodName: {
         value: "visitXorBoolean",
         writable: false
@@ -1789,23 +1789,23 @@ var XorBooleanSelector = exports.XorBooleanSelector = Montage.create(BooleanSele
 });
 Selector.registry.registerSelector(XorBooleanSelector);
 /**
-    @class module:montage/data/selector.NotBooleanSelector
-*/
-var NotBooleanSelector = exports.NotBooleanSelector = Montage.create(BooleanSelector,/** @lends module:montage/data/selector.NotBooleanSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "not"
-    */
+ @class module:montage/data/selector.NotBooleanSelector
+ */
+var NotBooleanSelector = exports.NotBooleanSelector = Montage.create(BooleanSelector, /** @lends module:montage/data/selector.NotBooleanSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "not"
+     */
     aliases: {
         value: "not",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitNotBoolean"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitNotBoolean"
+     */
     visitorMethodName: {
         value: "visitNotBoolean",
         writable: false
@@ -1814,27 +1814,27 @@ var NotBooleanSelector = exports.NotBooleanSelector = Montage.create(BooleanSele
 });
 Selector.registry.registerSelector(NotBooleanSelector);
 /**
-    @class module:montage/data/selector.StringSelector
-    @classdesc The String Selector
-*/
-var StringSelector = exports.StringSelector = Montage.create(Selector,/** @lends module:montage/data/selector.StringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Function} null
-    */
+ @class module:montage/data/selector.StringSelector
+ @classdesc The String Selector
+ */
+var StringSelector = exports.StringSelector = Montage.create(Selector, /** @lends module:montage/data/selector.StringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Function} null
+     */
     stringFragment: {
         enumerable: true,
         serializable: true,
         value: null
     },
-/**
-    Description TODO
-    @function
-    @param {Object} selector The object
-    @param {Function} declaredArguments TODO
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The object
+     @param {Function} declaredArguments TODO
+     @returns itself
+     */
     initWithSelector: {
         enumerable: false,
         value: function(selector, declaredArguments) {
@@ -1846,23 +1846,23 @@ var StringSelector = exports.StringSelector = Montage.create(Selector,/** @lends
 
 });
 /**
-    @class module:montage/data/selector.ContainsStringSelector
-*/
-var ContainsStringSelector = exports.ContainsStringSelector = Montage.create(StringSelector,/** @lends module:montage/data/selector.ContainsStringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "contains"
-    */
+ @class module:montage/data/selector.ContainsStringSelector
+ */
+var ContainsStringSelector = exports.ContainsStringSelector = Montage.create(StringSelector, /** @lends module:montage/data/selector.ContainsStringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "contains"
+     */
     aliases: {
         value: "contains",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitContainsString"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitContainsString"
+     */
     visitorMethodName: {
         value: "visitContainsString",
         writable: false
@@ -1871,23 +1871,23 @@ var ContainsStringSelector = exports.ContainsStringSelector = Montage.create(Str
 });
 Selector.registry.registerSelector(ContainsStringSelector);
 /**
-    @class module:montage/data/selector.CaseInsensitiveContainsStringSelector
-*/
-var CaseInsensitiveContainsStringSelector = exports.CaseInsensitiveContainsStringSelector = Montage.create(StringSelector,/** @lends module:montage/data/selector.CaseInsensitiveContainsStringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "caseInsensitiveContains"
-    */
+ @class module:montage/data/selector.CaseInsensitiveContainsStringSelector
+ */
+var CaseInsensitiveContainsStringSelector = exports.CaseInsensitiveContainsStringSelector = Montage.create(StringSelector, /** @lends module:montage/data/selector.CaseInsensitiveContainsStringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "caseInsensitiveContains"
+     */
     aliases: {
         value: "caseInsensitiveContains",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitCaseInsensitiveContainsString"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitCaseInsensitiveContainsString"
+     */
     visitorMethodName: {
         value: "visitCaseInsensitiveContainsString",
         writable: false
@@ -1896,23 +1896,23 @@ var CaseInsensitiveContainsStringSelector = exports.CaseInsensitiveContainsStrin
 });
 Selector.registry.registerSelector(CaseInsensitiveContainsStringSelector);
 /**
-    @class module:montage/data/selector.LikeStringSelector
-*/
-var LikeStringSelector = exports.LikeStringSelector = Montage.create(StringSelector,/** @lends module:montage/data/selector.LikeStringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "like"
-    */
+ @class module:montage/data/selector.LikeStringSelector
+ */
+var LikeStringSelector = exports.LikeStringSelector = Montage.create(StringSelector, /** @lends module:montage/data/selector.LikeStringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "like"
+     */
     aliases: {
         value: "like",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitLikeString"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitLikeString"
+     */
     visitorMethodName: {
         value: "visitLikeString",
         writable: false
@@ -1921,23 +1921,23 @@ var LikeStringSelector = exports.LikeStringSelector = Montage.create(StringSelec
 });
 Selector.registry.registerSelector(LikeStringSelector);
 /**
-    @class module:montage/data/selector.CaseInsensitiveLikeStringSelector
-*/
-var CaseInsensitiveLikeStringSelector = exports.CaseInsensitiveLikeStringSelector = Montage.create(StringSelector,/** @lends module:montage/data/selector.CaseInsensitiveLikeStringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "caseInsensitiveLike"
-    */
+ @class module:montage/data/selector.CaseInsensitiveLikeStringSelector
+ */
+var CaseInsensitiveLikeStringSelector = exports.CaseInsensitiveLikeStringSelector = Montage.create(StringSelector, /** @lends module:montage/data/selector.CaseInsensitiveLikeStringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "caseInsensitiveLike"
+     */
     aliases: {
         value: "caseInsensitiveLike",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitCaseInsensitiveLikeString"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitCaseInsensitiveLikeString"
+     */
     visitorMethodName: {
         value: "visitCaseInsensitiveLikeString",
         writable: false
@@ -1946,23 +1946,23 @@ var CaseInsensitiveLikeStringSelector = exports.CaseInsensitiveLikeStringSelecto
 });
 Selector.registry.registerSelector(CaseInsensitiveLikeStringSelector);
 /**
-    @class module:montage/data/selector.StartsWithStringSelector
-*/
-var StartsWithStringSelector = exports.StartsWithStringSelector = Montage.create(StringSelector,/** @lends module:montage/data/selector.StartsWithStringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "startsWith"
-    */
+ @class module:montage/data/selector.StartsWithStringSelector
+ */
+var StartsWithStringSelector = exports.StartsWithStringSelector = Montage.create(StringSelector, /** @lends module:montage/data/selector.StartsWithStringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "startsWith"
+     */
     aliases: {
         value: "startsWith",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitStartsWithString"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitStartsWithString"
+     */
     visitorMethodName: {
         value: "visitStartsWithString",
         writable: false
@@ -1971,23 +1971,23 @@ var StartsWithStringSelector = exports.StartsWithStringSelector = Montage.create
 });
 Selector.registry.registerSelector(StartsWithStringSelector);
 /**
-    @class module:montage/data/selector.CaseInsensitiveStartsWithStringSelector
-*/
-var CaseInsensitiveStartsWithStringSelector = exports.CaseInsensitiveStartsWithStringSelector = Montage.create(StringSelector,/** @lends module:montage/data/selector.CaseInsensitiveStartsWithStringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "caseInsensitiveStartsWith"
-    */
+ @class module:montage/data/selector.CaseInsensitiveStartsWithStringSelector
+ */
+var CaseInsensitiveStartsWithStringSelector = exports.CaseInsensitiveStartsWithStringSelector = Montage.create(StringSelector, /** @lends module:montage/data/selector.CaseInsensitiveStartsWithStringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "caseInsensitiveStartsWith"
+     */
     aliases: {
         value: "caseInsensitiveStartsWith",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitCaseInsensitiveStartsWithString"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitCaseInsensitiveStartsWithString"
+     */
     visitorMethodName: {
         value: "visitCaseInsensitiveStartsWithString",
         writable: false
@@ -1996,23 +1996,23 @@ var CaseInsensitiveStartsWithStringSelector = exports.CaseInsensitiveStartsWithS
 });
 Selector.registry.registerSelector(CaseInsensitiveStartsWithStringSelector);
 /**
-    @class module:montage/data/selector.EndsWithStringSelector
-*/
-var EndsWithStringSelector = exports.EndsWithStringSelector = Montage.create(StringSelector,/** @lends module:montage/data/selector.EndsWithStringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "endsWith"
-    */
+ @class module:montage/data/selector.EndsWithStringSelector
+ */
+var EndsWithStringSelector = exports.EndsWithStringSelector = Montage.create(StringSelector, /** @lends module:montage/data/selector.EndsWithStringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "endsWith"
+     */
     aliases: {
         value: "endsWith",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitEndsWithString"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitEndsWithString"
+     */
     visitorMethodName: {
         value: "visitEndsWithString",
         writable: false
@@ -2021,23 +2021,23 @@ var EndsWithStringSelector = exports.EndsWithStringSelector = Montage.create(Str
 });
 Selector.registry.registerSelector(EndsWithStringSelector);
 /**
-    @class module:montage/data/selector.CaseInsensitiveEndsWithStringSelector
-*/
-var CaseInsensitiveEndsWithStringSelector = exports.CaseInsensitiveEndsWithStringSelector = Montage.create(StringSelector,/** @lends module:montage/data/selector.CaseInsensitiveEndsWithStringSelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "caseInsensitiveEndsWith"
-    */
+ @class module:montage/data/selector.CaseInsensitiveEndsWithStringSelector
+ */
+var CaseInsensitiveEndsWithStringSelector = exports.CaseInsensitiveEndsWithStringSelector = Montage.create(StringSelector, /** @lends module:montage/data/selector.CaseInsensitiveEndsWithStringSelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "caseInsensitiveEndsWith"
+     */
     aliases: {
         value: "caseInsensitiveEndsWith",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitCaseInsensitiveEndsWithString"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitCaseInsensitiveEndsWithString"
+     */
     visitorMethodName: {
         value: "visitCaseInsensitiveEndsWithString",
         writable: false
@@ -2047,17 +2047,17 @@ var CaseInsensitiveEndsWithStringSelector = exports.CaseInsensitiveEndsWithStrin
 
 Selector.registry.registerSelector(CaseInsensitiveEndsWithStringSelector);
 /**
-    @class module:montage/data/selector.ArraySelector
-    @classdesc The Array Selector
-*/
-var ArraySelector = exports.ArraySelector = Montage.create(Selector,/** @lends module:montage/data/selector.ArraySelector# */ {
-/**
-    Description TODO
-    @function
-    @param {Object} selector The object
-    @param {Function} declaredArguments TODO
-    @returns itself
-    */
+ @class module:montage/data/selector.ArraySelector
+ @classdesc The Array Selector
+ */
+var ArraySelector = exports.ArraySelector = Montage.create(Selector, /** @lends module:montage/data/selector.ArraySelector# */ {
+    /**
+     Description TODO
+     @function
+     @param {Object} selector The object
+     @param {Function} declaredArguments TODO
+     @returns itself
+     */
     initWithSelector: {
         enumerable: false,
         value: function(selector, declaredArguments) {
@@ -2069,23 +2069,23 @@ var ArraySelector = exports.ArraySelector = Montage.create(Selector,/** @lends m
 
 });
 /**
-    @class module:montage/data/selector.FilterArraySelector
-*/
-var FilterArraySelector = exports.FilterArraySelector = Montage.create(ArraySelector,/** @lends module:montage/data/selector.FilterArraySelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "filter"
-    */
+ @class module:montage/data/selector.FilterArraySelector
+ */
+var FilterArraySelector = exports.FilterArraySelector = Montage.create(ArraySelector, /** @lends module:montage/data/selector.FilterArraySelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "filter"
+     */
     aliases: {
         value: "filter",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitFilterArray"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitFilterArray"
+     */
     visitorMethodName: {
         value: "visitFilterArray",
         writable: false
@@ -2094,23 +2094,23 @@ var FilterArraySelector = exports.FilterArraySelector = Montage.create(ArraySele
 });
 Selector.registry.registerSelector(FilterArraySelector);
 /**
-    @class module:montage/data/selector.FilteredArraySelector
-*/
-var FilteredArraySelector = exports.FilteredArraySelector = Montage.create(ArraySelector,/** @lends module:montage/data/selector.FilteredArraySelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "filtered"
-    */
+ @class module:montage/data/selector.FilteredArraySelector
+ */
+var FilteredArraySelector = exports.FilteredArraySelector = Montage.create(ArraySelector, /** @lends module:montage/data/selector.FilteredArraySelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "filtered"
+     */
     aliases: {
         value: "filtered",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitFilteredArray"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitFilteredArray"
+     */
     visitorMethodName: {
         value: "visitFilteredArray",
         writable: false
@@ -2119,23 +2119,23 @@ var FilteredArraySelector = exports.FilteredArraySelector = Montage.create(Array
 });
 Selector.registry.registerSelector(FilteredArraySelector);
 /**
-    @class module:montage/data/selector.FirstArraySelector
-*/
-var FirstArraySelector = exports.FirstArraySelector = Montage.create(ArraySelector,/** @lends module:montage/data/selector.FirstArraySelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "first"
-    */
+ @class module:montage/data/selector.FirstArraySelector
+ */
+var FirstArraySelector = exports.FirstArraySelector = Montage.create(ArraySelector, /** @lends module:montage/data/selector.FirstArraySelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "first"
+     */
     aliases: {
         value: "first",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitFirstArray"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitFirstArray"
+     */
     visitorMethodName: {
         value: "visitFirstArray",
         writable: false
@@ -2144,23 +2144,23 @@ var FirstArraySelector = exports.FirstArraySelector = Montage.create(ArraySelect
 });
 Selector.registry.registerSelector(FirstArraySelector);
 /**
-    @class module:montage/data/selector.LastArraySelector
-*/
-var LastArraySelector = exports.FirstArraySelector = Montage.create(ArraySelector,/** @lends module:montage/data/selector.LastArraySelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "last"
-    */
+ @class module:montage/data/selector.LastArraySelector
+ */
+var LastArraySelector = exports.FirstArraySelector = Montage.create(ArraySelector, /** @lends module:montage/data/selector.LastArraySelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "last"
+     */
     aliases: {
         value: "last",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitLastArray"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitLastArray"
+     */
     visitorMethodName: {
         value: "visitLastArray",
         writable: false
@@ -2169,23 +2169,23 @@ var LastArraySelector = exports.FirstArraySelector = Montage.create(ArraySelecto
 });
 Selector.registry.registerSelector(LastArraySelector);
 /**
-    @class module:montage/data/selector.OneArraySelector
-*/
-var OneArraySelector = exports.OneArraySelector = Montage.create(ArraySelector,/** @lends module:montage/data/selector.OneArraySelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "one"
-    */
+ @class module:montage/data/selector.OneArraySelector
+ */
+var OneArraySelector = exports.OneArraySelector = Montage.create(ArraySelector, /** @lends module:montage/data/selector.OneArraySelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "one"
+     */
     aliases: {
         value: "one",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitOneArray"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitOneArray"
+     */
     visitorMethodName: {
         value: "visitOneArray",
         writable: false
@@ -2194,23 +2194,23 @@ var OneArraySelector = exports.OneArraySelector = Montage.create(ArraySelector,/
 });
 Selector.registry.registerSelector(OneArraySelector);
 /**
-    @class module:montage/data/selector.RequiredOneArraySelector
-*/
-var RequiredOneArraySelector = exports.RequiredOneArraySelector = Montage.create(ArraySelector,/** @lends module:montage/data/selector.RequiredOneArraySelector# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "requiredOne"
-    */
+ @class module:montage/data/selector.RequiredOneArraySelector
+ */
+var RequiredOneArraySelector = exports.RequiredOneArraySelector = Montage.create(ArraySelector, /** @lends module:montage/data/selector.RequiredOneArraySelector# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "requiredOne"
+     */
     aliases: {
         value: "requiredOne",
         writable: false
     },
-/**
-        Description TODO
-        @type {Property} Function
-        @default {String} "visitRequiredOneArray"
-    */
+    /**
+     Description TODO
+     @type {Property} Function
+     @default {String} "visitRequiredOneArray"
+     */
     visitorMethodName: {
         value: "visitRequiredOneArray",
         writable: false

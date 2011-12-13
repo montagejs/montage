@@ -4,16 +4,16 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module montage/data/blueprint
-    @requires montage/core/core
-    @requires montage/data/store
-    @requires montage/data/objectid
-    @requires data/query
-    @requires core/exception
-    @requires data/objectproperty
-    @requires core/promise
-    @requires core/logger
-*/
+ @module montage/data/blueprint
+ @requires montage/core/core
+ @requires montage/data/store
+ @requires montage/data/objectid
+ @requires data/query
+ @requires core/exception
+ @requires data/objectproperty
+ @requires core/promise
+ @requires core/logger
+ */
 var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
 var TemporaryObjectId = require("data/objectid").TemporaryObjectId;
@@ -23,16 +23,16 @@ var ObjectProperty = require("data/objectproperty").ObjectProperty;
 var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("blueprint");
 /**
-    @class module:montage/data/blueprint.BlueprintBinder
-    @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
-    @extends module:montage/core/core.Montage
-*/
-var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lends module:montage/data/blueprint.BlueprintBinder# */ {
+ @class module:montage/data/blueprint.BlueprintBinder
+ @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
+ @extends module:montage/core/core.Montage
+ */
+var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @lends module:montage/data/blueprint.BlueprintBinder# */ {
 
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     _blueprintForPrototypeTable: {
         value: {},
         serializable: false,
@@ -40,11 +40,11 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lend
         enumerable: false,
         writable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Table} {}
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Table} {}
+     */
     restrictionsTable: {
         value: {},
         serializable: true,
@@ -52,44 +52,44 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lend
         enumerable: false,
         writable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} null
+     */
     name: {
         value: null,
         serializable: true
     },
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @returns itself
+     */
     initWithName: {
         value: function(name) {
             this.name = (name !== null ? name : "default");
             return this;
         }
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} new Array(30)
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} new Array(30)
+     */
     blueprints: {
         serializable: true,
         distinct: true,
         writable: false,
         value: new Array(30)
     },
-/**
-    Description TODO
-    @function
-    @param {Array} blueprint TODO
-    @returns blueprint
-    */
+    /**
+     Description TODO
+     @function
+     @param {Array} blueprint TODO
+     @returns blueprint
+     */
     addBlueprint: {
         value: function(blueprint) {
             if (blueprint !== null) {
@@ -108,12 +108,12 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lend
             return blueprint;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {Array} blueprint TODO
-    @returns blueprint
-    */
+    /**
+     Description TODO
+     @function
+     @param {Array} blueprint TODO
+     @returns blueprint
+     */
     removeBlueprint: {
         value: function(blueprint) {
             if (blueprint !== null) {
@@ -129,35 +129,35 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lend
             return blueprint;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @param {String} moduleID TODO
-    @returns this.addBlueprint(this.createBlueprint().initWithNameAndModuleId(name, moduleId))
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @param {String} moduleID TODO
+     @returns this.addBlueprint(this.createBlueprint().initWithNameAndModuleId(name, moduleId))
+     */
     addBlueprintNamed : {
         value: function(name, moduleId) {
             return this.addBlueprint(this.createBlueprint().initWithNameAndModuleId(name, moduleId));
         }
     },
-/**
-    Description TODO
-    @function
-    @returns Blueprint.create()
-    */
+    /**
+     Description TODO
+     @function
+     @returns Blueprint.create()
+     */
     createBlueprint: {
         value: function() {
             return Blueprint.create();
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} name  TODO
-    @param {Selector} defaultSelector TODO
-    @returns restriction
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name  TODO
+     @param {Selector} defaultSelector TODO
+     @returns restriction
+     */
     addRestriction: {
         value: function(name, defaultSelector) {
             var restriction = null;
@@ -167,12 +167,12 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lend
             return restriction;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} name  TODO
-    @returns restriction
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name  TODO
+     @returns restriction
+     */
     removeRestriction: {
         value: function(name) {
             if (name !== null) {
@@ -185,12 +185,12 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lend
         }
     },
 
-/**
-    Description TODO
-    @function
-    @param {String} restriction  TODO
-    @returns selector
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} restriction  TODO
+     @returns selector
+     */
     defaultSelectorForRestriction: {
         value: function(restriction) {
             var selector = null;
@@ -203,29 +203,29 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lend
             return selector;
         }
     },
- /**
-        Description TODO
-        @type {Property}
-        @default {ID} montage/data/store
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {ID} montage/data/store
+     */
     storeModuleId: {
         value: "data/store"
     },
     /**
-        Description TODO
-        @type {Property}
-        @default {String} "Store"
-    */
+     Description TODO
+     @type {Property}
+     @default {String} "Store"
+     */
     storePrototypeName: {
         value: "Store"
     },
     /**
-    Return the blueprint associated with this prototype.
-    @function
-    @param {String} prototypeName TODO
-    @param {ID} moduleId TODO
-    @returns blueprint
-    */
+     Return the blueprint associated with this prototype.
+     @function
+     @param {String} prototypeName TODO
+     @param {ID} moduleId TODO
+     @returns blueprint
+     */
     blueprintForPrototype: {
         value: function(prototypeName, moduleId) {
             var key = moduleId + "." + prototypeName;
@@ -250,17 +250,17 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage,/** @lend
 
 });
 /**
-    @class module:montage/data/bluprint.Blueprint
-*/
-var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:montage/data/bluprint.Blueprint# */ {
+ @class module:montage/data/bluprint.Blueprint
+ */
+var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:montage/data/bluprint.Blueprint# */ {
     /**
-    This is the canonical way of creating managed objects prototypes.<br>
-    Newly created prototype will be blessed with all the required properties to be well behaved.
-    @function
-    @param {Object} aPrototype TODO
-    @param {String} propertyDescriptor TODO
-    @returns newPrototype
-    */
+     This is the canonical way of creating managed objects prototypes.<br>
+     Newly created prototype will be blessed with all the required properties to be well behaved.
+     @function
+     @param {Object} aPrototype TODO
+     @param {String} propertyDescriptor TODO
+     @returns newPrototype
+     */
     create: {
         configurable: true,
         value: function(aPrototype, propertyDescriptor) {
@@ -275,23 +275,23 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return newPrototype;
         }
     },
-/**
-    Create a new instance of the target prototype for the blueprint.
-    @function
-    @return new instance
-    */
+    /**
+     Create a new instance of the target prototype for the blueprint.
+     @function
+     @return new instance
+     */
     newInstance: {
         value: function() {
             var prototype = this.newInstancePrototype();
             return (prototype ? prototype.create() : null);
         }
     },
- /**
-    Returns the target prototype for this blueprint.<br>
-    <b>Note:</b> This method uses the <code>customPrototype</code> property to determine if it needs to require a custom prototype or create a default prototype.
-    @function
-    @return new prototype
-    */
+    /**
+     Returns the target prototype for this blueprint.<br>
+     <b>Note:</b> This method uses the <code>customPrototype</code> property to determine if it needs to require a custom prototype or create a default prototype.
+     @function
+     @return new prototype
+     */
     newInstancePrototype: {
         value: function() {
             if (this.customPrototype) {
@@ -320,33 +320,33 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             }
         }
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} null
+     */
     name: {
         value: null,
         serializable: true
     },
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @returns this.initWithNameAndModuleId(name, null)
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @returns this.initWithNameAndModuleId(name, null)
+     */
     initWithName: {
         value: function(name) {
             return this.initWithNameAndModuleId(name, null);
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @param {String} moduleId TODO
-    @returns itself
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @param {String} moduleId TODO
+     @returns itself
+     */
     initWithNameAndModuleId: {
         value: function(name, moduleId) {
             this.name = (name !== null ? name : "default");
@@ -357,67 +357,67 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return this;
         }
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     binder: {
         value: null,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     parent: {
         value: null,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     moduleId: {
         value: null,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     prototypeName: {
         value: null,
         serializable: true
     },
-/**
-        Defines if the blueprint should use custom prototype for new instances.<br>
-        Returns <code>true</code> if the blueprint needs to require a custom prototype for creating new instances, <code>false</code> if new instance are generic prototypes.
-        @type {Boolean}
-        @default false
-    */
+    /**
+     Defines if the blueprint should use custom prototype for new instances.<br>
+     Returns <code>true</code> if the blueprint needs to require a custom prototype for creating new instances, <code>false</code> if new instance are generic prototypes.
+     @type {Boolean}
+     @default false
+     */
     customPrototype: {
         value: false,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Array} new Array(10)
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Array} new Array(10)
+     */
     attributes: {
         value: new Array(10),
         serializable: true,
         distinct: true,
         writable: false
     },
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     _attributesTable: {
         value: {},
         serializable: false,
@@ -425,21 +425,21 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         writable: false
     },
-/**
-        Description TODO
-        @type  {Property}
-        @default {Array} new Array(10)
-    */
+    /**
+     Description TODO
+     @type  {Property}
+     @default {Array} new Array(10)
+     */
     queries: {
         value: new Array(10),
         serializable: true,
         distinct: true,
         writable: false
     },
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     _queriesTable: {
         value: {},
         serializable: false,
@@ -447,11 +447,11 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         writable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Table} {}
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Table} {}
+     */
     restrictionsTable: {
         value: {},
         serializable: true,
@@ -460,12 +460,12 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
         writable: false
     },
     /**
-    Add a new attribute to this blueprint.<br>
-    If that attribute was associated with another blueprint it will be removed first.
-    @function
-    @param {String} attribute The attribute to be added.
-    @returns attribute
-    */
+     Add a new attribute to this blueprint.<br>
+     If that attribute was associated with another blueprint it will be removed first.
+     @function
+     @param {String} attribute The attribute to be added.
+     @returns attribute
+     */
     addAttribute: {
         value: function(attribute) {
             if (attribute !== null && attribute.name !== null) {
@@ -482,12 +482,12 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return attribute;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} attribute The attribute to be removed.
-    @returns attribute
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} attribute The attribute to be removed.
+     @returns attribute
+     */
     removeAttribute: {
         value: function(attribute) {
             if (attribute !== null && attribute.name !== null) {
@@ -501,24 +501,24 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return attribute;
         }
     },
-/**
-    Convenience to add one attribute.
-    @function
-    @param {String} name Add to one attribute
-    @returns name
-    */
+    /**
+     Convenience to add one attribute.
+     @function
+     @param {String} name Add to one attribute
+     @returns name
+     */
     addToOneAttributeNamed: {
         value: function(name) {
             return this.addAttribute(this.createToOneAttribute().initWithName(name));
         }
     },
 
-/**
-    Convenience to add many attributes.
-    @function
-    @param {String} name Add to many attributes
-    @returns names
-    */
+    /**
+     Convenience to add many attributes.
+     @function
+     @param {String} name Add to many attributes
+     @returns names
+     */
     addToManyAttributeNamed: {
         value: function(name) {
             return this.addAttribute(this.createToManyAttribute().initWithName(name));
@@ -528,13 +528,13 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
     /*
      *
      */
-/**
-    Convenience to add an attribute to one relationship.
-    @function
-    @param {String} name TODO
-    @param {String} inverse TODO
-    @returns relationship
-    */
+    /**
+     Convenience to add an attribute to one relationship.
+     @function
+     @param {String} name TODO
+     @param {String} inverse TODO
+     @returns relationship
+     */
     addToOneRelationshipNamed: {
         value: function(name, inverse) {
             var relationship = this.addAttribute(this.createToOneRelationship().initWithName(name));
@@ -545,13 +545,13 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return relationship;
         }
     },
-/**
-    Convenience to add an attribute to many relationships.
-    @function
-    @param {String} name TODO
-    @param {String} inverse TODO
-    @returns relationship
-    */
+    /**
+     Convenience to add an attribute to many relationships.
+     @function
+     @param {String} name TODO
+     @param {String} inverse TODO
+     @returns relationship
+     */
     addToManyRelationshipNamed: {
         value: function(name, inverse) {
             var relationship = this.addAttribute(this.createToManyRelationship().initWithName(name));
@@ -562,24 +562,24 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return relationship;
         }
     },
-/**
-    Conventional method to create one new attribute.<br>
-    This can be overwritten by specific stores.
-    @function
-    @returns {Function} ToOneAttribute.create()
-    */
+    /**
+     Conventional method to create one new attribute.<br>
+     This can be overwritten by specific stores.
+     @function
+     @returns {Function} ToOneAttribute.create()
+     */
     createToOneAttribute: {
         value: function() {
             return ToOneAttribute.create();
         }
     },
 
-   /**
-    Conventional method to create many new attributes.<br>
-    This can be overwritten by specific stores.
-    @function
-    @returns {Function} ToManyAttribute.create()
-    */
+    /**
+     Conventional method to create many new attributes.<br>
+     This can be overwritten by specific stores.
+     @function
+     @returns {Function} ToManyAttribute.create()
+     */
     createToManyAttribute: {
         value: function() {
             return ToManyAttribute.create();
@@ -589,35 +589,35 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
     /*
      *
      */
-/**
-    Conventional method to create new attribute.<br>
-    This can be overwritten by specific stores.
-    @function
-    @returns {Function} ToOneRelationship.create()
-    */
+    /**
+     Conventional method to create new attribute.<br>
+     This can be overwritten by specific stores.
+     @function
+     @returns {Function} ToOneRelationship.create()
+     */
     createToOneRelationship: {
         value: function() {
             return ToOneRelationship.create();
         }
     },
 
- /**
-    Conventional method to create new attribute.<br>
-    This can be overwritten by specific stores.
-    @function
-    @returns {Function} ToOneRelationship.create()
-    */
+    /**
+     Conventional method to create new attribute.<br>
+     This can be overwritten by specific stores.
+     @function
+     @returns {Function} ToOneRelationship.create()
+     */
     createToManyRelationship: {
         value: function() {
             return ToManyRelationship.create();
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @returns attribute
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @returns attribute
+     */
     attributeForName: {
         value: function(name) {
             var attribute = this._attributesTable[name];
@@ -639,12 +639,12 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
         }
 
     },
-/**
-    Description TODO
-    @function
-    @param {String} query TODO
-    @returns query
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} query TODO
+     @returns query
+     */
     addQuery: {
         value: function(query) {
             if (query !== null && query.name != null) {
@@ -660,12 +660,12 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return query;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} query TODO
-    @returns query
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} query TODO
+     @returns query
+     */
     removeQuery: {
         value: function(query) {
             if (query !== null && query.name != null) {
@@ -681,12 +681,12 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return query;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @returns query
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @returns query
+     */
     queryForName: {
         value: function(name) {
             var query = this._queriesTable[name];
@@ -707,13 +707,13 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return query;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @param {Selector} selector TODO
-    @returns restriction
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @param {Selector} selector TODO
+     @returns restriction
+     */
     addRestriction: {
         value: function(name, selector) {
             var restriction = null;
@@ -723,12 +723,12 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             return restriction;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @returns restriction
-    */
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @returns restriction
+     */
     removeRestriction: {
         value: function(name) {
             if (name !== null) {
@@ -741,14 +741,14 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-/**
-    Return the selector for this restriction.<br>
-    <b>Note:</b> This selector is usually parametric.<br>
-    Parameters need to be resolved before it can be evaluated.
-    @function
-    @param {String} restriction TODO
-    @returns selector
-    */
+    /**
+     Return the selector for this restriction.<br>
+     <b>Note:</b> This selector is usually parametric.<br>
+     Parameters need to be resolved before it can be evaluated.
+     @function
+     @param {String} restriction TODO
+     @returns selector
+     */
     selectorForRestriction: {
         value: function(restriction) {
             var selector = null;
@@ -765,13 +765,13 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-/**
-    This is the get function called on the target object to access properties.<br>
-    On call this refers to the target object.
-    @function
-    @param {Object} propertyName TODO
-    @returns {Array} [storageKey]
-    */
+    /**
+     This is the get function called on the target object to access properties.<br>
+     On call this refers to the target object.
+     @function
+     @param {Object} propertyName TODO
+     @returns {Array} [storageKey]
+     */
     blueprintGet: {
         value: function(propertyName) {
             var attribute = this.blueprint.attributeForName(propertyName);
@@ -782,14 +782,14 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         serializable: false
     },
-/**
-    This is the get function called on the target object to set properties.<br>
-    On call this refers to the target object.
-    @function
-    @param {Object} propertyName TODO
-    @param {Property} value TODO
-    @returns {Array} [storageKey]
-    */
+    /**
+     This is the get function called on the target object to set properties.<br>
+     On call this refers to the target object.
+     @function
+     @param {Object} propertyName TODO
+     @param {Property} value TODO
+     @returns {Array} [storageKey]
+     */
     blueprintSet: {
         value: function(propertyName, value) {
             var attribute = this.blueprint.attributeForName(propertyName);
@@ -797,29 +797,29 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
             if (value == null && attribute.denyDelete) {
                 throw Exception.create().initWithMessageTargetAndMethod("Deny Delete", this, attribute.name);
             } else {
-                this.willModify(attribute);
+                this.willModify(attribute, value);
                 this[storageKey] = value;
             }
         },
         enumerable: false,
         serializable: false
     },
-/**
-    Returns tne new value for the temporary object ID.<br>
-    This can be overwritten by subclass.
-    @function
-    @returns TemporaryObjectId.create().init()
-    */
+    /**
+     Returns tne new value for the temporary object ID.<br>
+     This can be overwritten by subclass.
+     @function
+     @returns TemporaryObjectId.create().init()
+     */
     objectId$Implementation: {
         get: function() {
             return TemporaryObjectId.create().init();
         }
     },
-/**
-    Description TODO
-    @function
-    @returns Query.create().initWithBlueprint(this)
-    */
+    /**
+     Description TODO
+     @function
+     @returns Query.create().initWithBlueprint(this)
+     */
     query: {
         value: function() {
             return Query.create().initWithBlueprint(this);
@@ -831,90 +831,102 @@ var UnknownBlueprint = Object.freeze(Blueprint.create().initWithName("Unknown"))
 var UnknownQuery = Object.freeze(Query.create().initWithBlueprint(null));
 
 /**
-    @class module:montage/data/blueprint.Attribute
-*/
-var Attribute = Montage.create(Montage,/** @lends module:montage/data/blueprint.Attribute# */ {
-/**
-    Description TODO
-    @function
-    @param {String} name TODO
-    @returns itself
-    */
+ @class module:montage/data/blueprint.Attribute
+ */
+var Attribute = Montage.create(Montage, /** @lends module:montage/data/blueprint.Attribute# */ {
+    /**
+     Description TODO
+     @function
+     @param {String} name TODO
+     @returns itself
+     */
     initWithName: {
         value: function(name) {
             this._name = (name !== null ? name : "default");
             return this;
         }
     },
-/**
-  Description TODO
-  @private
-*/
+    /**
+     Description TODO
+     @private
+     */
     _name: {
         serializable: true,
         enumerable: false,
         value: null
     },
-/**
-    Description TODO
-    @function
-    @returns this._name
-    */
+    /**
+     Description TODO
+     @function
+     @returns this._name
+     */
     name: {
         get: function() {
             return this._name;
         }
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     blueprint: {
         value: null,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} false
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} false
+     */
     mandatory: {
         value: false,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} false
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} false
+     */
     denyDelete: {
         value: false,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} false
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} false
+     */
     readOnly: {
         value: false,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} false
-    */
+
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} false
+     */
+    isRelationship: {
+        value: false,
+        serializable: false
+    },
+
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} false
+     */
     isToMany: {
         value: false,
         serializable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} false
-    */
+
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} false
+     */
     isDerived: {
         value: false,
         serializable: false
@@ -924,32 +936,32 @@ var Attribute = Montage.create(Montage,/** @lends module:montage/data/blueprint.
 var UnknownAttribute = Object.freeze(Attribute.create().initWithName("Unknown"));
 
 /**
-    @class module:montage/data/blueprint.ToOneAttribute
-*/
-var ToOneAttribute = exports.ToOneAttribute = Montage.create(Attribute,/** @lends module:montage/data/blueprint.ToOneAttribute# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {String} "string"
-    */
+ @class module:montage/data/blueprint.ToOneAttribute
+ */
+var ToOneAttribute = exports.ToOneAttribute = Montage.create(Attribute, /** @lends module:montage/data/blueprint.ToOneAttribute# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {String} "string"
+     */
     valueType: {
         value: "string",
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Object} null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Object} null
+     */
     valueObjectPrototypeName: {
         value: null,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Object} null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Object} null
+     */
     valueObjectModuleId: {
         value: null,
         serializable: true
@@ -957,37 +969,46 @@ var ToOneAttribute = exports.ToOneAttribute = Montage.create(Attribute,/** @lend
 
 });
 /**
-    @class module:montage/data/blueprint.ToOneRelationship
-*/
-var ToOneRelationship = exports.ToOneRelationship = Montage.create(ToOneAttribute,/** @lends module:montage/data/blueprint.ToOneRelationship# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Object} null
-    */
+ @class module:montage/data/blueprint.ToOneRelationship
+ */
+var ToOneRelationship = exports.ToOneRelationship = Montage.create(ToOneAttribute, /** @lends module:montage/data/blueprint.ToOneRelationship# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Object} null
+     */
     targetBlueprint: {
         value: null,
         serializable: true
-    }
+    },
 
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} false
+     */
+    isRelationship: {
+        value: true,
+        serializable: false
+    }
 });
 /**
-    @class module:montage/data/blueprint.ToManyAttribute
-*/
-var ToManyAttribute = exports.ToManyAttribute = Montage.create(Attribute,/** @lends module:montage/data/blueprint.ToManyAttribute# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+ @class module:montage/data/blueprint.ToManyAttribute
+ */
+var ToManyAttribute = exports.ToManyAttribute = Montage.create(Attribute, /** @lends module:montage/data/blueprint.ToManyAttribute# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     sort: {
         value: null
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} true
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} true
+     */
     isToMany: {
         value: true,
         serializable: false
@@ -995,23 +1016,34 @@ var ToManyAttribute = exports.ToManyAttribute = Montage.create(Attribute,/** @le
 
 });
 /**
-    @class module:montage/data/blueprint.ToManyRelationship
-*/
-var ToManyRelationship = exports.ToManyRelationship = Montage.create(ToManyAttribute,/** @lends module:montage/data/blueprint.ToManyRelationship# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Object} null
-    */
+ @class module:montage/data/blueprint.ToManyRelationship
+ */
+var ToManyRelationship = exports.ToManyRelationship = Montage.create(ToManyAttribute, /** @lends module:montage/data/blueprint.ToManyRelationship# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Object} null
+     */
     targetBlueprint: {
         value: null,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} true
-    */
+
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} false
+     */
+    isRelationship: {
+        value: true,
+        serializable: false
+    },
+
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} true
+     */
     isToMany: {
         value: true,
         serializable: false
@@ -1019,41 +1051,44 @@ var ToManyRelationship = exports.ToManyRelationship = Montage.create(ToManyAttri
 
 });
 /**
-    @class module:montage/data/blueprint.DerivedAttribute
-*/
-var DerivedAttribute = exports.DerivedAttribute = Montage.create(Attribute,/** @lends module:montage/data/blueprint.DerivedAttribute# */ {
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} true
-    */
+ A derived is attribute is calculated using other attributes of the object.<br/>
+ 
+ @class module:montage/data/blueprint.DerivedAttribute
+ */
+var DerivedAttribute = exports.DerivedAttribute = Montage.create(Attribute, /** @lends module:montage/data/blueprint.DerivedAttribute# */ {
+    /**
+     Description TODO
+     @type {Property}
+     @default {Boolean} true
+     */
     isDerived: {
         value: true,
         serializable: false
     },
 
-  /**
-        Description TODO
-        @type {Property}
-        @default {Array} []
-    */  dependencies: {
+    /**
+     List of attributes this derived attribute depends on.
+     @type {Property}
+     @default {Array} []
+     */
+    dependencies: {
         value: [],
         serializable: true
     },
     /**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+     Description TODO
+     @type {Property}
+     @default null
+     */
     getterDefinition: {
         value: null,
         serializable: true
     },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    /**
+     Description TODO
+     @type {Property}
+     @default null
+     */
     setterDefinition: {
         value: null,
         serializable: true
