@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-var Q = require("montage/core/promise");
+var Promise = require("montage/core/promise").Promise;
 
 var spec = queryString("spec");
 if (spec) {
@@ -13,7 +13,7 @@ if (spec) {
         window.testpage.callNext();
     });
 } else {
-    Q.all([
+    Promise.all([
         // Please keep in alphabetical order
         require.async("array-spec"),
         require.async("bitfield-spec"),

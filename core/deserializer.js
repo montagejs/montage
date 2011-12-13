@@ -13,7 +13,7 @@
 
 var Montage = require("montage").Montage,
     logger = require("core/logger").logger("deserializer"),
-    Q = require("core/promise");
+    Promise = require("core/promise").Promise;
 
 /**
  @class module:montage/core/deserializer.Deserializer
@@ -223,7 +223,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
             moduleIds.forEach(function(moduleId) {
                 if (callback) {
-                    Q.when(_require.async(moduleId),
+                    Promise.when(_require.async(moduleId),
                         function(module) {
                             modules[moduleId] = module;
                             if (++modulesLoaded === moduleIds.length) {

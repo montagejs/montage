@@ -6,7 +6,7 @@
 bootstrap("require/browser", function (require) {
 
 var CJS = require("require/require");
-var Q = require("core/promise");
+var Promise = require("core/promise").Promise;
 var URL = require("core/url");
 
 var global = typeof global !== "undefined" ? global : window;
@@ -102,7 +102,7 @@ CJS.overlays = ["browser"];
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 CJS.read = function (url, options) {
     var request = new XMLHttpRequest();
-    var response = Q.defer();
+    var response = Promise.defer();
 
     function onload() {
         if (xhrSuccess(request)) {

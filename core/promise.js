@@ -9,9 +9,6 @@
 //  * speed and economy of memory before safety and securability
 //  * run-time compatibility via thenability
 
-// TODO coerce then -> sendPromise
-// TODO use outOfService flag to stop early if a promise gets used
-//      after its freed
 // TODO note the comps/promiseSend/sendPromise and argument order
 //      changes from Q
 
@@ -33,215 +30,645 @@
 
 "use strict";
 
-require("core/shim/timers"); // setImmediate
-
-// abstract
-function Promise()/** @lends module:montage/core/promise.Promise# */ {
+try {
+    // bootstrapping can't handle relative identifiers
+    require("core/shim/timers"); // setImmediate
+} catch (exception) {
+    // in this case, node can't handle absolute identifiers
+    require("./shim/timers"); // setImmediate
 }
 
-// shared FulfilledPromise, RejectedPromise,
-// overridden by DeferredPromise
-
-/**
-    @function module:montage/core/promise.#sendPromise
-*/
-Promise.prototype.sendPromise = function (resolve, op /*, ...args*/) {
-    var result;
-    try {
-        result = (this._handlers[op] || this._fallback)
-            .apply(this, arguments);
-    } catch (error) {
-        result = RejectedPromise(error.message, error);
-    }
-    resolve(result);
-};
-/**
-    @function module:montage/core/promise.#toSource
-*/
-Promise.prototype.toSource = function () {
-    return this.toString();
-};
-/**
-    @function module:montage/core/promise.#toString
-*/
-Promise.prototype.toString = function () {
-    return '[object Promise]';
-};
-
-var fulfilledPromisePool = [];
-
-function FulfilledPromise(value) {
-    return Object.create(FulfilledPromise.prototype, {
-        _value: {
-            value: value,
-            writable: true
-        }
-    });
-}
-/**
-    @function module:montage/core/promise.#create
-*/
-FulfilledPromise.prototype = Object.create(Promise.prototype);
-/**
-    @function module:montage/core/promise.#constructor
-*/
-FulfilledPromise.prototype.constructor = FulfilledPromise;
-
-// All of these handlers receive the sendPromise resolve and operator
-// arguments, even though they are never used, because it is cheaper
-// to reuse the arguments object on apply than to slice the array.
-
-/**
-  @private
-*/
-FulfilledPromise.prototype._handlers = {
-    when: function (r, o) {
-        return this._value;
-    },
-    get: function (r, o, key) {
-        return this._value[key];
-    },
-    put: function (r, o, key, value) {
-        return this._value[key] = value;
-    },
-    del: function (r, o, key) {
-        return delete this._value[key];
-    },
-    post: function (r, o, key, value) {
-        return this._value[key].apply(this._value, value);
-    },
-    apply: function (r, o, self, args) {
-        return this._value.apply(self, args);
-    },
-    keys: function (r, o) {
-        return Object.keys(this._value);
-    }
-};
-/**
-  @private
-*/
-FulfilledPromise.prototype._fallback = function (r, operator) {
-    return RejectedPromise("Promise does not support operation: " + operator);
-};
-/**
-    @function module:montage/core/promise.#valueOf
-*/
-FulfilledPromise.prototype.valueOf = function () {
-    return this._value;
-};
-
-FulfilledPromise.prototype.toString = function () {
-    return '[object FulfilledPromise]';
-};
-/**
-    @function module:montage/core/promise.#free
-*/
-FulfilledPromise.prototype.free = function () {
-    this._outOfService = true;
-    fulfilledPromisePool.push(this);
-};
-
-var deferredPool = [];
-/**
-   @function module:montage/core/promise.#Deferred
- */
-function Deferred() {
-    var deferred;
-    if (deferredPool.length) {
-        deferred = deferredPool.pop();
-        deferred.promise._outOfService = false;
-    } else {
-        var promise = DeferredPromise();
-        deferred = Object.create(Deferred.prototype, {
-            promise: {
-                value: promise,
-                enumerable: true
+// merely ensures that the returned value can respond to
+// messages; does not guarantee a full promise API
+function toPromise(value) {
+    if (value && typeof value.sendPromise !== "undefined") {
+        return value;
+    } else if (value && typeof value.then !== "undefined") {
+        var deferred = Promise.defer();
+        value.then(function (value) {
+            deferred.resolve(value);
+        }, function (reason, error, rejection) {
+            if (rejection) {
+                deferred.resolve(rejection);
+            } else {
+                deferred.reject(reason, error);
             }
         });
-        Object.defineProperty(promise, "_deferred", {
-            value: deferred
-        });
-    }
-    return deferred;
-}
-/**
-    @function module:montage/core/promise.#resolve
-*/
-Deferred.prototype.resolve = function (value) {
-    if (!this.promise._pending) {
-        return;
-    }
-    this.promise._value = value = toPromise(value);
-    this.promise._pending.forEach(function (pending) {
-        setImmediate(function () {
-            value.sendPromise.apply(value, pending);
-        });
-    });
-    this.promise._pending = undefined;
-    return value;
-};
-/**
-    @function module:montage/core/promise.#reject
-*/
-Deferred.prototype.reject = function (reason, error, rejection) {
-    return this.resolve(rejection || RejectedPromise(reason, error));
-};
-/**
-   @function module:montage/core/promise.#DeferredPromise
- */
-function DeferredPromise() {
-    return Object.create(DeferredPromise.prototype, {
-        _pending: {
-            value: [],
-            writable: true
-        },
-        _value: {
-            value: undefined,
-            writable: true
-        }
-    });
-}
-Deferred.Promise = DeferredPromise;
-
-DeferredPromise.prototype = Object.create(Promise.prototype);
-
-/**
-    @function module:montage/core/promise.#constructor
-*/
-DeferredPromise.prototype.constructor = DeferredPromise;
-
-/**
-    @function module:montage/core/promise.#sendPromise
-*/
-DeferredPromise.prototype.sendPromise = function () {
-    if (this._pending) {
-        this._pending.push(arguments);
+        return deferred.promise;
     } else {
-        var args = arguments,
-            value = this._value;
-        setImmediate(function () {
-            value.sendPromise.apply(value, args);
-        });
+        return Promise.fulfill(value);
     }
-};
-/**
-    @function module:montage/core/promise/DeferredPromise.#valueOf
-*/
-DeferredPromise.prototype.valueOf = function () {
-    return this._pending ? this : this._value.valueOf();
-};
-/**
-    @function module:montage/core/promise/DeferredPromise.#free
-*/
-DeferredPromise.prototype.free = function () {
-    this._outOfService = true;
-    this._value = undefined;
-    deferredPool.push(this._deferred);
-};
+}
+
+var Creatable = Object.create(Object.prototype, {
+    create: {
+        value: function (descriptor) {
+            return Object.create(this, descriptor);
+        }
+    },
+});
+
+// Common implementation details of FulfilledPromise, RejectedPromise, and
+// DeferredPromise
+var AbstractPromise = Creatable.create({
+
+    // Common implementation of sendPromise for FulfiledPromise and
+    // RejectedPromise, but overridden by DeferredPromise to buffer
+    // messages instead of handling them.
+    sendPromise: {
+        value: function (resolve, op /*, ...args*/) {
+            var result;
+            try {
+                result = (this._handlers[op] || this._fallback)
+                    .apply(this, arguments);
+            } catch (error) {
+                result = this.Promise.reject(error && error.message, error);
+            }
+            resolve(result);
+        }
+    },
+
+    // Defers polymorphically to toString
+    toSource: {
+        value: function () {
+            return this.toString();
+        }
+    }
+
+});
+
+// Basic implementation of the Promise object and prototypes for its
+// Fulfilled, Rejected, and Deferred subtypes.  The mixin descriptors that
+// give the promise types useful methods like "then" are not applied until
+// .create() is used the first time to make the actual Promise export.
+var PrimordialPromise = Creatable.create({
+
+    create: {
+        value: function (descriptor, promiseDescriptor) {
+
+            // automatically subcreate each of the contained promise types
+            var creation = Object.create(this, {
+                DeferredPromise: {
+                    value: this.DeferredPromise.create(promiseDescriptor)
+                },
+                FulfilledPromise: {
+                    value: this.FulfilledPromise.create(promiseDescriptor)
+                },
+                RejectedPromise: {
+                    value: this.RejectedPromise.create(promiseDescriptor)
+                }
+            });
+
+            Object.defineProperties(creation, descriptor);
+
+            // create static reflections of all new promise methods
+            var statics = {};
+            Object.keys(promiseDescriptor).forEach(function (name) {
+                statics[name] = {
+                    value: function (value) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        var promise = this.ref(value);
+                        return promise[name].apply(promise, args);
+                    }
+                };
+            });
+            Object.defineProperties(creation, statics);
+
+            return creation;
+        }
+    },
+
+    isPromise: {
+        value: function (value) {
+            return value && typeof value.sendPromise !== "undefined";
+        }
+    },
+
+    ref: {
+        value: function (object) {
+            // if it is already a promise, wrap it to guarantee
+            // the full public API of this promise variety.
+            if (object && typeof object.sendPromise === "function") {
+                var deferred = this.defer();
+                deferred.resolve(object);
+                return deferred.promise;
+            // if it is at least a thenable duck-type, wrap it
+            } else if (object && typeof object.then === "function") {
+                var deferred = this.defer();
+                object.then(function (value) {
+                    deferred.resolve(value);
+                }, function (reason, error, rejection) {
+                    // if the thenable recognizes rejection
+                    // forwarding, accept the given rejection
+                    if (rejection) {
+                        deferred.resolve(rejection);
+                    // otherwise, handle reason and optional error forwarding
+                    } else {
+                        deferred.reject(reason, error);
+                    }
+                })
+                return deferred.promise;
+            // if it is a fulfillment value, wrap it with a fulfillment
+            // promise
+            } else {
+                return this.fulfill(object);
+            }
+        }
+    },
+
+    fulfill: {
+        value: function (value) {
+            return this.FulfilledPromise.create({
+                _value: {
+                    value: value,
+                    writable: true
+                },
+                Promise: {
+                    value: this
+                }
+            });
+        }
+    },
+
+    FulfilledPromise: {
+        value: AbstractPromise.create({
+
+            _handlers: {
+                value: {
+                    then: function (r, o) {
+                        return this._value;
+                    },
+                    get: function (r, o, key) {
+                        return this._value[key];
+                    },
+                    put: function (r, o, key, value) {
+                        return this._value[key] = value;
+                    },
+                    "delete": function (r, o, key) {
+                        return delete this._value[key];
+                    },
+                    post: function (r, o, key, value) {
+                        return this._value[key].apply(this._value, value);
+                    },
+                    apply: function (r, o, self, args) {
+                        return this._value.apply(self, args);
+                    },
+                    keys: function (r, o) {
+                        return Object.keys(this._value);
+                    }
+                }
+            },
+
+            _fallback: {
+                value: function (callback, operator) {
+                    return this.Promise.reject("Promise does not support operation: " + operator);
+                }
+            },
+
+            valueOf: {
+                value: function () {
+                    return this._value;
+                }
+            },
+
+            toString: {
+                value: function () {
+                    return '[object FulfilledPromise]';
+                }
+            }
+
+        })
+    },
+
+    reject: {
+        value: function (reason, error) {
+            var self = this.RejectedPromise.create({
+                _reason: {
+                    value: reason
+                },
+                _error: {
+                    value: error
+                },
+                Promise: {
+                    value: this
+                }
+            });
+            errors.push(error && error.stack || self);
+            return self;
+        }
+    },
+
+    RejectedPromise: {
+        value: AbstractPromise.create({
+
+            _handlers: {
+                value: {
+                    then: function (r, o, rejected) {
+                        // remove this error from the list of unhandled errors on the console
+                        if (rejected) {
+                            var at = errors.indexOf(this._error && this._error.stack || this);
+                            if (at !== -1) {
+                                errors.splice(at, 1);
+                            }
+                        }
+                        return rejected ?
+                            rejected(this._reason, this._error, this) :
+                            this;
+                    }
+                }
+            },
+
+            _fallback: {
+                value: function () {
+                    return this;
+                }
+            },
+
+            valueOf: {
+                value: function () {
+                    return this;
+                }
+            },
+
+            toString: {
+                value: function () {
+                    return '[object RejectedPromise]';
+                }
+            },
+
+            promiseRejected: {
+                value: true
+            }
+
+        })
+    },
+
+    defer: {
+        value: function () {
+            var deferred;
+            var promise = this.DeferredPromise.create({
+                _pending: {
+                    value: [],
+                    writable: true
+                },
+                _value: {
+                    value: undefined,
+                    writable: true
+                },
+                Promise: {
+                    value: this
+                }
+            });
+            deferred = this.Deferred.create({
+                promise: {
+                    value: promise,
+                    enumerable: true
+                },
+                Promise: {
+                    value: this
+                }
+            });
+            Object.defineProperty(promise, "_deferred", {
+                value: deferred
+            });
+            return deferred;
+        }
+    },
+
+    Deferred: {
+        value: Creatable.create({
+
+            resolve: {
+                value: function (value) {
+                    if (!this.promise._pending) {
+                        return;
+                    }
+                    this.promise._value = value = toPromise(value);
+                    this.promise._pending.forEach(function (pending) {
+                        setImmediate(function () {
+                            value.sendPromise.apply(value, pending);
+                        });
+                    });
+                    this.promise._pending = undefined;
+                    return value;
+                }
+            },
+
+            reject: {
+                value: function (reason, error, rejection) {
+                    return this.resolve(
+                        rejection ||
+                        this.Promise.reject(reason, error)
+                    );
+                }
+            },
+
+        })
+    },
+
+    DeferredPromise: {
+        value: AbstractPromise.create({
+
+            sendPromise: {
+                value: function (resolve, operation, reason) {
+                    if (this._pending) {
+                        this._pending.push(arguments);
+                    } else {
+                        var args = arguments,
+                            value = this._value;
+                        setImmediate(function () {
+                            value.sendPromise.apply(value, args);
+                        });
+                    }
+                }
+            },
+
+            valueOf: {
+                value: function () {
+                    return this._pending ? this : this._value.valueOf();
+                }
+            },
+
+            toString: {
+                value: function () {
+                    return '[object Promise]';
+                }
+            }
+
+        })
+    },
+
+});
+
+// The API is created from a basic set of static functions and a
+// descriptor that will be applied to each of the derrived promise types.
+var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three created promise types
+
+    // Synonym for then
+    when: {
+        value: function (fulfilled, rejected) {
+            return this.then(fulfilled, rejected);
+        }
+    },
+
+    then: {
+        value: function (fulfilled, rejected) {
+            var self = this;
+            var deferred = this.Promise.defer();
+            var done = false;
+
+            function fulfill(value) {
+                try {
+                    deferred.resolve(fulfilled ? fulfilled(value) : value);
+                } catch (error) {
+                    console.log(error.stack);
+                    deferred.reject(error.message, error);
+                }
+            }
+
+            function reject(reason, error, rejection) {
+                try {
+                    deferred.resolve(
+                        rejected ? rejected(
+                            reason,
+                            error,
+                            rejection
+                        ) :
+                            rejection || Promise.reject(reason, error)
+                    );
+                } catch (error) {
+                    deferred.reject(error.message, error);
+                }
+            }
+
+            setImmediate(function () {
+                self.sendPromise(
+                    function (value) {
+                        if (done) {
+                            return;
+                        }
+                        done = true;
+                        toPromise(value)
+                            .sendPromise(
+                            fulfill,
+                            "then",
+                            reject
+                        )
+                    },
+                    "then",
+                    function (reason, error, rejection) {
+                        if (done) {
+                            return;
+                        }
+                        done = true;
+                        reject(reason, error, rejection);
+                    }
+                );
+            });
+
+            return deferred.promise;
+        }
+    },
+
+    send: {
+        value: function (name, args) {
+            var deferred = Promise.defer();
+            var self = this;
+            setImmediate(function () {
+                self.sendPromise.apply(
+                    self,
+                    [
+                        function (resolution) {
+                            deferred.resolve(resolution);
+                        },
+                        name
+                    ].concat(Array.prototype.slice.call(args))
+                );
+            })
+            return deferred.promise;
+        }
+    },
+
+    get: {
+        value: function () {
+            return this.send("get", arguments);
+        }
+    },
+
+    put: {
+        value: function () {
+            return this.send("put", arguments);
+        }
+    },
+
+    "delete": {
+        value: function () {
+            return this.send("delete", arguments);
+        }
+    },
+
+    post: {
+        value: function () {
+            return this.send("post", arguments);
+        }
+    },
+
+    invoke: {
+        value: function (name /*, ...args*/) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            return this.send("post", [name, args]);
+        }
+    },
+
+    apply: {
+        value: function () {
+            return this.send("apply", arguments);
+        }
+    },
+
+    call: {
+        value: function (thisp /*, ...args*/) {
+            var args = Array.prototype.slice.call(arguments, 1);
+            return this.send("apply", [thisp, args]);
+        }
+    },
+
+    keys: {
+        value: function () {
+            return this.send("keys", []);
+        }
+    },
+
+    all: {
+        value: function () {
+            var self = this;
+            return self.then(function (promises) {
+                var countDown = promises.length;
+                var values = [];
+                if (countDown === 0) {
+                    return toPromise(values);
+                }
+                var deferred = self.Promise.defer();
+                promises.forEach(function (promise, index) {
+                    toPromise(promise).then(function (value) {
+                        values[index] = value;
+                        if (--countDown === 0) {
+                            deferred.resolve(values);
+                        }
+                    }, function (reason, error, rejection) {
+                        deferred.reject(reason, error, rejection);
+                    });
+                });
+                return deferred.promise;
+            });
+        }
+    },
+
+    delay: {
+        value: function (timeout) {
+            var deferred = this.Promise.defer();
+            this.then(function (value) {
+                clearTimeout(handle);
+                deferred.resolve(value);
+            }, function (reason, error, rejection) {
+                clearTimeout(handle);
+                deferred.resolve(rejection);
+            });
+            var handle = setTimeout(function () {
+                deferred.reject("Timed out");
+            }, timeout);
+            return deferred.promise;
+        }
+    },
+
+    timeout: {
+        value: function (timeout) {
+            var deferred = this.Promise.defer();
+            this.then(function (value) {
+                clearTimeout(handle);
+                deferred.resolve(value);
+            }, function (reason, error, rejection) {
+                clearTimeout(handle);
+                deferred.resolve(rejection);
+            }).end();
+            var handle = setTimeout(function () {
+                deferred.reject("Timed out");
+            }, timeout);
+            return deferred.promise;
+        }
+    },
+
+    fail: {
+        value: function (rejected) {
+            return this.then(void 0, rejected);
+        }
+    },
+
+    fin: {
+        value: function (callback) {
+            return this.then(function (value) {
+                return Promise.call(callback)
+                .then(function () {
+                    return value;
+                });
+            }, function (reason, error, rejection) {
+                return Promise.call(callback)
+                .then(function () {
+                    return rejection;
+                });
+            })
+            // Guarantees that the same API gets
+            // returned as received.
+            .to(this.Promise);
+        }
+    },
+
+    end: {
+        value: function () {
+            this.then(void 0, function (reason, error) {
+                // forward to a future turn so that ``when``
+                // does not catch it and turn it into a rejection.
+                setImmediate(function () {
+                    console.error(error && error.stack || error || reason);
+                    throw error;
+                });
+            })
+            // Returns undefined
+        }
+    },
+
+    isResolved: {
+        value: function () {
+            return !Promise.isPromise(this.valueOf());
+        }
+    },
+
+    isFulfilled: {
+        value: function () {
+            return (
+                !Promise.isPromise(this.valueOf()) &&
+                !this.isRejected()
+            );
+        }
+    },
+
+    isRejected: {
+        value: function () {
+            return !!this.valueOf().promiseRejected;
+        }
+    },
+
+    to: {
+        value: function (Type) {
+            return Type.ref(this);
+        }
+    }
+
+});
 
 var errors = [];
 // Live console objects are not handled on tablets
-if (!window.Touch) {
+if (typeof window !== "undefined" && !window.Touch) {
 
     /*
     * This promise library consumes exceptions thrown in callbacks so
@@ -255,476 +682,8 @@ if (!window.Touch) {
     * instantiated.  That should be once per frame.
     */
     console.log("Should be empty:", errors);
-
 }
 
-function RejectedPromise(reason, error) {
-    var self = Object.create(RejectedPromise.prototype, {
-        _reason: {
-            value: reason
-        },
-        _error: {
-            value: error
-        }
-    });
-    errors.push(error && error.stack || self);
-    return self;
-}
-
-RejectedPromise.prototype = Object.create(Promise.prototype);
-/**
-    @function module:montage/core/promise/RejectedPromise.#constructor
-*/
-RejectedPromise.prototype.constructor = RejectedPromise;
-
-/**
-  @private
-*/
-RejectedPromise.prototype._handlers = {
-    when: function (r, o, rejected) {
-        // remove this error from the list of unhandled errors on the console
-        if (rejected) {
-            var at = errors.indexOf(this._error && this._error.stack || this);
-            if (at !== -1) {
-                errors.splice(at, 1);
-            }
-        }
-        return rejected ?
-            rejected(this._reason, this._error, this) :
-            this;
-    }
-};
-/**
-  @private
-*/
-RejectedPromise.prototype._fallback = function () {
-    return this;
-};
-/**
- * @function module:montage/core/promise/RejectedPromise.#valueOf
- */
-RejectedPromise.prototype.valueOf = function () {
-    return this;
-};
-/**
- * @function module:montage/core/promise/RejectedPromise.#toString
- */
-RejectedPromise.prototype.toString = function () {
-    return '[object RejectedPromise]';
-};
-/**
- * @function module:montage/core/promise/RejectedPromise.#promiseRejected
- */
-RejectedPromise.prototype.promiseRejected = true;
-/**
- * @function module:montage/core/promise/RejectedPromise.#promiseRejected.
- */
-RejectedPromise.prototype.free = function () {
-    // noop; rejections are not reused
-};
-/**
-    Description TODO
-    @function
-    @param {Object} object  TODO
-    @returns object && typeof object.sendPromise === "function"
-    */
-function isPromise(object) {
-    return object && typeof object.sendPromise === "function";
-}
-/**
-    Description TODO
-    @function
-    @param {Object} object TODO
-    @returns !isPromise(valueOf(object))
-    */
-function isResolved(object) {
-    return !isPromise(valueOf(object));
-}
-/**
-    Description TODO
-    @function
-    @param {Object} object TODO
-    @returns !isPromise(valueOf(object)) && !isRejected(object)
-    */
-function isFulfilled(object) {
-    return !isPromise(valueOf(object)) && !isRejected(object);
-}
-;
-/**
-    Description TODO
-    @function
-    @param {Object} object TODO
-    @returns false || !!object.promiseRejected
-    */
-function isRejected(object) {
-    object = valueOf(object);
-    if (object === undefined || object === null) {
-        return false;
-    }
-    return !!object.promiseRejected;
-}
-/**
-    Description TODO
-    @function
-    @param {Number} value TODO
-    @param {Boolean} fulfilled TODO
-    @param {Boolean} rejected TODO
-    */
-function when(value, fulfilled, rejected) {
-    var deferred = Deferred();
-    var done = false;
-
-    function fulfill(value) {
-        try {
-            deferred.resolve(fulfilled ? fulfilled(value) : value);
-        } catch (error) {
-            console.log(error.stack);
-            deferred.reject(error.message, error);
-        }
-    }
-
-    function reject(reason, error, rejection) {
-        try {
-            deferred.resolve(
-                rejected ? rejected(
-                    reason,
-                    error,
-                    rejection
-                ) :
-                    rejection || RejectedPromise(reason, error)
-            );
-        } catch (error) {
-            deferred.reject(error.message, error);
-        }
-    }
-
-    setImmediate(function () {
-        toPromise(value)
-            .sendPromise(
-            function (value) {
-                if (done) {
-                    return;
-                }
-                done = true;
-                toPromise(value)
-                    .sendPromise(
-                    fulfill,
-                    "when",
-                    reject
-                )
-            },
-            "when",
-            function (reason, error, rejection) {
-                if (done) {
-                    return;
-                }
-                done = true;
-                reject(reason, error, rejection);
-            }
-        );
-    });
-
-    return deferred.promise;
-}
-/**
-    Description TODO
-    @function
-    @param {String} promise TODO
-    @param {String} rejected TODO
-    @returns when(promise, undefined, rejected)
-    */
-function fail(promise, rejected) {
-    return when(promise, undefined, rejected);
-}
-/**
-    Description TODO
-    @function
-    @param {String} promise TODO
-    @param {Function} callback The callback function.
-    @returns value or reject(reason)
-    */
-function fin(promise, callback) {
-    return when(promise, function (value) {
-        return when(callback(), function () {
-            return value;
-        });
-    }, function (reason, error, rejection) {
-        return when(callback(), function () {
-            return rejection;
-        });
-    });
-}
-/**
-    Description TODO
-    @function 
-    @param {Property} value TODO
-    */
-function end(value) {
-    when(value, undefined, function (reason, error) {
-        // forward to a future turn so that ``when``
-        // does not catch it and turn it into a rejection.
-        setImmediate(function () {
-            console.error(error && error.stack || error || reason);
-            throw error;
-        });
-    });
-}
-/**
-    Description TODO
-    @function 
-    @param {Property} value TODO
-    @returns deferred.promise
-    */
-function send(value /*, operator, ...args*/) {
-    var deferred = Deferred();
-    var args = Array.prototype.slice.call(arguments, 1);
-    var promise = toPromise(value);
-    setImmediate(function () {
-        promise.sendPromise.apply(
-            promise,
-            [function (value) {
-                deferred.resolve(value);
-            }].concat(args)
-        );
-    });
-    return deferred.promise;
-}
-/**
-    Description TODO
-    @function
-    @param {Operator} operator TODO
-    @returns {Array} send.apply(undefined, [value, operator].concat(args))
-    */
-function sender(operator) {
-    return function (value /*, ...args*/) {
-        var args = Array.prototype.slice.call(arguments, 1);
-        return send.apply(undefined, [value, operator].concat(args));
-    }
-}
-
-var get = sender("get");
-var put = sender("put");
-var del = sender("del");
-var post = sender("post");
-var apply = sender("apply");
-var keys = sender("keys");
-
-/**
-    Description TODO
-    @function
-    @param {Property} value TODO
-    @param {Property} name TODO
-    @returns post(value, name, args)
-    */
-var invoke = function (value, name) {
-    var args = Array.prototype.slice.call(arguments, 2);
-    return post(value, name, args);
-};
-/**
-    Description TODO
-    @function
-    @param {Property} value TODO
-    @param {Property} thisp TODO
-    @returns apply(value, thisp, args)
-    */
-var call = function (value, thisp) {
-    var args = Array.prototype.slice.call(arguments, 2);
-    return apply(value, thisp, args);
-};
-/**
-    Description TODO
-    @function
-    @param {Property} promises TODO
-    @returns when(promises, function (promises) or toPromise(values) or deferred.promise
-    */
-function all(promises) {
-    return when(promises, function (promises) {
-        var countDown = promises.length;
-        var values = [];
-        if (countDown === 0) {
-            return toPromise(values);
-        }
-        var deferred = Deferred();
-        promises.forEach(function (promise, index) {
-            when(promise, function (value) {
-                values[index] = value;
-                if (--countDown === 0) {
-                    deferred.resolve(values);
-                }
-            }, function (reason, error, rejection) {
-                deferred.reject(reason, error, rejection);
-            });
-        });
-        return deferred.promise;
-    });
-}
-/**
-    Description TODO
-    @function
-    @param {Property} value TODO
-    @returns value or promise or FulfilledPromise(value)
-    */
-function toPromise(value) {
-    // return sendables unaltered
-    if (isPromise(value)) {
-        return value;
-        //} else if (value && typeof value.sendPromise == "function") {
-        //}
-        //} else if (value && typeof value.then == "function") {
-        //}
-    } else if (fulfilledPromisePool.length) {
-        var promise = fulfilledPromisePool.pop();
-        promise._outOfService = false;
-        promise._value = toPromise(value);
-        return promise;
-    } else {
-        return FulfilledPromise(value);
-    }
-}
-/**
-    Description TODO
-    @function
-    @param {Function} callback The callback function.
-    @returns function() or deferred.promise
-    */
-function node(callback) {
-    return function () {
-        var deferred = Deferred();
-        var args = Array.prototype.slice.call(arguments);
-        var self = this;
-        // add a continuation that resolves the promise
-        args.push(function (error, value) {
-            if (error) {
-                deferred.reject(error);
-            } else {
-                deferred.resolve(value);
-            }
-        });
-        // trap exceptions thrown by the callback
-        when(undefined,
-            function () {
-                callback.apply(self, args);
-            }).fail(function (reason, error, rejection) {
-                deferred.reject(reason, error, rejection);
-            });
-        return deferred.promise;
-    };
-}
-/**
-    Description TODO
-    @function
-    @param {Function} callback The callback function.
-    @returns node(callback).apply(undefined, args)
-    */
-function ncall(callback /*, ...args*/) {
-    var args = Array.prototype.slice.call(arguments, 1);
-    return node(callback).apply(undefined, args);
-}
-
-// internal utilities
-/**
-    Description TODO
-    @function
-    @param {Property} value TODO
-    @returns value.valueOf() or value
-    */
-function valueOf(value) {
-    if (Object(value) === value) {
-        return value.valueOf();
-    } else {
-        return value;
-    }
-}
-
-/**
-    Description TODO
-    @function
-    @param {Property} promise TODO
-    @param {Property} timeout TODO
-    @returns deferred.promise
-    */
-function timeout(promise, timeout) {
-    var deferred = Deferred();
-    when(promise, function (value) {
-        clearTimeout(handle);
-        deferred.resolve(value);
-    }, function (reason, error, rejection) {
-        clearTimeout(handle);
-        deferred.reject(reason, error, rejection);
-    });
-    var handle = setTimeout(function () {
-        deferred.reject("Timed out");
-    }, timeout);
-    return deferred.promise;
-}
-/**
-    Description TODO
-    @function
-    @param {Property} promise TODO
-    @param {Property} timeout TODO
-    @returns deferred.promise
-    */
-function delay(promise, timeout) {
-    var deferred = Deferred();
-    setTimeout(function () {
-        deferred.resolve(promise);
-    }, timeout);
-    return deferred.promise;
-}
-
-
-// Patch the prototype chain
-/**
-    Description TODO
-    @function
-    @param {Property} fun TODO
-    @returns function () or fun.apply(void 0, [this].concat(args))
-    */
-function methodize(fun) {
-    return function () {
-        var args = Array.prototype.slice.call(arguments);
-        return fun.apply(void 0, [this].concat(args));
-    };
-}
-
-// Public API
-
-Promise.prototype.then = methodize(when);
-Promise.prototype.send = methodize(send);
-Promise.prototype.get = methodize(get);
-Promise.prototype.put = methodize(put);
-Promise.prototype["delete"] = methodize(del);
-Promise.prototype.post = methodize(post);
-Promise.prototype.invoke = methodize(invoke);
-Promise.prototype.keys = methodize(keys);
-Promise.prototype.apply = methodize(apply);
-Promise.prototype.call = methodize(call);
-Promise.prototype.all = methodize(all);
-Promise.prototype.timeout = methodize(timeout);
-Promise.prototype.delay = methodize(delay);
-Promise.prototype.fail = methodize(fail);
-Promise.prototype.end = methodize(end);
-
-exports.defer = Deferred;
-exports.ref = toPromise; // subsumes FulfilledPromise
-exports.fulfill = FulfilledPromise;
-exports.reject = RejectedPromise;
-exports.when = when;
-exports.all = all;
-exports.invoke = invoke;
-exports.get = get;
-exports.put = put;
-exports.post = post;
-exports["delete"] = del;
-exports.invoke = invoke;
-exports.apply = apply;
-exports.call = call;
-exports.isPromise = isPromise;
-exports.isResolved = isResolved;
-exports.isFulfilled = isFulfilled;
-exports.isRejected = isRejected;
-exports.node = node;
-exports.ncall = ncall;
-exports.pool = deferredPool;
+exports.Promise = Promise;
 
 });

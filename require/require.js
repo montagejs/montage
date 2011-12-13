@@ -5,7 +5,7 @@
  </copyright> */
 bootstrap("require/require", function (require, CJS) {
 
-    var Q = require("core/promise");
+    var Promise = require("core/promise").Promise;
     var URL = require("core/url");
 
     var global = (function () {return this})();
@@ -156,7 +156,7 @@ bootstrap("require/require", function (require, CJS) {
 
         // Loads module definition (and it's transitive dependencies if in async loading mode) then initializes the module.
         function loadModule(topId) {
-            var result = Q.defer();
+            var result = Promise.defer();
 
             // Update the list of modules that need to load
             CJS.progress.requiredModules.push(

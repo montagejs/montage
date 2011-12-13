@@ -23,7 +23,7 @@ var ObjectProperty = require("data/objectproperty").ObjectProperty;
 var WeakMap = require("core/shim/weak-map").WeakMap;
 var Set = require("core/shim/structures").Set;
 var Exception = require("core/exception").Exception;
-var Q = require("core/promise");
+var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("context");
 /**
  @class module:montage/data/context.Context
@@ -150,7 +150,7 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
                     this._inserted.add(instance);
                     return this.initializeObject(instance, this).then(function(instance) {
                         this._objectMap.set(instance.objectId, instance);
-                        return Q.ref(instance);
+                        return Promise.ref(instance);
                     }.bind(this));
                 } else if (instance.context !== this) {
                     throw Exception.initWithMessageTargetAndMethod("This instance is already inserted in another context.", this, "insert");
@@ -166,13 +166,13 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
      A deleted object will be deleted from the backing store on the next save.
      @function
      @param {Object} instance TODO
-     @returns Q.ref(instance)
+     @returns Promise.ref(instance)
      */
     'delete': {
         value: function(instance) {
             if (instance !== null) {
                 if ((typeof instance.context === "undefined") || (instance.context === null)) {
-                    return Q.ref(instance);
+                    return Promise.ref(instance);
                 }
                 if (instance.context !== this) {
                     throw Exception.initWithMessageTargetAndMethod("This instance is belongs to another context.", this, "delete");
@@ -195,7 +195,7 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
             } else {
                 throw Exception.initWithMessageTargetAndMethod("Cannot delete a null object.", this, "delete");
             }
-            return Q.ref(instance);
+            return Promise.ref(instance);
         }
     },
 
@@ -203,13 +203,13 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
      Revert an object to its saved values.
      @function
      @param {Object} instance TODO
-     @returns Q.ref(instance)
+     @returns Promise.ref(instance)
      */
     revert: {
         value: function(instance) {
             if (instance !== null) {
                 if (typeof instance.context === "undefined") {
-                    return Q.ref(instance);
+                    return Promise.ref(instance);
                 }
                 if (instance.context !== null) {
                     if (instance.context !== this) {
@@ -232,7 +232,7 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
             } else {
                 throw Exception.initWithMessageTargetAndMethod("Cannot revert a null object.", this, "revert");
             }
-            return  Q.ref(instance);
+            return  Promise.ref(instance);
         }
     },
 
@@ -243,7 +243,7 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
     _revertValues: {
         value: function(instance) {
             // TODO [PJYF May 24 2011] We should restore the saved values
-            return  Q.ref(instance);
+            return  Promise.ref(instance);
         }
     },
 
@@ -337,12 +337,12 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
      Fetch objects from the backing store.
      @function
      @param {String} query TODO
-     @returns Q.ref(this.parent.queryInContext(query, this))
+     @returns Promise.ref(this.parent.queryInContext(query, this))
      */
     query: {
         value: function(query) {
             // TODO [PJYF Sept 23 2011] This is probably incomplete - we need to handle the refresh
-            return Q.ref(this.parent.queryInContext(query, this));
+            return Promise.ref(this.parent.queryInContext(query, this));
         }
     },
 
@@ -351,12 +351,12 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
      If the target passed is an Array each object will be refreshed.
      @function
      @param {Object} target The target to be refreshed.
-     @returns Q.ref(this.repledgeObject(target, this))
+     @returns Promise.ref(this.repledgeObject(target, this))
      */
     refresh: {
         value: function(target) {
             // TODO [PJYF May 10 2011] This is incorrect we need to merge the changes in the refaulted objects
-            return Q.ref(this.repledgeObject(target, this));
+            return Promise.ref(this.repledgeObject(target, this));
         }
     },
 
