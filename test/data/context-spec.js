@@ -6,7 +6,7 @@
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
-var Context = require("montage/data/context").Context;
+var ChangeContext = require("montage/data/changecontext").ChangeContext;
 var Store = require("montage/data/store").Store;
 var StoreManager = require("montage/data/store").StoreManager;
 var logger = require("montage/core/logger").logger("context-spec");
@@ -21,7 +21,7 @@ describe("data/context-spec", function() {
     var companyBinder = BinderHelper.companyBinder();
 
     describe("creation", function() {
-        var context = Context.create().init();
+        var context = ChangeContext.create().init();
 
         it("successful", function() {
             expect(context).not.toBe(null);
@@ -29,7 +29,7 @@ describe("data/context-spec", function() {
     });
 
     describe("insert object", function() {
-        var context = Context.create().init();
+        var context = ChangeContext.create().init();
 
         var louis = null;
         it("should be inserted in the context, have an Id and be registered", function() {
@@ -53,7 +53,7 @@ describe("data/context-spec", function() {
     });
 
     describe("delete object", function() {
-        var context = Context.create().init();
+        var context = ChangeContext.create().init();
 
         var louis = null;
         it("should be deleted by the context, and should not be associated with a context", function() {

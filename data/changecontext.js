@@ -19,17 +19,17 @@ var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
 var Blueprint = require("data/blueprint").Blueprint;
 var ObjectProperty = require("data/objectproperty").ObjectProperty;
-// TODO [June 5 2011 PJYF] This s temporary implementation of WeakMap to let the browser catch up.
+// TODO [June 5 2011 PJYF] This is temporary implementation of WeakMap to let the browser catch up.
 var WeakMap = require("core/shim/weak-map").WeakMap;
 var Set = require("core/shim/structures").Set;
 var Exception = require("core/exception").Exception;
 var Promise = require("core/promise").Promise;
-var logger = require("core/logger").logger("context");
+var logger = require("core/logger").logger("changecontext");
 /**
- @class module:montage/data/context.Context
+ @class module:montage/data/changecontext.ChangeContext
  @extends module:montage/data/store.Store
  */
-var Context = exports.Context = Montage.create(Store, /** @lends module:montage/data/context.Context# */ {
+var ChangeContext = exports.ChangeContext = Montage.create(Store, /** @lends module:montage/data/changecontext.ChangeContext# */ {
     /**
      Collection of object inserted in this context since the last save.
      @private
@@ -148,9 +148,8 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
                 if (instance.context === null) {
                     instance.context = this;
                     this._inserted.add(instance);
-                    var self = this;
                     return this.initializeObject(instance, this).then(function(instance) {
-                        self._objectMap.set(instance.objectId, instance);
+                        instance.context._objectMap.set(instance.objectId, instance);
                         return Promise.ref(instance);
                     });
                 } else if (instance.context !== this) {
