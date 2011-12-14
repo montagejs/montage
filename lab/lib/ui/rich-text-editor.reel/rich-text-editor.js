@@ -249,7 +249,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         }
     },
 
-
     /**
       Description TODO
       @private
@@ -306,6 +305,15 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
             }
         }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _shortcutMap: {
+        enumerable: false,
+        value: {}
     },
 
     /**
