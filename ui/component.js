@@ -37,6 +37,32 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: null
     },
+
+    /**
+      Dispatch the actionEvent this component is configured to emit upon interaction
+      @private
+    */
+    _dispatchActionEvent: {
+        value: function() {
+            this.dispatchEvent(this.createActionEvent());
+        },
+        enumerable: false
+    },
+
+    /**
+        Create a custom event to dispatch upon interaction
+        @type {Function}
+        @returns and event to dispatch upon interaction
+    */
+    createActionEvent: {
+        value: function() {
+            var actionEvent = document.createEvent("CustomEvent");
+            actionEvent.initCustomEvent("action", true, true, null);
+            actionEvent.type = "action";
+            return actionEvent;
+        }
+    },
+
 /**
     Description TODO
     @function
@@ -222,13 +248,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
         }
     },
-    
+
     querySelectorComponent: {
         value: function(selector) {
             if (typeof selector !== "string") {
                 throw "querySelectorComponent: Selector needs to be a string.";
             }
-            
+
             // \s*(?:@([^>\s]+)) leftHandOperand [<label>]
             // \s*(>)?\s* operator [>] (if undefined it's a space)
             // @([^>\s]+) rightHandOperand [<label>]
@@ -237,17 +263,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (!matches) {
                 throw "querySelectorComponent: Syntax error \"" + selector + "\"";
             }
-            
+
             var childComponents = this.childComponents,
                 leftHandOperand = matches[1],
                 operator = matches[2] || " ",
                 rightHandOperand = matches[3],
                 rest = matches[4],
                 found;
-            
+
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
-                
+
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
                     if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
                         if (rest) {
@@ -273,17 +299,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
             }
-            
+
             return null;
         }
     },
-    
+
     querySelectorAllComponent: {
         value: function(selector) {
             if (typeof selector !== "string") {
                 throw "querySelectorComponent: Selector needs to be a string.";
             }
-            
+
             // (@([^>\s]+)? leftHandOperand [<label>]
             // \s*(>)?\s* operator [>] (if undefined it's a space)
             // @([^>\s]+) rightHandOperand [<label>]
@@ -292,14 +318,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (!matches) {
                 throw "querySelectorComponent: Syntax error \"" + selector + "\"";
             }
-                
+
             var childComponents = this.childComponents,
                 leftHandOperand = matches[1],
                 operator = matches[2] || " ",
                 rightHandOperand = matches[3],
                 rest = matches[4],
                 found = [];
-            
+
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
@@ -324,11 +350,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
             }
-            
+
             return found;
         }
     },
-    
+
 /**
         Description TODO
         @type {Property}

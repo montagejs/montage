@@ -83,11 +83,12 @@ exports.Main = Montage.create(Component, {
     handleMousedown: {
         value: function(evt) {
             if (evt.button === 1) {
-                this.toggleShowControlsAction();
+                this.handleToggleShowControlsButtonAction();
             }
         }
     },
-    toggleShowControlsAction: {
+
+    handleToggleShowControlsButtonAction: {
         value: function() {
             this.showControls = !this.showControls;
         }
@@ -231,7 +232,7 @@ exports.Main = Montage.create(Component, {
         value: null
     },
 
-    addPhotosAction: {
+    handleAddPhotosButtonAction: {
         value: function() {
             var popup = this.searchPopup;
 
@@ -245,7 +246,7 @@ exports.Main = Montage.create(Component, {
         }
     },
 
-    removePhotoAction: {
+    handleRemovePhotoButtonAction: {
         value: function() {
 
             var selectedPhoto = this.photoListController.getProperty("selectedObjects.0");

@@ -83,15 +83,16 @@
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
-                    "element": {"#": "addPhotosButton"}
+                    "element": {"#": "addPhotosButton"},
+                    "identifier": "addPhotosButton"
                 },
-                "bindings": {
-                    "action": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "addPhotosAction",
-                        "oneway": true
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
                     }
-                }
+                ]
             },
 
             "removeSelectionCondition": {
@@ -113,15 +114,16 @@
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
-                    "element": {"#": "removePhotoButton"}
+                    "element": {"#": "removePhotoButton"},
+                    "identifier": "removePhotoButton"
                 },
-                "bindings": {
-                    "action": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "removePhotoAction",
-                        "oneway": true
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
                     }
-                }
+                ]
             },
 
             "searchPanel": {
@@ -147,15 +149,16 @@
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
-                    "element": {"#": "toggleControlsButton"}
+                    "element": {"#": "toggleControlsButton"},
+                    "identifier": "toggleShowControlsButton"
                 },
-                "bindings": {
-                    "action": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "toggleShowControlsAction",
-                        "oneway": true
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
                     }
-                }
+                ]
             }
 
         }
