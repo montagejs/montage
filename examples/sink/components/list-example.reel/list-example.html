@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Image Example</title>
+    <script type="text/montage-serialization">
+{
+
+    "places": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true,
+            "content": [
+                {"src": "images/IMG_1.jpg", "title": "A train"},
+                {"src": "images/IMG_2.jpg", "title": "Another train"},
+                {"src": "images/IMG_3.jpg", "title": "Trains"},
+                {"src": "images/IMG_3.jpg", "title": "Trains, train, trains"},
+                {"src": "images/IMG_3.jpg", "title": "More trains."},
+                {"src": "images/IMG_3.jpg", "title": "A train"}
+            ]
+        }
+    },
+
+    "list1": {
+        "module": "montage/ui/list.reel",
+        "name": "List",
+        "properties": {
+            "element": {
+                "#": "list"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "places"},
+            "axis": "vertical"
+        }
+    },
+
+    "thumb": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+
+    "title": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "title"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.title",
+                "oneway": true
+            }
+        }
+    },
+
+    "owner": {
+        "module": "components/list-example.reel",
+        "name": "ImageExample",
+        "properties": {
+            "element": {"#": "example-root"}
+        }
+    }
+}
+    </script>
+
+    <style>
+        .list .thumb {
+            width: 96px;
+            height: 96px;
+            border: 5px solid #fff;
+            margin-top: 5px;
+            margin-left: 5px;
+
+        }
+
+        .span8.description {
+            width: 100%;
+            margin-left: 5px;
+        }
+
+        .list .montage-list-scrollView {
+            height: 300px;
+        }
+
+        .list {
+            height: 300px;
+            width: 100%;
+            background: lightGrey;
+        }
+
+        .list .title {
+            margin-top: 5px;
+            margin-left: 5px;
+        }
+
+
+        .list .selected {
+            background: hsl(195,96%,53%);
+            -webkit-transform: scale(1.0);
+            -webkit-box-shadow: 0 2px 5px hsla(120,2%,39%, 0.3);
+            border:  1px solid hsl(0,0%,56%);
+        }
+
+        .list .active {
+            background: hsl(195,66%,73%);
+        }
+
+    </style>
+
+
+</head>
+<body>
+    <div id="example-root">
+
+        <div class="row">
+            <div class="span8 description">
+                <h3>List</h3>
+                <p>
+                    The List component repeatedly generates new DOM structure based on a collection of data objects.  Like the Repetition component, the List component duplicates the contents of its associated HTML element, including any child elements. Those child elements may, in turn, be associated with other components. You can bind properties in the List's data source to each duplicated instance. The List also supports horizontal and vertical scrolling, with optional momentum and bounce behavior. In fact, List is composed of a Repetition component nested inside a ScrollView component.
+                </p>
+                <p>
+                    In this example, each row in the List contains an image (&lt;img&gt;) and a title (&lt;h3&gt;) that are controlled, respectively, by Image and DynamicText components. An ArrayController manages the List's data.
+                </p>
+            </div>
+        </div>
+
+        <!-- The "row" and "span8" divs are only for styling purposes. -->
+        <div class="row">
+            <div class="span8">
+                <!-- List element -->
+                <div class="list" id="list">
+                    <div class="item">
+                        <!-- Image and DynamicText components -->
+                        <img id="thumb" class="thumb" />
+                        <h2 id="title" class="title"></h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section>
+            <h6>HTML Markup</h6>
+            <pre class="prettyprint">
+&lt;div class="list" id="list"&gt;
+    &lt;div class="item"&gt;
+        &lt;img id="thumb" class="thumb" /&gt;
+        &lt;h3 id="title" class="title"&gt;&lt;/h3&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+        </section>
+
+
+        <section>
+        <h6>Serialization</h6>
+
+        <p>Besides the List component itself, the example's serialization creates and configures the ArrayController, and the Image and DynamicText components. The ArrayController's content is assigned directly in the serialization for the sake of simplicity.
+</p>
+<ul>
+    <li>Define the ArrayController that holds the List data:</li>
+    <pre class="prettyprint">
+"places": {
+    "name": "ArrayController",
+    "module": "montage/ui/controller/array-controller",
+    "properties": {
+        "selectObjectsOnAddition": true,
+        "automaticallyOrganizeObjects": true,
+        "content": [
+            {"src": "imagees/IMG_1.jpg", "title": "A train"},
+            {"src": "images/IMG_2.jpg", "title": "Another train"},
+            {"src": "images/IMG_3.jpg", "title": "Trains"},
+            {"src": "images/IMG_4.jpg", "title": "Trains, train, trains"},
+            {"src": "images/IMG_5.jpg", "title": "More trains."},
+            {"src": "images/IMG_6.jpg", "title": "A train"}
+        ]
+    }
+}
+    </pre>
+
+    <li>Define the List and set its <code>contentController</code> property to the serialized ArrayController. Sets <code>isSelectionEnabled</code> to true to enable selection tracking (more about tracking list selection below).</li>
+    <pre class="prettyprint">
+"list1": {
+    "module": "montage/ui/list.reel",
+    "name": "List",
+    "properties": {
+        "element": {
+            "#": "list"
+        },
+        "isSelectionEnabled": true,
+        "contentController": {"@": "places"},
+        "axis": "vertical"
+    }
+}
+        </pre>
+<li>Define the binding for the thumbnail for each row in the list. The "objectAtCurrentIteration" is used to specify the current Object during the iteration.
+</li>
+        <pre class="prettyprint">
+"thumb": {
+    "module": "montage/ui/image.reel",
+    "name": "Image",
+    "properties": {
+        "element": {"#": "thumb"}
+    },
+    "bindings": {
+        "src": {
+            "boundObject": {"@": "list1"},
+            "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+            "oneway": true
+        }
+    }
+}
+        </pre>
+
+</ul>
+
+        </section>
+
+<section>
+        <h6>CSS</h6>
+
+        Some custom CSS is used to format the currently selected list item, and to display scrollbars in the list.
+
+        <p>When a List component's <code><a href="#">isSelectionEnabled</a></code> property is set to true, and the user selects a new item in the list, a <code>selected</code> CSS class is added to the selected element's <code>classList</code> property.  During the selection, an <strong>active</strong> CSS class is added to the element's <code>classList</code>. By default, these styles are undefined so you need to create them yourself.</p>. The following CSS was used in this example to style the active and selected items.
+
+        <pre class="prettyprint">
+
+.list {
+    height: 300px;
+    width: 100%;
+    background: lightGrey;
+}
+
+.list .selected {
+    border: 2px solid red;
+    background-color: lightBlue;
+}
+
+.list .active {
+    background-color: lightBlue;
+}
+
+.list .title {
+    margin-top: 5px;
+    margin-left: 5px;
+}
+
+.list .thumb {
+    width: 96px;
+    height: 96px;
+    border: 5px solid #fff;
+    margin-top: 5px;
+    margin-left: 5px;
+
+}
+
+.list .montage-list-scrollView {
+    height: 300px;
+}
+
+        </pre>
+
+        <p>The <code class="prettyprint">.list .montage-list-scrollView</code> CSS selector is added to make sure the underlying ScrollView component displays it scrollbars. Note that the <code>height</code> assigned to the selector matches the height of the list itself (300px).</p>
+
+</section>
+
+
+
+    </div>
+
+</body>
+</html>

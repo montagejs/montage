@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Test Converters</title>
+    <script type="text/montage-serialization">
+{
+    "owner": {
+        "module": "components/converters.reel",
+        "name": "Converters",
+        "properties": {
+            "element": {"#": "main"},
+            "num1Cmp": {"@": "dynamictext1"},
+            "num2Cmp": {"@": "dynamictext2"},
+            "num3Cmp": {"@": "dynamictext3"},
+            "num4Cmp": {"@": "dynamictext4"},
+            "currencyCmp": {"@": "dynamictext5"}
+        }
+    },
+    "textfield1": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "value": "Hello World",
+            "element": {"#": "textfield1"}
+        }
+    },
+    "dynamictext6": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Hello World",
+            "element": {"#": "text1"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textfield1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "uppercaseconverter1": {
+        "module": "montage/core/converter/upper-case-converter",
+        "name": "UpperCaseConverter",
+        "properties": {
+
+        }
+    },
+    "dynamictext7": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Hello World",
+            "converter": {"@": "uppercaseconverter1"},
+            "element": {"#": "text2"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textfield1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "lowercaseconverter1": {
+        "module": "montage/core/converter/lower-case-converter",
+        "name": "LowerCaseConverter",
+        "properties": {
+
+        }
+    },
+    "dynamictext8": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Hello World",
+            "converter": {"@": "lowercaseconverter1"},
+            "element": {"#": "text3"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textfield1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "textarea1": {
+        "module": "montage/ui/textarea.reel",
+        "name": "TextArea",
+        "properties": {
+            "value": "Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget.",
+            "element": {"#": "textarea1"}
+        }
+    },
+    "uppercaseconverter2": {
+        "module": "montage/core/converter/upper-case-converter",
+        "name": "UpperCaseConverter",
+        "properties": {
+
+        }
+    },
+    "dynamictext9": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "",
+            "converter": {"@": "uppercaseconverter2"},
+            "element": {"#": "text4"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textarea1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "dateconverter1": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "MM-dd-yyyy"
+        }
+    },
+    "textfield2": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "converter": {"@": "dateconverter1"},
+            "updateOnInput": false,
+            "element": {"#": "txt-date"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dynamictext10": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "date1"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dateconverter2": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "dd MMM"
+        }
+    },
+    "dynamictext11": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "dateconverter2"},
+            "element": {"#": "date2"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dateconverter3": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "dd MMM yyyy hh:mm tt"
+        }
+    },
+    "dynamictext12": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "dateconverter3"},
+            "element": {"#": "date3"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dateconverter4": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "MM/dd/yyyy HH:mm"
+        }
+    },
+    "dynamictext13": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "dateconverter4"},
+            "element": {"#": "date4"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dateconverter5": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "MM-dd-yyyy"
+        }
+    },
+    "dynamictext14": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "dateconverter5"},
+            "element": {"#": "date5"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "numberconverter1": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "decimals": 2
+        }
+    },
+    "textfield3": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "converter": {"@": "numberconverter1"},
+            "element": {"#": "txt-number"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "num1"},
+            "converter": {"@": "numberconverter1"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+    "numberconverter2": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "shorten": true,
+            "decimals": 2
+        }
+    },
+    "dynamictext2": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "numberconverter2"},
+            "element": {"#": "num2"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+    "numberconverter3": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "shorten": true,
+            "decimals": 4
+        }
+    },
+    "dynamictext3": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "numberconverter3"},
+            "element": {"#": "num3"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+    "numberconverter4": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "round": true
+        }
+    },
+    "dynamictext4": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "numberconverter4"},
+            "element": {"#": "num4"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+
+    "numberconverter5": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "decimals": 2,
+            "allowPartialConversion": true
+        }
+    },
+    "temp-converter": {
+        "module": "components/converters.reel",
+        "name": "TempConverter",
+        "properties": {
+
+        }
+    },
+    "celsiusTextfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "celsius"},
+            "converter": {"@": "numberconverter5"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "fahrenheitTextfield"},
+                "boundObjectPropertyPath": "value",
+                "converter": {"@": "temp-converter"}
+            }
+        }
+    },
+    "fahrenheitTextfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "fahrenheit"},
+            "value": "32"
+        }
+    }
+}
+    </script>
+
+
+    <style type="text/css">
+
+        .text {
+            margin: 5px 0;
+            padding: 5px;
+            font-size: 1.1em;
+            background-color: #eee;
+            color: #333;
+        }
+
+        .text.example {
+            margin-bottom: 5px;
+            margin-top: 5p;
+        }
+
+
+
+    </style>
+
+</head>
+<body>
+    <div id="main">
+    <p>
+        Montage provides a collection of objects for converting and formatting strings and numbers:
+
+        <ul>
+            <li><a href="http://tetsubo.org/mot/montage-api/module_montage_core_converter_number_converter_NumberConverter.html" target="_blank">NumberConverter</a></li>
+            <li> <a href="http://tetsubo.org/mot/montage-api/module_montage_core_converter_upper_case_converter_UpperCaseConverter.html" target="_blank">UpperCaseConverter</a> </li>
+            <li><a href="http://tetsubo.org/mot/montage-api/module_montage_core_converter_lower_case_converter_LowerCaseConverter.html" target="_blank">LowerCaseConverter</a></li>
+            <li><a href="http://tetsubo.org/mot/montage-api/module_montage_core_converter_date_converter_DateConverter.html" target="_blank">DateConverter</a></li>
+            <li><a href="http://tetsubo.org/mot/montage-api/module_montage_core_converter_currency_converter_CurrencyConverter.html" target="_blank">CurrencyConverter</a></li>
+            <li><a href="http://tetsubo.org/mot/montage-api/module_montage_core_converter_new_line_to_br_converter_NewLineToBrConverter.html" target="_blank">NewLineToBrConverter</a></li>
+            <li><a href="http://tetsubo.org/mot/montage-api/module_montage_core_converter_trim_converter_TrimConverter.html" target="_blank">TrimConverter</a></li>
+        </ul>
+
+    </p>
+
+        <h3>String converters</h3>
+        The following examples demonstrate how to use a string converter on a DynamicText field to format its assigned value before being displayed. The value of the input text field (which is controlled by a Montage <a href="">Textfield object</a>.) This is done by creating a new converter object, and assinging that object to a DynamicText component's <code>converter</code> property.
+
+        <div>
+            <p>Enter some text:</p>
+
+            <input type="text" id="textfield1" />
+
+            <p> 1) Dynamic text bound to the textfield without any converter<p>
+            <div id="text1" class="text example"></div>
+<h6>Serialization</h6>
+<pre class="prettyprint linenums">
+    "dynamictext6": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Hello World",
+            "element": {"#": "text1"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textfield1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+
+</pre>
+
+            <p>2) Dynamic text with an UpperCase converter</p>
+
+            <div id="text2" class="text"></div>
+<h6>Serialization</h6>
+            <pre class="prettyprint linenums">
+"uppercaseconverter1": {
+    "module": "montage/core/converter/upper-case-converter",
+    "name": "UpperCaseConverter",
+    "properties": {
+
+    }
+},
+"dynamictext7": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "value": "Hello World",
+        "converter": {"@": "uppercaseconverter1"},
+        "element": {"#": "text2"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "textfield1"},
+            "boundObjectPropertyPath": "value"
+        }
+    }
+}
+</pre>
+
+            <p>3) Dynamic text with a LowerCase converter</p>
+            <div id="text3" class="text"></div>
+<h6>Serialization</h6>
+<pre class="prettyprint linenums">
+"lowercaseconverter1": {
+    "module": "montage/core/converter/lower-case-converter",
+    "name": "LowerCaseConverter",
+    "properties": {
+
+    }
+},
+"dynamictext8": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "value": "Hello World",
+        "converter": {"@": "lowercaseconverter1"},
+        "element": {"#": "text3"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "textfield1"},
+            "boundObjectPropertyPath": "value"
+        }
+    }
+}
+</pre>
+
+            <div>
+                <p>Type some text in the textarea:</p>
+                <textarea id="textarea1" style="font-size: 1em;"></textarea>
+                <p id="text4"></p>
+            </div>
+<h6>Serialization</h6>
+            <pre class="prettyprint">
+"dynamictext9": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "value": "",
+        "converter": {"@": "uppercaseconverter2"},
+        "element": {"#": "text4"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "textarea1"},
+            "boundObjectPropertyPath": "value"
+        }
+    }
+}
+            </pre>
+
+        </div>
+
+        <h3>Number to string converters </h3>
+        <input id="txt-number" type="text" />
+
+        <div>
+            <p>Default - Number rounded to 2 decimals</p>
+            <div id="num1" class="text"></div>
+<h6>Serialization</h6>
+<pre class="prettyprint linenums">
+"numberconverter1": {
+    "module": "montage/core/converter/number-converter",
+    "name": "NumberConverter",
+    "properties": {
+        "decimals": 2
+    }
+},
+"dynamictext1": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "element": {"#": "num1"},
+        "converter": {"@": "numberconverter1"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "inputNumber"
+        }
+    }
+}
+</pre>
+
+            <p>Number in human readable form (K,M etc). Set property "shorten" to true.</p>
+            <div id="num2" class="text"></div>
+<h6>Serialization</h6>
+<pre class="prettyprint linenums">
+"numberconverter2": {
+    "module": "montage/core/converter/number-converter",
+    "name": "NumberConverter",
+    "properties": {
+        "shorten": true,
+        "decimals": 2
+    }
+},
+"dynamictext2": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "converter": {"@": "numberconverter2"},
+        "element": {"#": "num2"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "inputNumber"
+        }
+    }
+}
+</pre>
+
+            <p>Number in human readable form with 3 decimals</p>
+            <div id="num3" class="text"></div>
+
+            <p>Number rounded to nearest integer</p>
+            <div id="num4" class="text"></div>
+
+        </div>
+
+
+        <h3>Date Converters </h3>
+        <p>Enter a date in the mm/dd/yyyy format</p>
+        <input id="txt-date" type="text" />
+
+        <p>For date format patterns, see: <a target="_new" href="http://www.ruby-doc.org/core/classes/Time.html#M000392">here</a></p>
+
+        <div>
+            <div>Default Date.toString()</div>
+            <div id="date1" class="text"></div>
+
+            <div>Format using dd MM pattern</div>
+            <div id="date2" class="text"></div>
+
+<h6>Serialization</h6>
+ <pre class="prettyprint linenums">
+"dateconverter2": {
+    "module": "montage/core/converter/date-converter",
+    "name": "DateConverter",
+    "properties": {
+        "pattern": "dd MMM"
+    }
+},
+"dynamictext11": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "converter": {"@": "dateconverter2"},
+        "element": {"#": "date2"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "inputDate"
+        }
+    }
+}
+</pre>
+
+            <div>Pattern: d M Y H:i</div>
+            <div id="date3" class="text"></div>
+
+            <div>Pattern: m/d/Y h:i A (eg: 08/20/2001 01:40 PM)</div>
+            <div id="date4" class="text"></div>
+
+            <div>Pattern: 'c' ISO-8601 format </div>
+            <div id="date5" class="text"></div>
+
+        </div>
+
+
+        <h3>Custom converter: Temperature Converter</h3>
+        <p>The following example demonstrates how to create and use a custom converter, in this case to convert from degrees C to degrees F. The custom object extends the base Converter object which defines two methodsThe base Converter class that is extended by specific converter classes. A Converter has two primary convert() and revert().</p>
+
+        <section id="converter">
+            <p>Temperature in Celsius</p>
+            <input type="number" name="celsius" id="celsius"/>
+
+            <p>Temperature in Fahrenheit</p>
+                <input type="number" name="fahrenheit" id="fahrenheit" >
+
+           <p>1) Implement the custom converter (see components/converters.reel/converters.js in project code). </p>
+<pre class="prettyprint linenums">
+/* converters.js - Custom converter to convert from Celsius to Fahrenheit and vice-versa. */
+exports.TempConverter = Montage.create(Converter, {
+
+    allowPartialConversion: {
+        value: true
+    },
+
+    // convert fahrenheit to celsius (showing our non-metric heritage here)
+    convert: {
+        value: function(value) {
+            return (parseInt(value, 10) - 32) / 1.8;
+        }
+    },
+
+    // revert celsius to fahrenheit
+    revert: {
+        value: function(value) {
+            return (1.8 * parseInt(value, 10)) + 32;
+        }
+    }
+
+});
+</pre>
+
+           <p> 2) Define the converter in the serialization. </p>
+
+<pre class="prettyprint linenums">
+ "temp-converter": {
+     "module": "components/converters.reel",
+     "name": "TempConverter",
+     "properties": {
+
+     }
+ },
+</pre>
+
+<p>2) Define the Temperature Converter as part of the Data binding. The "numberconverter1" is used to limit the number of decimals in the Celsius textfield.</p>
+<h6>Serialization</h6>
+<pre class="prettyprint linenums">
+ "celsiusTextfield": {
+     "module": "montage/ui/textfield.reel",
+     "name": "Textfield",
+     "properties": {
+         "element": {"#": "celsius"},
+         "converter": {"@": "numberconverter1"}
+     },
+     "bindings": {
+         "value": {
+             "boundObject": {"@": "fahrenheitTextfield"},
+             "boundObjectPropertyPath": "value",
+             "converter": {"@": "temp-converter"}
+         }
+     }
+ },
+
+ "fahrenheitTextfield": {
+     "module": "montage/ui/textfield.reel",
+     "name": "Textfield",
+     "properties": {
+         "element": {"#": "fahrenheit"},
+         "value": "32"
+     }
+ }
+
+</pre>
+
+        </section>
+
+    </div>
+
+</body>
+</html>

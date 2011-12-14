@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>sidebar Component</title>
+
+    <link rel="stylesheet" href="sidebar.css">
+
+    <script type="text/montage-serialization">
+        {
+            "navController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": true,
+                    "automaticallyOrganizeObjects": true
+                },
+                "bindings": {
+                    "content": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "montageComponents",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "list1": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {
+                        "#": "sidebar-list"
+                    },
+                    "isSelectionEnabled": true,
+                    "contentController": {"@": "navController"}
+                }
+            },
+
+            "list-item-text": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "list-item-text"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "list1"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.label",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "list-item-desc": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "list-item-desc"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "list1"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.desc",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "owner": {
+                "module": "sidebar.reel",
+                "name": "sidebar",
+                "properties": {
+                    "element": {"#": "sidebar"},
+                    "montageComponents": [
+                        {"label": "Button", "value": "button", "desc": "Wraps a div or input in a a styled Button component. Supports three modes (transient, toggle, and mixed), image icons, and labels for different button states. "},
+                        {"label": "Button Group", "value": "button-group", "desc": "Presents a styled group of Button components in row, which can be displayed either in icon or text/icon modes."},
+                        {"label": "Checkbox", "value": "checkbox", "desc": "Wraps an HTML checkbox input element with styled states and provides state management of the checkbox."},
+                        {"label": "Converters", "value": "converters", "desc": "A collection of objects for converting and formatting strings and numeric values."},
+                        {"label": "Dynamic Text", "value": "dynamic-text", "desc": "Provides an easy way to create a text box that you can easily assign text to."},
+                        {"label": "Image", "value": "image", "desc": "Provides an easy way to control the source of an HTML <img> element."},
+                        {"label": "List", "value": "list", "desc": "Repeatedly generates new DOM structure from a div element and its child elements, based on its collection of data objects. Supports scrolling vertically or horizontally, with optional momentum and bounce behavior."},
+                        {"label": "Pop-ups, alerts, & notifiers", "value": "popup1", "desc": "A collection of objects for displaying pop-ups, notifiers and alerts ."},
+                        {"label": "Progress", "value": "progress", "desc": "A styled, animated progress bar."},
+                        {"label": "Repetition", "value": "repetition", "desc": "Repeatedly generates new DOM structure from a div element and its child elements, based on its collection of data objects. The List component is very similar but provides scrolling."},
+                        {"label": "Slider", "value": "slider", "desc": "A styled slider component"},
+                        {"label": "Tabs", "value": "tabs", "desc": "Presents a list of labels and/or image icons in a vertical or horizontal tab format."}
+
+                    ]
+                },
+                "bindings": {
+                    "sandbox.selectedItem": {
+                        "boundObject": {"@": "navController"},
+                        "boundObjectPropertyPath": "selectedObjects.0",
+                        "oneway": true
+                    }
+                }
+
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="sidebar" class="sidebar">
+        <h2>Montage Components</h2>
+        <div id="sidebar-list" class='sidebar-list'>
+            <div class="sidebar-list-item">
+                <h4 class="list-item-text" id="list-item-text"></h4>
+                <div class="" id="list-item-desc"></div>
+            </div>
+        </div>
+
+    </div>
+
+</body>
+</html>

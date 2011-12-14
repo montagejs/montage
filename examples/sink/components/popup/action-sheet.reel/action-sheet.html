@@ -1,0 +1,103 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" type="text/css" href="action-sheet.css">
+        <script type="text/montage-serialization">
+{
+    "button1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "action-email"},
+            "identifier": "Email"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "Facebook",
+            "element": {"#": "action-facebook"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "TextMessage",
+            "element": {"#": "action-text"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button4": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "Tweet",
+            "element": {"#": "action-tweet"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button5": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "Call",
+            "element": {"#": "action-phone"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "owner": {
+        "module": "components/popup/action-sheet.reel",
+        "name": "ActionSheet",
+        "properties": {
+            "element": {"#": "action-sheet-container"}
+        }
+    }
+}
+    </script>
+
+    
+    </head>
+    <body>
+        <div id="action-sheet-container" class="action-sheet-container">
+            <div class="content">
+                <div class="action-container">
+                    <div class="submit action" id="action-email">Email</div>
+                    <div class="text action" id="action-facebook">Facebook</div>
+                    <div class="text action" id="action-text">Text Message</div>
+                    <div class="text action" id="action-tweet">Tweet</div>
+                    <div class="text action" id="action-phone">Call</div>
+                </div>                
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dynamic Text Example</title>
+        <script type="text/montage-serialization">
+{
+    "dateConverter1": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "hh:mm:ss"
+        }
+    },
+    "current-time": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "",
+            "converter": {"@": "dateConverter1"},
+            "element": {"#": "current-time"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "currentTime",
+                "oneway": true
+            }
+        }
+    },
+
+
+    "owner": {
+        "module": "components/dynamic-text-example.reel",
+        "name": "DynamicTextExample",
+        "properties": {
+            "element": {"#": "component-root"}
+        }
+    }
+}
+    </script>
+
+    <style>
+        .current-time {
+            margin: 40px auto;
+            font-size: 64px;
+            display: inline-block;
+        }
+    </style>
+
+    </head>
+
+    <body>
+        <div id="component-root">
+            <div class="row">
+                <div class="span8">
+                    <h3>Dynamic Text</h3>
+                    <p class="">
+                    The DynamicText component lets you easily display a string of text in any element that has a <code>innerHtml</code> property. This includes any element with an opening and closing angle brackets. The following example binds the current time to a DynamicText component's <code>value</code>.
+                    </p>
+                </div>
+            </div>
+
+            <span id="current-time" class="current-time"></span>
+
+            <section>
+            This example combines a DynamicText component, whose value is bound to the <code>currentTime</code> property that's definedthe component's controller JavaScript object (components/dynamic-text-example.reel/dynamic-text-example.js). Lastly, a DateConverter is used to format the time value in the "hh:mm:ss" format.
+
+            <h6>HTML</h6>
+            <pre class="prettyprint">&lt;span id="current-time" class="current-time"&gt;&lt;/span&gt;</pre>
+
+            <h6>Serialization</h6>
+
+            <pre class="prettyprint linenums">
+"dateConverter1": {
+    "module": "montage/core/converter/date-converter",
+    "name": "DateConverter",
+    "properties": {
+        "pattern": "hh:mm:ss"
+    }
+},
+
+"current-time": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "value": "",
+        "converter": {"@": "dateConverter1"},
+        "element": {"#": "current-time"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "currentTime",
+            "oneway": true
+        }
+    }
+}
+            </pre>
+
+        <h6>Controller code</h6>
+        The relevant part of the controller code is shown below.
+<pre class="prettyprint">
+exports.DynamicTextExample = Montage.create(Component, {
+
+    _currentTime: {value: null},
+    currentTime: {
+        set: function(value) {this._currentTime = value;},
+        get: function() {return this._currentTime;}
+    }
+});
+</pre>
+
+            </section>
+    </body>
+</html>

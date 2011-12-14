@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "module": "components/checkbox-example.reel",
+                    "name": "CheckboxExample",
+                    "properties": {
+                        "element": {"#": "checkbox-example"}
+                    }
+                },
+
+                "checkbox1": {
+                    "module": "montage/ui/checkbox.reel",
+                    "name": "Checkbox",
+                    "properties": {
+                        "element": {"#": "checkbox1"}
+                    }
+                },
+
+                "checkbox2": {
+                    "module": "montage/ui/checkbox.reel",
+                    "name": "Checkbox",
+                    "properties": {
+                        "element": {"#": "checkbox2"},
+                        "checked": true
+                    }
+                }
+            }
+        </script>
+
+        <style>
+            .checkbox-example ul {
+                list-style: none;
+            }
+            .checkbox-example h5 {
+                display: inline;
+                vertical-align: top;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="checkbox-example" class="checkbox-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>Checkbox</h3>
+                    <p>
+                        The Checkbox component wraps an HTML checkbox input type with custom styles and functionality.
+                    </p>
+                </div>
+            </div>
+
+            <ul>
+                <li><input id="checkbox1" type="checkbox" /> <h5>Milk</h5> </li>
+                <li><input id="checkbox2" type="checkbox" /> <h5>Eggs</h5> </li>
+            </ul>
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint linenums">
+"checkbox1": {
+    "module": "montage/ui/checkbox.reel",
+    "name": "Checkbox",
+    "properties": {
+        "element": {"#": "checkbox1"}
+    }
+}
+            </pre>
+
+            <h6>HTML Markup</h6>
+ <pre class="prettyprint linenums">
+&lt;input id=&quot;checkbox1&quot; type=&quot;checkbox&quot; /&gt; &lt;h5&gt;Milk&lt;/h5&gt;</pre>
+
+        </div>
+    </body>
+</html>

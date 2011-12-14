@@ -1,0 +1,23 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+ .dialog-container {
+     background-color: #e6e6e6;
+     margin: 0;
+     padding: 0px 3px;
+     width: 300px;
+ }
+  
+ .dialog-container .dialog-content {
+     text-align: center;
+     margin: 0;
+     padding: 3px;
+     font-size: 1.3em;
+ }
+ 
+ .dialog-container .dialog-actions {
+     text-align: center;
+ }

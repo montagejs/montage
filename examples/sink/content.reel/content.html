@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>content Component</title>
+
+    <link rel="stylesheet" href="content.css">
+
+    <script type="text/montage-serialization">
+        {
+            "tbi": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "value": "To be implemented"
+                }
+            },
+            "button-group": {
+                "module": "components/button-group-example.reel",
+                "name": "ButtonGroupExample",
+                "properties": {
+                }
+            },                        
+            "button": {
+                "module": "components/button-example.reel",
+                "name": "ButtonExample",
+                "properties": {
+                    
+                }
+            },
+            "checkbox": {
+                "module": "components/checkbox-example.reel",
+                "name": "CheckboxExample",
+                "properties": {
+                }
+            },
+            "image": {
+                "module": "components/image-example.reel",
+                "name": "ImageExample",
+                "properties": {
+                }
+            },
+            "converters": {
+                "module": "components/converters.reel",
+                "name": "Converters",
+                "properties": {
+                }
+            },
+            "dynamic-text": {
+                "module": "components/dynamic-text-example.reel",
+                "name": "DynamicTextExample",
+                "properties": {
+                }
+            },
+            "list": {
+                "module": "components/list-example.reel",
+                "name": "ListExample",
+                "properties": {
+                }
+            },
+            "popup": {
+                "module": "components/popup/popup-example.reel",
+                "name": "PopupExample",
+                "properties": {
+                }
+            },
+            "progress": {
+                "module": "components/progress-example.reel",
+                "name": "ProgressExample",
+                "properties": {
+                }
+            },
+            "repetition": {
+                "module": "components/repetition-example.reel",
+                "name": "RepetitionExample",
+                "properties": {
+                }
+            },
+            "slider": {
+                "module": "components/slider-example.reel",
+                "name": "SliderExample",
+                "properties": {
+                }
+            },
+            "tabs": {
+                "module": "components/tabs-example.reel",
+                "name": "TabsExample",
+                "properties": {
+                }
+            },
+            
+            "content": {
+                "module": "montage/ui/substitution.reel",
+                "name": "Substitution",
+                "properties": {
+                    "element": {"#": "content"},
+                    "switchComponents": {
+                        "button-group": {"@": "button-group"},
+                        "button": {"@": "button"},
+                        "combo-box": {"@": "tbi"},
+                        "checkbox": {"@": "checkbox"},
+                        "image": {"@": "image"},
+                        "popup1": {"@": "popup"},
+                        "progress": {"@": "progress"},
+                        "dynamic-text": {"@": "dynamic-text"},
+                        "converters": {"@": "converters"},
+                        "list": {"@": "list"},
+                        "repetition": {"@": "repetition"},
+                        "tabs": {"@": "tabs"},
+                        "slider": {"@": "slider"}
+                    },
+                    "delegate": {"@": "owner"}
+                },
+                "bindings": {
+                    "switchValue": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "sandbox.selectedItem.value",
+                        "oneway": true
+                    }
+                }
+            },
+            
+            "owner": {
+                "module": "content.reel",
+                "name": "content",
+                "properties": {
+                    "element": {"#": "content"}
+                }                
+            }
+        }
+    </script>
+</head>
+<body>
+
+    <div id="content" class="content">
+        <h5>Please select a Component to view</h5>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "module": "components/progress-example.reel",
+                    "name": "ProgressExample",
+                    "properties": {
+                        "element": {"#": "progress-example"},
+                        "uploadProgress": 10
+                    }
+                },
+                "progress1": {
+                    "module": "montage/ui/progress.reel",
+                    "name": "Progress",
+                    "properties": {
+                        "element": {"#": "progress1"},
+                        "value": 30
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "uploadProgress"
+                        }
+                    }
+                },
+                "progress2": {
+                    "module": "montage/ui/progress.reel",
+                    "name": "Progress",
+                    "properties": {
+                        "element": {"#": "progress2"},
+                        "value": 50
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "textfield1"},
+                            "boundObjectPropertyPath": "value"
+                        }
+                    }
+                },
+                "textfield1": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "text1"},
+                        "value": "25"
+                    }
+                }
+            }
+        </script>
+
+        <style>
+            .progress-example .progress {
+                margin: 10px 0;
+            }
+            /* Spin button */
+            .progress-example input::-webkit-outer-spin-button {
+                margin-left: 10px;
+                -webkit-transform: scale(1.4) translateY(-1px);
+            }
+            .progress-example input::-webkit-inner-spin-button {
+                margin-left: 3px;
+                -webkit-transform: scale(1.4) translateY(-1px);
+            }
+        </style>
+
+    </head>
+    <body>
+        <div id="progress-example" class="progress-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>Progress</h3>
+                    <p>
+                        A styled, animated progress bar.
+                        </p>
+                </div>
+            </div>
+
+            <div>
+                <h5>Progress bar bound to ProgressExample.uploadProgress property</h5>
+                <div class="progress montage-progress" id="progress1"></div>
+
+                <h5>Progress bar with 'dark' theme. Bound to the value in the textfield</h5>
+
+                <div class="progress progress2 montage-progress dark" id="progress2"></div>
+
+                <input id="text1" type="number" />
+            </div>
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint linenums">
+"progress1": {
+    "module": "montage/ui/progress.reel",
+    "name": "Progress",
+    "properties": {
+        "element": {"#": "progress1"},
+        "value": 30
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "uploadProgress"
+        }
+    }
+}
+            </pre>
+
+            <h6>HTML Markup</h6>
+            Define the Progress Component and bind the "value" property of this Component to the "uploadProgress" property of the example Object.
+<pre class="prettyprint linenums">
+    &lt;div class=&quot;progress montage-progress&quot; id=&quot;progress1&quot; /&gt;
+</pre>
+
+        </div>
+    </body>
+</html>

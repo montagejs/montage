@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Image Example</title>
+    <script type="text/montage-serialization">
+{
+
+    "places": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true,
+            "content": [
+                {"src": "images/IMG_1.jpg", "title": "Title One"},
+                {"src": "images/IMG_2.jpg", "title": "Title Two"},
+                {"src": "images/IMG_3.jpg", "title": "Title Three"}
+            ]
+        }
+    },
+
+    "repetition1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "repetition"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "places"},
+            "orientation": "vertical"
+        }
+    },
+
+    "thumb": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "repetition1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+
+    "title": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "title"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "repetition1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.title",
+                "oneway": true
+            }
+        }
+    },
+
+    "owner": {
+        "module": "components/image-example.reel",
+        "name": "ImageExample",
+        "properties": {
+            "element": {"#": "example-root"}
+        }
+    }
+}
+    </script>
+
+    <style>
+        .repetition .thumb {
+            width: 96px;
+            height: 96px;
+            border: 5px solid #fff;
+
+        }
+
+        .repetition {
+            width: 400px;
+        }
+        .repetition .item {
+            border: 1px solid #fff;
+        }
+        .repetition .selected {
+            border: 1px solid #FE4365;
+        }
+
+        .repetition .title {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+    </style>
+
+
+</head>
+<body>
+    <div id="example-root">
+
+        <div class="row">
+            <div class="span8">
+                <h3>Repetition</h3>
+                <p>
+                    The Repetition component repeatedly generates new DOM structure from an element and its child elements, based on a collection of data objects. You can bind properties in the Repetition object's data source to properties of its child components. The List component is very similar but provides scrolling.
+                    </p>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="span8">
+                <div class="repetition" id="repetition">
+                    <div class="item">
+                        <img id="thumb" class="thumb" />
+                        <h3 id="title" class="title"></h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <section>
+            <h6>Serialization</h6>
+<ul>
+    <li>
+<p>Define the ArrayController that holds the data for the repetition:</p>
+<pre class="prettyprint linenums">
+"places": {
+    "name": "ArrayController",
+    "module": "montage/ui/controller/array-controller",
+    "properties": {
+        "selectObjectsOnAddition": true,
+        "automaticallyOrganizeObjects": true,
+        "content": [
+            {"src": "images/IMG_1.jpg", "title": "Title One"},
+            {"src": "images/IMG_2.jpg", "title": "Title Two"},
+            {"src": "images/IMG_3.jpg", "title": "Title Three"}
+        ]
+    }
+}
+</pre>
+
+    </li>
+
+
+<li><p>Define the Repetition, set its orientation, and set its <code>contentController</code> to the <code>places</code> ArrayController previously defined:</p>
+
+<pre class="prettyprint linenums">
+"repetition1": {
+    "module": "montage/ui/repetition.reel",
+    "name": "Repetition",
+    "properties": {
+        "element": {
+            "#": "repetition"
+        },
+        "isSelectionEnabled": true,
+        "contentController": {"@": "places"},
+        "orientation": "vertical"
+    }
+}
+</pre>
+</li>
+
+
+<li>Bind the  thumbnail for each row in the repetition by specifying <code>"objectAtCurrentIteration.src"</code>  is used to specify the current Object during the iteration.
+
+<pre class="prettyprint linenums">
+"thumb": {
+    "module": "montage/ui/image.reel",
+    "name": "Image",
+    "properties": {
+        "element": {"#": "thumb"}
+    },
+    "bindings": {
+        "src": {
+            "boundObject": {"@": "repetition1"},
+            "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+            "oneway": true
+        }
+    }
+}
+</pre>
+</li>
+</ul>
+        </section>
+
+        <section>
+            <h6>HTML Markup</h6>
+            <pre class="prettyprint linenums">
+&lt;div class="repetition" id="repetition"&gt;
+    &lt;div class="item"&gt;
+        &lt;img id="thumb" class="thumb" /&gt;
+        &lt;h3 id="title" class="title"&gt;&lt;/h3&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+            </pre>
+        </section>
+
+        <section>
+        <h6>CSS</h6>
+        To highlight the currently selected item, the <code class="prettyprint">isSelectionEnabled</code> must be enabled on the Repetition component. A descendant selector named <code>.selected</code> is added to the <code>.repetition</code> selector. The Repetition component adds the .selected class to the currently selected item in the repetition.
+        <pre class="prettyprint">
+&lt;style&gt;
+    .repetition {
+        width: 400px;
+    }
+    .repetition .item {
+        border: 1px solid #fff;
+    }
+    .repetition .selected {
+        border: 1px solid #FE4365;
+    }
+
+    .repetition .title {
+        display: inline-block;
+        vertical-align: top;
+    }
+     .repetition .thumb {
+        width: 96px;
+        height: 96px;
+        border: 5px solid #fff;
+
+    }
+&lt;/style&gt;
+        </pre>
+
+        <p>You can also style the active item (that is, the item getting a <code>mousedown</code> or <code>touchstart</code> event) by adding a <code>.active</code> descendant selector to the main repetition element.</p>
+
+        <pre class="prettyprint">
+.repetition .active {
+    border: 1px solid blue;
+}
+       </pre>
+
+        </section>
+
+    </div>
+
+</body>
+</html>

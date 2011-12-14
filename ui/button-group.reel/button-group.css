@@ -18,8 +18,19 @@
 
 .montage-button-group.small > .montage-button.submit,
 .montage-button-group.small > .montage-button.cancel {
-    height: 22px;
-    line-height: 22px;
+    height: 21px;
+    line-height: 21px;
+}
+
+.montage-button-group.small > .montage-button.disabled,
+.montage-button-group.small > .montage-button.disabled:before {
+    height: 28px;
+    line-height: 28px;
+}
+
+.montage-button-group.small > .montage-button.submit:before,
+.montage-button-group.small > .montage-button.cancel:before {
+    height: 24px;
 }
 
 .montage-button-group > .montage-button.submit,

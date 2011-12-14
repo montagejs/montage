@@ -38,14 +38,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     containerEl: {
         value: null
     },
- /**
-        Description TODO
-        @type {Property}
-        @default {String} null
-    */
-    tipEl: {
-        value: null
-    },
+
 /**
   Description TODO
   @private
@@ -238,7 +231,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 if(anchor) {
                     anchorPosition = this._getPosition(anchor);
                 }
-                pos = delegate.positionPopup(popup, anchor, anchorPosition);
+                pos = delegate.positionPopup(this, anchor, anchorPosition);
             } else {
                 // @todo - advanced positioning support
                 var $el = this.contentEl || this.content.element;
@@ -319,7 +312,6 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     _showHidePointer: {
         value: function(showTip) {
-            this.tipEl.style.display = (showTip === true) ? 'block' : 'none';
         }
     },
 
@@ -349,12 +341,13 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     show: {
         value: function() {
-            var type = this.type || "custom";
+            var type = this.type || "custom",
+                self = this;
             this.application.getPopupSlot(type, this, function(slot) {
-                this._popupSlot = slot;
-                this.displayed = true;
-                this._addEventListeners();
-            }.bind(this));
+                self._popupSlot = slot;
+                self.displayed = true;
+                self._addEventListeners();
+            });
         }
     },
 
@@ -362,22 +355,17 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             this._removeEventListeners();
 
-            var type = this.type || "custom";
+            var type = this.type || "custom",
+                self = this;
             this.application.getPopupSlot(type, null, function() {
-                this.displayed = false;
-            }.bind(this));
+                self.displayed = false;
+            });
         }
     },
 
 
     draw: {
         value: function() {
-            //console.log('popup draw');
-            var showTip = false; //(this.anchor && (this._pointer === true));
-            this.containerEl.classList[showTip || this.boxed === true ? 'add' : 'remove']('montage-popup-tooltip');
-            // hide the tooltip pointer if no anchor has been provided
-            this.tipEl.style.display = (showTip === true) ? 'block' : 'none';
-
             if (this.displayed) {
                 // custom, alert, confirm, notify
                 // only one popup of each type can be displayed at the same time
@@ -385,7 +373,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
                 if(this.modal === true) {
                     this._modalDialogMask = document.querySelector('.montage-popup-modal-mask');
-                    this._modalDialogMask = this._modalDialogMask || this._createModalMask();
+                    this._modalDialogMask = this._modalDialogMask || this._createModalMask(); 
+                    this.element.classList.add('montage-modal');               
+                } else {
+                    this.element.classList.remove('montage-modal');
                 }
 
                 // @todo - positioning should happen inside the draw. Looks like this is only possible
@@ -399,9 +390,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this.content.element.setAttribute("tabindex", "0"); // Make the alert focusable
 
                 if (this.autoDismiss) {
+                    var self = this;
                     setTimeout(function() {
-                        this.hide();
-                    }.bind(this), this.autoDismiss);
+                        self.hide();
+                    }, this.autoDismiss);
                 }
             } else {
                 if (!this.element.classList.contains('montage-hide')) {

@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "module": "components/tabs-example.reel",
+                    "name": "TabsExample",
+                    "properties": {
+                        "element": {"#": "tabs-example"}
+                    }
+                },
+                "tabs1-one": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "value": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum.",
+                        "element": {"#": "tabs1-one"}
+                    }
+                },
+                "tabs1-two": {
+                    "module": "montage/ui/slider.reel",
+                    "name": "Slider",
+                    "properties": {
+                        "maxValue": 100,
+                        "element": {"#": "tabs1-two"}
+                    }
+                },
+                "tabs1-three": {
+                    "module": "montage/ui/image.reel",
+                    "name": "Image",
+                    "properties": {
+                        "src": "images/IMG_1416.jpg",
+                        "element": {"#": "tabs1-three"}
+                    }
+                },
+
+                "tabs1-content": {
+                    "module": "montage/ui/substitution.reel",
+                    "name": "Substitution",
+                    "properties": {
+                        "element": {"#": "tabs1-content"},
+                        "switchComponents": {
+                            "tabs1-one": {"@": "tabs1-one"},
+                            "tabs1-two": {"@": "tabs1-two"},
+                            "tabs1-three": {"@": "tabs1-three"}
+                        }
+                    }
+                },
+
+                "tabs1-nav-text": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "tabs1-nav-text"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "tabs1-nav"},
+                            "boundObjectPropertyPath": "objectAtCurrentIteration.text",
+                            "oneway": true
+                        }
+                    }
+                },
+
+                "tabs1-nav-icon": {
+                    "module": "montage/ui/image.reel",
+                    "name": "Image",
+                    "properties": {
+                        "element": {"#": "tabs1-nav-icon"}
+                    },
+                    "bindings": {
+                        "src": {
+                            "boundObject": {"@": "tabs1-nav"},
+                            "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
+                            "oneway": true
+                        }
+                    }
+                },
+
+                "tabs1-nav": {
+                    "module": "montage/ui/tabs.reel",
+                    "name": "Tabs",
+                    "properties": {
+                        "element": {"#": "tabs1-nav"},
+                        "tabs": [
+                        {
+                            "text": "Photos",
+                            "value": "tabs1-three",
+                            "icon": "images/photos.png"
+                        },
+
+                            {
+                                "text": "Music",
+                                "value": "tabs1-two",
+                                "icon": "images/music.png"
+                            },
+                            {
+                                "text": "Videos",
+                                "value": "tabs1-one",
+                                "icon": "images/film-roll.png"
+                            }                        ],
+                        "content": {"@": "tabs1-content"}
+                    }
+                },
+
+                "tabs2-one": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "value": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum.",
+                        "element": {"#": "tabs2-one"}
+                    }
+                },
+                "tabs2-two": {
+                    "module": "montage/ui/slider.reel",
+                    "name": "Slider",
+                    "properties": {
+                        "maxValue": 100,
+                        "element": {"#": "tabs2-two"}
+                    }
+                },
+                "tabs2-three": {
+                    "module": "montage/ui/image.reel",
+                    "name": "Image",
+                    "properties": {
+                        "src": "images/IMG_1416.jpg",
+                        "element": {"#": "tabs2-three"}
+                    }
+                },
+
+                "tabs2-content": {
+                    "module": "montage/ui/substitution.reel",
+                    "name": "Substitution",
+                    "properties": {
+                        "element": {"#": "tabs2-content"},
+                        "switchComponents": {
+                            "tabs2-one": {"@": "tabs2-one"},
+                            "tabs2-two": {"@": "tabs2-two"},
+                            "tabs2-three": {"@": "tabs2-three"}
+                        }
+                    }
+                },
+
+                "tabs2-nav-icon": {
+                    "module": "montage/ui/image.reel",
+                    "name": "Image",
+                    "properties": {
+                        "element": {"#": "tabs2-nav-icon"}
+                    },
+                    "bindings": {
+                        "src": {
+                            "boundObject": {"@": "tabs2-nav"},
+                            "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
+                            "oneway": true
+                        }
+                    }
+                },
+
+                "tabs2-nav": {
+                    "module": "montage/ui/tabs.reel",
+                    "name": "Tabs",
+                    "properties": {
+                        "element": {"#": "tabs2-nav"},
+                        "tabs": [
+                        {
+                            "text": "Photos",
+                            "value": "tabs2-three",
+                            "icon": "images/photos.png"
+                        },
+
+                            {
+                                "text": "Music",
+                                "value": "tabs2-two",
+                                "icon": "images/music.png"
+                            },
+                            {
+                                "text": "Videos",
+                                "value": "tabs2-one",
+                                "icon": "images/film-roll.png"
+                            }
+                        ],
+                        "selectedTabValue": "tabs2-one",
+                        "content": {"@": "tabs2-content"}
+                    }
+                }
+
+            }
+        </script>
+
+        <style>
+            .tab-view .tabs-content {
+                width: 400px;
+                padding: 10px;
+                height: 200px;
+                background-color: whitesmoke;
+                margin: 3px 0;
+            }
+
+            .tab-view .tabs-content img {
+                width: 390px;
+                height: 180px;
+            }
+
+
+            .tab-view {
+                margin: 20px;
+            }
+            /* display tabs2's navigation as a vertical tab */
+            #tabs2 .tabs2-nav .montage-tabs-list li {
+                display: block;
+            }
+
+            #tabs2 .tabs2-nav {
+                float: left;
+                margin-right: 5px;
+            }
+
+            #tabs2 .tabs2-content {
+                float: left;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="tabs-example" class="tabs-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>Tabs</h3>
+                    <p>
+                        Presents a list of labels and optional image icons in a vertical or horizontal tab format.</p>
+                </div>
+            </div>
+
+            <div id="tabs1" class="tab-view">
+                <div id="tabs1-nav">
+                    <img id="tabs1-nav-icon" />
+                    <span id="tabs1-nav-text" class="nav-text" />
+                </div>
+                <div id="tabs1-content" class="tabs1-content tabs-content">
+                    <div id="tabs1-one">One</div>
+                    <div id="tabs1-two">Two</div>
+                    <img id="tabs1-three" />
+                </div>
+            </div>
+
+
+            <div id="tabs2" class="tab-view">
+
+                <div id="tabs2-nav" class="tabs2-nav">
+                    <img id="tabs2-nav-icon" />
+                </div>
+
+                <div id="tabs2-content" class="tabs2-content tabs-content">
+                    <div id="tabs2-one">One</div>
+                    <div id="tabs2-two">Two</div>
+                    <img id="tabs2-three" />
+                </div>
+
+            </div>
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint linenums">
+"tabs2-nav": {
+    "module": "montage/ui/tabs.reel",
+    "name": "Tabs",
+    "properties": {
+        "element": {"#": "tabs2-nav"},
+        "tabs": [
+        {
+            "text": "Photos",
+            "value": "tabs2-three",
+            "icon": "images/photos.png"
+        },
+
+            {
+                "text": "Music",
+                "value": "tabs2-two",
+                "icon": "images/music.png"
+            },
+            {
+                "text": "Videos",
+                "value": "tabs2-one",
+                "icon": "images/film-roll.png"
+            }
+        ],
+        "selectedTab": "tabs2-three",
+        "content": {"@": "tabs2-content"}
+    }
+}
+            </pre>
+
+            <h6>HTML Markup</h6>
+ <pre class="prettyprint linenums">
+&lt;div id="tabs2" class="tab-view"&gt;
+
+    &lt;div id="tabs2-nav" class="tabs2-nav"&gt;
+        &lt;img id="tabs2-nav-icon" /&gt;
+    &lt;/div&gt;
+
+    &lt;div id="tabs2-content" class="tabs2-content tabs-content"&gt;
+        &lt;div id="tabs2-one"&gt;One&lt;/div&gt;
+        &lt;div id="tabs2-two"&gt;Two&lt;/div&gt;
+        &lt;img id="tabs2-three" /&gt;
+    &lt;/div&gt;
+
+&lt;/div&gt;
+ </pre>
+        </div>
+    </body>
+</html>

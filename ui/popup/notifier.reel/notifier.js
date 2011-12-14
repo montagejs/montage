@@ -78,6 +78,7 @@ var Notifier = exports.Notifier = Montage.create(Component, /** @lends module:"m
                 popup = Popup.create();
                 this.popup = popup;
                 popup.type = 'notify';
+                popup.boxed = false;
                 this.application._notifyPopup = popup;
 
                 notifier = Notifier.create();
