@@ -142,6 +142,7 @@ var Slot = exports.Slot = Montage.create(Component, /** @lends module:"montage/u
                 // we know we need to append its element to our own element.
                 // This happens outside of any drawing for better or worse right now.
                 this._element.appendChild(child.element);
+                this.needsDraw = true;
             }
         }
     },

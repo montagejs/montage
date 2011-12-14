@@ -7,9 +7,7 @@
 .montage-notifier {
     background-color: #333; /*#FFF1A8*/;
     color: #fff;
-    border-radius: 0 0 5px 5px;
-    /border: 1px solid #e6e6e6;
-    }
+}
 
 .montage-notifier .montage-notifier-msg {
     padding: 10px 20px;

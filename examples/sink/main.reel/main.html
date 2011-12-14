@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main Component</title>
+
+    <link rel="stylesheet" href="main.css" />
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "main.reel",
+                "name": "Main",
+                "properties": {
+                    "element": {"#": "main"}
+                }
+            },
+
+            "sidebar": {
+                "module": "sidebar.reel",
+                "name": "Sidebar",
+                "properties": {
+                    "element": {"#": "sidebar"},
+                    "sandbox": {"@": "owner"}
+                }
+            },
+
+            "content": {
+                "module": "content.reel",
+                "name": "Content",
+                "properties": {
+                    "element": {"#": "content"},
+                    "sandbox": {"@": "owner"}
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .page-header img {
+            width: 64px;
+            height: 64px;
+        }
+        .page-header h1 {
+            display: inline-block;
+            vertical-align: top;
+            padding-left: 20px;
+            line-height: 55px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="main container" id="main">
+
+      <div class="main-content">
+        <div class="page-header">
+            <img src="montage-logo.png" />
+            <h1>Montage Kitchen Sink</h1>
+        </div>
+        <div class="row">
+            <div class="span5 sidebar" id="sidebar">
+                <h3>Secondary content</h3>
+              </div>
+              
+          <div class="span10 content" id="content">
+            <h2>Main content</h2>
+          </div>
+          
+        </div>
+      </div>
+
+      <footer>
+        <p>&copy; Motorola Mobility 2011</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+
+</body>
+</html>

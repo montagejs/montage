@@ -20,31 +20,7 @@ var Popup = require("ui/popup/popup.reel").Popup;
  @extends module:montage/ui/component.Component
  */
 
-var Alert = exports.Alert = Montage.create(Component, /** @lends module:"montage/ui/popup/alert.reel".Alert# */ {
-    hasTemplate: {value: true},
-
-    dialog: {value: null},
-/**
-        Description TODO
-        @type {Property}
-        @default {String} null
-    */
-    headerEl: {
-        value: null
-    },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} null
-    */
-    titleEl: {
-        value: null
-    },
-/**
-        Description TODO
-        @type {Property}
-        @default {String} 'Alert'
-    */
+var Alert = exports.Alert = Montage.create(Component, {
     title: {
         value: 'Alert'
     },

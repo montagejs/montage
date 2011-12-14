@@ -22,7 +22,6 @@
     border-radius: 24px;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #fff), color-stop(100%, #e6e6e6));
     -webkit-box-shadow: rgba(0, 0, 0, .3) 0 1px 3px;
-    -webkit-transition: -webkit-transform .5s cubic-bezier(.4, 0, 0.3, 1);
 
 }
 
@@ -35,8 +34,7 @@
 .montage-tabs-list li {
     display: inline-block;
     line-height: 46px;
-    margin: 3px 15px;
-
+    margin: 3px;
     padding: 0 10px;
     border-radius: 26px;
     font-family: 'AGBuchBQRegular', Helvetica, sans-serif;
@@ -48,23 +46,18 @@
     text-overflow: ellipsis;
 
     cursor: pointer;
-    -webkit-transition: color .5s linear;
 }
 
 .montage-tabs-list li.selected {
     color: #333;
-    margin: 2px;
-    padding: 0px 10px;
-    border-radius: 24px;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #fff), color-stop(100%, #e6e6e6));
+    padding: 0 10px;
     -webkit-box-shadow: rgba(0, 0, 0, .3) 0 1px 3px;
-    -webkit-transition: background .5s linear; 
 }
 
 .montage-tabs-list li img {
     margin-bottom: -2px; /* based on 16px icons */
     opacity: .5;
-    -webkit-transition: opacity .5s linear;
 }
 
 .montage-tabs-list li.selected img {

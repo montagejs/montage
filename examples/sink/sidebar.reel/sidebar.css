@@ -1,0 +1,28 @@
+
+.sidebar {
+    background-color: whitesmoke;
+}
+
+.sidebar .sidebar-list-item {
+    border-bottom: 1px solid #eee;
+    cursor: default;
+    padding: 10px;
+    
+}
+.sidebar .sidebar-list-item:hover{
+    opacity: 0.3;
+    cursor: pointer;
+}
+.sidebar .sidebar-list .selected {
+    background-color: #fff;
+    border-right: 21px solid #FE4365;
+    opacity: 1.0;
+    cursor: default;
+    margin-left: -30px;
+    padding: 10px;
+    border-left: 1px solid #AAA;
+    border-top: 1px solid #AAA;
+    border-bottom: 1px solid #AAA;
+}
+.sidebar .sidebar-list .selected h4 {
+}

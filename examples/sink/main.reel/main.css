@@ -1,0 +1,73 @@
+
+
+
+.container > footer p {
+  text-align: center; /* center align it with the container */
+}
+
+
+/* The white background main-content wrapper */
+.main-content {
+  background-color: #fff;
+  padding: 20px;
+  margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+          box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+
+/* Page header tweaks */
+.page-header {
+  background-color: #f5f5f5;
+  padding: 20px 20px 10px;
+  margin: -20px -20px 20px;
+}
+
+/* Styles you shouldn't keep as they are for displaying this base example only */
+.main-content .span10,
+.main-content .span5 {
+  min-height: 500px;
+}
+/* Give a quick and non-cross-browser friendly divider */
+.main-content .span5 {
+  margin-left: 0;
+  padding-left: 40px;
+  border-left: 1px solid #eee;
+}
+
+.topbar .btn {
+  border: 0;
+}
+
+.main-content .content {
+    min-height: 500px;
+}
+
+.main-content p {
+    margin-top: 5px;
+}
+
+.main-content section {
+    margin: 10px 0;
+}
+
+/* Montage components CSS Override */
+
+
+
+
+
+/* Spin button */
+input::-webkit-outer-spin-button {
+    margin-left: 10px;
+    -webkit-transform: scale(1.4) translateY(-1px);
+}
+input::-webkit-inner-spin-button {
+    margin-left: 3px;
+    -webkit-transform: scale(1.4) translateY(-1px);
+}
+
+
