@@ -1,14 +1,25 @@
 .montage-editor {
-    /* need to be relative else the element resizer wont be positioned correctly */
-    position: relative;
-    z-index: 1;
-    overflow: auto;
+    /* need to be relative in order for the resizer to be positioned correctly */
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    padding: 4px;
+
     font-size: 1.0em;
+    outline:  none;
+    overflow: auto;
+    z-index: 1;
 }
 
-div.montage-editor ::selection {
-    background: pink !important;
-    /* TODO: please fix me! */
+.montage-editor-frame {
+    position: relative;
+    overflow: auto;
+}
+
+.montage-resizer-element::selection {
+    background: rgba(0,0,0,0);
 }
 
 /*
@@ -33,11 +44,11 @@ div.montage-editor ::selection {
     z-index: 31;
 }
 
-.montage-resizer-handle.dragged {
+.montage-resizer.dragged .montage-resizer-handle{
     display: none;
 }
 
-div.montage-resizer-handle:hover {
+.montage-resizer-handle:hover {
     background-color: black;
 }
 

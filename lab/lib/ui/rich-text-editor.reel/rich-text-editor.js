@@ -32,6 +32,15 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
+    _uniqueId: {
+        enumerable: false,
+        value: Math.floor(Math.random() * 1000000)
+    },
+
+    /**
+      Description TODO
+      @private
+    */
     _needSelectionReset: {
         enumerable: false,
         value: false
@@ -103,7 +112,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         enumerable: true,
         get: function() {
             if (this._hasChanged || !this._value) {
-                this._value = this.element.innerHTML;
+                this._value = this.element.firstChild ? this.element.firstChild.innerHTML : "";
                 this._hasChanged = false;
             }
             return this._value;
@@ -136,7 +145,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         enumerable: true,
         get: function() {
             if (this._hasChanged || !this._textValue) {
-                this._textValue = this.element.innerText;
+                this._textValue = this.element.firstChild ? this.element.firstChild.innerText : "";
                 this.__lookupGetter__("value").call(this); // Force the hasChanged state to sync up
             }
             return this._textValue;
@@ -335,6 +344,23 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 modifiersMap = {SHIFT: 1, CTRL: 2, ALT: 4, META: 8};
                 modifiersMap.CMD = window.navigator.userAgent.match(/\bmacintosh\b/i) ? modifiersMap.META : modifiersMap.CTRL;
                 keys = shortcut.split("+");
+                key,
+                keyNames = {
+                    "BACKSPACE": 8,
+                    "TAB": 9,
+                    "ENTER": 13,
+                    "ESCAPE": 27,
+                    "PAGEUP": 33,
+                    "PAGEDOWN": 34,
+                    "END": 35,
+                    "HOME": 36,
+                    "LEFT": 37,
+                    "UP": 38,
+                    "RIGHT": 39,
+                    "DOWN": 40,
+                    "INSERT": 45,
+                    "DELETE": 46
+                },
                 nbrKeys = keys.length;
                 modifiers = 0;
 
@@ -344,8 +370,13 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                         modifiers += modifiersMap[modifier];
                     }
                 }
-
-                this._actions[action].shortcut = {modifiers: modifiers, keyChar: keys[nbrKeys - 1]};
+                key = keys[nbrKeys - 1].toUpperCase();
+                if (keyNames[key] !== undefined) {
+                    key = keyNames[key];
+                } else {
+                    key = key.charCodeAt(0);
+                }
+                this._actions[action].shortcut = {modifiers: modifiers, keyChar: key};
             }
 
             // generate a shortcut map
@@ -379,16 +410,23 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     prepareForDraw: {
         enumerable: false,
         value: function() {
-            var el = this.element;
-            el.classList.add('montage-editor');
-            el.setAttribute("contentEditable", "true");
+            var el = this.element,
+                div;
+
+            el.classList.add('montage-editor-frame');
 
             el.addEventListener("focus", this);
-
             el.addEventListener("dragstart", this, false);
             el.addEventListener("dragend", this, false);
             el.addEventListener("dragover", this, false);
             el.addEventListener("drop", this, false);
+
+            // Insert a contentEditable div
+            div = document.createElement("div");
+            div.classList.add('montage-editor');
+            div.classList.add('editor-' + this._uniqueId);
+            div.setAttribute("contentEditable", "true");
+            el.insertBefore(div, el.firstChild);
 
             this._needSetContent = true;
         }
@@ -405,14 +443,13 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 element,
                 range,
                 offset;
-
             if (this._needSetContent === true) {
                 if (this._value) {
-                    this.element.innerHTML = this._value;
+                    this.element.firstChild.innerHTML = this._value;
                 } else if (this._textValue) {
-                    this.element.innerText = this._textValue;
+                    this.element.firstChild.innerText = this._textValue;
                 } else {
-                    this.element.innerHTML = "";
+                    this.element.firstChild.innerHTML = "";
                 }
                 delete this._needSetContent;
             }
@@ -693,15 +730,15 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleKeydown: {
         enumerable: false,
         value: function(event) {
-            var keyChar = String.fromCharCode(event.keyCode),
+            var keyCode = event.keyCode,
                 shortcutMap = this._shortcutMap;
                 SHIFT = 1, CTRL = 2, ALT = 4, META = 8,
                 modifiers = event.shiftKey + (event.ctrlKey << 1) + (event.altKey << 2) + (event.metaKey << 3),
                 stopEvent = false;
 
             // Check the shortcut map
-            if (this._shortcutMap[modifiers] && this._shortcutMap[modifiers][keyChar]) {
-                var actions = this._shortcutMap[modifiers][keyChar],
+            if (this._shortcutMap[modifiers] && this._shortcutMap[modifiers][keyCode]) {
+                var actions = this._shortcutMap[modifiers][keyCode],
                     action,
                     i;
 
