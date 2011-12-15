@@ -80,6 +80,7 @@ input {
 }
 
 .PhotoPanel #controlPanel {
+    box-sizing: border-box;
     padding: 25px 10px 10px;
     text-align: center;
 }
