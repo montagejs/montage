@@ -8,8 +8,9 @@
     @requires montage/core/core
 */
 var Montage = require("montage").Montage,
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
     Component = require("ui/component").Component,
+    MutableEvent = require("core/event/mutable-event").MutableEvent,
+    Sanitizer = require("./rich-text-sanitizer").Sanitizer,
     dom = require("ui/dom"),
     Point = require("core/geometry/point").Point;
 
@@ -34,7 +35,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     */
     _uniqueId: {
         enumerable: false,
-        value: Math.floor(Math.random() * 1000000)
+        value: Math.floor(Math.random() * 1000) + "-" + Math.floor(Math.random() * 1000)
     },
 
     /**
@@ -111,14 +112,23 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     value: {
         enumerable: true,
         get: function() {
+            var content;
+
             if (this._hasChanged || !this._value) {
-                this._value = this.element.firstChild ? this.element.firstChild.innerHTML : "";
+                content = this.element.firstChild ? this.element.firstChild.innerHTML : "";
+                if (this._sanitizer) {
+                    content = this._sanitizer.unscopeCSS(content);
+                }
+                this._value = content;
                 this._hasChanged = false;
             }
             return this._value;
         },
         set: function(value) {
             if (this._value !== value) {
+                if (this._sanitizer) {
+                    value = this._sanitizer.scopeCSS(value, this._uniqueId);
+                }
                 this._value = value;
                 this._textValue = null;
                 this._needSelectionReset = true;
@@ -144,6 +154,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     textValue: {
         enumerable: true,
         get: function() {
+            var content;
+
             if (this._hasChanged || !this._textValue) {
                 this._textValue = this.element.firstChild ? this.element.firstChild.innerText : "";
                 this.__lookupGetter__("value").call(this); // Force the hasChanged state to sync up
@@ -151,8 +163,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             return this._textValue;
         },
         set: function (value) {
-            if (this._value !== value) {
-                this._value = value;
+            if (this._textValue !== value) {
+                this._textValue = value;
                 this._value = null;
                 this._needSelectionReset = true;
                 this._needSetContent = true;
@@ -401,6 +413,30 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             this._shortcutMap = shortcutMap;
         }
     },
+
+    /**
+      Description TODO
+      @private
+    */
+    _sanitizer: {
+        enumerable: false,
+        value: Sanitizer.create()
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    sanitizer: {
+        enumerable: false,
+        get: function() {
+            return  this._sanitizer;
+        },
+        set: function(value) {
+            this._sanitizer = value;
+        }
+    },
+
 
     // Component Callbacks
     /**
