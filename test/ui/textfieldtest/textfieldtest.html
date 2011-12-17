@@ -8,12 +8,29 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>TextfieldTest</title>
+    <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
      <script type="text/montage-serialization">
 {
-    "textfieldtest1": {
-        "module": "ui/textfieldtest/textfieldtest",
-        "name": "TextfieldTest",
+    "textfield1": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+
+        }
+    },
+    
+    "textfield2": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+
+        }
+    },
+    
+    "textfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
         "properties": {
 
         }
@@ -22,7 +39,7 @@
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
-            "delegate": {"@": "textfieldtest1"}
+            "components": [{"@": "textfield1"}, {"@": "textfield2"}, {"@": "textfield3"}]
         }
     }
 }
@@ -30,9 +47,15 @@
 
 </head>
 <body>
-
-    <input type="text" id="textfield1" />
-    <input type="text" id="textfield2" />
-    <input type="text" id="textfield3" />
+    <form id="input-form" class="form-stacked">
+        <label for="textfield1">First Name</label>
+        <input type="text" placeholder="Enter first name" id="textfield1" required />
+    
+        <label for="textfield2">Number between 0 and 100</label>
+        <input type="number" id="textfield2" min="0" max="100" step="2" value="6" />
+        
+        <label for="textfield3">A Number Slider</label>
+        <input type="range" id="textfield3" min="0" max="100" value="50" />
+    </form>
 </body>
 </html>
