@@ -80,20 +80,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
-    _hasChanged: {
+    _dirty: {
         enumerable: false,
         value: false
-    },
-
-    /**
-      Description TODO
-     @type {Function}
-    */
-    hasChanged: {
-        enumerable: true,
-        get: function() {
-            return this._hasChanged;
-        }
     },
 
     /**
@@ -114,23 +103,24 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         get: function() {
             var content;
 
-            if (this._hasChanged || !this._value) {
+            if (this._dirtyValue) {
                 content = this.element.firstChild ? this.element.firstChild.innerHTML : "";
                 if (this._sanitizer) {
                     content = this._sanitizer.unscopeCSS(content);
                 }
                 this._value = content;
-                this._hasChanged = false;
+                this._dirtyValue = false;
             }
             return this._value;
         },
         set: function(value) {
-            if (this._value !== value) {
+            if (this._value !== value || this._dirtyValue) {
                 if (this._sanitizer) {
                     value = this._sanitizer.scopeCSS(value, this._uniqueId);
                 }
                 this._value = value;
-                this._textValue = null;
+                this._dirtyValue = false;
+                this._dirtyTextValue = true;
                 this._needSelectionReset = true;
                 this._needSetContent = true;
                 this.needsDraw = true;
@@ -154,18 +144,17 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     textValue: {
         enumerable: true,
         get: function() {
-            var content;
-
-            if (this._hasChanged || !this._textValue) {
+            if (this._dirtyTextValue) {
                 this._textValue = this.element.firstChild ? this.element.firstChild.innerText : "";
-                this.__lookupGetter__("value").call(this); // Force the hasChanged state to sync up
+                this._dirtyTextValue = false;
             }
             return this._textValue;
         },
         set: function (value) {
-            if (this._textValue !== value) {
+            if (this._textValue !== value || this._dirtyTextValue) {
                 this._textValue = value;
-                this._value = null;
+                this._dirtyTextValue = false;
+                this._dirtyValue = true;
                 this._needSelectionReset = true;
                 this._needSetContent = true;
                 this.needsDraw = true;
@@ -728,11 +717,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleKeypress: {
         enumerable: false,
         value: function() {
-            this._hasChanged = true;
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
-            this._dispatchEditorEvent("editorChange");
+            this._markDirty();
         }
     },
 
@@ -750,12 +738,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                }
             }
 
-            this._hasChanged = true;
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
             this.handleDragend(event);
-            this._dispatchEditorEvent("editorChange");
+            this._markDirty();
         }
     },
 
@@ -1215,7 +1202,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (value === undefined) {
                     value = false;
                 }
-
                 document.execCommand("styleWithCSS", false, true);
                 document.execCommand(action, false, value);
                 document.execCommand("styleWithCSS", false, false);
@@ -1302,12 +1288,45 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     @function
     */
     _dispatchEditorEvent: {
-        enumerable: true,
+        enumerable: false,
         value: function(type, value) {
             var editorEvent = document.createEvent("CustomEvent");
             editorEvent.initCustomEvent(type, true, false, value === undefined ? null : value);
             editorEvent.type = type;
             this.dispatchEvent(editorEvent);
+        }
+    },
+
+    /**
+    Description TODO
+    @private
+    @function
+    */
+    _markDirty: {
+        enumerable: false,
+        value: function() {
+            var thisRef = this,
+                updateValues = function() {
+                    clearTimeout(thisRef._forceUpdateValuesTimeout);
+                    delete thisRef._forceUpdateValuesTimeout;
+                    clearTimeout(thisRef._updateValuesTimeout);
+                    delete thisRef._updateValuesTimeout;
+                    thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , thisRef.value));
+                    thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , thisRef.textValue));
+                    thisRef._dispatchEditorEvent("editorChange");
+                };
+
+            // Clear the cached value
+            this._dirtyValue = true;
+            this._dirtyTextValue = true;
+
+            if (!this._forceUpdateValuesTimeout) {
+                this._forceUpdateValuesTimeout = setTimeout(updateValues, 1000);
+            }
+            if (this._updateValuesTimeout) {
+                clearTimeout(this._updateValuesTimeout);
+            }
+            this._updateValuesTimeout = setTimeout(updateValues, 200);
         }
     },
 
