@@ -207,13 +207,14 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 action,
                 states,
                 state,
-                statesChanged = false;
+                statesChanged = false,
+                hasFocus = this._hasFocus;
 
             states = this._states || {};
             for (key in actions) {
                 action = actions[key];
                 state = "false";
-                if (action.enabled && action.status) {
+                if (hasFocus && action.enabled && action.status) {
                     state = document.queryCommandValue(key);
                     if (typeof state == "boolean") {
                         state = state ? "true" : "false";
