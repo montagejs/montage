@@ -469,9 +469,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 range,
                 offset;
             if (this._needSetContent === true) {
-                if (this._value) {
+                if (this._value && !this._dirtyValue) {
                     this.element.firstChild.innerHTML = this._value;
-                } else if (this._textValue) {
+                } else if (this._textValue && !this._dirtyTextValue) {
                     this.element.firstChild.innerText = this._textValue;
                 } else {
                     this.element.firstChild.innerHTML = "";
