@@ -181,4 +181,55 @@ describe("core/promise-spec", function () {
 
     });
 
+    describe("thenable", function () {
+
+        describe("fulfiller", function () {
+
+            var ten;
+
+            Promise.when({
+                then: function (fulfill) {
+                    fulfill(10);
+                }
+            }, function (value) {
+                ten = value;
+            });
+
+            waitsFor(function () {
+                return ten;
+            }, 100);
+
+            it("fulfills", function () {
+                expect(ten).toEqual(10);
+            });
+
+        });
+
+        describe("rejecter", function () {
+
+            var done, reason, error;
+
+            Promise.fail({
+                then: function (fulfill, reject) {
+                    reject("reason", new Error("reason"));
+                }
+            }, function (_reason, _error) {
+                done = true;
+                reason = _reason;
+                error = _error;
+            });
+
+            waitsFor(function () {
+                return done;
+            }, 100);
+
+            it("rejects", function () {
+                expect(reason).toEqual("reason");
+                expect(error.message).toEqual("reason");
+            });
+
+        });
+
+    });
+
 });
