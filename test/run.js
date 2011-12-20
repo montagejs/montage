@@ -30,6 +30,7 @@ if (spec) {
         require.async("binding/binding-converter-spec"),
         require.async("binding/dependent-properties-spec"),
         require.async("binding/definebinding-spec"),
+        require.async("binding/self-binding-spec"),
 
         require.async("controllers/array-controller-spec"),
         require.async("controllers/paged-array-controller-spec"),

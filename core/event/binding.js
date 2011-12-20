@@ -545,9 +545,8 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
 
             targetPropertyPath = this.bindingPropertyPath;
             target = bindingOrigin;
-        }
 
-        if (!this.bindingOriginChangeTriggered) {//This is to avoid an infinite loop: left->push change to right-> tell listeners : don't loop!
+        } else if (!this.bindingOriginChangeTriggered) {
 
             // If we're handling the event at this point we know the right side triggered it, from somewhere inside the observed propertyPath
             // the event target, which just changed, could be any of the objects along the path, but from here on we want to
