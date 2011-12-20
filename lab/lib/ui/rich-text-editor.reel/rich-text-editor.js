@@ -122,7 +122,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 this._dirtyValue = false;
                 this._dirtyTextValue = true;
                 this._needSelectionReset = true;
-                this._needSetContent = true;
+                this._needsResetContent = true;
                 this.needsDraw = true;
             }
         }
@@ -156,7 +156,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 this._dirtyTextValue = false;
                 this._dirtyValue = true;
                 this._needSelectionReset = true;
-                this._needSetContent = true;
+                this._needsResetContent = true;
                 this.needsDraw = true;
             }
         }
@@ -447,14 +447,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             el.addEventListener("dragover", this, false);
             el.addEventListener("drop", this, false);
 
-            // Insert a contentEditable div
-            div = document.createElement("div");
-            div.classList.add('montage-editor');
-            div.classList.add('editor-' + this._uniqueId);
-            div.setAttribute("contentEditable", "true");
-            el.insertBefore(div, el.firstChild);
-
-            this._needSetContent = true;
+            this._needsResetContent = true;
         }
     },
 
@@ -466,18 +459,25 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         enumerable: false,
         value: function() {
             var thisRef = this,
+                editorElement = this.element,
                 element,
                 range,
                 offset;
-            if (this._needSetContent === true) {
+
+            if (this._needsResetContent === true) {
+                // Reset the editor content in order to reset the browser undo stack
+                editorElement.innerHTML = '<div class="montage-editor editor-' + this._uniqueId + '" contentEditable="true"></div>';
+
+                // Set the contentEditable value
                 if (this._value && !this._dirtyValue) {
-                    this.element.firstChild.innerHTML = this._value;
+                    editorElement.firstChild.innerHTML = this._value;
                 } else if (this._textValue && !this._dirtyTextValue) {
-                    this.element.firstChild.innerText = this._textValue;
+                    editorElement.firstChild.innerText = this._textValue;
                 } else {
-                    this.element.firstChild.innerHTML = "";
+                    editorElement.firstChild.innerHTML = "";
                 }
-                delete this._needSetContent;
+
+                delete this._needsResetContent;
             }
 
             if (this._drawNeedResizerOn !== undefined) {
