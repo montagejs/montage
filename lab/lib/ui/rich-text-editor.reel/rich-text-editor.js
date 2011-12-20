@@ -431,7 +431,25 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         }
     },
 
+    /**
+      Description TODO
+      @private
+    */
+    _needsFocus: {
+        value: false
+    },
 
+    /**
+      Description TODO
+      @type {Function}
+    */
+    focus: {
+        value: function() {
+            this._needsFocus = true;
+            this.needsDraw = true;
+        }
+    },
+    
     // Component Callbacks
     /**
     Description TODO
@@ -625,6 +643,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 } else {
                     this._draggedElement.parentNode.classList.add("dragged");
                 }
+            }
+            
+            if(this._needsFocus) {
+                this.element.firstChild.focus();
+                this._needsFocus = false;
             }
         }
     },
