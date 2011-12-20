@@ -187,10 +187,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     states: {
         enumerable: true,
         get: function() {
-            if (this._states == null || this._statesDirty) {
-                this.updateStates();
-            }
-
+            this.updateStates();
             return this._states;
         }
     },
@@ -210,27 +207,34 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 statesChanged = false,
                 hasFocus = this._hasFocus;
 
-            states = this._states || {};
-            for (key in actions) {
-                action = actions[key];
-                state = "false";
-                if (hasFocus && action.enabled && action.status) {
-                    state = document.queryCommandValue(key);
-                    if (typeof state == "boolean") {
-                        state = state ? "true" : "false";
-                    }
-                    // JFD TODO: We might need to do some conversion for fontsize, fontname and colors
-                }
+            if (this._states == null || this._statesDirty) {
+                this._states = this._states || {};
+                this._statesDirty = false;
 
-                if (states[key] !== state) {
-                    states[key] = state;
-                    statesChanged = true;
+                if (hasFocus) {
+                    states = this._states;
+                    for (key in actions) {
+                        action = actions[key];
+                        state = "false";
+                        if (action.enabled && action.status) {
+                            state = document.queryCommandValue(key);
+                            if (typeof state == "boolean") {
+                                state = state ? "true" : "false";
+                            }
+                            // JFD TODO: We might need to do some conversion for fontsize, fontname and colors
+                        }
+
+                        if (states[key] !== state) {
+                            states[key] = state;
+                            statesChanged = true;
+                        }
+                    }
+                    if (statesChanged) {
+                        this._states = states;
+                        // As we do not use a setter, we need to manually dispatch a change event
+                        this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("states" , this._states));
+                    }
                 }
-            }
-            if (statesChanged) {
-                this._states = states;
-                // As we do not use a setter, we need to manually dispatch a change event
-                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("states" , this._states));
             }
 
             return this._states;
@@ -710,8 +714,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         value: function() {
             var el = this.element;
 
-            this._hasFocus = false;
-
             // Force a selectionchange when we lose the focus
             this.handleSelectionchange();
 
@@ -729,6 +731,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             if (this._hasSelectionChangeEvent === false) {
                 el.removeEventListener("keydup", this);
             }
+
+            this._hasFocus = false;
         }
     },
 
@@ -960,11 +964,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
             }
 
+            this._statesDirty = true;
             if (this._selectionChangeTimer) {
                 clearTimeout(this._selectionChangeTimer);
             }
-
-            this._statesDirty = true;    // clear the cached states to force query it again
             this._selectionChangeTimer = setTimeout(function() {
                 thisRef._dispatchEditorEvent("editorSelect");
             }, 50);
