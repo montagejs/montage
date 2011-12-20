@@ -493,13 +493,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     range = document.createRange();
                     range.setStart(element.parentNode, offset);
                     range.setEnd(element.parentNode, offset + 1);
-                    if (window.getSelection) {
-                        var selection = window.getSelection();
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    } else {
-                        range.select();
-                    }
+                    this._selectedRange = range;
                     // JFD Note: Chrome (and maybe other browsers) will fire 2 selectionchange event asynchronously, to work around it let's use a timer
                     setTimeout(function() {delete thisRef._selectingResizer;}, 0);
                 } else {
@@ -620,13 +614,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     range = document.createRange();
                     range.setStart(element.parentNode, offset);
                     range.setEnd(element.parentNode, offset + 1);
-                    if (window.getSelection) {
-                        var selection = window.getSelection();
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    } else {
-                        range.select();
-                    }
+                    this._selectedRange = range;
                     // JFD Note: Chrome (and maybe other browsers) will fire 2 selectionchange event asynchronously, to work around it let's use a timer
                     setTimeout(function() {delete thisRef._selectingResizer;}, 0);
 
@@ -646,11 +634,38 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleFocus: {
         enumerable: false,
         value: function() {
-            var el = this.element;
+            var thisRef = this,
+                el = this.element,
+                content = el.firstChild,
+                savedRange;
 
             this._hasFocus = true;
             if (this._needSelectionReset) {
-                // JFD TODO: reset the user selection, set the caret at the end of the last text element
+                var node = this._lastInnerNode(),
+                    range,
+                    length,
+                    leafNodes = ["#text", "BR", "IMG"];
+
+                // Select the last inner node
+                if (node) {
+                    if (leafNodes.indexOf(node.nodeName) !== -1) {
+                        node = node.parentNode;
+                    }
+                    range = document.createRange();
+                    length = node.childNodes ? node.childNodes.length : 0;
+                    range.setStart(node, length);
+                    range.setEnd(node, length);
+                    this._selectedRange = range;
+                }
+
+                // Scroll the content to make sure the caret is visible, but only only if the focus wasn't the result of a user click/touch
+                savedRange = this._selectedRange;
+                setTimeout(function() {
+                    if (thisRef._equalRange(thisRef._selectedRange, savedRange)) {
+                        content.scrollTop = content.scrollHeight;
+                    }
+                }, 0);
+
                 this._needSelectionReset = false;
             }
 
@@ -1026,13 +1041,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
 
                 if (range) {
-                    if (window.getSelection) {
-                        var selection = window.getSelection();
-                        selection.removeAllRanges();
-                        selection.addRange(range);
-                    } else {
-                        range.select();
-                    }
+                    this._selectedRange = range;
                 }
                 delete this._ignoreSelectionchange;
             }
@@ -1417,6 +1426,86 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
             }
             return 0;
+        }
+    },
+
+    /**
+    Description TODO
+    @private
+    @function
+    */
+    _lastInnerNode: {
+        enumerable: false,
+        value: function() {
+            var nodes = this.element.firstChild.childNodes,
+                nbrNodes = nodes.length,
+                node = null;
+
+            while (nodes) {
+                nbrNodes = nodes.length;
+                if (nbrNodes) {
+                    node = nodes[nbrNodes - 1];
+                    nodes = node.childNodes;
+                } else {
+                    break;
+                }
+            }
+
+            return node;
+        }
+    },
+
+    /**
+    Description TODO
+    @private
+    @function
+    */
+    _selectedRange: {
+        enumerable: false,
+        set: function(range) {
+            if (window.getSelection) {
+                var selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
+            } else {
+                range.select();
+            }
+        },
+
+        get: function() {
+            var userSelection,
+                range;
+
+            if (window.getSelection) {
+                userSelection = window.getSelection();
+            } else if (document.selection) { // Opera!
+                userSelection = document.selection.createRange();
+            }
+
+            if (userSelection.getRangeAt) {
+                if (userSelection.rangeCount) {
+                    return userSelection.getRangeAt(0);
+                } else {
+                    // return an empty selection
+                    return document.createRange();
+                }
+            }
+            else { // Safari!
+                var range = document.createRange();
+                range.setStart(userSelection.anchorNode, userSelection.anchorOffset);
+                range.setEnd(userSelection.focusNode, userSelection.focusOffset);
+                return range;
+            }
+        }
+    },
+
+    _equalRange: {
+        enumerable: false,
+        value: function(rangeA, rangeB) {
+            return (rangeA.startContainer == rangeB.startContainer &&
+                rangeA.startOffset == rangeB.startOffset &&
+                rangeA.endContainer == rangeB.endContainer &&
+                rangeA.endOffset == rangeB.endOffset);
         }
     }
 });
