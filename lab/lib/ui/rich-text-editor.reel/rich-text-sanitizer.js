@@ -16,7 +16,7 @@ var Montage = require("montage").Montage,
 */
 exports.Sanitizer = Montage.create(Component,/** @lends module:"montage/ui/rich-text-sanitizer.js".Sanitizer# */ {
 
-    scopeCSS : {
+    scopeCSS: {
         enumerable: true,
         value: function(htmlFragment, identifier) {
             var identifierSelector = ".editor-" + identifier+ " ";
@@ -53,7 +53,7 @@ exports.Sanitizer = Montage.create(Component,/** @lends module:"montage/ui/rich-
         }
     },
 
-    unscopeCSS : {
+    unscopeCSS: {
         enumerable: true,
         value: function(htmlFragment) {
 
@@ -66,6 +66,50 @@ exports.Sanitizer = Montage.create(Component,/** @lends module:"montage/ui/rich-
                 });
             }
             return htmlFragment;
+        }
+    },
+
+    removeScripting: {
+        enumerable: true,
+        value: function(htmlFragment) {
+            /*
+                Will remove any script tag, onXXX handlers and javascript URLs
+             */
+            var div = document.createElement("div"),
+                _removeScript = function(element) {
+                    var children = element.children,
+                        child,
+                        nbrChildren = children.length,
+                        attributes = element.attributes,
+                        attribute,
+                        nbrAttributes = attributes.length,
+                        i;
+
+                for (i = 0; i < nbrAttributes; i ++) {
+                    attribute = attributes[i];
+                    if (attribute.name.match(/^on[a-z]+/i) || attribute.value.match(/^javascript:/)) {
+                        element.removeAttribute(attribute.name);
+                        i --;
+                        nbrAttributes --;
+                    }
+                }
+
+                for (i = 0; i < nbrChildren; i ++) {
+                    child = children[i];
+                    if (child.tagName == "SCRIPT") {
+                        child.parentNode.removeChild(child);
+                        i --;
+                        nbrChildren --;
+                    } else {
+                        _removeScript(child);
+                    }
+                }
+            };
+
+            div.innerHTML = htmlFragment;
+            _removeScript(div);
+
+            return div.innerHTML;
         }
     }
 });

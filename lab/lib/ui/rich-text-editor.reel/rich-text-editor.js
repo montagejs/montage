@@ -658,6 +658,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             el.addEventListener("input", this);
             el.addEventListener("keydown", this);
             el.addEventListener("keypress", this);
+            el.addEventListener("cut", this, false);
+            el.addEventListener("copy", this, false);
+            el.addEventListener("paste", this, false);
             el.addEventListener(window.Touch ? "touchstart" : "mousedown", this);
             document.addEventListener(window.Touch ? "touchend" : "mouseup", this);
 
@@ -700,6 +703,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             el.removeEventListener("blur", this);
             el.removeEventListener("input", this);
             el.removeEventListener("keypress", this);
+            el.removeEventListener("cut", this, false);
+            el.removeEventListener("copy", this, false);
+            el.removeEventListener("paste", this, false);
             el.removeEventListener(window.Touch ? "touchstart" : "mousedown", this);
             document.removeEventListener(window.Touch ? "touchend" : "mouseup", this);
 
@@ -1100,6 +1106,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     var delegateMethod = this._delegateMethod("drop"),
                         response;
 
+                    // Sanitize Fragment (CSS & JS)
+                    if (this._sanitizer) {
+                        data = this._sanitizer.scopeCSS(this._sanitizer.removeScripting(data));
+                    }
+
                     if (delegateMethod) {
                         response = delegateMethod.call(this.delegate, this, data, "text/html");
                         if (response === true) {
@@ -1121,6 +1132,41 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
             }
             this.handleDragend(event);
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleCut: {
+        enumerable: false,
+        value: function(event) {
+            //TODO: Write me
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleCopy: {
+        enumerable: false,
+        value: function(event) {
+            //TODO: Write me
+//            console.log("COPY:", event)
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handlePaste: {
+        enumerable: false,
+        value: function(event) {
+            //TODO: Write me
+            //console.log("PASTE:", event.clipboardData.getData("text"))
         }
     },
 
