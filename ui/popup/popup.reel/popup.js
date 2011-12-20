@@ -277,9 +277,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     },
 
     _positionPopup: {
-        value: function() {
+        value: function(pos) {
             //console.log('--> position popup');
-            var pos = this.position;
+            pos = pos || this.position;
             var popupSlot = this._popupSlot;
 
             if(pos) {
@@ -419,8 +419,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     this._modalDialogMask.classList.remove('montage-hide');
                 }
 
-                this.position = this.position || this._calculatePosition();
-                this._positionPopup();
+                var pos = this.position || this._calculatePosition();
+                if(!this.delegate && (this.delegate && this.delegate.positionPopup)) {
+                    this.position = pos;
+                }
+                this._positionPopup(pos);
 
             } else {
                 if(this.modal === true) {
