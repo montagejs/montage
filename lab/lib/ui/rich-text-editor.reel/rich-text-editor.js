@@ -115,6 +115,12 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         },
         set: function(value) {
             if (this._value !== value || this._dirtyValue) {
+                // Cancel resizer
+                if (this._currentResizerElement) {
+                   this._removeResizer(this._currentResizerElement);
+                   delete this._currentResizerElement;
+                }
+
                 if (this._sanitizer) {
                     value = this._sanitizer.scopeCSS(value, this._uniqueId);
                 }
@@ -152,6 +158,12 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         },
         set: function (value) {
             if (this._textValue !== value || this._dirtyTextValue) {
+                // Cancel resizer
+                if (this._currentResizerElement) {
+                   this._removeResizer(this._currentResizerElement);
+                   delete this._currentResizerElement;
+                }
+
                 this._textValue = value;
                 this._dirtyTextValue = false;
                 this._dirtyValue = true;
@@ -533,7 +545,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     framePosition = dom.convertPointFromNodeToPage(frame, zero),
                     cursor = this._cursorPosition,
                     direction = this._draggedElement.id.substring("editor-resizer-".length),
-                    element = this._draggedElement.parentNode.previousSibling,
                     info = this._resizerFrameInfo,
                     ratio = info.ratio,
                     height = frame.clientHeight,
@@ -541,6 +552,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     top = parseFloat(frame.style.top, 10),
                     left = parseFloat(frame.style.left, 10),
                     minSize = 15;
+
+                element = this._draggedElement.parentNode.previousSibling;
 
                 if (direction == "n") {
                     height += framePosition.y - cursor.y;
@@ -607,7 +620,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     var div = document.createElement("div"),
                         offlineElement,
                         savedID;
-                    div.innerHTML = element.outerHTML;
+                    div.innerHTML = element ? element.outerHTML : "";
                     offlineElement = div.firstChild;
 
                     // Resize the element now that it's offline
@@ -622,7 +635,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     // Inject the resized element into the contentEditable using execCommand in order to be in the browser undo queue
                     document.execCommand("inserthtml", false, div.innerHTML);
                     element = document.getElementById(offlineElement.id);
-                    if (savedID !== undefined) {
+                    if (element && savedID !== undefined) {
                         element.id = savedID;
                     }
                     this._currentResizerElement = element;
@@ -981,7 +994,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
             if (this._currentResizerElement) {
                 if (this._selectingResizer !== true) {
-
                     this._removeResizer(this._currentResizerElement);
                     delete this._currentResizerElement;
                 }
