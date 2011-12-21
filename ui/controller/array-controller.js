@@ -340,16 +340,15 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      */
     _convertIndexesFromContentToOrganized: {
         value: function(indexes) {
-            var index, selectedOrganizedIndexes = [], lookup, valueLength = indexes.length, selectedIndex, lookupLength;
+            var index, selectedOrganizedIndexes = [], lookup, valueLength = indexes.length, selectedIndex;
             // if _rangedOrganizedObjectsIndexes != null we have applied a range
             lookup = this._rangedOrganizedObjectsIndexes ? this._rangedOrganizedObjectsIndexes : this._organizedObjectsIndexes;
             if (lookup) {
-                lookupLength = lookup.length;
                 for (index = 0; index < valueLength ; index++) {
                     selectedIndex = indexes[index];
-                    if(selectedIndex < lookupLength && selectedIndex >= 0) {
+                    if (selectedIndex >= 0) {
                         selectedIndex = lookup.indexOf(selectedIndex);
-                        if(selectedIndex !== -1) {
+                        if (selectedIndex !== -1) {
                             selectedOrganizedIndexes[selectedOrganizedIndexes.length] = selectedIndex;
                         }
                     }
@@ -359,7 +358,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 for (index = 0; index < valueLength ; index++) {
                     selectedIndex = indexes[index] - this.startIndex;
                     // Check if we are within the range of the current organizedObjects
-                    if(selectedIndex > -1 && selectedIndex < this.endIndex) {
+                    if(selectedIndex > -1 && (this.endIndex == null || selectedIndex < this.endIndex)) {
                         selectedOrganizedIndexes[selectedOrganizedIndexes.length] = selectedIndex;
                    }
                 }
