@@ -21,6 +21,7 @@ var Montage = require("montage").Montage,
     Gate = require("core/gate").Gate,
     logger = require("core/logger").logger("component"),
     drawLogger = require("core/logger").logger("drawing"),
+    ControlProperties = require("ui/control").ControlProperties;
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 /**
  * @class module:montage/ui/component.Component
@@ -1106,6 +1107,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     }
 
 });
+
+// Mixin 
+Montage.defineProperties(Component, ControlProperties);
+
+
 
 /* @extends montage/ui/component.Component */
 /**

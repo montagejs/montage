@@ -7,7 +7,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Form Fields</title>
+    <title>HTML Form Elements</title>
     
     <!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
     <meta name="HandheldFriendly" content="True">
@@ -39,7 +39,7 @@
          <script type="text/montage-serialization">
     {
         "fname": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "fname"}
@@ -49,11 +49,16 @@
                     "boundObject": {"@": "sample-form"},
                     "boundObjectPropertyPath": "firstName",
                     "oneway": false
+                },
+                "title": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "firstName",
+                    "oneway": false
                 }
             }
         },
         "lname": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "lname"}
@@ -67,7 +72,7 @@
             }            
         },
         "email1": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "email1"}
@@ -81,7 +86,7 @@
             }           
         },
         "url1": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "url1"}
@@ -95,7 +100,7 @@
             }            
         },
         "info1": {
-            "module": "montage/ui/form/textarea.reel",
+            "module": "montage/ui/textarea.reel",
             "name": "TextArea",
             "properties": {
                 "element": {"#": "info1"}
@@ -131,7 +136,7 @@
             }
         },
         "date1": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "date1"},
@@ -140,7 +145,7 @@
         },
         
         "limit-max": {
-            "module": "montage/ui/form/number.reel",
+            "module": "montage/ui/number.reel",
             "name": "Number",
             "properties": {
                 "element": {"#": "limit-max"}
@@ -148,7 +153,7 @@
         },
 
         "number1": {
-            "module": "montage/ui/form/number.reel",
+            "module": "montage/ui/number.reel",
             "name": "Number",
             "properties": {
                 "element": {"#": "number1"}
@@ -168,7 +173,7 @@
         },
 
         "range1": {
-            "module": "montage/ui/form/range.reel",
+            "module": "montage/ui/range.reel",
             "name": "Range",
             "properties": {
                 "element": {"#": "range1"}
@@ -198,7 +203,7 @@
         },
         
         "sample-form": {
-            "module": "ui/form-fields/sample-form.reel",
+            "module": "ui/controls/sample-form.reel",
             "name": "SampleForm",
             "properties": {
                 "element": {"#": "input-form"},
@@ -227,7 +232,7 @@
         
         <style>
             form input:invalid {
-                border: 2px solid #E73525;
+                border: 1px solid #E73525;
                 border-style: dashed;
             }
             section {
@@ -300,7 +305,7 @@
         
                             <label for="range1">A Number Range field</label>
                             <span>0 </span>
-                            <input type="range" id="range1" min="0" max="500" value="90" />
+                            <input type="range" id="range1" min="10" max="500" value="90" />
                             <span id="max-value"></span>
             
                         </fieldset>

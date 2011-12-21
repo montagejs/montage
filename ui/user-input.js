@@ -6,11 +6,8 @@
 
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
-/**
- * Common base class for all Form UI controls
-    @extends module:montage/ui/component.Component
- */
-var FormField = exports.FormField = Montage.create(Component, /** @lends module:montage/ui/editable-text.FormField# */ {
+
+var UserInput = exports.UserInput = Montage.create(Component, /** @lends module:montage/ui/editable-text.UserInput# */ {
 
     hasTemplate: {
         value: true
@@ -121,7 +118,7 @@ var FormField = exports.FormField = Montage.create(Component, /** @lends module:
   Description TODO
   @private
 */
-    _disabled: {
+    _readOnly: {
         enumerable: true,
         value: false
     },
@@ -130,12 +127,12 @@ var FormField = exports.FormField = Montage.create(Component, /** @lends module:
         @type {Function}
         @default {Boolean} false
     */
-    disabled: {
+    readOnly: {
         get: function() {
-            return this._disabled;
+            return this._readOnly;
         },
         set: function(value) {
-            this._disabled = value;
+            this._readOnly = value;
             this.needsDraw = true;
         }
     },
@@ -162,47 +159,7 @@ var FormField = exports.FormField = Montage.create(Component, /** @lends module:
         }
     },
 
-
-     /**
-       Description TODO
-       @private
-     */
-     _setElementValue: {
-         value: function(v) {
-             this.element.value = v;
-         }
-     },
-
-
-    // Montage Lifecycle Callbacks
-    
-    deserializedFromTemplate: {
-        value: function() {
-            var attrs = this.element.attributes || [];
-            var i=0, len = attrs.length, name, value;
-            
-            // keep a map of existing map for easy lookup
-            for(i=0; i< len; i++) {
-                if(!this._attrsMap) {
-                    this._attrsMap = {};
-                }
-                name = attrs[i].name;
-                value = attrs[i].value;
-                
-                this._attrsMap[name] = value;
-                
-                if(typeof this[name] !== 'undefined' && value) {
-                    this[name] = value;
-                }
-                
-            }
-            
-            console.log('FormField component after: ');
-            console.log(this);
-            
-        }
-    },
-    
+    // Callbacks
     /**
     Description TODO
     @function
@@ -218,7 +175,15 @@ var FormField = exports.FormField = Montage.create(Component, /** @lends module:
             el.addEventListener('blur', this);
         }
     },
-
+/**
+  Description TODO
+  @private
+*/
+    _setElementValue: {
+        value: function(v) {
+            this.element.value = v;
+        }
+    },
 /**
     Description TODO
     @function
@@ -226,16 +191,19 @@ var FormField = exports.FormField = Montage.create(Component, /** @lends module:
     draw: {
         enumerable: false,
         value: function() {
+            
+            
+            
             var t = this.element;
 
             if (!this._valueSyncedWithInputField) {
                 this._setElementValue(this.converter ? this.converter.convert(this._value) : this._value);
             }
 
-            if (this._disabled) {
-                t.setAttribute('disabled');
+            if (this._readOnly) {
+                t.setAttribute('readonly');
             } else {
-                t.removeAttribute('disabled');
+                t.removeAttribute('readonly');
             }
 
             if (this.error) {
@@ -246,18 +214,9 @@ var FormField = exports.FormField = Montage.create(Component, /** @lends module:
                 t.title = '';
             }
             
-            // set all other attributes that are part of the subclasses
-            if(typeof this._attrs !== 'undefined') {
-                var i, len = this._attrs.length, attr;
-                for(i=0; i<len; i++) {
-                    attr = this._attrs[i];
-                    if(typeof this[attr] !== 'undefined' && this[attr] !== null) {
-                        this.element[attr] = this[attr];
-                    }
-                }
-            }
+            var fn = Object.getPrototypeOf(UserInput).draw;
+            fn.call(this);
 
-            //this._drawSpecific();
         }
     },
 /**
@@ -274,7 +233,6 @@ var FormField = exports.FormField = Montage.create(Component, /** @lends module:
             this._valueSyncedWithInputField = true;
         }
     },
-    
     // Event handlers
 /**
     Description TODO
