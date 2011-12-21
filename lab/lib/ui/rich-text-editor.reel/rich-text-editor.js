@@ -713,8 +713,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             el.addEventListener("input", this);
             el.addEventListener("keydown", this);
             el.addEventListener("keypress", this);
-            el.addEventListener("cut", this, false);
-            el.addEventListener("copy", this, false);
             el.addEventListener("paste", this, false);
             el.addEventListener(window.Touch ? "touchstart" : "mousedown", this);
             document.addEventListener(window.Touch ? "touchend" : "mouseup", this);
@@ -756,8 +754,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             el.removeEventListener("blur", this);
             el.removeEventListener("input", this);
             el.removeEventListener("keypress", this);
-            el.removeEventListener("cut", this, false);
-            el.removeEventListener("copy", this, false);
             el.removeEventListener("paste", this, false);
             el.removeEventListener(window.Touch ? "touchstart" : "mousedown", this);
             document.removeEventListener(window.Touch ? "touchend" : "mouseup", this);
@@ -898,7 +894,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
                 event.preventDefault();
                 event.stopPropagation();
-                return;
             }
         }
     },
@@ -1150,13 +1145,21 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             } else {
                 data = event.dataTransfer.getData("text/html");
                 if (data) {
-                    var delegateMethod = this._delegateMethod("drop"),
-                        response;
-
                     // Sanitize Fragment (CSS & JS)
                     if (this._sanitizer) {
                         data = this._sanitizer.scopeCSS(this._sanitizer.removeScripting(data));
                     }
+                } else {
+                    data = event.dataTransfer.getData("text/plain") || event.dataTransfer.getData("text");
+                    if (data) {
+                        var div = document.createElement('div');
+                        div.innerText = data;
+                        data = div.innerHTML;
+                    }
+                }
+                if (data) {
+                    var delegateMethod = this._delegateMethod("drop"),
+                        response;
 
                     if (delegateMethod) {
                         response = delegateMethod.call(this.delegate, this, data, "text/html");
@@ -1165,16 +1168,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                         } else {
                             data = response === false ? null : response ;
                         }
+                    } else {
+                        data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
                     }
                     if (data && data.length) {
                         document.execCommand("inserthtml", false, data);
-                    }
-                } else {
-                    data = event.dataTransfer.getData("text/plain") || event.dataTransfer.getData("text");
-                    if (data) {
-                        var div = document.createElement('div');
-                        div.innerText = data;
-                        document.execCommand("inserthtml", false, div.innerHTML);
                     }
                 }
             }
@@ -1186,34 +1184,50 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     Description TODO
     @function
     */
-    handleCut: {
-        enumerable: false,
-        value: function(event) {
-            //TODO: Write me
-        }
-    },
-
-    /**
-    Description TODO
-    @function
-    */
-    handleCopy: {
-        enumerable: false,
-        value: function(event) {
-            //TODO: Write me
-//            console.log("COPY:", event)
-        }
-    },
-
-    /**
-    Description TODO
-    @function
-    */
     handlePaste: {
         enumerable: false,
         value: function(event) {
-            //TODO: Write me
-            //console.log("PASTE:", event.clipboardData.getData("text"))
+            var data = event.clipboardData.getData("text/html"),
+                delegateMethod = this._delegateMethod("paste"),
+                response,
+                div,
+                isHTML;
+
+            /* NOTE: Chrome, and maybe the other browser too, returns html or plain text data when calling getData("text/html),
+                     To determine if the data is actually html, check the data starts with either an html or a meta tag
+            */
+            isHTML = data && data.match(/^<meta [^>]*>|<html>/i);
+            if (data && isHTML) {
+                // Sanitize Fragment (CSS & JS)
+                if (this._sanitizer) {
+                    data = this._sanitizer.scopeCSS(this._sanitizer.removeScripting(data));
+                }
+            } else {
+                data = event.clipboardData.getData("text/plain") ||  event.clipboardData.getData("text");
+                // Convert plain text to html
+                div = document.createElement('div');
+                div.innerText = data;
+                data = div.innerHTML;
+            }
+
+            if (data) {
+                if (delegateMethod) {
+                    response = delegateMethod.call(this.delegate, this, data, "text/html");
+                    if (response === true) {
+                        data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
+                    } else {
+                        data = response === false ? null : response ;
+                    }
+                } else {
+                    data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
+                }
+                if (data && data.length) {
+                    document.execCommand("inserthtml", false, data);
+                }
+            }
+
+            event.preventDefault();
+            event.stopPropagation();
         }
     },
 
