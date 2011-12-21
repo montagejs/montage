@@ -101,13 +101,26 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     value: {
         enumerable: true,
         get: function() {
-            var content;
+            var contentNode = this.element.firstChild,
+                content,
+                resizer;
 
             if (this._dirtyValue) {
-                content = this.element.firstChild ? this.element.firstChild.innerHTML : "";
+                if (this._currentResizerElement) {
+                    // Remove the resizer from the returned data
+                    contentNode = contentNode.cloneNode(true);
+                    resizer = contentNode.getElementsByClassName("montage-resizer");
+                    if (resizer && resizer.length) {
+                        resizer = resizer[0]
+                        resizer.parentNode.removeChild(resizer);
+                    }
+                }
+
+                content = contentNode ? contentNode.innerHTML : "";
                 if (this._sanitizer) {
                     content = this._sanitizer.unscopeCSS(content);
                 }
+
                 this._value = content;
                 this._dirtyValue = false;
             }
