@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "module": "components/input-text-example.reel",
+                    "name": "InputTextExample",
+                    "properties": {
+                        "element": {"#": "input-text-example"}
+                    }
+                },
+
+                "text1": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "text1"}
+                    }
+                },
+                
+                "echo1": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "echo1"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "text1"},
+                            "boundObjectPropertyPath": "value"
+                        }
+                    }
+                },
+
+                "textarea1": {
+                    "module": "montage/ui/TextArea.reel",
+                    "name": "TextArea",
+                    "properties": {
+                        "element": {"#": "textarea1"}
+                    }
+                },
+                "echo2": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "echo2"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "textarea1"},
+                            "boundObjectPropertyPath": "value"
+                        }
+                    }
+                }
+            }
+        </script>
+
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <div id="input-text-example" class="input-text-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>Textfield</h3>
+                    <p>
+                        The Textfield wraps a HTML input text field
+                    </p>
+                </div>
+            </div>
+
+            <input type="text" id="text1" />
+            <p id="echo1">Type something into the TextField above to see the binding</p>
+            
+            
+            <div class="row">
+                <div class="span8">
+                    <h3>TextArea</h3>
+                    <p>
+                        The TextArea wraps a HTML TextArea element
+                    </p>
+                </div>
+            </div>
+            
+            <textarea id="textarea1"></textarea>
+            <p id="echo2">Type something into the TextArea above to see the binding</p>
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint linenums">
+
+    "text1": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "text1"}
+        }
+    },
+    
+    "textarea1": {
+        "module": "montage/ui/TextArea.reel",
+        "name": "TextArea",
+        "properties": {
+            "element": {"#": "textarea1"}
+        }
+    }
+            </pre>
+
+            <h6>HTML Markup</h6>
+ <pre class="prettyprint linenums">
+ Textfield: &lt;input type=&quot;text&quot; id=&quot;text1&quot; /&gt;
+ TextArea: &lt;textarea id=&quot;textarea1&quot;&gt;&lt;/textarea&gt;
+</pre>
+
+        </div>
+    </body>
+</html>
