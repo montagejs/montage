@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title>Best Wishes from Montage</title>
+    <link rel="stylesheet" type="text/css" href="scene.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "scene.reel",
+                "name": "Scene",
+                "properties": {
+                    "element": {"#": "scene"},
+                    "rotation": {"#": "rotation"},
+                    "ballLeft": {"#": "ball-left"},
+                    "ballRight": {"#": "ball-right"}
+                }
+            },
+            "frontButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "front-button"},
+                    "identifier": "openCard",
+                    "value": "Open"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+            "innerButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "inner-button"},
+                    "identifier": "closeCard",
+                    "value": "Close"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+            "snowflakes": {
+                "module": "snowflakes.reel",
+                "name": "Snowflakes",
+                "properties": {
+                    "element": {"#": "snowflakes"}
+                },
+                "bindings": {
+                    "isAnimating": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "isSnowing",
+                        "oneway": true
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="scene" class="scene">
+        <div id="rotation" class="rotation">
+            <div class="background"></div>
+            <div class="card-shadow"></div>
+            <div class="front-page">
+                <div class="overlay">
+                    <div id="front-button" class="button"></div>
+                </div>
+                <div id="snowflakes" class="snowflakes"></div>
+            </div>
+            <div class="inner-top-page">
+                <div id="inner-button" class="inner-button button"></div>
+            </div>
+            <div class="inner-bottom-page">
+                <img class="message" src="images/message-1.gif" alt="May the peace and joy of the holiday season be with you throughout the coming year, the Montage team">
+                <div class="shadow"></div>
+            </div>
+            <div class="tree"></div>
+            <div class="present left bottom">
+                <div class="top"></div>
+            </div>
+            <div class="present right bottom">
+                <div class="top"></div>
+            </div>
+            <div class="ball-shadow left"></div>
+            <div class="ball-shadow right"></div>
+            <div id="ball-left" class="ball left"></div>
+            <div id="ball-right" class="ball right"></div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,234 @@
+.scene {
+    position: absolute;
+    width: 2048px;
+    height: 2048px;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: rotate3d(1,0,0,0) translate3d(0,0,0);
+    -webkit-transition: 1s all;
+}
+.scene .background {
+    position: absolute;
+    margin: 2px;
+    width: 2044px;
+    height: 2044px;
+    background: url(../images/background.jpg);
+}
+.scene .background:after {
+    content: "";
+    position: absolute;
+    width: 128px;
+    height: 128px;
+    margin: -2px;
+    background: url(../images/background-highlight.png) no-repeat;
+    -webkit-transform-origin: 0 0 0;
+    -webkit-transform: scale3d(16, 16, 1) translate3d(0,0,0.01px);
+}
+.scene .card-shadow {
+    position: absolute;
+    width: 869px;
+    height: 505px;
+    top: 50%;
+    left: 50%;
+    margin-top: -243px;
+    margin-left: -427px;
+    background: url(../images/shadow.png);
+    -webkit-transition: 1s all;
+    -webkit-transform-origin: 0 505px 0;
+    -webkit-transform: scale3d(1, 1, 1) translate3d(0, 0, .3px);
+    opacity: 1;
+}
+.scene .front-page {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -225px;
+    margin-left: -400px;
+    width: 800px;
+    height: 450px;
+    background: url(../images/front-page-background.jpg);
+    -webkit-transform-origin: 0 0 0;
+    -webkit-transform: rotate3d(1,0,0,0) translate3d(0, 0, 1px);
+    -webkit-transition: 1s -webkit-transform;
+    -webkit-backface-visibility: hidden;
+}
+.scene .overlay {
+    position: absolute;
+    top: 311px;
+    width: 800px;
+    height: 139px;
+    background: url(../images/merry-christmas.png);
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translateZ(1px);
+    z-index: 1;
+}
+.scene .button {
+    position: absolute;
+    left: 747px;
+    top: 87px;
+    width: 39px;
+    height: 39px;
+    background: url(../images/arrow.png);
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translateZ(1px);
+    opacity: .6;
+    cursor: pointer;
+    font-size: 1px;
+    line-height: 0;
+    color: transparent;
+    outline: none;
+}
+.scene .button:hover {
+    opacity: 1;
+}
+.scene .inner-top-page {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -225px;
+    margin-left: -400px;
+    width: 800px;
+    height: 450px;
+    background: url(../images/inner-fold-background.jpg);
+    -webkit-transform-origin: 0 450px 0;
+    -webkit-transform:  translate3d(0, -450px, 0px) rotateX(-180deg);
+    -webkit-transition: 1s -webkit-transform;
+    -webkit-backface-visibility: hidden;
+}
+.scene .inner-button {
+    opacity: .4;
+    -webkit-transform: rotateZ(180deg);
+    top: 14px;
+}
+.scene .inner-bottom-page {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -225px;
+    margin-left: -400px;
+    width: 800px;
+    height: 450px;
+    background: url(../images/montage-logo.gif) 321px 303px no-repeat, url(../images/inner-fold-background.jpg) 0 -450px no-repeat;
+    -webkit-transform-origin: 0 450px 0;
+    -webkit-transform:  translate3d(0, 0, .99px);
+    -webkit-transition: 1s -webkit-transform;
+    overflow: hidden;
+}
+.scene .message {
+    margin-left: 143px;
+    margin-top: 115px;
+}
+.scene .shadow {
+    position: absolute;
+    width: 869px;
+    height: 505px;
+    top: 50%;
+    left: 50%;
+    margin-top: -243px;
+    margin-left: -427px;
+    background: url(../images/shadow.png);
+    -webkit-transition: 1s all;
+    -webkit-transform-origin: 0 505px 0;
+    -webkit-transform: scale3d(1, 1, 1) translate3d(0, 0, .3px);
+    opacity: 1;
+}
+.scene .tree {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -528px;
+    margin-left: -142px;
+    width: 285px;
+    height: 376px;
+    background: url(../images/tree.gif) no-repeat, url(../images/tree-shape.png) no-repeat;
+    -webkit-transform-origin: 0 376px 0;
+    -webkit-transform:  translate3d(0, 0, .99px) rotateX(-180deg);
+    -webkit-transition: 1s -webkit-transform;
+}
+.scene .present.bottom {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -78px;
+    margin-left: -311px;
+    width: 90px;
+    height: 78px;
+    background: url(../images/present.jpg);
+    background-position: 0 -78px;
+    -webkit-transform-origin: 0 78px 0;
+    -webkit-transform:  translate3d(0, -147px, 0px) rotateX(-180deg);
+    -webkit-transition: 1s -webkit-transform;
+    -webkit-backface-visibility: hidden;
+    -webkit-transform-style: preserve-3d;
+}
+.scene .present.right {
+    margin-left: 221px;
+}
+.scene .present .top {
+    position: absolute;
+    width: 90px;
+    height: 78px;
+    background: url(../images/present.jpg);
+    -webkit-transform-origin: 0 78px 0;
+    -webkit-transform:  translate3d(0, -77px, 1px) rotateX(180deg);
+    -webkit-transition: 1s -webkit-transform;
+    -webkit-backface-visibility: hidden;
+}
+.scene .ball-shadow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -506px;
+    margin-top: 52px;
+    width: 128px;
+    height: 90px;
+    background: url(../images/ball-shadow.png);
+    -webkit-transform: scale3d(2.2,2.2,1) translate3d(0, 0, .02px);
+}
+.scene .ball-shadow.right {
+    margin-left: 508px;
+    margin-top: -141px;
+}
+.scene .ball {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -572px;
+    margin-top: 20px;
+    width: 142px;
+    height: 141px;
+    background: url(../images/ball.png);
+    -webkit-transform: translate3d(0, 0, 71px) rotate3d(1,0,0,0);
+    -webkit-transition: 1s -webkit-transform;
+}
+.scene .ball.right {
+    margin-left: 430px;
+    margin-top: -175px;
+}
+.scene.openCard {
+    -webkit-transform: rotate3d(1,0,0,50deg) translate3d(0,-10px,-250px);
+}
+.scene.openCard .ball {
+    -webkit-transform: translate3d(0, 0, 71px) rotate3d(1,0,0,-50deg);
+}
+.scene.openCard .shadow {
+    -webkit-transform: scale3d(1, 7, 1) translate3d(-15px, 0, .3px);
+    opacity: 0;
+}
+.scene.openCard .card-shadow {
+    opacity: .6;
+}
+.scene.openCard .front-page {
+    -webkit-transform: rotate3d(1,0,0,110deg) translate3d(0, 0, 1px);
+}
+.scene.openCard .inner-top-page {
+    -webkit-transform:  translate3d(0, -450px, .99px) rotateX(-70deg);
+}
+.scene.openCard .tree {
+    -webkit-transform:  translate3d(0, 0, .99px) rotateX(-70deg);
+}
+.scene.openCard .present.bottom {
+    -webkit-transform:  translate3d(0, -147px, 0px) rotateX(-70deg);
+}
+.scene.openCard .present .top {
+    -webkit-transform:  translate3d(0, -77px, 1px) rotateX(70deg);
+}

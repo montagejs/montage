@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title>Best Wishes from Montage</title>
+    <link rel="stylesheet" type="text/css" href="snowflakes.css">
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "snowflakes.reel",
+                "name": "Snowflakes",
+                "properties": {
+                    "element": {"#": "snowflakes"},
+                    "snowflakeRepetition": {"@": "snowflakeRepetition"}
+                }
+            },
+            "snowflakeRepetition": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "snowflake-repetition"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "snowflakes",
+                        "oneway": true
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="snowflakes" class="snowflakes">
+        <div id="snowflake-repetition" class="snowflake-repetition">
+            <div class="snowflake"><div class="texture"></div></div>
+        </div>
+    </div>
+</body>
+</html>
