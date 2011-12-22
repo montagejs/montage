@@ -1,0 +1,20 @@
+.snowflakes .snowflake-repetition {
+    width: 800px;
+    height: 450px;
+    position: absolute;
+    overflow: hidden;
+    -webkit-backface-visibility: hidden;
+    -webkit-transform: translateZ(.1px);
+    pointer-events: none;
+    -webkit-perspective: 800px;
+}
+.snowflakes .snowflake {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -50px;
+    margin-left: -50px;
+    width: 101px;
+    height: 101px;
+    background: url(../images/snowflakes.png);
+}
