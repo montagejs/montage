@@ -259,6 +259,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                         // As we do not use a setter, we need to manually dispatch a change event
                         this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("states" , this._states));
                     }
+
+                    if (this._states.fontname) {
+                        this._states.fontname = this._states.fontname.replace("'", "");
+                    }
                 }
             }
 
@@ -524,6 +528,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     editorElement.firstChild.innerHTML = "";
                 }
 
+                this._adjustPadding();
                 delete this._needsResetContent;
             }
 
@@ -674,6 +679,65 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             if(this._needsFocus) {
                 this.element.firstChild.focus();
                 this._needsFocus = false;
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    _adjustPadding: {
+        enumerable: false,
+        value: function() {
+            var el = this.element.firstChild,
+                minLeft = 0,
+                minTop = 0;
+
+            var walkTree = function(node, parentLeft, parentTop) {
+                var nodes = node ? node.childNodes : [],
+                    nbrNodes = nodes.length,
+                    i,
+                    offsetLeft = node.offsetLeft,
+                    offsetTop = node.offsetTop;
+
+                if (node.offsetParent) {
+                    offsetLeft += parentLeft;
+                    offsetTop += parentTop;
+                }
+                if (minLeft > offsetLeft) {
+                    minLeft = offsetLeft;
+                }
+                if (minTop > offsetTop) {
+                    minTop = offsetTop;
+                }
+
+                for (i = 0; i < nbrNodes; i ++) {
+                    walkTree(nodes[i], offsetLeft, offsetTop)
+                }
+            };
+            walkTree(el, el.offsetLeft, el.offsetTop);
+
+            var computedStyle = document.defaultView.getComputedStyle(el),
+                paddingLeft = computedStyle.paddingLeft,
+                paddingTop = computedStyle.paddingTop;
+
+            if (paddingLeft.match(/%$/)) {
+                paddingLeft = parseInt(paddingLeft, 10) * el.clientWidth;
+            } else {
+                paddingLeft = parseInt(paddingLeft, 10);
+            }
+            if (paddingTop.match(/%$/)) {
+                paddingTop = parseInt(paddingTop, 10) * el.clientHeight;
+            } else {
+                paddingTop = parseInt(paddingTop, 10);
+            }
+
+            if (minLeft < 0) {
+                el.style.paddingLeft = (-minLeft - paddingLeft) + "px";
+            }
+            if (minTop < 0) {
+                el.style.paddingTop = (-minTop - paddingTop) + "px";
             }
         }
     },
