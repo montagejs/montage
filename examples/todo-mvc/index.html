@@ -9,6 +9,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Todo</title>
     <script src="../../montage.js" data-package="."></script>
+    <link rel="stylesheet" href="todo-mvc.css">
 
     <script type="text/montage-serialization">
         {
@@ -18,58 +19,6 @@
             }
         }
     </script>
-
-    <style type="text/css">
-
-        html, body {
-            margin: 0;
-            padding: 0;
-            height: 100%;
-        }
-
-        html {
-            background-color: hsl(0,0%,94%);
-        }
-
-        .montage-app-bootstrapping,
-        .montage-app-loading {
-            color: hsl(0,0%,60%);
-            text-align: center;
-            font: 16px/400px "Lucida Grande", Lucida, Verdana, sans-serif;
-            text-shadow: 0 -1px 2px hsla(0,0%,98%,0.9);
-        }
-
-        .main,
-        #splash {
-            display: none;
-        }
-
-        .montage-app-bootstrapping #splash,
-        .montage-app-loading #splash {
-            display: block;
-        }
-
-        .montage-app-loaded .main {
-            display: block;
-        }
-
-        #loadingIndicator {
-            -webkit-animation-name: fade;
-            -webkit-animation-duration: 1000ms;
-            -webkit-animation-iteration-count: infinite;
-            -webkit-animation-direction: alternate;
-        }
-
-        @-webkit-keyframes fade {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-    </style>
 
 </head>
 <body>
