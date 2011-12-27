@@ -261,7 +261,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     }
 
                     if (this._states.fontname) {
-                        this._states.fontname = this._states.fontname.replace("'", "");
+                        this._states.fontname = this._states.fontname.replace(/'/g, "");
                     }
                 }
             }
