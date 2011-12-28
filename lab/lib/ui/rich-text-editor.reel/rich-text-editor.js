@@ -355,92 +355,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
-    _shortcutMap: {
-        enumerable: false,
-        value: {}
-    },
-
-    /**
-      Description TODO
-     @type {Function}
-    */
-    setActionShortcut: {
-        enumerable: true,
-        value: function(action, shortcut) {
-
-            var modifiersMap,
-                keys,
-                nbrKeys,
-                modifiers,
-                modifier,
-                i;
-
-            if (this._actions[action]) {
-                modifiersMap = {SHIFT: 1, CTRL: 2, ALT: 4, META: 8};
-                modifiersMap.CMD = window.navigator.userAgent.match(/\bmacintosh\b/i) ? modifiersMap.META : modifiersMap.CTRL;
-                keys = shortcut.split("+");
-                key,
-                keyNames = {
-                    "BACKSPACE": 8,
-                    "TAB": 9,
-                    "ENTER": 13,
-                    "ESCAPE": 27,
-                    "PAGEUP": 33,
-                    "PAGEDOWN": 34,
-                    "END": 35,
-                    "HOME": 36,
-                    "LEFT": 37,
-                    "UP": 38,
-                    "RIGHT": 39,
-                    "DOWN": 40,
-                    "INSERT": 45,
-                    "DELETE": 46
-                },
-                nbrKeys = keys.length;
-                modifiers = 0;
-
-                for (i = 0; i < nbrKeys - 1; i ++) {
-                    modifier = keys[i].toUpperCase();
-                    if (modifiersMap[modifier]) {
-                        modifiers += modifiersMap[modifier];
-                    }
-                }
-                key = keys[nbrKeys - 1].toUpperCase();
-                if (keyNames[key] !== undefined) {
-                    key = keyNames[key];
-                } else {
-                    key = key.charCodeAt(0);
-                }
-                this._actions[action].shortcut = {modifiers: modifiers, keyChar: key};
-            }
-
-            // generate a shortcut map
-            var action,
-                charCode,
-                shortcutMap = {};
-            for (i in this._actions) {
-                action = this._actions[i];
-                if (action.shortcut) {
-                    modifiers = action.shortcut.modifiers;
-                    keyChar = action.shortcut.keyChar;
-                    if (shortcutMap[modifiers] === undefined) {
-                        shortcutMap[modifiers] = {};
-                    }
-                    if (shortcutMap[modifiers][keyChar] === undefined) {
-                        shortcutMap[modifiers][keyChar] = [i];
-                    } else {
-                        shortcutMap[modifiers][keyChar].push(i);
-                    }
-                }
-            }
-            this._shortcutMap = shortcutMap;
-        }
-    },
-
-    /**
-      Description TODO
-      @private
-    */
     _sanitizer: {
         enumerable: false,
         value: Sanitizer.create()
@@ -788,7 +702,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
             el.addEventListener("blur", this);
             el.addEventListener("input", this);
-            el.addEventListener("keydown", this);
             el.addEventListener("keypress", this);
             el.addEventListener("paste", this, false);
             el.addEventListener(window.Touch ? "touchstart" : "mousedown", this);
@@ -885,36 +798,15 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     Description TODO
     @function
     */
-    handleKeydown: {
+    handleShortcut: {
         enumerable: false,
-        value: function(event) {
-            var keyCode = event.keyCode,
-                shortcutMap = this._shortcutMap;
-                SHIFT = 1, CTRL = 2, ALT = 4, META = 8,
-                modifiers = event.shiftKey + (event.ctrlKey << 1) + (event.altKey << 2) + (event.metaKey << 3),
-                stopEvent = false;
-
-            // Check the shortcut map
-            if (this._shortcutMap[modifiers] && this._shortcutMap[modifiers][keyCode]) {
-                var actions = this._shortcutMap[modifiers][keyCode],
-                    action,
-                    i;
-
-                // execute only the first enable command
-                for (i in actions) {
-                    action = actions[i];
-                    if (this._actions[action].enabled) {
-                        this.doAction(action);
-                        stopEvent = true;
-                        break;
-                    }
-                }
+        value: function(event, action) {
+            if (this._actions[action] && this._actions[action].enabled) {
+                this.doAction(action);
+                return true;
             }
 
-            if (stopEvent) {
-                event.preventDefault();
-                event.stopPropagation();
-            }
+            return false;
         }
     },
 
