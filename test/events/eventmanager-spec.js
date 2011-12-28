@@ -321,339 +321,392 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
         describe("when distributing an event", function() {
 
-            it("should present the event to any listeners along the propagation path registered in the capture phase first", function() {
+            describe("with respect to phases", function() {
 
-                var captureCalled = false,
-                        bubbleCalled = false;
+                it("should present the event to any listeners along the propagation path registered in the capture phase first", function() {
 
-                var mousedownCaptureSpy = {
-                    captureMousedown: function() {
-                        expect(bubbleCalled).toBe(false);
-                        captureCalled = true;
-                    }
-                };
+                    var captureCalled = false,
+                            bubbleCalled = false;
 
-                var mousedownBubbleSpy = {
-                    handleMousedown: function() {
-                        expect(captureCalled).toBe(true);
-                        bubbleCalled = true;
-                    }
-                };
+                    var mousedownCaptureSpy = {
+                        captureMousedown: function() {
+                            expect(bubbleCalled).toBe(false);
+                            captureCalled = true;
+                        }
+                    };
 
-                spyOn(mousedownCaptureSpy, 'captureMousedown').andCallThrough();
-                spyOn(mousedownBubbleSpy, 'handleMousedown').andCallThrough();
+                    var mousedownBubbleSpy = {
+                        handleMousedown: function() {
+                            expect(captureCalled).toBe(true);
+                            bubbleCalled = true;
+                        }
+                    };
 
-                testDocument.addEventListener("mousedown", mousedownCaptureSpy, true);
-                testDocument.addEventListener("mousedown", mousedownBubbleSpy, false);
+                    spyOn(mousedownCaptureSpy, 'captureMousedown').andCallThrough();
+                    spyOn(mousedownBubbleSpy, 'handleMousedown').andCallThrough();
 
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
-                    expect(mousedownCaptureSpy.captureMousedown).toHaveBeenCalled();
-                    expect(mousedownBubbleSpy.handleMousedown).toHaveBeenCalled();
+                    testDocument.addEventListener("mousedown", mousedownCaptureSpy, true);
+                    testDocument.addEventListener("mousedown", mousedownBubbleSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(mousedownCaptureSpy.captureMousedown).toHaveBeenCalled();
+                        expect(mousedownBubbleSpy.handleMousedown).toHaveBeenCalled();
+                    });
+
+                });
+
+                it("should present an event to capture listeners in the capture phase based on the DOM hierarchy from top to target, not in the order they registered", function() {
+
+                    var calledHandlers = [];
+
+                    var windowSpy = {
+                        captureMousedown: function() {
+                            expect(calledHandlers.length).toBe(0);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(windowSpy, 'captureMousedown').andCallThrough();
+
+                    var documentSpy = {
+                        captureMousedown: function() {
+                            expect(calledHandlers.length).toBe(1);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(documentSpy, 'captureMousedown').andCallThrough();
+
+                    var bodySpy = {
+                        captureMousedown: function() {
+                            expect(calledHandlers.length).toBe(2);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(bodySpy, 'captureMousedown').andCallThrough();
+
+                    var parentSpy = {
+                        captureMousedown: function() {
+                            expect(calledHandlers.length).toBe(3);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(parentSpy, 'captureMousedown').andCallThrough();
+
+                    var targetSpy = {
+                        captureMousedown: function() {
+                            expect(calledHandlers.length).toBe(4);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(targetSpy, 'captureMousedown').andCallThrough();
+
+
+                    var target = testDocument.getElementById("element");
+
+                    // We install these in the reverse order we expect them to be called in to ensure it's not the order
+                    target.addEventListener("mousedown", targetSpy, true);
+                    target.parentNode.addEventListener("mousedown", parentSpy, true);
+                    testDocument.body.addEventListener("mousedown", bodySpy, true);
+                    testDocument.addEventListener("mousedown", documentSpy, true);
+                    testDocument.defaultView.addEventListener("mousedown", windowSpy, true);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(target), "mousedown", function() {
+                        expect(windowSpy.captureMousedown).toHaveBeenCalled();
+                        expect(documentSpy.captureMousedown).toHaveBeenCalled();
+                        expect(bodySpy.captureMousedown).toHaveBeenCalled();
+                        expect(parentSpy.captureMousedown).toHaveBeenCalled();
+                        expect(targetSpy.captureMousedown).toHaveBeenCalled();
+                    });
+                });
+
+                it("should present an event to bubble listeners in the capture phase based on the DOM hierarchy from target to top, not in the order they registered", function() {
+
+                    var calledHandlers = [];
+
+                    var targetSpy = {
+                        handleMousedown: function() {
+                            expect(calledHandlers.length).toBe(0);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(targetSpy, 'handleMousedown').andCallThrough();
+
+                    var parentSpy = {
+                        handleMousedown: function() {
+                            expect(calledHandlers.length).toBe(1);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(parentSpy, 'handleMousedown').andCallThrough();
+
+                    var bodySpy = {
+                        handleMousedown: function() {
+                            expect(calledHandlers.length).toBe(2);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(bodySpy, 'handleMousedown').andCallThrough();
+
+                    var documentSpy = {
+                        handleMousedown: function() {
+                            expect(calledHandlers.length).toBe(3);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(documentSpy, 'handleMousedown').andCallThrough();
+
+                    var windowSpy = {
+                        handleMousedown: function() {
+                            expect(calledHandlers.length).toBe(4);
+                            calledHandlers.push(this);
+                        }
+                    };
+                    spyOn(windowSpy, 'handleMousedown').andCallThrough();
+
+                    var target = testDocument.getElementById("element");
+
+                    // We install these in the reverse order we expect them to be called in to ensure it's not the order
+                    testDocument.defaultView.addEventListener("mousedown", windowSpy, false);
+                    testDocument.addEventListener("mousedown", documentSpy, false);
+                    testDocument.body.addEventListener("mousedown", bodySpy, false);
+                    target.parentNode.addEventListener("mousedown", parentSpy, false);
+                    target.addEventListener("mousedown", targetSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(target), "mousedown", function() {
+                        expect(windowSpy.handleMousedown).toHaveBeenCalled();
+                        expect(documentSpy.handleMousedown).toHaveBeenCalled();
+                        expect(bodySpy.handleMousedown).toHaveBeenCalled();
+                        expect(parentSpy.handleMousedown).toHaveBeenCalled();
+                        expect(targetSpy.handleMousedown).toHaveBeenCalled();
+                    });
+                });
+
+                it("must not present the event to the generic handler in a phase the listener has not registered in", function() {
+
+                    var eventCaptureSpy = {
+                        handleEvent: function(event) {
+                            expect(event.eventPhase).toBe(event.CAPTURING_PHASE);
+                        }
+                    };
+
+                    var eventBubbleSpy = {
+                        handleEvent: function(event) {
+                            expect(event.eventPhase).toBe(event.BUBBLING_PHASE);
+                        }
+                    };
+
+                    spyOn(eventCaptureSpy, 'handleEvent').andCallThrough();
+                    spyOn(eventBubbleSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventCaptureSpy, true);
+                    testDocument.addEventListener("mousedown", eventBubbleSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(eventCaptureSpy.handleEvent).toHaveBeenCalled();
+                        expect(eventBubbleSpy.handleEvent).toHaveBeenCalled();
+                    });
+                });
+
+                it("should present the event at the CAPTURING_PHASE when the current target is triggered during the capture phase and the current target is not the proximal target", function() {
+
+                    var eventSpy = {
+                        handleEvent: function(event) {
+                            expect(event.eventPhase).toBe(event.CAPTURING_PHASE);
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventSpy, true);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                    });
+
+                });
+
+                it("should present the event at the AT_TARGET when the current target is the proximal target when the listener registered for the capture phase", function() {
+                    var eventSpy = {
+                        handleEvent: function(event) {
+                            expect(event.eventPhase).toBe(event.AT_TARGET);
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventSpy, true);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                    });
+
+                });
+
+                it("should present the event at the AT_TARGET when the current target is the proximal target when the listener registered for the bubble phase", function() {
+                    var eventSpy = {
+                        handleEvent: function(event) {
+                            expect(event.eventPhase).toBe(event.AT_TARGET);
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                    });
+
+                });
+
+                it("should present the event at the BUBBLING_PHASE during the bubble phase and the current target is not the proximal target", function() {
+
+                    var eventSpy = {
+                        handleEvent: function(event) {
+                            expect(event.eventPhase).toBe(event.BUBBLING_PHASE);
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.body), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                    });
+
                 });
 
             });
 
-            it("should present an event to capture listeners in the capture phase based on the DOM hierarchy from top to target, not in the order they registered", function() {
+            describe("with respect to handler method names", function() {
 
-                var calledHandlers = [];
+                it("must not present the event to a generic handler function if a more specific eventType handler method is available", function() {
 
-                var windowSpy = {
-                    captureMousedown: function() {
-                        expect(calledHandlers.length).toBe(0);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(windowSpy, 'captureMousedown').andCallThrough();
+                    var eventSpy = {
+                        handleMousedown: function() {
+                        },
 
-                var documentSpy = {
-                    captureMousedown: function() {
-                        expect(calledHandlers.length).toBe(1);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(documentSpy, 'captureMousedown').andCallThrough();
+                        handleEvent: function() {
+                        }
+                    };
 
-                var bodySpy = {
-                    captureMousedown: function() {
-                        expect(calledHandlers.length).toBe(2);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(bodySpy, 'captureMousedown').andCallThrough();
+                    spyOn(eventSpy, 'handleMousedown');
+                    spyOn(eventSpy, 'handleEvent');
 
-                var parentSpy = {
-                    captureMousedown: function() {
-                        expect(calledHandlers.length).toBe(3);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(parentSpy, 'captureMousedown').andCallThrough();
+                    testDocument.addEventListener("mousedown", eventSpy, false);
 
-                var targetSpy = {
-                    captureMousedown: function() {
-                        expect(calledHandlers.length).toBe(4);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(targetSpy, 'captureMousedown').andCallThrough();
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(eventSpy.handleMousedown).toHaveBeenCalled();
+                        expect(eventSpy.handleEvent).not.toHaveBeenCalled();
+                    });
 
-
-                var target = testDocument.getElementById("element");
-
-                // We install these in the reverse order we expect them to be called in to ensure it's not the order
-                target.addEventListener("mousedown", targetSpy, true);
-                target.parentNode.addEventListener("mousedown", parentSpy, true);
-                testDocument.body.addEventListener("mousedown", bodySpy, true);
-                testDocument.addEventListener("mousedown", documentSpy, true);
-                testDocument.defaultView.addEventListener("mousedown", windowSpy, true);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(target), "mousedown", function() {
-                    expect(windowSpy.captureMousedown).toHaveBeenCalled();
-                    expect(documentSpy.captureMousedown).toHaveBeenCalled();
-                    expect(bodySpy.captureMousedown).toHaveBeenCalled();
-                    expect(parentSpy.captureMousedown).toHaveBeenCalled();
-                    expect(targetSpy.captureMousedown).toHaveBeenCalled();
-                });
-            });
-
-            it("should present an event to bubble listeners in the capture phase based on the DOM hierarchy from target to top, not in the order they registered", function() {
-
-                var calledHandlers = [];
-
-                var targetSpy = {
-                    handleMousedown: function() {
-                        expect(calledHandlers.length).toBe(0);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(targetSpy, 'handleMousedown').andCallThrough();
-
-                var parentSpy = {
-                    handleMousedown: function() {
-                        expect(calledHandlers.length).toBe(1);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(parentSpy, 'handleMousedown').andCallThrough();
-
-                var bodySpy = {
-                    handleMousedown: function() {
-                        expect(calledHandlers.length).toBe(2);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(bodySpy, 'handleMousedown').andCallThrough();
-
-                var documentSpy = {
-                    handleMousedown: function() {
-                        expect(calledHandlers.length).toBe(3);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(documentSpy, 'handleMousedown').andCallThrough();
-
-                var windowSpy = {
-                    handleMousedown: function() {
-                        expect(calledHandlers.length).toBe(4);
-                        calledHandlers.push(this);
-                    }
-                };
-                spyOn(windowSpy, 'handleMousedown').andCallThrough();
-
-                var target = testDocument.getElementById("element");
-
-                // We install these in the reverse order we expect them to be called in to ensure it's not the order
-                testDocument.defaultView.addEventListener("mousedown", windowSpy, false);
-                testDocument.addEventListener("mousedown", documentSpy, false);
-                testDocument.body.addEventListener("mousedown", bodySpy, false);
-                target.parentNode.addEventListener("mousedown", parentSpy, false);
-                target.addEventListener("mousedown", targetSpy, false);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(target), "mousedown", function() {
-                    expect(windowSpy.handleMousedown).toHaveBeenCalled();
-                    expect(documentSpy.handleMousedown).toHaveBeenCalled();
-                    expect(bodySpy.handleMousedown).toHaveBeenCalled();
-                    expect(parentSpy.handleMousedown).toHaveBeenCalled();
-                    expect(targetSpy.handleMousedown).toHaveBeenCalled();
-                });
-            });
-
-            it("must not present the event to a less specific handler function if a more specific eventType + identifier handler function is available", function() {
-
-                var eventSpy = {
-
-                    captureMousedown: function() {
-                    },
-
-                    handleFooMousedown: function() {
-                    },
-
-                    handleMousedown: function() {
-                    },
-
-                    handleEvent: function() {
-                    }
-                };
-
-                spyOn(eventSpy, 'handleFooMousedown');
-                spyOn(eventSpy, 'handleMousedown');
-                spyOn(eventSpy, 'captureMousedown');
-                spyOn(eventSpy, 'handleEvent');
-
-                testDocument.identifier = "foo";
-
-                testDocument.addEventListener("mousedown", eventSpy, true);
-                testDocument.addEventListener("mousedown", eventSpy, false);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
-                    expect(eventSpy.handleFooMousedown).toHaveBeenCalled();
-
-                    expect(eventSpy.captureMousedown).toHaveBeenCalled();
-                    expect(eventSpy.handleMousedown).not.toHaveBeenCalled();
-                    expect(eventSpy.handleEvent).not.toHaveBeenCalled();
                 });
 
-                delete testDocument.identifier;
-            });
+                it("should present the event to the generic handler if no specific handler is present, in either event phase", function() {
 
-            it("must not present the event to a generic handler function if a more specific eventType handler method is available", function() {
+                    var handledEventCount = 0;
+                    var eventSpy = {
+                        handleEvent: function() {
+                            handledEventCount++;
+                        }
+                    };
 
-                var eventSpy = {
-                    handleMousedown: function() {
-                    },
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
 
-                    handleEvent: function() {
-                    }
-                };
+                    testDocument.addEventListener("mousedown", eventSpy, false);
+                    testDocument.addEventListener("mousedown", eventSpy, true);
 
-                spyOn(eventSpy, 'handleMousedown');
-                spyOn(eventSpy, 'handleEvent');
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                        expect(handledEventCount).toBe(2);
+                    });
 
-                testDocument.addEventListener("mousedown", eventSpy, false);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
-                    expect(eventSpy.handleMousedown).toHaveBeenCalled();
-                    expect(eventSpy.handleEvent).not.toHaveBeenCalled();
                 });
 
-            });
+                describe("involving identifiers", function() {
 
-            it("should present the event to the generic handler if no specific handler is present, in either event phase", function() {
+                    beforeEach(function() {
+                        testDocument.documentElement.identifier = "foo";
+                    });
 
-                var handledEventCount = 0;
-                var eventSpy = {
-                    handleEvent: function() {
-                        handledEventCount++;
-                    }
-                };
+                    afterEach(function() {
+                        delete testDocument.documentElement.identifier;
+                    })
 
-                spyOn(eventSpy, 'handleEvent').andCallThrough();
+                    it("should handle the event using the identifier from the original target as part of the handler method name, for listeners on the original target", function() {
+                        var eventSpy = {
+                            handleFooMousedown: function() {},
+                        };
 
-                testDocument.addEventListener("mousedown", eventSpy, false);
-                testDocument.addEventListener("mousedown", eventSpy, true);
+                        spyOn(eventSpy, 'handleFooMousedown');
 
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
-                    expect(eventSpy.handleEvent).toHaveBeenCalled();
-                    expect(handledEventCount).toBe(2);
+                        testDocument.documentElement.addEventListener("mousedown", eventSpy, false);
+
+                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                            expect(eventSpy.handleFooMousedown).toHaveBeenCalled();
+                        });
+                    });
+
+                    it("should handle the event using the identifier from the original target as part of the handler method name, for listeners along the distribution chain", function() {
+                        var eventSpy = {
+                            handleFooMousedown: function() {}
+                        };
+
+                        spyOn(eventSpy, 'handleFooMousedown');
+
+                        testDocument.identifier = "document";
+                        testDocument.addEventListener("mousedown", eventSpy, false);
+
+                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                            expect(eventSpy.handleFooMousedown).toHaveBeenCalled();
+                        });
+
+                        delete testDocument.identifier;
+                    });
+
+                    it("should handle the event using a less specific handler if the original target has no identifier, even if the currentTarget has an identifier", function() {
+
+                        var eventSpy = {
+
+                            handleDocumentMousedown: function() {
+                            },
+
+                            handleMousedown: function() {
+                            }
+                        };
+
+                        spyOn(eventSpy, 'handleDocumentMousedown');
+                        spyOn(eventSpy, 'handleMousedown');
+
+                        testDocument.identifier = "document";
+
+                        testDocument.addEventListener("mousedown", eventSpy, false);
+
+                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                            expect(eventSpy.handleMousedown).toHaveBeenCalled();
+                            expect(eventSpy.handleDocumentMousedown).not.toHaveBeenCalled();
+                        });
+
+                        delete testDocument.identifier;
+                    });
+
+                    it("must not handle the event using an identifier based handler based on the current target, if it is not also the original event target", function() {
+                        var eventSpy = {
+                            handleDocumentMousedown: function() {}
+                        };
+
+                        spyOn(eventSpy, 'handleDocumentMousedown');
+
+                        testDocument.identifier = "document";
+                        testDocument.addEventListener("mousedown", eventSpy, false);
+
+                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                            expect(eventSpy.handleDocumentMousedown).not.toHaveBeenCalled();
+                        });
+
+                        delete testDocument.identifier;
+                    });
                 });
-
-            });
-
-            it("must not present the event to the generic handler in a phase the listener has not registered in", function() {
-
-                var eventCaptureSpy = {
-                    handleEvent: function(event) {
-                        expect(event.eventPhase).toBe(event.CAPTURING_PHASE);
-                    }
-                };
-
-                var eventBubbleSpy = {
-                    handleEvent: function(event) {
-                        expect(event.eventPhase).toBe(event.BUBBLING_PHASE);
-                    }
-                };
-
-                spyOn(eventCaptureSpy, 'handleEvent').andCallThrough();
-                spyOn(eventBubbleSpy, 'handleEvent').andCallThrough();
-
-                testDocument.addEventListener("mousedown", eventCaptureSpy, true);
-                testDocument.addEventListener("mousedown", eventBubbleSpy, false);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
-                    expect(eventCaptureSpy.handleEvent).toHaveBeenCalled();
-                    expect(eventBubbleSpy.handleEvent).toHaveBeenCalled();
-                });
-
-            });
-
-            it("should present the event at the CAPTURING_PHASE when the current target is triggered during the capture phase and the current target is not the proximal target", function() {
-
-                var eventSpy = {
-                    handleEvent: function(event) {
-                        expect(event.eventPhase).toBe(event.CAPTURING_PHASE);
-                    }
-                };
-
-                spyOn(eventSpy, 'handleEvent').andCallThrough();
-
-                testDocument.addEventListener("mousedown", eventSpy, true);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
-                    expect(eventSpy.handleEvent).toHaveBeenCalled();
-                });
-
-            });
-
-            it("should present the event at the AT_TARGET when the current target is the proximal target when the listener registered for the capture phase", function() {
-                var eventSpy = {
-                    handleEvent: function(event) {
-                        expect(event.eventPhase).toBe(event.AT_TARGET);
-                    }
-                };
-
-                spyOn(eventSpy, 'handleEvent').andCallThrough();
-
-                testDocument.addEventListener("mousedown", eventSpy, true);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
-                    expect(eventSpy.handleEvent).toHaveBeenCalled();
-                });
-
-            });
-
-            it("should present the event at the AT_TARGET when the current target is the proximal target when the listener registered for the bubble phase", function() {
-                var eventSpy = {
-                    handleEvent: function(event) {
-                        expect(event.eventPhase).toBe(event.AT_TARGET);
-                    }
-                };
-
-                spyOn(eventSpy, 'handleEvent').andCallThrough();
-
-                testDocument.addEventListener("mousedown", eventSpy, false);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
-                    expect(eventSpy.handleEvent).toHaveBeenCalled();
-                });
-
-            });
-
-            it("should present the event at the BUBBLING_PHASE during the bubble phase and the current target is not the proximal target", function() {
-
-                var eventSpy = {
-                    handleEvent: function(event) {
-                        expect(event.eventPhase).toBe(event.BUBBLING_PHASE);
-                    }
-                };
-
-                spyOn(eventSpy, 'handleEvent').andCallThrough();
-
-                testDocument.addEventListener("mousedown", eventSpy, false);
-
-                testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.body), "mousedown", function() {
-                    expect(eventSpy.handleEvent).toHaveBeenCalled();
-                });
-
             });
 
         });
