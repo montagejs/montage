@@ -1772,13 +1772,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 } else if (typeof iEventHandler === functionType) {
                     iEventHandler.call(event.target, mutableEvent);
                 }
-
-                // So the next handler can determine if any other handler already looked at this event
-                // we store who we last distributed the event to. this doesn't mean the handler actually
-                // did anything with it
-                // TODO only do this if the handler we just distributed the event to actually did something? indicated by a return or something?
-                // I don't want each handler to be responsible to mark the event themselves
-                mutableEvent.previousHandler = iEventHandler;
             }
 
             mutableEvent.eventPhase = AT_TARGET;
@@ -1809,13 +1802,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 } else if (typeof iEventHandler === functionType) {
                     iEventHandler.call(event.target, mutableEvent);
                 }
-
-                // So the next handler can determine if any other handler already looked at this event
-                // we store who we last distributed the event to. this doesn't mean the handler actually
-                // did anything with it
-                // TODO only do this if the handler we just distributed the event to actually did something? indicated by a return or something?
-                // I don't want each handler to be responsible to mark the event themselves
-                mutableEvent.previousHandler = iEventHandler;
             }
 
             if (this._isStoringPointerEvents) {
