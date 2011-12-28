@@ -1742,14 +1742,8 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 this.delegate.willDistributeEvent(mutableEvent);
             }
 
-            //If we have some specific code to run in the capture phase,  do it now:
-
             if (this._isStoringPointerEvents) {
                 this._pointerStorage.storeEvent(mutableEvent);
-            }
-
-            if (typeof this[captureMethodName] === functionType) {
-                this[captureMethodName](mutableEvent);
             }
 
             // Capture Phase Distribution
@@ -1788,11 +1782,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             }
 
             mutableEvent.eventPhase = AT_TARGET;
-
-            //If we have some specific code to run in the bubble phase, we do it now:
-            if (typeof this[bubbleMethodName] === functionType) {
-                this[bubbleMethodName](mutableEvent);
-            }
 
             // Bubble Phase Distribution
             for (i = 0; !mutableEvent.propagationStopped && (iEventHandlerEntry = currentEventHandlers.bubble[i]); i++) {
