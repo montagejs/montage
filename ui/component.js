@@ -38,6 +38,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
+    parentProperty: {
+        serializable: true,
+        value: "parentComponent"
+    },
+
     /**
       Dispatch the actionEvent this component is configured to emit upon interaction
       @private

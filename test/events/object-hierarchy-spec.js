@@ -14,27 +14,37 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             expect(testPage.loaded).toBeTruthy();
         });
 
-        var eventManager, parent;
+        var eventManager, parent, testApplication;
 
         beforeEach(function() {
             var testDocument = testPage.iframe.contentDocument;
-            eventManager = testDocument.application.eventManager;
+            testApplication = testDocument.application;
+            eventManager = testApplication.eventManager;
             eventManager.reset();
-
-            parent = Montage.create();
         });
 
-        it("should have a parentProperty", function() {
-            expect(parent.parentProperty).toBeDefined();
+        it("should have a parentProperty on a Montage object", function() {
+            expect((Montage.create()).parentProperty).toBeDefined();
+        });
+
+        it("should have a parentProperty on a object", function() {
+            expect((Object.create(Object.prototype)).parentProperty).toBeDefined();
+        });
+
+        it("should have a parentProperty on a object literal", function() {
+            expect({}.parentProperty).toBeDefined();
         });
 
         describe("handling events throughout the object hierarchy", function() {
+
 
             var orphan, childFoo, childBar, grandchildFoo, bubbleEvent,
                 orphanListener, childFooListener, childBarListener, grandchildFooListener,
                 parentListener;
 
             beforeEach(function() {
+                parent = Montage.create();
+
                 orphan = Montage.create();
                 orphan.parentProperty = "parent";
                 orphan.parent = null;
@@ -262,6 +272,211 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
                 expect(grandchildFooListener.captureBubbleEvent).toHaveBeenCalled();
                 expect(grandchildFooListener.handleEvent).toHaveBeenCalled();
                 expect(childFooListener.handleEvent).toHaveBeenCalled();
+                expect(parentListener.handleEvent).toHaveBeenCalled();
+            });
+
+        });
+
+        describe("handling events throughout the component hierarchy", function() {
+
+            var parent, child, bubbleEvent;
+
+            beforeEach(function() {
+                parent = testApplication.components[0];
+                child = parent.childComponents[0];
+
+                bubbleEvent = window.document.createEvent("CustomEvent");
+                bubbleEvent.initCustomEvent("bubbleEvent", true, false, null);
+            });
+
+            it("should have a default parentProperty on all components", function() {
+                expect((Component.create()).parentProperty).toBe("parentComponent");
+            });
+
+            describe("during the capture phase", function() {
+
+                it("should distribute the event to listeners observing the target component", function() {
+
+                    var childListener = {
+                        handleEvent: function(event) {
+                           expect(event._event).toBe(bubbleEvent);
+                        }
+                    };
+
+                    child.addEventListener("bubbleEvent", childListener, true);
+
+                    spyOn(childListener, "handleEvent");
+                    child.dispatchEvent(bubbleEvent);
+
+                    expect(childListener.handleEvent).toHaveBeenCalled();
+                });
+
+                it("should distribute the event to the parent of the target object", function() {
+
+                    var parentListener = {
+                       handleEvent: function(event) {
+                           expect(event._event).toBe(bubbleEvent);
+                       }
+                    };
+
+                    parent.addEventListener("bubbleEvent", parentListener, true);
+
+                    spyOn(parentListener, "handleEvent");
+                    child.dispatchEvent(bubbleEvent);
+
+                    expect(parentListener.handleEvent).toHaveBeenCalled();
+                });
+
+                it("should distribute the event all registered bubble listeners from the target to the top-most parent in order", function() {
+
+                    var handledCount = 0;
+
+                    var childListener = {
+                        handleEvent: function(event) {
+                            expect(event._event).toBe(bubbleEvent);
+                            expect(handledCount).toBe(1);
+                            handledCount++;
+                        }
+                    };
+
+                    var parentListener = {
+                        handleEvent: function(event) {
+                            expect(event._event).toBe(bubbleEvent);
+                            expect(handledCount).toBe(0);
+                            handledCount++;
+                        }
+                    };
+
+                    spyOn(childListener, "handleEvent");
+                    spyOn(parentListener, "handleEvent");
+
+                    parent.addEventListener("bubbleEvent", parentListener, true);
+                    child.addEventListener("bubbleEvent", childListener, true);
+
+                    child.dispatchEvent(bubbleEvent);
+
+                    expect(childListener.handleEvent).toHaveBeenCalled();
+                    expect(parentListener.handleEvent).toHaveBeenCalled();
+                });
+
+            });
+
+            describe("during the bubble phase", function() {
+
+                it("should distribute the event to listeners observing the target object", function() {
+
+                    var childListener = {
+                        handleEvent: function(event) {
+                            expect(event._event).toBe(bubbleEvent);
+                        }
+                    };
+
+                    child.addEventListener("bubbleEvent", childListener, false);
+
+                    spyOn(childListener, "handleEvent");
+                    child.dispatchEvent(bubbleEvent);
+
+                    expect(childListener.handleEvent).toHaveBeenCalled();
+                });
+
+                it("should distribute the event to the parent of the target object", function() {
+
+                    var parentListener = {
+                        handleEvent: function(event) {
+                            expect(event._event).toBe(bubbleEvent);
+                        }
+                    };
+
+                    parent.addEventListener("bubbleEvent", parentListener, false);
+
+                    spyOn(parentListener, "handleEvent");
+                    child.dispatchEvent(bubbleEvent);
+
+                    expect(parentListener.handleEvent).toHaveBeenCalled();
+                });
+
+                it("should distribute the event all registered bubble listeners from the target to the top-most parent in order", function() {
+
+                    var handledCount = 0;
+
+                    var childListener = {
+                        handleEvent: function(event) {
+                            expect(event._event).toBe(bubbleEvent);
+                            expect(handledCount).toBe(0);
+                            handledCount++;
+                        }
+                    };
+
+                    var parentListener = {
+                        handleEvent: function(event) {
+                            expect(event._event).toBe(bubbleEvent);
+                            expect(handledCount).toBe(1);
+                            handledCount++;
+                        }
+                    };
+
+                    spyOn(childListener, "handleEvent");
+                    spyOn(parentListener, "handleEvent");
+
+                    parent.addEventListener("bubbleEvent", parentListener, false);
+                    child.addEventListener("bubbleEvent", childListener, false);
+
+                    child.dispatchEvent(bubbleEvent);
+
+                    expect(childListener.handleEvent).toHaveBeenCalled();
+                    expect(parentListener.handleEvent).toHaveBeenCalled();
+                });
+
+            });
+
+            it("should distribute the event to the entire chain of registered event listeners in the expected order", function() {
+                var handledCount = 0;
+
+                var parentListener = {
+                    captureBubbleEvent: function(event) {
+                        expect(event._event).toBe(bubbleEvent);
+                        expect(handledCount).toBe(0);
+                        handledCount++;
+                    },
+
+                    handleEvent: function(event) {
+                        expect(event._event).toBe(bubbleEvent);
+                        expect(handledCount).toBe(5);
+                        handledCount++;
+                    }
+                };
+
+                var childListener = {
+                    captureBubbleEvent: function(event) {
+                        expect(event._event).toBe(bubbleEvent);
+                        expect(handledCount).toBe(1);
+                        handledCount++;
+                    },
+
+                    handleEvent: function(event) {
+                        expect(event._event).toBe(bubbleEvent);
+                        expect(handledCount).toBe(4);
+                        handledCount++;
+                    }
+                };
+
+                spyOn(parentListener, "handleEvent");
+                spyOn(parentListener, "captureBubbleEvent");
+
+                spyOn(childListener, "handleEvent");
+                spyOn(childListener, "captureBubbleEvent");
+
+                parent.addEventListener("bubbleEvent", parentListener, true);
+                parent.addEventListener("bubbleEvent", parentListener, false);
+
+                child.addEventListener("bubbleEvent", childListener, true);
+                child.addEventListener("bubbleEvent", childListener, false);
+
+                child.dispatchEvent(bubbleEvent);
+
+                expect(parentListener.captureBubbleEvent).toHaveBeenCalled();
+                expect(childListener.captureBubbleEvent).toHaveBeenCalled();
+                expect(childListener.handleEvent).toHaveBeenCalled();
                 expect(parentListener.handleEvent).toHaveBeenCalled();
             });
 
