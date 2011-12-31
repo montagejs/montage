@@ -207,7 +207,6 @@ exports.ShortcutManager = Montage.create(Montage,/** @lends module:"montage/ui/s
         value: function(event) {
             var keyCode = event.keyCode,
                 shortcutMap = this._shortcutMap;
-                SHIFT = 1, CTRL = 2, ALT = 4, META = 8,
                 modifiers = event.shiftKey + (event.ctrlKey << 1) + (event.altKey << 2) + (event.metaKey << 3),
                 stopEvent = false;
 
