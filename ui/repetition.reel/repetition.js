@@ -881,7 +881,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             deactivatableElementCount,
             selectableElementCount,
             activatedCount,
-            activatableElementCount;
+            activatableElementCount,
+            iterationElement;
 
         // Before we remove any nodes, make sure we "deselect" them
         //but only for single element iterations
@@ -896,7 +897,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 deactivatableElementCount = Math.min(deactivateCount, iterationElements.length);
 
                 for (i = 0; i < deactivateCount; i++) {
-                    iterationElements.item(this._activeIndexesToClearOnDraw[i]).classList.remove("active");
+                    iterationElement = iterationElements.item(this._activeIndexesToClearOnDraw[i]);
+                    if (iterationElement) {
+                        iterationElement.classList.remove("active");
+                    }
                 }
 
                 this._activeIndexesToClearOnDraw = [];
@@ -909,7 +913,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 deselectableElementCount = Math.min(deselectionCount, iterationElements.length);
 
                 for (i = 0; i < deselectableElementCount; i++) {
-                    iterationElements.item(this._selectedIndexesToDeselectOnDraw[i]).classList.remove("selected");
+                    iterationElement = iterationElements.item(this._selectedIndexesToDeselectOnDraw[i]);
+                    if (iterationElement) {
+                        iterationElement.classList.remove("selected");
+                    }
                 }
 
                 this._selectedIndexesToDeselectOnDraw = [];
