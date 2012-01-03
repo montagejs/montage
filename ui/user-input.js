@@ -48,7 +48,24 @@ var UserInput = exports.UserInput = Montage.create(Component, /** @lends module:
             return this._value;
         },
         set: function(value, fromInput) {
-            this._value = value;
+            
+            if (value && value.length > 0 && this.converter) {
+                var convertedValue;
+                try {
+                    convertedValue = this.converter.revert(value);
+                    if (this.error) {
+                        this.error = null;
+                    }
+                    this._value = convertedValue;
+                    
+                } catch(e) {
+                    // unable to convert - maybe error
+                    this.error = e;
+                    //this._valueSyncedWithInputField = false;
+                }
+            } else {
+                this._value = value;
+            }            
             if(fromInput) {
                 this._valueSyncedWithInputField = true;
             } else {
@@ -65,24 +82,7 @@ var UserInput = exports.UserInput = Montage.create(Component, /** @lends module:
     _setValue: {
         value: function() {
             var newValue = this.element.value;
-            if (newValue && newValue.length > 0 && this.converter) {
-                var convertedValue;
-                try {
-                    convertedValue = this.converter.revert(newValue);
-                    if (this.error) {
-                        this.error = null;
-                    }
-                    // kishore: this is required bcos we need to pass the 2nd parameter to the setter
-                    Object.getPropertyDescriptor(this, "value").set.call(this, convertedValue, true);
-
-                } catch(e) {
-                    // unable to convert - maybe error
-                    this.error = e;
-                    //this._valueSyncedWithInputField = false;
-                }
-            } else {
-                Object.getPropertyDescriptor(this, "value").set.call(this, newValue, true);
-            }
+            Object.getPropertyDescriptor(this, "value").set.call(this, newValue, true);
         }
     },
 /**
@@ -191,8 +191,6 @@ var UserInput = exports.UserInput = Montage.create(Component, /** @lends module:
     draw: {
         enumerable: false,
         value: function() {
-            
-            
             
             var t = this.element;
 

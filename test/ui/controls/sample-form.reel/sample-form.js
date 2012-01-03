@@ -14,7 +14,7 @@ exports.SampleForm = Montage.create(Component, {
     
     _firstName: {value: null},
     firstName: {
-        set: function(v) {this._firstName = v; this._evaluateJson();}, 
+        set: function(v) {console.log('firstName = ' + v);this._firstName = v; this._evaluateJson();}, 
         get: function(){ return this._firstName;}
     },
     

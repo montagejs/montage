@@ -82,9 +82,23 @@
             "name": "SampleForm",
             "properties": {
                 "element": {"#": "input-form"},
-                "firstName": "Foo",
-                "lastName": "Bar"
+                "firstName": "ABC",
+                "lastName": "XYZ"
             }
+        },
+        "json-output": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "json-output"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "json",
+                    "oneway": true
+                }
+            }           
         }
         
     }
@@ -111,15 +125,20 @@
                         <fieldset>
                             <legend>A Simple Form</legend>
                             <label for="fname">First Name</label>
-                            <input type="text" placeholder="Enter first name" id="fname" required  value="" />
+                            <input type="text" placeholder="Enter first name" id="fname" required  value="Foo" />
 
                             <label for="lname">Last Name</label>
-                            <input type="text" placeholder="Enter last name" id="lname" required  value="" />
+                            <input type="text" placeholder="Enter last name" id="lname" required  value="Bar" />
 
                         </fieldset>
                     </div>
                 </div>
             </form>
+        </section>
+        
+        <section>
+            <h4>JSON Representation of the Object bound to the above Form</h4>
+            <div id="json-output"></div>
         </section>
 
     </div>

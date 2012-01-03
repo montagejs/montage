@@ -25,7 +25,7 @@ var isString = function(object) {
 /**
  * Mixin for Component to handle native HTML components
  */
-exports.ControlProperties = {
+exports.ControlMixin = {
     
     _baseElementProperties: {
         value: {
@@ -60,7 +60,7 @@ exports.ControlProperties = {
                        var attrName = '_' + n;
                        if(val && this[attrName] !== val) {
                            this[attrName] = val;
-                           this._changedProperties[attrName] = val;
+                           this._changedProperties[n] = val;
                            this.needsDraw = true;
                        }                                 
                     }; 
@@ -97,7 +97,7 @@ exports.ControlProperties = {
                     } 
                     this.addProperty(prop, desc);               
                 }
-            } // for
+            } 
         }
     },
     
@@ -106,19 +106,21 @@ exports.ControlProperties = {
             
             var attrs = this.element.attributes || [];
             var i=0, len = attrs.length, name, value;
-
             
-            // keep a map of existing map for easy lookup
             for(i=0; i< len; i++) {
                 name = attrs[i].name;
                 value = attrs[i].value;
-                
+
                 if(!this._changedProperties[name]) {
-                    this._changedProperties[name] = value;
+                    this._changedProperties[name] = value;   
+                    // since deserializedFromTemplate is called *after* the initial binding
+                    // is done, override the values only if a value does not already exist
+                    if(isUndefined(this[name])) {
+                        this[name] = value;  
+                    }
+                                    
                 }                                                         
-            }                     
-            console.log('FormElement after serialization: ');
-            console.log(this);            
+            }                               
         }
     },
     
@@ -139,6 +141,8 @@ exports.ControlProperties = {
                     }                    
                 }
             }
+            // the values have been flushed to the DOM. 
+            this._changedProperties = {};
             
         }
     }
