@@ -58,6 +58,11 @@ exports.SampleForm = Montage.create(Component, {
         value: function(e) {
                         
         }
-    }
+    },
+
+	check: {
+		set: function(v) { console.log("check", v); },
+		get: function() { return false; }
+	}
 
 });
