@@ -7,8 +7,8 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>Form Fields</title>
-    
+    <title>HTML Form Elements</title>
+
     <!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -39,39 +39,74 @@
          <script type="text/montage-serialization">
     {
         "fname": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
-                "element": {"#": "fname"}
-            }            
+                "element": {"#": "fname"},
+                "maxlength": "5"
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "firstName",
+                    "oneway": false
+                },
+                "title": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "firstName",
+                    "oneway": false
+                }
+                
+            }
         },
         "lname": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "lname"}
-            }            
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "lastName",
+                    "oneway": false
+                }
+            }
         },
         "email1": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "email1"}
-            }            
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "email",
+                    "oneway": false
+                }
+            }
         },
         "url1": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "url1"}
-            }            
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "url",
+                    "oneway": false
+                }
+            }
         },
         "info1": {
-            "module": "montage/ui/form/textarea.reel",
+            "module": "montage/ui/textarea.reel",
             "name": "TextArea",
             "properties": {
                 "element": {"#": "info1"}
-            }            
+            }
         },
         "uppercaseconverter1": {
             "module": "montage/core/converter/upper-case-converter",
@@ -93,7 +128,7 @@
                     "boundObjectPropertyPath": "value",
                     "oneway": true
                 }
-            }           
+            }
         },
         "dateconverter1": {
             "module": "montage/core/converter/date-converter",
@@ -103,25 +138,25 @@
             }
         },
         "date1": {
-            "module": "montage/ui/form/textfield.reel",
+            "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
                 "element": {"#": "date1"},
                 "converter": {"@": "dateconverter1"}
-            }            
+            }
         },
-        
+
         "limit-max": {
-            "module": "montage/ui/form/number.reel",
-            "name": "Number",
+            "module": "montage/ui/textfield.reel",
+            "name": "Textfield",
             "properties": {
                 "element": {"#": "limit-max"}
             }
         },
 
         "number1": {
-            "module": "montage/ui/form/number.reel",
-            "name": "Number",
+            "module": "montage/ui/textfield.reel",
+            "name": "Textfield",
             "properties": {
                 "element": {"#": "number1"}
             },
@@ -140,8 +175,8 @@
         },
 
         "range1": {
-            "module": "montage/ui/form/range.reel",
-            "name": "Range",
+            "module": "montage/ui/textfield.reel",
+            "name": "Textfield",
             "properties": {
                 "element": {"#": "range1"}
             },
@@ -151,9 +186,9 @@
                     "boundObjectPropertyPath": "value",
                     "oneway": true
                 }
-            } 
+            }
         },
-        
+
         "max-value": {
             "module": "montage/ui/dynamic-text.reel",
             "name": "DynamicText",
@@ -166,27 +201,102 @@
                     "boundObjectPropertyPath": "value",
                     "oneway": true
                 }
-            }           
+            }
         },
-        
+
+        "check1": {
+            "module": "montage/ui/checkbox.reel",
+            "name": "Checkbox",
+            "properties": {
+                "element": {"#": "check1"}
+            },
+            "bindings": {
+                "checked": {
+                    "boundObject": {"@": "check3"},
+                    "boundObjectPropertyPath": "checked",
+                    "oneway": true
+                }
+            }
+        },
+        "check2": {
+            "module": "montage/ui/checkbox.reel",
+            "name": "Checkbox",
+            "properties": {
+                "element": {"#": "check2"}
+            }
+        },
+        "check3": {
+            "module": "montage/ui/checkbox.reel",
+            "name": "Checkbox",
+            "properties": {
+                "element": {"#": "check3"},
+                "checked": true
+            }
+        },
+        "check-text": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "check-text"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "check1"},
+                    "boundObjectPropertyPath": "checked"
+                }
+            }
+        },
+
         "sample-form": {
-            "module": "sample-form",
+            "module": "ui/controls/sample-form.reel",
             "name": "SampleForm",
             "properties": {
-                "element": {"#": "input-form"}
+                "element": {"#": "input-form"},
+                "fname": {"@": "fname"},
+                "firstName": "Foo",
+                "lastName": "Bar",
+                "email": "foo.bar@me.com"
+            },
+            "bindings": {
+                "check": {
+                    "boundObject": {"@": "check1"},
+                    "boundObjectPropertyPath": "checked",
+                    "oneway": true
+                }
+            }
+        },
+
+        "json-output": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "json-output"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "json",
+                    "oneway": true
+                }
             }
         }
+
     }
         </script>
-        
+
         <style>
-            form input:invalid {
-                border: 2px solid #E73525;
+            :invalid {
+                border: 1px solid #E73525;
                 border-style: dashed;
             }
             section {
                 margin: 20px 0;
             }
+
+
+            /*:required {
+              border-color: #E73525;
+            }*/
         </style>
 
 </head>
@@ -195,19 +305,19 @@
     <div class="container">
         <section>
             <form id="input-form" class="form-stacked">
-            
+
                 <div class="row">
                     <div class="span8">
                         <fieldset>
                             <legend>A Simple Form</legend>
                             <label for="fname">First Name</label>
-                            <input type="text" placeholder="Enter first name" id="fname" required  value="" />
+                            <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
 
                             <label for="lname">Last Name</label>
-                            <input type="text" placeholder="Enter last name" id="lname" required  value="" />
+                            <input type="text" placeholder="Enter last name" id="lname" required  value="bar" />
 
                             <label for="email1">Email</label>
-                            <input type="email" id="email1" value="foo@bar.com" />
+                            <input type="email" id="email1" value="f" />
 
                             <label for="url1">Company URL</label>
                             <input type="url" id="url1" value="http://www.google.com" />
@@ -243,37 +353,39 @@
                             <label for="search-text">Search:</label>
                             <input type="search" id="search-text" value="" placeholder="Enter search text" />
                         </fieldset>
-        
+
                         <fieldset>
                             <legend>Number and Range fields</legend>
                             <label for="limit-max">Enter the maximum value for the Number and Range fields</label>
                             <input type="number" value="500" min="0" max="1000" id="limit-max" step="10"  />
-            
+
                             <label for="number1">A Number field</label>
                             <input type="number" id="number1" step="10" max="1000" min="0"  />
-        
+
                             <label for="range1">A Number Range field</label>
                             <span>0 </span>
-                            <input type="range" id="range1" min="0" max="500" value="90" />
+                            <input type="range" id="range1" min="0"  value="90" />
                             <span id="max-value"></span>
-            
+
                         </fieldset>
-                    
+
                         <fieldset>
                             <legend>Checkbox Group</legend>
 
                             <label>
-                                <input type="checkbox" name="checkbox-group" />
+                                <input type="checkbox" id="check1" name="checkbox-group" />
                                 Option #1
                             </label>
                             <label>
-                                <input type="checkbox" name="checkbox-group" />
+                                <input type="checkbox" id="check2" name="checkbox-group" checked/>
                                 Option #2
                             </label>
                             <label>
-                                <input type="checkbox" name="checkbox-group" />
+                                <input type="checkbox" id="check3" name="checkbox-group" />
                                 Option #3
                             </label>
+
+                            <span id="check-text">output</span>
 
                         </fieldset>
 
@@ -296,7 +408,16 @@
                         </fieldset>
                     </div>
                 </div>
+
+                <div>
+                    <button class="btn large primary">Submit</button>
+                </div>
             </form>
+        </section>
+
+        <section>
+            <h4>JSON Representation of the Object bound to the above Form</h4>
+            <div id="json-output"></div>
         </section>
     </div>
 </body>
