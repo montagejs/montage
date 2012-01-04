@@ -25,7 +25,7 @@ var isString = function(object) {
 /**
  * Mixin for Component to handle native HTML components
  */
-exports.ControlMixin = {
+exports.NativeControl = Montage.create(Component, {
     
     _baseElementProperties: {
         value: {
@@ -149,4 +149,4 @@ exports.ControlMixin = {
             
         }
     }
-};
+});

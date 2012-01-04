@@ -5,11 +5,11 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    UserInput = require("ui/user-input").UserInput;
+    TextInput = require("ui/text-input").TextInput;
 /**
  * The Text input
  */
-var Textfield = exports.Textfield = Montage.create(UserInput, {
+var Textfield = exports.Textfield = Montage.create(TextInput, {
 
 });
 
@@ -27,7 +27,9 @@ Textfield.addProperties({
         formnovalidate: 'false',
         formtarget: '',
         list: '', // list of autocomplete options
+        max: '',
         maxlength: '',
+        min: '',
         multiple: 'false',
         name: '',
         pattern: '',
@@ -36,6 +38,7 @@ Textfield.addProperties({
         required: {value: 'false', dataType: 'boolean'},
         size: '',
         src: '',
+        step: '',
         title: ''
         //type: 'text'
         // type is intentionally left out as this must be specified in the markup

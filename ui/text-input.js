@@ -5,9 +5,10 @@
  </copyright> */
 
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    NativeControl = require("ui/native-control").NativeControl;
 
-var UserInput = exports.UserInput = Montage.create(Component, /** @lends module:montage/ui/editable-text.UserInput# */ {
+var TextInput = exports.TextInput =  Montage.create(NativeControl, {
 
     hasTemplate: {
         value: true
@@ -213,7 +214,7 @@ var UserInput = exports.UserInput = Montage.create(Component, /** @lends module:
                 t.title = '';
             }
             
-            var fn = Object.getPrototypeOf(UserInput).draw;
+            var fn = Object.getPrototypeOf(TextInput).draw;
             fn.call(this);
 
         }
@@ -285,3 +286,4 @@ var UserInput = exports.UserInput = Montage.create(Component, /** @lends module:
     }
 
 });
+

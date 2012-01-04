@@ -6,21 +6,18 @@
 
 var Montage = require("montage").Montage,
 Component = require("ui/component").Component,
-UserInput = require("ui/user-input").UserInput;
+TextInput = require("ui/text-input").TextInput;
     
-var TextArea = exports.TextArea = Montage.create(UserInput, {
-    
-    // if there is existing textContent in the markup, use that as default value
+var TextArea = exports.TextArea = Montage.create(TextInput, {
     deserializedFromTemplate: {
         value: function() {
+            // @todo - Need a better way to do this. 
             var fn = Object.getPrototypeOf(TextArea).deserializedFromTemplate;
             fn.call(this);
             var text = this.element.textContent;
             this.value = text || '';
-            console.log('textarea default value = ' + text);
         }
     }
-
 });
 
 TextArea.addProperties({        
