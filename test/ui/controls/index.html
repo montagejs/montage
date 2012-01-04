@@ -54,12 +54,8 @@
                     "boundObject": {"@": "sample-form"},
                     "boundObjectPropertyPath": "firstName",
                     "oneway": false
-                },
-                "abc": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "firstName",
-                    "oneway": false
                 }
+                
             }
         },
         "lname": {
@@ -178,8 +174,8 @@
         },
 
         "range1": {
-            "module": "montage/ui/textfield.reel",
-            "name": "Textfield",
+            "module": "montage/ui/range.reel",
+            "name": "Range",
             "properties": {
                 "element": {"#": "range1"}
             },
@@ -212,6 +208,7 @@
             "name": "SampleForm",
             "properties": {
                 "element": {"#": "input-form"},
+                "fname": {"@": "fname"},
                 "firstName": "Foo",
                 "lastName": "Bar",
                 "email": "foo.bar@me.com"
@@ -237,13 +234,18 @@
         </script>
         
         <style>
-            form input:invalid {
+            :invalid {
                 border: 1px solid #E73525;
                 border-style: dashed;
             }
             section {
                 margin: 20px 0;
             }
+
+
+            /*:required {
+              border-color: #E73525;
+            }*/
         </style>
 
 </head>
@@ -258,13 +260,13 @@
                         <fieldset>
                             <legend>A Simple Form</legend>
                             <label for="fname">First Name</label>
-                            <input type="text" placeholder="Enter first name" id="fname" required  value="foo" abc="xyz" />
+                            <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
 
                             <label for="lname">Last Name</label>
                             <input type="text" placeholder="Enter last name" id="lname" required  value="bar" />
 
                             <label for="email1">Email</label>
-                            <input type="email" id="email1" value="foo@bar.com" />
+                            <input type="email" id="email1" value="f" />
 
                             <label for="url1">Company URL</label>
                             <input type="url" id="url1" value="http://www.google.com" />

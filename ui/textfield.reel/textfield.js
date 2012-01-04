@@ -36,8 +36,10 @@ Textfield.addProperties({
         required: {value: 'false', dataType: 'boolean'},
         size: '',
         src: '',
-        title: '',
-        type: {value: 'text'}
+        title: ''
+        //type: 'text'
+        // type is intentionally left out as this must be specified in the markup
+        // and is not bindable
         // width: ''
 });
 

@@ -47,6 +47,13 @@ exports.SampleForm = Montage.create(Component, {
         }
     },
     
+    prepareForDraw: {
+        value: function() {
+            // programatically override the maxlength property of the firstName component
+            this.fname.maxlength = "10";
+        }
+    },
+    
     handleSubmitAction: {
         value: function(e) {
                         

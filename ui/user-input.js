@@ -67,7 +67,8 @@ var UserInput = exports.UserInput = Montage.create(Component, /** @lends module:
                 this._value = value;
             }            
             if(fromInput) {
-                this._valueSyncedWithInputField = true;
+                //this._valueSyncedWithInputField = true;
+                this.needsDraw = true;
             } else {
                 this._valueSyncedWithInputField = false;
                 this.needsDraw = true;

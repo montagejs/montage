@@ -30,8 +30,9 @@ exports.ControlMixin = {
     _baseElementProperties: {
         value: {
             title: '',
-            disabled: {defaultValue: 'false', dataType: 'boolean'}            
-        }
+            disabled: {defaultValue: 'false', dataType: 'boolean'},
+            'class': ''  
+        }        
     },
 
     _changedProperties: {
@@ -137,7 +138,9 @@ exports.ControlMixin = {
                     }   
                     var val = this[i];              
                     if(!isUndefined(val) && val !== null) {
-                        el[i] = val;
+                        //https://developer.mozilla.org/en/DOM/element.setAttribute
+                        el.setAttribute(i, val);
+                        //el[i] = val;
                     }                    
                 }
             }
