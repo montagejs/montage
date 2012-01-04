@@ -79,6 +79,21 @@
                 }
             },
 
+            "supportsCrossOriginCanvasCondition": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "supportsCrossOriginCanvasCondition"}
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "supportsCrossOriginCanvas",
+                        "oneway": true
+                    }
+                }
+            },
+
             "addPhotosButton": {
                 "module": "montage/ui/button.reel",
                 "name": "Button",
@@ -184,10 +199,12 @@
             <div id="photoList" class="PhotoList">
                 <div id="photoThumb"></div>
             </div>
-            <div id="controlPanel">
-                <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
-                <div id="removeSelectionCondition">
-                    <div id="removePhotoButton" class="text RemovePhotosButton">Remove Photo</div>
+            <div id="supportsCrossOriginCanvasCondition">
+                <div class="controlPanel">
+                    <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
+                    <div id="removeSelectionCondition">
+                        <div id="removePhotoButton" class="text RemovePhotosButton">Remove Photo</div>
+                    </div>
                 </div>
             </div>
         </div>

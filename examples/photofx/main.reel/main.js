@@ -8,11 +8,24 @@ var Montage = require("montage").Montage,
     Popup = require("montage/ui/popup/popup.reel").Popup,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
-    LOCAL_STORAGE_KEY = "montage_photofx_state";
+    LOCAL_STORAGE_KEY = "montage_photofx_state",
+    CORS_TEST_IMAGE = "https://lh5.googleusercontent.com/-M9uCIhQjy3c/TwTSfmO6MlI/AAAAAAAAFcw/BIMvbz3a7Z4/s1/blank.jpg";
 
 exports.Main = Montage.create(Component, {
 
-    templateDidLoad: {
+    supportsCrossOriginCanvas: {
+        value: null
+    },
+
+    init: {
+        value: function() {
+            this._testCrossOriginCanvas();
+            this._loadPhotos();
+        }
+    },
+
+    _loadPhotos: {
+        enumerable: false,
         value: function() {
             var stateSerialization,
                 deserializer,
@@ -26,11 +39,9 @@ exports.Main = Montage.create(Component, {
                     self = this;
 
                     try {
-
                         deserializer.initWithStringAndRequire(stateSerialization, require).deserializeObject(function(savedState) {
                             self.photos = savedState.photos;
                         }, require);
-
                     } catch(e) {
                         console.error("Could not load saved state.");
                         console.debug("Could not deserialize", stateSerialization);
@@ -48,7 +59,37 @@ exports.Main = Montage.create(Component, {
                     {src: "images/IMG_1416.jpg", title: "Horizon", authors: ["mike"]}
                 ];
             }
+        }
+    },
 
+    _testCrossOriginCanvas: {
+        enumerable: false,
+        value: function() {
+
+            var corsImage,
+                corsCanvas,
+                corsContext,
+                self = this;
+
+            corsImage = document.createElement("img");
+            corsImage.crossOrigin = "";
+            corsImage.src = CORS_TEST_IMAGE;
+
+            corsImage.onload = function() {
+                corsCanvas = document.createElement("canvas");
+                corsContext = corsCanvas.getContext("2d");
+                corsContext.drawImage(corsImage, 0, 0, 1, 1);
+                try {
+                    corsContext.getImageData(0, 0, 1, 1);
+                    self.supportsCrossOriginCanvas = true;
+                } catch(e) {
+                    if (18 === e.code) {
+                        self.supportsCrossOriginCanvas = false;
+                    } else {
+                        throw e;
+                    }
+                }
+            }
         }
     },
 
@@ -234,6 +275,12 @@ exports.Main = Montage.create(Component, {
 
     handleAddPhotosButtonAction: {
         value: function() {
+
+            // Guard against adding cross-origin photos if we'll never be able to edit them
+            if (!this.supportsCrossOriginCanvas) {
+                return;
+            }
+
             var popup = this.searchPopup;
 
             if(!popup) {
@@ -248,6 +295,11 @@ exports.Main = Montage.create(Component, {
 
     handleRemovePhotoButtonAction: {
         value: function() {
+
+            // Guard against removing photos if we'll never be able to add more
+            if (!this.supportsCrossOriginCanvas) {
+                return;
+            }
 
             var selectedPhoto = this.photoListController.getProperty("selectedObjects.0");
 
