@@ -149,7 +149,6 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
         enumerable: false,
         value: function() {
             var el = this.element;
-            el.value = this._inputValue;
             el.addEventListener("focus", this);
             el.addEventListener('input', this);
             el.addEventListener('change', this);
