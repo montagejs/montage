@@ -105,3 +105,12 @@ input {
 .acceptsDrop {
     border: 5px solid hsl(195,96%,43%);
 }
+
+.PhotoFX .mainMenu .UndoButton,
+.PhotoFX .mainMenu .RedoButton {
+    width: 12em;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

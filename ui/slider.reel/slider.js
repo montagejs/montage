@@ -494,6 +494,10 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/slider.r
         value: function(pointer) {
             this.eventManager.claimPointer(pointer, this);
             this._observedPointer = pointer;
+
+            var interactionStartEvent = document.createEvent("CustomEvent");
+            interactionStartEvent.initCustomEvent("montageinteractionstart", true, true, null);
+            this.dispatchEvent(interactionStartEvent);
         }
     },
 /**
@@ -504,6 +508,10 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/slider.r
         value: function() {
             this.eventManager.forfeitPointer(this._observedPointer, this);
             this._observedPointer = null;
+
+            var interactionEndEvent = document.createEvent("CustomEvent");
+            interactionEndEvent.initCustomEvent("montageinteractionend", true, true, null);
+            this.dispatchEvent(interactionEndEvent);
         }
     },
 /**

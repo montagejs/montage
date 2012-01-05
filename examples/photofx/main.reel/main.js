@@ -8,6 +8,7 @@ var Montage = require("montage").Montage,
     Popup = require("montage/ui/popup/popup.reel").Popup,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
+    UndoManager = require("montage/core/undo-manager").UndoManager,
     LOCAL_STORAGE_KEY = "montage_photofx_state",
     CORS_TEST_IMAGE = "https://lh5.googleusercontent.com/-M9uCIhQjy3c/TwTSfmO6MlI/AAAAAAAAFcw/BIMvbz3a7Z4/s1/blank.jpg";
 
@@ -19,6 +20,8 @@ exports.Main = Montage.create(Component, {
 
     init: {
         value: function() {
+            this.undoManager = document.application.undoManager = UndoManager.create();
+
             this._testCrossOriginCanvas();
             this._loadPhotos();
         }
@@ -307,7 +310,44 @@ exports.Main = Montage.create(Component, {
                 return;
             }
 
-            this.photoListController.removeObjects(selectedPhoto);
+            var index = this.photoListController.content.indexOf(selectedPhoto);
+            this.removePhotoAtIndex(index);
+        }
+    },
+
+    handleUndoButtonAction: {
+        value: function() {
+            this.undoManager.undo();
+        }
+    },
+
+    handleRedoButtonAction: {
+        value: function() {
+            this.undoManager.redo();
+        }
+    },
+
+    removePhotoAtIndex: {
+        value: function(index) {
+
+            var photo = this.photoListController.content[index];
+            var undoLabel = 'remove photo "' + photo.title + '"';
+
+            this.undoManager.add(undoLabel, this.addPhotoAtIndex, this, photo, index);
+
+            this.photoListController.removeObjects(photo);
+        }
+    },
+
+    addPhotoAtIndex: {
+        value: function(photo, index) {
+
+            var undoLabel = 'add photo "' + photo.title + '"';
+
+            this.undoManager.add(undoLabel, this.removePhotoAtIndex, this, index);
+
+            this.photoListController.content.splice(index, 0, photo);
+            this.photoListController.selectedObjects = [photo];
         }
     },
 
