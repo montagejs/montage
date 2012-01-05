@@ -322,7 +322,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             // or well I'm trying a flag right
             if (neededItemCount > 0) {
                 // _addItem might be completly synchrounous since we cache both template and deserializer so we need to set this before adding any item otherwise it will trigger a draw after every iteration template instantiation.
-                this._expectedChildComponentsCount += this._childComponentsCount * neededItemCount;
+                this._expectedChildComponentsCount += (this._childComponentsCount||1) * neededItemCount;
+                this.canDrawGate.setField("iterationLoaded", false);
                 // Need to add more items
                 for (i = 0; i < neededItemCount; i++) {
                     this._addItem();
@@ -362,14 +363,15 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // for clarity sake
         this._itemsToAppend.push(this._currentItem);
         index = items.length + this._itemsToAppend.length - 1;
-
-        canDrawGate.setField("iterationLoaded", false);
+        
         self._canDraw = false;
         componentsCount = this._childComponentsCount;
 
         this._iterationTemplate.instantiateWithComponent(this, function() {
             if (componentsCount === 0) {
-                canDrawGate.setField("iterationLoaded", true);
+                if (++self._childLoadedCount === self._expectedChildComponentsCount) {
+                    canDrawGate.setField("iterationLoaded", true);
+                }
             } else {
                 childComponents = self.childComponents;
                 componentStartIndex = index * self._childComponentsCount;
@@ -416,6 +418,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             for (var i = 0, l = removedComponents.length; i < l; i++) {
                 this.cleanupDeletedComponentTree(removedComponents[i]);
             }
+        } else {
+            this._childLoadedCount--;
+            this._expectedChildComponentsCount--;
         }
     }},
 
