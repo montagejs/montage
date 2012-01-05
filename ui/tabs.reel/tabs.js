@@ -60,7 +60,7 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
         value: null
     },
 
-    // Current Tab -
+    // @private -
     _selectedTabs: {value: null},
     selectedTabs: {
         get: function() {
@@ -69,20 +69,20 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
         set: function(arr) {
             if(arr && arr.length > 0) {
                 this._selectedTabs = arr;
-                this.currentTab = arr[0];
+                this.selectedTab = arr[0];
             }
         }
     },
 
-    // selectedTab is the value of the Tab, currentTab returns the object representing the tab
+    // selectedTabValue is the value of the Tab, selectedTab returns the object representing the tab
 
-    _selectedTab: {value: null},
-    selectedTab: {
+    _selectedTabValue: {value: null},
+    selectedTabValue: {
         get: function() {
-            return this._selectedTab;
+            return this._selectedTabValue;
         },
         set: function(value) {
-            this._selectedTab = value;
+            this._selectedTabValue = value;
             if(this.navController) {
                 var index = this._indexOf(value);
                 this.navController.selectedIndexes = [index];
@@ -90,16 +90,17 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
         }
     },
 
-    _currentTab: {value: null},
-    currentTab: {
+
+    _selectedTab: {value: null},
+    selectedTab: {
         distinct: true,
         enumerable: false,
         get: function() {
-            return this._currentTab;
+            return this._selectedTab;
         },
         set: function(value) {
-            if(value && value !== this._currentTab) {
-                this._currentTab = value;
+            if(value && value !== this._selectedTab) {
+                this._selectedTab = value;
                 this.needsDraw = true;
             }
         }
@@ -158,10 +159,10 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
                 // substitution
                 Object.defineBinding(this.content, "switchValue", {
                     boundObject: this,
-                    boundObjectPropertyPath: 'currentTab.value'
+                    boundObjectPropertyPath: 'selectedTab.value'
                 });
             }
-            var index = (this.selectedTab ? this._indexOf(this.selectedTab) : 0);
+            var index = (this.selectedTabValue ? this._indexOf(this.selectedTabValue) : 0);
             this.navController.selectedIndexes = [index];
 
         }
