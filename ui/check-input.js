@@ -64,12 +64,14 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
+    /*
     deserializedFromTemplate: {
         value: function() {
             // TODO: check that this is the correct way to do this
-            //this.checked = this.element.checked;
+            this.checked = this.element.checked;
         }
     },
+    */
 
     // Callbacks
     /**
