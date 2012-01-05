@@ -18,7 +18,7 @@ exports.Main = Montage.create(Component, {
         value: null
     },
 
-    init: {
+    didCreate: {
         value: function() {
             this.undoManager = document.application.undoManager = UndoManager.create();
 
