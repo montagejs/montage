@@ -44,11 +44,17 @@ exports.NativeControl = Montage.create(Component, {
         distinct: true
     },
     
+    // the initial set of property descriptors that was used
     _propertyDescriptors: {
        value: {},
        distinct: true
     },
         
+    /**
+    * Add a property to this Component. A default getter/setter is provided and a 
+    * "_" property is created by default. Eg: if the property is "title", "_title" is 
+    * automatically created and the value set to the value from the descriptor.
+    */    
     addProperty: {
         value: function(name, descriptor) {
             descriptor = descriptor || {};
@@ -98,6 +104,9 @@ exports.NativeControl = Montage.create(Component, {
         }
     },
     
+    /**
+    * Add the specified properties as properties of this Component
+    */
     addProperties: {
         value: function(props) {
             var i, desc, prop, obj;
@@ -111,7 +120,7 @@ exports.NativeControl = Montage.create(Component, {
                 if(stdAttrs.hasOwnProperty(prop)) {
                     if(isUndefined(this[prop])) {                        
                         obj = stdAttrs[prop];
-                        if(isString(obj)) {
+                        if(obj == null || isString(obj)) {
                             desc = {value: obj};
                         } else {
                             desc = obj;

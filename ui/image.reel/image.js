@@ -15,8 +15,8 @@ var Image = exports.Image = Montage.create(NativeControl, {
 });
 
 Image.addProperties({        
-        alt: '',
-        height: '',
-        src: '',
-        width: ''
+        alt: null,
+        height: null,
+        src: null,
+        width: null
 });

@@ -14,32 +14,32 @@ var Textfield = exports.Textfield = Montage.create(TextInput, {
 });
 
 Textfield.addProperties({        
-        accept: '',
-        alt: '',
-        autocomplete: '',
+        accept: null,
+        alt: null,
+        autocomplete: null,
         autofocus: 'off', // on/off
-        dirname: '',
+        dirname: null,
         disabled: {dataType: 'boolean'},
-        form: '',
-        formaction: '',
-        formenctype: '',
-        formmethod: '',
+        form: null,
+        formaction: null,
+        formenctype: null,
+        formmethod: null,
         formnovalidate: 'false',
-        formtarget: '',
-        list: '', // list of autocomplete options
-        max: '',
-        maxlength: '',
-        min: '',
+        formtarget: null,
+        list: null, // list of autocomplete options
+        max: null,
+        maxlength: null,
+        min: null,
         multiple: 'false',
-        name: '',
-        pattern: '',
-        placeholder: '',
+        name: null,
+        pattern: null,
+        placeholder: null,
         readonly: {dataType: 'boolean'},
         required: {dataType: 'boolean'},
-        size: '',
-        src: '',
-        step: '',
-        title: ''
+        size: null,
+        src: null,
+        step: null,
+        title: null
         //type: 'text'
         // type is intentionally left out as this must be specified in the markup
         // and is not bindable
