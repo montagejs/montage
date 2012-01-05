@@ -86,6 +86,22 @@ Montage.defineProperty(Object.prototype, "dispatchEvent", {
     enumerable: false
 });
 
+var EventListenerDescriptor = Montage.create(Montage, {
+    type: {
+        serializable: true,
+        value: null
+    },
+    
+    listener: {
+        serializable: "reference",
+        value: null
+    },
+    
+    capture: {
+        serializable: true,
+        value: null
+    }
+});
 
 Serializer.defineSerializationUnit("listeners", function(object) {
     var eventManager = defaultEventManager,
@@ -93,22 +109,22 @@ Serializer.defineSerializationUnit("listeners", function(object) {
         eventListenerDescriptors = [],
         descriptors,
         descriptor,
+        listenerDescriptor,
         listener;
-
+    
     for (var type in eventManager.registeredEventListeners) {
         descriptors = eventManager.registeredEventListeners[type];
         descriptor = descriptors && descriptors[uuid];
         if (descriptor) {
             for (var listenerUuid in descriptor.listeners) {
-                listener = descriptor.listeners[listenerUuid].listener;
-                // only serializing ActionEventListener for now at least..
-                if (ActionEventListener.isPrototypeOf(listener)) {
-                    eventListenerDescriptors.push({
-                        type: type,
-                        listener: listener,
-                        capture: descriptor.listeners[listenerUuid].capture
-                    });
-                }
+                listener = descriptor.listeners[listenerUuid];
+                
+                eventListenerDescriptor = EventListenerDescriptor.create();
+                eventListenerDescriptor.type = type;
+                eventListenerDescriptor.listener = listener.listener;
+                eventListenerDescriptor.capture = listener.capture;
+                
+                eventListenerDescriptors.push(eventListenerDescriptor);
             }
         }
     }
