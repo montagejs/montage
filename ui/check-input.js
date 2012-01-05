@@ -9,11 +9,6 @@ var Montage = require("montage").Montage,
     NativeControl = require("ui/native-control").NativeControl;
 
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
-
-    hasTemplate: {
-        value: true
-    },
-
     /**
         Description TODO
         @private
