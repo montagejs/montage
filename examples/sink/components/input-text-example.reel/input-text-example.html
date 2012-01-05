@@ -21,10 +21,11 @@
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
                     "properties": {
-                        "element": {"#": "text1"}
+                        "element": {"#": "text1"},
+                        "value": "Enter some text..."
                     }
                 },
-                
+
                 "echo1": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
@@ -43,7 +44,8 @@
                     "module": "montage/ui/TextArea.reel",
                     "name": "TextArea",
                     "properties": {
-                        "element": {"#": "textarea1"}
+                        "element": {"#": "textarea1"},
+                        "value": "Enter some text..."
                     }
                 },
                 "echo2": {
@@ -72,53 +74,88 @@
                 <div class="span8">
                     <h3>Textfield</h3>
                     <p>
-                        The Textfield wraps a HTML input text field
+                        The Textfield component wraps an HTML <code>&lt;input&gt;</code> text field. The example uses <a href="http://tetsubo.org/docs/montage/data-binding/" target="_blank">data binding</a> to echo the text you enter in a <code>&lt;p></code> element, which is used to represent a DynamicText component.
                     </p>
                 </div>
             </div>
 
             <input type="text" id="text1" />
-            <p id="echo1">Type something into the TextField above to see the binding</p>
-            
-            
+            <p id="echo1"></p>
+
+<h6>HTML</h6>
+ <pre class="prettyprint">
+&lt;input type="text" id="text1" /&gt;
+&lt;p id="echo1"&gt;&lt;/p&gt;
+</pre>
+
+<h6>Serialization</h6>
+<pre class="prettyprint">
+"text1": {
+    "module": "montage/ui/textfield.reel",
+    "name": "Textfield",
+    "properties": {
+        "element": {"#": "text1"},
+        "value": "Enter some text..."
+    }
+},
+
+"echo1": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "element": {"#": "echo1"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "text1"},
+            "boundObjectPropertyPath": "value"
+        }
+    }
+}
+</pre>
+
             <div class="row">
                 <div class="span8">
                     <h3>TextArea</h3>
                     <p>
-                        The TextArea wraps a HTML TextArea element
+                        The TextArea component wraps an HTML <code>&lt;textarea></code> element.
                     </p>
                 </div>
             </div>
-            
+
             <textarea id="textarea1"></textarea>
-            <p id="echo2">Type something into the TextArea above to see the binding</p>
+            <p id="echo2"></p>
+
+            <h6>HTML</h6>
+            <pre class="prettyprint">
+&lt;textarea id="textarea1"&gt;&lt;/textarea&gt;
+&lt;p id="echo2"&gt;&lt;/p&gt;
+        </pre>
 
             <h6>Serialization</h6>
             <pre class="prettyprint linenums">
-
-    "text1": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
-        "properties": {
-            "element": {"#": "text1"}
-        }
+"textarea1": {
+    "module": "montage/ui/TextArea.reel",
+    "name": "TextArea",
+    "properties": {
+        "element": {"#": "textarea1"}
+        "value": "Enter some text..."
+    }
+},
+"echo2": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "element": {"#": "echo2"}
     },
-    
-    "textarea1": {
-        "module": "montage/ui/TextArea.reel",
-        "name": "TextArea",
-        "properties": {
-            "element": {"#": "textarea1"}
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "textarea1"},
+            "boundObjectPropertyPath": "value"
         }
     }
+}
             </pre>
 
-            <h6>HTML Markup</h6>
- <pre class="prettyprint linenums">
- Textfield: &lt;input type=&quot;text&quot; id=&quot;text1&quot; /&gt;
- TextArea: &lt;textarea id=&quot;textarea1&quot;&gt;&lt;/textarea&gt;
-</pre>
-
-        </div>
     </body>
 </html>
