@@ -29,6 +29,22 @@
             }
         }
     },
+    
+    "more-link": {
+        "module": "montage/ui/link.reel",
+        "name": "Link",
+        "properties": {
+            "element": {"#": "more-link"}
+        },
+        "bindings": {
+            "href": {
+                "boundObject": {"@": "images"},
+                "boundObjectPropertyPath": "selectedObjects.0.href",
+                "oneway": true
+            }
+        }
+    },
+    
 
     "images": {
         "name": "ArrayController",
@@ -73,6 +89,7 @@
             }
         }
     },
+    
 
     "owner": {
         "module": "components/image-example.reel",
@@ -80,9 +97,9 @@
         "properties": {
             "element": {"#": "example-root"},
             "images": [
-            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet"},
-            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus"},
-            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos"}
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
             ]
         }
     }
@@ -120,6 +137,7 @@
         <div class="row">
             <div class="span12">
                 <img id="img-main" class="img-main"/>
+                <div><a target="_blank" id="more-link">Click to learn more</a></div>
             </div>
         </div>
 
@@ -131,6 +149,7 @@
                 </div>
             </div>
         </div>
+        
 
         <section>
             <h6>Serialization</h6>
