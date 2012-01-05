@@ -116,28 +116,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
             this.needsDraw = true;
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _readOnly: {
-        enumerable: true,
-        value: false
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
-    */
-    readOnly: {
-        get: function() {
-            return this._readOnly;
-        },
-        set: function(value) {
-            this._readOnly = value;
-            this.needsDraw = true;
-        }
-    },
+
 /**
   Description TODO
   @private
@@ -200,11 +179,6 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
                 this._setElementValue(this.converter ? this.converter.convert(this._value) : this._value);
             }
 
-            if (this._readOnly) {
-                t.setAttribute('readonly');
-            } else {
-                t.removeAttribute('readonly');
-            }
 
             if (this.error) {
                 t.classList.add('montage-text-invalid');

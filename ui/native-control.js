@@ -27,17 +27,26 @@ var isString = function(object) {
  */
 exports.NativeControl = Montage.create(Component, {
     
+    hasTemplate: {value: false},
+    
+    //http://www.w3.org/TR/html5/elements.html#global-attributes
     _baseElementProperties: {
         value: {
-            title: '',
-            disabled: {defaultValue: 'false', dataType: 'boolean'},
-            'class': ''  
+            accesskey: {},
+            'class': {},
+            title: {},
+            style: {}
         }        
     },
 
-    _changedProperties: {
+    _elementAttributeValues: {
         value: {},
         distinct: true
+    },
+    
+    _propertyDescriptors: {
+       value: {},
+       distinct: true
     },
         
     addProperty: {
@@ -52,16 +61,25 @@ exports.NativeControl = Montage.create(Component, {
             
             Montage.defineProperty(this, '_' + name, {value: value});
             
-            descriptor = extend({
-                configurable: false,
-                enumerable: true,
-                serializable: true,
+            var newDescriptor = {
+                configurable: isUndefined(descriptor.configurable) ? true: descriptor.configurable,
+                enumerable: isUndefined(descriptor.enumerable) ?  true: descriptor.enumerable,
+                serializable: isUndefined(descriptor.serializable) ? true: descriptor.serializable,                
                 set: function(n) {                    
                     return function(val) {
                        var attrName = '_' + n;
-                       if(val && this[attrName] !== val) {
+                       
+                       var desc = this._propertyDescriptors[n];
+                       // if requested dataType is boolean (eg: checked, readonly etc)
+                       // coerce the value to boolean
+                       if(desc && "boolean" === desc.dataType) {
+                           //val = !!val;
+                           val = (val == null || isUndefined(val)? false : true);
+                       }
+                       
+                       if(!isUndefined(val) && this[attrName] !== val) {
                            this[attrName] = val;
-                           this._changedProperties[n] = val;
+                           this._elementAttributeValues[n] = val;
                            this.needsDraw = true;
                        }                                 
                     }; 
@@ -71,10 +89,11 @@ exports.NativeControl = Montage.create(Component, {
                         return this['_' + n];
                     };
                 }(name)
-            }, descriptor);
+            };
             
             
-            Montage.defineProperty(this, name, descriptor);  
+            Montage.defineProperty(this, name, newDescriptor);  
+            
                                   
         }
     },
@@ -86,6 +105,8 @@ exports.NativeControl = Montage.create(Component, {
             stdAttrs = extend(stdAttrs, this._baseElementProperties); 
             stdAttrs = extend(stdAttrs, props); 
             
+            this._propertyDescriptors = stdAttrs;
+            
             for(prop in stdAttrs) {
                 if(stdAttrs.hasOwnProperty(prop)) {
                     if(isUndefined(this[prop])) {                        
@@ -95,8 +116,9 @@ exports.NativeControl = Montage.create(Component, {
                         } else {
                             desc = obj;
                         }
+                        this.addProperty(prop, desc);
                     } 
-                    this.addProperty(prop, desc);               
+                           
                 }
             } 
         }
@@ -112,11 +134,11 @@ exports.NativeControl = Montage.create(Component, {
                 name = attrs[i].name;
                 value = attrs[i].value;
 
-                if(!this._changedProperties[name]) {
-                    this._changedProperties[name] = value;   
+                if(isUndefined(this._elementAttributeValues[name])) {
+                    this._elementAttributeValues[name] = value;   
                     // since deserializedFromTemplate is called *after* the initial binding
                     // is done, override the values only if a value does not already exist
-                    if(isUndefined(this[name])) {
+                    if(isUndefined(this[name]) || this[name] === null) {
                         this[name] = value;  
                     }
                                     
@@ -129,23 +151,32 @@ exports.NativeControl = Montage.create(Component, {
     draw: {
         enumerable: false,
         value: function() {
-            var el = this.element;
+            var el = this.element, desc;
             
-            for(var i in this._changedProperties) {   
-                if(this._changedProperties.hasOwnProperty(i)) {
+            for(var i in this._elementAttributeValues) {   
+                if(this._elementAttributeValues.hasOwnProperty(i)) {
                     if(i === 'value') {
                         continue;
                     }   
-                    var val = this[i];              
-                    if(!isUndefined(val) && val !== null) {
-                        //https://developer.mozilla.org/en/DOM/element.setAttribute
-                        el.setAttribute(i, val);
-                        //el[i] = val;
-                    }                    
+                    var val = this[i];      
+                    desc = this._propertyDescriptors[i];
+                    if(desc && desc.dataType === 'boolean') {
+                        if(val === true) {
+                            el.setAttribute(i);
+                        } else {
+                            el.removeAttribute(i);
+                        }
+                    } else {
+                        if(!isUndefined(val) && val !== null) {
+                            //https://developer.mozilla.org/en/DOM/element.setAttribute
+                            el.setAttribute(i, val);
+                        }
+                    }
+                                     
                 }
             }
             // the values have been flushed to the DOM. 
-            this._changedProperties = {};
+            this._elementAttributeValues = {};
             
         }
     }

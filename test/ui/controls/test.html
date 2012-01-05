@@ -42,7 +42,8 @@
             "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
-                "element": {"#": "fname"}
+                "element": {"#": "fname"},
+                "maxlength": "10"
             },
             "bindings": {
                 "value": {
@@ -54,19 +55,15 @@
                     "boundObject": {"@": "sample-form"},
                     "boundObjectPropertyPath": "firstName",
                     "oneway": false
-                },
-                "dirname": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "firstName",
-                    "oneway": false
-                }
+                }                
             }
         },
         "lname": {
             "module": "montage/ui/textfield.reel",
             "name": "Textfield",
             "properties": {
-                "element": {"#": "lname"}
+                "element": {"#": "lname"},
+                "maxlength": "10"
             },
             "bindings": {
                 "value": {
@@ -83,22 +80,9 @@
             "properties": {
                 "element": {"#": "input-form"},
                 "firstName": "ABC",
-                "lastName": "XYZ"
+                "lastName": "XYZ",
+                "fname": {"@": "fname"}
             }
-        },
-        "json-output": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
-            "properties": {
-                "element": {"#": "json-output"}
-            },
-            "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "json",
-                    "oneway": true
-                }
-            }           
         }
         
     }
@@ -117,7 +101,7 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="container"> 
         <section>
             <form id="input-form" class="form-stacked">            
                 <div class="row">
@@ -125,20 +109,15 @@
                         <fieldset>
                             <legend>A Simple Form</legend>
                             <label for="fname">First Name</label>
-                            <input type="text" placeholder="Enter first name" id="fname" required  value="Foo" />
+                            <input type="text" placeholder="Enter first name" id="fname" required value="Foo" />
 
                             <label for="lname">Last Name</label>
                             <input type="text" placeholder="Enter last name" id="lname" required  value="Bar" />
-
+                            
                         </fieldset>
                     </div>
                 </div>
             </form>
-        </section>
-        
-        <section>
-            <h4>JSON Representation of the Object bound to the above Form</h4>
-            <div id="json-output"></div>
         </section>
 
     </div>
