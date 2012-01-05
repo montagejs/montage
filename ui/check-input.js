@@ -42,7 +42,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
             return (this._checked !== null) ? this._checked : this.element.checked;
         },
         set: function(checked, fromInput) {
-            this._checked = checked;       
+            this._checked = checked;
             if(fromInput) {
                 //this._valueSyncedWithInputField = true;
                 this.needsDraw = true;
@@ -84,7 +84,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
             this.element.addEventListener('change', this);
         }
     },
-    
+
     /**
         Description TODO
         @function
@@ -97,7 +97,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
             if (!this._valueSyncedWithInputField) {
                 el.checked = this._checked;
             }
-            
+
             var fn = Object.getPrototypeOf(CheckInput).draw;
             fn.call(this);
         }

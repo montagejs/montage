@@ -10,17 +10,16 @@ var Montage = require("montage").Montage,
  * The Text input
  */
 var Checkbox = exports.Checkbox = Montage.create(CheckInput, {});
-
 Checkbox.addProperties({
-        autofocus: 'off', // on/off
-        disabled: {value: 'false', dataType: 'boolean'},
-        form: '',
-        formenctype: '',
-        name: '',
-        placeholder: '',
-        readonly: {value: 'false', dataType: 'boolean'},
-        required: {value: 'false', dataType: 'boolean'},
-        src: '',
-        title: '',
-        value: {value: 'on'}
+    autofocus: 'off', // on/off
+    disabled: {value: 'false', dataType: 'boolean'},
+    form: '',
+    formenctype: '',
+    name: null,
+    placeholder: '',
+    readonly: {value: 'false', dataType: 'boolean'},
+    required: {value: 'false', dataType: 'boolean'},
+    src: '',
+    title: '',
+    value: {value: 'on'}
 });
