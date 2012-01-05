@@ -36,6 +36,19 @@ exports.SampleForm = Montage.create(Component, {
         get: function(){ return this._url;}
     },
     
+    option1: {
+        set: function(v) {
+            console.log('option 1', v);
+        }, 
+        get: function(){ return false;}
+    },
+    option2: {
+        set: function(v) {
+            console.log('option 2', v)
+        }, 
+        get: function(){ return this._option2;}
+    },
+    
     _evaluateJson: {
         value: function() {
             this.json = JSON.stringify({
@@ -59,12 +72,4 @@ exports.SampleForm = Montage.create(Component, {
                         
         }
     },
-
-    check: {
-        set: function(v) {
-            console.log("check", v);
-        },
-        get: function() { return false; }
-    }
-
 });

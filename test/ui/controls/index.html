@@ -56,7 +56,7 @@
                     "boundObjectPropertyPath": "firstName",
                     "oneway": false
                 }
-                
+
             }
         },
         "lname": {
@@ -247,6 +247,41 @@
             }
         },
 
+        "radio1": {
+            "module": "montage/ui/radiobutton.reel",
+            "name": "Radiobutton",
+            "properties": {
+                "element": {"#": "radio1"}
+            }
+        },
+        "radio2": {
+            "module": "montage/ui/radiobutton.reel",
+            "name": "Radiobutton",
+            "properties": {
+                "element": {"#": "radio2"}
+            }
+        },
+        "radio3": {
+            "module": "montage/ui/radiobutton.reel",
+            "name": "Radiobutton",
+            "properties": {
+                "element": {"#": "radio3"}
+            }
+        },
+        "radio-text": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "radio-text"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "radio1"},
+                    "boundObjectPropertyPath": "checked"
+                }
+            }
+        },
+
         "sample-form": {
             "module": "ui/controls/sample-form.reel",
             "name": "SampleForm",
@@ -257,11 +292,14 @@
                 "lastName": "Bar",
                 "email": "foo.bar@me.com"
             },
-            "bindings": {
-                "check": {
-                    "boundObject": {"@": "check1"},
-                    "boundObjectPropertyPath": "checked",
-                    "oneway": true
+			"bindings": {
+                "option1": {
+                    "boundObject": {"@": "check3"},
+                    "boundObjectPropertyPath": "checked"
+                },
+                "option2": {
+                    "boundObject": {"@": "radio1"},
+                    "boundObjectPropertyPath": "checked"
                 }
             }
         },
@@ -393,17 +431,19 @@
                             <legend>RadioButton Group</legend>
 
                             <label>
-                                <input type="radio" name="radio-group" />
+                                <input type="radio" id="radio1" title="custom title" name="radio-group" />
                                 Option #1
                             </label>
                             <label>
-                                <input type="radio" name="radio-group" />
+                                <input type="radio" id="radio2" name="radio-group" />
                                 Option #2
                             </label>
                             <label>
-                                <input type="radio" name="radio-group" />
+                                <input type="radio" id="radio3" name="radio-group" />
                                 Option #3
                             </label>
+
+                            <span id="radio-text">output</span>
 
                         </fieldset>
                     </div>
