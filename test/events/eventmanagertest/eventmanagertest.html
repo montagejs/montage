@@ -6,6 +6,15 @@
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
 {
+    "activationTarget": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "hasReel": false,
+            "element": {"#": "activationTarget"}
+        }
+    },
+
     "eventmanagertest1": {
         "module": "events/eventmanagertest/eventmanagertest",
         "name": "EventManagerTest",
@@ -17,7 +26,8 @@
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
-            "delegate": {"@": "eventmanagertest1"}
+            "delegate": {"@": "eventmanagertest1"},
+            "activationTarget": {"@": "activationTarget"}
         }
     }
 }
@@ -28,7 +38,7 @@
     <div id="parent">
         <div id="element"></div>
         Testing EventManager…
-        </div>
+        <div id="activationTarget"></div>
     </div>
 </body>
 </html>

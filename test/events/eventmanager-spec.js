@@ -317,6 +317,23 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(listenerEntries[eventType]).toBeFalsy();
                 expect(listenerEntries[eventType2]).toBeFalsy();
             });
+
+            it("should still respond to activationEvent event type events even if the last interested listener is removed for an activationEvent event type", function() {
+                var activationTarget = testDocument.application.activationTarget;
+                activationTarget.prepareForActivationEvents = function() {};
+
+                spyOn(activationTarget, "prepareForActivationEvents");
+
+                var otherListener = function() {};
+
+                testDocument.addEventListener("mousedown", otherListener, false);
+                testDocument.removeEventListener("mousedown", otherListener, false);
+
+
+                testPage.mouseEvent(EventInfo.create().initWithElement(activationTarget.element), "mousedown", function() {
+                    expect(activationTarget.prepareForActivationEvents).toHaveBeenCalled();
+                });
+            });
         });
 
         describe("when distributing an event", function() {
