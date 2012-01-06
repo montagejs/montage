@@ -17,20 +17,20 @@ Textfield.addProperties({
         accept: null,
         alt: null,
         autocomplete: null,
-        autofocus: 'off', // on/off
+        autofocus: null,
         dirname: null,
         disabled: {dataType: 'boolean'},
         form: null,
         formaction: null,
         formenctype: null,
         formmethod: null,
-        formnovalidate: 'false',
+        formnovalidate: null,
         formtarget: null,
         list: null, // list of autocomplete options
         max: null,
         maxlength: null,
         min: null,
-        multiple: 'false',
+        multiple: null,
         name: null,
         pattern: null,
         placeholder: null,
@@ -45,38 +45,3 @@ Textfield.addProperties({
         // and is not bindable
         // width: ''
 });
-
-/*
-
-{        
-        accept: '',
-        alt: '',
-        autocomplete: '',
-        autofocus: 'off', // on/off
-        checked: {value: 'false', dataType: 'boolean'},
-        dirname: '',
-        disabled: {value: 'false', dataType: 'boolean'},
-        form: '',
-        formaction: '',
-        formenctype: '',
-        formmethod: '',
-        formnovalidate: 'false',
-        formtarget: '',
-        //height: '',
-        list: '', // list of autocomplete options
-        max: '',
-        maxlength: '',
-        min: '',
-        multiple: 'false',
-        name: '',
-        pattern: '',
-        placeholder: '',
-        readonly: {value: 'false', dataType: 'boolean'},
-        required: {value: 'false', dataType: 'boolean'},
-        size: '',
-        src: '',
-        step: '',
-        title: '',
-        type: ''
-        // width: ''
-}*/

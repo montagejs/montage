@@ -21,29 +21,16 @@ var TextArea = exports.TextArea = Montage.create(TextInput, {
 });
 
 TextArea.addProperties({        
-        accept: '',
-        alt: '',
-        autocomplete: '',
-        autofocus: 'off', // on/off
-        dirname: '',
-        disabled: {value: 'false', dataType: 'boolean'},
-        form: '',
-        formaction: '',
-        formenctype: '',
-        formmethod: '',
-        formnovalidate: 'false',
-        formtarget: '',
-        list: '', // list of autocomplete options
-        maxlength: '',
-        multiple: 'false',
-        name: '',
-        pattern: '',
-        placeholder: '',
-        readonly: {value: 'false', dataType: 'boolean'},
-        required: {value: 'false', dataType: 'boolean'},
-        size: '',
-        src: '',
-        title: '',
-        type: {value: 'text'}
-        // width: ''
+        autofocus: null,
+        cols: null,
+        dirname: null,
+        disabled: {dataType: 'boolean'},
+        form: null,        
+        maxlength: null,
+        name: null,
+        placeholder: null,
+        readonly: {dataType: 'boolean'},
+        required: {dataType: 'boolean'},
+        rows: null,
+        wrap: null
 });
