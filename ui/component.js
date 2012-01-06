@@ -1382,7 +1382,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     this.requestedAnimationFrame = requestAnimationFrame.call(window, _drawTree);
                 } else {
                     //1000/17 = 60fps
-                    this.requestedAnimationFrame = setTimeout(_drawTree, 0);
+                    this.requestedAnimationFrame = setTimeout(_drawTree, 16);
                 }
             }
         },
