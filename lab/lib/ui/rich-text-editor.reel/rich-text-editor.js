@@ -1284,6 +1284,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 document.execCommand("styleWithCSS", false, false);
 
                 this.handleSelectionchange();
+                this._markDirty();
             }
         }
     },
