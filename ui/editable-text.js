@@ -239,7 +239,7 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
             }
 
             if (this._readOnly) {
-                t.setAttribute('readonly');
+                t.setAttribute('readonly', 'readonly');
             } else {
                 t.removeAttribute('readonly');
             }
