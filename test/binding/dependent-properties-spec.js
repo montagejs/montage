@@ -31,8 +31,7 @@ var Person = Montage.create(Montage, {
         dependencies: ["title", "name"],
         get: function() {
             return [this.title, this.name].join(" ").trim();
-        },
-        set: function() {} //TODO only here for bindings..grr
+        }
     },
 
     name: {
@@ -43,8 +42,7 @@ var Person = Montage.create(Montage, {
                 last = this.lastName ? this.lastName.toCapitalized() : "";
 
             return first + " " + last;
-        },
-        set: function() {} //TODO only here to make sure bindings work ok
+        }
     },
 
     gender: {
