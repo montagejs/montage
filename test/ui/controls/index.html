@@ -130,6 +130,36 @@
                 }
             }
         },
+        
+        "statesController": {
+            "name": "ArrayController",
+            "module": "montage/ui/controller/array-controller",
+            "properties": {
+                "selectObjectsOnAddition": true,
+                "automaticallyOrganizeObjects": true,
+                "content": []                                                       
+            }
+        },
+        
+        "state": {
+            "module": "montage/ui/select-input.reel",
+            "name": "SelectInput",
+            "properties": {
+                "element": {"#": "state"},
+                "contentController": {"@": "statesController"},
+                "textProperty": "name",
+                "valueProperty": "code"
+            }         
+        },
+        
+        "country": {
+            "module": "montage/ui/select-input.reel",
+            "name": "SelectInput",
+            "properties": {
+                "element": {"#": "country"}
+            }           
+        },
+        
         "dateconverter1": {
             "module": "montage/core/converter/date-converter",
             "name": "DateConverter",
@@ -290,7 +320,8 @@
                 "fname": {"@": "fname"},
                 "firstName": "Foo",
                 "lastName": "Bar",
-                "email": "foo.bar@me.com"
+                "email": "foo.bar@me.com",
+                "statesController": {"@": "statesController"}
             },
 			"bindings": {
                 "option1": {
@@ -300,6 +331,16 @@
                 "option2": {
                     "boundObject": {"@": "radio1"},
                     "boundObjectPropertyPath": "checked"
+                },
+                "selectedCountry": {
+                    "boundObject": {"@": "country"},
+                    "boundObjectPropertyPath": "selectedObjects.0",
+                    "oneway": true
+                },
+                "selectedState": {
+                    "boundObject": {"@": "state"},
+                    "boundObjectPropertyPath": "selectedObjects.0",
+                    "oneway": true
                 }
             }
         },
@@ -362,6 +403,20 @@
 
                             <label for="date1">Date of Birth</label>
                             <input type="date" id="date1" value="" />
+                            
+                            <label for="country">Country</label>
+                            <select id="country" required>
+                                <option value="">Please select a Country</option>
+                                <option value="USA">United States of America</option>
+                                <option value="INR" selected="true">India</option>
+                                <option value="FR">France</option>
+                                <option value="GER">Germany</option>
+                            </select>
+                            
+                            <label for="state">State</label>
+                            <select id="state" required="true">
+                                <option>Please select a country...</option>
+                            </select>
 
                             <label for="arrival-date">Check-in Date & Time</label>
                             <input type="date" id="arrival-date" value="" class="span2"/>

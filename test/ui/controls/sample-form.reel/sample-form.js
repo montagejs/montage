@@ -44,9 +44,54 @@ exports.SampleForm = Montage.create(Component, {
     },
     option2: {
         set: function(v) {
-            console.log('option 2', v)
+            console.log('option 2', v);
         }, 
         get: function(){ return this._option2;}
+    },
+    states: {
+        value: {
+            'USA': [
+                {name: 'Arizona', code: 'AZ'},
+                {name: 'Colorado', code: 'CO'},
+                {name: 'California', code: 'CA'},
+                {name: 'New York', code: 'NY'},
+                {name: 'Washington', code: 'WA'}
+            ],
+            'INR': [
+                {name: 'Kerala', code: 'KL'},
+                {name: 'Karnataka', code: 'KA'},
+                {name: 'Tamil Nadu', code: 'TN'},
+                {name: 'Andhra Pradesh', code: 'AP'},
+                {name: 'Goa', code: 'GO'}
+            ]
+        }
+    },
+    
+    _selectedCountry: {value: null},
+    selectedCountry: {
+        get: function() {return this._selectedCountry;},
+        set: function(value) {
+            if(this._selectedCountry !== value) {
+                this._selectedCountry = value;
+                // update states list
+                var code = this._selectedCountry.value;
+                this.statesController.content = this.states[code];
+                // select the first option in the States dropdown
+                this.statesController.selectedIndexes = [0];
+                this._evaluateJson();
+            }
+        }
+    },
+    
+    _selectedState: {value: null},
+    selectedState: {
+        get: function() {return this._selectedState;},
+        set: function(value) {
+            if(this._selectedState !== value) {
+                this._selectedState = value;                
+                this._evaluateJson();
+            }
+        }
     },
     
     _evaluateJson: {
@@ -55,7 +100,9 @@ exports.SampleForm = Montage.create(Component, {
                 firstName: this.firstName,
                 lastName: this.lastName,
                 email: this.email,
-                url: this.url
+                url: this.url,
+                country: this._selectedCountry,
+                state: this.selectedState
             });
         }
     },
@@ -71,5 +118,5 @@ exports.SampleForm = Montage.create(Component, {
         value: function(e) {
                         
         }
-    },
+    }
 });

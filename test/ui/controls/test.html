@@ -74,6 +74,35 @@
             }            
         },
         
+        "statesController": {
+            "name": "ArrayController",
+            "module": "montage/ui/controller/array-controller",
+            "properties": {
+                "selectObjectsOnAddition": true,
+                "automaticallyOrganizeObjects": true,
+                "content": []                                                       
+            }
+        },
+        
+        "state": {
+            "module": "montage/ui/select-input.reel",
+            "name": "SelectInput",
+            "properties": {
+                "element": {"#": "state"},
+                "contentController": {"@": "statesController"},
+                "textProperty": "name",
+                "valueProperty": "code"
+            }         
+        },
+        
+        "country": {
+            "module": "montage/ui/select-input.reel",
+            "name": "SelectInput",
+            "properties": {
+                "element": {"#": "country"}
+            }           
+        },
+        
         "sample-form": {
             "module": "ui/controls/sample-form.reel",
             "name": "SampleForm",
@@ -81,7 +110,15 @@
                 "element": {"#": "input-form"},
                 "firstName": "ABC",
                 "lastName": "XYZ",
-                "fname": {"@": "fname"}
+                "fname": {"@": "fname"},
+                "statesController": {"@": "statesController"}
+            },
+            "bindings": {
+                "selectedCountry": {
+                    "boundObject": {"@": "country"},
+                    "boundObjectPropertyPath": "selectedObjects.0",
+                    "oneway": true
+                }
             }
         }
         
@@ -109,10 +146,27 @@
                         <fieldset>
                             <legend>A Simple Form</legend>
                             <label for="fname">First Name</label>
-                            <input type="text" placeholder="Enter first name" id="fname" required value="Foo" />
+                            <input type="text" placeholder="Enter first name" id="fname" required value="Foo" title="this is a title" />
 
                             <label for="lname">Last Name</label>
-                            <input type="text" placeholder="Enter last name" id="lname" required  value="Bar" />
+                            <input type="text" placeholder="Enter last name" id="lname" required  value="Bar" title="this is a title"/>
+                            
+                            
+                            <label for="country">Country</label>
+                            <select id="country" required>
+                                <option value="">Please select a Country</option>
+                                <option value="USA">United States of America</option>
+                                <option value="INR" selected="true">India</option>
+                                <option value="FR">France</option>
+                                <option value="GER">Germany</option>
+                            </select>
+                            
+                            <label for="state">State</label>
+                            <select id="state">
+                                <option>Please select a country...</option>
+                            </select>
+                            
+                            
                             
                         </fieldset>
                     </div>

@@ -10,9 +10,6 @@ var Montage = require("montage").Montage,
 
 var TextInput = exports.TextInput =  Montage.create(NativeControl, {
 
-    hasTemplate: {
-        value: true
-    },
 /**
   Description TODO
   @private

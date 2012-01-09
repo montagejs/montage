@@ -170,7 +170,7 @@ exports.NativeControl = Montage.create(Component, {
                     desc = this._propertyDescriptors[i];
                     if(desc && desc.dataType === 'boolean') {
                         if(val === true) {
-                            el.setAttribute(i);
+                            el.setAttribute(i, 'true');
                         } else {
                             el.removeAttribute(i);
                         }
