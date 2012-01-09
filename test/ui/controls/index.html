@@ -312,6 +312,14 @@
             }
         },
 
+        "button1": {
+            "module": "montage/ui/button.reel",
+            "name": "Button",
+            "properties": {
+                "element": {"#": "button1"}
+            }
+        },
+
         "sample-form": {
             "module": "ui/controls/sample-form.reel",
             "name": "SampleForm",
@@ -376,6 +384,11 @@
             /*:required {
               border-color: #E73525;
             }*/
+
+            button {
+                padding: 10px;
+                margin: 10px;
+            }
         </style>
 
 </head>
@@ -502,6 +515,12 @@
 
                         </fieldset>
                     </div>
+                </div>
+
+                <div>
+                    <button type="button" id="button1">One</button>
+                    <button type="button" id="button2">Two</button>
+                    <button type="button" id="buton3">Three</button>
                 </div>
 
                 <div>
