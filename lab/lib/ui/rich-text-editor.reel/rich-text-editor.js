@@ -592,7 +592,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             
             if(this._needsFocus) {
                 this.element.firstChild.focus();
-                this._needsFocus = false;
+                if(document.activeElement == this.element.firstChild) {
+                    this._needsFocus = false;
+                } else {
+                    this.needsDraw = true;
+                }
             }
         }
     },
