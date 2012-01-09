@@ -3,21 +3,13 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-/**
-	@module "montage/ui/button.reel"
-    @requires montage/core/core
-    @requires montage/ui/component
-*/
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
-
+    Component = require("ui/component").Component,
+    NativeControl = require("ui/native-control").NativeControl;
 /**
- @class module:"montage/ui/button.reel".Button
- @classdesc Button component implementation. Turns any div element into a multi-state labeled button.
- @extends module:montage/ui/component.Component
+ * The Text input
  */
-exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.reel".Button# */ {
-
+var Button = exports.Button = Montage.create(NativeControl, {
 /**
   Description TODO
   @private
@@ -49,34 +41,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
   Description TODO
   @private
 */
-    _busy: {
-        enumerable: false,
-        value: false
-    },
-
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
-    */
-    busy: {
-        get: function () {
-            return this._busy;
-        },
-        set: function (value) {
-            if ((value === true) && (!this._disabled)) {
-                this._busy = true;
-            } else {
-                this._busy = false;
-            }
-            this.needsDraw = true;
-        }
-    },
-
-/**
-  Description TODO
-  @private
-*/
+// TODO: this does more stuff than the addProperties version
     _disabled: {
         enumerable: false,
         value: false
@@ -94,7 +59,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
         set: function (value) {
             if (value === true) {
                 this._disabled = true;
-                this.busy = false;
             } else {
                 this._disabled = false;
             }
@@ -115,56 +79,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
     },
 
     /**
-     * When behavior is toggle, @link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed
-     * the pressed property contains the equivalent of the aria-pressed attribute: "true"||"false"||"mixed"
-     * @private
-     */
-    _pressed: {
-        value: "false",
-        enumerable: false
-    },
-    /**
-        Description TODO
-        @type {Function}
-        @default {Boolean} "false"
-    */
-    pressed: {
-        get: function() {
-            return this._pressed;
-        },
-        set: function(value) {
-            if (value !== this._pressed) {
-                this._pressed = value;
-                this.needsDraw = true;
-            }
-        }
-    },
-    /**
-     * Used when a button is associated with an input tag. For buttons, the title comes from it's value attribute.
-     * If the value property is undefined, it will be initialized from the button's input element if the element is an input type.
-     * @private
-     */
-    _value: {
-        enumerable: false,
-        value: undefined
-    },
-    /**
-        Description TODO
-        @type {Function}
-        @default undefined
-    */
-    value: {
-        serializable: true,
-        get: function () {
-            return this._value;
-        },
-        set: function (value) {
-            this._value = value;
-            this.needsDraw = true;
-        }
-    },
-
-    /**
         The Montage converted used to convert or format values displayed by this Button instance.
         @type {Property}
         @default null
@@ -173,31 +87,9 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
         value: null
     },
 
-    /**
-     * @private
-     */
-    _title: {
-        enumerable: false,
-        value: undefined
-    },
-    /**
-        Description Text to show in the tooltip displayed by hovering over this button
-        @type {Function}
-        @default undefined
-    */
-    title: {
-        serializable: true,
-        get: function () {
-            return this._title;
-        },
-        set: function (value) {
-            this._title = value;
-            this.needsDraw = true;
-        }
-    },
-
 /**
-  Description TODO
+  Stores the node that contains this button's value.
+  For INPUTs this is the value attribute. Fot BUTTONs this is the firstChild (text)
   @private
 */
     _valueNode: {value:undefined, enumerable: false},
@@ -205,11 +97,11 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
 /**
         Used when a button is associate with an input tag.<br>
         For buttons, the title comes from it's value attribute.<br>
-        valueActive, if set, is used when the button is in active state (mousedown / touchstart).
+        activeValue, if set, is used when the button is in active state (mousedown / touchstart).
         @type {String}
         @default undefined
     */
-    valueActive: {
+    activeValue: {
         serializable: true,
         value: undefined
     },
@@ -221,84 +113,9 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
     _valueNodeActiveNode: {value:undefined, enumerable: false},
 
 
-    /**
-     Used when a button is associate with an input tag.<br>
-     For buttons, the title comes from its value attribute.<br>
-     When behavior is toggle, @link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed the button has multiple states and may need different titles for that.<br>
-     So, pressedValue would contain the value to use when pressed is true.
-     @type {String}
-     @default undefined
-     */
-    pressedValue: {
-        serializable: true,
-        value: undefined
-    },
-
 /**
-  Description TODO
-  @private
-*/
-    _pressedValueNode: {value:undefined, enumerable: false},
-
-/**
-        Used when a button is associate with an input tag.<br>
-        For buttons, the title comes from its <code>value</code> attribute.<br>
-        When behavior is toggle, {@link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed} the button has multiple states and may need different titles for that.<br>
-        So, pressedValue would contain the value to use when pressed is true.
-        @type {String}
-        @default undefined
-    */
-    pressedValueActive: {
-        serializable: true,
-        value: undefined
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _pressedValueActiveNode: {value:undefined, enumerable: false},
-
-/**
-        Used when a button is associate with an input tag.<br>
-        For buttons, the title comes from it's value attribute.<br>
-        When behavior is toggle, {@link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed} the button has multiple states and may need different titles for that.<br>
-        So, <code>mixedValue</code> would contain the value to use when pressed is mixed.
-        @type {String}
-        @default undefined
-    */
-    mixedValue: {
-        serializable: true,
-        value: undefined
-    },
-
- /**
-  Description TODO
-  @private
-*/
-    _mixedValueNode: {value:undefined, enumerable: false},
-
-/**
-        Used when a button is associated with an input tag.<br>
-        For buttons, the title comes from its <code>value</code> attribute.<br>
-        When behavior is toggle, {@link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed} the button has multiple states and may need different titles for that.<br>
-        So, <code>mixedValue</code> would contain the value to use when pressed is mixed.
-        @type {String}
-        @default undefined
-    */
-    mixedValueActive: {
-        serializable: true,
-        value: undefined
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _mixedValueActiveNode: {value:undefined, enumerable: false},
-
-/**
-  Description TODO
+  True when the button is being interacted with, either through mouse click or
+  touch event.
   @private
 */
     _active: {
@@ -319,39 +136,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
             this.needsDraw = true;
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _behavior: {
-        value: "transient",
-        enumerable: false
-    },
 
-    /**
-        Behavior describes how the button interprets events:
-        <ul>
-            <li><b>transient</b> is the default, trigger an action on click</li>
-            <li><b>toggle</b> maintains a state from off -> click -> on -> click -> off</li>
-            <li><b>mixed</b> maintains a state from off -> click -> on -> click -> mixed -> off</li>
-        </ul>
-        @type {Function}
-        @default {String} "transient"
-    */
-    behavior: {
-        serializable: true,
-        get: function() {
-            return this._behavior;
-        },
-        set: function(value) {
-            if (value !== this._behavior) {
-                //Sanity check on behavior
-                value = ((value === "transient") || (value === "toggle") || (value === "mixed")) ? value : "transient";
-                this._behavior = value;
-                this.needsDraw = true;
-            }
-        }
-    },
 /**
   Description TODO
   @private
@@ -369,7 +154,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
     */
     handleMousedown: {
         value: function(event) {
-            if (!this._disabled && !this._busy) {
+            if (!this._disabled) {
                 this._acknowledgeIntent("mouse");
             }
 
@@ -402,7 +187,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
                 return;
             }
 
-            if (!this._disabled && !this._busy) {
+            if (!this._disabled) {
                 this._acknowledgeIntent(event.changedTouches[0].identifier);
             }
 
@@ -515,7 +300,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
             if (this.element === target) {
                 this._shouldDispatchActionEvent = true;
                 this._dispatchActionEvent();
-                this.updateState();
             }
 
             this._releaseInterest();
@@ -541,31 +325,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
             this._observedPointer = null;
         }
     },
-/**
-    Description TODO
-    @function
-    */
-    updateState: {
-        value: function() {
-            var newState;
 
-            if (this._behavior !== "transient") {
-                switch (this._pressed) {
-                    case "false":
-                        newState = "true";
-                        break;
-                    case "true":
-                        newState = (this._behavior === "toggle") ? "false" : "mixed";
-                        break;
-                    case "mixed":
-                        newState = "false";
-                        break;
-                }
-                this.pressed = newState;
-            }
-            this.needsDraw = true;
-        }
-    },
 /**
   Description TODO
   @private
@@ -682,83 +442,21 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
                 this._element.classList.remove("disabled");
             }
 
-            if (this._busy) {
-                this._element.setAttribute("aria-busy", true);
-                this._element.classList.add("busy");
+            if (this._isElementInput) {
+                this._element.setAttribute("value", this._convertValue(this.value));
             } else {
-                this._element.setAttribute("aria-busy", false);
-                this._element.classList.remove("busy");
+                this._element.firstChild.data = this._convertValue(this.value);
             }
 
-            if (this._behavior !== "transient") {
-
-                this._element.setAttribute("aria-pressed", this._pressed);
-
-                if (this._pressed === "true" && this.pressedValue) {
-                    if (this._isElementInput) {
-                        this._valueNode.value = this._convertValue(this.pressedValue);
-                    }
-                    else {
-                        if (!this._pressedValueNode) {
-                            this._pressedValueNode = document.createTextNode("");
-                            this._pressedValueNode.data = this._convertValue(this.pressedValue);
-                        }
-                        //TODO use replace now
-                        this._valueNode.data = this._convertValue(this.pressedValue);
-                    }
-                }
-                else if (this._pressed === "mixed" && this.mixedValue) {
-                    if (this._isElementInput) {
-                        this._element.setAttribute("value", this._convertValue(this.mixedValue));
-                    }
-                    else {
-                        this._element.firstChild.data = this._convertValue(this.mixedValue);
-                    }
-                }
-                else if ((this._pressed === "false") && (typeof this.value !== "undefined")) {
-                    if (this._isElementInput) {
-                        this._element.setAttribute("value", this._convertValue(this.value));
-                    }
-                    else {
-                        this._element.firstChild.data = this._convertValue(this.value);
-                    }
-                }
-            } else {
-                if (this._isElementInput) {
-                    this._element.setAttribute("value", this._convertValue(this.value));
-                } else {
-                    this._element.firstChild.data = this._convertValue(this.value);
-                }
-            }
-            if (this.valueActive) {
+            if (this.activeValue) {
                 if (this.active) {
-                    if (this._behavior === "transient" || this._pressed === "false") {
-                        if (this._isElementInput) {
-                            this._element.setAttribute("value", this._convertValue(this.valueActive));
-                        }
-                        else {
-                            this._element.firstChild.data = this._convertValue(this.valueActive);
-                        }
+                    if (this._isElementInput) {
+                        this._element.setAttribute("value", this._convertValue(this.activeValue));
                     }
-                    else if (this._pressed === "true" && this.pressedValueActive) {
-                        if (this._isElementInput) {
-                            this._element.setAttribute("value", this._convertValue(this.pressedValueActive));
-                        }
-                        else {
-                            this._element.firstChild.data = this._convertValue(this.pressedValueActive);
-                        }
+                    else {
+                        this._element.firstChild.data = this._convertValue(this.activeValue);
                     }
-                    else if (this._pressed === "mixed" && this.mixedValueActive) {
-                        if (this._isElementInput) {
-                            this._element.setAttribute("value", this._convertValue(this.mixedValueActive));
-                        }
-                        else {
-                            this._element.firstChild.data = this._convertValue(this.mixedValueActive);
-                        }
-                    }
-                }
-                /* Right now, we don't handle active-pressed */
-                else if (this._behavior === "transient") {
+                } else {
                     if (this._isElementInput) {
                         this._element.setAttribute("value", this._convertValue(this.value));
                     }
@@ -771,17 +469,18 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
             this._element.setAttribute("title", this.title || "");
         }
     }
+});
 
-}, module);
-/**
-    @class module:montage/ui/button.ToggleButton
-*/
-exports.ToggleButton = Montage.create(exports.Button,/** @lends module:montage/ui/button.ToggleButton# */ {
-/**
-  Description TODO
-  @private
-*/
-    _behavior: {
-        value: "toggle"
-    }
+Button.addProperties({
+        autocomplete: null,
+        autofocus: null,
+        disabled: {dataType: 'boolean'},
+        form: null,
+        formaction: null,
+        formenctype: null,
+        formmethod: null,
+        formnovalidate: null,
+        formtarget: null,
+        name: null,
+        title: null
 });
