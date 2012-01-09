@@ -76,6 +76,25 @@ window.addEventListener("DOMContentLoaded", function() {
                 montageRequire.config.modules["core/promise"] = {exports: Q};
                 montageRequire.config.modules["core/url"] = {exports: URL};
                 montageRequire.config.modules["core/shim/timers"] = {exports: {}};
+
+                // install the linter, which loads on the first error
+                config.lint = function (definition) {
+                    montageRequire.async("core/jshint")
+                    .then(function (JSHINT) {
+                        if (!JSHINT.JSHINT(definition.text)) {
+                            console.warn("JSHint Error: "+definition.path);
+                            JSHINT.JSHINT.errors.forEach(function(error) {
+                                if (error) {
+                                    console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
+                                    if (error.evidence) {
+                                        console.warn("    " + error.evidence);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                };
+
                 return montageRequire.loadPackage(location)
                 .then(function (applicationRequire) {
                     global.require = applicationRequire;
@@ -96,9 +115,9 @@ window.addEventListener("DOMContentLoaded", function() {
      @param config
      @param compiler
      */
-    exports.SerializationCompiler = function(config, compiler) {
+    exports.SerializationCompiler = function(config, compile) {
         return function(def) {
-            def = compiler(def);
+            def = compile(def);
             var defaultFactory = def.factory;
             def.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
@@ -141,13 +160,13 @@ window.addEventListener("DOMContentLoaded", function() {
      * @param loader the next loader in the chain
      */
     var reelExpression = /([^\/]+)\.reel$/;
-    exports.ReelLoader = function (config, loader) {
+    exports.ReelLoader = function (config, load) {
         return function (id, callback) {
             var match = reelExpression.exec(id);
             if (match) {
-                return loader(id + "/" + match[1], callback);
+                return load(id + "/" + match[1], callback);
             } else {
-                return loader(id, callback);
+                return load(id, callback);
             }
         };
     };
@@ -158,7 +177,7 @@ window.addEventListener("DOMContentLoaded", function() {
      @param config
      @param compiler
      */
-    exports.TemplateCompiler = function(config, compiler) {
+    exports.TemplateCompiler = function(config, compile) {
         return function(def) {
             var root = def.path.match(/(.*\/)?(?=[^\/]+\.html$)/);
             if (root) {
@@ -174,7 +193,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 };
                 return def;
             } else {
-                return compiler(def);
+                return compile(def);
             }
         };
     };
@@ -265,8 +284,7 @@ window.addEventListener("DOMContentLoaded", function() {
                 "require/require",
                 "require/browser",
                 "core/promise",
-                "core/url",
-                "core/jshint"
+                "core/url"
             ];
             if (typeof setImmediate === "undefined")
                 pending.push("core/shim/timers");
