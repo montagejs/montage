@@ -242,22 +242,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} pointer TODO
-    @param {Component} demandingComponent TODO
-    @returns {Boolean} true TODO
-    */
-    surrenderPointer: {
-        value: function(pointer, demandingComponent) {
-
-            this._releaseInterest();
-
-            this.active = false;
-            return true;
-        }
-    },
 
     // Internal state management
 /**
@@ -334,7 +318,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
         value: function() {
             if (typeof this.action === "function") {
 
-                var actionPropertyBinding = this._bindingDescriptors["action"],
+                var actionPropertyBinding = this.action,
                     context = this,
                     boundObjectPropertyPath,
                     functionOwnerPath,
