@@ -443,7 +443,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
 Button.addProperties({
         autocomplete: null,
         autofocus: null,
-        disabled: {dataType: 'boolean'},
+        disabled: {value: false, dataType: 'boolean'},
         form: null,
         formaction: null,
         formenctype: null,

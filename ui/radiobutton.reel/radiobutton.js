@@ -31,13 +31,13 @@ var Radiobutton = exports.Radiobutton = Montage.create(CheckInput, {
 });
 Radiobutton.addProperties({
     autofocus: 'off', // on/off
-    disabled: {value: 'false', dataType: 'boolean'},
+    disabled: {value: false, dataType: 'boolean'},
     form: null,
     formenctype: null,
     name: null,
     placeholder: null,
-    readonly: {value: 'false', dataType: 'boolean'},
-    required: {value: 'false', dataType: 'boolean'},
+    readonly: {value: false, dataType: 'boolean'},
+    required: {value: false, dataType: 'boolean'},
     src: null,
     title: null,
     value: {value: 'on'}
