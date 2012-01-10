@@ -95,7 +95,6 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     // TODO check button pressibility
                 });
                 it("is the inverse of the enabled property", function(){
-                    console.log(test.enabledinputszn.disabled, test.enabledinputszn.enabled);
                     expect(test.enabledinputszn.disabled).toBe(false);
                     expect(test.enabledinputszn.enabled).toBe(true);
                     test.enabledinputszn.enabled = false;
