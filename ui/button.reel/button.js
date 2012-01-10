@@ -37,41 +37,11 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
-// TODO: this does more stuff than the addProperties version
-    _disabled: {
-        enumerable: false,
-        value: false
-    },
-
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
-    */
-    disabled: {
-        get: function () {
-            return this._disabled;
-        },
-        set: function (value) {
-            if (value === true) {
-                this._disabled = true;
-            } else {
-                this._disabled = false;
-            }
-            this.needsDraw = true;
-        }
-    },
-
     //TODO we should prefer positive properties like enabled vs disabled, get rid of disabled
-
     enabled: {
         dependencies: ["disabled"],
         get: function () {
-            return !!this._disabled;
+            return !this._disabled;
         },
         set: function (value) {
             this.disabled = !value;
@@ -85,6 +55,35 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     converter: {
         value: null
+    },
+
+    _value: { value: undefined, enumerable: false },
+    value: {
+        get: function() {
+            return this._value;
+        },
+        set: function(value) {
+            console.log(value);
+            if (value && value.length > 0 && this.converter) {
+                var convertedValue;
+                try {
+                    // TODO: if revert() correct here? Shouldn't it be convert()?
+                    convertedValue = this.converter.convert(value);
+                    if (this.error) {
+                        this.error = null;
+                    }
+                    this._value = convertedValue;
+
+                } catch(e) {
+                    // unable to convert - maybe error
+                    this.error = e;
+                    //this._valueSyncedWithInputField = false;
+                }
+            } else {
+                this._value = value;
+            }
+            this.needsDraw = true;
+        }
     },
 
 /**
@@ -363,15 +362,17 @@ var Button = exports.Button = Montage.create(NativeControl, {
   @private
 */
     _isElementInput: {value: false},
-    prepareForDraw: {
+    deserializedFromTemplate: {
         value: function() {
-
-            this._element.tabIndex = 0;
+            var o = Object.getPrototypeOf(Button).deserializedFromTemplate.call(this);
 
             this._element.classList.add("montage-button");
             this._element.setAttribute("aria-role", "button");
 
-            if (!!(this._isElementInput = (this._element.tagName === "INPUT")) && this.value === undefined) {
+            this._isElementInput = (this._element.tagName === "INPUT");
+            // Only take the value from the element if it hasn't been set
+            // elsewhere (i.e. in the serialization)
+            if (this._isElementInput && this.value === undefined) {
                 this._valueNode = this._element.getAttributeNode("value");
                 this.value = this._element.value;
             }
@@ -385,6 +386,8 @@ var Button = exports.Button = Montage.create(NativeControl, {
                     this.value = this._valueNode.data;
                 }
             }
+
+            this.needsDraw = true;
         }
     },
 /**
@@ -403,16 +406,15 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    /**
-      Retrieves the display value for the button, running it through a converter if needed
-      @private
-    */
-    _convertValue: {
+
+    _drawValue: {
+        enumerable: false,
         value: function(value) {
-            if (this.converter) {
-                return this.converter.convert(value);
+            if (this._isElementInput) {
+                this._element.setAttribute("value", value);
+            } else {
+                this._element.firstChild.data = value;
             }
-            return value;
         }
     },
 /**
@@ -422,7 +424,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     draw: {
         value: function() {
             // Call super method
-            Object.getPrototypeOf(NativeControl).draw.call(this);
+            Object.getPrototypeOf(Button).draw.call(this);
 
             if (this._disabled) {
                 this._element.classList.add("disabled");
@@ -430,28 +432,10 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 this._element.classList.remove("disabled");
             }
 
-            if (this._isElementInput) {
-                this._element.setAttribute("value", this._convertValue(this.value));
-            } else {
-                this._element.firstChild.data = this._convertValue(this.value);
-            }
+            this._drawValue(this.value);
 
-            if (this.activeValue) {
-                if (this.active) {
-                    if (this._isElementInput) {
-                        this._element.setAttribute("value", this._convertValue(this.activeValue));
-                    }
-                    else {
-                        this._element.firstChild.data = this._convertValue(this.activeValue);
-                    }
-                } else {
-                    if (this._isElementInput) {
-                        this._element.setAttribute("value", this._convertValue(this.value));
-                    }
-                    else {
-                        this._element.firstChild.data = this._convertValue(this.value);
-                    }
-                }
+            if (this.activeValue && this.active) {
+                this._drawValue(this.activeValue);
             }
         }
     }
