@@ -481,8 +481,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 window.clearTimeout(this._timeoutId);
                 this._timeoutId = setTimeout(function() {
                     //self._positionPopup();
-                    self.position = self._calculatePosition();
-                    self._positionPopup();
+                    var pos = self.position || self._calculatePosition();
+                    if(!self.delegate && (self.delegate && self.delegate.positionPopup)) {
+                        self.position = pos;
+                    }
+                    self._positionPopup(pos);
                 }, 100);
             }
          }
