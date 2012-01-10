@@ -317,12 +317,16 @@ var Button = exports.Button = Montage.create(NativeControl, {
     _dispatchActionEvent: {
         value: function() {
             if (typeof this.action === "function") {
-
-                var actionPropertyBinding = this.action,
+                var actionPropertyBinding,
                     context = this,
                     boundObjectPropertyPath,
                     functionOwnerPath,
                     lastDotIndex;
+
+                // TODO: check if this is necessary
+                if (this._bindingDescriptors) {
+                    actionPropertyBinding = this._bindingDescriptors["action"];
+                }
 
                 if (actionPropertyBinding) {
                     boundObjectPropertyPath = actionPropertyBinding.boundObjectPropertyPath;
@@ -334,8 +338,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
                     } else {
                         context = actionPropertyBinding.boundObject;
                     }
-
-
                 }
 
                 this.action.call(context, this);
@@ -419,6 +421,8 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     draw: {
         value: function() {
+            // Call super method
+            Object.getPrototypeOf(NativeControl).draw.call(this);
 
             if (this._disabled) {
                 this._element.classList.add("disabled");
@@ -449,8 +453,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
                     }
                 }
             }
-
-            this._element.setAttribute("title", this.title || "");
         }
     }
 });
