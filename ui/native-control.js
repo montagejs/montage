@@ -32,39 +32,37 @@ exports.NativeControl = Montage.create(Component, {
     //http://www.w3.org/TR/html5/elements.html#global-attributes
     _baseElementProperties: {
         value: {
-            accesskey: {},
-            'class': {},
-            title: {},
-            style: {}
+            accesskey: null,
+            'class': null,
+            title: null,
+            style: null
         }
     },
 
-    // Stores values that need to be set on the element. Cleared each draw
-    // cycle.
+    /** Stores values that need to be set on the element. Cleared each draw
+     * cycle.
+     */
     _elementAttributeValues: {
         value: {},
         distinct: true
     },
 
+    /** Stores the descriptors of the properties that can be set on this
+     * control
+     */
     _propertyDescriptors: {
        value: {},
        distinct: true
     },
-        
+
     /**
-    * Add a property to this Component. A default getter/setter is provided and a 
-    * "_" property is created by default. Eg: if the property is "title", "_title" is 
+    * Add a property to this Component. A default getter/setter is provided and a
+    * "_" property is created by default. Eg: if the property is "title", "_title" is
     * automatically created and the value set to the value from the descriptor.
-    */    
+    */
     addProperty: {
         value: function(name, descriptor) {
             descriptor = descriptor || {};
-
-            var value = null;
-            if(!isUndefined(descriptor.value)) {
-                value = descriptor.value;
-                delete descriptor.value;
-            }
 
             var newDescriptor = {
                 configurable: isUndefined(descriptor.configurable) ? true: descriptor.configurable,
@@ -99,7 +97,7 @@ exports.NativeControl = Montage.create(Component, {
             };
 
             // Define _ property
-            Montage.defineProperty(this, '_' + name, {value: value});
+            Montage.defineProperty(this, '_' + name, {value: null});
             // Define property getter and setter
             Montage.defineProperty(this, name, newDescriptor);
         }
@@ -121,8 +119,10 @@ exports.NativeControl = Montage.create(Component, {
                 if(stdAttrs.hasOwnProperty(prop)) {
                     if(isUndefined(this[prop])) {
                         obj = stdAttrs[prop];
-                        if(obj == null || isString(obj)) {
-                            desc = {value: obj};
+                        // Make sure that the descriptor is of the correct form.
+                        if(obj === null || isString(obj)) {
+                            desc = {value: obj, dataType: "string"};
+                            stdAttrs[prop] = desc;
                         } else {
                             desc = obj;
                         }
@@ -139,7 +139,7 @@ exports.NativeControl = Montage.create(Component, {
             // The element is now ready, so we can read the attributes that
             // have been set on it.
             var attrs = this.element.attributes || [];
-            var i=0, len = attrs.length, name, value;
+            var i=0, len = attrs.length, name, value, d, desc;
 
             for(i=0; i< len; i++) {
                 name = attrs[i].name;
@@ -152,9 +152,19 @@ exports.NativeControl = Montage.create(Component, {
                     if(isUndefined(this[name]) || this[name] === null) {
                         this[name] = value;
                     }
-
                 }
             }
+
+            // Set defaults for any properties that weren't serialised or set
+            // as attributes on the element.
+            for (d in this._propertyDescriptors) {
+                desc = this._propertyDescriptors[d];
+                if (this["_"+d] === null && desc !== null && "value" in desc) {
+                    console.log(d, this["_"+d]);
+                    this["_"+d] = this._propertyDescriptors[d].value;
+                }
+            }
+
         }
     },
 
