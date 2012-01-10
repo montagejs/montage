@@ -18,7 +18,8 @@ var Montage = require("montage").Montage,
     ChangeTypes = require("core/event/mutable-event").ChangeTypes,
     Serializer = require("core/serializer").Serializer,
     Deserializer = require("core/deserializer").Deserializer,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    AT_TARGET = 2;
 
 /**
     @member external:Array#dispatchChangeEvent
@@ -752,6 +753,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
             independentProperty,
             i,
             dependencies,
+            dependencyEntry,
             dependencyPropertyPath,
             firstDotIndex;
 
@@ -809,27 +811,42 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                 }
 
                 if (currentObject._dependenciesForProperty) {
-
                     dependencies = currentObject._dependenciesForProperty[key];
 
                     if (dependencies) {
+                        dependencyEntry = currentObject._dependencyListeners[key];
 
-                        // if we're already listening for changes on this dependency for this dependent path, don't do it again
-                        // TODO keep track of how many times we legitimately need to observe the property so we know when we can remove it
-                        if (!currentObject._dependencyListeners[key]) {
+                        if (!dependencyEntry) {
+                            dependencyEntry = currentObject._dependencyListeners[key] = {
+                                observedDependencies: [],
+                                listener: null
+                            };
 
-                            currentObject._dependencyListeners[key] = (function(self, key) {
-                                    return function(event) {
+                            dependencyEntry.listener = (function(self, key) {
+                                return function(event) {
+                                    // Ignore events that have reached this dependency listener via capture/bubble distribution
+                                    if (AT_TARGET === event.eventPhase) {
                                         var anEvent = document.createEvent("CustomEvent");
                                         anEvent.initCustomEvent("change@" + key, true, false, null);
                                         anEvent.propertyName = key;
                                         self.dispatchEvent(anEvent);
                                     }
-                                })(currentObject, key);
+                                }
+                            })(currentObject, key);
+                        }
 
-                            for (i = 0; (independentProperty = dependencies[i]); i++) {
-                                currentObject.addEventListener("change@" + independentProperty, currentObject._dependencyListeners[key], true);
+                        // Ensure we use the dependencyListener to observe all the dependent keys
+                        // We can use the same listener for al lof them though as a change at
+                        // any independent property is treated as a change at a dependent property
+                        for (i = 0; (independentProperty = dependencies[i]); i++) {
+
+                            // Don't double observe a dependency
+                            if (dependencyEntry.observedDependencies.indexOf(independentProperty) >= 0) {
+                                continue;
                             }
+
+                            currentObject.addEventListener("change@" + independentProperty, dependencyEntry.listener, true);
+                            dependencyEntry.observedDependencies.push(independentProperty);
                         }
                     }
                 }

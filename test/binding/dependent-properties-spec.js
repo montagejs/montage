@@ -251,6 +251,25 @@ describe("binding/dependent-properties-spec", function() {
                 expect(personInformation.name).toBe("Al Allman");
             });
 
+            it("should affect properties dependent on multiple independent property, regardless of which are affected", function() {
+
+                person.firstName = "Alice";
+                person.lastName = "Allman";
+
+                var personInformation = {};
+
+                Object.defineBinding(personInformation, "name", {
+                    boundObject: person,
+                    boundObjectPropertyPath: "name"
+                });
+
+                person.firstName = "Al";
+                expect(personInformation.name).toBe("Al Allman");
+
+                person.lastName = "Allen";
+                expect(personInformation.name).toBe("Al Allen");
+            });
+
             it("should affect an entire chain of dependent keys", function() {
                 person.firstName = "Alice";
                 person.lastName = "Allman";
@@ -409,6 +428,64 @@ describe("binding/dependent-properties-spec", function() {
             });
 
         })
+
+        describe("when an event occurs along the event distribution path for an object with dependent properties", function() {
+
+            it("must not interpret a change event affecting a property on another object as a change at its own dependent property if the properties have the same name", function() {
+                person.firstName = "Alice";
+                person.lastName = "Allman";
+
+                var child = Person.create();
+                child.firstName = "Bob";
+                child.lastName = "Baggins";
+                child.parentProperty = "parent";
+                child.parent = person;
+
+                var personInformation = {};
+                var childInformation = {};
+
+                // These bindings trigger installing listeners for the dependencies for the 'name' property
+                Object.defineBinding(personInformation, "name", {
+                    boundObject: person,
+                    boundObjectPropertyPath: "name"
+                });
+
+                Object.defineBinding(childInformation, "name", {
+                    boundObject: child,
+                    boundObjectPropertyPath: "name"
+                });
+
+                var personObserver = {
+                    handleEvent: function(evt) {}
+                }
+
+                var childObserver = {
+                    handleEvent: function() {}
+                }
+
+                spyOn(personObserver, "handleEvent").andCallThrough();
+                spyOn(childObserver, "handleEvent");
+
+                person.addEventListener("change@name", personObserver, false);
+                child.addEventListener("change@name", childObserver, false);
+
+                window.hey = true;
+                child.firstName = "Robert";
+
+                // Parent should be unaffected by the dependency;
+                // It was given the chance to handle the change@name that bubbled up from the child
+                // It must not use the dependency listener for firstName
+                expect(personObserver.handleEvent.callCount).toBe(1);
+                expect(personInformation.name).toBe("Alice Allman");
+                expect(person.name).toBe("Alice Allman");
+
+                expect(childObserver.handleEvent).toHaveBeenCalled();
+                expect(childInformation.name).toBe("Robert Baggins");
+                expect(child.name).toBe("Robert Baggins");
+
+            });
+
+        });
 
     });
 
