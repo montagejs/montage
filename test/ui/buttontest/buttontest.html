@@ -63,6 +63,22 @@
             "enabled": true
         }
     },
+    "buttonvalueszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "buttonvalueszn"},
+            "value": "pass"
+        }
+    },
+    "inputvalueszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "inputvalueszn"},
+            "value": "pass"
+        }
+    },
     "nestedelement": {
         "module": "montage/ui/button.reel",
         "name": "Button",
@@ -129,6 +145,8 @@
             "disabledinput": {"@": "disabledinput"},
             "disabledinputszn": {"@": "disabledinputszn"},
             "enabledinputszn": {"@": "enabledinputszn"},
+            "buttonvalueszn": {"@": "buttonvalueszn"},
+            "inputvalueszn": {"@": "inputvalueszn"},
             "nestedelement": {"@": "nestedelement"},
             "inputactionszn": {"@": "inputactionszn"},
             "textinput": {"@": "textinput"},
@@ -163,12 +181,16 @@
     <div id="preventFocus">prevent focus</div>
 
     <h2>Disabled</h2>
-    <button disabled id="disabledbutton" disabled>disabled button</button>
-    <input type="button" id="disabledinput" value="disabled input" disabled>
+    <button disabled id="disabledbutton" disabled>should be disabled</button>
+    <input type="button" id="disabledinput" value="should be disabled" disabled>
 
-    <input type="button" id="disabledinputszn" value="disabled input serialization">
+    <input type="button" id="disabledinputszn" value="should be disabled">
 
-    <input type="button" id="enabledinputszn" value="disabled then enabled input serialization" disabled>
+    <input type="button" id="enabledinputszn" value="should be enabled" disabled>
+
+    <h2>Value from serialization</h2>
+    <button id="buttonvalueszn">fail</button>
+    <input type="button" id="inputvalueszn" value="fail">
 
     <h2>Nested elements</h2>
     <button id="buttonnested"><span id="nestedelement">element nested in button</span></button>

@@ -10,6 +10,26 @@ var Montage = require("montage").Montage,
 var testPage = TestPageLoader.queueTest("buttontest", function() {
     var test = testPage.test;
 
+    var mousedown = function(el) {
+        var downEvent = document.createEvent("MouseEvent");
+        downEvent.initMouseEvent("mousedown", true, true, el.view, null,
+                el.offsetLeft, el.offsetTop,
+                el.offsetLeft, el.offsetTop,
+                false, false, false, false,
+                el, null);
+        el.dispatchEvent(downEvent);
+        return downEvent;
+    };
+    var mouseup = function(el) {
+        var upEvent = document.createEvent("MouseEvent");
+        upEvent.initMouseEvent("mouseup", true, true, el.view, null,
+                el.offsetLeft, el.offsetTop,
+                el.offsetLeft, el.offsetTop,
+                false, false, false, false,
+                el, null);
+        el.dispatchEvent(upEvent);
+        return upEvent;
+    };
     var click = function(component, el) {
         el = el || component.element;
         var buttonSpy = {
@@ -22,21 +42,8 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
         var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
         component.addEventListener("action", actionListener);
 
-        var downEvent = document.createEvent("MouseEvent");
-        downEvent.initMouseEvent("mousedown", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(downEvent);
-
-        var upEvent = document.createEvent("MouseEvent");
-        upEvent.initMouseEvent("mouseup", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(upEvent);
+        mousedown(el);
+        mouseup(el);
 
         // Return this so that it can be checked in tha calling function.
         return buttonSpy.doSomething;
@@ -49,7 +56,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
     describe("ui/button-spec", function() {
         it("should load", function() {
-            expect(testPage.loaded).toBeTruthy();
+            expect(testPage.loaded).toBe(true);
         });
 
         it("can create a button from a div element", function(){
@@ -72,15 +79,14 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     expect(test.inputbutton.disabled).toBe(false);
                 });
                 it("can be set", function(){
-                    var orig;
-                    orig = !!test.disabledbutton.disabled;
-                    test.disabledbutton.disabled = !orig;
-                    expect(test.disabledbutton.disabled).toBe(!orig);
+                    expect(test.disabledbutton.disabled).toBe(true);
+                    test.disabledbutton.disabled = false;
+                    expect(test.disabledbutton.disabled).toBe(false);
                     // TODO click the button and check that it wasn't pressed
 
-                    orig = !!test.disabledinput.disabled;
-                    test.disabledinput.disabled = !orig;
-                    expect(test.disabledinput.disabled).toBe(!orig);
+                    expect(test.disabledinput.disabled).toBe(true);
+                    test.disabledinput.disabled = false;
+                    expect(test.disabledinput.disabled).toBe(false);
                     // TODO click the button and check that it wasn't pressed
                 });
                 it("can can be set in the serialization", function(){
@@ -88,14 +94,27 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     // TODO check button pressibility
                 });
                 it("is the inverse of the enabled property", function(){
+                    console.log(test.enabledinputszn.disabled, test.enabledinputszn.enabled);
                     expect(test.enabledinputszn.disabled).toBe(false);
-
-                    orig = !!test.disabledinput.enabled;
-                    test.disabledinput.enabled = !orig;
-                    expect(test.disabledinput.enabled).toBe(!orig);
+                    expect(test.enabledinputszn.enabled).toBe(true);
+                    test.enabledinputszn.enabled = false;
+                    expect(test.enabledinputszn.disabled).toBe(true);
+                    expect(test.enabledinputszn.enabled).toBe(false);
                     // TODO click the button and check that it wasn't pressed
                 });
             });
+
+            describe("value", function() {
+                it("is set from the serialization on a button", function() {
+                    expect(test.buttonvalueszn.value).toBe("pass");
+                    expect(test.buttonvalueszn.element.firstChild.data).toBe("pass");
+                });
+                it("is set from the serialization on an input", function() {
+                    expect(test.inputvalueszn.value).toBe("pass");
+                    expect(test.inputvalueszn.element.value).toBe("pass");
+                });
+            });
+
 
             it("responds when child elements are clicked on", function(){
                 expect(click(test.nestedelement, test.nestedelement.element.firstChild)).toHaveBeenCalled();
@@ -103,6 +122,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
             it("supports converters for value", function(){
                 expect(test.converterbutton.value).toBe("CONVERTED VALUE");
+                expect(test.converterbutton.element.value).toBe("CONVERTED VALUE");
             });
         });
 
@@ -119,109 +139,58 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
         } else {
 
             describe("when supporting mouse events", function() {
-                it("should dispatch an action event when a mouseup follows a mousedown on a button", function() {
-                    test.inputbutton.needsDraw = true;
-                    // wait for draw
-                    testPage.waitForDraw();
-                    runs(function() {
-                        var buttonSpy = {
-                            doSomething: function(event) {
-                                alert("action!");
-                            }
-                        };
-                        spyOn(buttonSpy, 'doSomething');
+                it("dispatches an action event when a mouseup follows a mousedown", function() {
+                    expect(click(test.inputbutton)).toHaveBeenCalled();
+                });
 
-                        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-                        test.inputbutton.addEventListener("action", actionListener);
+                it("calls the action property if it has been set and is a function", function() {
+                    var buttonSpy = {
+                        doSomething: function(event) {
+                            throw "This button should not have dispatched an action";
+                        }
+                    };
+                    spyOn(buttonSpy, 'doSomething');
+                    test.inputbutton.action = buttonSpy.doSomething;
 
-                        var downEvent = document.createEvent("MouseEvent");
-                        downEvent.initMouseEvent("mousedown", true, true, test.buttonElement.view, null,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop,
-                                false, false, false, false,
-                                test.buttonElement, null);
-                        test.buttonElement.dispatchEvent(downEvent);
+                    mousedown(test.inputbutton.element);
+                    mouseup(test.inputbutton.element);
 
-                        var upEvent = document.createEvent("MouseEvent");
-                        upEvent.initMouseEvent("mouseup", true, true, test.buttonElement.view, null,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop,
-                                false, false, false, false,
-                                test.buttonElement, null);
-                        test.buttonElement.dispatchEvent(upEvent);
-                        expect(buttonSpy.doSomething).toHaveBeenCalled();
-                    });
+                    expect(buttonSpy.doSomething).toHaveBeenCalled();
+                });
+
+                it("does not dispatch an action event when a mouseup occurs after not previously receive a mousedown", function() {
+                    var buttonSpy = {
+                        doSomething: function(event) {
+                            throw "This button should not have dispatched an action";
+                        }
+                    };
+                    spyOn(buttonSpy, 'doSomething');
+
+                    var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
+                    test.inputbutton.addEventListener("action", actionListener);
+
+                    mousedown(test.inputbutton.element);
+                    expect(buttonSpy.doSomething).not.toHaveBeenCalled();
 
                 });
 
-                it("must not dispatch an action event when a mouseup occurs on a button that did not previously receive a mousedown", function() {
+                it("does not dispatch an action event when a mouseup occurs away from the button after a mousedown on a button", function() {
+                    var buttonSpy = {
+                        doSomething: function(event) {
+                            alert("action!");
+                        }
+                    };
+                    spyOn(buttonSpy, 'doSomething');
 
-                    test.inputbutton.needsDraw = true;
-                    // wait for draw
-                    testPage.waitForDraw();
-                    runs(function() {
+                    var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
+                    test.inputbutton.addEventListener("action", actionListener);
 
-                        var buttonSpy = {
-                            doSomething: function(event) {
-                                throw "This button should not have dispatched an action";
-                            }
-                        };
-                        spyOn(buttonSpy, 'doSomething');
+                    mousedown(test.inputbutton.element);
+                    // Mouse up somewhere else
+                    mouseup(test.divbutton.element);
 
-                        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-                        test.inputbutton.addEventListener("action", actionListener);
-
-                        var upEvent = document.createEvent("MouseEvent");
-                        upEvent.initMouseEvent("mouseup", true, true, test.buttonElement.view, null,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop,
-                                false, false, false, false,
-                                test.buttonElement, null);
-                        test.buttonElement.dispatchEvent(upEvent);
-                        expect(buttonSpy.doSomething).not.toHaveBeenCalled();
-                    });
-
+                    expect(buttonSpy.doSomething).not.toHaveBeenCalled();
                 });
-
-                it("must not dispatch an action event when a mouseup occurs away from the button after a mousedown on a button", function() {
-
-                    test.inputbutton.needsDraw = true;
-                    // wait for draw
-                    testPage.waitForDraw();
-                    runs(function() {
-
-                        var buttonSpy = {
-                            doSomething: function(event) {
-                                alert("action!");
-                            }
-                        };
-                        spyOn(buttonSpy, 'doSomething');
-
-                        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-                        test.inputbutton.addEventListener("action", actionListener);
-
-                        var downEvent = document.createEvent("MouseEvent");
-                        downEvent.initMouseEvent("mousedown", true, true, test.buttonElement.view, null,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop,
-                                false, false, false, false,
-                                test.buttonElement, null);
-                        test.buttonElement.dispatchEvent(downEvent);
-
-                        var upEvent = document.createEvent("MouseEvent");
-                        upEvent.initMouseEvent("mouseup", true, true, test.buttonElement.view, null,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop + 200,
-                                test.buttonElement.offsetLeft, test.buttonElement.offsetTop + 200,
-                                false, false, false, false,
-                                document, null);
-                        document.dispatchEvent(upEvent);
-                        expect(buttonSpy.doSomething).not.toHaveBeenCalled();
-                    });
-
-                });
-
-                //////////////////////
-
             });
 
         }
