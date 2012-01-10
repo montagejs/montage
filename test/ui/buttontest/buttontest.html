@@ -11,18 +11,137 @@
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
 {
-    "buttontest1": {
+    "divbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "divbutton"}
+        }
+    },
+    "inputbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "inputbutton"}
+        }
+    },
+    "buttonbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "buttonbutton"}
+        }
+    },
+
+    "disabledbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "disabledbutton"}
+        }
+    },
+    "disabledinput": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "disabledinput"}
+        }
+    },
+    "disabledinputszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "disabledinputszn"},
+            "disabled": true
+        }
+    },
+    "enabledinputszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "enabledinputszn"},
+            "enabled": true
+        }
+    },
+    "nestedelement": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "nestedelement"}
+        }
+    },
+    "inputactionszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "inputactionszn"},
+            "action": {"->": {"arguments":[], "body": "window.actionFunction = true;"}}
+        }
+    },
+
+    "textinput": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "textinput"}
+        }
+    },
+    "converterbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "converterbutton"},
+            "converter": {"@": "uppercaseconverter"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textinput"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "uppercaseconverter": {
+        "module": "montage/core/converter/upper-case-converter",
+        "name": "UpperCaseConverter",
+        "properties": {
+
+        }
+    },
+
+    "activevalue": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "activevalue"},
+            "activeValue": "down"
+        }
+    },
+
+
+    "buttontest": {
         "module": "ui/buttontest/buttontest",
         "name": "ButtonTest",
         "properties": {
-
+            "divbutton": {"@": "divbutton"},
+            "inputbutton": {"@": "inputbutton"},
+            "buttonbutton": {"@": "buttonbutton"},
+            "disabledbutton": {"@": "disabledbutton"},
+            "disabledinput": {"@": "disabledinput"},
+            "disabledinputszn": {"@": "disabledinputszn"},
+            "enabledinputszn": {"@": "enabledinputszn"},
+            "nestedelement": {"@": "nestedelement"},
+            "inputactionszn": {"@": "inputactionszn"},
+            "textinput": {"@": "textinput"},
+            "converterbutton": {"@": "converterbutton"},
+            "uppercaseconverter": {"@": "uppercaseconverter"},
+            "activevalue": {"@": "activevalue"}
         }
     },
     "owner": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
-            "delegate": {"@": "buttontest1"}
+            "delegate": {"@": "buttontest"}
         }
     }
 }
@@ -30,6 +149,38 @@
 
 </head>
 <body>
-    <div id="testButton">Test Button</div>
+    <h1>Button test</h1>
+
+    <h2>Output</h2>
+    <span id="output">output</span>
+
+    <h2>Basic</h2>
+    <div id="divbutton">div button</div>
+    <input type="button" id="inputbutton" value="input button">
+    <button id="buttonbutton">button button</button>
+
+    <div id="testButton">test Button</div>
+    <div id="preventFocus">prevent focus</div>
+
+    <h2>Disabled</h2>
+    <button disabled id="disabledbutton" disabled>disabled button</button>
+    <input type="button" id="disabledinput" value="disabled input" disabled>
+
+    <input type="button" id="disabledinputszn" value="disabled input serialization">
+
+    <input type="button" id="enabledinputszn" value="disabled then enabled input serialization" disabled>
+
+    <h2>Nested elements</h2>
+    <button id="buttonnested"><span id="nestedelement">element nested in button</span></button>
+
+    <h2>Action property</h2>
+    <input type="button" id="inputactionszn" value="input with the action property set">
+
+    <h2>Converter</h2>
+    <input type="text" id="textinput" value="converted value">
+    <input type="button" id="converterbutton" value="default">
+
+    <h2>Active value</h2>
+    <input type="button" id="activevalue" value="active value">
 </body>
 </html>

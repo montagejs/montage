@@ -9,7 +9,6 @@ var Montage = require("montage").Montage,
 var ButtonTest = exports.ButtonTest = Montage.create(Montage, {
     deserializedFromTemplate: {
         value: function() {
-
             this.buttonElement = document.getElementById("testButton");
             this.buttonComponent = Montage.create(Button);
             this.buttonComponent.element = this.buttonElement;
