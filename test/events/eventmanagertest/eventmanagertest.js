@@ -14,5 +14,9 @@ var EventManagerTest = exports.EventManagerTest = Montage.create(Montage, {
             dummyComponent.element = document.body;
             dummyComponent.needsDraw = true;
         }
+    },
+
+    activationTarget: {
+        value: null
     }
 });

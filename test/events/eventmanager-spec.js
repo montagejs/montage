@@ -319,7 +319,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
             });
 
             it("should still respond to activationEvent event type events even if the last interested listener is removed for an activationEvent event type", function() {
-                var activationTarget = testDocument.application.activationTarget;
+                var activationTarget = testPage.test.activationTarget;
                 activationTarget.prepareForActivationEvents = function() {};
 
                 spyOn(activationTarget, "prepareForActivationEvents");
@@ -652,7 +652,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     it("should handle the event using the identifier from the original target as part of the handler method name, for listeners on the original target", function() {
                         var eventSpy = {
-                            handleFooMousedown: function() {},
+                            handleFooMousedown: function() {}
                         };
 
                         spyOn(eventSpy, 'handleFooMousedown');

@@ -5,4 +5,8 @@
  </copyright> */
 var Montage = require("montage").Montage;
 
-exports.ObjectHierarchyTest = Montage.create(Montage, {});
+exports.ObjectHierarchyTest = Montage.create(Montage, {
+    component1:{
+        value: null
+    }
+});

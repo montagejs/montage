@@ -50,7 +50,7 @@
             }
         }
     },
-    "slidertest1": {
+    "test": {
         "module": "ui/slidertest/slidertest",
         "name": "SliderTest",
         "properties": {
@@ -60,17 +60,11 @@
             "sliderValue2": {"@": "textfield2"}
         }
     },
-    "owner": {
+    "application": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
-            "components": [
-                {"@": "slider1"},
-                {"@": "textfield1"},
-                {"@": "slider2"},
-                {"@": "textfield2"}
-            ],
-            "delegate": {"@": "slidertest1"}
+            "delegate": {"@": "test"}
         }
     }
 }

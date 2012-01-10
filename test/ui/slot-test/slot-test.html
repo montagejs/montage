@@ -153,7 +153,7 @@
             "identifier": "photoButton"
         }
     },
-    "slottest1": {
+    "test": {
         "module": "ui/slot-test/slot-test",
         "name": "SlotTest",
         "properties": {
@@ -176,18 +176,11 @@
             "photoButton": {"@": "button8"}
         }
     },
-    "owner": {
+    "application": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
-            "components": [
-                {"@": "slot1"},
-                {"@": "slider1"},
-                {"@": "dynamictext1"},
-                {"@": "dynamictext2"},
-                {"@": "slottest1"}
-            ],
-            "delegate": {"@": "slottest1"}
+            "delegate": {"@": "test"}
         }
     }
 }
