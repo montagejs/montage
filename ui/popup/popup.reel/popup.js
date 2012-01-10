@@ -283,18 +283,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
             var popupSlot = this._popupSlot;
 
             if(pos) {
-                if (pos.top) {
-                    popupSlot.element.style.top = pos.top + 'px';
-                }
-                if (pos.left) {
-                    popupSlot.element.style.left = pos.left + 'px';
-                }
-                if (pos.right) {
-                    popupSlot.element.style.right = pos.right + 'px';
-                }
-                if (pos.bottom) {
-                    popupSlot.element.style.bottom = pos.bottom + 'px';
-                }
+                popupSlot.element.style.top = (pos.top ? pos.top + 'px' : '');
+                popupSlot.element.style.left = (pos.left ? pos.left + 'px' : '');
+                popupSlot.element.style.right = (pos.right ? pos.right + 'px' : '');
+                popupSlot.element.style.bottom = (pos.bottom ? pos.bottom + 'px' : '');
             }
         }
     },
