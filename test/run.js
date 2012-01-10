@@ -63,6 +63,7 @@ if (spec) {
         require.async("ui/application-spec"),
         require.async("ui/button-spec"),
         require.async("ui/component-spec"),
+        require.async("ui/dom-spec"),
         require.async("ui/firstdraw-spec"),
         require.async("ui/list-spec"),
         require.async("ui/repetition-spec"),

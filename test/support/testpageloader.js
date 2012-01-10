@@ -115,6 +115,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
 
             //set the timeout so that the jasmine suite runs if the pages fails to load.
             var pageLoadTimedOut = function() {
+                console.log("Page load timed out for test named: " + test.testName);
                 resumeJasmineTests()
             };
 
