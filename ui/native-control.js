@@ -39,6 +39,8 @@ exports.NativeControl = Montage.create(Component, {
         }
     },
 
+    // Stores values that need to be set on the element. Cleared each draw
+    // cycle.
     _elementAttributeValues: {
         value: {},
         distinct: true
@@ -64,29 +66,29 @@ exports.NativeControl = Montage.create(Component, {
                 delete descriptor.value;
             }
 
-            Montage.defineProperty(this, '_' + name, {value: value});
-
             var newDescriptor = {
                 configurable: isUndefined(descriptor.configurable) ? true: descriptor.configurable,
                 enumerable: isUndefined(descriptor.enumerable) ?  true: descriptor.enumerable,
                 serializable: isUndefined(descriptor.serializable) ? true: descriptor.serializable,
                 set: function(n) {
                     return function(val) {
-                       var attrName = '_' + n;
+                        var attrName = '_' + n;
 
-                       var desc = this._propertyDescriptors[n];
-                       // if requested dataType is boolean (eg: checked, readonly etc)
-                       // coerce the value to boolean
-                       if(desc && "boolean" === desc.dataType) {
-                           //val = !!val;
-                           val = (val == null || isUndefined(val)? false : true);
-                       }
+                        var desc = this._propertyDescriptors[n];
+                        // if requested dataType is boolean (eg: checked, readonly etc)
+                        // coerce the value to boolean
+                        if(desc && "boolean" === desc.dataType) {
+                            val = (val || val === "");
+                        }
 
-                       if(!isUndefined(val) && this[attrName] !== val) {
-                           this[attrName] = val;
-                           this._elementAttributeValues[n] = val;
-                           this.needsDraw = true;
-                       }
+                        // If the set value is different to the current one,
+                        // update it here, and set it to be updated on the
+                        // element in the next draw cycle.
+                        if(!isUndefined(val) && this[attrName] !== val) {
+                            this[attrName] = val;
+                            this._elementAttributeValues[n] = val;
+                            this.needsDraw = true;
+                        }
                     };
                 }(name),
                 get: function(n) {
@@ -96,13 +98,13 @@ exports.NativeControl = Montage.create(Component, {
                 }(name)
             };
 
-
+            // Define _ property
+            Montage.defineProperty(this, '_' + name, {value: value});
+            // Define property getter and setter
             Montage.defineProperty(this, name, newDescriptor);
-
-
         }
     },
-    
+
     /**
     * Add the specified properties as properties of this Component
     */
@@ -134,7 +136,8 @@ exports.NativeControl = Montage.create(Component, {
 
     deserializedFromTemplate: {
         value: function() {
-
+            // The element is now ready, so we can read the attributes that
+            // have been set on it.
             var attrs = this.element.attributes || [];
             var i=0, len = attrs.length, name, value;
 
