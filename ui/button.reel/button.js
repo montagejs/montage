@@ -63,7 +63,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
             return this._value;
         },
         set: function(value) {
-            console.log(value);
             if (value && value.length > 0 && this.converter) {
                 var convertedValue;
                 try {

@@ -59,17 +59,18 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
             expect(testPage.loaded).toBe(true);
         });
 
-        it("can create a button from a div element", function(){
-            testButton(test.divbutton, "div button");
-        });
-        it("can create a button from an input element", function(){
-            testButton(test.inputbutton, "input button");
-        });
-        it("can create a button from a button element", function(){
-            testButton(test.buttonbutton, "button button");
-        });
-
         describe("button", function(){
+
+            it("can be created from a div element", function(){
+                testButton(test.divbutton, "div button");
+            });
+            it("can be created from an input element", function(){
+                testButton(test.inputbutton, "input button");
+            });
+            it("can be created from a button element", function(){
+                testButton(test.buttonbutton, "button button");
+            });
+
             describe("disabled property", function(){
                 it("is taken from the element's disabled attribute", function() {
                     expect(test.disabledbutton.disabled).toBe(true);
@@ -104,7 +105,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 });
             });
 
-            describe("value", function() {
+            describe("value property", function() {
                 it("is set from the serialization on a button", function() {
                     expect(test.buttonvalueszn.value).toBe("pass");
                     expect(test.buttonvalueszn.element.firstChild.data).toBe("pass");
