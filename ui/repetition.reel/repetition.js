@@ -161,7 +161,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         },
         set: function(value) {
             if (logger.isDebug) {
-                logger.debug(this, " set objects:", value.length, value, "same objects?", value === this._objects);
+                logger.debug(this, " set objects:", (value ? value.length : null), value, "same objects?", value === this._objects);
             }
             this._objects = value;
 
