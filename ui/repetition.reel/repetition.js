@@ -448,6 +448,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         } else {
             this._iterationTemplate = Template.create().initWithComponent(this);
         }
+        
+        if (logger.isDebug) {
+            logger.debug(this._iterationTemplate.exportToString());
+        }
 
         // just needed to create the iteration Template, so we get rid of it.
         this.removeIterationSerialization();
