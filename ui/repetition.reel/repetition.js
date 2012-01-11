@@ -448,6 +448,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         } else {
             this._iterationTemplate = Template.create().initWithComponent(this);
         }
+        this._iterationTemplate.optimize();
         
         if (logger.isDebug) {
             logger.debug(this._iterationTemplate.exportToString());
