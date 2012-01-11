@@ -160,7 +160,6 @@ exports.NativeControl = Montage.create(Component, {
             for (d in this._propertyDescriptors) {
                 desc = this._propertyDescriptors[d];
                 if (this["_"+d] === null && desc !== null && "value" in desc) {
-                    console.log(d, this["_"+d]);
                     this["_"+d] = this._propertyDescriptors[d].value;
                 }
             }
