@@ -498,7 +498,7 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             localPrevValue = event.minus,
             localTarget = event.target,
             type = event.type,
-            changeType = event.propertyChange, //MODIFICATION is 1, ADDITION 2, REMOVAL 3,
+            changeType = event.propertyChange,
             localPropertyName = event.propertyName,
             boundObjectValue,
             sourceObjectValue,
@@ -621,9 +621,7 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             // Now we know that we handled a particular type of change event
             // Depending on what happened we may need to remove listeners from a broken propertyPath or
             // install listeners along the modified (or deeper) propertyPath
-
-            // MODIFICATION 1
-            if (changeType === 1) {
+            if (changeType === ChangeTypes.MODIFICATION) {
 
                 if (localPrevValue) {
                     // TODO remove all the listeners from the localPrev object as far to tne end of the path as possible
@@ -639,7 +637,7 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 }
 
             }
-            //ADDITION 2, REMOVAL 3, typically on collections
+            //ADDITION, REMOVAL, typically on collections
 
             //TODO looks like we end up wanting to do the sam thing in both cases right now, I think the TODO in the
             // modification explains why a bit.
@@ -964,7 +962,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                                                 anEvent.initCustomEvent("change@" + setter.property, true, false, null);
                                                 anEvent.minus = prevValue;
                                                 anEvent.plus = acceptedValue;
-                                                anEvent.propertyChange = 1;//MODIFICATION, ADDITION, REMOVAL
+                                                anEvent.propertyChange = ChangeTypes.MODIFICATION;
                                                 anEvent.propertyName = setter.property;
                                                 this.dispatchEvent(anEvent);
                                             }
@@ -1041,7 +1039,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                                         anEvent.initCustomEvent("change@" + setter.property, true, false, null);
                                         anEvent.minus = prevValue;
                                         anEvent.plus = acceptedValue;
-                                        anEvent.propertyChange = 1;//MODIFICATION, ADDITION, REMOVAL
+                                        anEvent.propertyChange = ChangeTypes.MODIFICATION;
                                         anEvent.propertyName = setter.property;
                                         this.dispatchEvent(anEvent);
                                     }
