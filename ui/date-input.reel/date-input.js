@@ -9,11 +9,11 @@ var Montage = require("montage").Montage,
 /**
  * The Text input
  */
-var Textfield = exports.Textfield = Montage.create(TextInput, {
+var DateInput = exports.DateInput = Montage.create(TextInput, {
     hasTemplate: {value: true}
 });
 
-Textfield.addProperties({        
+DateInput.addProperties({        
         accept: null,
         alt: null,
         autocomplete: null,

@@ -111,6 +111,9 @@ exports.SampleForm = Montage.create(Component, {
         value: function() {
             // programatically override the maxlength property of the firstName component
             this.fname.maxlength = "10";
+            
+            // select a Country programatically
+            //this.countries.contentController.selectedIndexes = [2];
         }
     },
     

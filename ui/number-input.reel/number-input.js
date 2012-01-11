@@ -7,13 +7,13 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TextInput = require("ui/text-input").TextInput;
 /**
- * The Text input
+ * The Number input
  */
-var Textfield = exports.Textfield = Montage.create(TextInput, {
-    hasTemplate: {value: true}
+var NumberInput = exports.NumberInput = Montage.create(TextInput, {
+    
 });
 
-Textfield.addProperties({        
+NumberInput.addProperties({        
         accept: null,
         alt: null,
         autocomplete: null,

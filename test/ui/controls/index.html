@@ -147,9 +147,9 @@
             "properties": {
                 "element": {"#": "state"},
                 "contentController": {"@": "statesController"},
-                "textProperty": "name",
-                "valueProperty": "code"
-            }
+                "textPropertyPath": "name",
+                "valuePropertyPath": "code"
+            }         
         },
 
         "country": {
@@ -329,7 +329,8 @@
                 "firstName": "Foo",
                 "lastName": "Bar",
                 "email": "foo.bar@me.com",
-                "statesController": {"@": "statesController"}
+                "statesController": {"@": "statesController"},
+                "countries": {"@": "country"}
             },
 			"bindings": {
                 "option1": {
@@ -394,12 +395,12 @@
 </head>
 <body>
 
-    <div class="container">
+    <div class="fluid-container">
         <section>
             <form id="input-form" class="form-stacked">
 
                 <div class="row">
-                    <div class="span8">
+                    <div class="span6">
                         <fieldset>
                             <legend>A Simple Form</legend>
                             <label for="fname">First Name</label>
@@ -421,7 +422,7 @@
                             <select id="country" required>
                                 <option value="">Please select a Country</option>
                                 <option value="USA">United States of America</option>
-                                <option value="INR" selected="true">India</option>
+                                <option value="INR" >India</option>
                                 <option value="FR">France</option>
                                 <option value="GER">Germany</option>
                             </select>
@@ -440,7 +441,7 @@
                             <textarea id="info1" class="xlarge">Use this area to tell us a little about yourself</textarea>
 
                             <label for="text1">Type something into the TextArea above to see the binding</label>
-                            <div id="text1" class="span4"></div>
+                            <div id="text1"></div>
 
 
                             <label for="disabled1">Disabled Textfield</label>

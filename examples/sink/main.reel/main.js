@@ -10,7 +10,7 @@ exports.Main = Montage.create(Component, {
     _selectedItem: {value: null},
     selectedItem: {
         get: function() {return this._selectedItem;},
-        set: function(value) {this._selectedItem = value; console.log('selected item = ' + (value === null ? '' : value.value)); }
+        set: function(value) {this._selectedItem = value;}
     },
 
     templateDidLoad: {

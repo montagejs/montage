@@ -7,90 +7,19 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>sidebar Component</title>
+    <title>Sidebar Component</title>
 
     <link rel="stylesheet" href="sidebar.css">
 
     <script type="text/montage-serialization">
         {
-            "navController": {
-                "name": "ArrayController",
-                "module": "montage/ui/controller/array-controller",
-                "properties": {
-                    "selectObjectsOnAddition": true,
-                    "automaticallyOrganizeObjects": true
-                },
-                "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "montageComponents",
-                        "oneway": true
-                    }
-                }
-            },
-
-            "list1": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
-                "properties": {
-                    "element": {
-                        "#": "sidebar-list"
-                    },
-                    "isSelectionEnabled": true,
-                    "contentController": {"@": "navController"}
-                }
-            },
-
-            "list-item-text": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
-                "properties": {
-                    "element": {"#": "list-item-text"}
-                },
-                "bindings": {
-                    "value": {
-                        "boundObject": {"@": "list1"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.label",
-                        "oneway": true
-                    }
-                }
-            },
-
-            "list-item-desc": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
-                "properties": {
-                    "element": {"#": "list-item-desc"}
-                },
-                "bindings": {
-                    "value": {
-                        "boundObject": {"@": "list1"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.desc",
-                        "oneway": true
-                    }
-                }
-            },
 
             "owner": {
                 "module": "sidebar.reel",
                 "name": "sidebar",
                 "properties": {
                     "element": {"#": "sidebar"},
-                    "montageComponents": [
-                        {"label": "Button", "value": "button", "desc": "Wraps a div or input in a a styled Button component. Supports three modes (transient, toggle, and mixed), image icons, and labels for different button states. "},
-                        {"label": "Button Group", "value": "button-group", "desc": "Presents a styled group of Button components in row, which can be displayed either in icon or text/icon modes."},
-                        {"label": "Checkbox", "value": "checkbox", "desc": "Wraps an HTML checkbox input element with styled states and provides state management of the checkbox."},
-                        {"label": "Converters", "value": "converters", "desc": "A collection of objects for converting and formatting strings and numeric values."},
-                        {"label": "Dynamic Text", "value": "dynamic-text", "desc": "Provides an easy way to create a text box that you can easily assign text to."},
-                        {"label": "Image", "value": "image", "desc": "Provides an easy way to control the source of an HTML <img> element."},
-                        {"label": "List", "value": "list", "desc": "Repeatedly generates new DOM structure from a div element and its child elements, based on its collection of data objects. Supports scrolling vertically or horizontally, with optional momentum and bounce behavior."},
-                        {"label": "Pop-ups, alerts, & notifiers", "value": "popup1", "desc": "A collection of objects for displaying pop-ups, notifiers and alerts ."},
-                        {"label": "Progress", "value": "progress", "desc": "A styled, animated progress bar."},
-                        {"label": "Repetition", "value": "repetition", "desc": "Repeatedly generates new DOM structure from a div element and its child elements, based on its collection of data objects. The List component is very similar but provides scrolling."},
-                        {"label": "Slider", "value": "slider", "desc": "A styled slider component"},
-                        {"label": "Tabs", "value": "tabs", "desc": "Presents a list of labels and/or image icons in a vertical or horizontal tab format."}
-
-                    ]
+                    "sidebarList": {"#": "sidebar-list"}                    
                 },
                 "bindings": {
                     "sandbox.selectedItem": {
@@ -99,6 +28,7 @@
                         "oneway": true
                     }
                 }
+                
 
             }
         }
@@ -106,14 +36,71 @@
 </head>
 <body>
 
-    <div id="sidebar" class="sidebar">
-        <h2>Montage Components</h2>
-        <div id="sidebar-list" class='sidebar-list'>
-            <div class="sidebar-list-item">
-                <h4 class="list-item-text" id="list-item-text"></h4>
-                <div class="" id="list-item-desc"></div>
-            </div>
+    "switchComponents": {
+        "button-group": {"@": "button-group"},
+        "button": {"@": "button"},
+        "combo-box": {"@": "tbi"},
+        "checkbox": {"@": "checkbox"},
+        "image": {"@": "image"},
+        "popup1": {"@": "popup"},
+        "progress": {"@": "progress"},
+        "dynamic-text": {"@": "dynamic-text"},
+        "converters": {"@": "converters"},
+        "list": {"@": "list"},
+        "repetition": {"@": "repetition"},
+        "tabs": {"@": "tabs"},
+        "slider": {"@": "slider"}
+        
+    <div id="sidebar" class="fluid-sidebar sidebar">
+        <div id="sidebar-list" class="sidebar-list">
+            <ul class="nav-group">
+                <h6 class="nav-label">Buttons</h6>
+                <li class="nav-item active"><a class="nav-item" href="#button"><h4>Button</h4></a></li>
+                <li class="nav-item" ><a href="#button-group"><h4>Grouped</h4></a></li>            
+            </ul>
+            <ul class="nav-group">
+                <h6 class="nav-label">Text</h6>
+                <li class="nav-item"><a href="#dynamic-text"><h4>Dynamic Text</h4></a></li>
+            </ul>
+            <ul class="nav-group">
+                <h6 class="nav-label">Text Inputs</h6>
+                <li class="nav-item"><a href="#textfield"><h4>Textfield</h4></a></li>
+                <li class="nav-item"><a href="#textarea"><h4>TextArea</h4></a></li>            
+            </ul>
+            <ul class="nav-group">
+                <h6 class="nav-label">Numerical Inputs</h6>
+                <li class="nav-item"><a href="#range"><h4>Range</h4></a></li>
+                <li class="nav-item"><a href="#number"><h4>Number</h4></a></li>            
+            </ul>
+            <ul class="nav-group">
+                <li class="nav-item"><a href="#converters"><h4>Converters</h4></a></li>
+            </ul>
+            <ul class="nav-group">
+                <h6 class="nav-label">Selection Inputs</h6>
+                <li class="nav-item"><a href="#select-input"><h4>Select</h4></a></li>
+                <li class="nav-item"><a href="#checkbox"><h4>Checkbox</h4></a></li>  
+                <li class="nav-item"><a href="#radio-button"><h4>Radio Button</h4></a></li>            
+            </ul>
+            <ul class="nav-group">
+                <h6 class="nav-label">Lists</h6>
+                <li class="nav-item"><a href="#list"><h4>List</h4></a></li>
+                <li class="nav-item"><a href="#repetition"><h4>Repetition</h4></a></li>            
+            </ul>
+            <ul class="nav-group">
+                <h6 class="nav-label">Overlays, Tabs</h6>
+                <li class="nav-item"><a href="#popup1"><h4>Overlays</h4></a></li>
+                <li class="nav-item"><a href="#tabs"><h4>Tabs</h4></a></li>            
+            </ul>
+            <ul class="nav-group">
+                <h6 class="nav-label">Other</h6>
+                <li class="nav-item"><a href="#progress"><h4>Progress</h4></a></li>  
+                <li class="nav-item"><a href="#image"><h4>Image</h4></a></li>
+                <li class="nav-item"><a href="#image"><h4>Link</h4></a></li>            
+            </ul>
+
+            
         </div>
+        
 
     </div>
 

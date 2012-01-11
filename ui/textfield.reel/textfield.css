@@ -17,11 +17,11 @@
 
 .montage-textfield:focus {
     background-color: hsl(0, 100%, 99%);
-    border: 2px solid hsl(0, 0%, 40%);
+    border: 1px solid hsl(0, 0%, 40%);
 }
 
 .montage-text-invalid {
-    border: 2px solid #E73525;
+    border: 1px solid #E73525;
     border-style: dashed;
 }
 

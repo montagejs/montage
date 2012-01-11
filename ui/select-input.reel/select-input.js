@@ -52,10 +52,10 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     
     // If contentController is provided, this allows the developer to specify
     // which property in each element provides the "value" part of <option>
-    valueProperty: {value: null},
+    valuePropertyPath: {value: null},
     // Property on iterated object from which textContent of the <option>
     // is received
-    textProperty: {value: null},
+    textPropertyPath: {value: null},
     
     
     // selected items from the underlying contentController
@@ -189,8 +189,8 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                 if(isString(arr[i])) {
                     text = value = arr[i];
                 } else {
-                    text = arr[i][this.textProperty || 'text'];
-                    value = arr[i][this.valueProperty  || 'value'];
+                    text = arr[i][this.textPropertyPath || 'text'];
+                    value = arr[i][this.valuePropertyPath  || 'value'];
                 }
                 
                 option.value = value;
@@ -215,8 +215,6 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         value: function() {
             
             var elem = this.element;
-            // create <option> elements for each value in the contentController
-            // mark 'selected' in the Option
             
             this._removeAll(elem);
             this._refreshOptions();
@@ -236,7 +234,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                 if(isString(arr[i])) {
                     value = arr[i];
                 } else {
-                    value = arr[i][this.valueProperty  || 'value'];
+                    value = arr[i][this.valuePropertyPath  || 'value'];
                 }
                 if(value && value === val) {
                     return i;
