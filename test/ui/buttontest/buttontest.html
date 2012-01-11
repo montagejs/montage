@@ -133,6 +133,15 @@
         }
     },
 
+    "toggleinput": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "toggleinput"},
+            "pressedValue": "on",
+            "unpressedValue": "off"
+        }
+    },
 
     "buttontest": {
         "module": "ui/buttontest/buttontest",
@@ -152,7 +161,8 @@
             "textinput": {"@": "textinput"},
             "converterbutton": {"@": "converterbutton"},
             "uppercaseconverter": {"@": "uppercaseconverter"},
-            "activevalue": {"@": "activevalue"}
+            "activevalue": {"@": "activevalue"},
+            "toggleinput": {"@": "toggleinput"}
         }
     },
     "owner": {
@@ -204,5 +214,8 @@
 
     <h2>Active value</h2>
     <input type="button" id="activevalue" value="active value">
+
+    <h1>Toggle button test</h1>
+    <input type="button" id="toggleinput" value="fail">
 </body>
 </html>

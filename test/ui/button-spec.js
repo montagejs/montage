@@ -30,10 +30,10 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
         el.dispatchEvent(upEvent);
         return upEvent;
     };
-    var click = function(component, el) {
+    var click = function(component, el, fn) {
         el = el || component.element;
         var buttonSpy = {
-            doSomething: function(event) {
+            doSomething: fn || function(event) {
                 return 1+1;
             }
         };
@@ -124,76 +124,168 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 expect(test.converterbutton.value).toBe("CONVERTED VALUE");
                 expect(test.converterbutton.element.value).toBe("CONVERTED VALUE");
             });
+
+
+            if (window.Touch) {
+
+                describe("when supporting touch events", function() {
+
+                    it("should dispatch an action event when a touchend follows a touchstart on a button", function() {
+
+                    });
+
+                });
+
+            } else {
+
+                describe("when supporting mouse events", function() {
+                    it("dispatches an action event when a mouseup follows a mousedown", function() {
+                        expect(click(test.inputbutton)).toHaveBeenCalled();
+                    });
+
+                    it("calls the action property if it has been set and is a function", function() {
+                        var buttonSpy = {
+                            doSomething: function(event) {
+                                throw "This button should not have dispatched an action";
+                            }
+                        };
+                        spyOn(buttonSpy, 'doSomething');
+                        test.inputbutton.action = buttonSpy.doSomething;
+
+                        mousedown(test.inputbutton.element);
+                        mouseup(test.inputbutton.element);
+
+                        expect(buttonSpy.doSomething).toHaveBeenCalled();
+                    });
+
+                    it("does not dispatch an action event when a mouseup occurs after not previously receive a mousedown", function() {
+                        var buttonSpy = {
+                            doSomething: function(event) {
+                                throw "This button should not have dispatched an action";
+                            }
+                        };
+                        spyOn(buttonSpy, 'doSomething');
+
+                        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
+                        test.inputbutton.addEventListener("action", actionListener);
+
+                        mousedown(test.inputbutton.element);
+                        expect(buttonSpy.doSomething).not.toHaveBeenCalled();
+
+                    });
+
+                    it("does not dispatch an action event when a mouseup occurs away from the button after a mousedown on a button", function() {
+                        var buttonSpy = {
+                            doSomething: function(event) {
+                                alert("action!");
+                            }
+                        };
+                        spyOn(buttonSpy, 'doSomething');
+
+                        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
+                        test.inputbutton.addEventListener("action", actionListener);
+
+                        mousedown(test.inputbutton.element);
+                        // Mouse up somewhere else
+                        mouseup(test.divbutton.element);
+
+                        expect(buttonSpy.doSomething).not.toHaveBeenCalled();
+                    });
+                });
+
+            }
         });
 
-        if (window.Touch) {
+        describe("toggle button", function() {
+            it("alternates between unpressed and pressed", function() {
+                expect(test.toggleinput.pressed).toBe(false);
+                expect(test.toggleinput.value).toBe("off");
 
-            describe("when supporting touch events", function() {
+                click(test.toggleinput);
+                expect(test.toggleinput.pressed).toBe(true);
+                expect(test.toggleinput.value).toBe("on");
 
-                it("should dispatch an action event when a touchend follows a touchstart on a button", function() {
-
-                });
-
+                click(test.toggleinput);
+                expect(test.toggleinput.pressed).toBe(false);
+                expect(test.toggleinput.value).toBe("off");
             });
 
-        } else {
-
-            describe("when supporting mouse events", function() {
-                it("dispatches an action event when a mouseup follows a mousedown", function() {
-                    expect(click(test.inputbutton)).toHaveBeenCalled();
-                });
-
-                it("calls the action property if it has been set and is a function", function() {
-                    var buttonSpy = {
-                        doSomething: function(event) {
-                            throw "This button should not have dispatched an action";
-                        }
-                    };
-                    spyOn(buttonSpy, 'doSomething');
-                    test.inputbutton.action = buttonSpy.doSomething;
-
-                    mousedown(test.inputbutton.element);
-                    mouseup(test.inputbutton.element);
-
-                    expect(buttonSpy.doSomething).toHaveBeenCalled();
-                });
-
-                it("does not dispatch an action event when a mouseup occurs after not previously receive a mousedown", function() {
-                    var buttonSpy = {
-                        doSomething: function(event) {
-                            throw "This button should not have dispatched an action";
-                        }
-                    };
-                    spyOn(buttonSpy, 'doSomething');
-
-                    var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-                    test.inputbutton.addEventListener("action", actionListener);
-
-                    mousedown(test.inputbutton.element);
-                    expect(buttonSpy.doSomething).not.toHaveBeenCalled();
-
-                });
-
-                it("does not dispatch an action event when a mouseup occurs away from the button after a mousedown on a button", function() {
-                    var buttonSpy = {
-                        doSomething: function(event) {
-                            alert("action!");
-                        }
-                    };
-                    spyOn(buttonSpy, 'doSomething');
-
-                    var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-                    test.inputbutton.addEventListener("action", actionListener);
-
-                    mousedown(test.inputbutton.element);
-                    // Mouse up somewhere else
-                    mouseup(test.divbutton.element);
-
-                    expect(buttonSpy.doSomething).not.toHaveBeenCalled();
+            describe("toggle()", function() {
+                it("swaps the state", function() {
+                    test.toggleinput.pressed = false;
+                    test.toggleinput.toggle();
+                    expect(test.toggleinput.pressed).toBe(true);
+                    test.toggleinput.toggle();
+                    expect(test.toggleinput.pressed).toBe(false);
+                    test.toggleinput.toggle();
+                    expect(test.toggleinput.pressed).toBe(true);
                 });
             });
 
-        }
+            describe("value", function() {
+                it("alternates between unpressed and pressed", function() {
+                    test.toggleinput.pressed = false;
 
+                    // The expectations are in a closure because the draw can
+                    // happen at any point after we click on the button
+                    var checker = function(e) {
+                        return function(){
+                            expect(test.toggleinput.pressed).toBe(e);
+                            expect(test.toggleinput.element.value).toBe((e)?"on":"off");
+                        };
+                    };
+
+                    runs(checker(false));
+
+                    runs(function(){ click(test.toggleinput); });
+                    testPage.waitForDraw();
+                    runs(checker(true));
+                });
+                it("changes pressed state when set to unpressedValue or pressedValue", function(){
+                    test.toggleinput.pressed = false;
+                    test.toggleinput.value = "on";
+                    expect(test.toggleinput.pressed).toBe(true);
+                    test.toggleinput.value = "off";
+                    expect(test.toggleinput.pressed).toBe(false);
+                });
+                it("doesn't change pressed state when set to a non-matching string", function(){
+                   expect(test.toggleinput.pressed).toBe(false);
+                   test.toggleinput.value = "random";
+                   expect(test.toggleinput.pressed).toBe(false);
+                   expect(test.toggleinput.value).toBe("random");
+
+                   test.toggleinput.pressed = true;
+                   expect(test.toggleinput.value).toBe("on");
+                });
+            });
+
+            describe("unpressedValue", function() {
+                it("is set as the value when the button is unpressed", function() {
+                    test.toggleinput.pressed = false;
+                    expect(test.toggleinput.value).toBe("off");
+                    test.toggleinput.unpressedValue = "unpressed";
+                    expect(test.toggleinput.value).toBe("unpressed");
+
+                    testPage.waitForDraw();
+                    runs(function(){
+                        expect(test.toggleinput.element.value).toBe("unpressed");
+                    });
+                });
+            });
+
+            describe("pressedValue", function() {
+                it("is set as the value when the button is pressed", function() {
+                    test.toggleinput.pressed = true;
+                    expect(test.toggleinput.value).toBe("on");
+                    test.toggleinput.pressedValue = "pressed";
+                    expect(test.toggleinput.value).toBe("pressed");
+
+                    testPage.waitForDraw();
+                    runs(function(){
+                        expect(test.toggleinput.element.value).toBe("pressed");
+                    });
+                });
+            });
+        });
     });
 });
