@@ -410,6 +410,9 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
         this._compiledDeserializationFunctionString = "(function() {\n" + requireStrings.join("\n") + "\nreturn function(element) {\nvar exports = {};\n" + exportsStrings + "\n\n" + objectsStrings + "\n\n" + unitsStrings + "\nreturn exports;\n}}).call(this)";
         //console.log(this._compiledDeserializationFunctionString);
+        if (logger.isDebug) {
+            logger.debug(this._compiledDeserializationFunctionString);
+        }
 
         this._serialization = serialization = null;
 
