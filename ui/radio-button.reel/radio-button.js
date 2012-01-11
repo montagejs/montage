@@ -9,7 +9,7 @@ var Montage = require("montage").Montage,
 /**
  * The Text input
  */
-var Radiobutton = exports.Radiobutton = Montage.create(CheckInput, {
+var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
     prepareForDraw: {
         enumerable: false,
         value: function() {
@@ -29,7 +29,7 @@ var Radiobutton = exports.Radiobutton = Montage.create(CheckInput, {
         }
     }
 });
-Radiobutton.addProperties({
+RadioButton.addProperties({
     autofocus: 'off', // on/off
     disabled: {value: false, dataType: 'boolean'},
     form: null,

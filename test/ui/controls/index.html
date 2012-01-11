@@ -130,17 +130,17 @@
                 }
             }
         },
-        
+
         "statesController": {
             "name": "ArrayController",
             "module": "montage/ui/controller/array-controller",
             "properties": {
                 "selectObjectsOnAddition": true,
                 "automaticallyOrganizeObjects": true,
-                "content": []                                                       
+                "content": []
             }
         },
-        
+
         "state": {
             "module": "montage/ui/select-input.reel",
             "name": "SelectInput",
@@ -149,17 +149,17 @@
                 "contentController": {"@": "statesController"},
                 "textProperty": "name",
                 "valueProperty": "code"
-            }         
+            }
         },
-        
+
         "country": {
             "module": "montage/ui/select-input.reel",
             "name": "SelectInput",
             "properties": {
                 "element": {"#": "country"}
-            }           
+            }
         },
-        
+
         "dateconverter1": {
             "module": "montage/core/converter/date-converter",
             "name": "DateConverter",
@@ -278,22 +278,22 @@
         },
 
         "radio1": {
-            "module": "montage/ui/radiobutton.reel",
-            "name": "Radiobutton",
+            "module": "montage/ui/radio-button.reel",
+            "name": "RadioButton",
             "properties": {
                 "element": {"#": "radio1"}
             }
         },
         "radio2": {
-            "module": "montage/ui/radiobutton.reel",
-            "name": "Radiobutton",
+            "module": "montage/ui/radio-button.reel",
+            "name": "RadioButton",
             "properties": {
                 "element": {"#": "radio2"}
             }
         },
         "radio3": {
-            "module": "montage/ui/radiobutton.reel",
-            "name": "Radiobutton",
+            "module": "montage/ui/radio-button.reel",
+            "name": "RadioButton",
             "properties": {
                 "element": {"#": "radio3"}
             }
@@ -416,7 +416,7 @@
 
                             <label for="date1">Date of Birth</label>
                             <input type="date" id="date1" value="" />
-                            
+
                             <label for="country">Country</label>
                             <select id="country" required>
                                 <option value="">Please select a Country</option>
@@ -425,7 +425,7 @@
                                 <option value="FR">France</option>
                                 <option value="GER">Germany</option>
                             </select>
-                            
+
                             <label for="state">State</label>
                             <select id="state" required="true">
                                 <option>Please select a country...</option>
