@@ -515,7 +515,12 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             baseType,
             bindingDescriptor,
             bindingOrigin = this.bindingOrigin,
-            leftOriginated;
+            leftOriginated,
+            changeOriginPropertyPath = null,
+            exploredPath,
+            remainingPath,
+            i,
+            localPrevValueCount;
 
         // Ignore changes that did not affect the length if the property path observed was for the count
         if (changeType === ChangeTypes.MODIFICATION && targetPropertyPath.match(/count\(\)$/)) {
@@ -629,49 +634,42 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             event.plus = localNewValue;
             event.target = localTarget;
 
+            if (localPrevValue) {
 
-            // Now we know that we handled a particular type of change event
-            // Depending on what happened we may need to remove listeners from a broken propertyPath or
-            // install listeners along the modified (or deeper) propertyPath
-            if (changeType === ChangeTypes.MODIFICATION) {
+                // Determine where along the property path the change originated from so we know how to build the path
+                // to stop observing on things that were removed
+                //TODO extract this into a "obj.getPathOfObjectAlongPropertyPath" method or something with proper tests
+                exploredPath = "";
+                this.target.getProperty(this.targetPropertyPath, null, null, function(value, currentPathComponent, result) {
 
-                if (localPrevValue) {
-                    // TODO remove all the listeners from the localPrev object as far to tne end of the path as possible
-                    //                    localPrevValue.removeEventListener(baseType, this, this.useCapture);
+                    if (changeOriginPropertyPath) {
+                        return;
+                    }
+
+                    exploredPath += "." + currentPathComponent;
+
+                    if (result === event.target) {
+                        changeOriginPropertyPath = exploredPath.replace(/^\./, "");
+                    }
+                });
+
+                if (changeOriginPropertyPath) {
+                    remainingPath = this.targetPropertyPath.replace(new RegExp("^" + changeOriginPropertyPath  + "\.?"), "");
+                } else {
+                    remainingPath = this.targetPropertyPath;
                 }
 
-                if (localNewValue) {
-                    // TODO this may be less efficient than we could be, but frankly I don't know how to tell where
-                    // in the path you are by the time you get here, so I'm not sure how to install just the part
-                    // we need, plus addEventListener seems to use the targetPropertyPath from the listener
-                    // regardless of what you pass in fro the eventType.
-                    this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
-                }
-
+                localPrevValue.removeEventListener(baseType + "@" + remainingPath, this, this.useCapture);
             }
-            //ADDITION, REMOVAL, typically on collections
 
-            //TODO looks like we end up wanting to do the sam thing in both cases right now, I think the TODO in the
-            // modification explains why a bit.
-            else {
-
-                if (localPrevValue) {
-
-                      // TODO how do we know the nextPathComponent, we need to know the rest of the path after each
-                      // entry in the localPrevValue array
-//                    for (var i = 0; i < localPrevValue.length; i++) {
-                        localPrevValue.removeEventListener(nextPathComponent ? baseType + "@" + nextPathComponent : baseType, this, this.useCapture);
-//                    }
-                }
-
-                if (localNewValue) {
-                    this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
-                } else if (event._event.plus) {
-                    this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
-                }
-
-
+            if (localNewValue) {
+                // Reinstall listeners along the entire propertyPath from the target
+                this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
+            } else if (event._event.plus) {
+                // TODO removing this causes no spec failures; looks suspicious
+                this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
             }
+
         }
         targetPropertyPath = null;
         target = null;

@@ -965,23 +965,20 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(changeListener.handleEvent).toHaveBeenCalled();
             });
 
-            it("TODO must stop observing removed members of an array for changes at the property path beyond the array itself", function() {
+            it("must stop observing removed members of an array for changes at the property path beyond the array itself", function() {
 
                 var changeListener = {
-                    handleEvent: function(event) {
-
-                    }
+                    handleEvent: function(event) {}
                 };
 
-                spyOn(changeListener, "handleEvent").andCallThrough();
+                spyOn(changeListener, "handleEvent");
 
                 owner.addEventListener("change@array.foo", changeListener, false);
 
                 myArray.pop();
-
                 second.foo = "earth";
 
-                expect(changeListener.handleEvent).not.toHaveBeenCalled();
+                expect(changeListener.handleEvent.callCount).toBe(1);
             });
 
             it("should continue observing remaining members of an array for changes at the property path beyond the array itself after some members are removed", function() {
