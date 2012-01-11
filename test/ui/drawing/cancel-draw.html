@@ -10,7 +10,7 @@
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
     {
-        "test1": {
+        "test": {
             "module": "ui/drawing/test",
             "name": "Test",
             "properties": {
@@ -40,14 +40,11 @@
                 "element": {"#": "slot-test"}
             }
         },
-        "owner": {
+        "application": {
             "module": "montage/ui/application",
             "name": "Application",
             "properties": {
-                "delegate": {"@": "test1"},
-                "components": [
-                    {"@": "slot1"}
-                ]
+                "delegate": {"@": "test"}
             }
         }
     }

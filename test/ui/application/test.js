@@ -5,8 +5,12 @@
  </copyright> */
 var Montage = require("montage").Montage;
 
-exports.ObjectHierarchyTest = Montage.create(Montage, {
-    component1:{
+exports.Test = Montage.create(Montage, {
+    svg:{
+        value: null
+    },
+
+    html:{
         value: null
     }
 });

@@ -128,28 +128,12 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     A collection of components that the application creates at startup.
-     @type {Object}
-     @default null
-     */
-    components: {
-        value: null
-    },
-
-    /**
      The application's delegate object.<br>
      The application delegate is notified of events during the application's life cycle.
      @type {Object}
      @default null
      */
     delegate: {
-        value: null
-    },
-
-    /**
-     @private
-     */
-    _template: {
         value: null
     },
 
@@ -161,32 +145,16 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     load: {
         value: function(callback) {
             var template = Template.create().initWithDocument(window.document),
-                components, component,
-                self = this,
-                isInstance = Application.isPrototypeOf(this);
+                component,
+                self = this;
 
-            template.instantiateWithOwnerAndDocument(isInstance ? this : null, window.document, function(rootObject) {
-                // The states we need to take care of:
-                // 1) Static Application.load() called and the template root object is an application
-                // 2) Static Application.load() called and the template root object is NOT an application
-                // 3) Instance application.load() called and the template root object is an application
-                // 4) Instance application.load() called and the template root object is NOT an application
-                if (rootObject !== self) { // Need to setup the application object
-                    if (Application.isPrototypeOf(rootObject)) { // the root object is an application already, use it
-                        self = rootObject;
-                    } else { // the root object is something else, need to create an application to "wrap" it or use "this" in case of an instance (vs static) call
-                        self = isInstance ? self : Application.create();
-                        self.components = [rootObject];
-                        require("ui/component").__root__.needsDraw = true;
-                    }
-                }
+            self = Application.isPrototypeOf(self) ? self : Application.create();
 
-                self._template = template;
-                components = self.components || [];
-                for (var i = 0; (component = components[i]); i++) {
-                    component.needsDraw = true;
-                }
+            // assign to the exports so that it is available in the deserialization of the template
+            exports.application = self;
 
+            template.instantiateWithOwnerAndDocument(null, window.document, function() {
+                require("ui/component").__root__.needsDraw = true;
                 if (callback) {
                     callback(self);
                 }

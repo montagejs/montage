@@ -60,6 +60,7 @@ if (spec) {
         require.async("serialization/deserializer-spec"),
         require.async("serialization/serializer-spec"),
 
+        require.async("ui/application-spec"),
         require.async("ui/button-spec"),
         require.async("ui/component-spec"),
         require.async("ui/firstdraw-spec"),

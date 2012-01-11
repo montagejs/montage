@@ -10,7 +10,7 @@
         "module": "montage/ui/component",
         "name": "Component",
         "properties": {
-            "hasReel": false,
+            "hasTemplate": false,
             "element": {"#": "activationTarget"}
         }
     },
@@ -19,15 +19,14 @@
         "module": "events/eventmanagertest/eventmanagertest",
         "name": "EventManagerTest",
         "properties": {
-
+            "activationTarget": {"@": "activationTarget"}
         }
     },
-    "owner": {
+    "application": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
-            "delegate": {"@": "eventmanagertest1"},
-            "activationTarget": {"@": "activationTarget"}
+            "delegate": {"@": "eventmanagertest1"}
         }
     }
 }
