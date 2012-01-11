@@ -517,6 +517,11 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             bindingOrigin = this.bindingOrigin,
             leftOriginated;
 
+        // Ignore changes that did not affect the length if the property path observed was for the count
+        if (changeType === ChangeTypes.MODIFICATION && targetPropertyPath.match(/count\(\)$/)) {
+            return;
+        }
+
         if (target !== bindingOrigin) {
             //the left and the right are different objects; easy enough
             leftOriginated = event.target === bindingOrigin;
