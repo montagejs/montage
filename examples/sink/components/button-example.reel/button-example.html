@@ -143,13 +143,13 @@ exports.ButtonExample = Montage.create(Component, {
 });
             </pre>
 
-            <p>Submit Button with no identifier</p>
+            <p>Submit Button without a specific handler. In this case, handleAction will be called on action.</p>
             <div class="submit" id="button2">I am a Submit Button</div>
             <h6>Serialization</h6>
             <pre class="prettyprint">&lt;div class="submit" id="button2"&gt;I am a Submit Button&lt;/div&gt;</pre>
 
 
-            <p>Cancel Button with an identifier</p>
+            <p>Cancel Button with a specific handler - handleButton3Action</p>
             <div class="cancel" id="button3">I am a Cancel Button</div>
             <h6>Serialization</h6>
             <pre class="prettyprint">&lt;div class="cancel" id="button3"&gt;I am a Cancel Button&lt;/div&gt;</pre>

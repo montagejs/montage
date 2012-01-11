@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-var Q = require("montage/core/promise");
+var Promise = require("montage/core/promise").Promise;
 
 var spec = queryString("spec");
 if (spec) {
@@ -13,7 +13,7 @@ if (spec) {
         window.testpage.callNext();
     });
 } else {
-    Q.all([
+    Promise.all([
         // Please keep in alphabetical order
         require.async("array-spec"),
         require.async("bitfield-spec"),
@@ -30,12 +30,14 @@ if (spec) {
         require.async("binding/binding-converter-spec"),
         require.async("binding/dependent-properties-spec"),
         require.async("binding/definebinding-spec"),
+        require.async("binding/self-binding-spec"),
 
         require.async("controllers/array-controller-spec"),
         require.async("controllers/paged-array-controller-spec"),
 
         require.async("core/core-require-spec"),
         require.async("core/core-spec"),
+        require.async("core/promise-spec"),
 
         require.async("data/blueprint-spec"),
         require.async("data/context-spec"),
@@ -58,8 +60,10 @@ if (spec) {
         require.async("serialization/deserializer-spec"),
         require.async("serialization/serializer-spec"),
 
+        require.async("ui/application-spec"),
         require.async("ui/button-spec"),
         require.async("ui/component-spec"),
+        require.async("ui/dom-spec"),
         require.async("ui/firstdraw-spec"),
         require.async("ui/list-spec"),
         require.async("ui/repetition-spec"),

@@ -14,21 +14,28 @@
             "element": {"#": "drawTrigger"}
         }
     },
-    "objecthierarchytest1": {
+
+    "component2": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "hasTemplate": false,
+            "element": {"#": "child"}
+        }
+    },
+
+    "test": {
         "module": "events/object-hierarchy-test/object-hierarchy-test",
         "name": "ObjectHierarchyTest",
         "properties": {
-
+            "component1": {"@": "component1"}
         }
     },
-    "owner": {
+    "application": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
-            "components": [
-                {"@": "component1"}
-            ],
-            "delegate": {"@": "objecthierarchytest1"}
+            "delegate": {"@": "test"}
         }
     }
 }
@@ -36,7 +43,9 @@
 
 </head>
 <body>
-    <div id="drawTrigger"></div>
+    <div id="drawTrigger">
+        <div id="child"></div>
+    </div>
     ObjectHierarchy…
 </body>
 </html>

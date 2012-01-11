@@ -18,7 +18,7 @@ var Serializer = require("core/serializer").Serializer;
 var Deserializer = require("core/deserializer").Deserializer;
 var logger = require("core/logger").logger("template");
 var defaultEventManager = require("core/event/event-manager").defaultEventManager;
-var defaultApplication = require("ui/application").application;
+var applicationExports = require("ui/application");
 
 /**
     @class module:montage/ui/template.Template
@@ -237,7 +237,8 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     */
     instantiateWithOwnerAndDocument: {
         value: function(owner, document, callback) {
-            var self = this;
+            var self = this,
+                defaultApplication = applicationExports.application;
             this.getDeserializer(function(deserializer) {
                 function invokeTemplateDidLoad(objects) {
                     owner = objects.owner;

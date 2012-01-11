@@ -79,17 +79,18 @@ input {
     margin-top: 10px;
 }
 
-.PhotoPanel #controlPanel {
+.PhotoPanel .controlPanel {
+    box-sizing: border-box;
     padding: 25px 10px 10px;
     text-align: center;
 }
 
-.PhotoPanel #controlPanel .montage-button {
+.PhotoPanel .controlPanel .montage-button {
     margin-bottom: 8px;
 }
 
 .EffectsPanel,
-.PhotoPanel #controlPanel {
+.PhotoPanel .controlPanel {
     width: 270px
 }
 
@@ -103,4 +104,13 @@ input {
 
 .acceptsDrop {
     border: 5px solid hsl(195,96%,43%);
+}
+
+.PhotoFX .mainMenu .UndoButton,
+.PhotoFX .mainMenu .RedoButton {
+    width: 12em;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }

@@ -33,7 +33,7 @@ var Person = Montage.create(Montage, {
 
 });
 
-describe("controller/array-controller-spec.js", function() {
+describe("controllers/array-controller-spec.js", function() {
 
     var arrayController;
 
@@ -597,6 +597,96 @@ describe("controller/array-controller-spec.js", function() {
                     arrayController.selectedIndexes = [0,1];
                     expect(arrayController.selectedObjects[0]).toBe(carol);
                     expect(arrayController.selectedObjects[1]).toBe(frank);
+                    expect(arrayController.selectedContentIndexes).toEqual([2,5]);
+                });
+
+            });
+
+        });
+
+        describe("setting the selected objects of the organized objects", function() {
+
+            beforeEach(function() {
+                arrayController.automaticallyOrganizeObjects = true;
+            });
+
+            describe("when there is no sorting, filtering, or range applied", function() {
+
+                it("should select the indexes for objects that were found", function() {
+                    arrayController.selectedObjects = [david, frank];
+                    expect(arrayController.selectedIndexes).toEqual([3,5])
+                    expect(arrayController.selectedContentIndexes).toEqual([3,5]);
+                });
+
+                it("must not select the indexes for objects that were not found", function() {
+                    arrayController.selectedObjects = [{}, david, frank, {}];
+                    expect(arrayController.selectedIndexes).toEqual([3, 5]);
+                    expect(arrayController.selectedContentIndexes).toEqual([3,5]);
+                });
+
+            });
+
+            describe("when sorting", function() {
+
+                beforeEach(function() {
+                    arrayController.sortFunction = sortByHome;
+                });
+
+                it("should select the indexes for objects that were found", function() {
+                    arrayController.selectedObjects = [david, frank];
+                    expect(arrayController.selectedIndexes).toEqual([1,2])
+                    expect(arrayController.selectedContentIndexes).toEqual([3,5]);
+                });
+
+                it("must not select the indexes for objects that were not found", function() {
+                    arrayController.selectedObjects = [{}, david, frank, {}];
+                    expect(arrayController.selectedIndexes).toEqual([1, 2]);
+                    expect(arrayController.selectedContentIndexes).toEqual([3,5]);
+                });
+
+            });
+
+            describe("when filtering", function() {
+
+                beforeEach(function() {
+                    arrayController.filterFunction = filterStatesWithA;
+                });
+
+                it("should select the indexes for objects that were found", function() {
+                    arrayController.selectedObjects = [carol, eve];
+                    expect(arrayController.selectedIndexes).toEqual([1,2]);
+                    expect(arrayController.selectedContentIndexes).toEqual([2,4]);
+                });
+
+            });
+
+            describe("when a range is applied", function() {
+
+                beforeEach(function() {
+                    arrayController.startIndex = 1;
+                    arrayController.endIndex = 4;
+                });
+
+                it("should select the indexes for objects that were found", function() {
+                    arrayController.selectedObjects = [carol, david];
+                    expect(arrayController.selectedIndexes).toEqual([1,2]);
+                    expect(arrayController.selectedContentIndexes).toEqual([2,3]);
+                });
+
+            });
+
+            describe("when sorting, filtering and range are applied", function() {
+
+                beforeEach(function() {
+                    arrayController.sortFunction = sortByHome;
+                    arrayController.filterFunction = filterStatesWithA;
+                    arrayController.startIndex = 1;
+                    arrayController.endIndex = 3;
+                });
+
+                it("should select the indexes for objects that were found", function() {
+                    arrayController.selectedObjects = [carol, frank];
+                    expect(arrayController.selectedIndexes).toEqual([0,1]);
                     expect(arrayController.selectedContentIndexes).toEqual([2,5]);
                 });
 

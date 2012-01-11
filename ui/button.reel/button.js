@@ -293,54 +293,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
   Description TODO
   @private
 */
-    _dispatchActionEvent: {
-        value: function() {
-            if (typeof this.action === "function") {
-                var actionPropertyBinding,
-                    context = this,
-                    boundObjectPropertyPath,
-                    functionOwnerPath,
-                    lastDotIndex;
-
-                // TODO: check if this is necessary
-                if (this._bindingDescriptors) {
-                    actionPropertyBinding = this._bindingDescriptors["action"];
-                }
-
-                if (actionPropertyBinding) {
-                    boundObjectPropertyPath = actionPropertyBinding.boundObjectPropertyPath;
-                    lastDotIndex = boundObjectPropertyPath.lastIndexOf(".");
-
-                    if (lastDotIndex >= 0) {
-                        functionOwnerPath = boundObjectPropertyPath.substring(0, lastDotIndex);
-                        context = actionPropertyBinding.boundObject.getProperty(functionOwnerPath);
-                    } else {
-                        context = actionPropertyBinding.boundObject;
-                    }
-                }
-
-                this.action.call(context, this);
-
-            } else {
-                var actionEvent = document.createEvent("CustomEvent");
-                actionEvent.initCustomEvent("action", true, true, null);
-                actionEvent.type = "action";
-                this.dispatchEvent(actionEvent);
-                this._shouldDispatchActionEvent = false;
-            }
-        },
-        enumerable: false
-    },
-
-    action: {
-        enumerable: false,
-        value: null
-    },
-
-/**
-  Description TODO
-  @private
-*/
     _isElementInput: {value: false},
     deserializedFromTemplate: {
         value: function() {

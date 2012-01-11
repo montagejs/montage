@@ -79,19 +79,35 @@
                 }
             },
 
+            "supportsCrossOriginCanvasCondition": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "supportsCrossOriginCanvasCondition"}
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "supportsCrossOriginCanvas",
+                        "oneway": true
+                    }
+                }
+            },
+
             "addPhotosButton": {
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
-                    "element": {"#": "addPhotosButton"}
+                    "element": {"#": "addPhotosButton"},
+                    "identifier": "addPhotosButton"
                 },
-                "bindings": {
-                    "action": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "addPhotosAction",
-                        "oneway": true
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
                     }
-                }
+                ]
             },
 
             "removeSelectionCondition": {
@@ -113,15 +129,16 @@
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
-                    "element": {"#": "removePhotoButton"}
+                    "element": {"#": "removePhotoButton"},
+                    "identifier": "removePhotoButton"
                 },
-                "bindings": {
-                    "action": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "removePhotoAction",
-                        "oneway": true
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
                     }
-                }
+                ]
             },
 
             "searchPanel": {
@@ -147,15 +164,72 @@
                 "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
-                    "element": {"#": "toggleControlsButton"}
+                    "element": {"#": "toggleControlsButton"},
+                    "identifier": "toggleShowControlsButton"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "undoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "undoButton"},
+                    "identifier": "undoButton"
                 },
                 "bindings": {
-                    "action": {
+                    "value": {
                         "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "toggleShowControlsAction",
+                        "boundObjectPropertyPath": "undoManager.undoLabel",
+                        "oneway": true
+                    },
+                    "enabled": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.canUndo",
                         "oneway": true
                     }
-                }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "redoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "redoButton"},
+                    "identifier": "redoButton"
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.redoLabel",
+                        "oneway": true
+                    },
+                    "enabled": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.canRedo",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
             }
 
         }
@@ -168,6 +242,8 @@
 
         <div class="mainMenu">
             <div id="toggleControlsButton" class="text ToggleControlsButton">✎</div>
+            <div id="undoButton" class="text UndoButton">⤺</div>
+            <div id="redoButton" class="text RedoButton">⤻</div>
         </div>
 
         <div class="editArea">
@@ -181,10 +257,12 @@
             <div id="photoList" class="PhotoList">
                 <div id="photoThumb"></div>
             </div>
-            <div id="controlPanel">
-                <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
-                <div id="removeSelectionCondition">
-                    <div id="removePhotoButton" class="text RemovePhotosButton">Remove Photo</div>
+            <div id="supportsCrossOriginCanvasCondition">
+                <div class="controlPanel">
+                    <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
+                    <div id="removeSelectionCondition">
+                        <div id="removePhotoButton" class="text RemovePhotosButton">Remove Photo</div>
+                    </div>
                 </div>
             </div>
         </div>

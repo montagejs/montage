@@ -9,7 +9,6 @@ var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
 var Context = require("montage/data/context").Context;
 var Store = require("montage/data/store").Store;
 var StoreManager = require("montage/data/store").StoreManager;
-var Q = require("montage/core/promise");
 var logger = require("montage/core/logger").logger("context-spec");
 
 var BinderHelper = require("data/object/binderhelper").BinderHelper;
@@ -41,7 +40,7 @@ describe("data/context-spec", function() {
                 });
             });
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
             runs(function() {
                 var result = promise.valueOf();
@@ -67,7 +66,7 @@ describe("data/context-spec", function() {
                 })
             });
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
             runs(function() {
                 var result = promise.valueOf();

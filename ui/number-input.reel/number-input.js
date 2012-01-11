@@ -14,18 +14,10 @@ var NumberInput = exports.NumberInput = Montage.create(TextInput, {
 });
 
 NumberInput.addProperties({        
-        accept: null,
         alt: null,
         autocomplete: null,
-        autofocus: null,
         dirname: null,
         disabled: {dataType: 'boolean'},
-        form: null,
-        formaction: null,
-        formenctype: null,
-        formmethod: null,
-        formnovalidate: null,
-        formtarget: null,
         list: null, // list of autocomplete options
         max: null,
         maxlength: null,

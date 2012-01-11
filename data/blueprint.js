@@ -20,7 +20,7 @@ var TemporaryObjectId = require("data/objectid").TemporaryObjectId;
 var Query = require("data/query").Query;
 var Exception = require("core/exception").Exception;
 var ObjectProperty = require("data/objectproperty").ObjectProperty;
-var Q = require("core/promise");
+var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("blueprint");
 /**
     @class module:montage/data/blueprint.BlueprintBinder
@@ -295,7 +295,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage,/** @lends module:mon
     newInstancePrototype: {
         value: function() {
             if (this.customPrototype) {
-                var results = Q.defer();
+                var results = Promise.defer();
                 require.async(this.moduleId,
                     function(exports) {
                         results.resolve(exports);

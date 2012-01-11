@@ -42,12 +42,13 @@
                 "module": "montage/ui/slider.reel",
                 "name": "Slider",
                 "properties": {
-                    "element": {"#": "valueSlider"}
+                    "element": {"#": "valueSlider"},
+                    "identifier": "valueSlider"
                 },
                 "bindings": {
                     "value": {
                         "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "value"
+                        "boundObjectPropertyPath": "sliderValue"
                     },
                     "minValue": {
                         "boundObject": {"@": "owner"},
@@ -57,7 +58,19 @@
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "maxValue"
                     }
-                }
+                },
+                "listeners": [
+                    {
+                        "type": "montageinteractionstart",
+                        "listener": {"@": "owner"},
+                        "useCapture": false
+                    },
+                    {
+                        "type": "montageinteractionend",
+                        "listener": {"@": "owner"},
+                        "useCapture": false
+                    }
+                ]
             },
             "valueDisplay": {
                 "module": "montage/ui/dynamic-text.reel",

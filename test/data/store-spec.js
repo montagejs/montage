@@ -13,7 +13,7 @@ var StoreManager = require("montage/data/store").StoreManager;
 var Serializer = require("montage/core/serializer").Serializer;
 var Deserializer = require("montage/core/deserializer").Deserializer;
 
-var Q = require("montage/core/promise");
+var Promise = require("montage/core/promise").Promise;
 var logger = require("montage/core/logger").logger("store-spec");
 
 describe("data/store-spec", function() {
@@ -66,7 +66,7 @@ describe("Store", function() {
 
         it("should be created for the blueprint", function() {
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
             runs(function() {
                 var result = promise.valueOf();
@@ -104,7 +104,7 @@ describe("SQLStore", function() {
 
         it("should be created for the SQL blueprint", function() {
             waitsFor(function() {
-                return !Q.isPromise(promise.valueOf());
+                return promise.isFulfilled();
             }, "promise", 500);
             runs(function() {
                 var result = promise.valueOf();
