@@ -12,6 +12,7 @@
 var Montage = require("montage").Montage;
 var Uuid = require("core/uuid").Uuid;
 var Deserializer = require("core/deserializer").Deserializer;
+var logger = require("core/logger").logger("serializer");
 
 /**
  @class module:montage/core/serializer.Serializer
@@ -382,7 +383,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             this._externalElements.push(element);
             return '{"#":"' + element.id + '"}';
         } else {
-            throw "Error: Not possible to serialize a DOM element with no id assigned: " + element.outerHTML;
+            logger.error("Error: Not possible to serialize a DOM element with no id assigned: " + element.outerHTML);
         }
     }},
 
