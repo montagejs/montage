@@ -644,6 +644,20 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             });
         }
     },
+    
+    /**
+     Deserializes a serialization of a single object using a root element to find elements' references.
+     @function
+     @param {Element} element The element to be cloned and used during deserialization of elements' references.
+     @param {function(object)} callback The callback to be invoked when the object has been fully deserialized.
+     */
+    deserializeObjectWithElement: {
+        value: function(element, callback) {
+            return this.deserializeWithInstancesAndElementForDocument(null, element, null, function(exports) {
+                callback(exports ? exports.root : undefined);
+            });
+        }
+    },
 
     /**
      Deserializes all objects.
