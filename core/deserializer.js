@@ -502,7 +502,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     type = "function";
                     value = value["->"];
                 } else if ("." in value && Object.keys(value).length === 1) {
-                    console.log("Warning: It's not possible to reference elements by class name anymore: " + JSON.stringify(value) + "' in template " + self._origin + ".");
+                    console.log("Warning: It's not possible to reference elements by class name anymore: '" + JSON.stringify(value) + "' in template " + self._origin + ".");
                 }
             }
 
