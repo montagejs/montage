@@ -143,21 +143,6 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         expect(click(test.inputbutton)).toHaveBeenCalled();
                     });
 
-                    it("calls the action property if it has been set and is a function", function() {
-                        var buttonSpy = {
-                            doSomething: function(event) {
-                                throw "This button should not have dispatched an action";
-                            }
-                        };
-                        spyOn(buttonSpy, 'doSomething');
-                        test.inputbutton.action = buttonSpy.doSomething;
-
-                        mousedown(test.inputbutton.element);
-                        mouseup(test.inputbutton.element);
-
-                        expect(buttonSpy.doSomething).toHaveBeenCalled();
-                    });
-
                     it("does not dispatch an action event when a mouseup occurs after not previously receive a mousedown", function() {
                         var buttonSpy = {
                             doSomething: function(event) {
