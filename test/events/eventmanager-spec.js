@@ -8,7 +8,8 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
-    EventInfo = require("support/testpageloader").EventInfo;
+    EventInfo = require("support/testpageloader").EventInfo,
+    ChangeTypes = require("montage/core/event/mutable-event").ChangeTypes;
 
 var global = typeof global !== "undefined" ? global : window;
 
@@ -877,6 +878,36 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(change).toBeTruthy();
                 expect(change0).toBeTruthy();
                 expect(change1).toBeTruthy();
+            });
+
+            describe("splice operations when reporting changes regarding length", function() {
+
+                var array, changeType;
+
+                beforeEach(function() {
+                    array = [1,2];
+                    changeType = null;
+
+                    array.addEventListener("change", function(evt) {
+                        changeType = evt.propertyChange;
+                    });
+                });
+
+                it("should report a splice that yielded a net loss as a removal", function() {
+                    array.splice(0, 1);
+                    expect(changeType).toBe(ChangeTypes.REMOVAL);
+                });
+
+                it("should report a splice that yielded a no net gain or loss as a modification", function() {
+                    array.splice(0, 1, "a");
+                    expect(changeType).toBe(ChangeTypes.MODIFICATION);
+                });
+
+                it("should report a splice that yielded a net gain as a removal", function() {
+                    array.splice(0, 1, "a", "b");
+                    expect(changeType).toBe(ChangeTypes.ADDITION);
+                });
+
             });
 
             it("should give the expected diff that resulted from popping from the array", function() {

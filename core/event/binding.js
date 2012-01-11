@@ -88,9 +88,18 @@ Object.defineProperty(ChangeEventDispatchingArray, "splice", {
         removedMembers = this._splice.apply(this, arguments);
         removedCount = removedMembers.length;
 
-        // I stopped caring about whether or not this splice could be considered an ADDITION or REMOVAL
-        // all splices result in a modification now; we could change this if we want to
+        netChange = addedCount - removedCount;
+
+        // Find the most accurate propertyChange type for this splice,
+        // For the most part it's considered a modification unless the length of the array was modified
+        // if only to not bother notifying listeners for changes of the length of this array
         changeType = ChangeTypes.MODIFICATION;
+
+        if (netChange > 0) {
+            changeType = ChangeTypes.ADDITION;
+        } else if (netChange < 0) {
+            changeType = ChangeTypes.REMOVAL;
+        }
 
         if (this.dispatchChangeEvent) {
             changeEvent = new ChangeEventConstructor();
@@ -102,8 +111,6 @@ Object.defineProperty(ChangeEventDispatchingArray, "splice", {
         }
 
         if (this.dispatchChangeAtIndexEvent) {
-
-            netChange = addedCount - removedCount;
 
             if (typeof howMany === "undefined") {
                 // no howMany argument given: remove all elements after index?
