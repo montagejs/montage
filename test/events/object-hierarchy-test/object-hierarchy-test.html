@@ -24,21 +24,18 @@
         }
     },
 
-    "objecthierarchytest1": {
+    "test": {
         "module": "events/object-hierarchy-test/object-hierarchy-test",
         "name": "ObjectHierarchyTest",
         "properties": {
-
+            "component1": {"@": "component1"}
         }
     },
-    "owner": {
+    "application": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
-            "components": [
-                {"@": "component1"}
-            ],
-            "delegate": {"@": "objecthierarchytest1"}
+            "delegate": {"@": "test"}
         }
     }
 }

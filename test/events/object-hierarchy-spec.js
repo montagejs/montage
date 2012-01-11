@@ -282,7 +282,7 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             var parent, child, bubbleEvent;
 
             beforeEach(function() {
-                parent = testApplication.components[0];
+                parent = testPage.test.component1;
                 child = parent.childComponents[0];
 
                 bubbleEvent = window.document.createEvent("CustomEvent");

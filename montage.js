@@ -340,7 +340,6 @@ window.addEventListener("DOMContentLoaded", function() {
                             global.montageWillLoad();
                         }
                         exports.Application.load(function(application) {
-                            exports.application = application;
                             window.document.application = application;
                             defaultEventManager.application = application;
                             application.eventManager = defaultEventManager;
