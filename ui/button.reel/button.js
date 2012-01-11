@@ -93,25 +93,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
     _valueNode: {value:undefined, enumerable: false},
 
 /**
-        Used when a button is associate with an input tag.<br>
-        For buttons, the title comes from it's value attribute.<br>
-        activeValue, if set, is used when the button is in active state (mousedown / touchstart).
-        @type {String}
-        @default undefined
-    */
-    activeValue: {
-        serializable: true,
-        value: undefined
-    },
-
- /**
-  Description TODO
-  @private
-*/
-    _valueNodeActiveNode: {value:undefined, enumerable: false},
-
-
-/**
   True when the button is being interacted with, either through mouse click or
   touch event.
   @private
@@ -395,7 +376,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     prepareForActivationEvents: {
         value: function() {
-
             if (window.Touch) {
                 this._element.addEventListener("touchstart", this);
             } else {
@@ -432,10 +412,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
             }
 
             this._drawValue(this.value);
-
-            if (this.activeValue && this.active) {
-                this._drawValue(this.activeValue);
-            }
         }
     }
 });
