@@ -1259,7 +1259,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(changeListener.handleEvent).toHaveBeenCalled();
             });
 
-            it("must not report a change for observers of 'count()' if a change on the observed array does not change the length", function() {
+            it("TODO must not report a change for observers of 'count()' if a change on thre observed array does not change the length", function() {
                 var changeListener = {
                     handleEvent: function(event) {}
                 };
