@@ -15,7 +15,7 @@ CJS.pwd = function() {
     return URL.resolve(window.location, ".");
 };
 
-function ScriptLoader(options) {
+function ScriptLoader(config) {
     var pendingDefinitions = [];
     var pendingScripts = {};
 
@@ -54,7 +54,7 @@ function ScriptLoader(options) {
             }
             var definition = pendingDefinitions.pop();
             if (definition) {
-                finish(options.compiler(definition))
+                finish(config.compile(definition))
             } else {
                 finish(null);
             }
@@ -135,7 +135,7 @@ CJS.read = function (url, options) {
     return response.promise;
 };
 
-function XHRLoader(options) {
+function XHRLoader(config) {
     return function(url, callback) {
         CJS.read(url, {
             overrideMimeType: "application/javascript"
@@ -144,21 +144,21 @@ function XHRLoader(options) {
                 CJS.console.log("Detected async module definition, load with script loader instead.");
                 callback(null);
             } else {
-                callback(options.compiler({ text : content, path : url }));
+                callback(config.compile({ text : content, path : url }));
             }
         }, function (error) {
             console.warn(error);
             callback(null);
         });
-    }
+    };
 }
 
-function CachingXHRLoader(options) {
-    return CJS.CachingLoader(options, XHRLoader(options));
+function CachingXHRLoader(config) {
+    return CJS.CachingLoader(config, XHRLoader(config));
 }
 
-function CachingScriptLoader(options) {
-    return CJS.CachingLoader(options, ScriptLoader(options));
+function CachingScriptLoader(config) {
+    return CJS.CachingLoader(config, ScriptLoader(config));
 }
 
 // Determine if an XMLHttpRequest was successful
@@ -215,20 +215,20 @@ CJS.DefaultCompilerConstructor = function(config) {
 // Try multiple paths
 // Try XHRLoader then ScriptLoader
 // ScriptLoader should probably always come after XHRLoader in case it's an unwrapped module
-CJS.DefaultLoaderConstructor = function(options) {
+CJS.DefaultLoaderConstructor = function(config) {
     var loaders = [];
-    if (options.xhr !== false)
-        loaders.push(CachingXHRLoader(options));
-    if (options.script !== false)
-        loaders.push(CachingScriptLoader(options));
+    if (config.xhr !== false)
+        loaders.push(CachingXHRLoader(config));
+    if (config.script !== false)
+        loaders.push(CachingScriptLoader(config));
     return CJS.Mappings(
-        options,
+        config,
         CJS.Extensions(
-            options,
+            config,
             CJS.Paths(
-                options,
+                config,
                 CJS.Multi(
-                    options,
+                    config,
                     loaders
                 )
             )
