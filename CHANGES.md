@@ -12,7 +12,7 @@
     observing setters on those properties.
     -   Montage.create(BasePrototype, {property descriptors}) is for *subtyping*. This will not
     call ``didCreate()``
--   All components now dispatch an action, similar to the button component
+-   All components now have the ability to easily dispatch an action event.
 -   Condition component improvements
 -   PhotoFX example improvements
 -   Added flow component for reference purposes, the API is not ready yet.
