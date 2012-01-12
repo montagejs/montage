@@ -153,10 +153,17 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: null
     },
 
+    translateComposer: {
+        value: null
+    },
+
     prepareForDraw: {
         enumerable: false,
         value: function () {
             this._repetitionComponents = this._repetition._childComponents;
+            if (this.translateComposer) {
+                this.addComposer(this.translateComposer);
+            }
         }
     },
 
