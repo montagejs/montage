@@ -1,0 +1,20 @@
+.logger {
+  background-color: rgba(0, 0, 0, 0.5);
+  color: #FFF;
+}
+
+.logger:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+.logger h2 {
+  font-size: 1em;
+  color: #FFF;
+  margin: 0;
+}
+
+.logger-output {
+  font-family: monospace;
+  white-space: pre;
+  padding: 0.5em;
+}
