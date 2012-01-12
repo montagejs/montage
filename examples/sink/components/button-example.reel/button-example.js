@@ -17,13 +17,7 @@ exports.ButtonExample = Montage.create(Component, {
 
     log: {
         value: function(msg) {
-            this.logger.innerHTML = this.logger.innerHTML + "<br/>" + msg;
-        }
-    },
-
-    clearLog: {
-        value: function() {
-            this.logger.innerHTML = "";
+            this.logger.log(msg);
         }
     },
 
