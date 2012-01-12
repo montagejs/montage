@@ -436,8 +436,12 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 // Set the contentEditable value
                 if (this._value && !this._dirtyValue) {
                     editorElement.firstChild.innerHTML = this._value;
+                    // Since this property affects the textValue, we need to fire a change event for it as well
+                    this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , this.textValue));
                 } else if (this._textValue && !this._dirtyTextValue) {
                     editorElement.firstChild.innerText = this._textValue;
+                    // Since this property affects the value, we need to fire a change event for it as well
+                    this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , this.value));
                 } else {
                     editorElement.firstChild.innerHTML = "";
                 }
