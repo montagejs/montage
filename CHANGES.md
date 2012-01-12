@@ -3,13 +3,19 @@
 -   Added UndoManager, example of usage added to the PhotoFX example.
 -   Custom Events now propagate through component tree by default if
     dispatched on a component.
--   didCreate is called on every instance if available, this makes it
-    possible to execute initialization code every time a instance of that
-    type is created.
+-   Addition of ``.didCreate()``
+    - Montage.create(Prototype) is for *instantiation*. From v0.5, this will
+    call ``.didCreate()`` on each begotten instance implicitly for
+    *initialization* purposes. It does not accept arguments and occurs
+    before the serialization has an opportunity to set initial properties.
+    All parameterized initialization must occur as the result of
+    observing setters on those properties.
+    -   Montage.create(BasePrototype, {property descriptors}) is for *subtyping*. This will not
+    call ``didCreate()``
 -   All components now dispatch an action, similar to the button component
 -   Condition component improvements
 -   PhotoFX example improvements
--   Added flow component for reference purposes, the API ready yet.
+-   Added flow component for reference purposes, the API is not ready yet.
 -   IE10 Fixes.
 -   Bug fixes in:
     -   require packaging
