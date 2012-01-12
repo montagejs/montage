@@ -10,8 +10,18 @@ exports.ButtonExample = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
+            var szn = JSON.parse(this._template._deserializer._serializationString);
+            console.log(this._template);
+            for (var e in szn) {
+                var entry = szn[e];
+                var pre = this.element.querySelector('pre[data-serialization-entry="'+e+'"]');
+                if (pre) {
+                    pre.innerHTML = '"'+e+'": ' + JSON.stringify(entry, null, "    ");
+                }
+            }
             // Invoke Google pretty printer on source code samples
             prettyPrint();
+
         }
     },
 
