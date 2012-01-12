@@ -107,6 +107,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         enumerable: false,
         value: function(event) {
             this._setChecked();
+            this._dispatchActionEvent();
         }
     }
 });
