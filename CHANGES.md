@@ -1,5 +1,24 @@
+# v0.5.0
 
-# Next minor
+-   Added UndoManager, example of usage added to the PhotoFX example.
+-   Custom Events now propagate through component tree by default if
+    dispatched on a component.
+-   didCreate is called on every instance if available, this makes it
+    possible to execute initialization code every time a instance of that
+    type is created.
+-   All components now dispatch an action, similar to the button component
+-   Condition component improvements
+-   PhotoFX example improvements
+-   Added flow component for reference purposes, the API ready yet.
+-   IE10 Fixes.
+-   Bug fixes in:
+    -   require packaging
+    -   Dependent properties listening
+    -   Promises
+    -   Selection in ArrayController
+    -   Scrollview
+
+# v0.4.0
 
 -   Packaging:
     -   All applications must be packages with ``package.json`` files.
