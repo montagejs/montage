@@ -654,7 +654,11 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                     remainingPath = this.targetPropertyPath;
                 }
 
-                localPrevValue.removeEventListener(baseType + "@" + remainingPath, this, this.useCapture);
+                // NOTE this check works around Safari not having a removeEventListener on its CanvasPixelArray
+                // TODO investigate if this is an appropriate fix or not
+                if (typeof localPrevValue.removeEventListener === "function") {
+                    localPrevValue.removeEventListener(baseType + "@" + remainingPath, this, this.useCapture);
+                }
             }
 
             if (localNewValue) {
