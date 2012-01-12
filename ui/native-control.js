@@ -12,7 +12,9 @@ var isUndefined = function(obj) {
 };
 
 var extend = function(destination, source) {
-  for (var property in source) destination[property] = source[property];
+  for (var property in source) {
+      destination[property] = source[property];
+  }
   return destination;
 };
 
@@ -68,7 +70,7 @@ exports.NativeControl = Montage.create(Component, {
                 configurable: isUndefined(descriptor.configurable) ? true: descriptor.configurable,
                 enumerable: isUndefined(descriptor.enumerable) ?  true: descriptor.enumerable,
                 serializable: isUndefined(descriptor.serializable) ? true: descriptor.serializable,
-                set: function(n) {
+                set: (function(n) {
                     return function(val) {
                         var attrName = '_' + n;
 
@@ -88,12 +90,12 @@ exports.NativeControl = Montage.create(Component, {
                             this.needsDraw = true;
                         }
                     };
-                }(name),
-                get: function(n) {
+                }(name)),
+                get: (function(n) {
                     return function() {
                         return this['_' + n];
                     };
-                }(name)
+                }(name))
             };
 
             // Define _ property
