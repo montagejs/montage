@@ -96,7 +96,6 @@ bootstrap("require/require", function (require, CJS) {
 
                     var result = Promise.defer();
                     loading[topId] = result.promise;
-                    if (topId == "montage/undefined") debugger;
                     config.load(topId, function(definition) {
                         if (!definition) {
                             result.reject("Can't find module " + JSON.stringify(topId) + " via " + JSON.stringify(viaId));
@@ -241,7 +240,6 @@ bootstrap("require/require", function (require, CJS) {
 
             // Asynchronous "require.async()" which ensures async executation (even with synchronous loaders)
             require.async = function(id, callback) {
-                if (id == "montage/undefined") debugger;
                 var topId = resolve(id, viaId);
                 return deepLoad(topId, viaId)
                 .then(function () {
@@ -283,52 +281,6 @@ bootstrap("require/require", function (require, CJS) {
         initializedModules: []
     };
 
-    function makeDefine() {
-        var subscribers = [];
-        var define = function() {
-            var definition = parseDefine(Array.prototype.slice.call(arguments));
-            definition.path = getCurrentScriptURL();
-            for (var i = 0; i < subscribers.length; i++) {
-                if (typeof subscribers[i] === "function") {
-                    subscribers[i](definition);
-                }
-            }
-        }
-        // API for loaders to "subscribe" to define calls
-        define._subscribe = function(subscriber) {
-            subscribers.push(subscriber);
-        }
-        return define;
-    }
-
-    function parseDefine(args) {
-        var definition = {};
-
-        // optional: module id
-        if (typeof args[0] === "string") {
-            definition.id = args.shift();
-        }
-        // optional: module dependencies
-        if (Array.isArray(args[0])) {
-            definition.dependencies = args.shift();
-        }
-        // required: module factory or exports object
-        if (typeof args[0] === "function") {
-            definition.factory = args.shift();
-        } else if (typeof args[0] === "object") {
-            var exportsObject = args.shift();
-            definition.factory = function(require, exports, module) {
-                module.exports = exportsObject;
-            };
-        }
-
-        if (args.length > 0 || typeof definition.factory !== "function") {
-            CJS.console.warn("Invalid module definition: ", args);
-        }
-
-        return definition;
-    }
-
     // TODO: other engines
     function getStack() {
         var stack = new Error().stack;
@@ -345,12 +297,6 @@ bootstrap("require/require", function (require, CJS) {
             var frames, last;
             return (frames = getStack()) && (last = frames.pop()) && last.url || null
         }
-    }
-
-    if (!global.define) {
-        global.define = makeDefine();
-    } else {
-        CJS.warn("define already exists.");
     }
 
     CJS.PackageSandbox = function (location, config) {
@@ -602,15 +548,6 @@ bootstrap("require/require", function (require, CJS) {
 
     // Built-in loader "middleware":
 
-    // Attempts to load using multiple loaders until one of them works:
-    CJS.Multi = function(config, loaders) {
-        return function(id, callback) {
-            return tryEachSyncOrAsync(loaders, function(load, resultCallback) {
-                return load(id, resultCallback);
-            }, callback);
-        };
-    };
-
     // Attempts to load using multiple base paths (or one absolute path) with a single loader.
     CJS.Paths = function(config, load) {
         return function(id, callback) {
@@ -704,7 +641,7 @@ bootstrap("require/require", function (require, CJS) {
     }
 
     // Special helper function that iterates over each item calling iteratorCallback until success (calls completeCallback
-    // with a truthy value, or returns a truthy value otherwise). Useful in "middleware" like Paths, Multi, etc.
+    // with a truthy value, or returns a truthy value otherwise). Useful in "middleware" like Paths, etc.
     function tryEachSyncOrAsync(items, iteratorCallback, completeCallback) {
         items.reduceRight(function (nextCallback, item) {
             return function () {

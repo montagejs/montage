@@ -15,84 +15,6 @@ CJS.pwd = function() {
     return URL.resolve(window.location, ".");
 };
 
-function ScriptLoader(config) {
-    var pendingDefinitions = [];
-    var pendingScripts = {};
-
-    window.define._subscribe(function(definition) {
-        if (definition.path && pendingScripts[definition.path]) {
-            pendingDefinitions.push(definition);
-        } else {
-            console.log("Ignoring "+definition.path + " (possibly concurrent )")
-        }
-    });
-
-    return function(url, callback) {
-        if (!callback) {
-            CJS.console.warn("ScriptLoader does not support synchronous loading ("+url+").");
-            return null;
-        }
-
-        // Firefox does not fire script tag events correct for scripts loaded from file://
-        // This only runs if loaded from file://
-        // TODO: make a configuration option to run only in debug mode?
-        if (HACK_checkFirefoxFileURL(url)) {
-            callback(null);
-            return;
-        }
-
-        var normalUrl = URL.resolve(url, "");
-        pendingScripts[normalUrl] = true;
-
-        var script = document.createElement("script");
-        script.onload = function() {
-            if (pendingDefinitions.length === 0) {
-                // Script tags seem to fire onload even for 404 status code in some browsers (Chrome, Safari).
-                // CJS.console.warn("No pending script definitions.");
-            } else if (pendingDefinitions.length > 1) {
-                CJS.console.warn("Support for multiple script definitions per file is not yet implemented.");
-            }
-            var definition = pendingDefinitions.pop();
-            if (definition) {
-                finish(config.compile(definition))
-            } else {
-                finish(null);
-            }
-        }
-        script.onerror = function() {
-            if (pendingDefinitions.length !== 0) {
-                CJS.console.warn("Extra pending script definitions!");
-            }
-            finish(null);
-        }
-        script.src = url;
-        document.getElementsByTagName("head")[0].appendChild(script);
-
-        function finish(result) {
-            pendingScripts[normalUrl] = false;
-            script.parentNode.removeChild(script);
-            callback(result);
-        }
-    }
-}
-
-function HACK_checkFirefoxFileURL(url) {
-    if (window.navigator.userAgent.indexOf("Firefox") >= 0) {
-        var protocol = url.match(/^([a-zA-Z]+:\/\/)?/)[1];
-        if (protocol === "file://" || (!protocol && window.location.protocol === "file:")) {
-            try {
-                var req = new XMLHttpRequest();
-                req.open("GET", url, false);
-                req.send();
-                return !xhrSuccess(req);
-            } catch (e) {
-                return true;
-            }
-        }
-    }
-    return false;
-}
-
 CJS.overlays = ["browser"];
 
 // Due to crazy variabile availability of new and old XHR APIs across
@@ -157,10 +79,6 @@ function CachingXHRLoader(config) {
     return CJS.CachingLoader(config, XHRLoader(config));
 }
 
-function CachingScriptLoader(config) {
-    return CJS.CachingLoader(config, ScriptLoader(config));
-}
-
 // Determine if an XMLHttpRequest was successful
 // Some versions of WebKit return 0 for successful file:// URLs
 function xhrSuccess(req) {
@@ -216,21 +134,13 @@ CJS.DefaultCompilerConstructor = function(config) {
 // Try XHRLoader then ScriptLoader
 // ScriptLoader should probably always come after XHRLoader in case it's an unwrapped module
 CJS.DefaultLoaderConstructor = function(config) {
-    var loaders = [];
-    if (config.xhr !== false)
-        loaders.push(CachingXHRLoader(config));
-    if (config.script !== false)
-        loaders.push(CachingScriptLoader(config));
     return CJS.Mappings(
         config,
         CJS.Extensions(
             config,
             CJS.Paths(
                 config,
-                CJS.Multi(
-                    config,
-                    loaders
-                )
+                CachingXHRLoader(config)
             )
         )
     );
