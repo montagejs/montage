@@ -175,22 +175,23 @@
 
                 <p class="span8">What is your favorite food?</p>
 
-                <ul>
-                    <li class="span4"><label><input type="radio" name="car" id="veg" /> Vegetables</label>
-                        <ul>
-                            <li><label><input type="radio" name="veg" id="veg-carrot"> Carrot</label></li>
-                            <li><label><input type="radio" name="veg" id="veg-potato"> Potato</label></li>
-                            <li><label><input type="radio" name="veg" id="veg-broccoli"> Broccoli</label></li>
-                        </ul>
-                    </li>
-                    <li class="span4"><label><input type="radio" name="car" id="fruit" /> Fruit</label>
-                        <ul>
-                            <li><label><input type="radio" name="fruit" value="apple" id="fruit-apple"> Apple</label></li>
-                            <li><label><input type="radio" name="fruit" value="banana" id="fruit-banana"> Banana</label></li>
-                            <li><label><input type="radio" name="fruit" value="pear" id="fruit-pear"> Pear</label></li>
-                        </ul>
-                    </li>
-                </ul>
+
+                <div class="span4">
+                    <label class="radio"><input type="radio" name="car" id="veg" /> Vegetables</label>
+                    <div style="padding-left: 1em">
+                        <label class="radio"><input type="radio" name="veg" id="veg-carrot"> Carrot</label>
+                        <label class="radio"><input type="radio" name="veg" id="veg-potato"> Potato</label>
+                        <label class="radio"><input type="radio" name="veg" id="veg-broccoli"> Broccoli</label>
+                    </div>
+                </div>
+                <div class="span4">
+                    <label class="radio"><input type="radio" name="car" id="fruit" /> Fruit</label>
+                    <div style="padding-left: 1em">
+                        <label class="radio"><input type="radio" name="fruit" value="apple" id="fruit-apple"> Apple</label>
+                        <label class="radio"><input type="radio" name="fruit" value="banana" id="fruit-banana"> Banana</label>
+                        <label class="radio"><input type="radio" name="fruit" value="pear" id="fruit-pear"> Pear</label>
+                    </div>
+                </div>
 
             </div>
 
@@ -251,8 +252,8 @@
 
             <h4>Listener example</h4>
 
-            <label><input type="radio" id="listen-on" name="on-off"> On</label>
-            <label><input type="radio" id="listen-off" name="on-off"> Off</label>
+            <label class="radio inline"><input type="radio" id="listen-on" name="on-off"> On</label>
+            <label class="radio inline"><input type="radio" id="listen-off" name="on-off"> Off</label>
 
             <h6>HTML</h6>
             <pre class="prettyprint">
