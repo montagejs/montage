@@ -4,6 +4,12 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
+
+ :invalid {
+     border: 1px solid #E73525;
+     border-style: dashed;
+ }
+ 
 .montage-textarea {
     width: 300px;
     height: 100px;
