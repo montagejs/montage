@@ -73,9 +73,9 @@ window.addEventListener("DOMContentLoaded", function() {
 
             CJS.PackageSandbox(params.montageBase, config)
             .then(function (montageRequire) {
-                montageRequire.config.modules["core/promise"] = {exports: Q};
-                montageRequire.config.modules["core/url"] = {exports: URL};
-                montageRequire.config.modules["core/shim/timers"] = {exports: {}};
+                montageRequire.inject("core/promise", Q);
+                montageRequire.inject("core/url", URL);
+                montageRequire.inject("core/shim/timeers", {});
 
                 // install the linter, which loads on the first error
                 config.lint = function (definition) {

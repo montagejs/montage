@@ -24,15 +24,16 @@ bootstrap("require/require", function (require, CJS) {
         config.lib = URL.resolve(config.location, config.lib || ".");
         config.paths = config.paths || [config.lib];
         config.mappings = config.mappings || {}; // EXTENSION
-        config.definitions = config.definitions || {};
-        config.modules = config.modules || {};
         config.exposedConfigs = config.exposedConfigs || [
             "paths",
             "mappings",
-            "definitions",
             "base",
             "location",
             "packageDescription",
+            "packages",
+            "modules",
+            "getModule",
+            "load",
             "loadPackage"
         ];
         config.makeLoader = config.makeLoader || CJS.DefaultLoaderConstructor;
@@ -41,28 +42,49 @@ bootstrap("require/require", function (require, CJS) {
         config.compile = config.compile || config.makeCompiler(config);
 
         // Sandbox state:
-        // Module instances: { exports, id, path, uri }
+        // Module instances: { exports, id, path, uri, factory, dependencies }
         var modules = config.modules;
-        // Module definition objects: { factory, dependencies, path }
-        var definitions = config.definitions;
-        // Arrays of callbacks to be executed once a module definition has been loaded
-        var definitionListeners = {};
         // Mapping from canonical IDs to the initial top ID used to load module
         var urisToIds = {};
 
+        function getModule(id) {
+            if (!has(modules, id)) {
+                modules[id] = {"id": id};
+            }
+            return modules[id];
+        }
+        config.getModule = getModule;
+
+        function inject(id, exports) {
+            var module = getModule(id)
+            module.exports = exports;
+            module.path = URL.resolve(config.location, id);
+            module.directory = URL.resolve(module.path, ".");
+        }
+
         // Ensures a module definition is loaded before returning or executing the callback.
         // Supports multiple calls for the same topId by registering callback as a listener if it has already been initiated.
-        var definitionMemo = {};
-        function load(topId) {
-            if (!has(definitionMemo, topId)) {
+        var loading = {};
+        function load(topId, viaId) {
+            if (!has(loading, topId)) {
+                var module = getModule(topId);
+
+                // instantiated or already loaded
+                if (
+                    module.factory !== void 0 ||
+                    module.exports !== void 0
+                ) {
+                    loading[topId] = Promise.ref(module);
                 // preloaded
-                if (has(definitions, topId) && definitions[topId].path !== undefined) {
-                    var definition = definitions[topId];
-                    definitionMemo[topId] = CJS.read(definition.path)
+                } else if (
+                    module.path !== void 0 &&
+                    module.factory !== void 0
+                ) {
+                    loading[topId] = CJS.read(module.path)
                     .then(function (text) {
-                        definition.text = text;
-                        config.compile(definition);
-                        return definition;
+                        module.text = text;
+                        config.compile(module);
+                        return module;
                     });
                 // load
                 } else {
@@ -73,12 +95,16 @@ bootstrap("require/require", function (require, CJS) {
                     );
 
                     var result = Promise.defer();
-                    definitionMemo[topId] = result.promise;
+                    loading[topId] = result.promise;
+                    if (topId == "montage/undefined") debugger;
                     config.load(topId, function(definition) {
                         if (!definition) {
-                            result.reject("Can't find module " + JSON.stringify(topId));
+                            result.reject("Can't find module " + JSON.stringify(topId) + " via " + JSON.stringify(viaId));
                         }
-                        definitions[topId] = definition || null;
+                        // TODO lace the module through instead of receiving the definition
+                        for (var name in definition) {
+                            module[name] = definition[name];
+                        }
 
                         // Progress update
                         CJS.progress.loadedModules.push([
@@ -86,16 +112,16 @@ bootstrap("require/require", function (require, CJS) {
                             topId
                         ].join("#"));
 
-                        result.resolve(definition);
+                        result.resolve(module);
                     });
                 }
             }
-            return definitionMemo[topId];
+            return loading[topId];
         }
 
         // Load a module definition, and the definitions of its transitive
         // dependencies
-        function deepLoad(id, loading) {
+        function deepLoad(id, viaId, loading) {
             // this is a memo of modules already being loaded so we don’t
             // data-lock on a cycle of dependencies.
             loading = loading || {};
@@ -103,66 +129,66 @@ bootstrap("require/require", function (require, CJS) {
             if (has(loading, id))
                 return; // break the cycle of violence.
             loading[id] = true; // this has happened before
-            return load(id)
-            .then(function (definition) {
+            return load(id, viaId)
+            .then(function (module) {
                 // load the transitive dependencies using the magic of
                 // recursion.
-                return Promise.all((definition.dependencies || [])
+                return Promise.all((module.dependencies || [])
                 .map(function (depId) {
                     depId = resolve(depId, id)
-                    return deepLoad(depId, loading);
+                    // create dependees array, purely for debug purposes
+                    var module = getModule(depId);
+                    var dependees = module.dependees = module.dependees || [];
+                    dependees.push(id);
+                    return deepLoad(depId, id, loading);
                 }))
                 .then(function () {
-                    return definition;
+                    return module;
                 })
             })
         }
 
         // Initializes a module by executing the factory function with a new module "exports" object.
         function initModule(topId) {
+            var module = getModule(topId);
             // do not reinitialize modules
-            if (has(modules, topId)) {
-                return;
-            }
-            // do not initialize modules that have not loaded
-            if (!has(definitions, topId)) {
-                CJS.error("Can't require module "+JSON.stringify(topId)+": not yet loaded.");
-                return;
+            if (module.exports !== void 0) {
+                return module.exports;
             }
             // do not initialize modules that do not define a factory function
-            if (typeof definitions[topId].factory !== "function") {
+            if (module.factory === void 0) {
                 CJS.warn("Can't require module "+JSON.stringify(topId));
                 throw new Error("Can't require module "+JSON.stringify(topId));
             }
 
-            // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
-            // TODO: Handle this at higher level?
-            var uri = URL.resolve(definitions[topId].path, "");
-            if (has(urisToIds, uri)) {
-                var canonicalId = urisToIds[uri];
-                modules[topId] = modules[canonicalId];
-                return;
+            if (module.path !== void 0) {
+
+                // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
+                // TODO: Handle this at higher level?
+                var uri = URL.resolve(modules[topId].path, "");
+                if (has(urisToIds, uri)) {
+                    var canonicalId = urisToIds[uri];
+                    modules[topId] = modules[canonicalId];
+                    return modules[topId].exports;
+                }
+                urisToIds[uri] = topId;
+
+                module.directory = URL.resolve(module.path, "."); // EXTENSION
+
             }
 
-            urisToIds[uri] = topId;
-
-            var module = modules[topId] = {
-                exports: {},
-                id: topId,
-                path: definitions[topId].path,
-                directory: URL.resolve(definitions[topId].path, "."),
-                uri: uri // EXTENSION
-            };
+            module.exports = {};
+            module.uri = uri; // EXTENSION
 
             var requireArg = makeRequire(topId);
             var exportsArg = module.exports;
             var moduleArg = module;
 
             // Execute the factory function:
-            var returnValue = definitions[topId].factory.call(global, requireArg, exportsArg, moduleArg);
+            var returnValue = module.factory.call(global, requireArg, exportsArg, moduleArg);
 
             // Modules should never have a return value.
-            if (returnValue !== undefined) {
+            if (returnValue !== void 0) {
                 CJS.warn('require: module "'+topId+'" returned a value.');
             }
 
@@ -172,6 +198,7 @@ bootstrap("require/require", function (require, CJS) {
                 topId
             ].join("#"));
 
+            return module.exports;
         }
 
         // Finds the internal identifier for a module in a subpackage
@@ -204,19 +231,19 @@ bootstrap("require/require", function (require, CJS) {
         }
 
         // Creates a unique require function for each module that encapsulates that module's id for resolving relative module IDs against.
-        function makeRequire(base) {
+        function makeRequire(viaId) {
 
             // Main synchronously executing "require()" function
             var require = function(id) {
-                var topId = resolve(id, base);
-                initModule(topId);
-                return modules[topId].exports;
+                var topId = resolve(id, viaId);
+                return initModule(topId);
             };
 
             // Asynchronous "require.async()" which ensures async executation (even with synchronous loaders)
             require.async = function(id, callback) {
-                var topId = resolve(id, base);
-                return deepLoad(topId)
+                if (id == "montage/undefined") debugger;
+                var topId = resolve(id, viaId);
+                return deepLoad(topId, viaId)
                 .then(function () {
                     return require(topId);
                 })
@@ -235,6 +262,7 @@ bootstrap("require/require", function (require, CJS) {
             require.load = load;
             require.deepLoad = deepLoad;
             require.identify = identify;
+            require.inject = inject;
             require.progress = CJS.progress;
 
             config.exposedConfigs.forEach(function(name) {
@@ -328,8 +356,8 @@ bootstrap("require/require", function (require, CJS) {
     CJS.PackageSandbox = function (location, config) {
         location = URL.resolve(location, ".");
         config = config || {};
-        var packages = config.packages = config.packages || {};
-        var loadedPackages = {};
+        var loadingPackages = config.loadingPackages = config.loadingPackages || {};
+        var loadedPackages = config.packages = {};
 
         config.getPackage = function (dependency) {
             dependency = Dependency(dependency);
@@ -344,9 +372,9 @@ bootstrap("require/require", function (require, CJS) {
             dependency = Dependency(dependency);
             // TODO handle other kinds of dependency
             var location = URL.resolve(dependency.location, ".");
-            if (!packages[location]) {
+            if (!loadingPackages[location]) {
                 var jsonPath = URL.resolve(location, 'package.json');
-                packages[location] = CJS.read(jsonPath)
+                loadingPackages[location] = CJS.read(jsonPath)
                 .then(function (json) {
                     var packageDescription = JSON.parse(json);
                     var subconfig = configurePackage(
@@ -359,7 +387,7 @@ bootstrap("require/require", function (require, CJS) {
                     return pkg;
                 });
             }
-            return packages[location];
+            return loadingPackages[location];
         };
 
         var _require = config.loadPackage(location);
@@ -388,8 +416,7 @@ bootstrap("require/require", function (require, CJS) {
         config.packageDescription = description;
         // explicitly mask definitions and modules, which must
         // not apply to child packages
-        var definitions = config.definitions = {};
-        config.modules = {};
+        var modules = config.modules = config.modules || {};
 
         // overlay
         var overlay = description.overlay || {};
@@ -405,29 +432,26 @@ bootstrap("require/require", function (require, CJS) {
 
         // directories
         description.directories = description.directories || {};
-        description.directories.lib = description.directories.lib === undefined ? "." : description.directories.lib;
+        description.directories.lib = description.directories.lib === void 0 ? "." : description.directories.lib;
         var lib = description.directories.lib;
         // lib
         config.lib = location + "/" + lib;
         var packageRoot = description.directories.packages || "node_modules";
         packageRoot = URL.resolve(location, packageRoot + "/");
 
-        // name, creates an alias for the module name within
-        // its package.  For example, in the "q" package, one
-        // can require("q") to get the main module.
-        if (description.name)
-            definitions[description.name] = {"ref": ""};
-
         // The default "main" module of a package has the same name as the
         // package.
-        if (description.main === undefined)
+        if (description.main === void 0)
             description.main = description.name;
 
         // main, injects a definition for the main module, with
         // only its path. makeRequire goes through special effort
         // in deepLoad to re-initialize this definition with the
         // loaded definition from the given path.
-        definitions[""] = {"path": URL.resolve(location, description.main)};
+        modules[""] = {
+            "id": "",
+            "path": URL.resolve(location, description.main)
+        };
 
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};
@@ -527,7 +551,7 @@ bootstrap("require/require", function (require, CJS) {
 
     CJS.ParseDependencies = function(config, compile) {
         return function(def) {
-            if (!def.dependencies && def.text !== undefined) {
+            if (!def.dependencies && def.text !== void 0) {
                 def.dependencies = CJS.parseDependencies(def.text);
             }
             def = compile(def);
@@ -612,15 +636,20 @@ bootstrap("require/require", function (require, CJS) {
             // TODO: remove this when all code has been migrated off of the autonomous name-space problem
             if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/")
                 console.warn("Package reflexive module ignored:", id);
-            if (id === config.name)
+            if (id === config.name) {
                 id = "";
+            }
             // The package loader can inject some definitions for
             // aliases into the package configuration.  These will
             // only have path attributes and need to be replaced with
             // factories.  We intercept these aliases (usually the
             // package's main module, not found in its lib path) here.
-            if (config.definitions[id]) {
-                return next(config.definitions[id].path, callback);
+            var module = config.getModule(id);
+            if (module.exports || module.factory) {
+                return callback(module);
+            }
+            if (module.path !== void 0) {
+                return next(module.path, callback);
             }
             return tryEachSyncOrAsync(Object.keys(config.mappings), function(candidate, resultCallback) {
                 if (
@@ -628,7 +657,8 @@ bootstrap("require/require", function (require, CJS) {
                     id.indexOf(candidate) === 0 && id.charAt(candidate.length) === "/"
                 ) {
                     var location = config.mappings[candidate].location;
-                    return config.loadPackage(location).then(function (pkg) {
+                    return config.loadPackage(location)
+                    .then(function (pkg) {
                         var rest = id.slice(candidate.length + 1);
                         pkg.deepLoad(rest)
                         .then(function (result) {
