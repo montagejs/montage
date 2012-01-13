@@ -59,14 +59,14 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
                 } catch(e) {
                     // unable to convert - maybe error
                     this.error = e;
-                    //this._valueSyncedWithInputField = false;
+                    this._valueSyncedWithInputField = false;
                 }
             } else {
                 this._value = value;
             }            
             if(fromInput) {
-                //this._valueSyncedWithInputField = true;
-                this.needsDraw = true;
+                this._valueSyncedWithInputField = true;
+                //this.needsDraw = true;
             } else {
                 this._valueSyncedWithInputField = false;
                 this.needsDraw = true;
@@ -119,7 +119,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
   @private
 */
     _updateOnInput: {
-        value: true
+        value: false
     },
 
     // switch to turn off auto update upon keypress overriding the Converter flag
