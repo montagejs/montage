@@ -96,6 +96,32 @@
                 },
 
 
+                "log-listener": {
+                    "value": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "logger"}
+                        }
+                    ]
+                },
+                "listen-on": {
+                    "module": "montage/ui/radio-button.reel",
+                    "name": "RadioButton",
+                    "properties": {
+                        "element": {"#": "listen-on"}
+                    },
+                    "listeners": {"@":"log-listener"}
+                },
+                "listen-off": {
+                    "module": "montage/ui/radio-button.reel",
+                    "name": "RadioButton",
+                    "properties": {
+                        "element": {"#": "listen-off"}
+                    },
+                    "listeners": {"@":"log-listener"}
+
+                },
+
                 "invert-converter": {
                     "module": "components/converters.reel",
                     "name": "InvertConverter"
@@ -152,9 +178,9 @@
                 <ul>
                     <li class="span4"><label><input type="radio" name="car" id="veg" /> Vegetables</label>
                         <ul>
-                            <li><label><input type="radio" name="trips" id="veg-carrot"> Carrot</label></li>
-                            <li><label><input type="radio" name="trips" id="veg-potato"> Potato</label></li>
-                            <li><label><input type="radio" name="trips" id="veg-broccoli"> Broccoli</label></li>
+                            <li><label><input type="radio" name="veg" id="veg-carrot"> Carrot</label></li>
+                            <li><label><input type="radio" name="veg" id="veg-potato"> Potato</label></li>
+                            <li><label><input type="radio" name="veg" id="veg-broccoli"> Broccoli</label></li>
                         </ul>
                     </li>
                     <li class="span4"><label><input type="radio" name="car" id="fruit" /> Fruit</label>
@@ -207,9 +233,9 @@
     &lt;li&gt;
         &lt;label&gt;&lt;input type="radio" name="car" id="veg" /&gt; Vegetables&lt;/label&gt;
         &lt;ul&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="trips" id="veg-carrot"&gt; Carrot&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="trips" id="veg-potato"&gt; Potato&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="trips" id="veg-broccoli"&gt; Broccoli&lt;/label&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-carrot"&gt; Carrot&lt;/label&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-potato"&gt; Potato&lt;/label&gt;&lt;/li&gt;
+            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-broccoli"&gt; Broccoli&lt;/label&gt;&lt;/li&gt;
         &lt;/ul&gt;
     &lt;/li&gt;
     &lt;li&gt;
@@ -223,7 +249,45 @@
 &lt;/ul&gt;</pre>
 
 
+            <h4>Listener example</h4>
 
+            <label><input type="radio" id="listen-on" name="on-off"> On</label>
+            <label><input type="radio" id="listen-off" name="on-off"> Off</label>
+
+            <h6>HTML</h6>
+            <pre class="prettyprint">
+&lt;label&gt;&lt;input type="radio" id="listen-on" name="on-off"&gt; On&lt;/label&gt;
+&lt;label&gt;&lt;input type="radio" id="listen-off" name="on-off"&gt; Off&lt;/label&gt;</pre>
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint">
+"log-listener": {
+    "value": [
+        {
+            "type": "action",
+            "listener": {"@": "logger"}
+        }
+    ]
+},
+
+"listen-on": {
+    "module": "montage/ui/radio-button.reel",
+    "name": "RadioButton",
+    "properties": {
+        "element": {"#": "listen-on"}
+    },
+    "listeners": {"@":"log-listener"}
+},
+
+"listen-off": {
+    "module": "montage/ui/radio-button.reel",
+    "name": "RadioButton",
+    "properties": {
+        "element": {"#": "listen-off"}
+    },
+    "listeners": {"@":"log-listener"}
+
+}</pre>
 
             <div id="logger"></div>
 
