@@ -14,34 +14,15 @@ var Textfield = exports.Textfield = Montage.create(TextInput, {
 });
 
 Textfield.addProperties({        
-        accept: null,
-        alt: null,
         autocomplete: null,
-        autofocus: null,
-        dirname: null,
         disabled: {dataType: 'boolean'},
-        form: null,
-        formaction: null,
-        formenctype: null,
-        formmethod: null,
-        formnovalidate: null,
-        formtarget: null,
         list: null, // list of autocomplete options
-        max: null,
         maxlength: null,
-        min: null,
-        multiple: null,
+        multiple: {dataType: 'boolean'},
         name: null,
         pattern: null,
         placeholder: null,
         readonly: {dataType: 'boolean'},
         required: {dataType: 'boolean'},
-        size: null,
-        src: null,
-        step: null,
-        title: null
-        //type: 'text'
-        // type is intentionally left out as this must be specified in the markup
-        // and is not bindable
-        // width: ''
+        size: null
 });

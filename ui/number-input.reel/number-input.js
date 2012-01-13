@@ -14,9 +14,7 @@ var NumberInput = exports.NumberInput = Montage.create(TextInput, {
 });
 
 NumberInput.addProperties({        
-        alt: null,
         autocomplete: null,
-        dirname: null,
         disabled: {dataType: 'boolean'},
         list: null, // list of autocomplete options
         max: null,
@@ -29,11 +27,5 @@ NumberInput.addProperties({
         readonly: {dataType: 'boolean'},
         required: {dataType: 'boolean'},
         size: null,
-        src: null,
-        step: null,
-        title: null
-        //type: 'text'
-        // type is intentionally left out as this must be specified in the markup
-        // and is not bindable
-        // width: ''
+        step: null
 });
