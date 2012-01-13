@@ -167,9 +167,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (!this.indexMap) {
                 return this._objects;
             } else {
-                if (!this._mappedObjects) {
+                if (this._objects && !this._mappedObjects) {
                     this._mappedObjects = this.indexMap.map(function(value) {
-                        return this._objects[value];
+                        return this._objects.getProperty(value);
                     }, this);
                 }
                 return this._mappedObjects;
@@ -179,6 +179,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (logger.isDebug) {
                 logger.debug(this, " set objects:", value.length, value, "same objects?", value === this._objects);
             }
+
+            this._mappedObjects = null;
             this._objects = value;
 
             // Objects have changed, clear the selectedIndexes, if we're managing our own selection
@@ -271,7 +273,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             this._mappedObjects = null;
             this._indexMap = value;
-            this.needsDraw = true;
 
             if (this._isComponentExpanded) {
                 this._refreshItems();
@@ -350,7 +351,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 i;
 
 
-            if (this.indexMap) {
+            if (this._objects && this.indexMap) {
                 objectCount = this.indexMap.length;
             }
 
@@ -412,7 +413,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // for clarity sake
         this._itemsToAppend.push(this._currentItem);
         index = items.length + this._itemsToAppend.length - 1;
-        
+
         self._canDraw = false;
         componentsCount = this._childComponentsCount;
 
