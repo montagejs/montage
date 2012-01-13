@@ -4,25 +4,26 @@
 -   Custom Events now propagate through component tree by default if
     dispatched on a component.
 -   Addition of ``.didCreate()``
-    - Montage.create(Prototype) is for *instantiation*. From v0.5, this will
-    call ``.didCreate()`` on each begotten instance implicitly for
-    *initialization* purposes. It does not accept arguments and occurs
+    - ``MyPrototype.create()`` or ``Montage.create(MyPrototype)`` is for **instantiation**. From v0.5, this will
+    call _didCreate()_ on each begotten instance implicitly for
+    **initialization** purposes. It does not accept arguments and occurs
     before the serialization has an opportunity to set initial properties.
     All parameterized initialization must occur as the result of
     observing setters on those properties.
-    -   Montage.create(BasePrototype, {property descriptors}) is for *subtyping*. This will not
-    call ``didCreate()``
+    -   ``Montage.create(MyPrototype, {property descriptors})`` is for **subtyping**. This will not
+    call _didCreate()_
 -   All components now have the ability to easily dispatch an action event.
 -   Condition component improvements
 -   PhotoFX example improvements
 -   Added flow component for reference purposes, the API is not ready yet.
 -   IE10 Fixes.
 -   Bug fixes in:
-    -   require packaging
+    -   Packaging for require
     -   Dependent properties listening
     -   Promises
     -   Selection in ArrayController
     -   Scrollview
+    -   Various other areas
 
 # v0.4.0
 
