@@ -13,7 +13,7 @@
     "listeners": [
         {
             "type": "action",
-            "listener": {"@": "owner"}
+            "listener": {"@": "logger"}
         }
     ]
 },
@@ -99,6 +99,15 @@
             "element": {"#": "iconicToggle"}
         }
     },
+
+    "logger": {
+        "module": "logger.reel",
+        "name": "Logger",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    },
+
     "owner": {
         "module": "components/button-group-example.reel",
         "name": "ButtonGroupExample",
@@ -222,6 +231,11 @@ Iconic:
     &lt;div id="button2_2" class="text icon"&gt;&lt;img src="images/upload.png" /&gt;Save&lt;/div&gt;
 &lt;/div&gt;
             </pre>
+
+        <div id="logger">
+            <h2>Logger</h2>
+        </div>
+
 
         </div>
     </body>
