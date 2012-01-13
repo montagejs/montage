@@ -594,12 +594,18 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
             }
             
-            if(this._needsFocus) {
+            if (this._needsFocus) {
                 this.element.firstChild.focus();
                 if(document.activeElement == this.element.firstChild) {
                     this._needsFocus = false;
                 } else {
-                    this.needsDraw = true;
+                    // Make sure the element is visible before trying again to set the focus
+                    var style = window.getComputedStyle(this.element);
+                    if (style.getPropertyValue("visibility") == "hidden" || style.getPropertyValue("display") == "none") {
+                        this._needsFocus = false;
+                    } else {
+                        this.needsDraw = true;
+                    }
                 }
             }
         }
