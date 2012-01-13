@@ -83,8 +83,6 @@
         }
 
     </style>
-
-
 </head>
 <body>
     <div id="buttontest" class="button-example">
@@ -102,7 +100,9 @@
         <section>
 
             <p>Default Button with an identifier to link it to an action handler</p>
-            <div class="text" id="button1">Button One</div>
+
+            <button class="text btn" id="button1">Button One</button>
+
             <h6>Serialization</h6>
             <pre class="prettyprint" data-serialization-entry="button1"></pre>
 
@@ -135,19 +135,16 @@ exports.ButtonExample = Montage.create(Component, {
             </pre>
 
             <p>Submit Button without a specific handler. In this case, handleAction will be called on action.</p>
-            <div class="submit" id="button2">I am a Submit Button</div>
+            <input type="submit" class="btn submit" id="button2" value="I am a Submit Button"/>
             <h6>Serialization</h6>
             <pre class="prettyprint">&lt;div class="submit" id="button2"&gt;I am a Submit Button&lt;/div&gt;</pre>
 
 
             <p>Cancel Button with a specific handler - handleButton3Action</p>
-            <div class="cancel" id="button3">I am a Cancel Button</div>
+            <div class="btn cancel" id="button3">I am a Cancel Button</div>
             <h6>Serialization</h6>
             <pre class="prettyprint">&lt;div class="cancel" id="button3"&gt;I am a Cancel Button&lt;/div&gt;</pre>
 
-            <div id="event-log" class="eventlog alert-message block-message info">
-                <h6>Event Log</h6>
-            </div>
         </section>
 
         <section>
@@ -169,7 +166,7 @@ handleButton1Action: {
 
         </section>
 
-        <div id="logger" class="logger">
+        <div id="logger">
             <h2>Logger</h2>
         </div>
 
