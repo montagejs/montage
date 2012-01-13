@@ -117,6 +117,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
 
                 content = contentNode ? contentNode.innerHTML : "";
+                if (content == "<br>") {
+                    // when the contentEditable div is emptied, Chrome add a <br>, let's filter it out
+                    content = "";
+                }
                 if (this._sanitizer) {
                     content = this._sanitizer.unscopeCSS(content);
                 }
