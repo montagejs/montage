@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+    <title></title>
+    <script type="text/montage-serialization">
+        {
+            "scrollbars": {
+                "module": "montage/ui/scroll-bars.reel",
+                "name": "ScrollBars",
+                "properties": {
+                    "element": {
+                        "#": "scrollbars"
+                    }
+                }
+            },
+            "owner": {
+                "module": "montage/ui/scroller.reel",
+                "name": "Scroller",
+                "properties": {
+                    "_content": {
+                        "#": "content"
+                    },
+                    "element": {
+                        "#": "montage-scroller"
+                    },
+                    "_scrollBars": {
+                        "@": "scrollbars"
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .montage-scroller {
+            position: relative;
+            display: block;
+            overflow: hidden;
+        }
+        .montage-scroller .content {
+            float: left;
+        }
+    </style>
+</head>
+<body>
+    <div id="montage-scroller" class="montage-scroller">
+        <div id="scrollbars"></div>
+        <div id="content" class="content"></div>
+    </div>
+</body>
+</html>

@@ -79,6 +79,21 @@
                 }
             },
 
+            "supportsCrossOriginCanvasCondition": {
+                "module": "montage/ui/condition.reel",
+                "name": "Condition",
+                "properties": {
+                    "element": {"#": "supportsCrossOriginCanvasCondition"}
+                },
+                "bindings": {
+                    "condition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "supportsCrossOriginCanvas",
+                        "oneway": true
+                    }
+                }
+            },
+
             "addPhotosButton": {
                 "module": "montage/ui/button.reel",
                 "name": "Button",
@@ -159,6 +174,62 @@
                         "capture": false
                     }
                 ]
+            },
+
+            "undoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "undoButton"},
+                    "identifier": "undoButton"
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.undoLabel",
+                        "oneway": true
+                    },
+                    "enabled": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.canUndo",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "redoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "redoButton"},
+                    "identifier": "redoButton"
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.redoLabel",
+                        "oneway": true
+                    },
+                    "enabled": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "undoManager.canRedo",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
             }
 
         }
@@ -171,6 +242,8 @@
 
         <div class="mainMenu">
             <div id="toggleControlsButton" class="text ToggleControlsButton">✎</div>
+            <div id="undoButton" class="text UndoButton">⤺</div>
+            <div id="redoButton" class="text RedoButton">⤻</div>
         </div>
 
         <div class="editArea">
@@ -184,10 +257,12 @@
             <div id="photoList" class="PhotoList">
                 <div id="photoThumb"></div>
             </div>
-            <div id="controlPanel">
-                <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
-                <div id="removeSelectionCondition">
-                    <div id="removePhotoButton" class="text RemovePhotosButton">Remove Photo</div>
+            <div id="supportsCrossOriginCanvasCondition">
+                <div class="controlPanel">
+                    <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
+                    <div id="removeSelectionCondition">
+                        <div id="removePhotoButton" class="text RemovePhotosButton">Remove Photo</div>
+                    </div>
                 </div>
             </div>
         </div>

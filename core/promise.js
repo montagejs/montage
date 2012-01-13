@@ -119,20 +119,24 @@ var PrimordialPromise = Creatable.create({
                 }
             });
 
-            Object.defineProperties(creation, descriptor);
+            if (descriptor) {
+                Object.defineProperties(creation, descriptor);
+            }
 
             // create static reflections of all new promise methods
-            var statics = {};
-            Object.keys(promiseDescriptor).forEach(function (name) {
-                statics[name] = {
-                    value: function (value) {
-                        var args = Array.prototype.slice.call(arguments, 1);
-                        var promise = this.ref(value);
-                        return promise[name].apply(promise, args);
-                    }
-                };
-            });
-            Object.defineProperties(creation, statics);
+            if (promiseDescriptor) {
+                var statics = {};
+                Object.keys(promiseDescriptor).forEach(function (name) {
+                    statics[name] = {
+                        value: function (value) {
+                            var args = Array.prototype.slice.call(arguments, 1);
+                            var promise = this.ref(value);
+                            return promise[name].apply(promise, args);
+                        }
+                    };
+                });
+                Object.defineProperties(creation, statics);
+            }
 
             return creation;
         }

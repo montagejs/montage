@@ -86,6 +86,22 @@ Montage.defineProperty(Object.prototype, "dispatchEvent", {
     enumerable: false
 });
 
+var EventListenerDescriptor = Montage.create(Montage, {
+    type: {
+        serializable: true,
+        value: null
+    },
+    
+    listener: {
+        serializable: "reference",
+        value: null
+    },
+    
+    capture: {
+        serializable: true,
+        value: null
+    }
+});
 
 Serializer.defineSerializationUnit("listeners", function(object) {
     var eventManager = defaultEventManager,
@@ -93,22 +109,22 @@ Serializer.defineSerializationUnit("listeners", function(object) {
         eventListenerDescriptors = [],
         descriptors,
         descriptor,
+        listenerDescriptor,
         listener;
-
+    
     for (var type in eventManager.registeredEventListeners) {
         descriptors = eventManager.registeredEventListeners[type];
         descriptor = descriptors && descriptors[uuid];
         if (descriptor) {
             for (var listenerUuid in descriptor.listeners) {
-                listener = descriptor.listeners[listenerUuid].listener;
-                // only serializing ActionEventListener for now at least..
-                if (ActionEventListener.isPrototypeOf(listener)) {
-                    eventListenerDescriptors.push({
-                        type: type,
-                        listener: listener,
-                        capture: descriptor.listeners[listenerUuid].capture
-                    });
-                }
+                listener = descriptor.listeners[listenerUuid];
+                
+                eventListenerDescriptor = EventListenerDescriptor.create();
+                eventListenerDescriptor.type = type;
+                eventListenerDescriptor.listener = listener.listener;
+                eventListenerDescriptor.capture = listener.capture;
+                
+                eventListenerDescriptors.push(eventListenerDescriptor);
             }
         }
     }
@@ -876,6 +892,11 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 
+    _activationHandler: {
+        enumerable: true,
+        value: null
+    },
+
     // Toggle listening for EventManager
 /**
   @private
@@ -884,6 +905,21 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         enumerable: false,
         value: function(aWindow) {
 
+            // We use our own function to handle activation events so it's not inadvertently
+            // removed as a listener when removing the last listener that may have also been observing
+            // the same eventType of an activation event
+            if (!this._activationHandler) {
+                var eventManager = this;
+                this._activationHandler = function(evt) {
+                    var eventType = evt.type;
+
+                    // Don't double call handleEvent if we're already handling it becasue we have a registered listener
+                    if (!eventManager.registeredEventListeners[eventType]) {
+                        eventManager.handleEvent(evt);
+                    }
+                }
+            }
+
             // The EventManager needs to handle "gateway/pointer/activation events" that we
             // haven't let children listen for yet
             // when the EM handles them eventually it will need to allow
@@ -891,9 +927,9 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             // before finding event handlers that were registered for these events
             if (aWindow.Touch) {
                 // TODO on iOS the touch doesn't capture up at the window, just the document; interesting
-                aWindow.document.nativeAddEventListener("touchstart", this, true);
+                aWindow.document.nativeAddEventListener("touchstart", this._activationHandler, true);
             } else {
-                aWindow.document.nativeAddEventListener("mousedown", this, true);
+                aWindow.document.nativeAddEventListener("mousedown", this._activationHandler, true);
                 //TODO also should accommodate mouseenter/mouseover possibly
             }
 

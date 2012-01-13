@@ -10,6 +10,7 @@
 
 var Montage = require("core/core").Montage,
     Component = require("ui/component").Component,
+    logger = require("core/logger").logger("loader"),
     bootstrappingTimeoutPropertyName = "_montageStartBootstrappingTimeout",
     MONTAGE_BOOTSTRAPPER_ELEMENT_ID = "montage-app-bootstrapper",
     MONTAGE_LOADER_ELEMENT_ID = "montage-app-loader",
@@ -136,6 +137,9 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 return;
             }
 
+            if (logger.isDebug) {
+                logger.debug(this, "CURRENT STAGE: " + value);
+            }
             this._currentStage = value;
             this.needsDraw = true;
         }
@@ -213,6 +217,11 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
     templateDidLoad: {
         value: function() {
+
+            if (logger.isDebug) {
+                logger.debug(this, "templateDidLoad");
+            }
+
             this.element = document.documentElement;
             this.readyToShowLoader = true;
 
@@ -221,6 +230,10 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 self = this;
 
             if (timing.bootstrappingStartTime) {
+
+                if (logger.isDebug) {
+                    logger.debug(this, "had already started bootstrapping");
+                }
 
                 // We just found out we were bootstrapping…
                 this.currentStage = BOOTSTRAPPING;
@@ -231,6 +244,9 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 remainingBootstrappingDelay = this.minimumBootstrappingDuration - (timing.bootstrappingEndTime - timing.bootstrappingStartTime)
 
                 if (remainingBootstrappingDelay > 0) {
+                    if (logger.isDebug) {
+                        logger.debug(this, "still need to show bootstrapper for another " + remainingBootstrappingDelay + "ms");
+                    }
                     this._showLoadingTimeout = setTimeout(function() {
                         self._revealLoader();
                     }, remainingBootstrappingDelay);
@@ -239,6 +255,9 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 }
             } else {
                 // The bootstrapper hasn't decided to show yet, that's fine let's try to load main
+                if (logger.isDebug) {
+                    logger.debug(this, "bootstrapping has not started yet…");
+                }
                 this._loadMainComponent();
             }
         }
@@ -246,6 +265,11 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
     _revealLoader: {
         value: function() {
+
+            if (logger.isDebug) {
+                logger.debug(this, "_revealLoader");
+            }
+
             this.currentStage = LOADING;
             document._montageTiming.loadingStartTime = Date.now();
 
@@ -286,12 +310,18 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
     _revealMainComponent: {
         value: function() {
+            if (logger.isDebug) {
+                logger.debug(this, "_revealMainComponent");
+            }
             this.currentStage = LOADED;
         }
     },
 
     _loadMainComponent: {
         value: function() {
+            if (logger.isDebug) {
+                logger.debug(this, "_loadMainComponent");
+            }
             this.isLoadingMainComponent = true;
             var self = this;
             window.require.async(this.mainModule)
@@ -304,6 +334,9 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
     _mainLoadedCallback: {
         value: function(exports) {
+            if (logger.isDebug) {
+                logger.debug(this, "_mainLoadedCallback");
+            }
             // We've loaded the class for the mainComponent
             // instantiate it and lets find out what else we need to load
             // based on its template
@@ -322,6 +355,9 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
             // if the mainComponent is ready to draw...
             if (child === this._mainComponent) {
 
+                if (logger.isDebug) {
+                    logger.debug(this, "main preparing to draw");
+                }
                 this.isLoadingMainComponent = false;
 
                 // Determine old content
@@ -340,6 +376,9 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 // if we hadn't even started to say we were bootstrapping…
                 if (!timing.bootstrappingStartTime) {
                     // don't bother showing bootstrapping, just show the mainComponent
+                    if (logger.isDebug) {
+                        logger.debug(this, "bootstrapper never shown");
+                    }
                     clearTimeout(startBootstrappingTimeout);
                     startBootstrappingTimeout = null;
                     this._revealMainComponent();
@@ -355,7 +394,13 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                     timing.bootstrappingEndTime = Date.now();
 
                     if ((remainingBootstrappingDelay = this.minimumBootstrappingDuration - (timing.bootstrappingEndTime - timing.bootstrappingStartTime)) > 0) {
+                        if (logger.isDebug) {
+                            logger.debug(this, "show bootstrapper for another " + remainingBootstrappingDelay + "ms");
+                        }
                         this._showMainComponentTimeout = setTimeout(function () {
+                            if (logger.isDebug) {
+                                logger.debug(this, "ok, shown bootstrapper long enough");
+                            }
                             self._revealMainComponent();
                         }, remainingBootstrappingDelay);
                     }
@@ -368,7 +413,13 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                     // wait until we've loaded for the minimumLoadingDuration
                     // TODO this is not precise, but it's a decent start for scheduling the delay
                     if ((remainingLoadingDelay = this.minimumLoadingDuration - (timing.loadingEndTime - timing.loadingStartTime)) > 0) {
+                        if (logger.isDebug) {
+                            logger.debug(this, "show loader for another " + remainingLoadingDelay + "ms");
+                        }
                         this._showMainComponentTimeout = setTimeout(function () {
+                            if (logger.isDebug) {
+                                logger.debug(this, "ok, shown loader long enough");
+                            }
                             self._revealMainComponent();;
                         }, remainingLoadingDelay);
                     } else {
@@ -391,6 +442,9 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
         value: function() {
             // start loading the mainComponent if we haven't already
             if (!this.readyToShowMainComponent && !this.isLoadingMainComponent) {
+                if (logger.isDebug) {
+                    logger.debug(this, "draw; start loading main component");
+                }
                 this._loadMainComponent();
             }
 

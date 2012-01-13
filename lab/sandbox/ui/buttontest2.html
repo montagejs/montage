@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <title>Buttontest</title>
+    <script type="text/javascript" src="../../../montage.js"></script>
+    <script type="text/montage-serialization">
+{
+    "slider1": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider0"},
+            "value": 50
+        }
+    },
+    "slider2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider1"},
+            "value": 50
+        }
+    },
+    "slider3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider2"},
+            "value": 50
+        }
+    },
+    "slider4": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider3"},
+            "value": 50
+        }
+    },
+    "slider5": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider4"},
+            "value": 50,
+            "busy": true
+        }
+    },
+    "slider6": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider5"},
+            "value": 50
+        }
+    },
+    "slider11": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider10"},
+            "value": 50
+        }
+    },
+    "slider12": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider11"},
+            "value": 50
+        }
+    },
+    "slider13": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider12"},
+            "value": 50
+        }
+    },
+    "slider14": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider13"},
+            "value": 50
+        }
+    },
+    "slider15": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider14"},
+            "value": 50
+        }
+    },
+    "slider16": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "slider15"},
+            "value": 50,
+            "busy": true
+        }
+    },
+    "sliderreeldemo1": {
+        "module": "slidertest",
+        "name": "SliderReelDemo",
+        "properties": {
+
+        }
+    },
+    "owner": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "components": [
+                {"@": "slider1"},
+                {"@": "slider2"},
+                {"@": "slider3"},
+                {"@": "slider4"},
+                {"@": "slider5"},
+                {"@": "slider6"},
+                {"@": "slider11"},
+                {"@": "slider12"},
+                {"@": "slider13"},
+                {"@": "slider14"},
+                {"@": "slider15"},
+                {"@": "slider16"}
+            ],
+            "delegate": {"@": "sliderreeldemo1"}
+        }
+    }
+}
+    </script>
+
+    <style>
+    	body {
+    		background-color: #E6E6E6;
+    	}
+        .testButton {
+		/*
+        	width: 260px;
+            margin : 35px 0 35px 50px;
+		*/
+
+            width : 200px;
+        }
+
+		#sliderValue {
+			-webkit-transform: translateZ(0);
+		}
+    </style>
+</head>
+<body>
+    <div style="float: left; border: 1px solid #000">
+        <div style="padding: 10px;">
+            <div class="submit busy" id="slider0" style="width: 200px"></div>
+        </div>
+        <div style="background-color: #505050; padding: 10px;">    
+            <div class="submit" id="slider1"></div>
+        </div>
+        <div style="background-color: white; padding: 10px;">
+            <div class="submit" id="slider2"></div>
+        </div>
+        <div style="background-color: black; padding: 10px;">
+            <div class="submit" id="slider3"></div>
+        </div>
+        <div style="background-color: MediumTurquoise; padding: 10px;">
+            <div class="submit" id="slider4"></div>
+        </div>
+        <div style="background-color: crimson; padding: 10px;">
+            <div class="submit" id="slider5"></div>
+        </div>
+    </div>
+    <div style="float: left; margin-left: 8px; border: 1px solid #000">
+        <div style="padding: 10px;">
+            <div class="submit montage-dark" id="slider10" style="width: 200px"></div>
+        </div>
+        <div style="background-color: #505050; padding: 10px;">    
+            <div class="text montage-dark" id="slider11"></div>
+        </div>
+        <div style="background-color: white; padding: 10px;">
+            <div class="submit montage-dark" id="slider12"></div>
+        </div>
+        <div style="background-color: black; padding: 10px;">
+            <div class="submit montage-dark" id="slider13"></div>
+        </div>
+        <div style="background-color: MediumTurquoise; padding: 10px;">
+            <div class="submit montage-dark" id="slider14"></div>
+        </div>
+        <div style="background-color: crimson; padding: 10px;">
+            <div class="submit montage-dark busy" id="slider15"></div>
+        </div>
+    </div>
+</body>
+</html>
