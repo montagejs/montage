@@ -415,6 +415,14 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
         }
     },
 
+    spread: {
+        value: function (fulfilled, rejected) {
+            return this.all().then(function (args) {
+                return fulfilled.apply(void 0, args);
+            }, rejected);
+        }
+    },
+
     then: {
         value: function (fulfilled, rejected) {
             var self = this;
@@ -425,7 +433,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 try {
                     deferred.resolve(fulfilled ? fulfilled(value) : value);
                 } catch (error) {
-                    console.log(error.stack);
+                    console.error(error.stack);
                     deferred.reject(error.message, error);
                 }
             }
