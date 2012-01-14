@@ -29,7 +29,6 @@ bootstrap("require/require", function (require, CJS) {
         config.exposedConfigs = config.exposedConfigs || [
             "paths",
             "mappings",
-            "loader",
             "definitions",
             "base",
             "location",
@@ -37,9 +36,9 @@ bootstrap("require/require", function (require, CJS) {
             "loadPackage"
         ];
         config.makeLoader = config.makeLoader || CJS.DefaultLoaderConstructor;
-        config.loader = config.loader || config.makeLoader(config);
+        config.load = config.load || config.makeLoader(config);
         config.makeCompiler = config.makeCompiler || CJS.DefaultCompilerConstructor;
-        config.compiler = config.compiler || config.makeCompiler(config);
+        config.compile = config.compile || config.makeCompiler(config);
 
         // Sandbox state:
         // Module instances: { exports, id, path, uri }
@@ -53,192 +52,171 @@ bootstrap("require/require", function (require, CJS) {
 
         // Ensures a module definition is loaded before returning or executing the callback.
         // Supports multiple calls for the same topId by registering callback as a listener if it has already been initiated.
-        function loadDefinition(topId, callback) {
-            if (callback) {
-                // already loaded
-                if (has(definitions, topId) && definitions[topId].factory) {
-                    callback(topId);
-                }
-                // in progress
-                else if (has(definitionListeners, topId)) {
-                    definitionListeners[topId].push(callback);
-                }
-                // pre-arranged
-                else if (has(definitions, topId) && definitions[topId].path !== undefined) {
-                    var def = definitions[topId];
-                    CJS.read(def.path).then(function (text) {
-                        def.text = text;
-                        config.compiler(def);
-                        callback(topId);
-                    }, function (reason) {
-                        console.warn("Can't read " + JSON.stringify(def.path) + ": " + reason);
-                        callback(null);
+        var definitionMemo = {};
+        function load(topId) {
+            if (!has(definitionMemo, topId)) {
+                // preloaded
+                if (has(definitions, topId) && definitions[topId].path !== undefined) {
+                    var definition = definitions[topId];
+                    definitionMemo[topId] = CJS.read(definition.path)
+                    .then(function (text) {
+                        definition.text = text;
+                        config.compile(definition);
+                        return definition;
                     });
-                }
-                // hasn't started
-                else {
-                    definitionListeners[topId] = [callback];
+                // load
+                } else {
 
-                    config.loader(topId, function(definition) {
+                    // Update the list of modules that need to load
+                    CJS.progress.requiredModules.push(
+                        [config.location, topId].join("#")
+                    );
+
+                    var result = Promise.defer();
+                    definitionMemo[topId] = result.promise;
+                    config.load(topId, function(definition) {
                         if (!definition) {
-                            CJS.warn("Can't find module " + JSON.stringify(topId));
+                            result.reject("Can't find module " + JSON.stringify(topId));
                         }
                         definitions[topId] = definition || null;
 
+                        // Progress update
                         CJS.progress.loadedModules.push([
                             config.location,
                             topId
                         ].join("#"));
 
-                        definitionListeners[topId].forEach(function(fn) { 
-                            fn(topId);
-                        });
-
+                        result.resolve(definition);
                     });
                 }
-            } else {
-                // already loaded
-                if (has(definitions, topId)) {
-                    return;
-                }
-                // hasn't started
-                else {
-                    var definition = config.loader(topId);
-                    if (!definition) {
-                        CJS.warn("Can't find module " + JSON.stringify(topId));
-                    }
-                    definitions[topId] = definition || null;
-                }
             }
+            return definitionMemo[topId];
         }
 
-        function loadDeepDefinitions(topId, callback) {
-            if (has(modules, topId)) {
-                CJS.warn("module already init (1): " + topId);
-                return callback && callback();
-            }
-            if (callback) {
-                // in async mode we need to load the transitive dependencies first
-                var transitiveDependencies = {}; // undefined = not yet seen; false = not yet loaded; true = already loaded;
-                var loaded = false;
-                function loadDependencies(id) {
-                    transitiveDependencies[id] = true;
-                    if (definitions[id]) {
-                        (definitions[id].dependencies || []).map(function(dependency) {
-                            var depId = resolve(dependency, id);
-                            if (!has(transitiveDependencies, depId)) {
-                                transitiveDependencies[depId] = false;
-                                return depId;
-                            }
-                        }).forEach(function(depId) {
-                            depId && loadDefinition(depId, loadDependencies);
-                        });
-                    }
-                    // if any dependency is still unloaded, bail early
-                    // TODO: could eliminate this loop by counting
-                    for (var dependency in transitiveDependencies) {
-                        if (transitiveDependencies[dependency] === false) {
-                            return;
-                        }
-                    }
-                    // otherwise we're done loading transitive dependencies
-                    if (!loaded) {
-                        loaded = true;
-                        callback();
-                    }
-                }
-                // kick it off with the root module:
-                loadDefinition(topId, loadDependencies);
-            } else {
-                loadDefinition(topId);
-            }
-        }
-
-        // Loads module definition (and it's transitive dependencies if in async loading mode) then initializes the module.
-        function loadModule(topId) {
-            var result = Promise.defer();
-
-            // Update the list of modules that need to load
-            CJS.progress.requiredModules.push(
-                [config.location, topId].join("#")
-            );
-
-            loadDeepDefinitions(topId, function () {
-                try {
-                    initModule(topId);
-                    result.resolve();
-                } catch (exception) {
-                    result.reject(exception.message, exception);
-                }
-            });
-
-            return result.promise;
+        // Load a module definition, and the definitions of its transitive
+        // dependencies
+        function deepLoad(id, loading) {
+            // this is a memo of modules already being loaded so we don’t
+            // data-lock on a cycle of dependencies.
+            loading = loading || {};
+            // has this all happened before?  will it happen again?
+            if (has(loading, id))
+                return; // break the cycle of violence.
+            loading[id] = true; // this has happened before
+            return load(id)
+            .then(function (definition) {
+                // load the transitive dependencies using the magic of
+                // recursion.
+                return Promise.all((definition.dependencies || [])
+                .map(function (depId) {
+                    depId = resolve(depId, id)
+                    return deepLoad(depId, loading);
+                }))
+                .then(function () {
+                    return definition;
+                })
+            })
         }
 
         // Initializes a module by executing the factory function with a new module "exports" object.
         function initModule(topId) {
-            if (has(definitions, topId)) {
-                if (definitions[topId] && typeof definitions[topId].factory === "function") {
-                    // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
-                    // TODO: Handle this at higher level?
-                    var uri = URL.resolve(definitions[topId].path, "");
-                    if (has(urisToIds, uri)) {
-                        var canonicalId = urisToIds[uri];
-                        modules[topId] = modules[canonicalId];
-                    } else {
-                        urisToIds[uri] = topId;
-
-                        var module = modules[topId] = {
-                            exports: {},
-                            id: topId,
-                            path: definitions[topId].path,
-                            directory: URL.resolve(definitions[topId].path, "."),
-                            uri: uri // EXTENSION
-                        };
-
-                        var requireArg = makeRequire(topId);
-                        var exportsArg = module.exports;
-                        var moduleArg = module;
-
-                        // Execute the factory function:
-                        var returnValue = definitions[topId].factory.call(global, requireArg, exportsArg, moduleArg);
-
-                        // Modules should never have a return value.
-                        if (returnValue !== undefined) {
-                            CJS.warn('require: module "'+topId+'" returned a value.');
-                        }
-
-                        // Update the list of modules that are ready to use
-                        CJS.progress.initializedModules.push([
-                            config.location,
-                            topId
-                        ].join("#"));
-
-                    }
-                } else {
-                    CJS.warn("Can't require module "+JSON.stringify(topId));
-                    throw new Error("Can't require module "+JSON.stringify(topId));
-                }
-            } else {
+            // do not reinitialize modules
+            if (has(modules, topId)) {
+                return;
+            }
+            // do not initialize modules that have not loaded
+            if (!has(definitions, topId)) {
                 CJS.error("Can't require module "+JSON.stringify(topId)+": not yet loaded.");
+                return;
+            }
+            // do not initialize modules that do not define a factory function
+            if (typeof definitions[topId].factory !== "function") {
+                CJS.warn("Can't require module "+JSON.stringify(topId));
+                throw new Error("Can't require module "+JSON.stringify(topId));
+            }
+
+            // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
+            // TODO: Handle this at higher level?
+            var uri = URL.resolve(definitions[topId].path, "");
+            if (has(urisToIds, uri)) {
+                var canonicalId = urisToIds[uri];
+                modules[topId] = modules[canonicalId];
+                return;
+            }
+
+            urisToIds[uri] = topId;
+
+            var module = modules[topId] = {
+                exports: {},
+                id: topId,
+                path: definitions[topId].path,
+                directory: URL.resolve(definitions[topId].path, "."),
+                uri: uri // EXTENSION
+            };
+
+            var requireArg = makeRequire(topId);
+            var exportsArg = module.exports;
+            var moduleArg = module;
+
+            // Execute the factory function:
+            var returnValue = definitions[topId].factory.call(global, requireArg, exportsArg, moduleArg);
+
+            // Modules should never have a return value.
+            if (returnValue !== undefined) {
+                CJS.warn('require: module "'+topId+'" returned a value.');
+            }
+
+            // Update the list of modules that are ready to use
+            CJS.progress.initializedModules.push([
+                config.location,
+                topId
+            ].join("#"));
+
+        }
+
+        // Finds the internal identifier for a module in a subpackage
+        // The ``internal`` boolean parameter causes the function to return
+        // null instead of throwing an exception.  I’m guessing that
+        // throwing exceptions *and* being recursive would be too much
+        // performance evil for one function.
+        function identify(id2, require2, internal) {
+            if (require2.location === config.location)
+                return id2;
+            var locations = {};
+            for (var name in config.mappings) {
+                var mapping = config.mappings[name];
+                var location = mapping.location;
+                var candidate = config.getPackage(location);
+                var id1 = candidate.identify(id2, require2, true);
+                if (id1 === null) {
+                    continue
+                } else if (id1 === "") {
+                    return name;
+                } else {
+                    return name + "/" + id1;
+                }
+            }
+            if (internal) {
+                return null;
+            } else {
+                throw new Error("Can't identify " + id2 + " from " + require2.location);
             }
         }
 
         // Creates a unique require function for each module that encapsulates that module's id for resolving relative module IDs against.
         function makeRequire(base) {
+
             // Main synchronously executing "require()" function
             var require = function(id) {
                 var topId = resolve(id, base);
-                if (!modules[topId]) {
-                    initModule(topId);
-                }
+                initModule(topId);
                 return modules[topId].exports;
             };
 
             // Asynchronous "require.async()" which ensures async executation (even with synchronous loaders)
             require.async = function(id, callback) {
                 var topId = resolve(id, base);
-                return loadModule(topId)
+                return deepLoad(topId)
                 .then(function () {
                     return require(topId);
                 })
@@ -254,37 +232,9 @@ bootstrap("require/require", function (require, CJS) {
 
             };
 
-            require.deepLoader = loadDeepDefinitions;
-
-            // Finds the internal identifier for a module in a subpackage
-            // The ``internal`` boolean parameter causes the function to return
-            // null instead of throwing an exception.  I’m guessing that
-            // throwing exceptions *and* being recursive would be too much
-            // performance evil for one function.
-            require.identify = function (id2, require2, internal) {
-                if (require2.location === require.location)
-                    return id2;
-                var locations = {};
-                for (var name in config.mappings) {
-                    var mapping = config.mappings[name];
-                    var location = mapping.location;
-                    var candidate = config.getPackage(location);
-                    var id1 = candidate.identify(id2, require2, true);
-                    if (id1 === null) {
-                        continue
-                    } else if (id1 === "") {
-                        return name;
-                    } else {
-                        return name + "/" + id1;
-                    }
-                }
-                if (internal) {
-                    return null;
-                } else {
-                    throw new Error("Can't identify " + id2 + " from " + require2.location);
-                }
-            };
-
+            require.load = load;
+            require.deepLoad = deepLoad;
+            require.identify = identify;
             require.progress = CJS.progress;
 
             config.exposedConfigs.forEach(function(name) {
@@ -553,28 +503,6 @@ bootstrap("require/require", function (require, CJS) {
         return parsed.authorityRoot || parsed.root;
     };
 
-    // Attempts to return a standardized error object.
-    CJS.standardizeError = function(e, defaults) {
-        var error = {
-            name    : e.name,
-            message : e.message,
-            line    : e.line || e.lineNumber,
-            url     : e.fileName,
-            stack   : e.stack
-        };
-        for (var name in defaults) {
-            if (has(defaults, name) && !error[name]) {
-                error[name] = defaults[name];
-            }
-        }
-        return error;
-    }
-
-    // Takes a standardized error (see CJS.standardizeError) and returns a string appropriate for error reporting
-    CJS.syntaxErrorFormatter = function(e) {
-        return e.name + (e.message ? " ("+e.message+")" : "") + " on line " + (e.line || "[unknown]") + " of " + e.url;
-    }
-
     // Extracts dependencies by parsing code and looking for "require" (currently using a simple regexp)
     CJS.parseDependencies = function(factory) {
         var o = {};
@@ -597,41 +525,12 @@ bootstrap("require/require", function (require, CJS) {
 
     // Built-in compiler/preprocessor "middleware":
 
-    // Compiles module text into a function.
-    // Can be overriden by the platform to make the engine aware of the source path. Uses sourceURL hack by default.
-    CJS.NewFunctionCompiler = function(config) {
-        config.scope = config.scope || {};
-        var names = ["require", "exports", "module"];
-        var scopeNames = Object.keys(config.scope);
-        names.push.apply(names, scopeNames);
-        return function(def) {
-            if (!def.factory && def.text !== undefined) {
-                var factory = globalEval(
-                    "(function(" + names.join(",") + "){" +
-                    def.text +
-                    "\n//*/\n})\n//@ sourceURL=" + def.path
-                );
-                def.factory = function (require, exports, module) {
-                    Array.prototype.push.apply(arguments, scopeNames.map(function (name) {
-                        return config.scope[name];
-                    }));
-                    return factory.apply(this, arguments);
-                };
-                // new Function will have its body reevaluated at every call, hence using eval instead
-                // https://developer.mozilla.org/en/JavaScript/Reference/Functions_and_function_scope
-                //def.factory = new Function("require", "exports", "module", def.text + "\n//*/\n//@ sourceURL="+def.path);
-                delete def.text;
-            }
-            return def;
-        };
-    };
-
-    CJS.ParseDependencies = function(config, compiler) {
+    CJS.ParseDependencies = function(config, compile) {
         return function(def) {
             if (!def.dependencies && def.text !== undefined) {
                 def.dependencies = CJS.parseDependencies(def.text);
             }
-            def = compiler(def);
+            def = compile(def);
             if (def && !def.dependencies) {
                 if (def.text || def.factory) {
                     def.dependencies = CJS.parseDependencies(def.text || def.factory);
@@ -643,61 +542,34 @@ bootstrap("require/require", function (require, CJS) {
         };
     };
 
-    CJS.CatchExceptions = function(config, compiler) {
-        return function(def) {
-            try {
-                return compiler(def);
-            } catch (e) {
-                CJS.error(CJS.syntaxErrorFormatter(CJS.standardizeError(e, { name : "SyntaxError", url : def.path })));
-                return null;
-            }
-        };
-    };
-
     // Support she-bang for shell scripts by commenting it out (it is never valid JavaScript syntax anyway)
-    CJS.StripShebang = function(config, compiler) {
+    CJS.StripShebang = function(config, compile) {
         return function(def) {
             if (def.text) {
                 def.text = def.text.replace(/^#!/, "//#!");
             }
-            return compiler(def);
+            return compile(def);
         }
     };
 
-    function runJSHint(text, path, options) {
-        if (!JSHINT(text, options)) {
-            console.warn("JSHint Error: "+path);
-            JSHINT.errors.forEach(function(error) {
-                if (error) {
-                    console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
-                    if (error.evidence) {
-                        console.warn("    " + error.evidence);
-                    }
-                }
-            });
+    CJS.Lint = function(config, compile) {
+        if (!config.lint) {
+            return compile;
         }
-    }
-
-    CJS.JSHint = function(config, compiler) {
-        if (typeof JSHINT !== "function") {
-            return compiler;
-        }
-
-        return function(def) {
+        return function(definition) {
             try {
-                return compiler(def);
-            } catch (e) {
-                runJSHint(def.text, def.path, config.jslintOptions);
-                return null;
+                return compile(definition);
+            } catch (error) {
+                config.lint(definition);
+                throw error;
             }
-        }
+        };
     }
 
-    CJS.DefaultCompilerMiddleware = function(config, compiler) {
-        return  CJS.CatchExceptions(config,
-                    CJS.StripShebang(config,
-                        CJS.ParseDependencies(config,
-                            CJS.JSHint(config, compiler))));
+    CJS.DefaultCompilerMiddleware = function(config, compile) {
+        return CJS.StripShebang(config,
+                   CJS.ParseDependencies(config,
+                       CJS.Lint(config, compile)));
     };
 
     CJS.DefaultCompilerConstructor = function(config) {
@@ -709,14 +581,14 @@ bootstrap("require/require", function (require, CJS) {
     // Attempts to load using multiple loaders until one of them works:
     CJS.Multi = function(config, loaders) {
         return function(id, callback) {
-            return tryEachSyncOrAsync(loaders, function(loader, resultCallback) {
-                return loader(id, resultCallback);
+            return tryEachSyncOrAsync(loaders, function(load, resultCallback) {
+                return load(id, resultCallback);
             }, callback);
         };
     };
 
     // Attempts to load using multiple base paths (or one absolute path) with a single loader.
-    CJS.Paths = function(config, loader) {
+    CJS.Paths = function(config, load) {
         return function(id, callback) {
             var paths = CJS.isAbsolute(id) ?
                 [id] :
@@ -725,7 +597,7 @@ bootstrap("require/require", function (require, CJS) {
                 });
 
             return tryEachSyncOrAsync(paths, function(path, resultCallback) {
-                return loader(path, resultCallback);
+                return load(path, resultCallback);
             }, callback);
         };
     };
@@ -758,14 +630,16 @@ bootstrap("require/require", function (require, CJS) {
                     var location = config.mappings[candidate].location;
                     return config.loadPackage(location).then(function (pkg) {
                         var rest = id.slice(candidate.length + 1);
-                        pkg.deepLoader(rest, function (result) {
+                        pkg.deepLoad(rest)
+                        .then(function (result) {
                             resultCallback({
                                 "factory": function (require, exports, module) {
                                     module.exports = pkg(rest);
                                 },
                                 "path": location + "#" + rest // this is necessary for constructing unique URI's for chaching
                             });
-                        });
+                        })
+                        .end();
                     }, function (reason) {
                         return resultCallback ? resultCallback(null) : null;
                     });
@@ -786,15 +660,15 @@ bootstrap("require/require", function (require, CJS) {
         };
     };
 
-    CJS.Extensions = function(config, loader) {
+    CJS.Extensions = function(config, load) {
         var extensions = config.extensions || ["js"];
         return function(id, callback) {
             var needsExtension = CJS.base(id).indexOf(".") < 0;
             return tryEachSyncOrAsync(extensions, function(extension, resultCallback) {
                 if (needsExtension)
-                    return loader(id + "." + extension, resultCallback);
+                    return load(id + "." + extension, resultCallback);
                 else
-                    return loader(id, resultCallback);
+                    return load(id, resultCallback);
             }, callback);
         }
     }
@@ -802,30 +676,20 @@ bootstrap("require/require", function (require, CJS) {
     // Special helper function that iterates over each item calling iteratorCallback until success (calls completeCallback
     // with a truthy value, or returns a truthy value otherwise). Useful in "middleware" like Paths, Multi, etc.
     function tryEachSyncOrAsync(items, iteratorCallback, completeCallback) {
-        if (completeCallback) {
-            var i = 0;
-            function tryNext() {
-                if (i >= items.length) {
-                    return completeCallback(null);
-                } else {
-                    return iteratorCallback(items[i++], function(result) {
-                        return result ? completeCallback(result) : tryNext();
-                    });
-                }
-            }
-            return tryNext();
-        } else {
-            for (var i = 0; i < items.length; i++) {
-                var result = iteratorCallback(items[i]);
-                if (result) {
-                    return result;
-                }
-            }
-            return null;
-        }
+        items.reduceRight(function (nextCallback, item) {
+            return function () {
+                iteratorCallback(item, function (result) {
+                    if (result) {
+                        completeCallback(result);
+                    } else {
+                        nextCallback(null);
+                    }
+                })
+            };
+        }, completeCallback)(null);
     };
 
-    CJS.CachingLoader = function(config, loader) {
+    CJS.CachingLoader = function(config, load) {
         var cache = {};
         var pending = {};
         return function(url, callback) {
@@ -835,20 +699,16 @@ bootstrap("require/require", function (require, CJS) {
                 return callback ? callback(cache[url]) : cache[url];
             }
 
-            if (callback) {
-                if (has(pending, url)) {
-                    pending[url].push(callback);
-                } else {
-                    pending[url] = [callback];
-                    loader(url, function(definition) {
-                        cache[url] = definition;
-                        pending[url].forEach(function(pendingCallback) {
-                            pendingCallback(definition);
-                        });
-                    });
-                }
+            if (has(pending, url)) {
+                pending[url].push(callback);
             } else {
-                return cache[url] = loader(url);
+                pending[url] = [callback];
+                load(url, function(definition) {
+                    cache[url] = definition;
+                    pending[url].forEach(function(pendingCallback) {
+                        pendingCallback(definition);
+                    });
+                });
             }
         }
     }
