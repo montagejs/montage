@@ -142,7 +142,23 @@
             "unpressedValue": "off"
         }
     },
-
+    "toggleinput2": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "toggleinput2"},
+            "pressedValue": "on"
+        }
+    },
+    "toggleinput3": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "toggleinput3"},
+            "pressed": true,
+            "unpressedValue": "off"
+        }
+    },
 
     "test": {
         "module": "ui/buttontest/buttontest",
@@ -163,7 +179,9 @@
             "converterbutton": {"@": "converterbutton"},
             "uppercaseconverter": {"@": "uppercaseconverter"},
             "activevalue": {"@": "activevalue"},
-            "toggleinput": {"@": "toggleinput"}
+            "toggleinput": {"@": "toggleinput"},
+            "toggleinput2": {"@": "toggleinput2"},
+            "toggleinput3": {"@": "toggleinput3"}
         }
     },
     "application": {
@@ -218,5 +236,7 @@
 
     <h1>Toggle button test</h1>
     <input type="button" id="toggleinput" value="fail">
+    <input type="button" id="toggleinput2" value="off">
+    <input type="button" id="toggleinput3" value="on">
 </body>
 </html>

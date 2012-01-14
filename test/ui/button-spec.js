@@ -256,6 +256,9 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         expect(test.toggleinput.element.value).toBe("unpressed");
                     });
                 });
+                it("is taken from `value` on init if the button is unpressed and unpressedValue isn't set", function() {
+                    expect(test.toggleinput2.unpressedValue).toBe(test.toggleinput2.value);
+                });
             });
 
             describe("pressedValue", function() {
@@ -269,6 +272,9 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     runs(function(){
                         expect(test.toggleinput.element.value).toBe("pressed");
                     });
+                });
+                it("is taken from `value` on init if the button is pressed and pressedValue isn't set", function() {
+                    expect(test.toggleinput3.pressedValue).toBe(test.toggleinput3.value);
                 });
             });
         });
