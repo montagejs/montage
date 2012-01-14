@@ -54,26 +54,26 @@ window.addEventListener("DOMContentLoaded", function() {
         var config = platform.getConfig();
 
         // Platform dependent
-        platform.loadCJS(function (CJS, Q, URL) {
+        platform.loadRequire(function (Require, Promise, URL) {
 
             // setup the reel loader
             config.makeLoader = function (config) {
                 return exports.ReelLoader(config,
-                    CJS.DefaultLoaderConstructor(config));
+                    Require.DefaultLoaderConstructor(config));
             };
 
             // setup serialization compiler
             config.makeCompiler = function (config) {
                 return exports.TemplateCompiler(config,
                     exports.SerializationCompiler(config,
-                        CJS.DefaultCompilerConstructor(config)));
+                        Require.DefaultCompilerConstructor(config)));
             };
 
             var location = URL.resolve(window.location, params["package"] || ".");
 
-            CJS.PackageSandbox(params.montageBase, config)
+            Require.PackageSandbox(params.montageBase, config)
             .then(function (montageRequire) {
-                montageRequire.inject("core/promise", Q);
+                montageRequire.inject("core/promise", Promise);
                 montageRequire.inject("core/url", URL);
                 montageRequire.inject("core/shim/timeers", {});
 
@@ -258,8 +258,8 @@ window.addEventListener("DOMContentLoaded", function() {
             return this._params;
         },
 
-        loadCJS: function (callback) {
-            var base, CJS, DOM, Q, URL;
+        loadRequire: function (callback) {
+            var base, Require, DOM, Promise, URL;
 
             var params = this.getParams();
 
@@ -325,17 +325,16 @@ window.addEventListener("DOMContentLoaded", function() {
 
             // execute bootstrap scripts
             function allModulesLoaded() {
-                Q = bootRequire("core/promise");
+                Promise = bootRequire("core/promise");
                 URL = bootRequire("core/url");
-                CJS = bootRequire("require/require");
-                bootRequire("require/browser");
+                Require = bootRequire("require/require");
                 delete global.bootstrap;
                 callbackIfReady();
             }
 
             function callbackIfReady() {
-                if (DOM && CJS) {
-                    callback(CJS, Q, URL);
+                if (DOM && Require) {
+                    callback(Require, Promise, URL);
                 }
             }
 

@@ -5,24 +5,24 @@
  </copyright> */
 bootstrap("require/browser", function (require) {
 
-var CJS = require("require/require");
+var Require = require("require/require");
 var Promise = require("core/promise").Promise;
 var URL = require("core/url");
 
 var global = typeof global !== "undefined" ? global : window;
 
-CJS.pwd = function() {
+Require.getLocation = function() {
     return URL.resolve(window.location, ".");
 };
 
-CJS.overlays = ["browser"];
+Require.overlays = ["browser"];
 
 // Due to crazy variabile availability of new and old XHR APIs across
 // platforms, this implementation registers every known name for the event
 // listeners.  The promise library ascertains that the returned promise
 // is resolved only by the first event.
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
-CJS.read = function (url, options) {
+Require.read = function (url) {
     var request = new XMLHttpRequest();
     var response = Promise.defer();
 
@@ -40,8 +40,7 @@ CJS.read = function (url, options) {
 
     try {
         request.open("GET", url, true);
-        options && options.overrideMimeType && request.overrideMimeType &&
-            request.overrideMimeType(options.overrideMimeType);
+        request.overrideMimeType("application/javascript");
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
                 onload();
@@ -57,27 +56,15 @@ CJS.read = function (url, options) {
     return response.promise;
 };
 
-function XHRLoader(config) {
+Require.Loader = function (config) {
     return function(url, callback) {
-        CJS.read(url, {
+        return Require.read(url, {
             overrideMimeType: "application/javascript"
         }).then(function (content) {
-            if (/^\s*define\s*\(/.test(content)) {
-                CJS.console.log("Detected async module definition, load with script loader instead.");
-                callback(null);
-            } else {
-                callback(config.compile({ text : content, path : url }));
-            }
-        }, function (error) {
-            console.warn(error);
-            callback(null);
+            return config.compile({ text : content, path : url });
         });
     };
-}
-
-function CachingXHRLoader(config) {
-    return CJS.CachingLoader(config, XHRLoader(config));
-}
+};
 
 // Determine if an XMLHttpRequest was successful
 // Some versions of WebKit return 0 for successful file:// URLs
@@ -95,10 +82,10 @@ if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
     globalEval = new Function("evalString", "return eval(evalString)");
 }
 
-CJS.BrowserCompiler = function(config) {
-    return function(def) {
-        if (def.factory)
-            return def;
+Require.Compiler = function(config) {
+    return function(module) {
+        if (module.factory)
+            return module;
 
         // Here we use a couple tricks to make debugging better in various browsers:
         // TODO: determine if these are all necessary / the best options
@@ -109,41 +96,19 @@ CJS.BrowserCompiler = function(config) {
         //      TODO: investigate why this isn't working in Firebug.
         // 3. set displayName property on the factory function (Safari, Chrome)
 
-        var displayName = "__FILE__"+def.path.replace(/\.\w+$|\W/g, "__");
-        var sourceURLComment = "\n//@ sourceURL="+def.path;
+        var displayName = "__FILE__"+module.path.replace(/\.\w+$|\W/g, "__");
+        var sourceURLComment = "\n//@ sourceURL="+module.path;
 
-        def.factory = globalEval("(function "+displayName+"(require, exports, module) {"+def.text+"//*/\n})"+sourceURLComment);
+        module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+sourceURLComment);
 
         // This should work and would be better, but Firebug does not show scripts executed via "new Function()" constructor.
         // TODO: sniff browser?
-        // def.factory = new Function("require", "exports", "module", def.text + "\n//*/"+sourceURLComment);
+        // module.factory = new Function("require", "exports", "module", module.text + "\n//*/"+sourceURLComment);
 
-        delete def.text;
+        module.factory.displayName = displayName;
 
-        def.factory.displayName = displayName;
-
-        return def;
+        return module;
     }
-}
-
-CJS.DefaultCompilerConstructor = function(config) {
-    return CJS.DefaultCompilerMiddleware(config, CJS.BrowserCompiler(config));
-}
-
-// Try multiple paths
-// Try XHRLoader then ScriptLoader
-// ScriptLoader should probably always come after XHRLoader in case it's an unwrapped module
-CJS.DefaultLoaderConstructor = function(config) {
-    return CJS.Mappings(
-        config,
-        CJS.Extensions(
-            config,
-            CJS.Paths(
-                config,
-                CachingXHRLoader(config)
-            )
-        )
-    );
-}
+};
 
 });
