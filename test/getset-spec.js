@@ -131,6 +131,10 @@ describe("getset-spec", function() {
             expect(motorola.getProperty("departments.0")).toBe(department0);
         });
 
+        it("should return the item at index for a numeric index", function() {
+            expect(motorola.departments.getProperty(0)).toBe(department0);
+        });
+
         it("should return the property of object at index", function() {
             expect(motorola.getProperty("departments.2.employees")[0]).toBe(employee21);
         });
@@ -303,6 +307,12 @@ describe("getset-spec", function() {
         it ("should set the specified value at the specified index using an index only property path", function() {
             var array = ["a", "b", "c"];
             array.setProperty("1", "foo");
+            expect(array[1]).toBe("foo");
+        });
+
+        it ("should set the specified value at the specified index using a numeric index property path", function() {
+            var array = ["a", "b", "c"];
+            array.setProperty(1, "foo");
             expect(array[1]).toBe("foo");
         });
 
