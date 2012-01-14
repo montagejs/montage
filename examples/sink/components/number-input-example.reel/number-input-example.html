@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "module": "components/number-input-example.reel",
+                    "name": "NumberInputExample",
+                    "properties": {
+                        "element": {"#": "number-input-example"}
+                    }
+                },
+                "temp-converter": {
+                    "module": "components/number-input-example.reel",
+                    "name": "TempConverter",
+                    "properties": {
+
+                    }
+                },
+                "celsiusTextfield": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "celsius"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "fahrenheitTextfield"},
+                            "boundObjectPropertyPath": "value",
+                            "converter": {"@": "temp-converter"}
+                        }
+                    }
+                },
+                "fahrenheitTextfield": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "fahrenheit"},
+                        "value": "32"
+                    }
+                }
+            }
+        </script>
+
+        <style>
+
+        </style>
+    </head>
+    <body>
+        <div id="number-input-example" class="number-input-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>number-input</h3>
+                    <p>
+                        The number-input component wraps an HTML input type=number element and provides data binding support.
+                    </p>
+                    <p>
+                        <a href="" target="_blank">View Documentation</a>
+                    </p>
+                </div>
+            </div>
+            
+            <h4>Demo</h4>
+            <div class="demo">
+                <form class="form-stacked">
+                    <label for="celsius">Temperature in Celsius</label>
+                    <input type="number" name="celsius" id="celsius"/>
+
+                    <label for="fahrenheit">Temperature in Fahrenheit</label>
+                    <input type="number" name="fahrenheit" id="fahrenheit" />
+                </form>
+            </div>
+            
+            <section>
+                <a href="m-js/examples/sink/components/input-text-example.reel" target="_blank">View Demo Source</a>
+            </section>
+
+            <section>
+                <h4>Component Properties</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                        <tr>
+                          <td>value</td>
+                          <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                        </tr>
+                        <tr>
+                          <td>converter</td>
+                          <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                        </tr>
+                        <tr>
+                          <td>error</td>
+                          <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                        </tr>
+                      <tr>
+                        <td>min</td>
+                        <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                      </tr>
+                      <tr>
+                        <td>max</td>
+                        <td>...</td>
+                      </tr>
+                      <tr>
+                        <td>step</td>
+                        <td>...</td>
+                      </tr>
+                      <tr>
+                        <td>required</td>
+                        <td>...</td>
+                      </tr>
+                      <tr>
+                        <td>readonly</td>
+                        <td>...</td>
+                      </tr>
+                      <tr>
+                        <td>name</td>
+                        <td>...</td>
+                      </tr>
+                    </tbody>
+                </table>
+                <p>
+                    <a href="" target="_blank">View full Documentation</a>
+                </p>
+            </section>
+        </div>
+    </body>
+</html>
