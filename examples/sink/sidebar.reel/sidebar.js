@@ -62,6 +62,19 @@ exports.Sidebar = Montage.create(Component, {
         }
     },
     
+    _highlightSelection: {
+        value: function($li) {
+            var $ul = findClosestOfType($li, 'div', this.element);
+            if($ul) {
+                var items = $ul.querySelectorAll('li')||[], len = items.length;
+                for(i=0; i< len; i++) {
+                    items[i].classList.remove('selected');
+                }
+                $li.classList.add('selected');
+            }
+        }
+    },
+    
     handleEvent: {
         value: function(event) {
             
@@ -71,6 +84,7 @@ exports.Sidebar = Montage.create(Component, {
             if($li) {
                 var a = $li.querySelector('a');
                 if(a) {
+                    this._highlightSelection($li);
                     this.handleNavItemClicked(a.href);
                     event.preventDefault();
                 }                

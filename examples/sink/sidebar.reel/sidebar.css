@@ -15,7 +15,7 @@
     
 }
 .sidebar .sidebar-list li:hover{
-    opacity: 0.3;
+    background-color: #fff;
     cursor: pointer;
 }
 .sidebar .sidebar-list .selected {
@@ -23,8 +23,7 @@
     border-right: 21px solid #FE4365;
     opacity: 1.0;
     cursor: default;
-    margin-left: -30px;
-    padding: 5px;
+
     border-left: 1px solid #AAA;
     border-top: 1px solid #AAA;
     border-bottom: 1px solid #AAA;
