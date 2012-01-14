@@ -56,16 +56,6 @@ Require.read = function (url) {
     return response.promise;
 };
 
-Require.Loader = function (config) {
-    return function(url, callback) {
-        return Require.read(url, {
-            overrideMimeType: "application/javascript"
-        }).then(function (content) {
-            return config.compile({ text : content, path : url });
-        });
-    };
-};
-
 // Determine if an XMLHttpRequest was successful
 // Some versions of WebKit return 0 for successful file:// URLs
 function xhrSuccess(req) {
@@ -82,9 +72,9 @@ if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
     globalEval = new Function("evalString", "return eval(evalString)");
 }
 
-Require.Compiler = function(config) {
+Require.Compiler = function (config) {
     return function(module) {
-        if (module.factory)
+        if (module.factory || module.text === void 0)
             return module;
 
         // Here we use a couple tricks to make debugging better in various browsers:

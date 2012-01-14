@@ -105,7 +105,6 @@
                     loading[topId] = Require.read(module.path)
                     .then(function (text) {
                         module.text = text;
-                        config.compile(module);
                         return module;
                     });
                 // load
@@ -118,10 +117,6 @@
 
                     loading[topId] = config.load(topId, module)
                     .then(function (definition) {
-                        if (!definition) {
-                            throw new Error("Can't load " + JSON.stringify(topId) + " via " + JSON.stringify(viaId));
-                        }
-
                         // TODO lace the module through instead of receiving the definition
                         for (var name in definition) {
                             module[name] = definition[name];
@@ -153,6 +148,10 @@
             loading[id] = true; // this has happened before
             return load(id, viaId)
             .then(function (module) {
+
+                // analyze dependencies
+                config.compile(module);
+
                 // load the transitive dependencies using the magic of
                 // recursion.
                 return Promise.all((module.dependencies || [])
@@ -177,6 +176,7 @@
             if (module.exports !== void 0) {
                 return module.exports;
             }
+
             // do not initialize modules that do not define a factory function
             if (module.factory === void 0) {
                 Require.warn("Can't require module "+JSON.stringify(topId));
@@ -519,29 +519,29 @@
     // Built-in compiler/preprocessor "middleware":
 
     Require.DependenciesCompiler = function(config, compile) {
-        return function(def) {
-            if (!def.dependencies && def.text !== void 0) {
-                def.dependencies = Require.parseDependencies(def.text);
+        return function(module) {
+            if (!module.dependencies && module.text !== void 0) {
+                module.dependencies = Require.parseDependencies(module.text);
             }
-            def = compile(def);
-            if (def && !def.dependencies) {
-                if (def.text || def.factory) {
-                    def.dependencies = Require.parseDependencies(def.text || def.factory);
+            module = compile(module);
+            if (module && !module.dependencies) {
+                if (module.text || module.factory) {
+                    module.dependencies = Require.parseDependencies(module.text || module.factory);
                 } else {
-                    def.dependencies = [];
+                    module.dependencies = [];
                 }
             }
-            return def;
+            return module;
         };
     };
 
     // Support she-bang for shell scripts by commenting it out (it is never valid JavaScript syntax anyway)
     Require.ShebangCompiler = function(config, compile) {
-        return function(def) {
-            if (def.text) {
-                def.text = def.text.replace(/^#!/, "//#!");
+        return function (module) {
+            if (module.text) {
+                module.text = module.text.replace(/^#!/, "//#!");
             }
-            return compile(def);
+            return compile(module);
         }
     };
 
@@ -549,11 +549,11 @@
         if (!config.lint) {
             return compile;
         }
-        return function(definition) {
+        return function(module) {
             try {
-                return compile(definition);
+                return compile(module);
             } catch (error) {
-                config.lint(definition);
+                config.lint(module);
                 throw error;
             }
         };
@@ -717,10 +717,11 @@
         return function (url, module) {
             return Require.read(url)
             .then(function (text) {
-                return config.compile({
+                return {
+                    type: "javascript",
                     text: text,
                     path: url
-                });
+                };
             });
         };
     };

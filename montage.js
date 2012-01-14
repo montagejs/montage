@@ -116,10 +116,10 @@ window.addEventListener("DOMContentLoaded", function() {
      @param compiler
      */
     exports.SerializationCompiler = function(config, compile) {
-        return function(def) {
-            def = compile(def);
-            var defaultFactory = def.factory;
-            def.factory = function(require, exports, module) {
+        return function(module) {
+            module = compile(module);
+            var defaultFactory = module.factory;
+            module.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
                 for (var symbol in exports) {
                     // avoid attempting to reinitialize an aliased property
@@ -148,7 +148,7 @@ window.addEventListener("DOMContentLoaded", function() {
                     }
                 }
             };
-            return def;
+            return module;
         };
     };
 
@@ -178,22 +178,22 @@ window.addEventListener("DOMContentLoaded", function() {
      @param compiler
      */
     exports.TemplateCompiler = function(config, compile) {
-        return function(def) {
-            var root = def.path.match(/(.*\/)?(?=[^\/]+\.html$)/);
+        return function(module) {
+            var root = module.path.match(/(.*\/)?(?=[^\/]+\.html$)/);
             if (root) {
-                def.dependencies = def.dependencies || [];
-                var originalFactory = def.factory;
-                def.factory = function(require, exports, module) {
+                module.dependencies = module.dependencies || [];
+                var originalFactory = module.factory;
+                module.factory = function(require, exports, module) {
                     if (originalFactory) {
                         originalFactory(require, exports, module);
                     }
                     // Use module.exports in case originalFactory changed it.
                     module.exports.root = module.exports.root || root;
-                    module.exports.content = module.exports.content || def.text;
+                    module.exports.content = module.exports.content || module.text;
                 };
-                return def;
+                return module;
             } else {
-                return compile(def);
+                return compile(module);
             }
         };
     };
