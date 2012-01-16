@@ -11,6 +11,10 @@
 var Montage = require("montage").Montage,
     Enum = require("core/enum").Enum;
 
+// XXX Does not presently function server-side
+if (typeof window === "undefined")
+    return;
+
 var ChangeTypes = exports.ChangeTypes = Enum.create().initWithMembers("MODIFICATION", "ADDITION", "REMOVAL");
 
 var _eventConstructorsByType = {};

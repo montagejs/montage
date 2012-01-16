@@ -42,8 +42,8 @@
     Require.Sandbox = function(config) {
         // Configuration defaults:
         config = config || {};
-        config.location = URL.resolve(config.location || Require.getLocation(), ".");
-        config.lib = URL.resolve(config.location, config.lib || ".");
+        config.location = URL.resolve(config.location || Require.getLocation(), "./");
+        config.lib = URL.resolve(config.location, config.lib || "./");
         config.paths = config.paths || [config.lib];
         config.mappings = config.mappings || {}; // EXTENSION
         config.exposedConfigs = config.exposedConfigs || [
@@ -64,10 +64,10 @@
         config.compile = config.compile || config.makeCompiler(config);
 
         // Sandbox state:
-        // Module instances: { exports, id, path, uri, factory, dependencies }
+        // Modules: { exports, id, path, directory, factory, dependencies, dependees, text, type }
         var modules = config.modules = config.modules || {};
         // Mapping from canonical IDs to the initial top ID used to load module
-        var urisToIds = {};
+        var locationsToIds = {};
 
         function getModule(id) {
             if (!has(modules, id)) {
@@ -81,7 +81,7 @@
             var module = getModule(id)
             module.exports = exports;
             module.path = URL.resolve(config.location, id);
-            module.directory = URL.resolve(module.path, ".");
+            module.directory = URL.resolve(module.path, "./");
         }
 
         // Ensures a module definition is loaded before returning or executing the callback.
@@ -187,20 +187,19 @@
 
                 // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
                 // TODO: Handle this at higher level?
-                var uri = URL.resolve(modules[topId].path, "");
-                if (has(urisToIds, uri)) {
-                    var canonicalId = urisToIds[uri];
+                var location = modules[topId].path;
+                if (has(locationsToIds, location)) {
+                    var canonicalId = locationsToIds[location];
                     modules[topId] = modules[canonicalId];
                     return modules[topId].exports;
                 }
-                urisToIds[uri] = topId;
+                locationsToIds[location] = topId;
 
-                module.directory = URL.resolve(module.path, "."); // EXTENSION
+                module.directory = URL.resolve(module.path, "./"); // EXTENSION
 
             }
 
             module.exports = {};
-            module.uri = uri; // EXTENSION
 
             var requireArg = makeRequire(topId);
             var exportsArg = module.exports;
@@ -323,7 +322,7 @@
     }
 
     Require.PackageSandbox = function (location, config) {
-        location = URL.resolve(location, ".");
+        location = URL.resolve(location, "./");
         config = config || {};
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
@@ -340,12 +339,16 @@
         config.loadPackage = function (dependency) {
             dependency = Dependency(dependency);
             // TODO handle other kinds of dependency
-            var location = URL.resolve(dependency.location, ".");
+            var location = URL.resolve(dependency.location, "./");
             if (!loadingPackages[location]) {
                 var jsonPath = URL.resolve(location, 'package.json');
                 loadingPackages[location] = Require.read(jsonPath)
                 .then(function (json) {
-                    var packageDescription = JSON.parse(json);
+                    try {
+                        var packageDescription = JSON.parse(json);
+                    } catch (exception) {
+                        throw new SyntaxError("in " + JSON.stringify(jsonPath) + ": " + exception.message);
+                    }
                     var subconfig = configurePackage(
                         location,
                         packageDescription,
@@ -393,7 +396,7 @@
             if (overlay[engine]) {
                 layer = overlay[engine];
                 for (var name in layer) {
-                    info[name] = layer[name];
+                    description[name] = layer[name];
                 }
             }
         });
@@ -401,7 +404,7 @@
 
         // directories
         description.directories = description.directories || {};
-        description.directories.lib = description.directories.lib === void 0 ? "." : description.directories.lib;
+        description.directories.lib = description.directories.lib === void 0 ? "./" : description.directories.lib;
         var lib = description.directories.lib;
         // lib
         config.lib = location + "/" + lib;
@@ -625,7 +628,7 @@
                         factory: function (require, exports, module) {
                             module.exports = pkg(rest);
                         },
-                        path: pkg.location + "#" + rest // this is necessary for constructing unique URI's for chaching
+                        path: pkg.location + "!" + rest // this is necessary for constructing unique URI's for chaching
                     };
                 })
             });
@@ -713,7 +716,7 @@
         };
     }
 
-    Require.Loader = function (config) {
+    Require.Loader = function (config, next) {
         return function (url, module) {
             return Require.read(url)
             .then(function (text) {
@@ -722,6 +725,12 @@
                     text: text,
                     path: url
                 };
+            }, function (reason, error, rejection) {
+                if (next) {
+                    return next(url, module);
+                } else {
+                    return rejection;
+                }
             });
         };
     };

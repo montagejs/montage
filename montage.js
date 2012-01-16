@@ -4,28 +4,32 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-document._montageTiming = {}
-document._montageTiming.loadStartTime = Date.now();
+if (typeof window !== "undefined") {
 
-// Give a threshold before we decide we need to show the bootstrapper progress
-// Applications that use our loader will interact with this timeout
-// and class name to coordinate a nice loading experience. Applications that do not will
-// just go about business as usual and draw their content as soon as possible.
-window.addEventListener("DOMContentLoaded", function() {
-    var bootstrappingDelay = 1000;
-    document._montageStartBootstrappingTimeout = setTimeout(function() {
-        document._montageStartBootstrappingTimeout = null;
+    document._montageTiming = {}
+    document._montageTiming.loadStartTime = Date.now();
 
-        var root = document.documentElement;
-        if(!!root.classList) {
-            root.classList.add("montage-app-bootstrapping");
-        } else {
-            root.className = root.className + " montage-app-bootstrapping";
-        }
+    // Give a threshold before we decide we need to show the bootstrapper progress
+    // Applications that use our loader will interact with this timeout
+    // and class name to coordinate a nice loading experience. Applications that do not will
+    // just go about business as usual and draw their content as soon as possible.
+    window.addEventListener("DOMContentLoaded", function() {
+        var bootstrappingDelay = 1000;
+        document._montageStartBootstrappingTimeout = setTimeout(function() {
+            document._montageStartBootstrappingTimeout = null;
 
-        document._montageTiming.bootstrappingStartTime = Date.now();
-    }, bootstrappingDelay);
-});
+            var root = document.documentElement;
+            if(!!root.classList) {
+                root.classList.add("montage-app-bootstrapping");
+            } else {
+                root.className = root.className + " montage-app-bootstrapping";
+            }
+
+            document._montageTiming.bootstrappingStartTime = Date.now();
+        }, bootstrappingDelay);
+    });
+
+}
 
 (function (definition) {
     if (typeof require !== "undefined") {
@@ -50,11 +54,11 @@ window.addEventListener("DOMContentLoaded", function() {
      */
     exports.initMontage = function () {
         var platform = exports.getPlatform();
-        var params = platform.getParams();
-        var config = platform.getConfig();
 
         // Platform dependent
-        platform.loadRequire(function (Require, Promise, URL) {
+        platform.bootstrap(function (Require, Promise, URL) {
+            var params = platform.getParams();
+            var config = platform.getConfig();
 
             // setup the reel loader
             config.makeLoader = function (config) {
@@ -69,7 +73,7 @@ window.addEventListener("DOMContentLoaded", function() {
                         Require.DefaultCompilerConstructor(config)));
             };
 
-            var location = URL.resolve(window.location, params["package"] || ".");
+            var location = URL.resolve(config.location, params["package"] || ".");
 
             Require.PackageSandbox(params.montageBase, config)
             .then(function (montageRequire) {
@@ -203,6 +207,8 @@ window.addEventListener("DOMContentLoaded", function() {
     exports.getPlatform = function () {
         if (typeof window !== "undefined" && window && window.document) {
             return browser;
+        } else if (typeof process !== "undefined") {
+            return require("./node.js");
         } else {
             throw new Error("Platform not supported.");
         }
@@ -212,10 +218,7 @@ window.addEventListener("DOMContentLoaded", function() {
 
         getConfig: function() {
             return {
-                lib: ".",
-                base: window.location,
-                // Disable XHR loader for file://
-                xhr: window.location.protocol.indexOf("file:") !== 0
+                location: '' + window.location
             };
         },
 
@@ -258,7 +261,7 @@ window.addEventListener("DOMContentLoaded", function() {
             return this._params;
         },
 
-        loadRequire: function (callback) {
+        bootstrap: function (callback) {
             var base, Require, DOM, Promise, URL;
 
             var params = this.getParams();
@@ -369,11 +372,15 @@ window.addEventListener("DOMContentLoaded", function() {
 
     };
 
-    if (global.__MONTAGE_LOADED__) {
-        console.warn("Montage already loaded!");
+    if (typeof window !== "undefined") {
+        if (global.__MONTAGE_LOADED__) {
+            console.warn("Montage already loaded!");
+        } else {
+            global.__MONTAGE_LOADED__ = true;
+            exports.initMontage();
+        }
     } else {
-        global.__MONTAGE_LOADED__ = true;
-        exports.initMontage();
+        exports.getPlatform(); // may cause additional exports to be injected
     }
 
 });

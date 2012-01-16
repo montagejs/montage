@@ -15,7 +15,7 @@ Require.getLocation = function() {
     return URL.resolve(window.location, ".");
 };
 
-Require.overlays = ["browser"];
+Require.overlays = ["browser", "montage"];
 
 // Due to crazy variabile availability of new and old XHR APIs across
 // platforms, this implementation registers every known name for the event
@@ -23,6 +23,11 @@ Require.overlays = ["browser"];
 // is resolved only by the first event.
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 Require.read = function (url) {
+
+    if (URL.parse(url).scheme.indexOf("file:") === 0) {
+        throw new Error("XHR does not function for file: protocol");
+    }
+
     var request = new XMLHttpRequest();
     var response = Promise.defer();
 

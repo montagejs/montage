@@ -58,12 +58,42 @@ Require.Compiler = function (config) {
     };
 };
 
+Require.DefaultLoaderConstructor = function(config) {
+    return Require.MappingsLoader(
+        config,
+        Require.ExtensionsLoader(
+            config,
+            Require.PathsLoader(
+                config,
+                Require.CachingLoader(
+                    config,
+                    Require.Loader(
+                        config,
+                        Require.NodeLoader(config)
+                    )
+                )
+            )
+        )
+    );
+};
+
+Require.NodeLoader = function (config) {
+    return function (url, module) {
+        var id = url.slice(config.location.length);
+        return {
+            type: "native",
+            exports: require(id),
+            path: url
+        }
+    };
+}
+
 Require.main = function () {
     var require = Require.Sandbox();
     require.async(process.argv[2]).end();
 };
 
-Require.overlays = ["node"];
+Require.overlays = ["node", "server", "montage"];
 
 if (require.main === module) {
     Require.main();
