@@ -50,6 +50,48 @@
         ]
     },
 
+    "copy": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "copy"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+    "cut": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "cut"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+    "paste": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "paste"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
+
+
     "logger": {
         "module": "logger.reel",
         "name": "Logger",
@@ -150,7 +192,7 @@ exports.ButtonExample = Montage.create(Component, {
         <section>
             <h6>Handling Button Click/Touch Events</h6>
             <p>To setup a handler for a Button, implement a function with the following naming convention:
-            <pre class="prettyprint">"handle" + < button Identifier capitalized > + "Action"</pre>
+            <pre class="prettyprint">"handle" + &lt; button Identifier capitalized &gt; + "Action"</pre>
             </p>
             <p>
                 Eg: for button with identifier = "button1":
@@ -165,6 +207,18 @@ handleButton1Action: {
 </pre>
 
         </section>
+
+        <h4>Button group</h4>
+
+        <p>Putting buttons in a group is a matter of wrapping the buttons in an
+        element and giving it a class.</p>
+
+        <div class="btn-group">
+            <button class="btn" id="copy">Copy</button>
+            <button class="btn" id="cut">Cut</button>
+            <button class="btn" id="paste">Paste</button>
+        </div>
+
 
         <div id="logger">
             <h2>Logger</h2>
