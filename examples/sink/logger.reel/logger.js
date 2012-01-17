@@ -10,6 +10,10 @@ exports.Logger = Montage.create(Component, {
     enumerable: false,
     value: false
   },
+  _new_log: {
+    enumerable: false,
+    value: false
+  },
 
   prepareForDraw: {
     enumerable: false,
@@ -34,6 +38,7 @@ exports.Logger = Montage.create(Component, {
       if (this._messages.length > 10) {
         this._messages = this._messages.slice(-10);
       }
+      this._new_log = true;
       this.needsDraw = true;
     }
   },
@@ -58,6 +63,18 @@ exports.Logger = Montage.create(Component, {
         this.output.value = this._messages.join("\n");
       } else {
         this.output.value = this._messages[this._messages.length-1];
+      }
+
+      if (this._new_log) {
+        this.element.classList.add("logger-hilight");
+        this._new_log = false;
+
+        var self = this;
+        window.setTimeout(function() {
+          self.needsDraw = true;
+        }, 300);
+      } else {
+        this.element.classList.remove("logger-hilight");
       }
     }
   },
