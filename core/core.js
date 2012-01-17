@@ -1117,6 +1117,10 @@ Object.defineProperty(Object.prototype, "parentProperty", {
     writable: true
 });
 
+// XXX Does not presently function server-side
+if (typeof window === "undefined")
+    return;
+
 var EventManager = require("core/event/event-manager").EventManager;
 EventManager.create().initWithWindow(window);
 

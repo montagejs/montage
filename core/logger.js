@@ -15,7 +15,8 @@ var Montage = require("montage").Montage,
     emptyLoggerFunction,
     getFunctionName,
     toTimeString,
-    LoggerUI;
+    LoggerUI,
+    localStorage;
 
 loggers = exports.loggers = {};
 
@@ -104,7 +105,7 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
         value: function(name, dontStoreState) {
             this.name = name;
             this._storeState = !dontStoreState;
-            if (this._storeState) {
+            if (this._storeState && localStorage) {
                 var storedState = localStorage.getItem("_montage_logger_" + name);
                 if (storedState) {
                     this.isDebug = storedState === "true";
@@ -335,7 +336,7 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
                 name = event.target.value,
                 logger = loggers[name];
             logger.isDebug = value;
-            if (logger._storeState) {
+            if (logger._storeState && localStorage) {
                 localStorage.setItem("_montage_logger_" + name, value);
             }
         }
@@ -394,7 +395,7 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
                     input.type = "checkbox";
                     input.checked = !!iLogger.isDebug;
                     storageKey = "_montage_logger_" + iLogger.name;
-                    if (iLogger._storeState) {
+                    if (iLogger._storeState && localStorage) {
                         storedValue = localStorage.getItem(storageKey);
                         if (storedValue == null) {
                             localStorage.setItem(storageKey, iLogger.isDebug);
@@ -485,9 +486,12 @@ var setupUI = function() {
         @type {Statement}
         @default window
     */
-if (window) {
+if (typeof window !== "undefined") {
+    // assigning to a local allows us to feature-test without typeof
+    localStorage = window.localStorage;
     window.loggers = loggers;
     if (window.localStorage) {
         setupUI();
     }
 }
+
