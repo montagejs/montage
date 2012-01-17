@@ -4,6 +4,54 @@
         <title>Button Group Sandbox</title>
         <script type="text/montage-serialization">
 {
+    "bold": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "bold"},
+            "pressedClass": "active"
+        }
+    },
+    "italic": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "italic"},
+            "pressedClass": "active"
+        }
+    },
+    "underline": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "underline"},
+            "pressedClass": "active"
+        }
+    },
+    "display": {
+        "module": "components/style-element.reel",
+        "name": "StyleElement",
+        "properties": {
+            "element": {"#": "display"}
+        },
+        "bindings": {
+            "bold": {
+                "boundObject": {"@": "bold"},
+                "boundObjectPropertyPath": "pressed",
+                "oneway": true
+            },
+            "italic": {
+                "boundObject": {"@": "italic"},
+                "boundObjectPropertyPath": "pressed",
+                "oneway": true
+            },
+            "underline": {
+                "boundObject": {"@": "underline"},
+                "boundObjectPropertyPath": "pressed",
+                "oneway": true
+            }
+        }
+    },
 
     "logger": {
         "module": "logger.reel",
@@ -17,14 +65,19 @@
         "module": "components/toggle-button-example.reel",
         "name": "ButtonGroupExample",
         "properties": {
-            "element": {"#": "toggle-button-example"}
+            "element": {"#": "toggle-button-example"},
+            "display": {"@": "display"}
         }
     }
 }
     </script>
-
+    <style type="text/css">
+        .font-styles button {
+            height: 2.5em;
+            width: 2.5em;
+        }
+    </style>
     </head>
-
     <body>
         <div id="toggle-button-example">
             <div class="row ">
@@ -35,13 +88,20 @@
                     </p>
                 </div>
             </div>
-        </div>
 
-        <div id="logger">
-            <h2>Logger</h2>
-        </div>
+            <div class="btn-group font-styles" style="display: inline-block">
+                <button class="btn font-styles" id="bold" style="font-weight: bold;">B</button>
+                <button class="btn font-styles" id="italic" style="font-family: serif; font-style: italic;">I</button>
+                <button class="btn font-styles" id="underline" style="text-decoration: underline;">U</button>
+            </div>
+            <input type="text" id="display" value="This is some example text">
 
+            <h6>HTML</h6>
+            <pre>html + serialization here</pre>
 
+            <div id="logger">
+                <h2>Logger</h2>
+            </div>
         </div>
     </body>
 </html>
