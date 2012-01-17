@@ -228,6 +228,12 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         return this;
     }},
 
+    optimize: {
+        value: function() {
+            this.deserializer.optimizeForDocument(this._document);
+        }
+    },
+
     /**
      Instantiates the Template by specifying an object as the owner and a document where the elements referenced in the serialization should be found.
      @function
