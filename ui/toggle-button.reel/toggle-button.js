@@ -19,7 +19,6 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
             return this._pressed;
         },
         set: function(value) {
-            console.log("hello", value);
             this._pressed = !!value;
             this._value = (this._pressed) ? this._pressedValue : this._unpressedValue;
             this.needsDraw = true;
@@ -60,6 +59,22 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         }
     },
 
+    _pressedClass: {
+        enumerable: false,
+        value: "pressed"
+    },
+    pressedClass: {
+        get: function() {
+            return this._pressedClass;
+        },
+        set: function(value) {
+            this._pressedClass = value;
+            if (this._pressed) {
+                this.needsDraw = true;
+            }
+        }
+    },
+
     value: {
       get: function() {
         return this._value;
@@ -81,12 +96,25 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
 
             // If we haven't set the (un)pressedValue of the initial state,
             // then take it from the value
-            if (this._pressed === false && this._unpressedValue === null && this._value !== null) {
+            if (this._unpressedValue === null && this._value !== null) {
                 this._unpressedValue = this._value;
-            } else if (this._pressed === true && this._pressedValue === null && this._value !== null) {
+            }
+            if (this._pressedValue === null && this._value !== null) {
                 this._pressedValue = this._value;
             }
 
+        }
+    },
+
+    draw: {
+        value: function() {
+            Object.getPrototypeOf(ToggleButton).draw.call(this);
+            if (this._pressed) {
+                this._element.classList.add(this._pressedClass);
+            } else {
+                this._element.classList.remove(this._pressedClass);
+
+            }
         }
     },
 

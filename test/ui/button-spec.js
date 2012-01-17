@@ -243,7 +243,6 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                    expect(test.toggleinput.value).toBe("on");
                 });
             });
-
             describe("unpressedValue", function() {
                 it("is set as the value when the button is unpressed", function() {
                     test.toggleinput.pressed = false;
@@ -275,6 +274,25 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 });
                 it("is taken from `value` on init if the button is pressed and pressedValue isn't set", function() {
                     expect(test.toggleinput3.pressedValue).toBe(test.toggleinput3.value);
+                });
+            });
+
+            describe("pressedClass", function() {
+                it("is not in the classList when the button is unpressed", function() {
+                    test.toggleinput.pressed = false;
+
+                    testPage.waitForDraw();
+                    runs(function(){
+                        expect(test.toggleinput.element.className).not.toContain("pressed");
+                    });
+                });
+                it("is added to the classList when the button is pressed", function() {
+                    test.toggleinput.pressed = true;
+
+                    testPage.waitForDraw();
+                    runs(function(){
+                        expect(test.toggleinput.element.className).toContain("pressed");
+                    });
                 });
             });
         });
