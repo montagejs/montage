@@ -52,7 +52,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         enumerable: false,
         value: function() {
             this.element.checked = this._checked;
-            var fn = Object.getPrototypeOf(CheckInput).draw.call(this);
         }
     },
 

@@ -14,11 +14,11 @@ var Montage = require("montage").Montage,
     var isString = function(object) {
         return _toString.call(object) === STRING_CLASS;
     };
-    
+
 var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
-    
-    _fromInput: {value: null},    
-    
+
+    _fromInput: {value: null},
+
     __objects: {value: null, enumerable: false},
     _objects: {
         set: function(value) {
@@ -29,7 +29,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             return this.__objects;
         }
     },
-    
+
     __selectedIndexes: {value: null, enumerable: false},
     _selectedIndexes: {
         set: function(value) {
@@ -37,7 +37,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             if(this.contentController) {
                 this.selectedObjects = this.contentController.selectedObjects;
             }
-            
+
             if(!this._fromInput) {
                 this.needsDraw = true;
             } else {
@@ -48,19 +48,19 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             return this.__selectedIndexes;
         }
     },
-    
-    
+
+
     // If contentController is provided, this allows the developer to specify
     // which property in each element provides the "value" part of <option>
     valuePropertyPath: {value: null},
     // Property on iterated object from which textContent of the <option>
     // is received
     textPropertyPath: {value: null},
-    
-    
+
+
     // selected items from the underlying contentController
     selectedObjects: {value: null},
-    
+
     _contentController: {value: null, enumerable: false},
     contentController: {
         get: function() {
@@ -95,26 +95,26 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                     boundObjectPropertyPath: "selectedIndexes"
                 });
             }
-                    
+
         }
     },
 
     // Callbacks
-    
+
     _addOptionsFromMarkup: {
         value: function() {
-            
+
             var el = this.element, options = el.querySelectorAll('option');
             // @todo: if contentController is provided, should we just ignore the <option>
             // from the markup ?
-            
+
             // create a new Arraycontroller if one is not provided
             // add options to contentController
             // look for selected options in the markup and mark these as selected
             if(!this.contentController) {
                 var contentController = ArrayController.create();
                 var selectedIndexes = [];
-                
+
                 contentController.content = [];
                 if(options && options.length > 0) {
                     var i=0, len = options.length, selected;
@@ -128,35 +128,35 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                             text: options[i].textContent
                         });
                     }
-                    
+
                     this.contentController = contentController;
-                    
+
                     if(selectedIndexes.length > 0) {
                         this._fromInput = true;
                         this.contentController.selectedIndexes = selectedIndexes;
                     }
                 }
-            }            
-            
+            }
+
         }
     },
-    
+
     deserializedFromTemplate: {
         value: function() {
-            // @todo - Need a better way to do this. 
+            // @todo - Need a better way to do this.
             var fn = Object.getPrototypeOf(SelectInput).deserializedFromTemplate;
             fn.call(this);
-            
+
             /*
-            1) If <option> is provided in the markup but contentController is not, 
+            1) If <option> is provided in the markup but contentController is not,
             fill the contentController with the options from the markup
-            2) If contentController is present, options from markup will be overwritten 
+            2) If contentController is present, options from markup will be overwritten
             by the values from contentController when they are available
             */
             this._addOptionsFromMarkup();
         }
     },
-    
+
     /**
     Description TODO
     @function
@@ -169,7 +169,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             el.addEventListener('change', this);
         }
     },
-    
+
     _removeAll: {
         value: function(elem) {
             // remove all existing options
@@ -178,7 +178,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             }
         }
     },
-    
+
     _refreshOptions: {
         value: function() {
             console.log('==== refreshOptions ====');
@@ -192,10 +192,10 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                     text = arr[i][this.textPropertyPath || 'text'];
                     value = arr[i][this.valuePropertyPath  || 'value'];
                 }
-                
+
                 option.value = value;
                 option.textContent = text || value;
-                
+
                 if(this._selectedIndexes && this._selectedIndexes.length > 0) {
                     if(this._selectedIndexes.indexOf(i) >= 0) {
                         option.setAttribute("selected", "true");
@@ -213,19 +213,15 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     draw: {
         enumerable: false,
         value: function() {
-            
+
             var elem = this.element;
-            
+
             this._removeAll(elem);
             this._refreshOptions();
-            
-            var fn = Object.getPrototypeOf(SelectInput).draw;
-            fn.call(this);
-
         }
     },
-    
-    // find the index of the object with the specified value in the _objects array 
+
+    // find the index of the object with the specified value in the _objects array
     _indexOf: {
         value: function(val) {
             var arr = this._objects||[], len = arr.length, i;
@@ -243,7 +239,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             return -1;
         }
     },
-    
+
     handleChange: {
         value: function(e) {
             // get selected values and set it on the contentController
@@ -263,7 +259,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
 //http://www.w3.org/TR/html5/the-button-element.html#the-select-element
 
-SelectInput.addProperties({        
+SelectInput.addProperties({
         //autofocus: null,
         disabled: {dataType: 'boolean'},
         //form: null,

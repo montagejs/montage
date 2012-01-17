@@ -353,9 +353,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     draw: {
         value: function() {
-            // Call super method
-            Object.getPrototypeOf(Button).draw.call(this);
-
             if (this._disabled) {
                 this._element.classList.add("disabled");
             } else {
