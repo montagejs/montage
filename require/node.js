@@ -42,7 +42,7 @@ Require.Compiler = function (config) {
             var factory = globalEval(
                 "(function(" + names.join(",") + "){" +
                 module.text +
-                "\n//*/\n})\n//@ sourceURL=" + module.path
+                "\n//*/\n})\n//@ sourceURL=" + module.location
             );
             module.factory = function (require, exports, module) {
                 Array.prototype.push.apply(arguments, scopeNames.map(function (name) {
@@ -83,7 +83,7 @@ Require.NodeLoader = function (config) {
         return {
             type: "native",
             exports: require(id),
-            path: url
+            location: url
         }
     };
 }

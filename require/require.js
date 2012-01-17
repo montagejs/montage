@@ -64,7 +64,7 @@
         config.compile = config.compile || config.makeCompiler(config);
 
         // Sandbox state:
-        // Modules: { exports, id, path, directory, factory, dependencies, dependees, text, type }
+        // Modules: { exports, id, location, directory, factory, dependencies, dependees, text, type }
         var modules = config.modules = config.modules || {};
         // Mapping from canonical IDs to the initial top ID used to load module
         var locationsToIds = {};
@@ -80,8 +80,8 @@
         function inject(id, exports) {
             var module = getModule(id)
             module.exports = exports;
-            module.path = URL.resolve(config.location, id);
-            module.directory = URL.resolve(module.path, "./");
+            module.location = URL.resolve(config.location, id);
+            module.directory = URL.resolve(module.location, "./");
         }
 
         // Ensures a module definition is loaded before returning or executing the callback.
@@ -99,10 +99,10 @@
                     loading[topId] = Promise.ref(module);
                 // preloaded
                 } else if (
-                    module.path !== void 0 &&
+                    module.location !== void 0 &&
                     module.factory !== void 0
                 ) {
-                    loading[topId] = Require.read(module.path)
+                    loading[topId] = Require.read(module.location)
                     .then(function (text) {
                         module.text = text;
                         return module;
@@ -183,11 +183,11 @@
                 throw new Error("Can't require module "+JSON.stringify(topId));
             }
 
-            if (module.path !== void 0) {
+            if (module.location !== void 0) {
 
                 // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
                 // TODO: Handle this at higher level?
-                var location = modules[topId].path;
+                var location = modules[topId].location;
                 if (has(locationsToIds, location)) {
                     var canonicalId = locationsToIds[location];
                     modules[topId] = modules[canonicalId];
@@ -195,7 +195,7 @@
                 }
                 locationsToIds[location] = topId;
 
-                module.directory = URL.resolve(module.path, "./"); // EXTENSION
+                module.directory = URL.resolve(module.location, "./"); // EXTENSION
 
             }
 
@@ -421,8 +421,8 @@
         // in deepLoad to re-initialize this definition with the
         // loaded definition from the given path.
         modules[""] = {
-            "id": "",
-            "path": URL.resolve(location, description.main)
+            id: "",
+            location: URL.resolve(location, description.main)
         };
 
         // mappings, link this package to other packages.
@@ -486,16 +486,16 @@
         };
     }
 
-    Require.base = function (path) {
+    Require.base = function (location) {
         // matches Unix basename
-        return String(path)
+        return String(location)
             .replace(/(.+?)\/+$/, "$1")
             .match(/([^\/]+$|^\/$|^$)/)[1];
     };
 
-    // Tests whether the path or URL is a absolute.
-    Require.isAbsolute = function(path) {
-        var parsed = URL.parse(path);
+    // Tests whether the location or URL is a absolute.
+    Require.isAbsolute = function(location) {
+        var parsed = URL.parse(location);
         return parsed.authorityRoot || parsed.root;
     };
 
@@ -628,7 +628,7 @@
                         factory: function (require, exports, module) {
                             module.exports = pkg(rest);
                         },
-                        path: pkg.location + "!" + rest // this is necessary for constructing unique URI's for chaching
+                        location: pkg.location + "!" + rest // this is necessary for constructing unique URI's for chaching
                     };
                 })
             });
@@ -645,16 +645,16 @@
                 if (id === config.name) {
                     id = "";
                 }
-                // The package loader can inject some definitions for
-                // aliases into the package configuration.  These will
-                // only have path attributes and need to be replaced with
-                // factories.  We intercept these aliases (usually the
-                // package's main module, not found in its lib path) here.
+                // The package loader can inject some definitions for aliases
+                // into the package configuration.  These will only have
+                // location attributes and need to be replaced with factories.
+                // We intercept these aliases (usually the package's main
+                // module, not found in its lib location) here.
                 var module = config.module(id);
                 if (module.exports || module.factory) {
                     return Promise.ref(module);
-                } else if (module.path !== void 0) {
-                    return load(module.path, module);
+                } else if (module.location !== void 0) {
+                    return load(module.location, module);
                 } else {
                     return loadFromMappings(id, module);
                 }
@@ -723,7 +723,7 @@
                 return {
                     type: "javascript",
                     text: text,
-                    path: url
+                    location: url
                 };
             }, function (reason, error, rejection) {
                 if (next) {

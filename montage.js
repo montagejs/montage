@@ -82,11 +82,11 @@ if (typeof window !== "undefined") {
                 montageRequire.inject("core/shim/timeers", {});
 
                 // install the linter, which loads on the first error
-                config.lint = function (definition) {
+                config.lint = function (module) {
                     montageRequire.async("core/jshint")
                     .then(function (JSHINT) {
-                        if (!JSHINT.JSHINT(definition.text)) {
-                            console.warn("JSHint Error: "+definition.path);
+                        if (!JSHINT.JSHINT(module.text)) {
+                            console.warn("JSHint Error: "+module.location);
                             JSHINT.JSHINT.errors.forEach(function(error) {
                                 if (error) {
                                     console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
@@ -183,7 +183,7 @@ if (typeof window !== "undefined") {
      */
     exports.TemplateCompiler = function(config, compile) {
         return function(module) {
-            var root = module.path.match(/(.*\/)?(?=[^\/]+\.html$)/);
+            var root = module.location.match(/(.*\/)?(?=[^\/]+\.html$)/);
             if (root) {
                 module.dependencies = module.dependencies || [];
                 var originalFactory = module.factory;

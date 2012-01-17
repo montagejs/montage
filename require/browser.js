@@ -85,14 +85,14 @@ Require.Compiler = function (config) {
         // Here we use a couple tricks to make debugging better in various browsers:
         // TODO: determine if these are all necessary / the best options
         // 1. name the function with something inteligible since some debuggers display the first part of each eval (Firebug)
-        // 2. append the "//@ sourceURL=path" hack (Safari, Chrome, Firebug)
+        // 2. append the "//@ sourceURL=location" hack (Safari, Chrome, Firebug)
         //  * http://pmuellr.blogspot.com/2009/06/debugger-friendly.html
         //  * http://blog.getfirebug.com/2009/08/11/give-your-eval-a-name-with-sourceurl/
         //      TODO: investigate why this isn't working in Firebug.
         // 3. set displayName property on the factory function (Safari, Chrome)
 
-        var displayName = "__FILE__"+module.path.replace(/\.\w+$|\W/g, "__");
-        var sourceURLComment = "\n//@ sourceURL="+module.path;
+        var displayName = "__FILE__"+module.location.replace(/\.\w+$|\W/g, "__");
+        var sourceURLComment = "\n//@ sourceURL="+module.location;
 
         module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+sourceURLComment);
 
