@@ -14,6 +14,11 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         enumerable: false,
         value: false
     },
+    /**
+        Whether the toggle button is down/pressed or not.
+        @type {Property}
+        @default {Boolean} false
+    */
     pressed: {
         get: function() {
             return this._pressed;
@@ -29,6 +34,13 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         enumerable: false,
         value: null
     },
+    /**
+        The value the button should take when it is in the unpressed state. If
+        this is not set at initialization it will be set to the `value` of the
+        button.
+        @type {Property}
+        @default {String} null
+    */
     unpressedValue: {
         get: function() {
             return this._unpressedValue;
@@ -46,6 +58,13 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         enumerable: false,
         value: null
     },
+    /**
+        The value the button should take when it is in the pressed state. If
+        this is not set at initialization it will be set to the `value` of the
+        button.
+        @type {Property}
+        @default {String} null
+    */
     pressedValue: {
         get: function() {
             return this._pressedValue;
@@ -63,6 +82,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         enumerable: false,
         value: "pressed"
     },
+    /**
+        The class that should be added to the element when the button is in
+        the pressed state. It is removed when the button is unpressed.
+        @type {Property}
+        @default {String} "pressed"
+    */
     pressedClass: {
         get: function() {
             return this._pressedClass;
@@ -75,6 +100,15 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         }
     },
 
+    /**
+        The current value of the button. It will be set to unpressedValue or
+        pressedValue depending on state.
+
+        Setting this property equal to unpressedValue or pressedValue will
+        change the pressed state of the button to `false` and `true` respectively.
+        @type {Property}
+        @default {String} null, or the value of the element
+    */
     value: {
       get: function() {
         return this._value;
@@ -125,6 +159,10 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         }
     },
 
+    /**
+        Change the button to the inverse of its current state.
+        @type {Function}
+    */
     toggle: {
         value: function() {
             this.pressed = !this._pressed;
