@@ -14,18 +14,8 @@ var DateInput = exports.DateInput = Montage.create(TextInput, {
 });
 
 DateInput.addProperties({        
-        accept: null,
-        alt: null,
         autocomplete: null,
-        autofocus: null,
-        dirname: null,
         disabled: {dataType: 'boolean'},
-        form: null,
-        formaction: null,
-        formenctype: null,
-        formmethod: null,
-        formnovalidate: null,
-        formtarget: null,
         list: null, // list of autocomplete options
         max: null,
         maxlength: null,
@@ -37,11 +27,5 @@ DateInput.addProperties({
         readonly: {dataType: 'boolean'},
         required: {dataType: 'boolean'},
         size: null,
-        src: null,
-        step: null,
-        title: null
-        //type: 'text'
-        // type is intentionally left out as this must be specified in the markup
-        // and is not bindable
-        // width: ''
+        src: null
 });

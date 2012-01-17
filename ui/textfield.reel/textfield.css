@@ -4,6 +4,12 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
+/* The invalid state is added by the browser if it detects an error in the entered text */
+ :invalid {
+     border: 1px solid #E73525;
+     border-style: dashed;
+ }
+ 
 .montage-textfield {
     line-height: 1em;
     z-index: 1;
