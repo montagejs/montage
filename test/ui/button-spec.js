@@ -117,7 +117,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
 
             it("responds when child elements are clicked on", function(){
-                expect(click(test.nestedelement, test.nestedelement.element.firstChild)).toHaveBeenCalled();
+                expect(click(test.buttonnested, test.buttonnested.element.firstChild)).toHaveBeenCalled();
             });
 
             it("supports converters for value", function(){
