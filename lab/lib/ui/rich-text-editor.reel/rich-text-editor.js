@@ -1111,6 +1111,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                             if (response === true) {
                                 if (file.type.match(/^image\//i)) {
                                     document.execCommand("insertimage", false, data);
+                                    this._markDirty();
                                 }
                             }
                         }
@@ -1120,12 +1121,12 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                         }
                         reader.readAsDataURL(file);
                     } else {
-                        // JFD: This browser does not support the File API, we cannot do a preview...
+                        // Note: This browser does not support the File API, we cannot do a preview...
                         if (delegateMethod) {
                             response = delegateMethod.call(this.delegate, this, file);
                         }
                         if (response === true) {
-                            // JFD TODO: for now, we do nothing, up to the consumer to deal with that case
+                            // TODO: for now, we do nothing, up to the consumer to deal with that case
                         }
                     }
                 }
@@ -1160,6 +1161,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     }
                     if (data && data.length) {
                         document.execCommand("inserthtml", false, data);
+                        this._markDirty();
                     }
                 }
             }
@@ -1174,15 +1176,20 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handlePaste: {
         enumerable: false,
         value: function(event) {
-            var data = event.clipboardData.getData("text/html"),
+            var clipboardData = event.clipboardData,
+                data = clipboardData.getData("text/html"),
                 delegateMethod = this._delegateMethod("paste"),
                 response,
                 div,
-                isHTML;
+                isHTML,
+                item,
+                file,
+                reader;
 
             /* NOTE: Chrome, and maybe the other browser too, returns html or plain text data when calling getData("text/html),
                      To determine if the data is actually html, check the data starts with either an html or a meta tag
             */
+
             isHTML = data && data.match(/^<meta [^>]*>|<html>/i);
             if (data && isHTML) {
                 // Sanitize Fragment (CSS & JS)
@@ -1190,11 +1197,13 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     data = this._sanitizer.scopeCSS(this._sanitizer.removeScripting(data));
                 }
             } else {
-                data = event.clipboardData.getData("text/plain") ||  event.clipboardData.getData("text");
-                // Convert plain text to html
-                div = document.createElement('div');
-                div.innerText = data;
-                data = div.innerHTML;
+                data = clipboardData.getData("text/plain") ||  clipboardData.getData("text");
+                if (data) {
+                    // Convert plain text to html
+                    div = document.createElement('div');
+                    div.innerText = data;
+                    data = div.innerHTML;
+                }
             }
 
             if (data) {
@@ -1210,6 +1219,48 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
                 if (data && data.length) {
                     document.execCommand("inserthtml", false, data);
+                    this._markDirty();
+                }
+            } else {
+                // Maybe we have trying to paste an image as Blob...
+                console.log("PASTE:", data, clipboardData);
+                if (clipboardData.items.length) {
+                    item = clipboardData.items[0];
+                    if (item.kind == "file" && item.type.match(/^image\/.*$/)) {
+                        file = item.getAsFile();
+
+                        response = true;
+
+                        if (window.FileReader) {
+                            reader = new FileReader();
+                            reader.onload = function() {
+                                data = reader.result;
+
+                                if (delegateMethod) {
+                                    response = delegateMethod.call(this.delegate, this, file, data);
+                                }
+                                if (response === true) {
+                                    if (file.type.match(/^image\//i)) {
+                                        document.execCommand("insertimage", false, data);
+                                        this._markDirty();
+                                    }
+                                }
+                            }
+                            reader.onprogress = function(e) {
+                            }
+                            reader.onerror = function(e) {
+                            }
+                            reader.readAsDataURL(file);
+                        } else {
+                            // Note: This browser does not support the File API, we cannot handle it directly...
+                            if (delegateMethod) {
+                                response = delegateMethod.call(this.delegate, this, file);
+                            }
+                            if (response === true) {
+                                // TODO: for now, we do nothing, up to the consumer to deal with that case
+                            }
+                        }
+                    }
                 }
             }
 
