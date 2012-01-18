@@ -7,12 +7,20 @@
     color: #999;
 }
 
+.sidebar .sidebar-list {
+    padding-left: 40px;
+}
+
+.sidebar .sidebar-list ul {
+    list-style: none;
+    margin: 0;
+}
+
 .sidebar .sidebar-list li {
     border-bottom: 1px solid #eee;
     border-top: 1px solid #eee;
     cursor: default;
     padding: 5px;
-    
 }
 .sidebar .sidebar-list li:hover{
     background-color: #fff;
@@ -27,13 +35,6 @@
     border-left: 1px solid #AAA;
     border-top: 1px solid #AAA;
     border-bottom: 1px solid #AAA;
-}
-.sidebar .sidebar-list .selected h4 {
-}
-
-.sidebar .sidebar-list ul {
-    list-style: none;
-    margin: 0;
 }
 
 .sidebar .sidebar-list a h4 {

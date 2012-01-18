@@ -12,7 +12,9 @@ var isUndefined = function(obj) {
 };
 
 var extend = function(destination, source) {
-  for (var property in source) destination[property] = source[property];
+  for (var property in source) {
+      destination[property] = source[property];
+  }
   return destination;
 };
 
@@ -33,9 +35,19 @@ exports.NativeControl = Montage.create(Component, {
     _baseElementProperties: {
         value: {
             accesskey: null,
+            contenteditable: null, // true, false, inherit
+            contextmenu: null,
             'class': null,
-            title: null,
-            style: null
+            dir: null,
+            draggable: {dataType: 'boolean'},
+            dropzone: null, // copy/move/link
+            hidden: {dataType: 'boolean'},
+            //id: null,
+            lang: null,
+            spellcheck: null,
+            style: null,
+            tabindex: null,
+            title: null            
         }
     },
 
@@ -68,7 +80,7 @@ exports.NativeControl = Montage.create(Component, {
                 configurable: isUndefined(descriptor.configurable) ? true: descriptor.configurable,
                 enumerable: isUndefined(descriptor.enumerable) ?  true: descriptor.enumerable,
                 serializable: isUndefined(descriptor.serializable) ? true: descriptor.serializable,
-                set: function(n) {
+                set: (function(n) {
                     return function(val) {
                         var attrName = '_' + n;
 
@@ -76,7 +88,8 @@ exports.NativeControl = Montage.create(Component, {
                         // if requested dataType is boolean (eg: checked, readonly etc)
                         // coerce the value to boolean
                         if(desc && "boolean" === desc.dataType) {
-                            val = (val || val === "");
+                            //val = (val || val === "");
+                            val = ( (val || val === "") ? true : false);
                         }
 
                         // If the set value is different to the current one,
@@ -88,12 +101,12 @@ exports.NativeControl = Montage.create(Component, {
                             this.needsDraw = true;
                         }
                     };
-                }(name),
-                get: function(n) {
+                }(name)),
+                get: (function(n) {
                     return function() {
                         return this['_' + n];
                     };
-                }(name)
+                }(name))
             };
 
             // Define _ property

@@ -14,14 +14,13 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         enumerable: false,
         value: false
     },
-
     pressed: {
         get: function() {
             return this._pressed;
         },
         set: function(value) {
             this._pressed = !!value;
-            this.value = (this._pressed) ? this._pressedValue : this._unpressedValue;
+            this._value = (this._pressed) ? this._pressedValue : this._unpressedValue;
             this.needsDraw = true;
         }
     },
@@ -32,7 +31,7 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
     },
     unpressedValue: {
         get: function() {
-            return _unpressedValue;
+            return this._unpressedValue;
         },
         set: function(value) {
             this._unpressedValue = value;
@@ -60,6 +59,22 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         }
     },
 
+    _pressedClass: {
+        enumerable: false,
+        value: "pressed"
+    },
+    pressedClass: {
+        get: function() {
+            return this._pressedClass;
+        },
+        set: function(value) {
+            this._pressedClass = value;
+            if (this._pressed) {
+                this.needsDraw = true;
+            }
+        }
+    },
+
     value: {
       get: function() {
         return this._value;
@@ -73,6 +88,34 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
             this.pressed = true;
         }
       }
+    },
+
+    deserializedFromTemplate: {
+        value: function() {
+            Object.getPrototypeOf(ToggleButton).deserializedFromTemplate.call(this);
+
+            // If we haven't set the (un)pressedValue of the initial state,
+            // then take it from the value
+            if (this._unpressedValue === null && this._value !== null) {
+                this._unpressedValue = this._value;
+            }
+            if (this._pressedValue === null && this._value !== null) {
+                this._pressedValue = this._value;
+            }
+
+        }
+    },
+
+    draw: {
+        value: function() {
+            Object.getPrototypeOf(ToggleButton).draw.call(this);
+            if (this._pressed) {
+                this._element.classList.add(this._pressedClass);
+            } else {
+                this._element.classList.remove(this._pressedClass);
+
+            }
+        }
     },
 
     _dispatchActionEvent: {

@@ -4,19 +4,6 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    Textfield = require("montage/ui/textfield.reel").Textfield;
+    Checkbox = require("montage/ui/button.reel").Checkbox;
 
-var TextfieldTest = exports.TextfieldTest = Montage.create(Montage, {
-
-    txt1: {
-        value: null
-    },
-
-    txt2: {
-        value: null
-    },
-
-    date1: {
-        value: null
-    }
-});
+var CheckTest = exports.CheckTest = Montage.create(Montage, {});

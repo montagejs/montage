@@ -9,20 +9,18 @@
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <script type="text/montage-serialization">
             {
-                "owner": {
-                    "module": "components/checkbox-example.reel",
-                    "name": "CheckboxExample",
-                    "properties": {
-                        "element": {"#": "checkbox-example"}
-                    }
-                },
-
                 "checkbox1": {
                     "module": "montage/ui/checkbox.reel",
                     "name": "Checkbox",
                     "properties": {
                         "element": {"#": "checkbox1"}
-                    }
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "logger"}
+                        }
+                    ]
                 },
 
                 "checkbox2": {
@@ -31,6 +29,56 @@
                     "properties": {
                         "element": {"#": "checkbox2"},
                         "checked": true
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "logger"}
+                        }
+                    ]
+                },
+
+                "agree-checkbox": {
+                    "module": "montage/ui/checkbox.reel",
+                    "name": "Checkbox",
+                    "properties": {
+                        "element": {"#": "agree-checkbox"}
+                    }
+                },
+                "continue-button": {
+                    "module": "montage/ui/button.reel",
+                    "name": "Button",
+                    "properties": {
+                        "element": {"#": "continue-button"}
+                    },
+                    "bindings": {
+                        "disabled": {
+                            "boundObject": {"@": "agree-checkbox"},
+                            "boundObjectPropertyPath": "checked",
+                            "converter": {"@": "invert-converter"},
+                            "oneway": true
+                        }
+                    }
+                },
+
+                "invert-converter": {
+                    "module": "components/converters.reel",
+                    "name": "InvertConverter"
+                },
+
+                "logger": {
+                    "module": "logger.reel",
+                    "name": "Logger",
+                    "properties": {
+                        "element": {"#": "logger"}
+                    }
+                },
+
+                "owner": {
+                    "module": "components/checkbox-example.reel",
+                    "name": "CheckboxExample",
+                    "properties": {
+                        "element": {"#": "checkbox-example"}
                     }
                 }
             }
@@ -57,25 +105,65 @@
                 </div>
             </div>
 
-            <ul>
-                <li><input id="checkbox1" type="checkbox" /> <h5>Milk</h5> </li>
-                <li><input id="checkbox2" type="checkbox" /> <h5>Eggs</h5> </li>
-            </ul>
+            <label class="checkbox inline"><input id="checkbox1" type="checkbox" /> Milk </label>
+            <label class="checkbox inline"><input id="checkbox2" type="checkbox" /> Eggs</label>
 
             <h6>Serialization</h6>
-            <pre class="prettyprint linenums">
+            <pre class="prettyprint">
 "checkbox1": {
     "module": "montage/ui/checkbox.reel",
     "name": "Checkbox",
     "properties": {
         "element": {"#": "checkbox1"}
     }
-}
-            </pre>
+}</pre>
 
             <h6>HTML Markup</h6>
  <pre class="prettyprint linenums">
-&lt;input id=&quot;checkbox1&quot; type=&quot;checkbox&quot; /&gt; &lt;h5&gt;Milk&lt;/h5&gt;</pre>
+&lt;label&gt; &lt;input id=&quot;checkbox1&quot; type=&quot;checkbox&quot; /&gt; Milk&lt;/label&gt;</pre>
+
+            <h4>Binding</h4>
+
+            <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label><br/>
+            <input type="submit" id="continue-button" value="Continue" class="btn" disabled />
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint">
+"agree-checkbox": {
+    "module": "montage/ui/checkbox.reel",
+    "name": "Checkbox",
+    "properties": {
+        "element": {"#": "agree-checkbox"}
+    }
+},
+"continue-button": {
+    "module": "montage/ui/button.reel",
+    "name": "Button",
+    "properties": {
+        "element": {"#": "continue-button"}
+    },
+    "bindings": {
+        "disabled": {
+            "boundObject": {"@": "agree-checkbox"},
+            "boundObjectPropertyPath": "checked",
+            "converter": {"@": "invert-converter"},
+            "oneway": true
+        }
+    }
+},
+
+"invert-converter": {
+    "module": "components/converters.reel",
+    "name": "InvertConverter"
+}</pre>
+
+            <h6>HTML Markup</h6>
+ <pre class="prettyprint">
+&lt;label&gt;&lt;input type="checkbox" id="agree-checkbox"/&gt; I agree to something&lt;/label&gt;
+
+&lt;input type="submit" id="continue-button" value="Continue" class="btn" disabled /&gt;</pre>
+
+            <div id="logger"></div>
 
         </div>
     </body>

@@ -1,0 +1,52 @@
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>CheckTest</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+{
+    "check1": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "check1"}
+        }
+    },
+    "check2": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "check2"}
+        }
+    },
+    "test": {
+        "module": "ui/checktest/checktest",
+        "name": "CheckTest",
+        "properties": {
+            "check1": {"@": "check1"},
+            "check2": {"@": "check2"}
+        }
+    },
+    "application": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "delegate": {"@": "test"}
+        }
+    }
+}
+    </script>
+</head>
+<body>
+    <h1>Checkbox and radio button test</h1>
+
+    <h2>Basic</h2>
+    <label><input type="checkbox" id="check1" /> should be unchecked</label>
+    <label><input type="checkbox" id="check2" checked /> should be checked</label>
+</body>
+</html>

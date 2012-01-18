@@ -13,6 +13,7 @@ var Checkbox = exports.Checkbox = Montage.create(CheckInput, {});
 Checkbox.addProperties({
     autofocus: 'off', // on/off
     disabled: {value: false, dataType: 'boolean'},
+    checked: {value: false, dataType: 'boolean'},
     form: null,
     formenctype: null,
     name: null,

@@ -143,21 +143,6 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         expect(click(test.inputbutton)).toHaveBeenCalled();
                     });
 
-                    it("calls the action property if it has been set and is a function", function() {
-                        var buttonSpy = {
-                            doSomething: function(event) {
-                                throw "This button should not have dispatched an action";
-                            }
-                        };
-                        spyOn(buttonSpy, 'doSomething');
-                        test.inputbutton.action = buttonSpy.doSomething;
-
-                        mousedown(test.inputbutton.element);
-                        mouseup(test.inputbutton.element);
-
-                        expect(buttonSpy.doSomething).toHaveBeenCalled();
-                    });
-
                     it("does not dispatch an action event when a mouseup occurs after not previously receive a mousedown", function() {
                         var buttonSpy = {
                             doSomething: function(event) {
@@ -258,7 +243,6 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                    expect(test.toggleinput.value).toBe("on");
                 });
             });
-
             describe("unpressedValue", function() {
                 it("is set as the value when the button is unpressed", function() {
                     test.toggleinput.pressed = false;
@@ -270,6 +254,9 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     runs(function(){
                         expect(test.toggleinput.element.value).toBe("unpressed");
                     });
+                });
+                it("is taken from `value` on init if the button is unpressed and unpressedValue isn't set", function() {
+                    expect(test.toggleinput2.unpressedValue).toBe(test.toggleinput2.value);
                 });
             });
 
@@ -283,6 +270,28 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     testPage.waitForDraw();
                     runs(function(){
                         expect(test.toggleinput.element.value).toBe("pressed");
+                    });
+                });
+                it("is taken from `value` on init if the button is pressed and pressedValue isn't set", function() {
+                    expect(test.toggleinput3.pressedValue).toBe(test.toggleinput3.value);
+                });
+            });
+
+            describe("pressedClass", function() {
+                it("is not in the classList when the button is unpressed", function() {
+                    test.toggleinput.pressed = false;
+
+                    testPage.waitForDraw();
+                    runs(function(){
+                        expect(test.toggleinput.element.className).not.toContain("pressed");
+                    });
+                });
+                it("is added to the classList when the button is pressed", function() {
+                    test.toggleinput.pressed = true;
+
+                    testPage.waitForDraw();
+                    runs(function(){
+                        expect(test.toggleinput.element.className).toContain("pressed");
                     });
                 });
             });

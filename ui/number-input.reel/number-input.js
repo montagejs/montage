@@ -5,7 +5,8 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    TextInput = require("ui/text-input").TextInput;
+    TextInput = require("ui/text-input").TextInput,
+    StandardInputAttributes = require("ui/text-input").StandardInputAttributes;
 /**
  * The Number input
  */
@@ -13,10 +14,12 @@ var NumberInput = exports.NumberInput = Montage.create(TextInput, {
     
 });
 
+NumberInput.addProperties(StandardInputAttributes);
+
+/*
 NumberInput.addProperties({        
         autocomplete: null,
         disabled: {dataType: 'boolean'},
-        list: null, // list of autocomplete options
         max: null,
         maxlength: null,
         min: null,
@@ -29,3 +32,6 @@ NumberInput.addProperties({
         size: null,
         step: null
 });
+*/
+
+// API - autocomplete, disabled, max, maxlength, min, multiple, list, name, pattern, placeholder, readonly, required, size, step

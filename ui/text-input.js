@@ -7,6 +7,40 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl;
+    
+    // Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
+
+exports.StandardInputAttributes = {
+    accept: null,
+    alt: null,
+    autocomplete: null,
+    autofocus: {dataType: "boolean"},
+    checked: {dataType: "boolean"},
+    dirname: null,    
+    disabled: {dataType: 'boolean'},
+    form: null,
+    formaction: null,
+    formenctype: null,
+    formmethod: null,
+    formnovalidate: null,
+    formtarget: null,
+    height: null,
+    list: null,
+    max: null,
+    maxlength: null,
+    min: null,
+    multiple: {dataType: 'boolean'},
+    name: null,
+    pattern: null,
+    placeholder: null,
+    readonly: {dataType: 'boolean'},
+    required: {dataType: 'boolean'},
+    size: null,
+    src: null,
+    step: null,
+    width: null
+    // "type" is not bindable and "value" is handled as a special attribute
+};
 
 var TextInput = exports.TextInput =  Montage.create(NativeControl, {
 
@@ -110,7 +144,18 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
         },
         set: function(v) {
             this._error = v;
+            this.errorMessage = this._error ? this._error.message : null;
             this.needsDraw = true;
+        }
+    },
+    
+    _errorMessage: {value: null},
+    errorMessage: {
+        get: function() {
+            return this._errorMessage;
+        },
+        set: function(v) {
+            this._errorMessage = v;
         }
     },
 
@@ -119,7 +164,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
   @private
 */
     _updateOnInput: {
-        value: false
+        value: true
     },
 
     // switch to turn off auto update upon keypress overriding the Converter flag

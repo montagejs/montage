@@ -9,44 +9,8 @@ var Montage = require("montage").Montage,
     NativeControl = require("ui/native-control").NativeControl;
 
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
-    /**
-        Description TODO
-        @private
-    */
-    _valueSyncedWithInputField: {
-        enumerable: false,
-        value: false
-    },
-    /**
-        Description TODO
-        @private
-    */
-    _checked: {
-        enumerable: false,
-        value: null
-    },
-    /**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    checked: {
-        enumerable: true,
-        serializable: true,
-        get: function() {
-            return (this._checked !== null) ? this._checked : this.element.checked;
-        },
-        set: function(checked, fromInput) {
-            this._checked = checked;
-            if(fromInput) {
-                //this._valueSyncedWithInputField = true;
-                this.needsDraw = true;
-            } else {
-                this._valueSyncedWithInputField = false;
-                this.needsDraw = true;
-            }
-        }
-    },
+
+
 
     // set value from user input
     /**
@@ -87,14 +51,8 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     draw: {
         enumerable: false,
         value: function() {
-            var el = this.element;
-
-            if (!this._valueSyncedWithInputField) {
-                el.checked = this._checked;
-            }
-
-            var fn = Object.getPrototypeOf(CheckInput).draw;
-            fn.call(this);
+            this.element.checked = this._checked;
+            var fn = Object.getPrototypeOf(CheckInput).draw.call(this);
         }
     },
 
@@ -107,7 +65,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         enumerable: false,
         value: function(event) {
             this._setChecked();
+            this._dispatchActionEvent();
         }
     }
 });
-

@@ -261,7 +261,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
             }
 
             if (this.element === target) {
-                this._shouldDispatchActionEvent = true;
                 this._dispatchActionEvent();
             }
 
