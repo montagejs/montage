@@ -55,7 +55,7 @@ exports.Sanitizer = Montage.create(Component,/** @lends module:"montage/ui/rich-
 
     unscopeCSS: {
         enumerable: true,
-        value: function(htmlFragment) {
+        value: function(htmlFragment, identifier) {
 
             if (typeof htmlFragment == "string") {
                 // Extract the style tag and its content
@@ -69,7 +69,7 @@ exports.Sanitizer = Montage.create(Component,/** @lends module:"montage/ui/rich-
         }
     },
 
-    removeScripting: {
+    removeScript: {
         enumerable: true,
         value: function(htmlFragment) {
             /*

@@ -122,7 +122,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     content = "";
                 }
                 if (this._sanitizer) {
-                    content = this._sanitizer.unscopeCSS(content);
+                    content = this._sanitizer.unscopeCSS(content, this._uniqueId);
                 }
 
                 this._value = content;
@@ -189,6 +189,15 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 this.needsDraw = true;
             }
         }
+    },
+
+    /**
+      Description TODO
+     @type {}
+    */
+    delegate: {
+        enumerable: true,
+        value: null
     },
 
     /**
@@ -326,7 +335,15 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     actions: {
         enumerable: false,
         get: function() {
-            return this._actions;
+            var actions = this._actions,
+                action,
+                actionsArray = [];
+
+            for (action in actions) {
+                actionsArray.push(action);
+            }
+
+            return actionsArray;
         }
     },
 
@@ -336,6 +353,19 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     */
     enabledActions: {
         enumerable: true,
+        get: function() {
+            var actions = this._actions,
+                action,
+                actionsArray = [];
+
+            for (action in actions) {
+                if (actions[action].enabled) {
+                    actionsArray.push(action);
+                }
+            }
+
+            return actionsArray;
+        },
         set: function(enabledActions) {
             var actions = this._actions,
                 nbrEnabledActions = enabledActions.length,
@@ -1135,7 +1165,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (data) {
                     // Sanitize Fragment (CSS & JS)
                     if (this._sanitizer) {
-                        data = this._sanitizer.scopeCSS(this._sanitizer.removeScripting(data));
+                        data = this._sanitizer.scopeCSS(this._sanitizer.removeScript(data));
                     }
                 } else {
                     data = event.dataTransfer.getData("text/plain") || event.dataTransfer.getData("text");
@@ -1178,7 +1208,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         value: function(event) {
             var clipboardData = event.clipboardData,
                 data = clipboardData.getData("text/html"),
-                delegateMethod = this._delegateMethod("paste"),
+                delegateMethod,
                 response,
                 div,
                 isHTML,
@@ -1194,7 +1224,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             if (data && isHTML) {
                 // Sanitize Fragment (CSS & JS)
                 if (this._sanitizer) {
-                    data = this._sanitizer.scopeCSS(this._sanitizer.removeScripting(data));
+                    data = this._sanitizer.scopeCSS(this._sanitizer.removeScript(data));
                 }
             } else {
                 data = clipboardData.getData("text/plain") ||  clipboardData.getData("text");
@@ -1207,6 +1237,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             }
 
             if (data) {
+                delegateMethod = this._delegateMethod("paste");
                 if (delegateMethod) {
                     response = delegateMethod.call(this.delegate, this, data, "text/html");
                     if (response === true) {
@@ -1223,7 +1254,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
             } else {
                 // Maybe we have trying to paste an image as Blob...
-                console.log("PASTE:", data, clipboardData);
                 if (clipboardData.items.length) {
                     item = clipboardData.items[0];
                     if (item.kind == "file" && item.type.match(/^image\/.*$/)) {
@@ -1236,6 +1266,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                             reader.onload = function() {
                                 data = reader.result;
 
+                                this._delegateMethod("filePaste");
                                 if (delegateMethod) {
                                     response = delegateMethod.call(this.delegate, this, file, data);
                                 }

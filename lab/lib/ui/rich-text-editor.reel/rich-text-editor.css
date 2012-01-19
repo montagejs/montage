@@ -16,6 +16,8 @@
 .montage-editor-frame {
     position: relative;
     overflow: auto;
+    height: 100%;
+    width: 100%;
 }
 
 .montage-resizer-element::selection {
