@@ -4,19 +4,19 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    Textfield = require("montage/ui/textfield.reel").Textfield;
+    NumberInput = require("montage/ui/number-input.reel").NumberInput;
 
-var TextfieldTest = exports.TextfieldTest = Montage.create(Montage, {
+var NumberInputTest = exports.NumberInputTest = Montage.create(Montage, {
 
-    txt1: {
+    num1: {
         value: null
     },
 
-    txt2: {
+    num2: {
         value: null
     },
 
-    date1: {
+    num3: {
         value: null
     }
 });

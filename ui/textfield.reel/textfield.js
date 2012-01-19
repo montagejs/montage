@@ -5,7 +5,8 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    TextInput = require("ui/text-input").TextInput;
+    TextInput = require("ui/text-input").TextInput,
+    StandardInputAttributes = require("ui/text-input").StandardInputAttributes;
 /**
  * The Text input
  */
@@ -13,16 +14,5 @@ var Textfield = exports.Textfield = Montage.create(TextInput, {
     hasTemplate: {value: true}
 });
 
-Textfield.addProperties({        
-        autocomplete: null,
-        disabled: {dataType: 'boolean'},
-        list: null, // list of autocomplete options
-        maxlength: null,
-        multiple: {dataType: 'boolean'},
-        name: null,
-        pattern: null,
-        placeholder: null,
-        readonly: {dataType: 'boolean'},
-        required: {dataType: 'boolean'},
-        size: null
-});
+// Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
+Textfield.addProperties(StandardInputAttributes);

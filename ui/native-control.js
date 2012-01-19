@@ -35,9 +35,19 @@ exports.NativeControl = Montage.create(Component, {
     _baseElementProperties: {
         value: {
             accesskey: null,
+            contenteditable: null, // true, false, inherit
+            contextmenu: null,
             'class': null,
-            title: null,
-            style: null
+            dir: null,
+            draggable: {dataType: 'boolean'},
+            dropzone: null, // copy/move/link
+            hidden: {dataType: 'boolean'},
+            //id: null,
+            lang: null,
+            spellcheck: null,
+            style: null,
+            tabindex: null,
+            title: null            
         }
     },
 
@@ -78,7 +88,8 @@ exports.NativeControl = Montage.create(Component, {
                         // if requested dataType is boolean (eg: checked, readonly etc)
                         // coerce the value to boolean
                         if(desc && "boolean" === desc.dataType) {
-                            val = (val || val === "");
+                            //val = (val || val === "");
+                            val = ( (val || val === "") ? true : false);
                         }
 
                         // If the set value is different to the current one,

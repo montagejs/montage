@@ -60,16 +60,20 @@
     margin: 10px 0;
 }
 
+.demo{
+    background-color: whitesmoke;
+    padding: 5px;
+}
+
+.demo input {
+    display: inline-block;
+}
+
 .logger {
     position: fixed;
     bottom: 0;
     width: 80%;
     left: 10%;
-}
-
-.demo{
-    background-color: whitesmoke;
-    padding: 5px;
 }
 
 /* Montage components CSS Override */
