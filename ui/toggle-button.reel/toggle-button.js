@@ -25,12 +25,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         },
         set: function(value) {
             this._pressed = !!value;
-            this._value = (this._pressed) ? this._pressedValue : this._unpressedValue;
+            this._label = (this._pressed) ? this._pressedLabel : this._unpressedLabel;
             this.needsDraw = true;
         }
     },
 
-    _unpressedValue: {
+    _unpressedLabel: {
         enumerable: false,
         value: null
     },
@@ -41,20 +41,20 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         @type {Property}
         @default {String} null
     */
-    unpressedValue: {
+    unpressedLabel: {
         get: function() {
-            return this._unpressedValue;
+            return this._unpressedLabel;
         },
         set: function(value) {
-            this._unpressedValue = value;
+            this._unpressedLabel = value;
             if (!this._pressed) {
-                this.value = this._unpressedValue;
+                this.label = this._unpressedLabel;
                 this.needsDraw = true;
             }
         }
     },
 
-    _pressedValue: {
+    _pressedLabel: {
         enumerable: false,
         value: null
     },
@@ -65,14 +65,14 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         @type {Property}
         @default {String} null
     */
-    pressedValue: {
+    pressedLabel: {
         get: function() {
-            return this._pressedValue;
+            return this._pressedLabel;
         },
         set: function(value) {
-            this._pressedValue = value;
+            this._pressedLabel = value;
             if (this._pressed) {
-                this.value = this._pressedValue;
+                this.label = this._pressedLabel;
                 this.needsDraw = true;
             }
         }
@@ -101,24 +101,24 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
     },
 
     /**
-        The current value of the button. It will be set to unpressedValue or
-        pressedValue depending on state.
+        The current value of the button. It will be set to unpressedLabel or
+        pressedLabel depending on state.
 
-        Setting this property equal to unpressedValue or pressedValue will
+        Setting this property equal to unpressedLabel or pressedLabel will
         change the pressed state of the button to `false` and `true` respectively.
         @type {Property}
         @default {String} null, or the value of the element
     */
-    value: {
+    label: {
       get: function() {
-        return this._value;
+        return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").get.call(this);
       },
       set: function(value) {
         // Call super
-        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"value").set.call(this, value);
-        if (this._pressed === true && this._value === this._unpressedValue) {
+        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").set.call(this, value);
+        if (this._pressed === true && this._label === this._unpressedLabel) {
             this.pressed = false;
-        } else if (this._pressed === false && this._value === this._pressedValue) {
+        } else if (this._pressed === false && this._label === this._pressedLabel) {
             this.pressed = true;
         }
       }
@@ -128,15 +128,14 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         value: function() {
             Object.getPrototypeOf(ToggleButton).deserializedFromTemplate.call(this);
 
-            // If we haven't set the (un)pressedValue of the initial state,
-            // then take it from the value
-            if (this._unpressedValue === null && this._value !== null) {
-                this._unpressedValue = this._value;
+            // If we haven't set the (un)pressedLabel of the initial state,
+            // then take it from the label
+            if (this._unpressedLabel === null && this._label !== null) {
+                this._unpressedLabel = this._label;
             }
-            if (this._pressedValue === null && this._value !== null) {
-                this._pressedValue = this._value;
+            if (this._pressedLabel === null && this._label !== null) {
+                this._pressedLabel = this._label;
             }
-
         }
     },
 

@@ -57,54 +57,63 @@ var Button = exports.Button = Montage.create(NativeControl, {
         value: null
     },
 
-    _value: { value: undefined, enumerable: false },
-    value: {
+    /**
+      Stores the node that contains this button's value. Only used for
+      non-`<input>` elements.
+      @private
+    */
+    _labelNode: {value:undefined, enumerable: false},
+
+    _label: { value: undefined, enumerable: false },
+    /**
+        The label for the button.
+
+        In an `<input>` element this is the value property. On any other element
+        (including `<button>`) this is the first child node which is a text node.
+        If one isn't found it will be created.
+
+        @type {Property}
+        @default {String} element value
+    */
+    label: {
         get: function() {
-            return this._value;
+            return this._label;
         },
         set: function(value) {
             if (value && value.length > 0 && this.converter) {
-                var convertedValue;
                 try {
-                    // TODO: if revert() correct here? Shouldn't it be convert()?
-                    convertedValue = this.converter.convert(value);
+                    value = this.converter.convert(value);
                     if (this.error) {
                         this.error = null;
                     }
-                    this._value = convertedValue;
-
                 } catch(e) {
                     // unable to convert - maybe error
                     this.error = e;
-                    //this._valueSyncedWithInputField = false;
                 }
-            } else {
+            }
+
+            this._label = value;
+            if (this._isElementInput) {
                 this._value = value;
             }
+
             this.needsDraw = true;
         }
     },
 
-/**
-  Stores the node that contains this button's value.
-  For INPUTs this is the value attribute. Fot BUTTONs this is the firstChild (text)
-  @private
-*/
-    _valueNode: {value:undefined, enumerable: false},
-
-/**
-  True when the button is being interacted with, either through mouse click or
-  touch event.
-  @private
-*/
+    /**
+    True when the button is being interacted with, either through mouse click or
+    touch event.
+    @private
+    */
     _active: {
         value: false
     },
 
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
+    /**
+    Description TODO
+    @type {Function}
+    @default {Boolean} false
     */
     active: {
         get: function() {
@@ -116,17 +125,18 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
+    /**
+    Description TODO
+    @private
+    */
     _observedPointer: {
         enumerable: true,
         value: null
     },
 
     // Low-level event listeners
- /**
+
+    /**
     Description TODO
     @function
     @param {Event} event The handleMousedown event
@@ -144,7 +154,8 @@ var Button = exports.Button = Montage.create(NativeControl, {
             }
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     @param {Event} event The handleMouseup event
@@ -303,18 +314,28 @@ var Button = exports.Button = Montage.create(NativeControl, {
             this._isElementInput = (this._element.tagName === "INPUT");
             // Only take the value from the element if it hasn't been set
             // elsewhere (i.e. in the serialization)
-            if (this._isElementInput && this.value === undefined) {
-                this._valueNode = this._element.getAttributeNode("value");
-                this.value = this._element.value;
-            }
-            else {
+            if (this._isElementInput) {
+                // NOTE: This might not be the best way to do this
+                // With an input element value and label are one and the same
+                Object.defineProperty(this, "value", {
+                    get: function() {
+                        return this._label;
+                    },
+                    set: function(value) {
+                        this.label = value;
+                    }
+                });
+
+                if (this._label === undefined) {
+                    this._label = this._element.value;
+                }
+            } else {
                 if (!this._element.firstChild) {
                     this._element.appendChild(document.createTextNode(""));
-
                 }
-                this._valueNode = this._element.firstChild;
-                if (this.value === undefined) {
-                    this.value = this._valueNode.data;
+                this._labelNode = this._element.firstChild;
+                if (this._label === undefined) {
+                    this._label = this._labelNode.data;
                 }
             }
 
@@ -337,13 +358,13 @@ var Button = exports.Button = Montage.create(NativeControl, {
     },
 
 
-    _drawValue: {
+    _drawLabel: {
         enumerable: false,
         value: function(value) {
             if (this._isElementInput) {
                 this._element.setAttribute("value", value);
             } else {
-                this._element.firstChild.data = value;
+                this._labelNode.data = value;
             }
         }
     },
@@ -359,21 +380,22 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 this._element.classList.remove("disabled");
             }
 
-            this._drawValue(this.value);
+            this._drawLabel(this.label);
         }
     }
 });
 
 Button.addProperties({
-        autocomplete: null,
-        autofocus: null,
-        disabled: {value: false, dataType: 'boolean'},
-        form: null,
-        formaction: null,
-        formenctype: null,
-        formmethod: null,
-        formnovalidate: null,
-        formtarget: null,
-        name: null,
-        title: null
+    autocomplete: null,
+    autofocus: null,
+    disabled: {value: false, dataType: 'boolean'},
+    form: null,
+    formaction: null,
+    formenctype: null,
+    formmethod: null,
+    formnovalidate: null,
+    formtarget: null,
+    name: null,
+    title: null,
+    value: null
 });
