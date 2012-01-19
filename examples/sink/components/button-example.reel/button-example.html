@@ -124,6 +124,13 @@
             margin-top: 10px;
         }
 
+        .settings:before {
+            content: url(images/settings.png);
+            vertical-align: middle;
+            display: inline-block;
+            padding-right: 0.5em;
+        }
+
     </style>
 </head>
 <body>
@@ -208,22 +215,33 @@ handleButton1Action: {
 
         </section>
 
-        <h4>Button group</h4>
+        <section>
+            <h4>Button group</h4>
 
-        <p>Putting buttons in a group is a matter of wrapping the buttons in an
-        element and giving it a class.</p>
+            <p>Putting buttons in a group is a matter of wrapping the buttons in an
+            element and giving it a class.</p>
 
-        <div class="btn-group">
-            <button class="btn" id="copy">Copy</button>
-            <button class="btn" id="cut">Cut</button>
-            <button class="btn" id="paste">Paste</button>
-        </div>
+            <div class="btn-group">
+                <button class="btn" id="copy">Copy</button>
+                <button class="btn" id="cut">Cut</button>
+                <button class="btn" id="paste">Paste</button>
+            </div>
+        </section>
 
+        <section>
+            <h4>Image</h4>
 
-        <div id="logger">
-            <h2>Logger</h2>
-        </div>
+            <p>It is recommended that images are added to buttons using CSS, either by
+            setting a background image, or by using the <code>:before</code> and
+            <code>:after</code> pseudo elements with the <code>content</code>
+            property, as follows:</p>
 
+            <button class="btn settings" id="image">Settings</button>
+
+            <div id="logger">
+                <h2>Logger</h2>
+            </div>
+        </section>
     </div>
 </body>
 </html>
