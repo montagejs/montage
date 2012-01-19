@@ -190,7 +190,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     */
     prepareForDraw: {
         value: function() {
-
+            this.type = this.type || 'custom';
         }
     },
 
@@ -224,7 +224,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     _calculatePosition: {
         value: function() {
-            var pos, delegate = this.delegate, anchor = this.anchor, type = (this.type || 'custom');
+            var pos, delegate = this.delegate, anchor = this.anchor, type = this.type;
 
             if(delegate && (typeof delegate.positionPopup === 'function')) {
                 var anchorPosition;
@@ -303,8 +303,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             var el = document.createElement('div');
             el.classList.add('montage-popup-modal-mask');
-            el.style['z-index'] = 9000;
+            el.style['z-index'] = 6999;
             el.classList.add('montage-hide');
+            el.setAttribute('id', 'montage-popup-modal-mask-' + this.type);
             document.body.appendChild(el);
             return el;
         }
@@ -341,7 +342,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     show: {
         value: function() {
-            var type = this.type || "custom",
+            var type = this.type,
                 self = this;
             this.application.getPopupSlot(type, this, function(slot) {
                 self._popupSlot = slot;
@@ -355,11 +356,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             this._removeEventListeners();
 
-            var type = this.type || "custom",
+            var type = this.type,
                 self = this;
-            this.application.getPopupSlot(type, null, function() {
-                self.displayed = false;
-            });
+            
+            this.application.returnPopupSlot(type);
+            this.displayed = false;
         }
     },
 
@@ -372,7 +373,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // kishore - does the above restriction make sense ? should we restrict it ?
 
                 if(this.modal === true) {
-                    this._modalDialogMask = document.querySelector('.montage-popup-modal-mask');
+                    this._modalDialogMask = document.getElementById('montage-popup-modal-mask-' + this.type);
                     this._modalDialogMask = this._modalDialogMask || this._createModalMask(); 
                     this.element.classList.add('montage-modal');               
                 } else {
