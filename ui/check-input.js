@@ -10,8 +10,6 @@ var Montage = require("montage").Montage,
 
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
-
-
     // set value from user input
     /**
       @private
@@ -23,14 +21,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
-    /*
-    deserializedFromTemplate: {
-        value: function() {
-            // TODO: check that this is the correct way to do this
-            this.checked = this.element.checked;
-        }
-    },
-    */
 
     // Callbacks
     /**
