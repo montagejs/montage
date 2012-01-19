@@ -80,7 +80,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
             return this._value;
         },
         set: function(value, fromInput) {
-
+            
             if (value && value.length > 0 && this.converter) {
                 var convertedValue;
                 try {
@@ -89,7 +89,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
                         this.error = null;
                     }
                     this._value = convertedValue;
-
+                    
                 } catch(e) {
                     // unable to convert - maybe error
                     this.error = e;
@@ -97,7 +97,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
                 }
             } else {
                 this._value = value;
-            }
+            }            
             if(fromInput) {
                 this._valueSyncedWithInputField = true;
                 //this.needsDraw = true;
@@ -213,6 +213,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
     draw: {
         enumerable: false,
         value: function() {
+            
             var t = this.element;
 
             if (!this._valueSyncedWithInputField) {
@@ -227,6 +228,10 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
                 t.classList.remove("montage-text-invalid");
                 t.title = '';
             }
+            
+            var fn = Object.getPrototypeOf(TextInput).draw;
+            fn.call(this);
+
         }
     },
 /**

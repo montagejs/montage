@@ -181,7 +181,7 @@ exports.NativeControl = Montage.create(Component, {
     },
 
 
-    prepareForDraw: {
+    draw: {
         enumerable: false,
         value: function() {
             var el = this.element, desc;
@@ -210,6 +210,7 @@ exports.NativeControl = Montage.create(Component, {
             }
             // the values have been flushed to the DOM.
             this._elementAttributeValues = {};
+
         }
     }
 });
