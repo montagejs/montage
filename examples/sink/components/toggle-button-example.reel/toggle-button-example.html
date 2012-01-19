@@ -53,6 +53,24 @@
         }
     },
 
+    "values": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "values"},
+            "pressed": true,
+            "pressedClass": "active",
+            "pressedLabel": "On",
+            "unpressedLabel": "Off"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
     "logger": {
         "module": "logger.reel",
         "name": "Logger",
@@ -97,7 +115,20 @@
             <input type="text" id="display" value="This is some example text">
 
             <h6>HTML</h6>
-            <pre>html + serialization here</pre>
+            <pre class="prettyprint">html here</pre>
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint">serialization here</pre>
+
+            <h4>Different pressed and unpressed values</h4>
+
+            <button class="btn" style="width: 5em" id="values"></button>
+
+            <h6>HTML</h6>
+            <pre class="prettyprint">html here</pre>
+
+            <h6>Serialization</h6>
+            <pre class="prettyprint">serialization here</pre>
 
             <div id="logger">
                 <h2>Logger</h2>

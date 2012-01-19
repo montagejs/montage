@@ -63,20 +63,20 @@
             "enabled": true
         }
     },
-    "buttonvalueszn": {
+    "buttonlabelszn": {
         "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
-            "element": {"#": "buttonvalueszn"},
-            "value": "pass"
+            "element": {"#": "buttonlabelszn"},
+            "label": "pass"
         }
     },
-    "inputvalueszn": {
+    "inputlabelszn": {
         "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
-            "element": {"#": "inputvalueszn"},
-            "value": "pass"
+            "element": {"#": "inputlabelszn"},
+            "label": "pass"
         }
     },
     "buttonnested": {
@@ -110,7 +110,7 @@
             "converter": {"@": "uppercaseconverter"}
         },
         "bindings": {
-            "value": {
+            "label": {
                 "boundObject": {"@": "textinput"},
                 "boundObjectPropertyPath": "value"
             }
@@ -124,12 +124,12 @@
         }
     },
 
-    "activevalue": {
+    "activelabel": {
         "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
-            "element": {"#": "activevalue"},
-            "activeValue": "down"
+            "element": {"#": "activelabel"},
+            "activeLabel": "down"
         }
     },
 
@@ -138,8 +138,8 @@
         "name": "ToggleButton",
         "properties": {
             "element": {"#": "toggleinput"},
-            "pressedValue": "on",
-            "unpressedValue": "off"
+            "pressedLabel": "on",
+            "unpressedLabel": "off"
         }
     },
     "toggleinput2": {
@@ -147,7 +147,7 @@
         "name": "ToggleButton",
         "properties": {
             "element": {"#": "toggleinput2"},
-            "pressedValue": "on",
+            "pressedLabel": "on",
             "pressedClass": "active"
         }
     },
@@ -157,7 +157,7 @@
         "properties": {
             "element": {"#": "toggleinput3"},
             "pressed": true,
-            "unpressedValue": "off"
+            "unpressedLabel": "off"
         }
     },
 
@@ -172,14 +172,14 @@
             "disabledinput": {"@": "disabledinput"},
             "disabledinputszn": {"@": "disabledinputszn"},
             "enabledinputszn": {"@": "enabledinputszn"},
-            "buttonvalueszn": {"@": "buttonvalueszn"},
-            "inputvalueszn": {"@": "inputvalueszn"},
+            "buttonlabelszn": {"@": "buttonlabelszn"},
+            "inputlabelszn": {"@": "inputlabelszn"},
             "buttonnested": {"@": "buttonnested"},
             "inputactionszn": {"@": "inputactionszn"},
             "textinput": {"@": "textinput"},
             "converterbutton": {"@": "converterbutton"},
             "uppercaseconverter": {"@": "uppercaseconverter"},
-            "activevalue": {"@": "activevalue"},
+            "activelabel": {"@": "activelabel"},
             "toggleinput": {"@": "toggleinput"},
             "toggleinput2": {"@": "toggleinput2"},
             "toggleinput3": {"@": "toggleinput3"}
@@ -218,9 +218,9 @@
 
     <input type="button" id="enabledinputszn" value="should be enabled" disabled>
 
-    <h2>Value from serialization</h2>
-    <button id="buttonvalueszn">fail</button>
-    <input type="button" id="inputvalueszn" value="fail">
+    <h2>Label from serialization</h2>
+    <button id="buttonlabelszn">fail</button>
+    <input type="button" id="inputlabelszn" value="fail">
 
     <h2>Nested elements</h2>
     <button id="buttonnested"><span id="nestedelement">element nested in button</span></button>
@@ -229,11 +229,11 @@
     <input type="button" id="inputactionszn" value="input with the action property set">
 
     <h2>Converter</h2>
-    <input type="text" id="textinput" value="converted value">
-    <input type="button" id="converterbutton" value="default">
+    <input type="text" id="textinput" value="pass">
+    <input type="button" id="converterbutton" value="fail">
 
-    <h2>Active value</h2>
-    <input type="button" id="activevalue" value="active value">
+    <h2>Active label</h2>
+    <input type="button" id="activelabel" value="active label">
 
     <h1>Toggle button test</h1>
     <input type="button" id="toggleinput" value="fail">
