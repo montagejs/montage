@@ -5,7 +5,7 @@
  </copyright> */
 
 // Scope:
-//  * ES5, W3C setImmediate (shimmed if necessary)
+//  * ES5, nextTick
 //  * speed and economy of memory before safety and securability
 //  * run-time compatibility via thenability
 
@@ -32,10 +32,10 @@
 
 try {
     // bootstrapping can't handle relative identifiers
-    require("core/shim/timers"); // setImmediate
+    require("core/shim/timers"); // nextTick
 } catch (exception) {
     // in this case, node can't handle absolute identifiers
-    require("./shim/timers"); // setImmediate
+    require("./shim/timers"); // nextTick
 }
 
 // merely ensures that the returned value can respond to
@@ -107,17 +107,10 @@ var PrimordialPromise = Creatable.create({
         value: function (descriptor, promiseDescriptor) {
 
             // automatically subcreate each of the contained promise types
-            var creation = Object.create(this, {
-                DeferredPromise: {
-                    value: this.DeferredPromise.create(promiseDescriptor)
-                },
-                FulfilledPromise: {
-                    value: this.FulfilledPromise.create(promiseDescriptor)
-                },
-                RejectedPromise: {
-                    value: this.RejectedPromise.create(promiseDescriptor)
-                }
-            });
+            var creation = Object.create(this);
+            creation.DeferredPromise = this.DeferredPromise.create(promiseDescriptor);
+            creation.FulfilledPromise = this.FulfilledPromise.create(promiseDescriptor);
+            creation.RejectedPromise = this.RejectedPromise.create(promiseDescriptor);
 
             if (descriptor) {
                 Object.defineProperties(creation, descriptor);
@@ -125,17 +118,13 @@ var PrimordialPromise = Creatable.create({
 
             // create static reflections of all new promise methods
             if (promiseDescriptor) {
-                var statics = {};
                 Object.keys(promiseDescriptor).forEach(function (name) {
-                    statics[name] = {
-                        value: function (value) {
-                            var args = Array.prototype.slice.call(arguments, 1);
-                            var promise = this.ref(value);
-                            return promise[name].apply(promise, args);
-                        }
+                    creation[name] = function (value) {
+                        var args = Array.prototype.slice.call(arguments, 1);
+                        var promise = this.ref(value);
+                        return promise[name].apply(promise, args);
                     };
                 });
-                Object.defineProperties(creation, statics);
             }
 
             return creation;
@@ -182,15 +171,10 @@ var PrimordialPromise = Creatable.create({
 
     fulfill: {
         value: function (value) {
-            return this.FulfilledPromise.create({
-                _value: {
-                    value: value,
-                    writable: true
-                },
-                Promise: {
-                    value: this
-                }
-            });
+            var self = Object.create(this.FulfilledPromise);
+            self._value = value;
+            self.Promise = this;
+            return self;
         }
     },
 
@@ -246,17 +230,10 @@ var PrimordialPromise = Creatable.create({
 
     reject: {
         value: function (reason, error) {
-            var self = this.RejectedPromise.create({
-                _reason: {
-                    value: reason
-                },
-                _error: {
-                    value: error
-                },
-                Promise: {
-                    value: this
-                }
-            });
+            var self = Object.create(this.RejectedPromise);
+            self._reason = reason;
+            self._error = error;
+            self.Promise = this;
             errors.push(error && error.stack || self);
             return self;
         }
@@ -310,31 +287,13 @@ var PrimordialPromise = Creatable.create({
     defer: {
         value: function () {
             var deferred;
-            var promise = this.DeferredPromise.create({
-                _pending: {
-                    value: [],
-                    writable: true
-                },
-                _value: {
-                    value: undefined,
-                    writable: true
-                },
-                Promise: {
-                    value: this
-                }
-            });
-            deferred = this.Deferred.create({
-                promise: {
-                    value: promise,
-                    enumerable: true
-                },
-                Promise: {
-                    value: this
-                }
-            });
-            Object.defineProperty(promise, "_deferred", {
-                value: deferred
-            });
+            var promise = Object.create(this.DeferredPromise);
+            promise._pending = [];
+            promise.Promise = this;
+            deferred = Object.create(this.Deferred);
+            deferred.promise = promise;
+            deferred.Promise = this;
+            promise._deferred = deferred;
             return deferred;
         }
     },
@@ -349,7 +308,7 @@ var PrimordialPromise = Creatable.create({
                     }
                     this.promise._value = value = toPromise(value);
                     this.promise._pending.forEach(function (pending) {
-                        setImmediate(function () {
+                        nextTick(function () {
                             value.sendPromise.apply(value, pending);
                         });
                     });
@@ -380,7 +339,7 @@ var PrimordialPromise = Creatable.create({
                     } else {
                         var args = arguments,
                             value = this._value;
-                        setImmediate(function () {
+                        nextTick(function () {
                             value.sendPromise.apply(value, args);
                         });
                     }
@@ -415,6 +374,14 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
         }
     },
 
+    spread: {
+        value: function (fulfilled, rejected) {
+            return this.all().then(function (args) {
+                return fulfilled.apply(void 0, args);
+            }, rejected);
+        }
+    },
+
     then: {
         value: function (fulfilled, rejected) {
             var self = this;
@@ -425,7 +392,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 try {
                     deferred.resolve(fulfilled ? fulfilled(value) : value);
                 } catch (error) {
-                    console.log(error.stack);
+                    console.error(error.stack);
                     deferred.reject(error.message, error);
                 }
             }
@@ -445,7 +412,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 }
             }
 
-            setImmediate(function () {
+            nextTick(function () {
                 self.sendPromise(
                     function (value) {
                         if (done) {
@@ -478,7 +445,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
         value: function (name, args) {
             var deferred = Promise.defer();
             var self = this;
-            setImmediate(function () {
+            nextTick(function () {
                 self.sendPromise.apply(
                     self,
                     [
@@ -632,7 +599,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
             this.then(void 0, function (reason, error) {
                 // forward to a future turn so that ``when``
                 // does not catch it and turn it into a rejection.
-                setImmediate(function () {
+                nextTick(function () {
                     console.error(error && error.stack || error || reason);
                     throw error;
                 });

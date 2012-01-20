@@ -111,7 +111,7 @@ if (typeof Element !== "undefined") {
         if (!Element.prototype.hasOwnProperty(classListProp)) {
             var trim = /^\s+|\s+$/g,
                 setClasses = function (elem, classes) {
-                    elem.className = classes.join(" ");
+                    elem.setAttribute("class", classes.join(" "));
                 },
                 checkAndGetIndex = function (classes, token) {
                     if (token === "") {
@@ -125,7 +125,8 @@ if (typeof Element !== "undefined") {
                 },
                 classListGetter = function () {
                     var elem = this,
-                        classes = elem.className.replace(trim, "").split(/\s+/);
+                        classes = elem.getAttribute("class") || "";
+                        classes = classes.replace(trim, "").split(/\s+/);
                     return {
                         length: classes.length,
                         item: function (i) {
@@ -157,7 +158,7 @@ if (typeof Element !== "undefined") {
                             }
                         },
                         toString: function () {
-                            return elem.className;
+                            return (elem.getAttribute("class") || "");
                         }
                     };
                 };

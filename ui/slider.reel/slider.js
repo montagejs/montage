@@ -289,7 +289,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/slider.r
         set: function (value) {
             if (!isNaN(value)) {
                 if (value !== this._value) {
-                    this._value = value;
+                    this._value = parseFloat(value);
                     this.needsDraw = true;
                 }
             }

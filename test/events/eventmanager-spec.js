@@ -8,7 +8,8 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
-    EventInfo = require("support/testpageloader").EventInfo;
+    EventInfo = require("support/testpageloader").EventInfo,
+    ChangeTypes = require("montage/core/event/mutable-event").ChangeTypes;
 
 var global = typeof global !== "undefined" ? global : window;
 
@@ -319,7 +320,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
             });
 
             it("should still respond to activationEvent event type events even if the last interested listener is removed for an activationEvent event type", function() {
-                var activationTarget = testDocument.application.activationTarget;
+                var activationTarget = testPage.test.activationTarget;
                 activationTarget.prepareForActivationEvents = function() {};
 
                 spyOn(activationTarget, "prepareForActivationEvents");
@@ -652,7 +653,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     it("should handle the event using the identifier from the original target as part of the handler method name, for listeners on the original target", function() {
                         var eventSpy = {
-                            handleFooMousedown: function() {},
+                            handleFooMousedown: function() {}
                         };
 
                         spyOn(eventSpy, 'handleFooMousedown');
@@ -879,6 +880,36 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(change1).toBeTruthy();
             });
 
+            describe("splice operations when reporting changes regarding length", function() {
+
+                var array, changeType;
+
+                beforeEach(function() {
+                    array = [1,2];
+                    changeType = null;
+
+                    array.addEventListener("change", function(evt) {
+                        changeType = evt.propertyChange;
+                    });
+                });
+
+                it("should report a splice that yielded a net loss as a removal", function() {
+                    array.splice(0, 1);
+                    expect(changeType).toBe(ChangeTypes.REMOVAL);
+                });
+
+                it("should report a splice that yielded a no net gain or loss as a modification", function() {
+                    array.splice(0, 1, "a");
+                    expect(changeType).toBe(ChangeTypes.MODIFICATION);
+                });
+
+                it("should report a splice that yielded a net gain as a removal", function() {
+                    array.splice(0, 1, "a", "b");
+                    expect(changeType).toBe(ChangeTypes.ADDITION);
+                });
+
+            });
+
             it("should give the expected diff that resulted from popping from the array", function() {
                 var array = [1, 2];
 
@@ -934,23 +965,20 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(changeListener.handleEvent).toHaveBeenCalled();
             });
 
-            it("TODO must stop observing removed members of an array for changes at the property path beyond the array itself", function() {
+            it("must stop observing removed members of an array for changes at the property path beyond the array itself", function() {
 
                 var changeListener = {
-                    handleEvent: function(event) {
-
-                    }
+                    handleEvent: function(event) {}
                 };
 
-                spyOn(changeListener, "handleEvent").andCallThrough();
+                spyOn(changeListener, "handleEvent");
 
                 owner.addEventListener("change@array.foo", changeListener, false);
 
                 myArray.pop();
-
                 second.foo = "earth";
 
-                expect(changeListener.handleEvent).not.toHaveBeenCalled();
+                expect(changeListener.handleEvent.callCount).toBe(1);
             });
 
             it("should continue observing remaining members of an array for changes at the property path beyond the array itself after some members are removed", function() {

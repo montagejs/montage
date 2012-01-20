@@ -18,7 +18,8 @@ var Montage = require("montage").Montage,
     ChangeTypes = require("core/event/mutable-event").ChangeTypes,
     Serializer = require("core/serializer").Serializer,
     Deserializer = require("core/deserializer").Deserializer,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    AT_TARGET = 2;
 
 /**
     @member external:Array#dispatchChangeEvent
@@ -87,9 +88,18 @@ Object.defineProperty(ChangeEventDispatchingArray, "splice", {
         removedMembers = this._splice.apply(this, arguments);
         removedCount = removedMembers.length;
 
-        // I stopped caring about whether or not this splice could be considered an ADDITION or REMOVAL
-        // all splices result in a modification now; we could change this if we want to
+        netChange = addedCount - removedCount;
+
+        // Find the most accurate propertyChange type for this splice,
+        // For the most part it's considered a modification unless the length of the array was modified
+        // if only to not bother notifying listeners for changes of the length of this array
         changeType = ChangeTypes.MODIFICATION;
+
+        if (netChange > 0) {
+            changeType = ChangeTypes.ADDITION;
+        } else if (netChange < 0) {
+            changeType = ChangeTypes.REMOVAL;
+        }
 
         if (this.dispatchChangeEvent) {
             changeEvent = new ChangeEventConstructor();
@@ -101,8 +111,6 @@ Object.defineProperty(ChangeEventDispatchingArray, "splice", {
         }
 
         if (this.dispatchChangeAtIndexEvent) {
-
-            netChange = addedCount - removedCount;
 
             if (typeof howMany === "undefined") {
                 // no howMany argument given: remove all elements after index?
@@ -497,7 +505,7 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             localPrevValue = event.minus,
             localTarget = event.target,
             type = event.type,
-            changeType = event.propertyChange, //MODIFICATION is 1, ADDITION 2, REMOVAL 3,
+            changeType = event.propertyChange,
             localPropertyName = event.propertyName,
             boundObjectValue,
             sourceObjectValue,
@@ -507,7 +515,12 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             baseType,
             bindingDescriptor,
             bindingOrigin = this.bindingOrigin,
-            leftOriginated;
+            leftOriginated,
+            changeOriginPropertyPath = null,
+            exploredPath,
+            remainingPath,
+            i,
+            localPrevValueCount;
 
         if (target !== bindingOrigin) {
             //the left and the right are different objects; easy enough
@@ -616,51 +629,46 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             event.plus = localNewValue;
             event.target = localTarget;
 
+            if (localPrevValue) {
 
-            // Now we know that we handled a particular type of change event
-            // Depending on what happened we may need to remove listeners from a broken propertyPath or
-            // install listeners along the modified (or deeper) propertyPath
+                // Determine where along the property path the change originated from so we know how to build the path
+                // to stop observing on things that were removed
+                //TODO extract this into a "obj.getPathOfObjectAlongPropertyPath" method or something with proper tests
+                exploredPath = "";
+                this.target.getProperty(this.targetPropertyPath, null, null, function(value, currentPathComponent, result) {
 
-            // MODIFICATION 1
-            if (changeType === 1) {
+                    if (changeOriginPropertyPath) {
+                        return;
+                    }
 
-                if (localPrevValue) {
-                    // TODO remove all the listeners from the localPrev object as far to tne end of the path as possible
-                    //                    localPrevValue.removeEventListener(baseType, this, this.useCapture);
+                    exploredPath += "." + currentPathComponent;
+
+                    if (result === event.target) {
+                        changeOriginPropertyPath = exploredPath.replace(/^\./, "");
+                    }
+                });
+
+                if (changeOriginPropertyPath) {
+                    remainingPath = this.targetPropertyPath.replace(new RegExp("^" + changeOriginPropertyPath  + "\.?"), "");
+                } else {
+                    remainingPath = this.targetPropertyPath;
                 }
 
-                if (localNewValue) {
-                    // TODO this may be less efficient than we could be, but frankly I don't know how to tell where
-                    // in the path you are by the time you get here, so I'm not sure how to install just the part
-                    // we need, plus addEventListener seems to use the targetPropertyPath from the listener
-                    // regardless of what you pass in fro the eventType.
-                    this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
+                // NOTE this check works around Safari not having a removeEventListener on its CanvasPixelArray
+                // TODO investigate if this is an appropriate fix or not
+                if (typeof localPrevValue.removeEventListener === "function") {
+                    localPrevValue.removeEventListener(baseType + "@" + remainingPath, this, this.useCapture);
                 }
-
             }
-            //ADDITION 2, REMOVAL 3, typically on collections
 
-            //TODO looks like we end up wanting to do the sam thing in both cases right now, I think the TODO in the
-            // modification explains why a bit.
-            else {
-
-                if (localPrevValue) {
-
-                      // TODO how do we know the nextPathComponent, we need to know the rest of the path after each
-                      // entry in the localPrevValue array
-//                    for (var i = 0; i < localPrevValue.length; i++) {
-                        localPrevValue.removeEventListener(nextPathComponent ? baseType + "@" + nextPathComponent : baseType, this, this.useCapture);
-//                    }
-                }
-
-                if (localNewValue) {
-                    this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
-                } else if (event._event.plus) {
-                    this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
-                }
-
-
+            if (localNewValue) {
+                // Reinstall listeners along the entire propertyPath from the target
+                this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
+            } else if (event._event.plus) {
+                // TODO removing this causes no spec failures; looks suspicious
+                this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
             }
+
         }
         targetPropertyPath = null;
         target = null;
@@ -752,6 +760,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
             independentProperty,
             i,
             dependencies,
+            dependencyEntry,
             dependencyPropertyPath,
             firstDotIndex;
 
@@ -809,27 +818,42 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                 }
 
                 if (currentObject._dependenciesForProperty) {
-
                     dependencies = currentObject._dependenciesForProperty[key];
 
                     if (dependencies) {
+                        dependencyEntry = currentObject._dependencyListeners[key];
 
-                        // if we're already listening for changes on this dependency for this dependent path, don't do it again
-                        // TODO keep track of how many times we legitimately need to observe the property so we know when we can remove it
-                        if (!currentObject._dependencyListeners[key]) {
+                        if (!dependencyEntry) {
+                            dependencyEntry = currentObject._dependencyListeners[key] = {
+                                observedDependencies: [],
+                                listener: null
+                            };
 
-                            currentObject._dependencyListeners[key] = (function(self, key) {
-                                    return function(event) {
+                            dependencyEntry.listener = (function(self, key) {
+                                return function(event) {
+                                    // Ignore events that have reached this dependency listener via capture/bubble distribution
+                                    if (AT_TARGET === event.eventPhase) {
                                         var anEvent = document.createEvent("CustomEvent");
                                         anEvent.initCustomEvent("change@" + key, true, false, null);
                                         anEvent.propertyName = key;
                                         self.dispatchEvent(anEvent);
                                     }
-                                })(currentObject, key);
+                                }
+                            })(currentObject, key);
+                        }
 
-                            for (i = 0; (independentProperty = dependencies[i]); i++) {
-                                currentObject.addEventListener("change@" + independentProperty, currentObject._dependencyListeners[key], true);
+                        // Ensure we use the dependencyListener to observe all the dependent keys
+                        // We can use the same listener for al lof them though as a change at
+                        // any independent property is treated as a change at a dependent property
+                        for (i = 0; (independentProperty = dependencies[i]); i++) {
+
+                            // Don't double observe a dependency
+                            if (dependencyEntry.observedDependencies.indexOf(independentProperty) >= 0) {
+                                continue;
                             }
+
+                            currentObject.addEventListener("change@" + independentProperty, dependencyEntry.listener, true);
+                            dependencyEntry.observedDependencies.push(independentProperty);
                         }
                     }
                 }
@@ -947,7 +971,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                                                 anEvent.initCustomEvent("change@" + setter.property, true, false, null);
                                                 anEvent.minus = prevValue;
                                                 anEvent.plus = acceptedValue;
-                                                anEvent.propertyChange = 1;//MODIFICATION, ADDITION, REMOVAL
+                                                anEvent.propertyChange = ChangeTypes.MODIFICATION;
                                                 anEvent.propertyName = setter.property;
                                                 this.dispatchEvent(anEvent);
                                             }
@@ -1024,7 +1048,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                                         anEvent.initCustomEvent("change@" + setter.property, true, false, null);
                                         anEvent.minus = prevValue;
                                         anEvent.plus = acceptedValue;
-                                        anEvent.propertyChange = 1;//MODIFICATION, ADDITION, REMOVAL
+                                        anEvent.propertyChange = ChangeTypes.MODIFICATION;
                                         anEvent.propertyName = setter.property;
                                         this.dispatchEvent(anEvent);
                                     }
