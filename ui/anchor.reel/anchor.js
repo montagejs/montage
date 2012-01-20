@@ -8,17 +8,19 @@ var Montage = require("montage").Montage,
     NativeControl = require("ui/native-control").NativeControl;
     
 /**
- * The <img> native control with binding support for the standard attributes
+ * The <a> native control with binding support for the standard attributes
  */
-var Link = exports.Link = Montage.create(NativeControl, {
+var Anchor = exports.Anchor = Montage.create(NativeControl, {
 
 });
 
-Link.addProperties({        
+http://www.w3.org/TR/html5/text-level-semantics.html#the-a-element
+Anchor.addProperties({  
+        textContent: null,
         href: null,
         hreflang: null,
         media: null,
         rel: null,
         target: null,
-        type: null
+        type: null        
 });
