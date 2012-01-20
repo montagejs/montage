@@ -201,8 +201,13 @@ exports.NativeControl = Montage.create(Component, {
                         }
                     } else {
                         if(!isUndefined(val) && val !== null) {
-                            //https://developer.mozilla.org/en/DOM/element.setAttribute
-                            el.setAttribute(i, val);
+                            if(i === 'textContent') {
+                                el.textContent = val;
+                            } else {
+                                //https://developer.mozilla.org/en/DOM/element.setAttribute
+                                el.setAttribute(i, val);
+                            }
+                            
                         }
                     }
 
