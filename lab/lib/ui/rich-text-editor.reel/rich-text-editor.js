@@ -100,6 +100,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     */
     value: {
         enumerable: true,
+        serializable: true,
         get: function() {
             var contentNode = this.element.firstChild,
                 content;
@@ -338,6 +339,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     */
     allowDrop: {
         enumerable: true,
+        serializable: true,
         get: function() {
             return this._allowDrop;
         },
@@ -393,6 +395,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     */
     enabledActions: {
         enumerable: true,
+        serializable: true,
         get: function() {
             var actions = this._actions,
                 action,
