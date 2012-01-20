@@ -48,6 +48,12 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
         // Return this so that it can be checked in tha calling function.
         return buttonSpy.doSomething;
     };
+    var change = function(el) {
+        var changeEvent = document.createEvent("HTMLEvents");
+        changeEvent.initEvent("change", true, true);
+        el.dispatchEvent(changeEvent);
+        return changeEvent;
+    };
 
     describe("ui/check-spec", function() {
         it("should load", function() {
@@ -62,7 +68,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                 it("is true if the `checked` attribute is set", function() {
                     expect(test.check2.checked).toBe(true);
                 });
-                it("can be set to true", function() {
+                it("can be set to true and checks the checkbox", function() {
                     runs(function() {
                         test.check1.checked = true;
                         expect(test.check1.checked).toBe(true);
@@ -75,7 +81,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                     });
 
                 });
-                it("can be set to false", function() {
+                it("can be set to false and unchecks the checkbox", function() {
                     runs(function() {
                         test.check2.checked = false;
                         expect(test.check2.checked).toBe(false);
@@ -92,7 +98,21 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
         });
 
         describe("radio button", function() {
+            describe("checked property", function() {
+                it("changes when the radio button is clicked", function() {
+                    runs(function() {
+                        expect(test.radio1.checked).toBe(false);
 
+                        // Faking a click doesn't actually do anything, so we
+                        // have to set the checkedness, and trigger the change
+                        // event manually.
+                        test.radio1.element.checked = true;
+                        change(test.radio1.element);
+
+                        expect(test.radio1.checked).toBe(true);
+                    });
+                });
+            });
         });
     });
 });

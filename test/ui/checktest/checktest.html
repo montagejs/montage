@@ -24,12 +24,38 @@
             "element": {"#": "check2"}
         }
     },
+
+    "radio1": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "radio1"}
+        }
+    },
+    "radio2": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "radio2"}
+        }
+    },
+    "radio3": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "radio3"}
+        }
+    },
+
     "test": {
         "module": "ui/checktest/checktest",
         "name": "CheckTest",
         "properties": {
             "check1": {"@": "check1"},
-            "check2": {"@": "check2"}
+            "check2": {"@": "check2"},
+            "radio1": {"@": "radio1"},
+            "radio2": {"@": "radio2"},
+            "radio3": {"@": "radio3"}
         }
     },
     "application": {
@@ -43,10 +69,17 @@
     </script>
 </head>
 <body>
-    <h1>Checkbox and radio button test</h1>
+    <h1>Checkbox tests</h1>
 
     <h2>Basic</h2>
     <label><input type="checkbox" id="check1" /> should be unchecked</label>
     <label><input type="checkbox" id="check2" checked /> should be checked</label>
+
+    <h1>Radio button tests</h1>
+    <h2>Basic</h2>
+    <label><input type="radio" id="radio1" name="basic"></label>
+    <label><input type="radio" id="radio2" name="basic"></label>
+    <label><input type="radio" id="radio3" name="basic"></label>
+
 </body>
 </html>
