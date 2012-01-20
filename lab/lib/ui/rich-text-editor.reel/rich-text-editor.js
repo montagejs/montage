@@ -10,8 +10,8 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
+    Resizer = require("./rich-text-resizer").Resizer,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    dom = require("ui/dom"),
     Point = require("core/geometry/point").Point;
 
 /**
@@ -102,20 +102,12 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         enumerable: true,
         get: function() {
             var contentNode = this.element.firstChild,
-                content,
-                resizer;
+                content;
 
             if (this._dirtyValue) {
-                if (this._currentResizerElement) {
-                    // Remove the resizer from the returned data
-                    contentNode = contentNode.cloneNode(true);
-                    resizer = contentNode.getElementsByClassName("montage-resizer");
-                    if (resizer && resizer.length) {
-                        resizer = resizer[0]
-                        resizer.parentNode.removeChild(resizer);
-                    }
+                if (this._resizer) {
+                    contentNode = this._resizer.cleanup(contentNode);
                 }
-
                 content = contentNode ? contentNode.innerHTML : "";
                 if (content == "<br>") {
                     // when the contentEditable div is emptied, Chrome add a <br>, let's filter it out
@@ -132,10 +124,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         },
         set: function(value) {
             if (this._value !== value || this._dirtyValue) {
-                // Cancel resizer
-                if (this._currentResizerElement) {
-                   this._removeResizer(this._currentResizerElement);
-                   delete this._currentResizerElement;
+                if (this._resizer) {
+                    this._needsHideResizer = true;
                 }
 
                 if (this._sanitizer) {
@@ -175,10 +165,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         },
         set: function (value) {
             if (this._textValue !== value || this._dirtyTextValue) {
-                // Cancel resizer
-                if (this._currentResizerElement) {
-                   this._removeResizer(this._currentResizerElement);
-                   delete this._currentResizerElement;
+                if (this._resizer) {
+                    this._needsHideResizer = true;
                 }
 
                 this._textValue = value;
@@ -198,6 +186,58 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     delegate: {
         enumerable: true,
         value: null
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _sanitizer: {
+        enumerable: false,
+        value: Sanitizer.create()
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    sanitizer: {
+        enumerable: false,
+        get: function() {
+            return  this._sanitizer;
+        },
+        set: function(value) {
+            this._sanitizer = value;
+        }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _resizer: {
+        enumerable: false,
+        value: Resizer.create()
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    resizer: {
+        enumerable: false,
+        get: function() {
+            return  this._resizer;
+        },
+        set: function(value) {
+            // force hide the current resizer
+            if (this._resizer){
+                this._resizer.hide(true);
+                delete this._needsHideResizer;
+            }
+            this._resizer = value;
+            this._resizer.initialize(this);
+        }
     },
 
     /**
@@ -389,29 +429,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
-    _sanitizer: {
-        enumerable: false,
-        value: Sanitizer.create()
-    },
-
-    /**
-      Description TODO
-     @type {Function}
-    */
-    sanitizer: {
-        enumerable: false,
-        get: function() {
-            return  this._sanitizer;
-        },
-        set: function(value) {
-            this._sanitizer = value;
-        }
-    },
-
-    /**
-      Description TODO
-      @private
-    */
     _needsFocus: {
         value: false
     },
@@ -438,6 +455,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             var el = this.element,
                 div;
 
+            if (this._resizer) {
+                this._resizer.initialize(this);
+            }
             el.classList.add('montage-editor-frame');
 
             el.addEventListener("focus", this);
@@ -484,12 +504,17 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 delete this._needsResetContent;
             }
 
-            if (this._drawNeedResizerOn !== undefined) {
-                element = this._drawNeedResizerOn;
-                if (element) {
-                    this._removeResizer(this._currentResizerElement);
-                    this._addResizer(element);
-                    this._currentResizerElement = element;
+            if (this._resizer) {
+                // Need to hide the resizer?
+                if (this._needsHideResizer) {
+                    this._resizer.hide();
+                    delete this._needsHideResizer;
+                }
+
+                // Need to show the resizer?
+                if (this._needsShowResizerOn) {
+                    element = this._needsShowResizerOn;
+                    this._resizer.show(element);
 
                     // Select the element and its resizer
                     this._selectingResizer = true;
@@ -498,136 +523,17 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     range.setStart(element.parentNode, offset);
                     range.setEnd(element.parentNode, offset + 1);
                     this._selectedRange = range;
-                    // JFD Note: Chrome (and maybe other browsers) will fire 2 selectionchange event asynchronously, to work around it let's use a timer
-                    setTimeout(function() {delete thisRef._selectingResizer;}, 0);
-                } else {
-                    this._removeResizer(this._currentResizerElement);
-                    delete this._currentResizerElement
-                }
 
-                delete this._drawNeedResizerOn;
-            }
-
-            if (this._draggedElement) {
-                // Resize the resizer frame
-                var frame = this._draggedElement.parentNode.firstChild,
-                    zero = Point.create().init(0, 0),
-                    framePosition = dom.convertPointFromNodeToPage(frame, zero),
-                    cursor = this._cursorPosition,
-                    direction = this._draggedElement.id.substring("editor-resizer-".length),
-                    info = this._resizerFrameInfo,
-                    ratio = info.ratio,
-                    height = frame.clientHeight,
-                    width = frame.clientWidth,
-                    top = parseFloat(frame.style.top, 10),
-                    left = parseFloat(frame.style.left, 10),
-                    minSize = 15;
-
-                element = this._draggedElement.parentNode.previousSibling;
-
-                if (direction == "n") {
-                    height += framePosition.y - cursor.y;
-                    top = info.top - (height - info.height);
-                } else if (direction == "ne") {
-                    height += framePosition.y - cursor.y;
-                    width = Math.round(height * ratio);
-                    if (cursor.x > (framePosition.x + width)) {
-                        width = cursor.x - framePosition.x;
-                        height = Math.round(width / ratio);
-                    }
-                    top = info.top - (height - info.height);
-                } else if (direction == "e") {
-                    width = cursor.x - framePosition.x;
-                } else if (direction == "se") {
-                    height = cursor.y - framePosition.y;
-                    width = Math.round(height * ratio);
-                    if (cursor.x > (framePosition.x + width)) {
-                        width = cursor.x - framePosition.x;
-                        height = Math.round(width / ratio);
-                    }
-                } else if (direction == "s") {
-                    height = cursor.y - framePosition.y;
-                } else if (direction == "sw") {
-                    height = cursor.y - framePosition.y;
-                    width = Math.round(height * ratio);
-                    if (cursor.x <= framePosition.x - width + frame.clientWidth) {
-                        width = frame.clientWidth + framePosition.x - cursor.x;
-                        height = Math.round(width / ratio);
-                    }
-                    left = info.left - (width - info.width);
-                } else if (direction == "w") {
-                    width += framePosition.x - cursor.x;
-                    left = info.left - (width - info.width);
-                } else if (direction == "nw") {
-                    height += framePosition.y - cursor.y;
-                    width = Math.round(height * ratio);
-                    if (cursor.x <= framePosition.x - width + frame.clientWidth) {
-                        width = frame.clientWidth + framePosition.x - cursor.x;
-                        height = Math.round(width / ratio);
-                    }
-                    top = info.top - (height - info.height);
-                    left = info.left - (width - info.width);
-                }
-
-	            //set the frame's new height and width
-	            if (height > minSize && width > minSize) {
-		            frame.style.height = height + "px";
-                    frame.style.width = width + "px";
-                    frame.style.top = top + "px";
-                    frame.style.left = left + "px";
-	            }
-
-                if (this._finalizeDrag) {
-                    this._draggedElement.parentNode.classList.remove("dragged");
-                    delete this._finalizeDrag;
-                    delete this._resizerFrameInfo;
-                    delete this._draggedElement;
-
-                    // Remove the resizer, we don't wont it in case of undo!
-                    this._removeResizer(element);
-
-                    // Take the element offline tp modify it
-                    var div = document.createElement("div"),
-                        offlineElement,
-                        savedID;
-                    div.innerHTML = element ? element.outerHTML : "";
-                    offlineElement = div.firstChild;
-
-                    // Resize the element now that it's offline
-                    offlineElement.width = (width + 1);
-                    offlineElement.height = (height + 1);
-                    offlineElement.style.removeProperty("width");
-                    offlineElement.style.removeProperty("height");
-
-                    savedID = offlineElement.id;
-                    offlineElement.id = "montage-editor-resized-image";
-
-                    // Inject the resized element into the contentEditable using execCommand in order to be in the browser undo queue
-                    document.execCommand("inserthtml", false, div.innerHTML);
-                    element = document.getElementById(offlineElement.id);
-                    if (element && savedID !== undefined) {
-                        element.id = savedID;
-                    }
-                    this._currentResizerElement = element;
-
-                    // Add back the resizer frame
-                    this._addResizer(element);
-
-                    // Reset the selection
-                    this._selectingResizer = true;
-                    offset = this._nodeOffset(element);
-                    range = document.createRange();
-                    range.setStart(element.parentNode, offset);
-                    range.setEnd(element.parentNode, offset + 1);
-                    this._selectedRange = range;
-                    // JFD Note: Chrome (and maybe other browsers) will fire 2 selectionchange event asynchronously, to work around it let's use a timer
+                    // Note: Chrome (and maybe other browsers) will fire 2 selectionchange event asynchronously, to work around it let's use a timer
                     setTimeout(function() {delete thisRef._selectingResizer;}, 0);
 
-                } else {
-                    this._draggedElement.parentNode.classList.add("dragged");
+                    delete this._needsShowResizerOn;
                 }
+
+                // Let's give a change to the resizer to do any custom drawing if needed
+                this._resizer.draw();
             }
-            
+
             if (this._needsFocus) {
                 this.element.firstChild.focus();
                 if(document.activeElement == this.element.firstChild) {
@@ -827,13 +733,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleInput: {
         enumerable: false,
         value: function(event) {
-            // If the resizer what show, hide it
-            if (this._currentResizerElement) {
-               if (this._removeResizer(this._currentResizerElement)) {
-                   delete this._currentResizerElement;
-               }
-            }
-
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
@@ -865,52 +764,13 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleMousedown: {
         enumerable: false,
         value: function(event) {
-            // Check if we are inside a resizer handle
-            var element = event.target,
-                frame;
+            if (this._resizer) {
+                if (this.resizer.startUserAction(event)) {
+                    event.preventDefault();
+                    event.stopPropagation();
 
-            if (element.classList.contains("montage-resizer-handle")) {
-                if (window.Touch) {
-                    this._observePointer(target.id);
-                    document.addEventListener("touchmove", this);
-                } else {
-                    this._observePointer("mouse");
-                    document.addEventListener("mousemove", this);
+                    return;
                 }
-
-                this._draggedElement = element;
-
-                frame = element.parentNode.firstChild;
-                this._resizerFrameInfo = {
-                    width: frame.clientWidth,
-                    height: frame.clientHeight,
-                    left: parseInt(frame.style.left, 10),
-                    top: parseInt(frame.style.top, 10),
-                    ratio: frame.clientWidth / frame.clientHeight
-                };
-                this._cursorPosition = {x:event.pageX, y:event.pageY};
-
-                event.preventDefault();
-                event.stopPropagation();
-            }
-        }
-    },
-
-    /**
-    Description TODO
-    @function
-    */
-    handleMousemove: {
-        enumerable: false,
-        value: function(event) {
-            if (this._draggedElement) {
-                // We are dragging the resizer
-
-                this._cursorPosition = {x:event.pageX, y:event.pageY};
-                this.needsDraw = true;
-
-                event.preventDefault();
-                event.stopPropagation();
             }
         }
     },
@@ -927,33 +787,23 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 range,
                 offset;
 
-            if (this._draggedElement) {
-                // We are dragging the resizer
-                if (window.Touch) {
-                    document.removeEventListener("touchmove", this, false);
-                } else {
-                    this._cursorPosition = {x:event.pageX, y:event.pageY};
-                    document.removeEventListener("mousemove", this, false);
+            if (this._resizer) {
+                if (this.resizer.endUserAction(event)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+
+                    return;
                 }
-
-                this._releaseInterest();
-
-                this._finalizeDrag = true;
-                this.needsDraw = true;
-
-                event.preventDefault();
-                event.stopPropagation();
-                return;
             }
 
             if (element.tagName === "IMG") {
                 if (this._currentResizerElement !== element) {
-                    this._drawNeedResizerOn = element;
+                    this._needsShowResizerOn = element;
                     this.needsDraw = true;
                 }
             } else {
-                if (this._currentResizerElement) {
-                    this._drawNeedResizerOn = null;
+                if (this._resizer && this._resizer.element) {
+                    this._needsHideResizer = true;
                     this.needsDraw = true;
                 }
 
@@ -1004,10 +854,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 this._hasSelectionChangeEvent = true;
             }
 
-            if (this._currentResizerElement) {
+            if (this._resizer) {
                 if (this._selectingResizer !== true) {
-                    this._removeResizer(this._currentResizerElement);
-                    delete this._currentResizerElement;
+                    this._needsHideResizer = true;
+                    this.needsDraw = true;
                 }
             }
 
@@ -1028,14 +878,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleDragstart: {
         enumerable: false,
         value: function(event) {
-            var element = event.target;
-            if (element === this._currentResizerElement) {
-                // We are showing the resize frame, prevent dragging the image
-                event.preventDefault();
-                event.stopPropagation();
-                return;
-            }
-
             // let's remember which element we are dragging
             this._dragSourceElement = event.srcElement;
         }
@@ -1105,7 +947,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleDrop: {
         enumerable: false,
         value: function(event) {
-            var files = event.dataTransfer.files,
+            var thisRef = this,
+                files = event.dataTransfer.files,
                 fileLength = files.length,
                 file,
                 data,
@@ -1141,7 +984,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                             if (response === true) {
                                 if (file.type.match(/^image\//i)) {
                                     document.execCommand("insertimage", false, data);
-                                    this._markDirty();
+                                    thisRef._markDirty();
                                 }
                             }
                         }
@@ -1206,7 +1049,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handlePaste: {
         enumerable: false,
         value: function(event) {
-            var clipboardData = event.clipboardData,
+            var thisRef = this,
+                clipboardData = event.clipboardData,
                 data = clipboardData.getData("text/html"),
                 delegateMethod,
                 response,
@@ -1273,7 +1117,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                                 if (response === true) {
                                     if (file.type.match(/^image\//i)) {
                                         document.execCommand("insertimage", false, data);
-                                        this._markDirty();
+                                        thisRef._markDirty();
                                     }
                                 }
                             }
@@ -1386,75 +1230,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 this.handleSelectionchange();
                 this._markDirty();
             }
-        }
-    },
-
-
-    // Element Resize methods
-    /**
-    Description TODO
-    @private
-    @function
-    */
-    _addResizer: {
-        enumerable: true,
-        value: function(element) {
-            var parentNode = element.parentNode,
-                nextSibling = element.nextSibling,
-                frame,
-                w  = element.offsetWidth -1,
-                h  = element.offsetHeight -1,
-                l  = element.offsetLeft,
-                t  = element.offsetTop,
-                resizerFrameHtml = '<div id="montage-resizer" class="montage-resizer">' +
-                    '<div id="editor-resizer-frame" class="montage-resizer-frame" style="width:'+ w + 'px; height:' + h + 'px; left:' + l + 'px; top:' + t + 'px"></div>' +
-                    '<div id="editor-resizer-nw" class="montage-resizer-handle montage-resizer-nw" style="left:' + (l - 4) + 'px; top:' + (t - 4) + 'px"></div>' +
-                    '<div id="editor-resizer-n" class="montage-resizer-handle montage-resizer-n" style="left:' + (l-3+ (w/2)) + 'px; top:' + (t-4)+ 'px"></div>' +
-                    '<div id="editor-resizer-ne" class="montage-resizer-handle montage-resizer-ne" style="left:' + (l+w-2) + 'px; top:' + (t-4) + 'px"></div>' +
-                    '<div id="editor-resizer-w" class="montage-resizer-handle montage-resizer-w" style="left:' + (l-4) + 'px; top:' + (t-3 + (h/2)) + 'px"></div>' +
-                    '<div id="editor-resizer-e" class="montage-resizer-handle montage-resizer-e" style="left:' +(l+w-2) + 'px; top:' + (t-3+(h/2)) + 'px"></div>' +
-                    '<div id="editor-resizer-sw" class="montage-resizer-handle montage-resizer-sw" style="left:' +(l-4) + 'px; top:' + (t+h-2) + 'px"></div>' +
-                    '<div id="editor-resizer-s" class="montage-resizer-handle montage-resizer-s" style="left:' + (l-3+ (w/2)) + 'px; top:' + (t+h-2) + 'px"></div>' +
-                    '<div id="editor-resizer-se" class="montage-resizer-handle montage-resizer-se" style="left:' + (l+w-2) + 'px; top:' + (t+h-2) + 'px"></div>' +
-                    '</div>',
-                handles,
-                i;
-            // sanity check: make sure we don't already have a frame
-            if (!nextSibling || nextSibling.tagName !== "DIV" || !nextSibling.classList.contains("montage-resizer")) {
-                frame = document.createElement("DIV");
-                frame.innerHTML = resizerFrameHtml;
-                parentNode.insertBefore(frame.firstChild, nextSibling);
-                element.classList.add("montage-resizer-element");
-            }
-        }
-    },
-
-    /**
-    Description TODO
-    @private
-    @function
-    */
-    _removeResizer: {
-        enumerable: true,
-        value: function(element) {
-            if (!element) {
-                return;
-            }
-            var resizer = element.nextSibling;
-
-            if (resizer && resizer.tagName === "DIV" && resizer.classList.contains("montage-resizer")) {
-                element.parentNode.removeChild(resizer)
-                element.classList.remove("montage-resizer-element");
-            } else {
-                // Handle case where the element has been removed from the DOM or the resizer is not in sync with the
-                // element anymore (hapen after an undo)
-                resizer = document.getElementById("montage-resizer");
-                if (resizer && resizer.tagName === "DIV" && resizer.classList.contains("montage-resizer")) {
-                    resizer.parentNode.removeChild(resizer);
-                    return false;
-                }
-            }
-            return true;
         }
     },
 

@@ -7,14 +7,13 @@
 	@module "montage/ui/rich-text-sanitizer.js"
     @requires montage/core/core
 */
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component
+var Montage = require("montage").Montage;
 
 /**
     @class module:"montage/ui/rich-text-sanitizer.js".Sanitizer
-    @extends module:montage/ui/component.Component
+    @extends module:montage/core/core.Montage
 */
-exports.Sanitizer = Montage.create(Component,/** @lends module:"montage/ui/rich-text-sanitizer.js".Sanitizer# */ {
+exports.Sanitizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-text-sanitizer.js".Sanitizer# */ {
 
     scopeCSS: {
         enumerable: true,
