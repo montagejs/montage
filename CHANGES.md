@@ -1,5 +1,34 @@
+# v0.5.0
 
-# Next minor
+-   Added UndoManager.
+    It stores actions that can later be undone or re-done,
+    example of usage has been added to the PhotoFX example.
+-   Custom Events now propagate through component tree by default if
+    dispatched on a component.
+-   Addition of ``.didCreate()``
+    - ``MyPrototype.create()`` or ``Montage.create(MyPrototype)`` is for
+    **instantiation**. From v0.5, this will call _didCreate()_ on each
+    begotten instance implicitly for **initialization** purposes. It does
+    not accept arguments and occurs before the serialization has an
+    opportunity to set initial properties.
+    All parameterized initialization must occur as the result of
+    observing setters on those properties.
+    -   ``Montage.create(MyPrototype, {property descriptors})`` is for
+    **subtyping**. This will not call _didCreate()_.
+-   All components now have the ability to easily dispatch an action event.
+-   Condition component improvements
+-   PhotoFX example improvements
+-   Added flow component for reference purposes, the API is not ready yet.
+-   IE10 Fixes.
+-   Bug fixes in:
+    -   Packaging for require
+    -   Dependent properties listening
+    -   Promises
+    -   Selection in ArrayController
+    -   Scrollview
+    -   Various other areas
+
+# v0.4.0
 
 -   Packaging:
     -   All applications must be packages with ``package.json`` files.

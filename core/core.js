@@ -788,7 +788,8 @@ Description
 */
 Object.defineProperty(Object.prototype, "setProperty", {
     value: function(aPropertyPath, value) {
-        var lastDotIndex = aPropertyPath.lastIndexOf("."),
+        var propertyIsNumber = !isNaN(aPropertyPath),
+            lastDotIndex = propertyIsNumber ? -1 : aPropertyPath.lastIndexOf("."),
             setObject,
             lastObjectAtPath,
             propertyToSetOnArray;
@@ -883,9 +884,10 @@ Object.defineProperty(Array.prototype, "getProperty", {
         currentIndex = currentIndex || 0;
 
         var result,
-            parenthesisStartIndex = aPropertyPath.indexOf("(", currentIndex),
-            parenthesisEndIndex = aPropertyPath.lastIndexOf(")"),
-            currentPathComponentEndIndex = aPropertyPath.indexOf(".", currentIndex),
+            propertyIsNumber = !isNaN(aPropertyPath),
+            parenthesisStartIndex = propertyIsNumber ? -1 : aPropertyPath.indexOf("(", currentIndex),
+            parenthesisEndIndex = propertyIsNumber ? -1 : aPropertyPath.lastIndexOf(")"),
+            currentPathComponentEndIndex = propertyIsNumber ? -1 : aPropertyPath.indexOf(".", currentIndex),
             nextDelimiterIndex = -1,
             itemResult,
             index,
@@ -917,7 +919,7 @@ Object.defineProperty(Array.prototype, "getProperty", {
         }
 
         // Find the component of the propertyPath we want to deal with during this particular invocation of this function
-        currentPathComponent = aPropertyPath.substring(currentIndex, (nextDelimiterIndex === -1 ? aPropertyPath.length : nextDelimiterIndex));
+        currentPathComponent = propertyIsNumber ? aPropertyPath : aPropertyPath.substring(currentIndex, (nextDelimiterIndex === -1 ? aPropertyPath.length : nextDelimiterIndex));
 
         // EVALUATE: Determine the value of the currentPathComponent
 

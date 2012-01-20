@@ -348,4 +348,200 @@ describe("serialization/deserializer-spec", function() {
             waitsFor(function() { return latch; });
         });
     });
+    
+    describe("Element Reference Deserialization", function() {
+        var root = document.createElement("div");
+        
+        it("should deserialize an element reference through id", function() {
+            root.innerHTML = '<div id="id">content</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content");
+                });
+            }
+        });
+        
+        it("should deserialize an element reference through data-montage-id", function() {
+            root.innerHTML = '<div data-montage-id="id">content</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content");
+                });
+            }
+        });
+        
+        it("should deserialize an element reference through data-montage-id over id", function() {
+            root.innerHTML = '<div id="id">content1</div>' +
+                             '<div data-montage-id="id">content2</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content2");
+                });
+            }
+        });
+        
+        it("should deserialize an element with id and data-montage-id", function() {
+            root.innerHTML = '<div id="realId" data-montage-id="id">content</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content");
+                });
+            }
+        });
+        
+        it("should deserialize an element with the same id and data-montage-id", function() {
+            root.innerHTML = '<div id="id" data-montage-id="id">content</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content");
+                });
+            }
+        });
+        
+        it("should deserialize an element reference through id w/ optimization", function() {
+            root.innerHTML = '<div id="id">content</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            deserializer.optimizeForDocument(root);
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content");
+                    expect(object.element.getAttribute("id")).toBe("id");
+                });
+            }
+        });
+        
+        it("should deserialize an element reference through data-montage-id w/ optimization", function() {
+            root.innerHTML = '<div data-montage-id="id">content</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            deserializer.optimizeForDocument(root);
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content");
+                    expect(object.element.getAttribute("id")).toBeNull();
+                });
+            }
+        });
+        
+        it("should deserialize an element reference through data-montage-id over id w/ optimization", function() {
+            root.innerHTML = '<div id="id">content1</div>' +
+                             '<div data-montage-id="id">content2</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            deserializer.optimizeForDocument(root);
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content2");
+                    expect(object.element.getAttribute("id")).toBeNull();
+                });
+            }
+        });
+        
+        it("should deserialize an element with id and data-montage-id w/ optimization", function() {
+            root.innerHTML = '<div id="realId" data-montage-id="id">content</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            deserializer.optimizeForDocument(root);
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content");
+                    expect(object.element.getAttribute("id")).toBe("realId");
+                });
+            }
+        });
+        
+        it("should deserialize an element with the same id and data-montage-id w/ optimization", function() {
+            root.innerHTML = '<div id="id" data-montage-id="id">content</div>';
+            deserializer.initWithObject({
+                root: {
+                    value: {
+                        "element": {"#": "id"}
+                    }
+                }
+            });
+            deserializer.optimizeForDocument(root);
+            
+            for (var i = 0; i < 3; i++) {
+                deserializer.deserializeObjectWithElement(root, function(object) {
+                    expect(object.element instanceof Element).toBe(true);
+                    expect(object.element.textContent).toBe("content");
+                    expect(object.element.getAttribute("id")).toBe("id");
+                });
+            }
+        });
+    })
 });
