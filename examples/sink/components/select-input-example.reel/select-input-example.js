@@ -12,6 +12,19 @@ exports.SelectInputExample = Montage.create(Component, {
     firstName: {value: null},
     lastName: {value: null},
     
+    departments: {
+        value: [
+            {name: 'Please select a Department', code: ''},
+            {name: 'Human Resources', code: 'HRD'},
+            {name: 'Software Engineering', code: 'SWE'},
+            {name: 'Hardware Engineering', code: 'HWE'},
+            {name: 'Finance', code: 'FIN'},
+            {name: 'Information Technology', code: 'IT'}
+        ]
+    },
+    
+    dept: {value: null},
+    
     states: {
         value: {
             'USA': [
@@ -35,7 +48,7 @@ exports.SelectInputExample = Montage.create(Component, {
     selectedCountry: {
         get: function() {return this._selectedCountry;},
         set: function(value) {
-            if(this._selectedCountry !== value) {
+            if(value && this._selectedCountry !== value) {
                 this._selectedCountry = value;
                 // update states list
                 var code = this._selectedCountry.value;
@@ -55,6 +68,16 @@ exports.SelectInputExample = Montage.create(Component, {
             }
         }
     },
+    
+    _selectedDept: {value: null},
+    selectedDept: {
+        get: function() {return this._selectedDept;},
+        set: function(value) {
+            if(this._selectedDept !== value) {
+                this._selectedDept = value;                
+            }
+        }
+    },
         
     prepareForDraw: {
         value: function() {
@@ -63,6 +86,8 @@ exports.SelectInputExample = Montage.create(Component, {
             
             this.firstName = "Foo";
             this.lastName = "Bar";
+            
+            this.dept.contentController.selectedIndexes = [2];
             
         }
     },
@@ -73,7 +98,8 @@ exports.SelectInputExample = Montage.create(Component, {
                 firstName: this.firstName,
                 lastName: this.lastName,
                 country: this.selectedCountry,
-                state: this.selectedState                
+                state: this.selectedState,
+                department: this.selectedDept             
             });
         }
     }

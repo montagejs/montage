@@ -14,17 +14,23 @@
                     "name": "InputTextExample",
                     "properties": {
                         "element": {"#": "select-input-example"},
-                        "statesController": {"@": "statesController"}
+                        "statesController": {"@": "statesController"},
+                        "dept": {"@": "dept"}
                     },
                     "bindings": {
                         "selectedCountry": {
                             "boundObject": {"@": "country"},
-                            "boundObjectPropertyPath": "selectedObjects.0",
+                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
                             "oneway": true
                         },
                         "selectedState": {
                             "boundObject": {"@": "state"},
-                            "boundObjectPropertyPath": "selectedObjects.0",
+                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
+                            "oneway": true
+                        },
+                        "selectedDept": {
+                            "boundObject": {"@": "dept"},
+                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
                             "oneway": true
                         }
                     }
@@ -63,6 +69,23 @@
                             "oneway": false
                         }
                     }
+                },
+                
+                "dept": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "dept"},
+                        "textPropertyPath": "name",
+                        "valuePropertyPath": "code"
+                    },
+                    "bindings": {
+                        "content": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "departments",
+                            "oneway": true
+                        }
+                    }        
                 },
                 
                 
@@ -164,6 +187,11 @@
                      <label for="lname">Last Name</label>
                      <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
                      
+                     <label for="dept">Department</label>
+                      <select id="dept" required="true">
+                          <option>Please select a Department</option>
+                      </select>
+                     
                      <label for="country">Country</label>
                      <select id="country" required>
                          <option value="">Please select a Country</option>
@@ -171,7 +199,7 @@
                          <option value="INR" >India</option>
                          <option value="FR">France</option>
                          <option value="GER">Germany</option>
-                     </select>
+                     </select>                     
 
                      <label for="state">State</label>
                      <select id="state" required="true">
@@ -205,7 +233,7 @@
                       <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
                     </tr>
                     <tr>
-                      <td>objects</td>
+                      <td>content</td>
                       <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
                     </tr>
                     <tr>

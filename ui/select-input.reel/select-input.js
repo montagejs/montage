@@ -9,35 +9,25 @@ var Montage = require("montage").Montage,
     ArrayController = require("ui/controller/array-controller").ArrayController,
     NativeControl = require("ui/native-control").NativeControl;
 
-    var STRING_CLASS = '[object String]';
-    var _toString = Object.prototype.toString;
-    var isString = function(object) {
-        return _toString.call(object) === STRING_CLASS;
-    };
+var STRING_CLASS = '[object String]';
+var ARRAY_CLASS = '[object Array]';
+var _toString = Object.prototype.toString;
+
+var isString = function(object) {
+    return _toString.call(object) === STRING_CLASS;
+};
+var isArray = function(object) {
+    return _toString.call(object) === ARRAY_CLASS;
+};
     
 var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     
     _fromInput: {value: null},    
     
-    __objects: {value: null, enumerable: false},
-    _objects: {
-        set: function(value) {
-            this.__objects = value;
-            this.needsDraw = true;
-        },
-        get: function() {
-            return this.__objects;
-        }
-    },
-    
     __selectedIndexes: {value: null, enumerable: false},
     _selectedIndexes: {
         set: function(value) {
             this.__selectedIndexes = value;
-            if(this.contentController) {
-                this.selectedObjects = this.contentController.selectedObjects;
-            }
-            
             if(!this._fromInput) {
                 this.needsDraw = true;
             } else {
@@ -49,6 +39,30 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         }
     },
     
+    //-----------------------
+    // Public API 
+    //-----------------------    
+    
+    _content: {value: null, enumerable: false},
+    content: {
+        set: function(value) {
+            if(!isArray(value)) {
+                value = [value];
+            }
+            this._content = value;
+            
+            if(!this.contentController) {
+                var contentController = ArrayController.create();                
+                contentController.content = value;
+                this.contentController = contentController;
+            }
+            
+            this.needsDraw = true;
+        },
+        get: function() {
+            return this._content;
+        }
+    },
     
     // If contentController is provided, this allows the developer to specify
     // which property in each element provides the "value" part of <option>
@@ -57,9 +71,6 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     // is received
     textPropertyPath: {value: null},
     
-    
-    // selected items from the underlying contentController
-    selectedObjects: {value: null},
     
     _contentController: {value: null, enumerable: false},
     contentController: {
@@ -72,7 +83,6 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             }
 
             if (this._contentController) {
-                Object.deleteBinding(this, "_objects");
                 Object.deleteBinding(this, "_selectedIndexes");
             }
 
@@ -82,14 +92,16 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
                 // If we're already getting contentController related values from other bindings...stop that
                 if (this._bindingDescriptors) {
-                    Object.deleteBinding(this, "_objects");
+                    Object.deleteBinding(this, "content");
                 }
-
-                Object.defineBinding(this, "_objects", {
+                
+                Object.defineBinding(this, "content", {
                     boundObject: this._contentController,
                     boundObjectPropertyPath: "organizedObjects",
                     oneway: true
                 });
+                
+                
                 Object.defineBinding(this, "_selectedIndexes", {
                     boundObject: this._contentController,
                     boundObjectPropertyPath: "selectedIndexes"
@@ -99,7 +111,9 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         }
     },
 
-    // Callbacks
+    // -------------------
+    // Montage Callbacks
+    // --------------------
     
     _addOptionsFromMarkup: {
         value: function() {
@@ -140,6 +154,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             
         }
     },
+    
     
     deserializedFromTemplate: {
         value: function() {
@@ -182,7 +197,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     _refreshOptions: {
         value: function() {
             console.log('==== refreshOptions ====');
-            var arr = this._objects||[], len = arr.length, i, option;
+            var arr = this.content||[], len = arr.length, i, option;
             var text, value;
             for(i=0; i< len; i++) {
                 option = document.createElement('option');
@@ -225,10 +240,10 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         }
     },
     
-    // find the index of the object with the specified value in the _objects array 
+    // find the index of the object with the specified value in the _content array 
     _indexOf: {
         value: function(val) {
-            var arr = this._objects||[], len = arr.length, i;
+            var arr = this.content||[], len = arr.length, i;
             var text, value;
             for(i=0; i< len; i++) {
                 if(isString(arr[i])) {
@@ -264,9 +279,9 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 //http://www.w3.org/TR/html5/the-button-element.html#the-select-element
 
 SelectInput.addProperties({        
-        //autofocus: null,
+        autofocus: null,
         disabled: {dataType: 'boolean'},
-        //form: null,
+        form: null,
         multiple: {dataType: 'boolean'},
         name: null,
         required: {dataType: 'boolean'},
