@@ -16,11 +16,30 @@ exports.Test = Montage.create(Montage, {
         }
     },
 
-
+    convertPoint1:{
+       value: null
+    },
+    convertPoint2:{
+       value: null
+    },
+    convertPoint3:{
+       value: null
+    },
+    convertPoint4:{
+       value: null
+    },
+    convertPoint5:{
+       value: null
+    },
+    convertPoint6:{
+       value: null
+    },
+    convertPoint7:{
+        value: null
+     },
     svg:{
         value: null
     },
-
     html:{
         value: null
     }
