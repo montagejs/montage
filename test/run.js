@@ -14,6 +14,7 @@ if (spec) {
     });
 } else {
     Promise.all([
+
         // Please keep in alphabetical order
         require.async("array-spec"),
         require.async("bitfield-spec"),
@@ -61,15 +62,18 @@ if (spec) {
         require.async("serialization/serializer-spec"),
 
         require.async("ui/application-spec"),
+        require.async("ui/anchor-spec"),
         require.async("ui/button-spec"),
         require.async("ui/component-spec"),
         require.async("ui/dom-spec"),
         require.async("ui/firstdraw-spec"),
         require.async("ui/list-spec"),
+        require.async("ui/number-input-spec"),
         require.async("ui/repetition-spec"),
         require.async("ui/slider-spec"),
         require.async("ui/slot-spec"),
         require.async("ui/textfield-spec")
+        
     ]).then(function() {
         jasmine.getEnv().execute();
         window.testpage.callNext();
