@@ -115,7 +115,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     content = "";
                 }
                 if (this._sanitizer) {
-                    content = this._sanitizer.unscopeCSS(content, this._uniqueId);
+                    content = this._sanitizer.didGetValue(content, this._uniqueId);
                 }
 
                 this._value = content;
@@ -130,7 +130,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
 
                 if (this._sanitizer) {
-                    value = this._sanitizer.scopeCSS(value, this._uniqueId);
+                    value = this._sanitizer.willSetValue(value, this._uniqueId);
                 }
                 this._value = value;
                 this._dirtyValue = false;
@@ -1011,7 +1011,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (data) {
                     // Sanitize Fragment (CSS & JS)
                     if (this._sanitizer) {
-                        data = this._sanitizer.scopeCSS(this._sanitizer.removeScript(data));
+                        data = this._sanitizer.willInsertHTMLData(data, this._uniqueId);
                     }
                 } else {
                     data = event.dataTransfer.getData("text/plain") || event.dataTransfer.getData("text");
@@ -1071,7 +1071,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             if (data && isHTML) {
                 // Sanitize Fragment (CSS & JS)
                 if (this._sanitizer) {
-                    data = this._sanitizer.scopeCSS(this._sanitizer.removeScript(data));
+                    data = this._sanitizer.willInsertHTMLData(data, this._uniqueId);
                 }
             } else {
                 data = clipboardData.getData("text/plain") ||  clipboardData.getData("text");
