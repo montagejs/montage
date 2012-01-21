@@ -47,7 +47,7 @@ exports.NativeControl = Montage.create(Component, {
             spellcheck: null,
             style: null,
             tabindex: null,
-            title: null            
+            title: null
         }
     },
 
@@ -209,8 +209,10 @@ exports.NativeControl = Montage.create(Component, {
                     desc = this._propertyDescriptors[i];
                     if(desc && desc.dataType === 'boolean') {
                         if(val === true) {
-                            el.setAttribute(i, 'true');
+                            el[i] = true;
+                            el.setAttribute(i, i.toLowerCase());
                         } else {
+                            el[i] = false;
                             el.removeAttribute(i);
                         }
                     } else {

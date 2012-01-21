@@ -34,18 +34,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
-    /**
-        Description TODO
-        @function
-    */
-    draw: {
-        enumerable: false,
-        value: function() {
-            this.element.checked = this._checked;
-            var fn = Object.getPrototypeOf(CheckInput).draw.call(this);
-        }
-    },
-
 /**
     Description TODO
     @function
