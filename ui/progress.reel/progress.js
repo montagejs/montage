@@ -19,7 +19,7 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/progre
   Description TODO
   @private
 */
-    _barEl: {
+    _barElement: {
         enumerable: false,
         value: null
     },
@@ -120,18 +120,17 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/progre
     draw: {
         enumerable: false,
         value: function() {
-            var percentage = (this._value / this._maximumValue) * 100;
-            if(percentage > 100) {
-                this._barEl.style.width = "100%";
-            } else {
-                this._barEl.style.width = percentage + '%';
-            }
-
+            var ratio = this._value / this._maximumValue;
+            // constrain to interval [0, 1]
+            ratio = Math.min(Math.max(ratio, 0), 1);
+            // map into [0, 100]
+            var percentage = ratio * 100;
+            this._barElement.style.width = percentage + '%';
             if(this._scrollingChanged) {
                 if(this._scrolling) {
-                    this._barEl.classList.add("scrolling");
+                    this._barElement.classList.add("scrolling");
                 } else {
-                    this._barEl.classList.remove("scrolling");
+                    this._barElement.classList.remove("scrolling");
                 }
                 this._scrollingChanged = false;
             }
