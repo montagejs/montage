@@ -25,6 +25,46 @@
         }
     },
 
+    "check_szn1": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "check_szn1"},
+            "checked": false
+        }
+    },
+    "check_szn2": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "check_szn2"},
+            "checked": true
+        }
+    },
+
+    "check_bound1": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "check_bound1"},
+            "checked": true
+        },
+        "bindings": {
+            "checked": {
+                "boundObject": {"@": "check_bound2"},
+                "boundObjectPropertyPath": "checked",
+                "oneway": true
+            }
+        }
+    },
+    "check_bound2": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "check_bound2"}
+        }
+    },
+
     "radio1": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
@@ -53,6 +93,10 @@
         "properties": {
             "check1": {"@": "check1"},
             "check2": {"@": "check2"},
+            "check_szn1": {"@": "check_szn1"},
+            "check_szn2": {"@": "check_szn2"},
+            "check_bound1": {"@": "check_bound1"},
+            "check_bound2": {"@": "check_bound2"},
             "radio1": {"@": "radio1"},
             "radio2": {"@": "radio2"},
             "radio3": {"@": "radio3"}
@@ -72,8 +116,21 @@
     <h1>Checkbox tests</h1>
 
     <h2>Basic</h2>
-    <label><input type="checkbox" id="check1" /> should be unchecked</label>
-    <label><input type="checkbox" id="check2" checked /> should be checked</label>
+    <p>
+        <label><input type="checkbox" id="check1" /> should be unchecked</label>
+        <label><input type="checkbox" id="check2" checked /> should be checked</label>
+    </p>
+
+    <h2>Serialization</h2>
+
+    <label><input type="checkbox" id="check_szn1" checked /> should be unchecked</label>
+    <label><input type="checkbox" id="check_szn2" /> should be checked</label>
+
+    <h2>Bindings</h2>
+    <p>
+        <label><input type="checkbox" id="check_bound1" /> should be unchecked</label>
+        <label><input type="checkbox" id="check_bound2" checked /> should be checked</label>
+    </p>
 
     <h1>Radio button tests</h1>
     <h2>Basic</h2>
