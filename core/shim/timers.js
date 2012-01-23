@@ -46,18 +46,16 @@ if (typeof process !== "undefined") {
         channel.port2.postMessage(void 0);
     }
 } else if (typeof setTimeout !== "undefined") {
-
     nextTick = function (callback) {
         setTimeout(callback, 0);
     };
-} else {
+} else if (typeof setImmediate === "undefined") {
     throw new Error("Can't shim setImmediate.");
 }
 
 if (typeof setImmediate === "undefined") {
     var nextHandle = 0;
     var handles = {};
-
 
     global.setImmediate = function setImmediate(callback) {
         var handle = nextHandle++;
@@ -77,7 +75,17 @@ if (typeof setImmediate === "undefined") {
     global.clearImmediate = function clearImmediate(handle) {
         delete handles[handle];
     };
+} else {
+    // If setImmediate is native, use it as nextTick since
+    // that should have less overhead than the nextTick
+    // shim
+    nextTick = setImmediate;
 }
+
+// Publish nextTick because it either is setImmediate or it
+// is a shim that has less overhead than the setImmediate
+// shim.
+global.nextTick = nextTick;
 
 // Make this work as a <script> for bootstrapping montage.js
 if (typeof bootstrap !== "undefined") {
