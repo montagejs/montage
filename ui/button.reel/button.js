@@ -573,8 +573,10 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/button.r
     _isElementInput: {value: false},
     prepareForDraw: {
         value: function() {
-
-            this._element.tabIndex = 0;
+            
+            if(!this._element.tabIndex) {
+                this._element.tabIndex = 0;
+            }
 
             this._element.classList.add("montage-button");
             this._element.setAttribute("aria-role", "button");
