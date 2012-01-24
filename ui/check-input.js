@@ -11,6 +11,14 @@ var Montage = require("montage").Montage,
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
     // Callbacks
+    draw: {
+        value: function() {
+            // Call super
+            var fn = Object.getPrototypeOf(RadioButton).draw.call(this);
+            this._element.setAttribute("aria-checked", this._checked);
+        }
+    },
+
     /**
         Description TODO
         @function
