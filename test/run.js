@@ -70,13 +70,15 @@ if (spec) {
         require.async("ui/list-spec"),
         require.async("ui/number-input-spec"),
         require.async("ui/repetition-spec"),
+        require.async("ui/select-input-spec"),        
         require.async("ui/slider-spec"),
         require.async("ui/slot-spec"),
         require.async("ui/textfield-spec")
         
+        
     ]).then(function() {
         jasmine.getEnv().execute();
         window.testpage.callNext();
-    })
+    });
 }
 
