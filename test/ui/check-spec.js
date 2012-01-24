@@ -155,6 +155,27 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                     });
                 });
             });
+            describe("action event", function() {
+                it("should fire when clicked", function() {
+                    expect(click(test.radio2)).toHaveBeenCalled();
+                });
+                it("should not fire when another radio button in the same group is clicked", function() {
+                    click(test.radio2);
+
+                    var buttonSpy = {
+                        doSomething: function(event) {
+                            return 1+1;
+                        }
+                    };
+                    spyOn(buttonSpy, 'doSomething');
+
+                    var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
+                    test.radio1.addEventListener("action", actionListener);
+
+                    click(test.radio3);
+                    expect(buttonSpy.doSomething).not.toHaveBeenCalled();
+                });
+            });
         });
     });
 });
