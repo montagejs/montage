@@ -62,6 +62,7 @@ if (spec) {
         require.async("ui/component-spec"),
         require.async("ui/firstdraw-spec"),
         require.async("ui/list-spec"),
+        require.async("ui/popup-spec"),
         require.async("ui/repetition-spec"),
         require.async("ui/slider-spec"),
         require.async("ui/slot-spec"),
