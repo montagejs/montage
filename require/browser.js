@@ -7,7 +7,7 @@ bootstrap("require/browser", function (require) {
 
 var Require = require("require/require");
 var Promise = require("core/promise").Promise;
-var URL = require("core/url");
+var URL = require("core/mini-url");
 
 var global = typeof global !== "undefined" ? global : window;
 
@@ -24,7 +24,7 @@ Require.overlays = ["browser", "montage"];
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 Require.read = function (url) {
 
-    if (URL.parse(url).scheme.indexOf("file:") === 0) {
+    if (URL.resolve(window.location, url).indexOf("file:") === 0) {
         throw new Error("XHR does not function for file: protocol");
     }
 
