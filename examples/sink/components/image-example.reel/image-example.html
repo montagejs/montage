@@ -31,8 +31,8 @@
     },
     
     "more-link": {
-        "module": "montage/ui/link.reel",
-        "name": "Link",
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
         "properties": {
             "element": {"#": "more-link"}
         },
@@ -133,49 +133,27 @@
                     </p>
             </div>
         </div>
-
-        <div class="row">
-            <div class="span12">
-                <img id="img-main" class="img-main"/>
-                <div><a target="_blank" id="more-link">Click to learn more</a></div>
-            </div>
-        </div>
-
-        <p>Select an image from the list:</p>
-        <div class="row">
-            <div class="span12">
-                <div id="thumbs-list" class="thumbs-list">
-                    <img id="thumb" class="thumb" />
+        
+        <h4>Demo</h4>
+                    
+            <div class="row">
+                <div class="span12">
+                
+                    <div class="demo">
+                        <img id="img-main" class="img-main"/>
+                        <div><a target="_blank" id="more-link">Click to learn more</a></div>
+                
+                        <p>Select an image from the list:</p>
+                        <div class="row">
+                        <div class="span12">
+                            <div id="thumbs-list" class="thumbs-list">
+                                <img id="thumb" class="thumb" />
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        
-
-        <section>
-            <h6>Serialization</h6>
-
-            <p>Bind the main image's "src" property to the selected value of the ArrayController.</p>
-
-<pre class="prettyprint linenums">
-"main-image": {
-    "module": "montage/ui/image.reel",
-    "name": "Image",
-    "properties": {
-        "element": {"#": "img-main"}
-    },
-    "bindings": {
-        "src": {
-            "boundObject": {"@": "images"},
-            "boundObjectPropertyPath": "selectedObjects.0.src",
-            "oneway": true
-        }
-    }
-}
-</pre>
-
-        </section>
-
-
     </div>
 
 </body>
