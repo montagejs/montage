@@ -92,9 +92,8 @@ Require.Compiler = function (config) {
         // 3. set displayName property on the factory function (Safari, Chrome)
 
         var displayName = "__FILE__"+module.location.replace(/\.\w+$|\W/g, "__");
-        var sourceURLComment = "\n//@ sourceURL="+module.location;
 
-        module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+sourceURLComment);
+        module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+"\n//@ sourceURL="+module.location);
 
         // This should work and would be better, but Firebug does not show scripts executed via "new Function()" constructor.
         // TODO: sniff browser?
