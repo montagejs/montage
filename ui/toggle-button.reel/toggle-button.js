@@ -144,9 +144,10 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
             Object.getPrototypeOf(ToggleButton).draw.call(this);
             if (this._pressed) {
                 this._element.classList.add(this._pressedClass);
+                this._element.setAttribute("aria-pressed", true);
             } else {
                 this._element.classList.remove(this._pressedClass);
-
+                this._element.setAttribute("aria-pressed", false);
             }
         }
     },
