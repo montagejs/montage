@@ -69,25 +69,24 @@ exports.SelectInputExample = Montage.create(Component, {
         }
     },
     
-    _selectedDept: {value: null},
-    selectedDept: {
-        get: function() {return this._selectedDept;},
+    _selectedDepts: {value: null},
+    selectedDepts: {
+        get: function() {return this._selectedDepts;},
         set: function(value) {
-            if(this._selectedDept !== value) {
-                this._selectedDept = value;                
-            }
+            this._selectedDepts = (value || []);              
         }
     },
         
     prepareForDraw: {
         value: function() {
-            // Invoke Google pretty printer on source code samples
-            //prettyPrint();
             
-            this.firstName = "Foo";
-            this.lastName = "Bar";
+            this.firstName = "John";
+            this.lastName = "FooBar";
             
-            this.dept.contentController.selectedIndexes = [2];
+            this.dept.contentController.selectedIndexes = [2, 4, 5];
+            // The following code does not trigger the selection. The selection is 
+            // managed by the contentController
+            //this.selectedDept = this.departments[3];
             
         }
     },
@@ -99,7 +98,7 @@ exports.SelectInputExample = Montage.create(Component, {
                 lastName: this.lastName,
                 country: this.selectedCountry,
                 state: this.selectedState,
-                department: this.selectedDept             
+                departments: this.selectedDepts             
             });
         }
     }
