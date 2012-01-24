@@ -538,7 +538,15 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 // Let's give a change to the resizer to do any custom drawing if needed
                 this._resizer.draw();
             }
+        }
+    },
 
+    /**
+    Description TODO
+    @function
+    */
+    didDraw: {
+        value: function() {
             if (this._needsFocus) {
                 this.element.firstChild.focus();
                 if(document.activeElement == this.element.firstChild) {
@@ -627,7 +635,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             var thisRef = this,
                 el = this.element,
                 content = el.firstChild,
-                savedRange;
+                savedRange,
+                timer;
 
             this._hasFocus = true;
             if (this._needSelectionReset) {
@@ -650,11 +659,14 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
                 // Scroll the content to make sure the caret is visible, but only only if the focus wasn't the result of a user click/touch
                 savedRange = this._selectedRange;
-                setTimeout(function() {
-                    if (thisRef._equalRange(thisRef._selectedRange, savedRange)) {
-                        content.scrollTop = content.scrollHeight;
+                timer = setInterval(function() {
+                    if (thisRef._equalRange(thisRef._selectedRange, savedRange) &&
+                            content.scrollTop + content.offsetHeight != content.scrollHeight) {
+                        content.scrollTop = content.scrollHeight - content.offsetHeight;
                     }
-                }, 0);
+                }, 10);
+
+                setTimeout(function(){clearInterval(timer)}, 1000);
 
                 this._needSelectionReset = false;
             }
@@ -865,7 +877,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             }
 
             if (this._resizer) {
-                if (this._selectingResizer !== true) {
+                if (this._selectingResizer !== true && this._resizer.element) {
                     this._needsHideResizer = true;
                     this.needsDraw = true;
                 }

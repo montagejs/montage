@@ -21,14 +21,6 @@ exports.Resizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-text
         value: null
     },
 
-    _needsAddResizerOn: {
-        value: null
-    },
-
-    _needsRemoveResizer: {
-        value: null
-    },
-
     _element: {
         value: null
     },
