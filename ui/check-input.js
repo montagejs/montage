@@ -10,19 +10,15 @@ var Montage = require("montage").Montage,
 
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
-    // set value from user input
-    /**
-      @private
-    */
-    _setChecked: {
+    // Callbacks
+    draw: {
         value: function() {
-            var newValue = this.element.checked;
-            Object.getPropertyDescriptor(this, "checked").set.call(this, newValue, true);
+            // Call super
+            var fn = Object.getPrototypeOf(RadioButton).draw.call(this);
+            this._element.setAttribute("aria-checked", this._checked);
         }
     },
 
-
-    // Callbacks
     /**
         Description TODO
         @function
@@ -34,18 +30,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
-    /**
-        Description TODO
-        @function
-    */
-    draw: {
-        enumerable: false,
-        value: function() {
-            this.element.checked = this._checked;
-            var fn = Object.getPrototypeOf(CheckInput).draw.call(this);
-        }
-    },
-
 /**
     Description TODO
     @function
@@ -54,7 +38,8 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     handleChange: {
         enumerable: false,
         value: function(event) {
-            this._setChecked();
+            Object.getPropertyDescriptor(this, "checked").set.call(this,
+                this.element.checked, true);
             this._dispatchActionEvent();
         }
     }

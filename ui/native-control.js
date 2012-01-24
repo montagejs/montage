@@ -47,7 +47,7 @@ exports.NativeControl = Montage.create(Component, {
             spellcheck: null,
             style: null,
             tabindex: null,
-            title: null            
+            title: null
         }
     },
 
@@ -88,7 +88,6 @@ exports.NativeControl = Montage.create(Component, {
                         // if requested dataType is boolean (eg: checked, readonly etc)
                         // coerce the value to boolean
                         if(desc && "boolean" === desc.dataType) {
-                            //val = (val || val === "");
                             val = ( (val || val === "") ? true : false);
                         }
 
@@ -130,18 +129,20 @@ exports.NativeControl = Montage.create(Component, {
 
             for(prop in stdAttrs) {
                 if(stdAttrs.hasOwnProperty(prop)) {
-                    if(isUndefined(this[prop])) {
-                        obj = stdAttrs[prop];
-                        // Make sure that the descriptor is of the correct form.
-                        if(obj === null || isString(obj)) {
-                            desc = {value: obj, dataType: "string"};
-                            stdAttrs[prop] = desc;
-                        } else {
-                            desc = obj;
-                        }
-                        this.addProperty(prop, desc);
+                    obj = stdAttrs[prop];
+                    // Make sure that the descriptor is of the correct form.
+                    if(obj === null || isString(obj)) {
+                        desc = {value: obj, dataType: "string"};
+                        stdAttrs[prop] = desc;
+                    } else {
+                        desc = obj;
                     }
 
+                    // Only add the internal prop, and getter and setter if
+                    // they don't already exist.
+                    if(isUndefined(this[prop])) {
+                        this.addProperty(prop, desc);
+                    }
                 }
             }
         }
@@ -167,7 +168,7 @@ exports.NativeControl = Montage.create(Component, {
                     }
                 }
             }
-            
+
             // check if this element has textContent
             var textContent = this.element.textContent;
             // set textContent only if it is defined as part of element properties
@@ -209,8 +210,10 @@ exports.NativeControl = Montage.create(Component, {
                     desc = this._propertyDescriptors[i];
                     if(desc && desc.dataType === 'boolean') {
                         if(val === true) {
-                            el.setAttribute(i, 'true');
+                            el[i] = true;
+                            el.setAttribute(i, i.toLowerCase());
                         } else {
+                            el[i] = false;
                             el.removeAttribute(i);
                         }
                     } else {
@@ -221,7 +224,7 @@ exports.NativeControl = Montage.create(Component, {
                                 //https://developer.mozilla.org/en/DOM/element.setAttribute
                                 el.setAttribute(i, val);
                             }
-                            
+
                         }
                     }
 

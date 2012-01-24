@@ -4,17 +4,17 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module "montage/ui/toggle.reel"
+	@module "montage/ui/toggle-switch.reel"
     @requires montage/core/core
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 /**
- @class module:"montage/ui/toggle.reel".Toggle
+ @class module:"montage/ui/toggle-switch.reel".ToggleSwitch
  @extends module:montage/ui/component.Component
  */
-var Toggle = exports.Toggle = Montage.create(Component, /** @lends module:"montage/ui/toggle.reel".Toggle# */ {
+var ToggleSwitch = exports.ToggleSwitch = Montage.create(Component, /** @lends module:"montage/ui/toggle-switch.reel".ToggleSwitch# */ {
 
     _value: {
         enumerable: false,
@@ -325,7 +325,7 @@ var Toggle = exports.Toggle = Montage.create(Component, /** @lends module:"monta
     prepareForDraw: {
         enumerable: false,
         value: function() {
-            this._element.classList.add("montage-toggle");
+            this._element.classList.add("montage-toggle-switch");
             this._toggle = document.createElement('div');
             this._scroll = document.createElement('div');
             this._circle = document.createElement('div');

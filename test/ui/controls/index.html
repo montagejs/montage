@@ -149,7 +149,7 @@
                 "contentController": {"@": "statesController"},
                 "textPropertyPath": "name",
                 "valuePropertyPath": "code"
-            }         
+            }
         },
 
         "country": {
@@ -335,11 +335,13 @@
 			"bindings": {
                 "option1": {
                     "boundObject": {"@": "check3"},
-                    "boundObjectPropertyPath": "checked"
+                    "boundObjectPropertyPath": "checked",
+                    "oneway": true
                 },
                 "option2": {
                     "boundObject": {"@": "radio1"},
-                    "boundObjectPropertyPath": "checked"
+                    "boundObjectPropertyPath": "checked",
+                    "oneway": true
                 },
                 "selectedCountry": {
                     "boundObject": {"@": "country"},
@@ -411,7 +413,7 @@
 
                             <label for="email1">Email</label>
                             <input type="email" id="email1" value="f" />
-                            
+
                             <datalist name="companies">
                                 <option value="google" label="http://www.google.com"></option>
                                 <option value="yahoo" label="http://www.yahoo.com"></option>

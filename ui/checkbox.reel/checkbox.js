@@ -6,9 +6,7 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     CheckInput = require("ui/check-input").CheckInput;
-/**
- * The Text input
- */
+
 var Checkbox = exports.Checkbox = Montage.create(CheckInput, {});
 Checkbox.addProperties({
     autofocus: 'off', // on/off
