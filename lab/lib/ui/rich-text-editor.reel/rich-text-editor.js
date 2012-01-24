@@ -686,7 +686,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             // Force use css for styling (if supported)
             document.execCommand("styleWithCSS", false, true);
 
-            // Update the states is they are dirty
+            // Update the states if they are dirty
             if (this._statesDirty) {
                 this.updateStates();
             }
