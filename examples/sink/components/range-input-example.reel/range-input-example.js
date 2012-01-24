@@ -110,6 +110,10 @@ exports.RangeInputExample = Montage.create(Component, {
     handleResetAction: {
         value: function() {
             Pixastic.revert(document.getElementById("image"));
+            this.red = 0;
+            this.green = 0;
+            this.blue = 0;
+            this.sharpnessAmount = 0;
         }
     }
 });
