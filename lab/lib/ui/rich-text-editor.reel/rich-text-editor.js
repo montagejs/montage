@@ -288,9 +288,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
             if (this._states == null || this._statesDirty) {
                 this._states = this._states || {};
-                this._statesDirty = false;
 
                 if (hasFocus) {
+                    this._statesDirty = false;
                     states = this._states;
                     for (key in actions) {
                         action = actions[key];
@@ -300,7 +300,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                             if (typeof state == "boolean") {
                                 state = state ? "true" : "false";
                             }
-                            // JFD TODO: We might need to do some conversion for fontsize, fontname and colors
+
+                            // Clean up font name
+                            if (key == "fontname") {
+                                state = state.replace(/'/g, "");
+                            }
                         }
 
                         if (states[key] !== state) {
@@ -308,15 +312,13 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                             statesChanged = true;
                         }
                     }
+
                     if (statesChanged) {
                         this._states = states;
                         // As we do not use a setter, we need to manually dispatch a change event
                         this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("states" , this._states));
                     }
 
-                    if (this._states.fontname) {
-                        this._states.fontname = this._states.fontname.replace(/'/g, "");
-                    }
                 }
             }
 
@@ -683,6 +685,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             document.execCommand("enableObjectResizing", false, false);
             // Force use css for styling (if supported)
             document.execCommand("styleWithCSS", false, true);
+
+            // Update the states is they are dirty
+            if (this._statesDirty) {
+                this.updateStates();
+            }
         }
     },
 
@@ -1226,9 +1233,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (value === undefined) {
                     value = false;
                 }
-                document.execCommand("styleWithCSS", false, true);
                 document.execCommand(action, false, value);
-                document.execCommand("styleWithCSS", false, false);
 
                 this.handleSelectionchange();
                 this._markDirty();
