@@ -31,19 +31,35 @@ if (typeof process !== "undefined") {
 } else if (typeof MessageChannel !== "undefined") {
     // http://www.nonblocking.io/2011/06/windownexttick.html
     var channel = new MessageChannel();
-    // linked list of tasks (single, with head node)
-    var head = {}, tail = head;
+    // queue of tasks implemented as a singly linked list with a head node
+    var head = {}, tail = head, pending;
 
     channel.port1.onmessage = function () {
-        var next = head.next;
-        var task = next.task;
-        head = next;
-        task();
+        try {
+            // unroll all pending events
+            while (head.next) {
+                head = head.next;
+                // guarantee consistent queue state
+                // before task, because it may throw
+                head.task(); // may throw
+            }
+            pending = false;
+        } finally {
+            // if a task throws an exception and
+            // there are more pending tasks, dispatch
+            // another event
+            if (pending) {
+                channel.port2.postMessage(void 0);
+            }
+        }
     };
 
     nextTick = function (task) {
         tail = tail.next = {task: task};
-        channel.port2.postMessage(void 0);
+        if (!pending) {
+            channel.port2.postMessage(void 0);
+            pending = true;
+        }
     }
 } else if (typeof setTimeout !== "undefined") {
     nextTick = function (callback) {
