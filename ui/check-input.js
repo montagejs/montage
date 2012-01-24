@@ -10,18 +10,6 @@ var Montage = require("montage").Montage,
 
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
-    // set value from user input
-    /**
-      @private
-    */
-    _setChecked: {
-        value: function() {
-            var newValue = this.element.checked;
-            Object.getPropertyDescriptor(this, "checked").set.call(this, newValue, true);
-        }
-    },
-
-
     // Callbacks
     /**
         Description TODO
@@ -42,7 +30,8 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     handleChange: {
         enumerable: false,
         value: function(event) {
-            this._setChecked();
+            Object.getPropertyDescriptor(this, "checked").set.call(this,
+                this.element.checked, true);
             this._dispatchActionEvent();
         }
     }

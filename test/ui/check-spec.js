@@ -139,6 +139,13 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                     });
                 });
             });
+
+            describe("action event", function() {
+                it("should fire when clicked", function() {
+                    expect(click(test.check1)).toHaveBeenCalled();
+                });
+            });
+
         });
 
         // The radio button uses the check-input class, which is pretty much

@@ -10,22 +10,47 @@ var Montage = require("montage").Montage,
  * The Text input
  */
 var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
-    prepareForDraw: {
+    _checkedSyncedWithInputField: {
         enumerable: false,
-        value: function() {
-            // Bind the listener to all radio buttons with this name, so that
-            // we get an event when another radio button is checked, causing
-            // this one to be unchecked.
-            // This function binds a listener to this radio button, so we don't
-            // need to call the super method.
-            var i, name = this.element.getAttribute("name"), others;
-            if (name) {
-                others = document.querySelectorAll('input[name="'+ name +'"]');
-                for (i = 0; i < others.length; i++) {
-                    others[i].addEventListener('change', this);
-                }
+        value: false
+    },
+
+    _checked: {
+        enumerable: false,
+        value: null
+    },
+    checked: {
+        get: function() {
+            // If we haven't synced with the input field then our value is
+            // more up to date than the element and so we don't get it from the
+            // element. If we have synced then the user could have changed
+            // the focus to another radio button, so we *do* retrieve it from
+            // the element.
+            if (this._checkedSyncedWithInputField === true) {
+                this._checked = this._element.checked;
             }
 
+            return this._checked;
+        },
+        set: function(value, fromInput) {
+            this._checked = value;
+            if (fromInput) {
+                this._valueSyncedWithInputField = true;
+            } else {
+                this._valueSyncedWithInputField = false;
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    draw: {
+        value: function() {
+            if (!this._valueSyncedWithInputField) {
+                this._element.checked = this._checked;
+            }
+
+            // Call super
+            var fn = Object.getPrototypeOf(RadioButton).draw.call(this);
         }
     }
 });
