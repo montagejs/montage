@@ -7,8 +7,6 @@
 	@module montage/core/shim
     @requires montage/core/shim/string
     @requires montage/core/shim/array
-    @requires montage/core/shim/timers
 */
 require("./shim/string");
 require("./shim/array");
-require("./shim/timers");

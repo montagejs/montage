@@ -24,6 +24,9 @@ var Montage = require("montage").Montage,
     Deserializer = require("core/deserializer").Deserializer,
     defaultEventManager;
 
+// XXX Does not presently function server-side
+if (typeof window !== "undefined") { // client-side
+
 /* This is to handle browsers that have TouchEvents but don't have the global constructor function Touch */
 //if(TouchEvent && typeof window.Touch === "undefined") {
 // HACK: The commented expression fails because Chrome on the desktop also has TouchEvent and in the code we're either registering touch events OR mouse events on most components.
@@ -2072,4 +2075,6 @@ if (typeof window.ondragstart !== undefined) {
         "bubbles": true
     };
 }
+
+} // client-side
 

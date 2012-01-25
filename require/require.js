@@ -3,12 +3,34 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-bootstrap("require/require", function (require, CJS) {
 
-    var Promise = require("core/promise").Promise;
-    var URL = require("core/url");
+(function (definition) {
 
-    var global = (function () {return this})();
+    // Browser
+    if (typeof bootstrap !== "undefined") {
+        bootstrap("require/require", function (require, exports) {
+            var Promise = require("core/promise").Promise;
+            var URL = require("core/mini-url");
+            definition(exports, Promise, URL);
+            require("require/browser");
+        });
+
+    // Node
+    } else {
+        var Promise = (require)("../core/promise").Promise;
+        var URL = (require)("../core/url");
+        definition(exports, Promise, URL);
+        require("./node");
+        if (require.main == module)
+            exports.main();
+    }
+
+})(function (Require, Promise, URL) {
+
+    if (!this)
+        throw new Error("Require does not work in strict mode.");
+
+    var global = this;
     var globalEval = eval; // reassigning causes eval to not use lexical scope.
 
     // Non-CommonJS speced extensions should be marked with an "// EXTENSION" comment.
@@ -17,85 +39,106 @@ bootstrap("require/require", function (require, CJS) {
     // Returns the root "require" function. If this root "require()" function is called the loader will be in synchronous mode.
     // To get asynchronous loading you MUST call the root "require.async()". In async mode all subsequent calls to "require()" will
     // be asynchronously loaded, and synchronously executed.
-    CJS.Sandbox = function(config) {
+    Require.Sandbox = function(config) {
         // Configuration defaults:
         config = config || {};
-        config.location = URL.resolve(config.location || CJS.pwd(), ".");
+        config.location = URL.resolve(config.location || Require.getLocation(), ".");
         config.lib = URL.resolve(config.location, config.lib || ".");
         config.paths = config.paths || [config.lib];
         config.mappings = config.mappings || {}; // EXTENSION
-        config.definitions = config.definitions || {};
-        config.modules = config.modules || {};
         config.exposedConfigs = config.exposedConfigs || [
             "paths",
             "mappings",
-            "definitions",
             "base",
             "location",
             "packageDescription",
+            "packages",
+            "modules",
+            "module",
+            "load",
             "loadPackage"
         ];
-        config.makeLoader = config.makeLoader || CJS.DefaultLoaderConstructor;
+        config.makeLoader = config.makeLoader || Require.DefaultLoaderConstructor;
         config.load = config.load || config.makeLoader(config);
-        config.makeCompiler = config.makeCompiler || CJS.DefaultCompilerConstructor;
+        config.makeCompiler = config.makeCompiler || Require.DefaultCompilerConstructor;
         config.compile = config.compile || config.makeCompiler(config);
 
         // Sandbox state:
-        // Module instances: { exports, id, path, uri }
-        var modules = config.modules;
-        // Module definition objects: { factory, dependencies, path }
-        var definitions = config.definitions;
-        // Arrays of callbacks to be executed once a module definition has been loaded
-        var definitionListeners = {};
+        // Modules: { exports, id, location, directory, factory, dependencies, dependees, text, type }
+        var modules = config.modules = config.modules || {};
         // Mapping from canonical IDs to the initial top ID used to load module
-        var urisToIds = {};
+        var locationsToIds = {};
+
+        function getModule(id) {
+            if (!has(modules, id)) {
+                modules[id] = {"id": id};
+            }
+            return modules[id];
+        }
+        config.module = getModule;
+
+        function inject(id, exports) {
+            var module = getModule(id)
+            module.exports = exports;
+            module.location = URL.resolve(config.location, id);
+            module.directory = URL.resolve(module.location, ".");
+        }
 
         // Ensures a module definition is loaded before returning or executing the callback.
         // Supports multiple calls for the same topId by registering callback as a listener if it has already been initiated.
-        var definitionMemo = {};
-        function load(topId) {
-            if (!has(definitionMemo, topId)) {
+        var loading = {};
+        function load(topId, viaId) {
+            if (!has(loading, topId)) {
+                var module = getModule(topId);
+
+                // instantiated or already loaded
+                if (
+                    module.factory !== void 0 ||
+                    module.exports !== void 0
+                ) {
+                    loading[topId] = Promise.ref(module);
                 // preloaded
-                if (has(definitions, topId) && definitions[topId].path !== undefined) {
-                    var definition = definitions[topId];
-                    definitionMemo[topId] = CJS.read(definition.path)
+                } else if (
+                    module.location !== void 0 &&
+                    module.factory !== void 0
+                ) {
+                    loading[topId] = Require.read(module.location)
                     .then(function (text) {
-                        definition.text = text;
-                        config.compile(definition);
-                        return definition;
+                        module.text = text;
+                        return module;
                     });
                 // load
                 } else {
 
                     // Update the list of modules that need to load
-                    CJS.progress.requiredModules.push(
+                    Require.progress.requiredModules.push(
                         [config.location, topId].join("#")
                     );
 
-                    var result = Promise.defer();
-                    definitionMemo[topId] = result.promise;
-                    config.load(topId, function(definition) {
-                        if (!definition) {
-                            result.reject("Can't find module " + JSON.stringify(topId));
+                    loading[topId] = config.load(topId, module)
+                    .then(function (definition) {
+                        // TODO lace the module through instead of receiving the definition
+                        for (var name in definition) {
+                            module[name] = definition[name];
                         }
-                        definitions[topId] = definition || null;
 
                         // Progress update
-                        CJS.progress.loadedModules.push([
+                        Require.progress.loadedModules.push([
                             config.location,
                             topId
                         ].join("#"));
 
-                        result.resolve(definition);
+                        return module;
                     });
+
                 }
             }
-            return definitionMemo[topId];
+            return loading[topId];
         }
 
         // Load a module definition, and the definitions of its transitive
         // dependencies
-        function deepLoad(id, loading) {
+        function deepLoad(id, viaId, loading) {
             // this is a memo of modules already being loaded so we don’t
             // data-lock on a cycle of dependencies.
             loading = loading || {};
@@ -103,75 +146,80 @@ bootstrap("require/require", function (require, CJS) {
             if (has(loading, id))
                 return; // break the cycle of violence.
             loading[id] = true; // this has happened before
-            return load(id)
-            .then(function (definition) {
+            return load(id, viaId)
+            .then(function (module) {
+
+                // analyze dependencies
+                config.compile(module);
+
                 // load the transitive dependencies using the magic of
                 // recursion.
-                return Promise.all((definition.dependencies || [])
+                return Promise.all((module.dependencies || [])
                 .map(function (depId) {
                     depId = resolve(depId, id)
-                    return deepLoad(depId, loading);
+                    // create dependees array, purely for debug purposes
+                    var module = getModule(depId);
+                    var dependees = module.dependees = module.dependees || [];
+                    dependees.push(id);
+                    return deepLoad(depId, id, loading);
                 }))
                 .then(function () {
-                    return definition;
+                    return module;
                 })
             })
         }
 
         // Initializes a module by executing the factory function with a new module "exports" object.
         function initModule(topId) {
+            var module = getModule(topId);
             // do not reinitialize modules
-            if (has(modules, topId)) {
-                return;
+            if (module.exports !== void 0) {
+                return module.exports;
             }
-            // do not initialize modules that have not loaded
-            if (!has(definitions, topId)) {
-                CJS.error("Can't require module "+JSON.stringify(topId)+": not yet loaded.");
-                return;
-            }
+
             // do not initialize modules that do not define a factory function
-            if (typeof definitions[topId].factory !== "function") {
-                CJS.warn("Can't require module "+JSON.stringify(topId));
+            if (module.factory === void 0) {
+                Require.warn("Can't require module "+JSON.stringify(topId));
                 throw new Error("Can't require module "+JSON.stringify(topId));
             }
 
-            // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
-            // TODO: Handle this at higher level?
-            var uri = URL.resolve(definitions[topId].path, "");
-            if (has(urisToIds, uri)) {
-                var canonicalId = urisToIds[uri];
-                modules[topId] = modules[canonicalId];
-                return;
+            if (module.location !== void 0) {
+
+                // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
+                // TODO: Handle this at higher level?
+                var location = modules[topId].location;
+                if (has(locationsToIds, location)) {
+                    var canonicalId = locationsToIds[location];
+                    modules[topId] = modules[canonicalId];
+                    return modules[topId].exports;
+                }
+                locationsToIds[location] = topId;
+
+                module.directory = URL.resolve(module.location, "."); // EXTENSION
+
             }
 
-            urisToIds[uri] = topId;
-
-            var module = modules[topId] = {
-                exports: {},
-                id: topId,
-                path: definitions[topId].path,
-                directory: URL.resolve(definitions[topId].path, "."),
-                uri: uri // EXTENSION
-            };
+            module.exports = {};
 
             var requireArg = makeRequire(topId);
             var exportsArg = module.exports;
             var moduleArg = module;
 
             // Execute the factory function:
-            var returnValue = definitions[topId].factory.call(global, requireArg, exportsArg, moduleArg);
+            var returnValue = module.factory.call(global, requireArg, exportsArg, moduleArg);
 
             // Modules should never have a return value.
-            if (returnValue !== undefined) {
-                CJS.warn('require: module "'+topId+'" returned a value.');
+            if (returnValue !== void 0) {
+                Require.warn('require: module "'+topId+'" returned a value.');
             }
 
             // Update the list of modules that are ready to use
-            CJS.progress.initializedModules.push([
+            Require.progress.initializedModules.push([
                 config.location,
                 topId
             ].join("#"));
 
+            return module.exports;
         }
 
         // Finds the internal identifier for a module in a subpackage
@@ -204,19 +252,18 @@ bootstrap("require/require", function (require, CJS) {
         }
 
         // Creates a unique require function for each module that encapsulates that module's id for resolving relative module IDs against.
-        function makeRequire(base) {
+        function makeRequire(viaId) {
 
             // Main synchronously executing "require()" function
             var require = function(id) {
-                var topId = resolve(id, base);
-                initModule(topId);
-                return modules[topId].exports;
+                var topId = resolve(id, viaId);
+                return initModule(topId);
             };
 
             // Asynchronous "require.async()" which ensures async executation (even with synchronous loaders)
             require.async = function(id, callback) {
-                var topId = resolve(id, base);
-                return deepLoad(topId)
+                var topId = resolve(id, viaId);
+                return deepLoad(topId, viaId)
                 .then(function () {
                     return require(topId);
                 })
@@ -232,10 +279,15 @@ bootstrap("require/require", function (require, CJS) {
 
             };
 
+            require.resolve = function (id) {
+                return resolve(id, viaId);
+            };
+
             require.load = load;
             require.deepLoad = deepLoad;
             require.identify = identify;
-            require.progress = CJS.progress;
+            require.inject = inject;
+            require.progress = Require.progress;
 
             config.exposedConfigs.forEach(function(name) {
                 require[name] = config[name];
@@ -249,57 +301,11 @@ bootstrap("require/require", function (require, CJS) {
         return makeRequire("");
     };
 
-    CJS.progress = {
+    Require.progress = {
         requiredModules: [],
         loadedModules: [],
         initializedModules: []
     };
-
-    function makeDefine() {
-        var subscribers = [];
-        var define = function() {
-            var definition = parseDefine(Array.prototype.slice.call(arguments));
-            definition.path = getCurrentScriptURL();
-            for (var i = 0; i < subscribers.length; i++) {
-                if (typeof subscribers[i] === "function") {
-                    subscribers[i](definition);
-                }
-            }
-        }
-        // API for loaders to "subscribe" to define calls
-        define._subscribe = function(subscriber) {
-            subscribers.push(subscriber);
-        }
-        return define;
-    }
-
-    function parseDefine(args) {
-        var definition = {};
-
-        // optional: module id
-        if (typeof args[0] === "string") {
-            definition.id = args.shift();
-        }
-        // optional: module dependencies
-        if (Array.isArray(args[0])) {
-            definition.dependencies = args.shift();
-        }
-        // required: module factory or exports object
-        if (typeof args[0] === "function") {
-            definition.factory = args.shift();
-        } else if (typeof args[0] === "object") {
-            var exportsObject = args.shift();
-            definition.factory = function(require, exports, module) {
-                module.exports = exportsObject;
-            };
-        }
-
-        if (args.length > 0 || typeof definition.factory !== "function") {
-            CJS.console.warn("Invalid module definition: ", args);
-        }
-
-        return definition;
-    }
 
     // TODO: other engines
     function getStack() {
@@ -319,17 +325,11 @@ bootstrap("require/require", function (require, CJS) {
         }
     }
 
-    if (!global.define) {
-        global.define = makeDefine();
-    } else {
-        CJS.warn("define already exists.");
-    }
-
-    CJS.PackageSandbox = function (location, config) {
+    Require.PackageSandbox = function (location, config) {
         location = URL.resolve(location, ".");
         config = config || {};
-        var packages = config.packages = config.packages || {};
-        var loadedPackages = {};
+        var loadingPackages = config.loadingPackages = config.loadingPackages || {};
+        var loadedPackages = config.packages = {};
 
         config.getPackage = function (dependency) {
             dependency = Dependency(dependency);
@@ -344,22 +344,26 @@ bootstrap("require/require", function (require, CJS) {
             dependency = Dependency(dependency);
             // TODO handle other kinds of dependency
             var location = URL.resolve(dependency.location, ".");
-            if (!packages[location]) {
+            if (!loadingPackages[location]) {
                 var jsonPath = URL.resolve(location, 'package.json');
-                packages[location] = CJS.read(jsonPath)
+                loadingPackages[location] = Require.read(jsonPath)
                 .then(function (json) {
-                    var packageDescription = JSON.parse(json);
+                    try {
+                        var packageDescription = JSON.parse(json);
+                    } catch (exception) {
+                        throw new SyntaxError("in " + JSON.stringify(jsonPath) + ": " + exception.message);
+                    }
                     var subconfig = configurePackage(
                         location,
                         packageDescription,
                         config
                     );
-                    var pkg = CJS.Sandbox(subconfig);
+                    var pkg = Require.Sandbox(subconfig);
                     loadedPackages[location] = pkg;
                     return pkg;
                 });
             }
-            return packages[location];
+            return loadingPackages[location];
         };
 
         var _require = config.loadPackage(location);
@@ -382,22 +386,25 @@ bootstrap("require/require", function (require, CJS) {
 
     function configurePackage(location, description, parent) {
 
+        if (!/\/$/.test(location)) {
+            location += "/";
+        }
+
         var config = Object.create(parent);
         config.name = description.name;
-        config.location = location;
+        config.location = location || Require.getLocation();
         config.packageDescription = description;
         // explicitly mask definitions and modules, which must
         // not apply to child packages
-        var definitions = config.definitions = {};
-        config.modules = {};
+        var modules = config.modules = config.modules || {};
 
         // overlay
         var overlay = description.overlay || {};
-        CJS.overlays.forEach(function (engine) {
+        Require.overlays.forEach(function (engine) {
             if (overlay[engine]) {
                 layer = overlay[engine];
                 for (var name in layer) {
-                    info[name] = layer[name];
+                    description[name] = layer[name];
                 }
             }
         });
@@ -405,29 +412,26 @@ bootstrap("require/require", function (require, CJS) {
 
         // directories
         description.directories = description.directories || {};
-        description.directories.lib = description.directories.lib === undefined ? "." : description.directories.lib;
+        description.directories.lib = description.directories.lib === void 0 ? "." : description.directories.lib;
         var lib = description.directories.lib;
         // lib
-        config.lib = location + "/" + lib;
+        config.lib = URL.resolve(location, "./" + lib);
         var packageRoot = description.directories.packages || "node_modules";
         packageRoot = URL.resolve(location, packageRoot + "/");
 
-        // name, creates an alias for the module name within
-        // its package.  For example, in the "q" package, one
-        // can require("q") to get the main module.
-        if (description.name)
-            definitions[description.name] = {"ref": ""};
-
         // The default "main" module of a package has the same name as the
         // package.
-        if (description.main === undefined)
+        if (description.main === void 0)
             description.main = description.name;
 
         // main, injects a definition for the main module, with
         // only its path. makeRequire goes through special effort
         // in deepLoad to re-initialize this definition with the
         // loaded definition from the given path.
-        definitions[""] = {"path": URL.resolve(location, description.main)};
+        modules[""] = {
+            id: "",
+            location: URL.resolve(location, description.main)
+        };
 
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};
@@ -445,8 +449,8 @@ bootstrap("require/require", function (require, CJS) {
         });
         Object.keys(mappings).forEach(function (name) {
             var mapping = mappings[name] = Dependency(mappings[name]);
-            if (!CJS.isAbsolute(mapping.location))
-                mapping.location = URL.resolve(location + "/", mapping.location + "/");
+            if (!Require.isAbsolute(mapping.location))
+                mapping.location = URL.resolve(location, mapping.location);
         });
 
         config.mappings = mappings;
@@ -461,12 +465,28 @@ bootstrap("require/require", function (require, CJS) {
     };
 
     // Resolves CommonJS module IDs (not paths)
+    Require.resolve = resolve;
     function resolve(id, baseId) {
         id = String(id);
-        if (id.charAt(0) == ".") {
-            id = URL.resolve(URL.resolve(baseId, "."), id);
+        var source = id.split("/");
+        var target = [];
+        if (source.length && source[0] === "." || source[0] === "..") {
+            var parts = baseId.split("/");
+            parts.pop();
+            source.unshift.apply(source, parts);
         }
-        return URL.resolve(id, "");
+        for (var i = 0, ii = source.length; i < ii; i++) {
+            var part = source[i];
+            if (part === "" || part === ".") {
+            } else if (part === "..") {
+                if (target.length) {
+                    target.pop();
+                }
+            } else {
+                target.push(part);
+            }
+        }
+        return target.join("/");
     };
 
     // ES5 shim:
@@ -490,21 +510,20 @@ bootstrap("require/require", function (require, CJS) {
         };
     }
 
-    CJS.base = function (path) {
+    Require.base = function (location) {
         // matches Unix basename
-        return String(path)
+        return String(location)
             .replace(/(.+?)\/+$/, "$1")
             .match(/([^\/]+$|^\/$|^$)/)[1];
     };
 
-    // Tests whether the path or URL is a absolute.
-    CJS.isAbsolute = function(path) {
-        var parsed = URL.parse(path);
-        return parsed.authorityRoot || parsed.root;
+    // Tests whether the location or URL is a absolute.
+    Require.isAbsolute = function(location) {
+        return /^\w+:/.test(location);
     };
 
     // Extracts dependencies by parsing code and looking for "require" (currently using a simple regexp)
-    CJS.parseDependencies = function(factory) {
+    Require.parseDependencies = function(factory) {
         var o = {};
         String(factory).replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function(_, id) {
             o[id] = true;
@@ -514,204 +533,230 @@ bootstrap("require/require", function (require, CJS) {
 
     // Executes a function asynchronously using whatever mechaism is available to the platform
     // Used to ensure asynchronicity even when loader doesn't support async.
-    CJS.executeAsynchronously = function(fn) {
+    Require.executeAsynchronously = function(fn) {
         if (typeof setTimeout === "function") {
             setTimeout(fn, 1);
         } else {
-            CJS.warn("CJS warning: Implement CJS.executeAsynchronously(fn) for your platform.");
+            Require.warn("Require warning: Implement Require.executeAsynchronously(fn) for your platform.");
             fn();
         }
     };
 
     // Built-in compiler/preprocessor "middleware":
 
-    CJS.ParseDependencies = function(config, compile) {
-        return function(def) {
-            if (!def.dependencies && def.text !== undefined) {
-                def.dependencies = CJS.parseDependencies(def.text);
+    Require.DependenciesCompiler = function(config, compile) {
+        return function(module) {
+            if (!module.dependencies && module.text !== void 0) {
+                module.dependencies = Require.parseDependencies(module.text);
             }
-            def = compile(def);
-            if (def && !def.dependencies) {
-                if (def.text || def.factory) {
-                    def.dependencies = CJS.parseDependencies(def.text || def.factory);
+            module = compile(module);
+            if (module && !module.dependencies) {
+                if (module.text || module.factory) {
+                    module.dependencies = Require.parseDependencies(module.text || module.factory);
                 } else {
-                    def.dependencies = [];
+                    module.dependencies = [];
                 }
             }
-            return def;
+            return module;
         };
     };
 
     // Support she-bang for shell scripts by commenting it out (it is never valid JavaScript syntax anyway)
-    CJS.StripShebang = function(config, compile) {
-        return function(def) {
-            if (def.text) {
-                def.text = def.text.replace(/^#!/, "//#!");
+    Require.ShebangCompiler = function(config, compile) {
+        return function (module) {
+            if (module.text) {
+                module.text = module.text.replace(/^#!/, "//#!");
             }
-            return compile(def);
+            return compile(module);
         }
     };
 
-    CJS.Lint = function(config, compile) {
+    Require.LintCompiler = function(config, compile) {
         if (!config.lint) {
             return compile;
         }
-        return function(definition) {
+        return function(module) {
             try {
-                return compile(definition);
+                return compile(module);
             } catch (error) {
-                config.lint(definition);
+                config.lint(module);
                 throw error;
             }
         };
     }
 
-    CJS.DefaultCompilerMiddleware = function(config, compile) {
-        return CJS.StripShebang(config,
-                   CJS.ParseDependencies(config,
-                       CJS.Lint(config, compile)));
-    };
-
-    CJS.DefaultCompilerConstructor = function(config) {
-        return CJS.DefaultCompilerMiddleware(config, CJS.NewFunctionCompiler(config));
+    Require.DefaultCompilerConstructor = function(config) {
+        return Require.ShebangCompiler(
+            config,
+            Require.DependenciesCompiler(
+                config,
+                Require.LintCompiler(
+                    config,
+                    Require.Compiler(config)
+                )
+            )
+        );
     };
 
     // Built-in loader "middleware":
 
-    // Attempts to load using multiple loaders until one of them works:
-    CJS.Multi = function(config, loaders) {
-        return function(id, callback) {
-            return tryEachSyncOrAsync(loaders, function(load, resultCallback) {
-                return load(id, resultCallback);
-            }, callback);
-        };
-    };
-
-    // Attempts to load using multiple base paths (or one absolute path) with a single loader.
-    CJS.Paths = function(config, load) {
-        return function(id, callback) {
-            var paths = CJS.isAbsolute(id) ?
-                [id] :
-                config.paths.map(function(path) {
-                    return URL.resolve(path, id);
-                });
-
-            return tryEachSyncOrAsync(paths, function(path, resultCallback) {
-                return load(path, resultCallback);
-            }, callback);
-        };
+    Require.DefaultLoaderConstructor = function(config) {
+        return Require.MappingsLoader(
+            config,
+            Require.ExtensionsLoader(
+                config,
+                Require.PathsLoader(
+                    config,
+                    Require.CachingLoader(
+                        config,
+                        Require.Loader(config)
+                    )
+                )
+            )
+        );
     };
 
     // Using mappings hash to load modules that match a mapping.
-    CJS.Mappings = function(config, next) {
+    Require.MappingsLoader = function(config, load) {
         config.mappings = config.mappings || {};
         config.name = config.name || "";
-        return function(id, callback) {
-            if (CJS.isAbsolute(id))
-                return next(id, callback);
-            // TODO: remove this when all code has been migrated off of the autonomous name-space problem
-            if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/")
-                console.warn("Package reflexive module ignored:", id);
-            if (id === config.name)
-                id = "";
-            // The package loader can inject some definitions for
-            // aliases into the package configuration.  These will
-            // only have path attributes and need to be replaced with
-            // factories.  We intercept these aliases (usually the
-            // package's main module, not found in its lib path) here.
-            if (config.definitions[id]) {
-                return next(config.definitions[id].path, callback);
-            }
-            return tryEachSyncOrAsync(Object.keys(config.mappings), function(candidate, resultCallback) {
+
+        var mappings = config.mappings;
+        var prefixes = Object.keys(mappings);
+        var length = prefixes.length;
+
+        var loadFromMappings = function (id, module) {
+            var i, prefix
+            for (i = 0; i < length; i++) {
+                prefix = prefixes[i];
                 if (
-                    id === candidate ||
-                    id.indexOf(candidate) === 0 && id.charAt(candidate.length) === "/"
+                    id === prefix ||
+                    id.indexOf(prefix) === 0 &&
+                    id.charAt(prefix.length) === "/"
                 ) {
-                    var location = config.mappings[candidate].location;
-                    return config.loadPackage(location).then(function (pkg) {
-                        var rest = id.slice(candidate.length + 1);
-                        pkg.deepLoad(rest)
-                        .then(function (result) {
-                            resultCallback({
-                                "factory": function (require, exports, module) {
-                                    module.exports = pkg(rest);
-                                },
-                                "path": location + "#" + rest // this is necessary for constructing unique URI's for chaching
-                            });
-                        })
-                        .end();
-                    }, function (reason) {
-                        return resultCallback ? resultCallback(null) : null;
-                    });
-                } else {
-                    return resultCallback ? resultCallback(null) : null;
+                    var mapping = mappings[prefix];
+                    return loadFromMapping(prefix, mapping, id, module);
                 }
-            }, function (result) {
-                if (result) {
-                    if (callback) {
-                        callback(result);
-                    } else {
-                        return result;
-                    }
+            }
+            return load(id, module);
+        };
+
+        var loadFromMapping = function (prefix, mapping, id, module) {
+            return config.loadPackage(mapping)
+            .then(function (pkg) {
+                var rest = id.slice(prefix.length + 1);
+                return pkg.deepLoad(rest)
+                .then(function () {
+                    return {
+                        factory: function (require, exports, module) {
+                            module.exports = pkg(rest);
+                        },
+                        location: pkg.location + "!" + rest // this is necessary for constructing unique URI's for chaching
+                    };
+                })
+            });
+        }
+
+        return function (id, module) {
+            if (Require.isAbsolute(id)) {
+                return load(id, module);
+            } else {
+                // TODO: remove this when all code has been migrated off of the autonomous name-space problem
+                if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/")
+                    console.warn("Package reflexive module ignored:", id);
+                // TODO fix this
+                if (id === config.name) {
+                    id = "";
+                }
+                // The package loader can inject some definitions for aliases
+                // into the package configuration.  These will only have
+                // location attributes and need to be replaced with factories.
+                // We intercept these aliases (usually the package's main
+                // module, not found in its lib location) here.
+                var module = config.module(id);
+                if (module.exports || module.factory) {
+                    return Promise.ref(module);
+                } else if (module.location !== void 0) {
+                    return load(module.location, module);
                 } else {
-                    return next(id, callback);
+                    return loadFromMappings(id, module);
+                }
+            }
+        };
+    };
+
+    Require.ExtensionsLoader = function(config, load) {
+        var extensions = config.extensions || ["js"];
+        var loadExtension = extensions.reduceRight(function (next, extension) {
+            return function (id, module) {
+                return load(id + "." + extension, module)
+                .fail(function (error) {
+                    return next(id, module);
+                });
+            };
+        }, load);
+        return function(id, module) {
+            var needsExtension = Require.base(id).indexOf(".") < 0;
+            if (needsExtension) {
+                return loadExtension(id, module);
+            } else {
+                return load(id, module);
+            }
+        }
+    }
+
+    // Attempts to load using multiple base paths (or one absolute path) with a single loader.
+    Require.PathsLoader = function(config, load) {
+        var loadFromPaths = config.paths.reduceRight(function (next, path) {
+            return function (id, module) {
+                var newId = URL.resolve(path, id);
+                return load(newId, module)
+                .fail(function () {
+                    return next(id, module);
+                });
+            };
+        }, function (id) {
+            throw new Error("Can't find " + JSON.stringify(id));
+        });
+        return function(id, module) {
+            if (Require.isAbsolute(id)) {
+                return load(id, module);
+            } else {
+                return loadFromPaths(id, module);
+            }
+        };
+    };
+
+    Require.CachingLoader = function (config, load) {
+        var cache = {};
+        return function (url, module) {
+            // remove search, anchor
+            url = URL.resolve(url, "");
+            if (!has(cache, url)) {
+                cache[url] = load(url, module);
+            }
+            return cache[url];
+        };
+    }
+
+    Require.Loader = function (config, next) {
+        return function (url, module) {
+            return Require.read(url)
+            .then(function (text) {
+                return {
+                    type: "javascript",
+                    text: text,
+                    location: url
+                };
+            }, function (reason, error, rejection) {
+                if (next) {
+                    return next(url, module);
+                } else {
+                    return rejection;
                 }
             });
         };
     };
-
-    CJS.Extensions = function(config, load) {
-        var extensions = config.extensions || ["js"];
-        return function(id, callback) {
-            var needsExtension = CJS.base(id).indexOf(".") < 0;
-            return tryEachSyncOrAsync(extensions, function(extension, resultCallback) {
-                if (needsExtension)
-                    return load(id + "." + extension, resultCallback);
-                else
-                    return load(id, resultCallback);
-            }, callback);
-        }
-    }
-
-    // Special helper function that iterates over each item calling iteratorCallback until success (calls completeCallback
-    // with a truthy value, or returns a truthy value otherwise). Useful in "middleware" like Paths, Multi, etc.
-    function tryEachSyncOrAsync(items, iteratorCallback, completeCallback) {
-        items.reduceRight(function (nextCallback, item) {
-            return function () {
-                iteratorCallback(item, function (result) {
-                    if (result) {
-                        completeCallback(result);
-                    } else {
-                        nextCallback(null);
-                    }
-                })
-            };
-        }, completeCallback)(null);
-    };
-
-    CJS.CachingLoader = function(config, load) {
-        var cache = {};
-        var pending = {};
-        return function(url, callback) {
-            url = URL.resolve(url, "");
-
-            if (has(cache, url)) {
-                return callback ? callback(cache[url]) : cache[url];
-            }
-
-            if (has(pending, url)) {
-                pending[url].push(callback);
-            } else {
-                pending[url] = [callback];
-                load(url, function(definition) {
-                    cache[url] = definition;
-                    pending[url].forEach(function(pendingCallback) {
-                        pendingCallback(definition);
-                    });
-                });
-            }
-        }
-    }
 
     if (typeof console === "undefined") {
         console = {}
@@ -720,11 +765,11 @@ bootstrap("require/require", function (require, CJS) {
         console.error = function () {};
     }
 
-    CJS.enableLogging = false;
-    CJS.log =
-    CJS.warn =
-    CJS.error = function () {
-        if (CJS.enableLogging)
+    Require.enableLogging = false;
+    Require.log =
+    Require.warn =
+    Require.error = function () {
+        if (Require.enableLogging)
             console.log.apply(console, arguments);
     };
 
