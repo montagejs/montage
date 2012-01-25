@@ -13,7 +13,6 @@ var Montage = require("montage").Montage;
 var Uuid = require("core/uuid").Uuid;
 var Deserializer = require("core/deserializer").Deserializer;
 var logger = require("core/logger").logger("serializer");
-
 var Element;
 
 // Shadowing the global with a local allows us to feature-test without typeof

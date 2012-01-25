@@ -78,7 +78,6 @@ if (typeof window !== "undefined") {
             Require.PackageSandbox(params.montageBase, config)
             .then(function (montageRequire) {
                 montageRequire.inject("core/promise", Promise);
-                montageRequire.inject("core/url", URL);
                 montageRequire.inject("core/shim/timeers", {});
 
                 // install the linter, which loads on the first error
@@ -214,6 +213,24 @@ if (typeof window !== "undefined") {
         }
     };
 
+    var urlModuleFactory = function (require, exports) {
+        var baseElement = document.createElement("base");
+        baseElement.href = "";
+        document.querySelector("head").appendChild(baseElement);
+        var relativeElement = document.createElement("a");
+        exports.resolve = function (base, relative) {
+            base = String(base);
+            if (!/^\w+:/.test(base))
+                throw new Error("Can't resolve from relative base");
+            var restore = baseElement.href;
+            baseElement.href = base;
+            relativeElement.href = relative;
+            var resolved = relativeElement.href;
+            baseElement.href = restore;
+            return resolved;
+        };
+    };
+
     var browser = {
 
         getConfig: function() {
@@ -286,8 +303,7 @@ if (typeof window !== "undefined") {
             var pending = [
                 "require/require",
                 "require/browser",
-                "core/promise",
-                "core/url"
+                "core/promise"
             ];
             if (typeof setImmediate === "undefined")
                 pending.push("core/shim/timers");
@@ -310,11 +326,15 @@ if (typeof window !== "undefined") {
             global.bootstrap = function (id, factory) {
                 definitions[id] = factory;
                 var at = pending.indexOf(id);
-                pending.splice(at, 1);
+                if (at !== -1) {
+                    pending.splice(at, 1);
+                }
                 if (pending.length === 0) {
                     allModulesLoaded();
                 }
             };
+
+            global.bootstrap('core/mini-url', urlModuleFactory);
 
             // miniature module system
             var bootModules = {};
@@ -329,7 +349,7 @@ if (typeof window !== "undefined") {
             // execute bootstrap scripts
             function allModulesLoaded() {
                 Promise = bootRequire("core/promise");
-                URL = bootRequire("core/url");
+                URL = bootRequire("core/mini-url");
                 Require = bootRequire("require/require");
                 delete global.bootstrap;
                 callbackIfReady();
