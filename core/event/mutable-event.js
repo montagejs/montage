@@ -12,8 +12,7 @@ var Montage = require("montage").Montage,
     Enum = require("core/enum").Enum;
 
 // XXX Does not presently function server-side
-if (typeof window === "undefined")
-    return;
+if (typeof window !== "undefined") {
 
 var ChangeTypes = exports.ChangeTypes = Enum.create().initWithMembers("MODIFICATION", "ADDITION", "REMOVAL");
 
@@ -236,3 +235,5 @@ _changeEventConstructor.prototype = MutableEvent.create()._initPrototypeWithEven
 */
 _changeEventConstructor.prototype.type = "change";
 exports._Change = _changeEventConstructor;
+
+} // client-side
