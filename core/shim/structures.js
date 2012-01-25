@@ -17,9 +17,9 @@
  @classdesc Provides a Map data structure for managing key/value pairs, including methods for querying and manipulating map elements. A map cannot contain duplicate keys; each key can map to at most one value.
  */
 exports.Map = Map;
-function Map(ignored, options) {
+function Map(reserved, options) {
     if (!(this instanceof Map)) {
-        return new Map(ignored, options);
+        return new Map(reserved, options);
     }
     options = options || {};
     var eq = options.eq || Set.eq;
@@ -131,9 +131,9 @@ Object.defineProperties(Map.prototype, /** @lends module:montage/core/shim/struc
  @class module:montage/core/shim/structures.Set
  */
 exports.Set = Set;
-function Set(ignored, options) {
+function Set(reserved, options) {
     if (!(this instanceof Set)) {
-        return new Set(ignored, options);
+        return new Set(reserved, options);
     }
     options = options || {};
     var eq = options.eq || Set.eq;
@@ -238,13 +238,13 @@ Object.defineProperties(Set.prototype, /** @lends module:montage/core/shim/struc
 });
 /**
     @class module:montage/core/shim/structures.OrderedSet
-    @param {boolean} ignored
+    @param {boolean} reserved
     @param {object} options
 */
 exports.OrderedSet = OrderedSet;
-function OrderedSet(ignored, options) {
+function OrderedSet(reserved, options) {
     if (!(this instanceof OrderedSet)) {
-        return new OrderedSet(ignored, options);
+        return new OrderedSet(reserved, options);
     }
     options = options || {};
     var eq = options.eq || OrderedSet.eq;
@@ -397,14 +397,14 @@ Set.hash = function (value) {
 /**
     @exports CacheMap
     @function
-    @param {Boolean} ignored
+    @param {Boolean} reserved
     @param {String} options
-    @returns new CacheMap(ignored, options)
+    @returns new CacheMap(reserved, options)
     */
 exports.CacheMap = CacheMap;
-function CacheMap(ignored, options) {
+function CacheMap(reserved, options) {
     if (!(this instanceof CacheMap)) {
-        return new CacheMap(ignored, options);
+        return new CacheMap(reserved, options);
     }
     options = options || {};
 

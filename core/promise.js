@@ -5,7 +5,7 @@
  </copyright> */
 
 // Scope:
-//  * ES5, nextTick
+//  * ES5
 //  * speed and economy of memory before safety and securability
 //  * run-time compatibility via thenability
 
@@ -30,13 +30,15 @@
 
 "use strict";
 
+var TIMER;
 try {
     // bootstrapping can't handle relative identifiers
-    require("core/shim/timers"); // nextTick
+    TIMER = require("core/next-tick");
 } catch (exception) {
     // in this case, node can't handle absolute identifiers
-    require("./shim/timers"); // nextTick
+    TIMER = require("./next-tick");
 }
+var nextTick = TIMER.nextTick;
 
 // merely ensures that the returned value can respond to
 // messages; does not guarantee a full promise API

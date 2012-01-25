@@ -10,7 +10,7 @@
     if (typeof bootstrap !== "undefined") {
         bootstrap("require/require", function (require, exports) {
             var Promise = require("core/promise").Promise;
-            var URL = require("core/url");
+            var URL = require("core/mini-url");
             definition(exports, Promise, URL);
             require("require/browser");
         });
@@ -42,8 +42,8 @@
     Require.Sandbox = function(config) {
         // Configuration defaults:
         config = config || {};
-        config.location = URL.resolve(config.location || Require.getLocation(), "./");
-        config.lib = URL.resolve(config.location, config.lib || "./");
+        config.location = URL.resolve(config.location || Require.getLocation(), ".");
+        config.lib = URL.resolve(config.location, config.lib || ".");
         config.paths = config.paths || [config.lib];
         config.mappings = config.mappings || {}; // EXTENSION
         config.exposedConfigs = config.exposedConfigs || [
@@ -81,7 +81,7 @@
             var module = getModule(id)
             module.exports = exports;
             module.location = URL.resolve(config.location, id);
-            module.directory = URL.resolve(module.location, "./");
+            module.directory = URL.resolve(module.location, ".");
         }
 
         // Ensures a module definition is loaded before returning or executing the callback.
@@ -195,7 +195,7 @@
                 }
                 locationsToIds[location] = topId;
 
-                module.directory = URL.resolve(module.location, "./"); // EXTENSION
+                module.directory = URL.resolve(module.location, "."); // EXTENSION
 
             }
 
@@ -279,6 +279,10 @@
 
             };
 
+            require.resolve = function (id) {
+                return resolve(id, viaId);
+            };
+
             require.load = load;
             require.deepLoad = deepLoad;
             require.identify = identify;
@@ -322,7 +326,7 @@
     }
 
     Require.PackageSandbox = function (location, config) {
-        location = URL.resolve(location, "./");
+        location = URL.resolve(location, ".");
         config = config || {};
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
@@ -339,7 +343,7 @@
         config.loadPackage = function (dependency) {
             dependency = Dependency(dependency);
             // TODO handle other kinds of dependency
-            var location = URL.resolve(dependency.location, "./");
+            var location = URL.resolve(dependency.location, ".");
             if (!loadingPackages[location]) {
                 var jsonPath = URL.resolve(location, 'package.json');
                 loadingPackages[location] = Require.read(jsonPath)
@@ -382,6 +386,10 @@
 
     function configurePackage(location, description, parent) {
 
+        if (!/\/$/.test(location)) {
+            location += "/";
+        }
+
         var config = Object.create(parent);
         config.name = description.name;
         config.location = location || Require.getLocation();
@@ -404,10 +412,10 @@
 
         // directories
         description.directories = description.directories || {};
-        description.directories.lib = description.directories.lib === void 0 ? "./" : description.directories.lib;
+        description.directories.lib = description.directories.lib === void 0 ? "." : description.directories.lib;
         var lib = description.directories.lib;
         // lib
-        config.lib = location + "/" + lib;
+        config.lib = URL.resolve(location, "./" + lib);
         var packageRoot = description.directories.packages || "node_modules";
         packageRoot = URL.resolve(location, packageRoot + "/");
 
@@ -442,7 +450,7 @@
         Object.keys(mappings).forEach(function (name) {
             var mapping = mappings[name] = Dependency(mappings[name]);
             if (!Require.isAbsolute(mapping.location))
-                mapping.location = URL.resolve(location + "/", mapping.location + "/");
+                mapping.location = URL.resolve(location, mapping.location);
         });
 
         config.mappings = mappings;
@@ -457,12 +465,28 @@
     };
 
     // Resolves CommonJS module IDs (not paths)
+    Require.resolve = resolve;
     function resolve(id, baseId) {
         id = String(id);
-        if (id.charAt(0) == ".") {
-            id = URL.resolve(URL.resolve(baseId, "."), id);
+        var source = id.split("/");
+        var target = [];
+        if (source.length && source[0] === "." || source[0] === "..") {
+            var parts = baseId.split("/");
+            parts.pop();
+            source.unshift.apply(source, parts);
         }
-        return URL.resolve(id, "");
+        for (var i = 0, ii = source.length; i < ii; i++) {
+            var part = source[i];
+            if (part === "" || part === ".") {
+            } else if (part === "..") {
+                if (target.length) {
+                    target.pop();
+                }
+            } else {
+                target.push(part);
+            }
+        }
+        return target.join("/");
     };
 
     // ES5 shim:
@@ -495,8 +519,7 @@
 
     // Tests whether the location or URL is a absolute.
     Require.isAbsolute = function(location) {
-        var parsed = URL.parse(location);
-        return parsed.authorityRoot || parsed.root;
+        return /^\w+:/.test(location);
     };
 
     // Extracts dependencies by parsing code and looking for "require" (currently using a simple regexp)

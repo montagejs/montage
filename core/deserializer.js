@@ -15,6 +15,10 @@ var Montage = require("montage").Montage,
     logger = require("core/logger").logger("deserializer"),
     Promise = require("core/promise").Promise;
 
+// By rebinding eval to a new name, it loses its ability to
+// capture the calling scope.
+var globalEval = eval;
+
 /**
  @class module:montage/core/deserializer.Deserializer
  @extends module:montage/core/core.Montage
@@ -631,7 +635,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 case "function":
                     var source = "function" + (value.name ? " " + value.name : "") + "(" + value.arguments.join(", ") + ") {\n" + value.body + "\n}";
                     if (deserialize) {
-                        parent[key] = (1,eval)('(' + source + ')');
+                        parent[key] = globalEval('(' + source + ')');
                     }
                     return source;
                     break;
