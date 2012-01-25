@@ -126,18 +126,14 @@ if (typeof window !== "undefined") {
             module.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
                 for (var symbol in exports) {
+					var exportsSymbol = exports[symbol];
                     // avoid attempting to reinitialize an aliased property
-                    if (
-                        Object.prototype.hasOwnProperty.call(
-                            exports[symbol],
-                            "_montage_metadata"
-                        )
-                    ) {
-                        exports[symbol]._montage_metadata.aliases.push(symbol);
-                        exports[symbol]._montage_metadata.objectName = symbol;
-                    } else if (!Object.isSealed(exports[symbol])) {
+                    if (exportsSymbol.hasOwnProperty("_montage_metadata")) {
+                        exportsSymbol._montage_metadata.aliases.push(symbol);
+                        exportsSymbol._montage_metadata.objectName = symbol;
+                    } else if (!Object.isSealed(exportsSymbol)) {
                         Object.defineProperty(
-                            exports[symbol],
+                            exportsSymbol,
                             "_montage_metadata",
                             {
                                 value: {
