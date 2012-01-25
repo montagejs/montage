@@ -449,6 +449,8 @@
         });
         Object.keys(mappings).forEach(function (name) {
             var mapping = mappings[name] = Dependency(mappings[name]);
+            if (!/\/$/.test(mapping.location))
+                mapping.location += "/";
             if (!Require.isAbsolute(mapping.location))
                 mapping.location = URL.resolve(location, mapping.location);
         });
@@ -645,7 +647,7 @@
             return config.loadPackage(mapping)
             .then(function (pkg) {
                 var rest = id.slice(prefix.length + 1);
-                return pkg.deepLoad(rest)
+                return pkg.deepLoad(rest, config.location)
                 .then(function () {
                     return {
                         factory: function (require, exports, module) {
@@ -716,7 +718,7 @@
                 });
             };
         }, function (id) {
-            throw new Error("Can't find " + JSON.stringify(id));
+            throw new Error("Can't find " + JSON.stringify(id) + " from paths " + JSON.stringify(config.paths) + " in package at " + JSON.stringify(config.location));
         });
         return function(id, module) {
             if (Require.isAbsolute(id)) {
