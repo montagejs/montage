@@ -220,8 +220,8 @@ if (typeof window !== "undefined") {
         var relativeElement = document.createElement("a");
         exports.resolve = function (base, relative) {
             base = String(base);
-            if (!/^\w+:/.test(base))
-                throw new Error("Can't resolve from relative base");
+            if (!/^[\w\-]+:/.test(base))
+                throw new Error("Can't resolve from relative base:" + JSON.stringify(base) + " " + JSON.stringify(relative));
             var restore = baseElement.href;
             baseElement.href = base;
             relativeElement.href = relative;
