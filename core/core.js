@@ -1118,11 +1118,13 @@ Object.defineProperty(Object.prototype, "parentProperty", {
 });
 
 // XXX Does not presently function server-side
-if (typeof window === "undefined")
-    return;
+if (typeof window !== "undefined") {
 
-var EventManager = require("core/event/event-manager").EventManager;
-EventManager.create().initWithWindow(window);
+    var EventManager = require("core/event/event-manager").EventManager;
+    EventManager.create().initWithWindow(window);
 
-// Now that we have a defaultEventManager we can setup the bindings system
-require("core/event/binding");
+    // Now that we have a defaultEventManager we can setup the bindings system
+    require("core/event/binding");
+
+}
+
