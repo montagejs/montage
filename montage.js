@@ -303,10 +303,9 @@ if (typeof window !== "undefined") {
             var pending = [
                 "require/require",
                 "require/browser",
-                "core/promise"
+                "core/promise",
+                "core/next-tick"
             ];
-            if (typeof setImmediate === "undefined")
-                pending.push("core/shim/timers");
 
             // load in parallel
             pending.forEach(function(name) {

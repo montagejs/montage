@@ -25,8 +25,7 @@ var Montage = require("montage").Montage,
     defaultEventManager;
 
 // XXX Does not presently function server-side
-if (typeof window === "undefined")
-    return;
+if (typeof window !== "undefined") { // client-side
 
 /* This is to handle browsers that have TouchEvents but don't have the global constructor function Touch */
 //if(TouchEvent && typeof window.Touch === "undefined") {
@@ -2076,4 +2075,6 @@ if (typeof window.ondragstart !== undefined) {
         "bubbles": true
     };
 }
+
+} // client-side
 
