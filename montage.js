@@ -126,7 +126,7 @@ if (typeof window !== "undefined") {
             module.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
                 for (var symbol in exports) {
-					var exportsSymbol = exports[symbol];
+                    var exportsSymbol = exports[symbol];
                     // avoid attempting to reinitialize an aliased property
                     if (exportsSymbol.hasOwnProperty("_montage_metadata")) {
                         exportsSymbol._montage_metadata.aliases.push(symbol);
