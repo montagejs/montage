@@ -30,8 +30,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
         el.dispatchEvent(upEvent);
         return upEvent;
     };
-    var click = function(component, el, fn) {
-        el = el || component.element;
+    var addListener = function(component, fn) {
         var buttonSpy = {
             doSomething: fn || function(event) {
                 return 1+1;
@@ -42,11 +41,18 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
         var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
         component.addEventListener("action", actionListener);
 
+        return buttonSpy.doSomething;
+    };
+    var click = function(component, el, fn) {
+        el = el || component.element;
+
+        var listener = addListener(component, fn);
+
         mousedown(el);
         mouseup(el);
 
         // Return this so that it can be checked in tha calling function.
-        return buttonSpy.doSomething;
+        return listener;
     };
     var testButton = function(component, value) {
         expect(component).toBeDefined();
@@ -175,6 +181,18 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 expect(test.converterbutton.element.value).toBe("PASS");
             });
 
+            it("correctly releases the pointer", function() {
+                var l = addListener(test.scroll_input);
+
+                mousedown(test.scroll_input.element);
+                expect(test.scroll_input.active).toBe(true);
+                test.scroll_input.surrenderPointer(test.scroll_input._observedPointer, null);
+                expect(test.scroll_input.active).toBe(false);
+                mouseup(test.scroll_input.element);
+
+                expect(l).not.toHaveBeenCalled();
+
+            });
 
             if (window.Touch) {
 
@@ -194,37 +212,19 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     });
 
                     it("does not dispatch an action event when a mouseup occurs after not previously receive a mousedown", function() {
-                        var buttonSpy = {
-                            doSomething: function(event) {
-                                throw "This button should not have dispatched an action";
-                            }
-                        };
-                        spyOn(buttonSpy, 'doSomething');
-
-                        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-                        test.inputbutton.addEventListener("action", actionListener);
-
-                        mousedown(test.inputbutton.element);
-                        expect(buttonSpy.doSomething).not.toHaveBeenCalled();
-
+                        var l = addListener(test.inputbutton);
+                        mouseup(test.inputbutton.element);
+                        expect(l).not.toHaveBeenCalled();
                     });
 
                     it("does not dispatch an action event when a mouseup occurs away from the button after a mousedown on a button", function() {
-                        var buttonSpy = {
-                            doSomething: function(event) {
-                                alert("action!");
-                            }
-                        };
-                        spyOn(buttonSpy, 'doSomething');
-
-                        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-                        test.inputbutton.addEventListener("action", actionListener);
+                        var l = addListener(test.inputbutton);
 
                         mousedown(test.inputbutton.element);
                         // Mouse up somewhere else
                         mouseup(test.divbutton.element);
 
-                        expect(buttonSpy.doSomething).not.toHaveBeenCalled();
+                        expect(l).not.toHaveBeenCalled();
                     });
                 });
 

@@ -124,15 +124,6 @@
         }
     },
 
-    "activelabel": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
-        "properties": {
-            "element": {"#": "activelabel"},
-            "activeLabel": "down"
-        }
-    },
-
     "toggleinput": {
         "module": "montage/ui/toggle-button.reel",
         "name": "ToggleButton",
@@ -161,6 +152,28 @@
         }
     },
 
+    "scroll": {
+        "module": "montage/ui/scrollview.reel",
+        "name": "Scrollview",
+        "properties": {
+            "element": {"#": "scroll"}
+        }
+    },
+    "scroll_input": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "scroll_input"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"->": {"arguments": [], "body": "console.log('button action');"}}
+            }
+        ]
+    },
+
+
     "test": {
         "module": "ui/buttontest/buttontest",
         "name": "ButtonTest",
@@ -182,7 +195,8 @@
             "activelabel": {"@": "activelabel"},
             "toggleinput": {"@": "toggleinput"},
             "toggleinput2": {"@": "toggleinput2"},
-            "toggleinput3": {"@": "toggleinput3"}
+            "toggleinput3": {"@": "toggleinput3"},
+            "scroll_input": {"@": "scroll_input"}
         }
     },
     "application": {
@@ -232,12 +246,20 @@
     <input type="text" id="textinput" value="pass">
     <input type="button" id="converterbutton" value="fail">
 
-    <h2>Active label</h2>
-    <input type="button" id="activelabel" value="active label">
+    <h2>Scroll</h2>
+    <div id="scroll" style="background:#CCC; height: 300px">
+        <div>
+            <div style="background:#A00; height:260px; width:10px">.</div>
+            <input type="button" id="scroll_input" value="scroll input">
+            <div style="background:#A00; height:200px; width:10px">.</div>
+        </div>
+    </div>
 
     <h1>Toggle button test</h1>
     <input type="button" id="toggleinput" value="fail">
     <input type="button" id="toggleinput2" value="off">
     <input type="button" id="toggleinput3" value="on">
+
+    <input type="button" value="regular button" onclick="alert('hello');" />
 </body>
 </html>
