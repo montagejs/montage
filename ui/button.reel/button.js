@@ -126,15 +126,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    /**
-    Description TODO
-    @private
-    */
-    _observedPointer: {
-        enumerable: true,
-        value: null
-    },
-
     // Low-level event listeners
 
     /**
@@ -144,8 +135,11 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     handleMousedown: {
         value: function(event) {
+            if (this._observedPointer !== null) {
+                return;
+            }
             if (!this._disabled) {
-                this._acknowledgeIntent("mouse");
+                this._startInteraction("mouse");
             }
 
             event.preventDefault();
@@ -165,20 +159,19 @@ var Button = exports.Button = Montage.create(NativeControl, {
             this._interpretInteraction(event);
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     @param {Event} event The handleTouchstart event
     */
     handleTouchstart: {
         value: function(event) {
-
             if (this._observedPointer !== null) {
                 return;
             }
-
             if (!this._disabled) {
-                this._acknowledgeIntent(event.changedTouches[0].identifier);
+                this._startInteraction(event.changedTouches[0].identifier);
             }
 
             // NOTE preventingDefault disables the magnifying class
@@ -208,22 +201,18 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
         }
     },
-/**
+    /**
     Description TODO
     @function
     @param {Event} event The handleTouchcancel event
     */
     handleTouchcancel: {
         value: function(event) {
-
-            var i = 0,
-                changedTouchCount = event.changedTouches.length;
+            var i = 0, changedTouchCount = event.changedTouches.length;
 
             for (; i < changedTouchCount; i++) {
                 if (event.changedTouches[i].identifier === this._observedPointer) {
-                    this._releaseInterest();
-
-                    this.active = false;
+                    this._endInteraction();
                     return;
                 }
             }
@@ -231,16 +220,40 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    // Internal state management
-/**
-  Description TODO
-  @private
-*/
-    _acknowledgeIntent: {
-        value: function(pointer) {
+    /**
+    If we have to surrender the pointer we are no longer active. This will
+    stop the action event being dispatched.
+    */
+    surrenderPointer: {
+        value: function(pointer, component) {
+            if (pointer === this._observedPointer) {
+                this._endInteraction();
+            }
+            return true;
+        }
+    },
 
-            this._observedPointer = pointer;
+    // Internal state management
+
+    /**
+    Stores the pointer that pressed down the button. Needed for multitouch.
+    @private
+    */
+    _observedPointer: {
+        enumerable: true,
+        value: null
+    },
+
+    /**
+    Called when the user starts interacting with the component. Adds release
+    (touch and mouse) listeners.
+    @private
+    */
+    _startInteraction: {
+        value: function(pointer) {
             this.eventManager.claimPointer(pointer, this);
+            this._observedPointer = pointer;
+            this.active = true;
 
             if (window.Touch) {
                 document.addEventListener("touchend", this);
@@ -272,17 +285,15 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 this._dispatchActionEvent();
             }
 
-            this._releaseInterest();
-
-            this.active = false;
+            this._endInteraction();
         },
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
-    _releaseInterest: {
+    /**
+    Called when all interaction is over. Removes listeners.
+    @private
+    */
+    _endInteraction: {
         value: function() {
             if (window.Touch) {
                 document.removeEventListener("touchend", this);
@@ -291,8 +302,11 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 document.removeEventListener("mouseup", this);
             }
 
-            this.eventManager.forfeitPointer(this._observedPointer, this);
+            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                this.eventManager.forfeitPointer(this._observedPointer, this);
+            }
             this._observedPointer = null;
+            this.active = false;
         }
     },
 
