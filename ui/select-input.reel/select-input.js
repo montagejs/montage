@@ -259,16 +259,50 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         }
     },
     
+    _getSelectedOptions: {
+        value: function(selectEl) {
+            var options = selectEl.querySelectorAll('option');
+            // TODO: looks like querySelectorAll('option[selected]') only returns the default selected
+            // value
+            var i, len = options.length, arr = [];
+            for(i=0; i< len; i++) {
+                if(options[i].selected) {
+                    arr.push(options[i]);
+                }
+            }
+            return arr;
+        }
+    },
+    
+    _getSelectedOptionsIndices: {
+        value: function(selectEl) {
+            var options = selectEl.querySelectorAll('option');
+            // TODO: looks like querySelectorAll('option[selected]') only returns the default selected
+            // value
+            var i, len = options.length, arr = [];
+            for(i=0; i< len; i++) {
+                if(options[i].selected) {
+                    arr.push(i);
+                }
+            }
+            return arr;
+        }
+    },
+    
     handleChange: {
         value: function(e) {
             // get selected values and set it on the contentController
             console.log('selection changed');
-            console.log(this.element.value);
-            var index = this._indexOf(this.element.value);
-            if(index >= 0) {
-                // @todo: handle multiple selections
+            console.log(this.element.selectedOptions);
+            
+            //var selectedOptions = this.element.selectedOptions || [];
+            // select.selectedOptions does not work on Chrome !
+            
+            var arr = this._getSelectedOptionsIndices(this.element);
+            
+            if(arr.length > 0) {
                 this._fromInput = true;
-                this.contentController.selectedIndexes = [index];
+                this.contentController.selectedIndexes = arr;
             }
         }
     }

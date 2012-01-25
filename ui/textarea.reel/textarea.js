@@ -9,15 +9,16 @@ Component = require("ui/component").Component,
 TextInput = require("ui/text-input").TextInput;
     
 var TextArea = exports.TextArea = Montage.create(TextInput, {
-    deserializedFromTemplate: {
-        value: function() {
-            // @todo - Need a better way to do this. 
-            var fn = Object.getPrototypeOf(TextArea).deserializedFromTemplate;
-            fn.call(this);
-            var text = this.element.textContent;
-            this.value = text || '';
+    
+    textContent: {
+        get: function() {
+            return this.value;
+        },
+        set: function(v) {
+            this.value = v;
         }
     }
+    
 });
 
 TextArea.addProperties({        

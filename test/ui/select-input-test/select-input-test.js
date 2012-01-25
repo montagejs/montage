@@ -3,14 +3,22 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component;
+var Montage = require("montage").Montage,
+    SelectInput = require("montage/ui/Select-input.reel").SelectInput;
 
-exports.SelectInputExample = Montage.create(Component, {
-    json: {value: null},
-    
-    firstName: {value: null},
-    lastName: {value: null},
+var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
+
+    dept: {
+        value: null
+    },
+
+    state: {
+        value: null
+    },
+
+    country: {
+        value: null
+    },
     
     departments: {
         value: [
@@ -23,8 +31,6 @@ exports.SelectInputExample = Montage.create(Component, {
         ]
     },
     
-    dept: {value: null},
-    
     states: {
         value: {
             'USA': [
@@ -32,7 +38,9 @@ exports.SelectInputExample = Montage.create(Component, {
                 {name: 'Colorado', code: 'CO'},
                 {name: 'California', code: 'CA'},
                 {name: 'New York', code: 'NY'},
-                {name: 'Washington', code: 'WA'}
+                {name: 'Washington', code: 'WA'},
+                {name: 'Oregon', code: 'OR'},
+                {name: 'Georgia', code: 'GA'}
             ],
             'INR': [
                 {name: 'Kerala', code: 'KL'},
@@ -43,6 +51,7 @@ exports.SelectInputExample = Montage.create(Component, {
             ]
         }
     },
+
     
     _selectedCountry: {value: null},
     selectedCountry: {
@@ -69,37 +78,13 @@ exports.SelectInputExample = Montage.create(Component, {
         }
     },
     
-    _selectedDepts: {value: null},
-    selectedDepts: {
-        get: function() {return this._selectedDepts;},
+    _selectedDept: {value: null},
+    selectedDept: {
+        get: function() {return this._selectedDept;},
         set: function(value) {
-            this._selectedDepts = (value || []);              
+            if(this._selectedDept !== value) {
+                this._selectedDept = value;                
+            }
         }
     },
-        
-    prepareForDraw: {
-        value: function() {
-            
-            this.firstName = "John";
-            this.lastName = "FooBar";
-            
-            this.dept.contentController.selectedIndexes = [2, 4, 5];
-            // The following code does not trigger the selection. The selection is 
-            // managed by the contentController
-            //this.selectedDept = this.departments[3];
-            
-        }
-    },
-    
-    handleUpdateAction: {
-        value: function(event) {
-            this.json = JSON.stringify({
-                firstName: this.firstName,
-                lastName: this.lastName,
-                country: this.selectedCountry,
-                state: this.selectedState,
-                departments: this.selectedDepts             
-            });
-        }
-    }
 });

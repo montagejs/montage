@@ -172,7 +172,7 @@ exports.NativeControl = Montage.create(Component, {
             // check if this element has textContent
             var textContent = this.element.textContent;
             // set textContent only if it is defined as part of element properties
-            if(this._propertyDescriptors['textContent'] && textContent && ("" !== textContent)) {
+            if(('textContent' in this) && textContent && ("" !== textContent)) {
                 if(isUndefined(this._elementAttributeValues['textContent'])) {
                     this._elementAttributeValues['textContent'] = textContent;
                     // since deserializedFromTemplate is called *after* the initial binding
