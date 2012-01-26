@@ -18,8 +18,26 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
         value: null
     },
 
+    component: {
+        get: function() {
+            return this._component;
+        },
+        set: function(component) {
+            this._component = component;
+        }
+    },
+
     _element: {
         value: null
+    },
+
+    element: {
+        get: function() {
+            return this._element;
+        },
+        set: function(element) {
+            this._element = element;
+        }
     },
 
     _needsFrame: {
@@ -27,8 +45,10 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
     },
 
     /**
-     * A composer calls this method in order to be part of an applications draw cycle.
-     *
+        This property should be set to true when this composer wants to have its
+        frame method executed during the next draw cycle.  Setting this property
+        to true will cause a draw cycle to be scheduled iff one is not already
+        scheduled.
      */
     needsFrame: {
         set: function(value) {
@@ -46,27 +66,76 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
         }
     },
 
+    /**
+        This method will be invoked by the framework at the beginning of a draw cycle. This is the method where
+        a composer should implement its update logic.
+        @param {Date} timestamp time that the draw cycle started
+     */
     frame: {
         value: function(timestamp) {
 
         }
     },
 
-    /**
-     * This method is called when a component adds a composer
+
+    /*
+        Invoked by the framework to default the composer's element to the component's element if necessary.
+        @private
      */
-    prepare: {
+    _resolveDefaults: {
+        value: function() {
+            if (this.element == null) {
+                if (this.component != null) {
+                    this.element = this.component.element;
+                }
+            }
+        }
+    },
+
+    /*
+        Invoked by the framework to load this composer
+        @private
+     */
+    _load: {
+        value: function() {
+            if (!this.element) {
+                this._resolveDefaults();
+            }
+            this.load();
+        }
+    },
+
+    /**
+        Called when a composer should be loaded.  Any event listeners that the composer needs to install should
+        be installed in this method.
+        @function
+     */
+    load: {
         value: function() {
 
         }
     },
 
     /**
-     * This method is called when a component removes a composer
+        Called when a component removes a composer.  Any event listeners that the composer needs to remove should
+        be removed in this method and any additional cleanup should be performed.
+        @function
      */
-    tearDown: {
+    unload: {
         value: function() {
 
+        }
+    },
+
+    /*
+        Called when a composer is part of a template serialization.  It's responsible for calling addComposer on
+        the component.
+     */
+    deserializedFromTemplate: {
+        value: function() {
+            if (this.component) {
+                this.component.addComposer(this);
+            }
         }
     }
 

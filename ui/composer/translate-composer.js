@@ -350,7 +350,7 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
         }
     },
 
-    _releaseInterest: {
+    _releaseInterest: { // unload??
         value: function() {
 
             if (window.Touch) {
@@ -757,10 +757,8 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
         }
     },
 
-    prepare: {
-        value: function(element) {
-            this._element = element;
-
+    load: {
+        value: function() {
             if (window.Touch) {
                 this._element.addEventListener("touchstart", this, true);
                 this._element.addEventListener("touchstart", this, false);

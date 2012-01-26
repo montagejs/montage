@@ -30,7 +30,8 @@
                 "name": "TranslateComposer",
                 "properties": {
                     "pointerSpeedMultiplier": 3,
-                    "element": {"#": "scrollingArea"}
+                    "element": {"#": "scrollingArea"},
+                    "component": {"@": "flow1"}
                 },
                 "bindings": {
                     "maxTranslateX": {
@@ -83,7 +84,6 @@
                         {"src": "images/14.jpg", "text": "Lorem Ipsum 8"}
                     ],
                     "scale": 1000,
-                    "translateComposer": {"@": "translateComposer1"},
                     "selectedSlideIndex": {
                         "boundObject": {"@": "nearest"},
                         "boundObjectPropertyPath": "nearestNeighborComponent",
@@ -206,8 +206,7 @@
                         "images/6.jpg",
                         "images/7.jpg"
                     ],
-                    "scale": 1000,
-                    "translateComposer": {"@": "translateComposer1"}
+                    "scale": 1000
                 },
                 "bindings": {
                     "path": {

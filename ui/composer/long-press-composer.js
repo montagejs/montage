@@ -51,15 +51,14 @@ exports.LongPressComposer = Montage.create(Composer,/** @lends module:montage/ui
     Description TODO
     @function
     */
-    prepare: {
-        value: function (element) {
-            this._element = element;
+    load: {
+        value: function () {
             if (window.Touch) {
-                element.addEventListener("touchstart", this);
-                element.addEventListener("touchmove", this);
-                element.addEventListener("touchend", this);
+                this._element.addEventListener("touchstart", this);
+                this._element.addEventListener("touchmove", this);
+                this._element.addEventListener("touchend", this);
             } else {
-                element.addEventListener("mousedown", this);
+                this._element.addEventListener("mousedown", this);
             }
         }
     },
@@ -67,7 +66,7 @@ exports.LongPressComposer = Montage.create(Composer,/** @lends module:montage/ui
     Description TODO
     @function
     */
-    tearDown: {
+    unload: {
         value: function () {
             if (window.Touch) {
                 this._element.removeEventListener("touchstart", this);

@@ -28,6 +28,9 @@
             "translateComposer1": {
                 "module": "montage/ui/composer/translate-composer",
                 "name": "TranslateComposer",
+                "properties": {
+                    "component": {"@": "flow1"}
+                },
                 "bindings": {
                     "maxTranslateX": {
                         "boundObject": {"@": "flow1"},
@@ -77,8 +80,7 @@
                         "images/12.jpg",
                         "images/13.jpg",
                         "images/14.jpg"
-                    ],
-                    "translateComposer": {"@": "translateComposer1"}
+                    ]
                 },
                 "bindings": {
                     "path": {

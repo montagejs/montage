@@ -25,9 +25,8 @@ exports.SwipeComposer = Montage.create(Composer, /** @lends module:montage/ui/co
     @function
     @param {Element}
     */
-    prepare: {
-        value: function(element) {
-            this._element = element;
+    load: {
+        value: function() {
             document.addEventListener("touchstart", this, true);
         }
     },
@@ -36,9 +35,9 @@ exports.SwipeComposer = Montage.create(Composer, /** @lends module:montage/ui/co
     Description TODO
     @function
     */
-    tearDown: {
+    unload: {
         value: function() {
-            target.removeEventListener("touchstart", this, true);
+            document.removeEventListener("touchstart", this, true);
         }
     },
 

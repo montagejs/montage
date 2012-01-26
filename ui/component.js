@@ -1140,44 +1140,71 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     // Composers
-
+    /*
+        Variable to track this component's associated composers
+        @private
+     */
     composerList: {
         value: [],
         distinct: true
     },
 
+    /**
+        Adds the passed in composer to the component's composer list.
+        @function
+        @param {Composer} composer Composer object
+    */
     addComposer: {  // What if the same composer instance is added to more than one component?
         value: function(composer) {
-            if (!composer.element) {
-                this.addComposerForElement(composer, this.element);
-            } else {
-                // If the element was already supplied use that one
-                this.addComposerForElement(composer, composer.element);
+            this.addComposerForElement(composer, composer.element);
+        }
+    },
+
+    /**
+        Adds the passed in composer to the component's composer list and
+        sets the element of the composer to the passed in element.
+        @function
+        @param {Composer} composer Composer object
+        @param {Element} element Element
+    */
+    addComposerForElement: {
+        value: function(composer, element) {
+            composer.component = this;
+            composer.element = element;
+            this.composerList.push(composer);
+
+            if (!this._firstDraw) {  // prepareForDraw has already happened so do the loading here
+                composer._load();
             }
         }
     },
 
-    addComposerForElement: {
-        value: function(composer, element) {
-            composer.prepare(element);
-            this.composerList.push(composer);
-            composer._component = this;
-        }
-    },
-
+    /**
+        Adds the passed in composer to the list of composers which will have their
+        frame method called during the next draw cycle.  It causes a draw cycle to be scheduled
+        iff one has not already been scheduled.
+        @function
+        @param {Composer} composer Composer object
+    */
     scheduleComposer: {
         value: function(composer) {
             this.rootComponent.addToComposerList(composer);
         }
     },
 
+    /**
+        Removes the passed in composer from this component's composer list.  It takes care
+        of calling the composers unload method before removing it from the list.
+        @function
+        @param {Composer} composer Composer object
+    */
     removeComposer: {
         value: function(composer) {
             var i, length;
             length = this.composerList.length;
             for (i = 0; i < length; i++) {
                 if (this.composerList[i].uuid === composer.uuid) {
-                    this.composerList[i].tearDown();
+                    this.composerList[i].unload();
                     this.composerList.splice(i, 1);
                     break;
                 }
@@ -1185,12 +1212,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    /**
+        A convenience method for removing all composers from a component.  This method
+        is responsible for calling unload on each composer before removing it.
+        @function
+    */
     clearAllComposers: {
         value: function() {
             var length, i;
             length = this.composerList.length;
             for (i = 0; i < length; i++) {
-                this.composerList[i].tearDown();
+                this.composerList[i].unload();
             }
             this.composerList = [];
         }
@@ -1377,7 +1409,11 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
 
     /**
      * Adds the passed in composer to the list of composers to be executed
-     * in the next draw cycle and request a draw cycle if necessary
+     * in the next draw cycle and requests a draw cycle iff one has not been
+     * requested yet.
+     * @private
+     * @function
+     * @param {Composer} composer Composer object
      */
     addToComposerList: {
         value: function(composer) {
@@ -1393,6 +1429,10 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         }
     },
 
+    /*
+        Flag to track if a composer is requesting a draw
+        @private
+     */
     _scheduleComposerRequest: {
         value: false
     },
@@ -1506,7 +1546,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     */
     addToDrawCycle: {
         value: function(component) {
-            var needsDrawListIndex = this._readyToDrawListIndex;
+            var needsDrawListIndex = this._readyToDrawListIndex, length;
 
             if (needsDrawListIndex.hasOwnProperty(component.uuid)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
@@ -1528,6 +1568,13 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 if (component.prepareForDraw) {
                     component.prepareForDraw();
                 }
+
+                // Load any composers that have been added
+                length = component.composerList.length;
+                for (i = 0; i < length; i++) {
+                    component.composerList[i]._load();
+                }
+
                 // Will we expose a different property, firstDraw, for components to check
                 component._firstDraw = false;
             }
@@ -1542,14 +1589,15 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     drawIfNeeded:{
         value: function drawIfNeeded() {
             var needsDrawList = this._readyToDrawList, component, j, i, start = 0, firstDrawEvent,
-                composerList = this.composerList, composer;
+                composerList = this.composerList, composer, length;
             needsDrawList.length = 0;
             this._readyToDrawListIndex = {};
             this.composerList = [];
 
             // Process the composers first so that any components that need to be newly drawn due to composer changes
             // get added in this cycle
-            for (i = 0; i < composerList.length; i++) {
+            length = composerList.length;
+            for (i = 0; i < length; i++) {
                 composer = composerList[i];
                 composer.needsFrame = false;
                 composer.frame(this._frameTime);

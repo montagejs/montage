@@ -28,6 +28,9 @@
             "translateComposer1": {
                 "module": "montage/ui/composer/translate-composer",
                 "name": "TranslateComposer",
+                "properties": {
+                    "component": {"@": "flow1"}
+                },
                 "bindings": {
                     "maxTranslateX": {
                         "boundObject": {"@": "flow1"},
@@ -80,8 +83,7 @@
                     ],
                     "cameraRotationAxisX": 1,
                     "cameraRotationAxisY": 0,
-                    "cameraRotationAxisZ": 0,
-                    "translateComposer": {"@": "translateComposer1"}
+                    "cameraRotationAxisZ": 0
                 },
                 "bindings": {
                     "path": {
