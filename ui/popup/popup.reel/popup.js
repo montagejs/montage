@@ -477,7 +477,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // an optimization to call positionPopup fewer times
                 window.clearTimeout(this._timeoutId);
                 this._timeoutId = setTimeout(function() {
-                    self._positionPopup();
+                    self.needsDraw = true;
                 }, 100);
             }
          }
