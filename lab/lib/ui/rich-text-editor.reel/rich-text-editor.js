@@ -42,7 +42,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
-    _needSelectionReset: {
+    _needsSelectionReset: {
         enumerable: false,
         value: false
     },
@@ -54,6 +54,24 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     _selectionChangeTimer: {
         enumerable: false,
         value: null
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _activeLink: {
+        enumerable: false,
+        value: null
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _needsActiveLinkOn: {
+        enumerable: false,
+        value: false
     },
 
     /**
@@ -109,6 +127,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (this._resizer) {
                     contentNode = this._resizer.cleanup(contentNode);
                 }
+
+                contentNode = this._cleanupActiveLink(contentNode);
+
                 content = contentNode ? contentNode.innerHTML : "";
                 if (content == "<br>") {
                     // when the contentEditable div is emptied, Chrome add a <br>, let's filter it out
@@ -135,7 +156,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 this._value = value;
                 this._dirtyValue = false;
                 this._dirtyTextValue = true;
-                this._needSelectionReset = true;
+                this._needsSelectionReset = true;
                 this._needsResetContent = true;
                 this.needsDraw = true;
             }
@@ -173,7 +194,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 this._textValue = value;
                 this._dirtyTextValue = false;
                 this._dirtyValue = true;
-                this._needSelectionReset = true;
+                this._needsSelectionReset = true;
                 this._needsResetContent = true;
                 this.needsDraw = true;
             }
@@ -538,6 +559,12 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 // Let's give a change to the resizer to do any custom drawing if needed
                 this._resizer.draw();
             }
+
+            if (this._needsActiveLinkOn !== false && this._needsActiveLinkOn != this._activeLink) {
+                this._showActiveLink(this._needsActiveLinkOn);
+                this._needsActiveLinkOn = false;
+            }
+
         }
     },
 
@@ -639,7 +666,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 timer;
 
             this._hasFocus = true;
-            if (this._needSelectionReset) {
+            if (this._needsSelectionReset) {
                 var node = this._lastInnerNode(),
                     range,
                     length,
@@ -668,7 +695,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
                 setTimeout(function(){clearInterval(timer)}, 1000);
 
-                this._needSelectionReset = false;
+                this._needsSelectionReset = false;
             }
 
             el.addEventListener("blur", this);
@@ -744,6 +771,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
+
+            if (this._activeLink) {
+                this._hideActiveLink();
+            }
+
             this._markDirty();
         }
     },
@@ -758,6 +790,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
+
+            if (this._activeLink) {
+                this._hideActiveLink();
+            }
+
             this.handleDragend(event);
             this._markDirty();
         }
@@ -866,7 +903,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleSelectionchange: {
         enumerable: false,
         value: function() {
-            var thisRef = this;
+            var thisRef = this,
+                range,
+                element,
+                hideLinkPopup = true;
 
             if (this._ignoreSelectionchange) {
                 return;
@@ -881,6 +921,27 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     this._needsHideResizer = true;
                     this.needsDraw = true;
                 }
+            }
+
+            //Check if we are inside an anchor
+            range = this._selectedRange;
+            if (range && range.collapsed) {
+                element = range.commonAncestorContainer;
+                while (element && element != this._element) {
+                    if (element.nodeName == "A") {
+                        hideLinkPopup = false;
+                        if (element != this._activeLink) {
+                            this._needsActiveLinkOn = element;
+                            this.needsDraw = true;
+                        }
+                        break;
+                    }
+                    element = element.parentElement;
+                }
+            }
+            if (hideLinkPopup) {
+                this._needsActiveLinkOn = null;
+                this.needsDraw = true;
             }
 
             this._statesDirty = true;
@@ -927,7 +988,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleDragover: {
         enumerable: false,
         value: function(event) {
-            var range;
+            var thisRef = this,
+                range;
 
             // If we are moving an element from within the ourselves, let the browser deal with it...
             if (this._dragSourceElement) {
@@ -957,7 +1019,13 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (range) {
                     this._selectedRange = range;
                 }
-                delete this._ignoreSelectionchange;
+                if (this._ignoreSelectionchangeTimer) {
+                    clearTimeout(this._ignoreSelectionchangeTimer)
+                }
+                this._ignoreSelectionchangeTimer = setTimeout(function(){
+                    delete thisRef._ignoreSelectionchange;
+                    thisRef._ignoreSelectionchangeTimer = null;
+                }, 0);
             }
         }
     },
@@ -1416,6 +1484,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         }
     },
 
+    /**
+    Description TODO
+    @private
+    @function
+    */
     _equalRange: {
         enumerable: false,
         value: function(rangeA, rangeB) {
@@ -1423,6 +1496,136 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 rangeA.startOffset == rangeB.startOffset &&
                 rangeA.endContainer == rangeB.endContainer &&
                 rangeA.endOffset == rangeB.endOffset);
+        }
+    },
+
+    /**
+    Description TODO
+    @private
+    @function
+    */
+    _showActiveLink: {
+        enumerable: false,
+        value: function(element) {
+            var editorElement = this._element.firstChild,
+                popup,
+                parentNode,
+                nextSibling,
+                w, h, l, t, docH, docW,
+                maxWidth,
+                style,
+                popupExtraWidth = 53; // This is depending of the popup css
+
+            if (this._activeLink != element) {
+                this._hideActiveLink();
+                if (element) {
+                    parentNode = element.parentNode;
+                    nextSibling = element.nextSibling;
+
+                    // sanity check: make sure we don't already have a popup installed for that element
+                    if (!nextSibling || nextSibling.tagName !== "DIV" || !nextSibling.classList.contains("montage-link-popup")) {
+
+                        oh = editorElement.offsetHeight;
+                        ow = editorElement.offsetWidth;
+                        st = editorElement.scrollTop;
+                        sl = editorElement.scrollLeft;
+
+                        w  = element.offsetWidth -1,
+                        h  = element.offsetHeight -1,
+                        l  = element.offsetLeft,
+                        t  = element.offsetTop,
+
+                        style = "";
+                        if (t > 60 && t - st + h + 50 > oh) {
+                            style = "bottom: " + (oh - t + 5) + "px;";
+                        } else {
+                            style = "top: " + (t + h + 5 ) + "px;";
+                        }
+
+                        var maxWidth = ow - l - popupExtraWidth + sl;
+                        if (maxWidth < 150) {
+                            maxWidth = 150;
+                        }
+                        if (l + maxWidth + popupExtraWidth - sl > ow) {
+                            l = ow - maxWidth - popupExtraWidth + sl;
+                        }
+                        if (l < 3) {
+                            l = 3;
+                        }
+                        style += " left: " + l + "px;"
+                        style += "max-width: " + maxWidth + "px;"
+
+
+                        popup = document.createElement("DIV");
+                        popup.className = "montage-link-popup";
+                        popup.setAttribute("contentEditable", "false");
+                        popup.setAttribute("style", style);
+                        popup.innerHTML = '<a href="' + element.href + '" target="_blank">' + element.href + '</a>';
+                        parentNode.insertBefore(popup, nextSibling);
+
+                        this._activeLink = element;
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @private
+    @function
+    */
+    _hideActiveLink: {
+        enumerable: false,
+        value: function() {
+            var popups,
+                nbrPopups,
+                popup,
+                i;
+
+            if (this._activeLink) {
+                popups = this._element.firstChild.getElementsByClassName("montage-link-popup");
+                nbrPopups = popups.length;
+
+                // Note: We should not have more than one popup, this is just in case...
+                for (i = 0; i < nbrPopups; i ++) {
+                    popup = popups[0];
+                    popup.parentNode.removeChild(popup);
+                }
+
+                this._activeLink = null;
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @private
+    @function
+    */
+    _cleanupActiveLink: {
+        enumerable: false,
+        value: function(contentNode) {
+            var cleanContentNode = contentNode,
+                popups = contentNode.getElementsByClassName("montage-link-popup"),
+                nbrPopups,
+                popup,
+                i;
+
+            if (popups) {
+                // We don't want to hide the popup, just return a copy of the content without any popup
+                cleanContentNode = contentNode.cloneNode(true);
+                popups = cleanContentNode.getElementsByClassName("montage-link-popup");
+                nbrPopups = popups.length;
+
+                // Note: We should not have more than one popup, this is just in case...
+                for (i = 0; i < nbrPopups; i ++) {
+                    popup = popups[0];
+                    popup.parentNode.removeChild(popup);
+                }
+            }
+
+            return cleanContentNode;
         }
     }
 });
