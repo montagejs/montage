@@ -179,8 +179,18 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     textValue: {
         enumerable: true,
         get: function() {
+            var contentNode = this.element.firstChild,
+                childNodes;
+
             if (this._dirtyTextValue) {
-                this._textValue = this.element.firstChild ? this.element.firstChild.innerText : "";
+                if (contentNode) {
+                    if (this._resizer) {
+                        contentNode = this._resizer.cleanup(contentNode);
+                    }
+                    contentNode = this._cleanupActiveLink(contentNode);
+                }
+
+                this._textValue = contentNode ? this._innerText(contentNode) : "";
                 this._dirtyTextValue = false;
             }
             return this._textValue;
@@ -1153,8 +1163,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             /* NOTE: Chrome, and maybe the other browser too, returns html or plain text data when calling getData("text/html),
                      To determine if the data is actually html, check the data starts with either an html or a meta tag
             */
-
-            isHTML = data && data.match(/^<meta [^>]*>|<html>/i);
+            isHTML = data && data.match(/^(<meta [^>]*>|<html>)/i);
             if (data && isHTML) {
                 // Sanitize Fragment (CSS & JS)
                 if (this._sanitizer) {
@@ -1626,6 +1635,35 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             }
 
             return cleanContentNode;
+        }
+    },
+
+    _innerText: {
+        enumerable: false,
+        value: function(contentNode) {
+            var result = "",
+                textNodeContents = [],
+                _walkNode = function(node) {
+                    var child;
+
+                    if (node.nodeName == "STYLE") {
+                        return;
+                    }
+
+                    // TODO: We need to insert newlines after block elements (and remove any newline coming from HTML)
+                    for (child = node.firstChild; child; child = child.nextSibling) {
+                        if (child.nodeType == 3) { // text node
+                            textNodeContents.push(child.nodeValue);
+                        } else {
+                            _walkNode(child);
+                        }
+                    }
+                };
+
+            _walkNode(contentNode);
+            result = textNodeContents.join("");
+
+            return result;
         }
     }
 });
