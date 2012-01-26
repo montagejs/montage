@@ -403,6 +403,13 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                             }
                             self._revealMainComponent();
                         }, remainingBootstrappingDelay);
+                    } else {
+                        setTimeout(function () {
+                            if (logger.isDebug) {
+                                logger.debug(this, "ok, showing bootstrapper now");
+                            }
+                            self._revealMainComponent();
+                        }, 0);
                     }
                 }
 
