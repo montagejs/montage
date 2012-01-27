@@ -121,6 +121,8 @@ if (typeof window !== "undefined") {
     exports.SerializationCompiler = function(config, compile) {
         return function(module) {
             module = compile(module);
+            if (!module.factory)
+                return module; // TODO remove return value
             var defaultFactory = module.factory;
             module.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
@@ -160,12 +162,12 @@ if (typeof window !== "undefined") {
      */
     var reelExpression = /([^\/]+)\.reel$/;
     exports.ReelLoader = function (config, load) {
-        return function (id, callback) {
+        return function (id, module) {
             var match = reelExpression.exec(id);
             if (match) {
-                return load(id + "/" + match[1], callback);
+                return load(id + "/" + match[1], module);
             } else {
-                return load(id, callback);
+                return load(id, module);
             }
         };
     };
