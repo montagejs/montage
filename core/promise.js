@@ -67,7 +67,9 @@ var Creatable = Object.create(Object.prototype, {
         value: function (descriptor) {
             for (var name in descriptor) {
                 var property = descriptor[name];
-                property.writable = true;
+                if (!property.set && !property.get) {
+                    property.writable = true
+                }
                 property.configurable = true;
             }
             return Object.create(this, descriptor);
