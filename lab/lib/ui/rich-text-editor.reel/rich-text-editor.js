@@ -1012,6 +1012,12 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             event.preventDefault();
             event.stopPropagation();
 
+            // Remove the link popup
+            if (this._needsActiveLinkOn === false && this._activeLink) {
+                this._needsActiveLinkOn = null;
+                this.needsDraw = true;
+            }
+
             // Update the caret
             if (event.x !== this._dragOverX || event.y !== this._dragOverY) {
                 this._dragOverX = event.x;
@@ -1520,60 +1526,87 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 popup,
                 parentNode,
                 nextSibling,
-                w, h, l, t, docH, docW,
-                maxWidth,
+                w, h, l, t,
+                left, right, leftWidth, rightWidth,
                 style,
                 popupExtraWidth = 53; // This is depending of the popup css
+
+            var offsetLeft,
+                offsetTop,
+                _findOffset = function(node) {
+                    offsetLeft = node.offsetLeft;
+                    offsetTop = node.offsetTop;
+
+                    while ((node = node.offsetParent) && node != editorElement) {
+                        console.log("NODE:", node)
+                        offsetLeft += node.offsetLeft;
+                        offsetTop += node.offsetTop;
+                    }
+                };
+
 
             if (this._activeLink != element) {
                 this._hideActiveLink();
                 if (element) {
+
+                    _findOffset(element);
+                    console.log("OFFSET:", "{" + offsetTop + ", " + offsetLeft + "}  (" +  element.offsetTop + ", " + element.offsetLeft + ")")
+
                     parentNode = element.parentNode;
                     nextSibling = element.nextSibling;
 
-                    // sanity check: make sure we don't already have a popup installed for that element
-                    if (!nextSibling || nextSibling.tagName !== "DIV" || !nextSibling.classList.contains("montage-link-popup")) {
+                    oh = editorElement.offsetHeight;
+                    ow = editorElement.offsetWidth;
+                    st = editorElement.scrollTop;
+                    sl = editorElement.scrollLeft;
 
-                        oh = editorElement.offsetHeight;
-                        ow = editorElement.offsetWidth;
-                        st = editorElement.scrollTop;
-                        sl = editorElement.scrollLeft;
+                    w  = element.offsetWidth -1,
+                    h  = element.offsetHeight -1,
+                    l  = offsetLeft,
+                    t  = offsetTop,
 
-                        w  = element.offsetWidth -1,
-                        h  = element.offsetHeight -1,
-                        l  = element.offsetLeft,
-                        t  = element.offsetTop,
+                    style = "";
 
-                        style = "";
-                        if (t > 60 && t - st + h + 50 > oh) {
-                            style = "bottom: " + (oh - t + 5) + "px;";
-                        } else {
-                            style = "top: " + (t + h + 5 ) + "px;";
-                        }
-
-                        var maxWidth = ow - l - popupExtraWidth + sl;
-                        if (maxWidth < 150) {
-                            maxWidth = 150;
-                        }
-                        if (l + maxWidth + popupExtraWidth - sl > ow) {
-                            l = ow - maxWidth - popupExtraWidth + sl;
-                        }
-                        if (l < 3) {
-                            l = 3;
-                        }
-                        style += " left: " + l + "px;"
-                        style += "max-width: " + maxWidth + "px;"
-
-
-                        popup = document.createElement("DIV");
-                        popup.className = "montage-link-popup";
-                        popup.setAttribute("contentEditable", "false");
-                        popup.setAttribute("style", style);
-                        popup.innerHTML = '<a href="' + element.href + '" target="_blank">' + element.href + '</a>';
-                        parentNode.insertBefore(popup, nextSibling);
-
-                        this._activeLink = element;
+                    // Should we display the popup on top or below the element?
+                    if (t > 60 && t - st + h + 50 > oh) {
+                        style = "bottom: " + (oh - t + 5) + "px;";
+                    } else {
+                        style = "top: " + (t + h + 5 ) + "px;";
                     }
+
+                    // Should we display the popup aligned on the left or right of the element?
+                    left = sl;
+                    right = sl + ow;
+                    leftWidth = right - l;
+                    rightWidth = l + w - left;
+
+                    if (leftWidth  > rightWidth) {
+                        //Let's align the popup to the left of the element or to the far left
+                        if (leftWidth < 150) {
+                            style += " left: " + (left + 5) + "px;";
+                            style += " max-width: " + (ow - 10 - popupExtraWidth) + "px;";
+                        } else {
+                            style += " left: " + (left + l) + "px;";
+                            style += " max-width: " + (leftWidth - 5 - popupExtraWidth) + "px;";
+                        }
+                    } else {
+                        if (rightWidth < 150) {
+                            style += " right: " + (left + 6) + "px;";
+                            style += " max-width: " + (ow - 10 - popupExtraWidth) + "px;";
+                        } else {
+                            style += " right: " + (right - (left + l + w + 10)) + "px;";
+                            style += " max-width: " + (rightWidth - popupExtraWidth) + "px;";
+                        }
+                    }
+
+                    popup = document.createElement("DIV");
+                    popup.className = "montage-link-popup";
+                    popup.setAttribute("contentEditable", "false");
+                    popup.setAttribute("style", style);
+                    popup.innerHTML = '<a href="' + element.href + '" target="_blank">' + element.href + '</a>';
+                    editorElement.insertBefore(popup, null);
+
+                    this._activeLink = element;
                 }
             }
         }
