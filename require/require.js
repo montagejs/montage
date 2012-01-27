@@ -49,15 +49,7 @@
         config.lib = URL.resolve(config.location, config.lib || ".");
         config.paths = config.paths || [config.lib];
         config.mappings = config.mappings || {}; // EXTENSION
-        config.exposedConfigs = config.exposedConfigs || [
-            "paths",
-            "mappings",
-            "location",
-            "packageDescription",
-            "packages",
-            "modules",
-            "module"
-        ];
+        config.exposedConfigs = config.exposedConfigs || Require.defaultExposedConfigs;
         config.makeLoader = config.makeLoader || Require.DefaultLoaderConstructor;
         config.load = config.load || config.makeLoader(config);
         config.makeCompiler = config.makeCompiler || Require.DefaultCompilerConstructor;
@@ -87,43 +79,27 @@
             module.directory = URL.resolve(module.location, ".");
         }
 
-        // Ensures a module definition is loaded.
-        // Does not need to be memoized because it is protected by the
-        // loadAndAnalyze memo.
-        var load = function (topId, viaId) {
+        // Ensures a module definition is loaded, compiled, analyzed
+        var load = memoize(function (topId, viaId) {
             var module = getModule(topId);
-
-            // already loaded, already instantiated, or redirection
-            if (
-                module.factory !== void 0 ||
-                module.exports !== void 0 ||
-                module.redirect !== void 0
-            ) {
-                return module;
-            // load
-            } else {
-
-                // Update the list of modules that need to load
-                Require.progress.requiredModules.push(module.display);
-
-                return config.load(topId, module)
-                .then(function (definition) {
-                    // TODO lace the module through instead of receiving the definition
-                    for (var name in definition) {
-                        module[name] = definition[name];
-                    }
-
-                    // Progress update
-                    Require.progress.loadedModules.push(module.display);
-
+            return Promise.call(function () {
+                // already loaded, already instantiated, or redirection
+                if (
+                    module.factory !== void 0 ||
+                    module.exports !== void 0 ||
+                    module.redirect !== void 0
+                ) {
                     return module;
-                });
-
-            }
-        };
-
-        var loadAndAnalyze = memoize(function (id, viaId) {
-            return Promise.call(load, null, id, viaId)
+                // load
+                } else {
+                    Require.progress.requiredModules.push(module.display);
+                    return Promise.call(config.load, null, topId, module)
+                    .then(function () {
+                        Require.progress.loadedModules.push(module.display);
+                        return module;
+                    });
+                }
+            })
             .then(function (module) {
                 // analyze dependencies
                 config.compile(module);
@@ -145,7 +121,7 @@
             if (has(loading, id))
                 return; // break the cycle of violence.
             loading[id] = true; // this has happened before
-            return loadAndAnalyze(id, viaId)
+            return load(id, viaId)
             .then(function (module) {
                 // load the transitive dependencies using the magic of
                 // recursion.
@@ -170,6 +146,11 @@
             // handle redirects
             if (module.redirect !== void 0) {
                 return getExports(module.redirect, viaId);
+            }
+
+            // handle cross-package linkage
+            if (module.mappingRedirect !== void 0) {
+                return module.mappingRequire(module.mappingRedirect, viaId);
             }
 
             // do not reinitialize modules
@@ -512,7 +493,7 @@
             if (!module.dependencies && module.text !== void 0) {
                 module.dependencies = Require.parseDependencies(module.text);
             }
-            module = compile(module); // TODO remove reassignment
+            compile(module);
             if (module && !module.dependencies) {
                 if (module.text || module.factory) {
                     module.dependencies = Require.parseDependencies(module.text || module.factory);
@@ -530,7 +511,7 @@
             if (module.text) {
                 module.text = module.text.replace(/^#!/, "//#!");
             }
-            return compile(module);
+            compile(module);
         }
     };
 
@@ -540,13 +521,23 @@
         }
         return function(module) {
             try {
-                return compile(module);
+                compile(module);
             } catch (error) {
                 config.lint(module);
                 throw error;
             }
         };
     }
+
+    Require.defaultExposedConfigs = [
+        "paths",
+        "mappings",
+        "location",
+        "packageDescription",
+        "packages",
+        "modules",
+        "module"
+    ];
 
     Require.DefaultCompilerConstructor = function(config) {
         return Require.ShebangCompiler(
@@ -589,7 +580,14 @@
         var length = prefixes.length;
 
         // finds a mapping to follow, if any
-        var loadFromMappings = function (id, module) {
+        return function (id, module) {
+            if (Require.isAbsolute(id)) {
+                return load(id, module);
+            }
+            // TODO: remove this when all code has been migrated off of the autonomous name-space problem
+            if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/") {
+                console.warn("Package reflexive module ignored:", id);
+            }
             var i, prefix
             for (i = 0; i < length; i++) {
                 prefix = prefixes[i];
@@ -599,74 +597,41 @@
                     id.charAt(prefix.length) === "/"
                 ) {
                     var mapping = mappings[prefix];
-                    return loadFromMapping(prefix, mapping, id, module);
+                    var rest = id.slice(prefix.length + 1);
+                    return config.loadPackage(mapping)
+                    .then(function (mappingRequire) {
+                        module.mappingRedirect = rest;
+                        module.mappingRequire = mappingRequire;
+                        return mappingRequire.deepLoad(rest, config.location);
+                    });
                 }
             }
             return load(id, module);
-        };
-
-        // follows a particular mapping, from above
-        var loadFromMapping = function (prefix, mapping, id, module) {
-            return config.loadPackage(mapping)
-            .then(function (pkg) {
-                var rest = id.slice(prefix.length + 1);
-                return pkg.deepLoad(rest, config.location)
-                .then(function () {
-                    return {
-                        externalId: rest,
-                        externalRequire: pkg,
-                        factory: function (require, exports, module) {
-                            module.exports = pkg(rest);
-                        },
-                        // this is necessary for constructing unique URI's for
-                        // chaching:
-                        location: pkg.location + "!" + rest
-                    };
-                })
-            });
-        }
-
-        return function (id, module) {
-            if (Require.isAbsolute(id)) {
-                return load(id, module);
-            } else {
-                // TODO: remove this when all code has been migrated off of the autonomous name-space problem
-                if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/") {
-                    console.warn("Package reflexive module ignored:", id);
-                }
-                // The package loader can inject some definitions for aliases
-                // into the package configuration.  These will only have
-                // location attributes and need to be replaced with factories.
-                // We intercept these aliases (usually the package's main
-                // module, not found in its lib location) here.
-                var module = config.module(id);
-                if (module.exports || module.factory || module.redirect !== void 0) {
-                    return Promise.ref(module);
-                } else if (module.location !== void 0) {
-                    return load(module.location, module);
-                } else {
-                    return loadFromMappings(id, module);
-                }
-            }
         };
     };
 
     Require.ExtensionsLoader = function(config, load) {
         var extensions = config.extensions || ["js"];
-        var loadExtension = extensions.reduceRight(function (next, extension) {
+        var loadWithExtension = extensions.reduceRight(function (next, extension) {
             return function (id, module) {
                 return load(id + "." + extension, module)
                 .fail(function (error) {
                     return next(id, module);
                 });
             };
-        }, load);
-        return function(id, module) {
-            var needsExtension = Require.base(id).indexOf(".") < 0;
-            if (needsExtension) {
-                return loadExtension(id, module);
-            } else {
+        }, function (id, module) {
+            throw new Error(
+                "Can't find " + JSON.stringify(id) + " with extensions " +
+                JSON.stringify(extensions) + " in package at " +
+                JSON.stringify(config.location)
+            );
+        });
+        return function (id, module) {
+            if (Require.base(id).indexOf(".") !== -1) {
+                // already has an extension
                 return load(id, module);
+            } else {
+                return loadWithExtension(id, module);
             }
         }
     }
@@ -681,11 +646,12 @@
                     return next(id, module);
                 });
             };
-        }, function (id) {
+        }, function (id, module) {
             throw new Error("Can't find " + JSON.stringify(id) + " from paths " + JSON.stringify(config.paths) + " in package at " + JSON.stringify(config.location));
         });
         return function(id, module) {
             if (Require.isAbsolute(id)) {
+                // already fully qualified
                 return load(id, module);
             } else {
                 return loadFromPaths(id, module);
@@ -698,18 +664,19 @@
         return memoize(load, cache);
     };
 
-    Require.Loader = function (config, next) {
+    Require.Loader = function (config, load) {
         return function (url, module) {
             return Require.read(url)
             .then(function (text) {
-                return {
-                    type: "javascript",
-                    text: text,
-                    location: url
-                };
+                module.type = "javascript";
+                module.text = text;
+                module.location = url;
             }, function (reason, error, rejection) {
-                if (next) {
-                    return next(url, module);
+                // This is a hook that allows a Loader to be chained to a
+                // fallback, such as the NodeLoader, if a local module can’t be
+                // found.
+                if (load) {
+                    return load(url, module);
                 } else {
                     return rejection;
                 }
