@@ -155,6 +155,77 @@
             }
         }
     },
+    
+    "answers-controller": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "answers",
+                "oneway": true
+            }
+        }
+    },
+
+    "list2": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "list2-rows"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "answers-controller"}
+        }
+    },
+    
+    "answer-selection": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "answer-selection"}
+        },
+        "bindings": {
+            "checked": {
+                "boundObject": {"@": "list2"},
+                "boundObjectPropertyPath": "selectionAtCurrentIteration"
+            }
+        }
+    },
+    
+    "answer-text": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "answer-text"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list2"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration",
+                "oneway": true
+            }
+        }
+    },
+    
+    "selected-answer": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "selected-answer"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "selectedAnswer"
+            }
+        }
+    },
 
     "owner": {
         "module": "components/image-example.reel",
@@ -165,12 +236,19 @@
             {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
             {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
             {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ],
+            "answers": [
+                "Very Satisfied", "Satisfied", "Neutral", "Unsatisfied", "Very Unsatisfied", "Dont want to answer"
             ]
         },
         "bindings": {
             "selectedItems": {
                 "boundObject": {"@": "controller"},
                 "boundObjectPropertyPath": "selectedObjects"
+            },
+            "selectedAnswer": {
+                "boundObject": {"@": "answers-controller"},
+                "boundObjectPropertyPath": "selectedObjects.0"
             }
         }
     }
@@ -257,6 +335,29 @@
             </div>
         </div>
         
+        
+        <h4>Demo: Repetition supporting single Selection using a Radiobutton</h4>
+        
+       
+        <div class="demo">
+            
+            <h5>Overall, how satisfied are you with our product?</h5>
+             
+            <table id="list2" class="bordered-table" style="width: auto;">
+                <tbody id="list2-rows">
+                    <tr>
+                         <td><input type="radio" id="answer-selection" name="answer-selection" /></td>
+                        <td><span id="answer-text"></span></td>
+                    </tr>
+                </tbody>
+            </table> 
+            
+            <div>
+                <h5>You selected: </h5>
+                <span id="selected-answer"  style="width: 400px;"></span>
+            </div>
+        </div>
+        
         <section>
             <a href="m-js/examples/sink/components/repetition-example.reel" target="_blank">View Demo Source</a>
         </section>
@@ -283,11 +384,7 @@
                 <tr>
                   <td>isSelectionEnabled</td>
                   <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                </tr>
-                <tr>
-                  <td>axis</td>
-                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                </tr>                
+                </tr>               
                 
               </tbody>
             </table>

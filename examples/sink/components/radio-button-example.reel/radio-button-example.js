@@ -7,6 +7,10 @@ var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.RadioButtonExample = Montage.create(Component, {
+    
+    answers: {value: null},
+    selectedAnswer: {value: null},
+    
     prepareForDraw: {
         value: function() {
             // Invoke Google pretty printer on source code samples

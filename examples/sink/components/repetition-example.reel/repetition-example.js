@@ -23,6 +23,8 @@ exports.RepetitionExample = Montage.create(Component, {
         }
     },
     
+    selectedAnswer: {value: null},
+    
      prepareForDraw: {
         value: function() {
             // Invoke Google pretty printer on source code samples
