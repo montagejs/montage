@@ -65,8 +65,15 @@ function toPromise(value) {
 var Creatable = Object.create(Object.prototype, {
     create: {
         value: function (descriptor) {
+            for (var name in descriptor) {
+                var property = descriptor[name];
+                property.writable = true;
+                property.configurable = true;
+            }
             return Object.create(this, descriptor);
-        }
+        },
+        writable: true,
+        configurable: true
     },
 });
 
