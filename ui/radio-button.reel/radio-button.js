@@ -54,17 +54,19 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
         }
     }
 });
-RadioButton.addProperties({
+Checkbox.addProperties({
     autofocus: 'off', // on/off
     disabled: {value: false, dataType: 'boolean'},
     checked: {value: false, dataType: 'boolean'},
     form: null,
-    formenctype: null,
     name: null,
-    placeholder: null,
     readonly: {value: false, dataType: 'boolean'},
-    required: {value: false, dataType: 'boolean'},
-    src: null,
     title: null,
+    /*
+    "On getting, if the element has a value attribute, it must return that
+    attribute's value; otherwise, it must return the string "on". On setting,
+    it must set the element's value attribute to the new value."
+    http://www.w3.org/TR/html5/common-input-element-attributes.html#dom-input-value-default-on
+    */
     value: {value: 'on'}
 });

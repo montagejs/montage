@@ -93,7 +93,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
             }
 
             this._label = value;
-            if (this._isElementInput) {
+            if (this._isInputElement) {
                 this._value = value;
             }
 
@@ -107,6 +107,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     @private
     */
     _active: {
+        enumerable: false,
         value: false
     },
 
@@ -125,15 +126,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    /**
-    Description TODO
-    @private
-    */
-    _observedPointer: {
-        enumerable: true,
-        value: null
-    },
-
     // Low-level event listeners
 
     /**
@@ -143,8 +135,11 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     handleMousedown: {
         value: function(event) {
+            if (this._observedPointer !== null) {
+                return;
+            }
             if (!this._disabled) {
-                this._acknowledgeIntent("mouse");
+                this._startInteraction("mouse");
             }
 
             event.preventDefault();
@@ -154,7 +149,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
             }
         }
     },
-
     /**
     Description TODO
     @function
@@ -165,20 +159,19 @@ var Button = exports.Button = Montage.create(NativeControl, {
             this._interpretInteraction(event);
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     @param {Event} event The handleTouchstart event
     */
     handleTouchstart: {
         value: function(event) {
-
             if (this._observedPointer !== null) {
                 return;
             }
-
             if (!this._disabled) {
-                this._acknowledgeIntent(event.changedTouches[0].identifier);
+                this._startInteraction(event.changedTouches[0].identifier);
             }
 
             // NOTE preventingDefault disables the magnifying class
@@ -190,16 +183,14 @@ var Button = exports.Button = Montage.create(NativeControl, {
             }
         }
     },
-/**
+    /**
     Description TODO
     @function
     @param {Event} event The handleTouchend event
     */
     handleTouchend: {
         value: function(event) {
-
-            var i = 0,
-                changedTouchCount = event.changedTouches.length;
+            var i = 0, changedTouchCount = event.changedTouches.length;
 
             for (; i < changedTouchCount; i++) {
                 if (event.changedTouches[i].identifier === this._observedPointer) {
@@ -210,22 +201,18 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
         }
     },
-/**
+    /**
     Description TODO
     @function
     @param {Event} event The handleTouchcancel event
     */
     handleTouchcancel: {
         value: function(event) {
-
-            var i = 0,
-                changedTouchCount = event.changedTouches.length;
+            var i = 0, changedTouchCount = event.changedTouches.length;
 
             for (; i < changedTouchCount; i++) {
                 if (event.changedTouches[i].identifier === this._observedPointer) {
-                    this._releaseInterest();
-
-                    this.active = false;
+                    this._endInteraction();
                     return;
                 }
             }
@@ -233,16 +220,40 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    // Internal state management
-/**
-  Description TODO
-  @private
-*/
-    _acknowledgeIntent: {
-        value: function(pointer) {
+    /**
+    If we have to surrender the pointer we are no longer active. This will
+    stop the action event being dispatched.
+    */
+    surrenderPointer: {
+        value: function(pointer, component) {
+            if (pointer === this._observedPointer) {
+                this._endInteraction();
+            }
+            return true;
+        }
+    },
 
-            this._observedPointer = pointer;
+    // Internal state management
+
+    /**
+    Stores the pointer that pressed down the button. Needed for multitouch.
+    @private
+    */
+    _observedPointer: {
+        enumerable: true,
+        value: null
+    },
+
+    /**
+    Called when the user starts interacting with the component. Adds release
+    (touch and mouse) listeners.
+    @private
+    */
+    _startInteraction: {
+        value: function(pointer) {
             this.eventManager.claimPointer(pointer, this);
+            this._observedPointer = pointer;
+            this.active = true;
 
             if (window.Touch) {
                 document.addEventListener("touchend", this);
@@ -250,19 +261,18 @@ var Button = exports.Button = Montage.create(NativeControl, {
             } else {
                 document.addEventListener("mouseup", this);
             }
-
-            this.active = true;
         },
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+    Called when the user has interacted with the button. Decides whether to
+    dispatch an action event.
+    @private
+    */
     _interpretInteraction: {
         value: function(event) {
-
-            if (!this.active) {
+            if (!this._active) {
                 return;
             }
 
@@ -275,17 +285,15 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 this._dispatchActionEvent();
             }
 
-            this._releaseInterest();
-
-            this.active = false;
+            this._endInteraction();
         },
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
-    _releaseInterest: {
+    /**
+    Called when all interaction is over. Removes listeners.
+    @private
+    */
+    _endInteraction: {
         value: function() {
             if (window.Touch) {
                 document.removeEventListener("touchend", this);
@@ -294,16 +302,20 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 document.removeEventListener("mouseup", this);
             }
 
-            this.eventManager.forfeitPointer(this._observedPointer, this);
+            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                this.eventManager.forfeitPointer(this._observedPointer, this);
+            }
             this._observedPointer = null;
+            this.active = false;
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
-    _isElementInput: {value: false},
+    /**
+    Description TODO
+    @private
+    */
+    _isInputElement: {value: false},
+
     deserializedFromTemplate: {
         value: function() {
             var o = Object.getPrototypeOf(Button).deserializedFromTemplate.call(this);
@@ -311,10 +323,10 @@ var Button = exports.Button = Montage.create(NativeControl, {
             this._element.classList.add("montage-button");
             this._element.setAttribute("aria-role", "button");
 
-            this._isElementInput = (this._element.tagName === "INPUT");
+            this._isInputElement = (this._element.tagName === "INPUT");
             // Only take the value from the element if it hasn't been set
             // elsewhere (i.e. in the serialization)
-            if (this._isElementInput) {
+            if (this._isInputElement) {
                 // NOTE: This might not be the best way to do this
                 // With an input element value and label are one and the same
                 Object.defineProperty(this, "value", {
@@ -342,7 +354,8 @@ var Button = exports.Button = Montage.create(NativeControl, {
             this.needsDraw = true;
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     */
@@ -351,27 +364,27 @@ var Button = exports.Button = Montage.create(NativeControl, {
             if (window.Touch) {
                 this._element.addEventListener("touchstart", this);
             } else {
-                this.element.addEventListener("mousedown", this);
+                this._element.addEventListener("mousedown", this);
             }
 
         }
     },
 
-
+    /**
+    Draws the label to the DOM.
+    @function
+    */
     _drawLabel: {
         enumerable: false,
         value: function(value) {
-            if (this._isElementInput) {
+            if (this._isInputElement) {
                 this._element.setAttribute("value", value);
             } else {
                 this._labelNode.data = value;
             }
         }
     },
-/**
-    Description TODO
-    @function
-    */
+
     draw: {
         value: function() {
             // Call super method
