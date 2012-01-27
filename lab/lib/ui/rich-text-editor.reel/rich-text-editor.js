@@ -1538,7 +1538,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     offsetTop = node.offsetTop;
 
                     while ((node = node.offsetParent) && node != editorElement) {
-                        console.log("NODE:", node)
                         offsetLeft += node.offsetLeft;
                         offsetTop += node.offsetTop;
                     }
@@ -1550,7 +1549,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (element) {
 
                     _findOffset(element);
-                    console.log("OFFSET:", "{" + offsetTop + ", " + offsetLeft + "}  (" +  element.offsetTop + ", " + element.offsetLeft + ")")
 
                     parentNode = element.parentNode;
                     nextSibling = element.nextSibling;
