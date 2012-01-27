@@ -584,9 +584,9 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                         idsToRemove.push(id);
                     } else {
                         node = element.querySelector('*[' + Deserializer._MONTAGE_ID_ATTRIBUTE + '="' + value + '"]');
-                        // TODO: only here for backwards compatibility
                         if (!node) {
                             node = element.getElementById(value);
+                            id = value;
                         }
                     }
                     
@@ -848,9 +848,6 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         for (var unit in serializedUnits) {
             var unitFunction = units[unit];
             if (unitFunction) {
-                if (serializedUnits[unit].text) {
-                    //debugger;
-                }
                 unitFunction(object, serializedUnits[unit]);
             }
         }
