@@ -397,10 +397,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     _addChildComponent: {
         value: function(childComponent) {
-            //var childParentComponent = childComponent.parentComponent;
-            //if (childParentComponent) {
-            //    childParentComponent.removeChildComponent(childComponent);
-            //}
             if (this.childComponents.indexOf(childComponent) == -1) {
                 this.childComponents.push(childComponent);
                 childComponent._cachedParentComponent = this;
@@ -518,6 +514,67 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
     
+    originalContent: {
+        value: null
+    },
+    
+    _newContent: {
+        enumerable: false,
+        value: null
+    },
+    
+    content: {
+        get: function() {
+            return Array.prototype.slice.call(this._element.childNodes, 0);
+        },
+        set: function(value) {
+            var components = [],
+                childNodes;
+                
+            this._newContent = value;
+            this.needsDraw = true;
+            
+            if (typeof this.contentWillChange === "function") {
+                this.contentWillChange(value);
+            }
+            
+            // cleanup current content
+            components = this.childComponents;
+            for (var i = 0, component; (component = components[i]); i++) {
+                component.detachFromParentComponent();
+                component.cleanupDeletedComponentTree();
+            }
+            
+            if (value instanceof Element) {
+                findAndDetachComponents(value);
+            } else {
+                for (var i = 0; i < value.length; i++) {
+                    findAndDetachComponents(value[i]);
+                }
+            }
+            
+            // find the component fringe and detach them from the component tree
+            function findAndDetachComponents(node) {
+                var component = node.controller;
+                
+                if (component) {
+                    component.detachFromParentComponent();
+                    components.push(component);
+                } else {
+                    var childNodes = node.childNodes;
+                    for (var i = 0, childNode; (childNode = childNodes[i]); i++) {
+                        findAndDetachComponents(childNode);
+                    }
+                }
+            }
+            
+            // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
+            for (var i = 0, component; (component = components[i]); i++) {
+                this._addChildComponent(component);
+            }
+        }
+    },
+    
 /**
     Description TODO
     @function
@@ -525,6 +582,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     deserializedFromSerialization: {
         value: function() {
             this.attachToParentComponent();
+            if (this._element) {
+                this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+            }
         }
     },
 
@@ -991,8 +1051,30 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 */
     _draw: {
         value: function() {
+            var contents = this._newContent,
+                element;
+            
             this._canDrawTable = {};
             this._canDrawCount = 0;
+            
+            if (contents) {
+                element = this._element;
+                
+                element.innerHTML = "";
+
+                if (contents instanceof Element) {
+                    element.appendChild(contents);
+                } else {
+                    for (var i = 0, content; (content = contents[i]); i++) {
+                        element.appendChild(content);
+                    }
+                }
+                
+                this._newContent = null;
+                if (typeof this.contentDidChange === "function") {
+                    this.contentDidChange();
+                }
+            }
         }
     },
     /**
