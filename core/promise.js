@@ -139,7 +139,14 @@ var PrimordialPromise = Creatable.create({
         }
     },
 
+    // deprecated
     ref: {
+        get: function () {
+            return this.resolve;
+        }
+    },
+
+    resolve: {
         value: function (object) {
             // if it is already a promise, wrap it to guarantee
             // the full public API of this promise variety.
