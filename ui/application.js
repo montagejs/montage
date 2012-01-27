@@ -232,6 +232,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
     
     returnPopupSlot: {value: function(type) {
+        var self = this;
         if(self.popupSlots && self.popupSlots[type]) {
             var popupSlot = self.popupSlots[type];
             popupSlot.content = null;
@@ -239,6 +240,27 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             // OR should we remove the slotEl from the DOM to clean up ?
         }
         
-    }}
+    }},
+    
+    // private
+    _getActivePopupSlots: {
+        value: function() {
+            var arr = [];
+            if(this.popupSlots) {
+                var keys = Object.keys(this.popupSlots);
+                if(keys && keys.length > 0) {
+                    var i=0, len = keys.length, slot;
+                    for(i=0; i< len; i++) {
+                        slot = this.popupSlots[keys[i]];
+                        if(slot && slot.content !== null) {
+                            arr.push(slot);
+                        }
+                        
+                    }
+                }
+            }
+            return arr;
+        }
+    }
 
 });
