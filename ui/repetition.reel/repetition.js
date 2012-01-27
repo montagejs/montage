@@ -1090,15 +1090,14 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Property} deserializer TODO
     */
     deserializeIteration: {value: function(deserializer) {
-        var item = this._itemsToAppend[this._nextDeserializedItemIx++],
-            newChildComponents = deserializer.get("childComponents");
+        var item = this._itemsToAppend[this._nextDeserializedItemIx++];
 
         this._deserializedItem = item;
         item.element = deserializer.get("element");
 
         this.eventManager.registerEventHandlerForElement(this, item.element);
         if (logger.debug) {
-            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.range);
+            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.element);
         }
     }},
 
