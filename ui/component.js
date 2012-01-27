@@ -395,9 +395,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @function
     @param {Component} childComponent The childComponent
     */
-    addChildComponent: {
+    _addChildComponent: {
         value: function(childComponent) {
-            this.childComponents.push(childComponent);
+            //var childParentComponent = childComponent.parentComponent;
+            //if (childParentComponent) {
+            //    childParentComponent.removeChildComponent(childComponent);
+            //}
+            if (this.childComponents.indexOf(childComponent) == -1) {
+                this.childComponents.push(childComponent);
+                childComponent._cachedParentComponent = this;
+            }
         }
     },
 /**
@@ -406,9 +413,22 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     attachToParentComponent: {
         value: function() {
+            this._cachedParentComponent = null;
+            
             var parentComponent = this.parentComponent;
+            
             if (parentComponent) {
-                parentComponent.addChildComponent(this);
+                parentComponent._addChildComponent(this);
+            }
+        }
+    },
+    
+    detachFromParentComponent: {
+        value: function() {
+            var parentComponent = this.parentComponent;
+            
+            if (parentComponent) {
+                parentComponent.removeChildComponent(this);
             }
         }
     },
@@ -425,6 +445,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
             if (ix > -1) {
                 childComponents.splice(ix, 1);
+                childComponent._cachedParentComponent = null;
             }
 
             if (element && element.parentNode) {
