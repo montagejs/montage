@@ -35,7 +35,7 @@ Require.read = function (url) {
         if (xhrSuccess(request)) {
             response.resolve(request.responseText);
         } else {
-            response.reject("Can't XHR " + JSON.stringify(url));
+            onerror();
         }
     }
 
@@ -93,9 +93,13 @@ Require.Compiler = function (config) {
 
         var displayName = "__FILE__"+module.location.replace(/\.\w+$|\W/g, "__");
 
-        module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+"\n//@ sourceURL="+module.location);
+        try {
+            module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+"\n//@ sourceURL="+module.location);
+        } catch (exception) {
+            throw new SyntaxError("in " + module.location + ": " + exception.message);
+        }
 
-        // This should work and would be better, but Firebug does not show scripts executed via "new Function()" constructor.
+        // This should work and would be simpler, but Firebug does not show scripts executed via "new Function()" constructor.
         // TODO: sniff browser?
         // module.factory = new Function("require", "exports", "module", module.text + "\n//*/"+sourceURLComment);
 
