@@ -18,6 +18,63 @@
                     }
                 }
             },
+            "translateComposer1": {
+                "module": "montage/ui/composer/translate-composer",
+                "name": "TranslateComposer",
+                "properties": {
+                    "component": {"@": "owner"}
+                },
+                "bindings": {
+                    "translateX": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "scrollX",
+                        "oneway": false
+                    },
+                    "translateY": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "scrollY",
+                        "oneway": false
+                    },
+                    "maxTranslateY": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "_maxTranslateY"
+                    },
+                    "maxTranslateX": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "_maxTranslateX"
+                    },
+                    "axis": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "axis"
+                    },
+                    "hasBouncing": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "hasBouncing"
+                    },
+                    "hasMomentum": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "hasMomentum"
+                    },
+                    "bouncingDuration": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "bouncingDuration"
+                    },
+                    "momentumDuration": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "momentumDuration"
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "scrollStart",
+                        "listener": {"@": "owner"}
+                    },
+                    {
+                        "type": "scrollEnd",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
             "owner": {
                 "module": "montage/ui/scroller.reel",
                 "name": "Scroller",

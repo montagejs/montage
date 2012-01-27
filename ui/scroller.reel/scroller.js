@@ -1,14 +1,8 @@
 var Montage = require("montage").Montage,
-    Scroll = require("ui/scroll").Scroll,
     Component = require("ui/component").Component
     TranslateComposer = require("ui/composer/translate-composer").TranslateComposer;
 
 exports.Scroller = Montage.create(Component, {
-
-    _scroll: {
-        enumerable: false,
-        value: null
-    },
 
     _scrollX: {
         enumerable: false,
@@ -38,6 +32,14 @@ exports.Scroller = Montage.create(Component, {
             this._scrollY = value;
             this.needsDraw = true;
         }
+    },
+
+    _maxTranslateX: {
+        value: 0
+    },
+
+    _maxTranslateY: {
+        value: 0
     },
 
     _axis: {
@@ -152,26 +154,15 @@ exports.Scroller = Montage.create(Component, {
         }
     },
     
-    prepareForDraw: {
-        value: function () {
-            var self = this;
-            this._scroll = Montage.create(TranslateComposer);
-            this.addComposer(this._scroll);
-            Object.defineBinding(this._scroll, "translateX", {boundObject: this, boundObjectPropertyPath: "scrollX", oneway: false});
-            Object.defineBinding(this._scroll, "translateY", {boundObject: this, boundObjectPropertyPath: "scrollY", oneway: false});
+    handleScrollStart: {
+        value: function(event) {
+            this._scrollBars.opacity = .5;
+        }
+    },
 
-            this._scroll.axis = this.axis;
-            this._scroll.hasBouncing = this.hasBouncing;
-            this._scroll.hasMomentum = this.hasMomentum;
-            this._scroll.bouncingDuration = this.bouncingDuration;
-            this._scroll.momentumDuration = this.momentumDuration;
-
-            this._scroll.addEventListener("scrollStart", function () {
-                self._scrollBars.opacity = .5;
-            }, false);
-            this._scroll.addEventListener("scrollEnd", function () {
-                self._scrollBars.opacity = 0;
-            }, false);
+    handleScrollEnd: {
+        value: function(event) {
+            this._scrollBars.opacity = 0;
         }
     },
 
@@ -182,18 +173,18 @@ exports.Scroller = Montage.create(Component, {
             this._top = this._element.offsetTop;
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
-            this._scroll.maxTranslateX = this._content.scrollWidth - this._width;
-            if (this._scroll.maxTranslateX < 0) {
-                this._scroll.maxTranslateX = 0;
+            this._maxTranslateX = this._content.scrollWidth - this._width;
+            if (this._maxTranslateX < 0) {
+                this._.maxTranslateX = 0;
             }
-            this._scroll.maxTranslateY = this._content.offsetHeight - this._height;
-            if (this._scroll.maxTranslateY < 0) {
-                this._scroll.maxTranslateY = 0;
+            this._maxTranslateY = this._content.offsetHeight - this._height;
+            if (this._maxTranslateY < 0) {
+                this._maxTranslateY = 0;
             }
-            var delegateValue = this.callDelegateMethod("didSetMaxScroll", {x: this._scroll.maxTranslateX, y: this._scroll.maxTranslateY});
+            var delegateValue = this.callDelegateMethod("didSetMaxScroll", {x: this._maxTranslateX, y: this._maxTranslateY});
             if (delegateValue) {
-                this._scroll.maxTranslateX = delegateValue.x;
-                this._scroll.maxTranslateY = delegateValue.y;
+                this._maxTranslateX = delegateValue.x;
+                this._maxTranslateY = delegateValue.y;
             }
             switch (this._displayScrollbars) {
                 case "horizontal":
@@ -209,15 +200,15 @@ exports.Scroller = Montage.create(Component, {
                     this._scrollBars.displayVertical = true;
                     break;
                 case "auto":
-                    if (this._scroll._maxTranslateX && this._scroll._maxTranslateY) {
+                    if (this._maxTranslateX && this._maxTranslateY) {
                         this._scrollBars.displayHorizontal = true;
                         this._scrollBars.displayVertical = true;
                     } else {
-                        if (this._scroll._maxTranslateX) {
+                        if (this._maxTranslateX) {
                             this._scrollBars.displayHorizontal = true;
                             this._scrollBars.displayVertical = false;
                         } else {
-                            if (this._scroll._maxTranslateY) {
+                            if (this._maxTranslateY) {
                                 this._scrollBars.displayHorizontal = false;
                                 this._scrollBars.displayVertical = true;
                             } else {
