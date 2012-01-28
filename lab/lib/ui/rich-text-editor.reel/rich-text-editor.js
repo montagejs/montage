@@ -149,7 +149,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (this._resizer) {
                     this._needsHideResizer = true;
                 }
-
                 if (this._sanitizer) {
                     value = this._sanitizer.willSetValue(value, this._uniqueId);
                 }
@@ -1674,25 +1673,41 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         value: function(contentNode) {
             var result = "",
                 textNodeContents = [],
+                newLines = "",
+                gotText = false,
                 _walkNode = function(node) {
-                    var child;
+                    var nodeName = node.nodeName,
+                        child
 
-                    if (node.nodeName == "STYLE") {
+                    if (nodeName.match(/^(TITLE|STYLE|SCRIPT)$/)) {
                         return;
                     }
 
-                    // TODO: We need to insert newlines after block elements (and remove any newline coming from HTML)
+                    if (gotText && nodeName.match(/^(P|DIV|BR|TR|LI)$/)) {
+                        newLines += "\n";
+                    }
+
                     for (child = node.firstChild; child; child = child.nextSibling) {
-                        if (child.nodeType == 3) { // text node
-                            textNodeContents.push(child.nodeValue);
+                        if (child.nodeType == 3) {      // text node
+                            textNodeContents.push(newLines + child.nodeValue);
+                            newLines = "";
+                            gotText = true;
                         } else {
-                            _walkNode(child);
+                            if (child.nodeName != "BR" || child.nextSibling) {
+                                _walkNode(child);
+                            }
                         }
+                    }
+
+                    if (gotText && nodeName.match(/^(TABLE|UL|OL)$/)) {
+                        newLines += "\n";
                     }
                 };
 
-            _walkNode(contentNode);
-            result = textNodeContents.join("");
+            if (contentNode) {
+                _walkNode(contentNode);
+                result = textNodeContents.join("");
+            }
 
             return result;
         }
