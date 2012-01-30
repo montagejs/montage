@@ -92,46 +92,46 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound2);
-                        });
-                        testPage.waitForDraw();
+                     });
                     });
                     it("unchecks both one way", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(false);
                             expect(test.check_bound2.element.checked).toBe(false);
 
                             click(test.check_bound2);
                         });
-                        testPage.waitForDraw();
                     });
                     it("checks both one way", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(true);
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound1);
                         });
-                        testPage.waitForDraw();
                     });
                     it("doesn't bind the other way (unchecked)", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(false);
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound1);
                         });
-                        testPage.waitForDraw();
                     });
                     it("doesn't bind the other way (checked)", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(true);
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound2);
                         });
-                        testPage.waitForDraw();
                     });
                     it("unchecks both", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(false);
                             expect(test.check_bound2.element.checked).toBe(false);

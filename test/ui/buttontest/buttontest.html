@@ -156,19 +156,20 @@
         "module": "montage/ui/scrollview.reel",
         "name": "Scrollview",
         "properties": {
-            "element": {"#": "scroll"}
+            "element": {"#": "scroll"},
+            "axis": "vertical"
         }
     },
-    "scroll_input": {
+    "scroll_button": {
         "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
-            "element": {"#": "scroll_input"}
+            "element": {"#": "scroll_button"}
         },
         "listeners": [
             {
                 "type": "action",
-                "listener": {"->": {"arguments": [], "body": "console.log('button action');"}}
+                "listener": {"->": {"arguments": [], "body": "console.log('button szn action');"}}
             }
         ]
     },
@@ -196,7 +197,7 @@
             "toggleinput": {"@": "toggleinput"},
             "toggleinput2": {"@": "toggleinput2"},
             "toggleinput3": {"@": "toggleinput3"},
-            "scroll_input": {"@": "scroll_input"}
+            "scroll_button": {"@": "scroll_button"}
         }
     },
     "application": {
@@ -247,13 +248,15 @@
     <input type="button" id="converterbutton" value="fail">
 
     <h2>Scroll</h2>
+    <form action="" method="get">
     <div id="scroll" style="background:#CCC; height: 300px">
         <div>
             <div style="background:#A00; height:260px; width:10px">.</div>
-            <input type="button" id="scroll_input" value="scroll input">
+            <button type="button" id="scroll_button">Button</button>
             <div style="background:#A00; height:200px; width:10px">.</div>
         </div>
     </div>
+    </form>
 
     <h1>Toggle button test</h1>
     <input type="button" id="toggleinput" value="fail">

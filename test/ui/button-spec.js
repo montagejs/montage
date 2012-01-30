@@ -30,6 +30,16 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
         el.dispatchEvent(upEvent);
         return upEvent;
     };
+    var clickEvent = function(el) {
+        var clickEvent = document.createEvent("MouseEvent");
+        clickEvent.initMouseEvent("click", true, true, el.view, null,
+                el.offsetLeft, el.offsetTop,
+                el.offsetLeft, el.offsetTop,
+                false, false, false, false,
+                el, null);
+        el.dispatchEvent(clickEvent);
+        return clickEvent;
+    };
     var addListener = function(component, fn) {
         var buttonSpy = {
             doSomething: fn || function(event) {
@@ -50,6 +60,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
         mousedown(el);
         mouseup(el);
+        clickEvent(el)
 
         // Return this so that it can be checked in tha calling function.
         return listener;
@@ -182,13 +193,13 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
             });
 
             it("correctly releases the pointer", function() {
-                var l = addListener(test.scroll_input);
+                var l = addListener(test.scroll_button);
 
-                mousedown(test.scroll_input.element);
-                expect(test.scroll_input.active).toBe(true);
-                test.scroll_input.surrenderPointer(test.scroll_input._observedPointer, null);
-                expect(test.scroll_input.active).toBe(false);
-                mouseup(test.scroll_input.element);
+                mousedown(test.scroll_button.element);
+                expect(test.scroll_button.active).toBe(true);
+                test.scroll_button.surrenderPointer(test.scroll_button._observedPointer, null);
+                expect(test.scroll_button.active).toBe(false);
+                mouseup(test.scroll_button.element);
 
                 expect(l).not.toHaveBeenCalled();
 
@@ -211,7 +222,9 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         expect(click(test.inputbutton)).toHaveBeenCalled();
                     });
 
-                    it("does not dispatch an action event when a mouseup occurs after not previously receive a mousedown", function() {
+                    it("does not dispatch an action event when a mouseup occurs after not previously receiving a mousedown", function() {
+                        // reset interaction
+                        // test.inputbutton._endInteraction();
                         var l = addListener(test.inputbutton);
                         mouseup(test.inputbutton.element);
                         expect(l).not.toHaveBeenCalled();

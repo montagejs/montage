@@ -140,7 +140,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 return;
             }
             if (!this._disabled) {
-                this._startInteraction("mouse");
+                this._startInteraction(event);
             }
 
             event.preventDefault();
@@ -148,16 +148,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
             if (!this._preventFocus) {
                 this._element.focus();
             }
-        }
-    },
-    /**
-    Description TODO
-    @function
-    @param {Event} event The handleMouseup event
-    */
-    handleMouseup: {
-        value: function(event) {
-            this._interpretInteraction(event);
         }
     },
 
@@ -172,7 +162,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 return;
             }
             if (!this._disabled) {
-                this._startInteraction(event.changedTouches[0].identifier);
+                this._startInteraction(event);
             }
 
             // NOTE preventingDefault disables the magnifying class
@@ -182,55 +172,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
             if (!this._preventFocus) {
                 this._element.focus();
             }
-        }
-    },
-    /**
-    Description TODO
-    @function
-    @param {Event} event The handleTouchend event
-    */
-    handleTouchend: {
-        value: function(event) {
-            var i = 0, changedTouchCount = event.changedTouches.length;
-
-            for (; i < changedTouchCount; i++) {
-                if (event.changedTouches[i].identifier === this._observedPointer) {
-                    this._interpretInteraction(event);
-                    return;
-                }
-            }
-
-        }
-    },
-    /**
-    Description TODO
-    @function
-    @param {Event} event The handleTouchcancel event
-    */
-    handleTouchcancel: {
-        value: function(event) {
-            var i = 0, changedTouchCount = event.changedTouches.length;
-
-            for (; i < changedTouchCount; i++) {
-                if (event.changedTouches[i].identifier === this._observedPointer) {
-                    this._endInteraction();
-                    return;
-                }
-            }
-
-        }
-    },
-
-    /**
-    If we have to surrender the pointer we are no longer active. This will
-    stop the action event being dispatched.
-    */
-    surrenderPointer: {
-        value: function(pointer, component) {
-            if (pointer === this._observedPointer) {
-                this._endInteraction();
-            }
-            return true;
         }
     },
 
@@ -251,19 +192,10 @@ var Button = exports.Button = Montage.create(NativeControl, {
     @private
     */
     _startInteraction: {
-        value: function(pointer) {
-            this.eventManager.claimPointer(pointer, this);
-            this._observedPointer = pointer;
+        value: function(event) {
+            Object.getPrototypeOf(Button)._startInteraction.call(this, event);
             this.active = true;
-
-            if (window.Touch) {
-                document.addEventListener("touchend", this);
-                document.addEventListener("touchcancel", this);
-            } else {
-                document.addEventListener("mouseup", this);
-            }
-        },
-        enumerable: false
+        }
     },
 
     /**
@@ -273,20 +205,27 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     _interpretInteraction: {
         value: function(event) {
-            if (!this._active) {
-                return;
+            var isTarget = Object.getPrototypeOf(Button)._interpretInteraction.call(this, event, false);
+            if (isTarget) {
+                if (
+                    this.active &&
+                    (event.type === "mouseup" || event.type === "touchend") &&
+                    this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)
+                ) {
+                    this._dispatchActionEvent();
+                }
+
+                // Don't end interaction when mouseup on element as we need to
+                // prevent default on the click event if we've lost the pointer,
+                // which comes after mouseup
+                if (event.type !== "mouseup") {
+                    this._endInteraction(event);
+                }
+            } else {
+                this._endInteraction(event);
             }
 
-            var target = event.target;
-            while (target !== this.element && target && target.parentNode) {
-                target = target.parentNode;
-            }
-
-            if (this.element === target) {
-                this._dispatchActionEvent();
-            }
-
-            this._endInteraction();
+            return isTarget;
         },
         enumerable: false
     },
@@ -295,19 +234,20 @@ var Button = exports.Button = Montage.create(NativeControl, {
     @private
     */
     _endInteraction: {
-        value: function() {
-            if (window.Touch) {
-                document.removeEventListener("touchend", this);
-                document.removeEventListener("touchcancel", this);
-            } else {
-                document.removeEventListener("mouseup", this);
-            }
-
-            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                this.eventManager.forfeitPointer(this._observedPointer, this);
-            }
-            this._observedPointer = null;
+        value: function(event) {
+            Object.getPrototypeOf(Button)._endInteraction.call(this, event);
             this.active = false;
+        }
+    },
+
+    /**
+    If we have to surrender the pointer we are no longer active. This will
+    stop the action event being dispatched.
+    */
+    surrenderPointer: {
+        value: function(pointer, component) {
+            this.active = false;
+            return true;
         }
     },
 
@@ -356,20 +296,6 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    /**
-    Description TODO
-    @function
-    */
-    prepareForActivationEvents: {
-        value: function() {
-            if (window.Touch) {
-                this._element.addEventListener("touchstart", this);
-            } else {
-                this._element.addEventListener("mousedown", this);
-            }
-
-        }
-    },
 
     /**
     Draws the label to the DOM.
