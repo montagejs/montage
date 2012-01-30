@@ -127,6 +127,7 @@ var PrimordialPromise = Creatable.create({
 
             // automatically subcreate each of the contained promise types
             var creation = Object.create(this);
+            creation.AbstractPromise = this.AbstractPromise.create(promiseDescriptor);
             creation.DeferredPromise = this.DeferredPromise.create(promiseDescriptor);
             creation.FulfilledPromise = this.FulfilledPromise.create(promiseDescriptor);
             creation.RejectedPromise = this.RejectedPromise.create(promiseDescriptor);
@@ -378,6 +379,10 @@ var PrimordialPromise = Creatable.create({
             }
 
         })
+    },
+
+    AbstractPromise: {
+        value: AbstractPromise
     }
 
 });
