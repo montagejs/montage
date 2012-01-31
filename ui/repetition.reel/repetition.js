@@ -233,7 +233,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   Description TODO
   @private
 */
-    _childComponentsCount: {
+    _iterationChildComponentsCount: {
         enumerable: false,
         serializable: true,
         value: null
@@ -332,7 +332,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             // or well I'm trying a flag right
             if (neededItemCount > 0) {
                 // _addItem might be completly synchrounous since we cache both template and deserializer so we need to set this before adding any item otherwise it will trigger a draw after every iteration template instantiation.
-                this._expectedChildComponentsCount += (this._childComponentsCount||1) * neededItemCount;
+                this._expectedChildComponentsCount += (this._iterationChildComponentsCount||1) * neededItemCount;
                 this.canDrawGate.setField("iterationLoaded", false);
                 // Need to add more items
                 for (i = 0; i < neededItemCount; i++) {
@@ -375,8 +375,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         index = items.length + this._itemsToAppend.length - 1;
 
         self._canDraw = false;
-        componentsCount = this._childComponentsCount;
-
+        componentsCount = this._iterationChildComponentsCount;
         this._iterationTemplate.instantiateWithComponent(this, function() {
             if (componentsCount === 0) {
                 if (++self._childLoadedCount === self._expectedChildComponentsCount) {
@@ -384,7 +383,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 }
             } else {
                 childComponents = self.childComponents;
-                componentStartIndex = index * self._childComponentsCount;
+                componentStartIndex = index * self._iterationChildComponentsCount;
                 componentEndIndex = componentStartIndex + componentsCount;
                 for (var i = componentStartIndex; i < componentEndIndex; i++) {
                     childComponent = childComponents[i];
@@ -405,7 +404,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 */
     _deleteItem: {value: function() {
 
-        var deletedItem, itemIndex, removedComponents, childComponents = this.childComponents, childComponentsCount = this._childComponentsCount,
+        var deletedItem, itemIndex, removedComponents, childComponents = this.childComponents, childComponentsCount = this._iterationChildComponentsCount,
             itemsToAppendCount = this._itemsToAppend.length;
         if (itemsToAppendCount > 0) {
             // We caught the need to remove these items before they got inserted
@@ -450,9 +449,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             childComponent;
 
         this.setupIterationSerialization();
-        this._childComponentsCount = childComponents.length;
+        this._iterationChildComponentsCount = childComponents.length;
 
-        if (this._childComponentsCount > 0) {
+        if (this._iterationChildComponentsCount > 0) {
             this._templateId = childComponents[0]._suuid || childComponents[0].uuid;
             this._iterationTemplate = Template.templateWithComponent(this);
         } else {
@@ -1003,8 +1002,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 //now that the item has been appended, we add it to our items array
                 this._items.push(iItem);
                 // Tell childComponents that are associated with this new item
-                componentStartIndex = (itemCount + i) * this._childComponentsCount;
-                componentEndIndex = componentStartIndex + this._childComponentsCount;
+                componentStartIndex = (itemCount + i) * this._iterationChildComponentsCount;
+                componentEndIndex = componentStartIndex + this._iterationChildComponentsCount;
             }
 
             repetitionElement.appendChild(addFragment);
