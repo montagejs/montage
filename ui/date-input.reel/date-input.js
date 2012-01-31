@@ -13,7 +13,7 @@ var DateInput = exports.DateInput = Montage.create(TextInput, {
     hasTemplate: {value: true}
 });
 
-DateInput.addProperties({        
+DateInput.addAttributes({
         autocomplete: null,
         disabled: {dataType: 'boolean'},
         list: null, // list of autocomplete options

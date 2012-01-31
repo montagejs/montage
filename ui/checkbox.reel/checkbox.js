@@ -8,7 +8,7 @@ var Montage = require("montage").Montage,
     CheckInput = require("ui/check-input").CheckInput;
 
 var Checkbox = exports.Checkbox = Montage.create(CheckInput, {});
-Checkbox.addProperties({
+Checkbox.addAttributes({
     autofocus: 'off', // on/off
     disabled: {value: false, dataType: 'boolean'},
     checked: {value: false, dataType: 'boolean'},

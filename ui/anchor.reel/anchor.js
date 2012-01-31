@@ -15,12 +15,12 @@ var Anchor = exports.Anchor = Montage.create(NativeControl, {
 });
 
 http://www.w3.org/TR/html5/text-level-semantics.html#the-a-element
-Anchor.addProperties({  
+Anchor.addAttributes({
         textContent: null,
         href: null,
         hreflang: null,
         media: null,
         rel: null,
         target: null,
-        type: null        
+        type: null
 });

@@ -402,7 +402,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     }
 });
 
-Button.addProperties({
+Button.addAttributes({
     autofocus: {value: false, dataType: 'boolean'},
     disabled: {value: false, dataType: 'boolean'},
     form: null,

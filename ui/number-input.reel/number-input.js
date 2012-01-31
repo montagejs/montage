@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
  * The Number input
  */
 var NumberInput = exports.NumberInput = Montage.create(TextInput, {
-    
+
 });
 
-NumberInput.addProperties(StandardInputAttributes);
+NumberInput.addAttributes(StandardInputAttributes);

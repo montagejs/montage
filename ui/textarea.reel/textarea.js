@@ -21,7 +21,7 @@ var TextArea = exports.TextArea = Montage.create(TextInput, {
     
 });
 
-TextArea.addProperties({        
+TextArea.addAttributes({
         autofocus: null,
         cols: null,
         dirname: null,

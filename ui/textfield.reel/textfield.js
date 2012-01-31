@@ -14,4 +14,4 @@ var Textfield = exports.Textfield = Montage.create(TextInput, {
 });
 
 // Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
-Textfield.addProperties(StandardInputAttributes);
+Textfield.addAttributes(StandardInputAttributes);
