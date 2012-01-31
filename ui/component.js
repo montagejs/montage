@@ -991,11 +991,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
-                if (attributeName === "id") {
+                if (attributeName === "id" || attributeName === "data-montage-id") {
                     continue;
+                } else {
+                    value = (template.getAttribute(attributeName) || "") + " " +
+                        attribute.nodeValue;
                 }
-                value = (template.getAttribute(attributeName) || "") + " " +
-                    attribute.nodeValue;
+                
                 template.setAttribute(attributeName, value);
             }
 
