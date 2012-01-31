@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    Textfield = require("montage/ui/textfield.reel").Textfield;
+    Textfield = require("montage/ui/bluemoon/textfield.reel").Textfield;
 
 var TextfieldTest = exports.TextfieldTest = Montage.create(Montage, {
     deserializedFromTemplate: {
