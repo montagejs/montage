@@ -394,7 +394,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 try {
                     deferred.resolve(fulfilled ? fulfilled(value) : value);
                 } catch (error) {
-                    console.error(error.stack);
+                    console.error(error.stack || error, fulfilled);
                     deferred.reject(error.message, error);
                 }
             }
