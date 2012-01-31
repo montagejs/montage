@@ -13,81 +13,183 @@
                     "module": "components/slider-example.reel",
                     "name": "SliderExample",
                     "properties": {
-                        "element": {"#": "slider-example"}
+                        "element": {"#": "slider-example"},
+                        "image": {"#": "image"}
                     }
                 },
-
-                "textfield1": {
-                    "module": "montage/ui/bluemoon/textfield.reel",
-                    "name": "Textfield",
+                "roundTo2Decimals": {
+                    "module": "montage/core/converter/number-converter",
+                    "name": "NumberConverter",
                     "properties": {
-                        "element": {"#": "sliderValue"},
-                        "value": 0
+                        "decimals": 2
                     }
                 },
-                "slider1": {
+                "red": {
                     "module": "montage/ui/bluemoon/slider.reel",
                     "name": "Slider",
                     "properties": {
-                        "element": {"#": "slider0"},
-                        "value": 0
-                    }
-                },
-                "slider2": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
-                    "properties": {
-                        "element": {"#": "slider1"},
-                        "value": 20
-                    }
-                },
-                "slider3": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
-                    "properties": {
-                        "element": {"#": "slider2"},
-                        "value": 40
-                    }
-                },
-                "slider4": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
-                    "properties": {
-                        "element": {"#": "slider3"},
-                        "value": 80
-                    }
-                },
-                "slider5": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
-                    "properties": {
-                        "element": {"#": "slider4"},
-                        "value": 100,
-                        "hasTapBarToScroll": true
-                    }
-                },
-                "slider6": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
-                    "properties": {
-                        "element": {"#": "slider5"},
-                        "value": 25,
-                        "minValue": 10,
-                        "maxValue": 40,
-                        "hasTapBarToScroll": true
+                        "element": {"#": "color-red"},
+                        "minValue": "-1",
+                        "maxValue": "1",
+                        "step": "0.1",
+                        "value": "0"
                     },
                     "bindings": {
                         "value": {
-                            "boundObject": {"@": "textfield1"},
-                            "boundObjectPropertyPath": "value"
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "red"                            
                         }
                     }
+                },
+                "red-value": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "red-value"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "red",
+                            "converter": {"@": "roundTo2Decimals"},
+                            "oneway": true
+                        }
+                    }
+                },
+                "green": {
+                    "module": "montage/ui/bluemoon/slider.reel",
+                    "name": "Slider",
+                    "properties": {
+                        "element": {"#": "color-green"},
+                        "minValue": "-1",
+                        "maxValue": "1",
+                        "step": "0.1",
+                        "value": "0"
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "green"
+                        }
+                    }
+                },
+                "green-value": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "green-value"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "green",
+                            "converter": {"@": "roundTo2Decimals"},
+                            "oneway": true
+                        }
+                    }
+                },
+                "blue": {
+                    "module": "montage/ui/bluemoon/slider.reel",
+                    "name": "Slider",
+                    "properties": {
+                        "element": {"#": "color-blue"},
+                        "minValue": "-1",
+                        "maxValue": "1",
+                        "step": "0.1",
+                        "value": "0"
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "blue"
+                        }
+                    }
+                },
+                "blue-value": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "blue-value"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "blue",
+                            "converter": {"@": "roundTo2Decimals"},
+                            "oneway": true
+                        }
+                    }
+                },
+                
+                "sharpness": {
+                    "module": "montage/ui/bluemoon/slider.reel",
+                    "name": "Slider",
+                    "properties": {
+                        "element": {"#": "sharpness-amount"},
+                        "minValue": "0",
+                        "maxValue": "1",
+                        "step": "0.05",
+                        "value": "0"
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "sharpnessAmount"
+                        }
+                    }
+                },
+                "sharpness-amount-value": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "sharpness-amount-value"}                       
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "sharpnessAmount",
+                            "converter": {"@": "roundTo2Decimals"},
+                            "oneway": true
+                        }
+                    }
+                },
+                
+                "reset": {
+                    "module": "montage/ui/button.reel",
+                    "name": "Button",
+                    "properties": {
+                        "element": {"#": "reset"},
+                        "identifier": "reset"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
                 }
             }
         </script>
 
         <style>
-
+            .slider-example .demo{
+                
+            }
+            .slider-example .control {
+                background-color: whitesmoke;
+                padding: 5px;
+            }
+            .slider-example input[type=range] {
+                width: 100px;
+                vertical-align: middle;
+            }
+            .slider-example .range-value {
+                padding: 2px;  
+                border: 1px solid #aaa;              
+            }
+            #reset {
+                margin-top: 10px;
+            }
         </style>
     </head>
     <body>
@@ -101,51 +203,98 @@
                 </div>
             </div>
 
-            <p>Default Slider</p>
-            <div class="testSlider" id="slider0" style="width: 200px"></div>
-
-            <p>Slider with initial value set to 20</p>
-            <div class="testSlider" id="slider1"></div>
-
-            <p>Slider with a dark theme</p>
-            <div style="background-color: #eee; padding: 20px;">
-        	    <div class="testSlider dark" id="slider2"></div>
-        	</div>
-
-        	<p>Slider with a tap bar to scroll<p>
-            <div class="testSlider" id="slider3"></div>
-            <div class="testSlider" id="slider4"></div>
-
-            <p>Slider with minValue = 10 and maxValue = 40 with value bound to the value in the textbox</p>
-            <div class="testSlider" id="slider5"></div>
-            <input type="number" id="sliderValue" />
-
+            <h4>Demo</h4>
+            <div class="demo">
+            <div class="row">
+                <div class="span6">
+                    <img id="image" src="images/IMG_1416.jpg" style="height: 300px; width: 450px;" class="image"/>
+                </div>
+                <div class="span6">
+                    <h6>Color</h6>
+                    <div class="control">
+                        <div>
+                            Red: 
+                            <div id="color-red" />
+                            <span id="red-value" class="range-value">0.5</span>
+                        </div>
+                        <div>
+                            Green: 
+                            <div id="color-green"  />
+                            <span id="green-value" class="range-value"/>
+                        </div>
+                        <div>
+                            Blue: 
+                            <div id="color-blue"  />
+                            <span id="blue-value" class="range-value" />
+                        </div>
+                        
+                        
+                    </div>
+                    
+                    
+                    <h6>Sharpen</h6>
+                    <div class="control">
+                        <div>
+                            Amount: 
+                            <div id="sharpness-amount" />
+                            <span id="sharpness-amount-value" class="range-value">0.5</span>
+                        </div>
+                    </div>
+                   
+                    
+                    <button id="reset" class="btn cancel small">Reset</button>
+                    
+                </div>
+            </div>
+            </div>
+            
             <section>
-            <h6>Serialization</h6>
-            <pre class="prettyprint linenums">
-"slider6": {
-    "module": "montage/ui/bluemoon/slider.reel",
-    "name": "Slider",
-    "properties": {
-        "element": {"#": "slider5"},
-        "value": 25,
-        "minValue": 10,
-        "maxValue": 40,
-        "hasTapBarToScroll": true
-    },
-    "bindings": {
-        "value": {
-            "boundObject": {"@": "textfield1"},
-            "boundObjectPropertyPath": "value"
-        }
-    }
-}
-            </pre>
-
-            <h6>HTML Markup</h6>
- <pre class="prettyprint">&lt;div class=&quot;testSlider&quot; id=&quot;slider5&quot;&gt;&lt;/div&gt;</pre>
+                <a href="m-js/examples/sink/components/slider-example.reel" target="_blank">View Demo Source</a>
             </section>
-
-        </div>
+            
+            <section>
+                <h4>Component Properties</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                        <td>value</td>
+                        <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                      </tr>
+                    <tr>
+                      <td>minValue</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+                    <tr>
+                      <td>maxValue</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>step</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>required</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>readonly</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>name</td>
+                      <td>...</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>
+                    <a href="" target="_blank">View full Documentation</a>
+                </p>
+            </section>
     </body>
 </html>

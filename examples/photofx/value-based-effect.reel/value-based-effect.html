@@ -39,8 +39,8 @@
                 }
             },
             "valueSlider": {
-                "module": "montage/ui/bluemoon/slider.reel",
-                "name": "Slider",
+                "module": "montage/ui/range-input.reel",
+                "name": "RangeInput",
                 "properties": {
                     "element": {"#": "valueSlider"},
                     "identifier": "valueSlider"
@@ -50,11 +50,11 @@
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "sliderValue"
                     },
-                    "minValue": {
+                    "min": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "minValue"
                     },
-                    "maxValue": {
+                    "max": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "maxValue"
                     }
@@ -72,6 +72,13 @@
                     }
                 ]
             },
+            "numberconverter1": {
+                "module": "montage/core/converter/number-converter",
+                "name": "NumberConverter",
+                "properties": {
+                    "decimals": 2
+                }
+            },
             "valueDisplay": {
                 "module": "montage/ui/dynamic-text.reel",
                 "name": "DynamicText",
@@ -83,7 +90,7 @@
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "value",
                         "oneway": true,
-                        "boundValueMutator": {"->": {"arguments": ["n"], "body": "\n                                        return n.toFixed(2);\n                                    "}}
+                        "converter": {"@": "numberconverter1"}                        
                     }
                 }
             },
@@ -125,7 +132,7 @@
             },
 
             "resetButton": {
-                "module": "montage/ui/bluemoon/button.reel",
+                "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "resetButton"},
@@ -155,7 +162,7 @@
     <div id="control" class="ValueBasedEffect">
         <span id="toggle"></span> <span id="effectName"></span>
         <div class="valueControl">
-            <div id="valueSlider" class="slider"></div>
+            <input type="range" id="valueSlider" class="slider" />
             <div id="valueDisplay" class="value"></div>
         </div>
 
