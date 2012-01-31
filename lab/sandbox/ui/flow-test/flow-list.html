@@ -25,20 +25,15 @@
                     }
                 }
             },
-            "scroll1": {
-                "module": "montage/ui/scroll",
-                "name": "Scroll",
+            "translateComposer1": {
+                "module": "montage/ui/composer/translate-composer",
+                "name": "TranslateComposer",
                 "properties": {
                     "component": {"@": "flow1"},
-                    "maxScrollY": 1000
+                    "maxTranslateY": 1000
                 },
                 "bindings": {
-                    "element": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "_element",
-                        "oneway": true
-                    },
-                    "scrollY": {
+                    "translateY": {
                         "boundObject": {"@": "flow1"},
                         "boundObjectPropertyPath": "origin"
                     }
@@ -54,7 +49,7 @@
                         "oneway": true
                     },
                     "pointerPosition": {
-                        "boundObject": {"@": "scroll1"},
+                        "boundObject": {"@": "translateComposer1"},
                         "boundObjectPropertyPath": "pointerStartEventPosition",
                         "oneway": true                    
                     }
