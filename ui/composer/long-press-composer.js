@@ -108,10 +108,11 @@ exports.LongPressComposer = Montage.create(Composer,/** @lends module:montage/ui
     */
     handleTouchmove: {
         value: function (event) {
-            var i, deltaX, deltaY;
+            var i, deltaX, deltaY, len;
             /* the longpresstimer is checked so that the flushing of the timer occurs only once even though touchmoves are received */
             if (this._longpressTimer) {
-                for (i = 0; i < event.changedTouches.length; i++) {
+                len = event.changedTouches.length;
+                for (i = 0; i < len; i++) {
                     /*Checked if two fingers on same target and both are moved */
                     if (this._fingerId === event.changedTouches[i].identifier) {
                         deltaX = Math.abs(event.changedTouches[i].clientX - this._X);

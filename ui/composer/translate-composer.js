@@ -404,12 +404,12 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
         enumerable: false,
         value: function (event) {
 
-            var i = 0;
-            while (i < event.changedTouches.length && event.changedTouches[i].identifier !== this._observedPointer) {
+            var i = 0, len = event.changedTouches.length;
+            while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
                 i++;
             }
 
-            if (i < event.changedTouches.length) {
+            if (i < len) {
                 if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                     event.preventDefault();
                     this._move(event.changedTouches[i].clientX, event.changedTouches[i].clientY);
@@ -424,11 +424,11 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
     captureTouchend: {
         enumerable: false,
         value: function (event) {
-            var i = 0;
-            while (i < event.changedTouches.length && !this.eventManager.isPointerClaimedByComponent(event.changedTouches[i].identifier, this)) {
+            var i = 0, len = event.changedTouches.length;
+            while (i < len && !this.eventManager.isPointerClaimedByComponent(event.changedTouches[i].identifier, this)) {
                 i++;
             }
-            if (i < event.changedTouches.length) {
+            if (i < len) {
                 this._end(event.changedTouches[i]);
             }
         }
