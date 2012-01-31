@@ -65,7 +65,7 @@ Require.DefaultLoaderConstructor = function(config) {
             config,
             Require.PathsLoader(
                 config,
-                Require.CachingLoader(
+                Require.MemoizedLoader(
                     config,
                     Require.Loader(
                         config,

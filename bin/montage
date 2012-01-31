@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+// --harmony_weakmaps --harmony_proxies
+require("../montage.js").initMontage();
