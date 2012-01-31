@@ -367,24 +367,25 @@
 
         // The default "main" module of a package has the same name as the
         // package.
-        if (description.main === void 0)
-            description.main = description.name;
+        if (description.main !== void 0) {
 
-        // main, injects a definition for the main module, with
-        // only its path. makeRequire goes through special effort
-        // in deepLoad to re-initialize this definition with the
-        // loaded definition from the given path.
-        modules[""] = {
-            id: "",
-            redirect: description.main,
-            location: config.location
-        };
+            // main, injects a definition for the main module, with
+            // only its path. makeRequire goes through special effort
+            // in deepLoad to re-initialize this definition with the
+            // loaded definition from the given path.
+            modules[""] = {
+                id: "",
+                redirect: description.main,
+                location: config.location
+            };
 
-        modules[description.name] = {
-            id: description.name,
-            redirect: "",
-            location: URL.resolve(location, description.name)
-        };
+            modules[description.name] = {
+                id: description.name,
+                redirect: "",
+                location: URL.resolve(location, description.name)
+            };
+
+        }
 
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};
