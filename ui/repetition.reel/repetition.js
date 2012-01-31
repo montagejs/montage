@@ -482,6 +482,31 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         item.fragment = range.extractContents();
     }},
 
+    contentWillChange: {
+        value: function(content) {
+            this._refreshingItems = true;
+            this.reset();
+        }
+    },
+    
+    contentDidChange: {
+        value: function() {
+            this._refreshingItems = false;
+            this._setupIterationTemplate();
+            this._skipCurrentDraw = true;
+        }
+    },
+    
+    reset: {
+        value: function() {
+            this._items = [];
+            this._itemsToAppend = [];
+            this._nextDeserializedItemIx = 0;
+            this._itemsToRemove = [];
+            this._deletedItems = [];
+        }
+    },
+    
     deserializedFromTemplate: {value: function deserializedFromTemplate() {
         this.setupIterationDeserialization();
         if (this._isComponentExpanded) {
@@ -895,6 +920,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
             repetitionElement.innerHTML = "";
+            // even if there were items to remove we don't need to do that anymore.
+            if (this._skipCurrentDraw) {
+                this._skipCurrentDraw = false;
+                return;
+            }
         }
         
         // Before we remove any nodes, make sure we "deselect" them
