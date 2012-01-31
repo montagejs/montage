@@ -500,6 +500,24 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: null
     },
+    
+    /**
+     * Remove all bindings and starts buffering the needsDraw.
+     * @function
+     */
+    cleanupDeletedComponentTree: {
+        value: function() {
+            this.needsDraw = false;
+            this.traverseComponentTree(function(component) {
+                Object.deleteBindings(component);
+                component.canDrawGate.setField("componentTreeLoaded", false);
+                component.blockDrawGate.setField("element", false);
+                component.blockDrawGate.setField("drawRequested", false);
+                component.needsDraw = false;
+            });
+        }
+    },
+    
 /**
     Description TODO
     @function

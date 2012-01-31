@@ -426,7 +426,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             this._childLoadedCount -= childComponentsCount;
             this._expectedChildComponentsCount -= childComponentsCount;
             for (var i = 0, l = removedComponents.length; i < l; i++) {
-                this.cleanupDeletedComponentTree(removedComponents[i]);
+                removedComponents[i].cleanupDeletedComponentTree();
             }
         } else {
             this._childLoadedCount--;
@@ -1157,21 +1157,5 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         if (logger.debug) {
             logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.element);
         }
-    }},
-
-    /**
-     Remove all bindings and starts buffering the needsDraw.
-     @function
-     @param {Property} rootComponent The root component of the tree do cleanup.
-     */
-    cleanupDeletedComponentTree: {value: function(rootComponent) {
-        rootComponent.needsDraw = false;
-        rootComponent.traverseComponentTree(function(component) {
-            Object.deleteBindings(component);
-            component.canDrawGate.setField("componentTreeLoaded", false);
-            component.blockDrawGate.setField("element", false);
-            component.blockDrawGate.setField("drawRequested", false);
-            component.needsDraw = false;
-        });
     }}
 });
