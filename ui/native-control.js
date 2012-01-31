@@ -29,7 +29,9 @@ var isString = function(object) {
  */
 exports.NativeControl = Montage.create(Component, {
 
-    hasTemplate: {value: false},
+    hasTemplate: {
+        value: false
+    },
 
     //http://www.w3.org/TR/html5/elements.html#global-attributes
     _baseElementProperties: {
@@ -80,30 +82,30 @@ exports.NativeControl = Montage.create(Component, {
                 configurable: isUndefined(descriptor.configurable) ? true: descriptor.configurable,
                 enumerable: isUndefined(descriptor.enumerable) ?  true: descriptor.enumerable,
                 serializable: isUndefined(descriptor.serializable) ? true: descriptor.serializable,
-                set: (function(n) {
-                    return function(val) {
-                        var attrName = '_' + n;
+                set: (function(name) {
+                    return function(value) {
+                        var attrName = '_' + name;
 
-                        var desc = this._propertyDescriptors[n];
+                        var desc = this._propertyDescriptors[name];
                         // if requested dataType is boolean (eg: checked, readonly etc)
                         // coerce the value to boolean
                         if(desc && "boolean" === desc.dataType) {
-                            val = ( (val || val === "") ? true : false);
+                            value = ( (value || value === "") ? true : false);
                         }
 
                         // If the set value is different to the current one,
                         // update it here, and set it to be updated on the
                         // element in the next draw cycle.
-                        if(!isUndefined(val) && this[attrName] !== val) {
-                            this[attrName] = val;
-                            this._elementAttributeValues[n] = val;
+                        if(!isUndefined(value) && this[attrName] !== value) {
+                            this[attrName] = value;
+                            this._elementAttributeValues[name] = value;
                             this.needsDraw = true;
                         }
                     };
                 }(name)),
-                get: (function(n) {
+                get: (function(name) {
                     return function() {
-                        return this['_' + n];
+                        return this['_' + name];
                     };
                 }(name))
             };
@@ -121,19 +123,19 @@ exports.NativeControl = Montage.create(Component, {
     addAttributes: {
         value: function(props) {
             var i, desc, prop, obj;
-            var stdAttrs = {};
-            stdAttrs = extend(stdAttrs, this._baseElementProperties);
-            stdAttrs = extend(stdAttrs, props);
+            var standardAttributes = {};
+            standardAttributes = extend(standardAttributes, this._baseElementProperties);
+            standardAttributes = extend(standardAttributes, props);
 
-            this._propertyDescriptors = stdAttrs;
+            this._propertyDescriptors = standardAttributes;
 
-            for(prop in stdAttrs) {
-                if(stdAttrs.hasOwnProperty(prop)) {
-                    obj = stdAttrs[prop];
+            for(prop in standardAttributes) {
+                if(standardAttributes.hasOwnProperty(prop)) {
+                    obj = standardAttributes[prop];
                     // Make sure that the descriptor is of the correct form.
                     if(obj === null || isString(obj)) {
                         desc = {value: obj, dataType: "string"};
-                        stdAttrs[prop] = desc;
+                        standardAttributes[prop] = desc;
                     } else {
                         desc = obj;
                     }
