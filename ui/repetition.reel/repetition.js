@@ -370,7 +370,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 componentEndIndex = componentStartIndex + componentsCount;
                 for (var i = componentStartIndex; i < componentEndIndex; i++) {
                     childComponent = childComponents[i];
-                    childComponent.element.id = childComponent.element.id + "-" + index;
                     childComponent.needsDraw = true;
                     childComponent.loadComponentTree(function() {
                         if (++self._childLoadedCount === self._expectedChildComponentsCount) {
