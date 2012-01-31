@@ -170,7 +170,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         },
         set: function(value) {
             if (logger.isDebug) {
-                logger.debug(this, " set objects:", value.length, value, "same objects?", value === this._objects);
+                logger.debug(this, " set objects:", (value ? value.length : null), value, "same objects?", value === this._objects);
             }
             this._objects = value;
 
@@ -457,6 +457,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             this._iterationTemplate = Template.templateWithComponent(this);
         } else {
             this._iterationTemplate = Template.create().initWithComponent(this);
+        }
+        this._iterationTemplate.optimize();
+        
+        if (logger.isDebug) {
+            logger.debug(this._iterationTemplate.exportToString());
         }
 
         // just needed to create the iteration Template, so we get rid of it.
@@ -1143,15 +1148,14 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Property} deserializer TODO
     */
     deserializeIteration: {value: function(deserializer) {
-        var item = this._itemsToAppend[this._nextDeserializedItemIx++],
-            newChildComponents = deserializer.get("childComponents");
+        var item = this._itemsToAppend[this._nextDeserializedItemIx++];
 
         this._deserializedItem = item;
         item.element = deserializer.get("element");
 
         this.eventManager.registerEventHandlerForElement(this, item.element);
         if (logger.debug) {
-            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.range);
+            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.element);
         }
     }},
 

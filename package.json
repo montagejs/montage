@@ -2,14 +2,23 @@
     "name": "montage",
     "version": "0.3.1",
     "description": "A UI Framework",
-    "main": "core/core.js",
+    "main": "montage",
     "exclude": [
         "lab/benchmarks",
         "lab/sandbox",
         "examples",
         "require/test",
-        "require/tests"
+        "require/tests",
+        "etc"
     ],
+    "overlay": {
+        "montage": {
+            "main": "core/core"
+        }
+    },
+    "bin": {
+        "montage": "bin/montage"
+    },
     "devDependencies": {
         "test": ">=0.2.1"
     }

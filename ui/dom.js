@@ -220,8 +220,7 @@ try {
     _webKitPoint = new WebKitPoint(0,0);
 } catch (e) {}
 
-if (_webKitPoint) {
-
+var webkitImplementation = function() {
     exports.convertPointFromNodeToPage = function(element, point) {
         if(point) {
             _webKitPoint.x = point.x;
@@ -230,8 +229,8 @@ if (_webKitPoint) {
             _webKitPoint.x = 0;
             _webKitPoint.y = 0;
         }
-        _webKitPoint = webkitConvertPointFromNodeToPage(element, _webKitPoint);
-        return Point.create().init(_webKitPoint.x, _webKitPoint.y);
+        point = webkitConvertPointFromNodeToPage(element, _webKitPoint);
+        return point ? Point.create().init(point.x, point.y) : null;
     };
 
     exports.convertPointFromPageToNode = function(element, point) {
@@ -242,13 +241,15 @@ if (_webKitPoint) {
             _webKitPoint.x = 0;
             _webKitPoint.y = 0;
         }
-        _webKitPoint = webkitConvertPointFromPageToNode(element, _webKitPoint);
-        return Point.create().init(_webKitPoint.x, _webKitPoint.y);
+        point = webkitConvertPointFromPageToNode(element, _webKitPoint);
+        return point ? Point.create().init(point.x, point.y) : null;
     };
-
-} else {
-
+};
+var shimImplementation = function() {
     exports.convertPointFromNodeToPage = function(element, point) {
+        if (!element || typeof element.x !== "undefined") {
+            return null;
+        }
         var offset;
         if (offset =_offsetForElement(element)) {
             return Point.create().init((point ? point.x:0)+offset.left, (point ? point.y:0)+offset.top);
@@ -258,6 +259,9 @@ if (_webKitPoint) {
     };
 
     exports.convertPointFromPageToNode = function(element, point) {
+        if (!element || typeof element.x !== "undefined") {
+            return null;
+        }
         var offset;
         if (offset =_offsetForElement(element)) {
             return Point.create().init((point ? point.x:0)-offset.left, (point ? point.y:0)-offset.top);
@@ -265,4 +269,10 @@ if (_webKitPoint) {
             return Point.create().init((point ? point.x:0), (point ? point.y:0));
         }
     };
+};
+
+if (_webKitPoint) {
+    webkitImplementation();
+} else {
+    shimImplementation();
 }

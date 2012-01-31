@@ -14,7 +14,7 @@ exports.Content = Montage.create(Component, {
     
     slotDidSwitchContent: {
         value: function(substitution, nodeShown, componentShown, nodeHidden, componentHidden) {
-            console.log('substition did switch content');
+            console.log('substitution did switch content');
             if(componentHidden && typeof componentHidden.didBecomeInactiveInSlot === 'function') {
                 componentHidden.didBecomeInactiveInSlot();
             }

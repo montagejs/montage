@@ -10,6 +10,7 @@ var Montage = require("montage").Montage,
  * The Text input
  */
 var Button = exports.Button = Montage.create(NativeControl, {
+
 /**
   Description TODO
   @private

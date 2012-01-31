@@ -12,6 +12,14 @@
 var Montage = require("montage").Montage;
 var Uuid = require("core/uuid").Uuid;
 var Deserializer = require("core/deserializer").Deserializer;
+var logger = require("core/logger").logger("serializer");
+var Element;
+
+// Shadowing the global with a local allows us to feature-test without typeof
+// Element does not exist on the server-side
+if (typeof window !== "undefined") {
+    Element = window.Element;
+}
 
 /**
  @class module:montage/core/serializer.Serializer
@@ -19,6 +27,7 @@ var Deserializer = require("core/deserializer").Deserializer;
  @extends module:montage/core/core.Montage
  */
 var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Serializer# */ {
+    _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
     _serializedObjects: {value: {}}, // uuid -> string
     _serializedReferences: {value: {}}, // uuid -> string
     _externalObjects: {value: null}, // label -> object
@@ -358,7 +367,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         if (value instanceof RegExp) {
             return this._serializeRegExp(value);
         } else if (value && (typeof value === "object" || typeof value === "function")) {
-            if (value instanceof Element) {
+            if (Element && value instanceof Element) {
                 return this._serializeElement(value);
             } else if (Array.isArray(value)) {
                 return this._serializeArray(value, indent + 1);
@@ -378,11 +387,15 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
      @private
      */
     _serializeElement: {value: function(element) {
-        if (element.id) {
+        var attribute = element.getAttribute(this._MONTAGE_ID_ATTRIBUTE),
+            // TODO: element.id only here for backwards compatibility
+            id = attribute || element.id;
+
+        if (id) {
             this._externalElements.push(element);
-            return '{"#":"' + element.id + '"}';
+            return '{"#":"' + id + '"}';
         } else {
-            throw "Error: Not possible to serialize a DOM element with no id assigned: " + element.outerHTML;
+            logger.error("Error: Not possible to serialize a DOM element with no id assigned: " + element.outerHTML);
         }
     }},
 

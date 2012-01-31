@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module "montage/ui/toggle-switch.reel"
+
     @requires montage/core/core
     @requires montage/ui/component
 */
@@ -15,6 +15,7 @@ var Montage = require("montage").Montage,
  @extends module:montage/ui/component.Component
  */
 var ToggleSwitch = exports.ToggleSwitch = Montage.create(Component, /** @lends module:"montage/ui/toggle-switch.reel".ToggleSwitch# */ {
+
 
     _value: {
         enumerable: false,

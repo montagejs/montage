@@ -15,11 +15,17 @@ var Montage = require("montage").Montage,
     logger = require("core/logger").logger("deserializer"),
     Promise = require("core/promise").Promise;
 
+// By rebinding eval to a new name, it loses its ability to
+// capture the calling scope.
+var globalEval = eval;
+
 /**
  @class module:montage/core/deserializer.Deserializer
  @extends module:montage/core/core.Montage
  */
 var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deserializer.Deserializer# */ {
+    _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
+    
     _objects: {value: null},
    /**
   @private
@@ -51,6 +57,13 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 /**
   @private
 */
+
+    /**
+      @private
+    */
+    // list of ids that were just created for optimization
+    _optimizedIds: {value: {}},
+
     _indexedDeserializationUnits: {value: {}},
 
     __sharedDocument: {
@@ -365,6 +378,27 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         this._compileAndDeserialize();
         return this._compiledDeserializationFunctionString;
     }},
+    
+    /**
+     * Optimizes the current serialization for a specific document.
+     * @function
+     * @param {Document} doc The document to optimize against, this document can be modified during optimization.
+    */
+    optimizeForDocument: {
+        value: function(doc) {
+            var idAttributeName = Deserializer._MONTAGE_ID_ATTRIBUTE,
+                elements = doc.querySelectorAll('*[' + idAttributeName + ']'),
+                ids = this._optimizedIds = {};
+            
+            for (var i = 0, element; (element = elements[i]); i++) {
+                if (!element.id) {
+                    var attribute = element.getAttribute(idAttributeName);
+                    element.setAttribute("id", ids[attribute] = "_" + idAttributeName + "_" + attribute); 
+                }
+            }
+        }
+    },
+    
 /**
   @private
 */
@@ -374,9 +408,12 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             exportsStrings = "",
             unitsStrings = "",
             objectsStrings = "",
+            cleanupStrings = "",
             valueString,
             exports = {},
             modules = this._modules,
+            idsToRemove = [],
+            optimizedIds = this._optimizedIds,
             requireStrings = [],
             objectNamesCounter = {},
             label;
@@ -408,8 +445,17 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
         }
 
-        this._compiledDeserializationFunctionString = "(function() {\n" + requireStrings.join("\n") + "\nreturn function(element) {\nvar exports = {};\n" + exportsStrings + "\n\n" + objectsStrings + "\n\n" + unitsStrings + "\nreturn exports;\n}}).call(this)";
-        //console.log(this._compiledDeserializationFunctionString);
+        if (idsToRemove.length > 0) {
+            cleanupStrings = 'element.getElementById("' + idsToRemove.join('").removeAttribute("id");\nelement.getElementById("') + '").removeAttribute("id");';
+            for (var i = 0, id; (id = idsToRemove[i]); i++) {
+                element.getElementById(idsToRemove[i]).removeAttribute("id");
+            }
+        }
+
+        this._compiledDeserializationFunctionString = "(function() {\n" + requireStrings.join("\n") + "\nreturn function(element) {\nvar exports = {};\n" + exportsStrings + "\n\n" + objectsStrings + "\n\n" + unitsStrings + "\n\n" + cleanupStrings + "\nreturn exports;\n}}).call(this)";
+        if (logger.isDebug) {
+            logger.debug(this._compiledDeserializationFunctionString);
+        }
 
         this._serialization = serialization = null;
 
@@ -490,7 +536,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 } else if (value === null) {
                     return "null";
                 } else if ("#" in value) {
-                    type = "elementById";
+                    type = "elementByMontageId";
                     value = value["#"];
                 } else if ("/" in value) {
                     type = "regexp";
@@ -502,7 +548,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     type = "function";
                     value = value["->"];
                 } else if ("." in value && Object.keys(value).length === 1) {
-                    console.log("Warning: It's not possible to reference elements by class name anymore: " + JSON.stringify(value) + "' in template " + self._origin + ".");
+                    console.log("Warning: It's not possible to reference elements by class name anymore: '" + JSON.stringify(value) + "' in template " + self._origin + ".");
                 }
             }
 
@@ -528,16 +574,36 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     }
                     return '[' + properties.join(",\n") + ']';
                     break;
-
-                case "elementById":
-                    if (deserialize) {
-                        var node = element.getElementById(value);
+                    
+                case "elementByMontageId":
+                    var id = self._optimizedIds[value],
+                        node;
+                    
+                    if (id) {
+                        node = element.getElementById(id);
+                        idsToRemove.push(id);
+                    } else {
+                        node = element.querySelector('*[' + Deserializer._MONTAGE_ID_ATTRIBUTE + '="' + value + '"]');
                         if (!node) {
-                            console.log("Warning: Element '#" + value + "' not found in template " + self._origin);
+                            node = element.getElementById(value);
+                            id = value;
                         }
+                    }
+                    
+                    if (!node) {
+                        console.log("Warning: Element " + Deserializer._MONTAGE_ID_ATTRIBUTE + "='" + value + "' not found in template " + self._origin);
+                    }
+                    
+                    if (deserialize) {
                         parent[key] = node;
                     }
-                    return 'element.getElementById("' + value + '")';
+                    
+                    if (id) {
+                        return 'element.getElementById("' + id + '")';
+                    } else {
+                        // TODO: getElemenyById only here for backwards compatibility
+                        return 'element.querySelector(\'*[' + Deserializer._MONTAGE_ID_ATTRIBUTE + '="' + value + '"]\') || element.getElementById("' + value + '")';
+                    }
                     break;
 
                 case "regexp":
@@ -569,7 +635,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 case "function":
                     var source = "function" + (value.name ? " " + value.name : "") + "(" + value.arguments.join(", ") + ") {\n" + value.body + "\n}";
                     if (deserialize) {
-                        parent[key] = (1,eval)('(' + source + ')');
+                        parent[key] = globalEval('(' + source + ')');
                     }
                     return source;
                     break;
@@ -618,7 +684,6 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 // first run, deserialize and create the source of the compiled deserialization function
             } else {
                 exports = this._compileAndDeserialize(sourceDocument, true);
-                //console.log(this._compiledDeserializationFunctionString);
             }
 
             if (targetDocument) {
@@ -637,6 +702,20 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     deserializeObject: {
         value: function(callback) {
             return this.deserializeWithInstancesAndDocument(null, null, function(exports) {
+                callback(exports ? exports.root : undefined);
+            });
+        }
+    },
+    
+    /**
+     Deserializes a serialization of a single object using a root element to find elements' references.
+     @function
+     @param {Element} element The element to be cloned and used during deserialization of elements' references.
+     @param {function(object)} callback The callback to be invoked when the object has been fully deserialized.
+     */
+    deserializeObjectWithElement: {
+        value: function(element, callback) {
+            return this.deserializeWithInstancesAndElementForDocument(null, element, null, function(exports) {
                 callback(exports ? exports.root : undefined);
             });
         }
@@ -769,9 +848,6 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         for (var unit in serializedUnits) {
             var unitFunction = units[unit];
             if (unitFunction) {
-                if (serializedUnits[unit].text) {
-                    //debugger;
-                }
                 unitFunction(object, serializedUnits[unit]);
             }
         }

@@ -4,28 +4,32 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-document._montageTiming = {}
-document._montageTiming.loadStartTime = Date.now();
+if (typeof window !== "undefined") {
 
-// Give a threshold before we decide we need to show the bootstrapper progress
-// Applications that use our loader will interact with this timeout
-// and class name to coordinate a nice loading experience. Applications that do not will
-// just go about business as usual and draw their content as soon as possible.
-window.addEventListener("DOMContentLoaded", function() {
-    var bootstrappingDelay = 1000;
-    document._montageStartBootstrappingTimeout = setTimeout(function() {
-        document._montageStartBootstrappingTimeout = null;
+    document._montageTiming = {}
+    document._montageTiming.loadStartTime = Date.now();
 
-        var root = document.documentElement;
-        if(!!root.classList) {
-            root.classList.add("montage-app-bootstrapping");
-        } else {
-            root.className = root.className + " montage-app-bootstrapping";
-        }
+    // Give a threshold before we decide we need to show the bootstrapper progress
+    // Applications that use our loader will interact with this timeout
+    // and class name to coordinate a nice loading experience. Applications that do not will
+    // just go about business as usual and draw their content as soon as possible.
+    window.addEventListener("DOMContentLoaded", function() {
+        var bootstrappingDelay = 1000;
+        document._montageStartBootstrappingTimeout = setTimeout(function() {
+            document._montageStartBootstrappingTimeout = null;
 
-        document._montageTiming.bootstrappingStartTime = Date.now();
-    }, bootstrappingDelay);
-});
+            var root = document.documentElement;
+            if(!!root.classList) {
+                root.classList.add("montage-app-bootstrapping");
+            } else {
+                root.className = root.className + " montage-app-bootstrapping";
+            }
+
+            document._montageTiming.bootstrappingStartTime = Date.now();
+        }, bootstrappingDelay);
+    });
+
+}
 
 (function (definition) {
     if (typeof require !== "undefined") {
@@ -50,32 +54,50 @@ window.addEventListener("DOMContentLoaded", function() {
      */
     exports.initMontage = function () {
         var platform = exports.getPlatform();
-        var params = platform.getParams();
-        var config = platform.getConfig();
 
         // Platform dependent
-        platform.loadCJS(function (CJS, Q, URL) {
+        platform.bootstrap(function (Require, Promise, URL) {
+            var params = platform.getParams();
+            var config = platform.getConfig();
 
             // setup the reel loader
             config.makeLoader = function (config) {
                 return exports.ReelLoader(config,
-                    CJS.DefaultLoaderConstructor(config));
+                    Require.DefaultLoaderConstructor(config));
             };
 
             // setup serialization compiler
             config.makeCompiler = function (config) {
                 return exports.TemplateCompiler(config,
                     exports.SerializationCompiler(config,
-                        CJS.DefaultCompilerConstructor(config)));
+                        Require.DefaultCompilerConstructor(config)));
             };
 
-            var location = URL.resolve(window.location, params["package"] || ".");
+            var location = URL.resolve(config.location, params["package"] || ".");
 
-            CJS.PackageSandbox(params.montageBase, config)
+            Require.PackageSandbox(params.montageBase, config)
             .then(function (montageRequire) {
-                montageRequire.config.modules["core/promise"] = {exports: Q};
-                montageRequire.config.modules["core/url"] = {exports: URL};
-                montageRequire.config.modules["core/shim/timers"] = {exports: {}};
+                montageRequire.inject("core/promise", Promise);
+                montageRequire.inject("core/shim/timeers", {});
+
+                // install the linter, which loads on the first error
+                config.lint = function (module) {
+                    montageRequire.async("core/jshint")
+                    .then(function (JSHINT) {
+                        if (!JSHINT.JSHINT(module.text)) {
+                            console.warn("JSHint Error: "+module.location);
+                            JSHINT.JSHINT.errors.forEach(function(error) {
+                                if (error) {
+                                    console.warn("Problem at line "+error.line+" character "+error.character+": "+error.reason);
+                                    if (error.evidence) {
+                                        console.warn("    " + error.evidence);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                };
+
                 return montageRequire.loadPackage(location)
                 .then(function (applicationRequire) {
                     global.require = applicationRequire;
@@ -96,25 +118,23 @@ window.addEventListener("DOMContentLoaded", function() {
      @param config
      @param compiler
      */
-    exports.SerializationCompiler = function(config, compiler) {
-        return function(def) {
-            def = compiler(def);
-            var defaultFactory = def.factory;
-            def.factory = function(require, exports, module) {
+    exports.SerializationCompiler = function(config, compile) {
+        return function(module) {
+            compile(module);
+            if (!module.factory)
+                return;
+            var defaultFactory = module.factory;
+            module.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
                 for (var symbol in exports) {
+                    var object = exports[symbol];
                     // avoid attempting to reinitialize an aliased property
-                    if (
-                        Object.prototype.hasOwnProperty.call(
-                            exports[symbol],
-                            "_montage_metadata"
-                        )
-                    ) {
-                        exports[symbol]._montage_metadata.aliases.push(symbol);
-                        exports[symbol]._montage_metadata.objectName = symbol;
-                    } else if (!Object.isSealed(exports[symbol])) {
+                    if (object.hasOwnProperty("_montage_metadata")) {
+                        object._montage_metadata.aliases.push(symbol);
+                        object._montage_metadata.objectName = symbol;
+                    } else if (!Object.isSealed(object)) {
                         Object.defineProperty(
-                            exports[symbol],
+                            object,
                             "_montage_metadata",
                             {
                                 value: {
@@ -129,7 +149,7 @@ window.addEventListener("DOMContentLoaded", function() {
                     }
                 }
             };
-            return def;
+            return module;
         };
     };
 
@@ -141,13 +161,14 @@ window.addEventListener("DOMContentLoaded", function() {
      * @param loader the next loader in the chain
      */
     var reelExpression = /([^\/]+)\.reel$/;
-    exports.ReelLoader = function (config, loader) {
-        return function (id, callback) {
+    exports.ReelLoader = function (config, load) {
+        return function (id, module) {
             var match = reelExpression.exec(id);
             if (match) {
-                return loader(id + "/" + match[1], callback);
+                module.redirect = id + "/" + match[1];
+                return module;
             } else {
-                return loader(id, callback);
+                return load(id, module);
             }
         };
     };
@@ -158,23 +179,20 @@ window.addEventListener("DOMContentLoaded", function() {
      @param config
      @param compiler
      */
-    exports.TemplateCompiler = function(config, compiler) {
-        return function(def) {
-            var root = def.path.match(/(.*\/)?(?=[^\/]+\.html$)/);
+    exports.TemplateCompiler = function(config, compile) {
+        return function(module) {
+            if (!module.location)
+                return;
+            var root = module.location.match(/(.*\/)?(?=[^\/]+\.html$)/);
             if (root) {
-                def.dependencies = def.dependencies || [];
-                var originalFactory = def.factory;
-                def.factory = function(require, exports, module) {
-                    if (originalFactory) {
-                        originalFactory(require, exports, module);
-                    }
-                    // Use module.exports in case originalFactory changed it.
-                    module.exports.root = module.exports.root || root;
-                    module.exports.content = module.exports.content || def.text;
+                module.dependencies = module.dependencies || [];
+                module.exports = {
+                    root: root,
+                    content: module.text
                 };
-                return def;
+                return module;
             } else {
-                return compiler(def);
+                compile(module);
             }
         };
     };
@@ -184,19 +202,37 @@ window.addEventListener("DOMContentLoaded", function() {
     exports.getPlatform = function () {
         if (typeof window !== "undefined" && window && window.document) {
             return browser;
+        } else if (typeof process !== "undefined") {
+            return require("./node.js");
         } else {
             throw new Error("Platform not supported.");
         }
+    };
+
+    var urlModuleFactory = function (require, exports) {
+        var baseElement = document.createElement("base");
+        baseElement.href = "";
+        document.querySelector("head").appendChild(baseElement);
+        var relativeElement = document.createElement("a");
+        exports.resolve = function (base, relative) {
+            base = String(base);
+            if (!/^[\w\-]+:/.test(base)) {
+                throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
+            }
+            var restore = baseElement.href;
+            baseElement.href = base;
+            relativeElement.href = relative;
+            var resolved = relativeElement.href;
+            baseElement.href = restore;
+            return resolved;
+        };
     };
 
     var browser = {
 
         getConfig: function() {
             return {
-                lib: ".",
-                base: window.location,
-                // Disable XHR loader for file://
-                xhr: window.location.protocol.indexOf("file:") !== 0
+                location: '' + window.location
             };
         },
 
@@ -239,8 +275,8 @@ window.addEventListener("DOMContentLoaded", function() {
             return this._params;
         },
 
-        loadCJS: function (callback) {
-            var base, CJS, DOM, Q, URL;
+        bootstrap: function (callback) {
+            var base, Require, DOM, Promise, URL;
 
             var params = this.getParams();
 
@@ -265,11 +301,8 @@ window.addEventListener("DOMContentLoaded", function() {
                 "require/require",
                 "require/browser",
                 "core/promise",
-                "core/url",
-                "core/jshint"
+                "core/next-tick"
             ];
-            if (typeof setImmediate === "undefined")
-                pending.push("core/shim/timers");
 
             // load in parallel
             pending.forEach(function(name) {
@@ -289,11 +322,15 @@ window.addEventListener("DOMContentLoaded", function() {
             global.bootstrap = function (id, factory) {
                 definitions[id] = factory;
                 var at = pending.indexOf(id);
-                pending.splice(at, 1);
+                if (at !== -1) {
+                    pending.splice(at, 1);
+                }
                 if (pending.length === 0) {
                     allModulesLoaded();
                 }
             };
+
+            global.bootstrap('core/mini-url', urlModuleFactory);
 
             // miniature module system
             var bootModules = {};
@@ -307,17 +344,16 @@ window.addEventListener("DOMContentLoaded", function() {
 
             // execute bootstrap scripts
             function allModulesLoaded() {
-                Q = bootRequire("core/promise");
-                URL = bootRequire("core/url");
-                CJS = bootRequire("require/require");
-                bootRequire("require/browser");
+                Promise = bootRequire("core/promise");
+                URL = bootRequire("core/mini-url");
+                Require = bootRequire("require/require");
                 delete global.bootstrap;
                 callbackIfReady();
             }
 
             function callbackIfReady() {
-                if (DOM && CJS) {
-                    callback(CJS, Q, URL);
+                if (DOM && Require) {
+                    callback(Require, Promise, URL);
                 }
             }
 
@@ -351,11 +387,15 @@ window.addEventListener("DOMContentLoaded", function() {
 
     };
 
-    if (global.__MONTAGE_LOADED__) {
-        console.warn("Montage already loaded!");
+    if (typeof window !== "undefined") {
+        if (global.__MONTAGE_LOADED__) {
+            console.warn("Montage already loaded!");
+        } else {
+            global.__MONTAGE_LOADED__ = true;
+            exports.initMontage();
+        }
     } else {
-        global.__MONTAGE_LOADED__ = true;
-        exports.initMontage();
+        exports.getPlatform(); // may cause additional exports to be injected
     }
 
 });

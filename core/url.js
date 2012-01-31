@@ -11,7 +11,7 @@
     if (typeof bootstrap !== "undefined") {
         bootstrap("core/url", definition);
     } else {
-        bootstrap(require, exports);
+        definition(require, exports);
     }
 })(function (require, exports) {
 

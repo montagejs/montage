@@ -4,12 +4,13 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
- /**
-    Defines [setImmediate()]{@link setImmediate} and [clearImmediate()]{@link clearImmediate} shim functions.
+/**
+    [setImmediate()]{@link setImmediate}
+    and [clearImmediate()]{@link clearImmediate} shim functions.
     @see setImmediate
     @see clearImmediate
-    @module montage/core/shim/timers
- */
+    @module montage/core/shim/immediate
+*/
 
 /**
     @function
@@ -25,39 +26,12 @@
 
 (function (global) {
 
-var nextTick;
-if (typeof process !== "undefined") {
-    nextTick = process.nextTick;
-} else if (typeof MessageChannel !== "undefined") {
-    // http://www.nonblocking.io/2011/06/windownexttick.html
-    var channel = new MessageChannel();
-    // linked list of tasks (single, with head node)
-    var head = {}, tail = head;
-
-    channel.port1.onmessage = function () {
-        var next = head.next;
-        var task = next.task;
-        head = next;
-        task();
-    };
-
-    nextTick = function (task) {
-        tail = tail.next = {task: task};
-        channel.port2.postMessage(void 0);
-    }
-} else if (typeof setTimeout !== "undefined") {
-
-    nextTick = function (callback) {
-        setTimeout(callback, 0);
-    };
-} else {
-    throw new Error("Can't shim setImmediate.");
-}
+var nextTick = require("../next-tick").nextTick;
 
 if (typeof setImmediate === "undefined") {
+
     var nextHandle = 0;
     var handles = {};
-
 
     global.setImmediate = function setImmediate(callback) {
         var handle = nextHandle++;
@@ -77,11 +51,7 @@ if (typeof setImmediate === "undefined") {
     global.clearImmediate = function clearImmediate(handle) {
         delete handles[handle];
     };
-}
 
-// Make this work as a <script> for bootstrapping montage.js
-if (typeof bootstrap !== "undefined") {
-    bootstrap("core/shim/timers", function () {});
 }
 
 })(typeof global === "undefined" ? window : global);

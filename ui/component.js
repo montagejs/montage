@@ -921,7 +921,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this._templateElement) {
                 this._replaceElementWithTemplate();
             }
-            this._element.removeAttribute("id");
+            // TODO: removeAttribute only here for backwards compatibility
+            if (!this._element.getAttribute("data-montage-id")) {
+                this._element.removeAttribute("id");
+            }
 
             // This will schedule a second draw for any component that has children
             var childComponents = this.childComponents;
