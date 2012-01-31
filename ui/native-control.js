@@ -25,7 +25,7 @@ var isString = function(object) {
 };
 
 /**
- * Mixin for Component to handle native HTML components
+ * Base component for all native controls.
  */
 exports.NativeControl = Montage.create(Component, {
 

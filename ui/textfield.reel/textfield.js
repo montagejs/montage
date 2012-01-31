@@ -11,7 +11,6 @@ var Montage = require("montage").Montage,
  * The Text input
  */
 var Textfield = exports.Textfield = Montage.create(TextInput, {
-    hasTemplate: {value: true}
 });
 
 // Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element

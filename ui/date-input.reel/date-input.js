@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TextInput = require("ui/text-input").TextInput;
 /**
- * The Text input
+ * The Component wrapper for input type="date"
  */
 var DateInput = exports.DateInput = Montage.create(TextInput, {
     hasTemplate: {value: true}

@@ -15,23 +15,3 @@ var NumberInput = exports.NumberInput = Montage.create(TextInput, {
 });
 
 NumberInput.addProperties(StandardInputAttributes);
-
-/*
-NumberInput.addProperties({        
-        autocomplete: null,
-        disabled: {dataType: 'boolean'},
-        max: null,
-        maxlength: null,
-        min: null,
-        multiple: null,
-        name: null,
-        pattern: null,
-        placeholder: null,
-        readonly: {dataType: 'boolean'},
-        required: {dataType: 'boolean'},
-        size: null,
-        step: null
-});
-*/
-
-// API - autocomplete, disabled, max, maxlength, min, multiple, list, name, pattern, placeholder, readonly, required, size, step

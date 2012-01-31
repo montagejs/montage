@@ -10,15 +10,12 @@ var Montage = require("montage").Montage,
     NativeControl = require("ui/native-control").NativeControl;
 
 var STRING_CLASS = '[object String]';
-var ARRAY_CLASS = '[object Array]';
 var _toString = Object.prototype.toString;
 
 var isString = function(object) {
     return _toString.call(object) === STRING_CLASS;
 };
-var isArray = function(object) {
-    return _toString.call(object) === ARRAY_CLASS;
-};
+
     
 var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     
@@ -46,7 +43,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     _content: {value: null, enumerable: false},
     content: {
         set: function(value) {
-            if(!isArray(value)) {
+            if(!Array.isArray(value)) {
                 value = [value];
             }
             this._content = value;

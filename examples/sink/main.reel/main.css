@@ -78,6 +78,18 @@
 
 /* Montage components CSS Override */
 
+/* The invalid state is added by the browser if it detects an error in the entered text */
+ :invalid {
+     border: 1px solid #E73525;
+     border-style: dashed;
+ }
+ 
+ .montage-text-invalid {
+     border: 1px solid #E73525;
+     border-style: dashed;
+ }
+ 
+
 
 /* Spin button */
 input::-webkit-outer-spin-button {

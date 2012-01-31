@@ -14,7 +14,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     draw: {
         value: function() {
             // Call super
-            var fn = Object.getPrototypeOf(CheckInput).draw.call(this);
+            Object.getPrototypeOf(CheckInput).draw.call(this);
             this._element.setAttribute("aria-checked", this._checked);
         }
     },

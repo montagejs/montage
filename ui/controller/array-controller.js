@@ -643,7 +643,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             this.dispatchEvent(selectedIndexesChangeEvent.withPlusValue(this.selectedIndexes));
             this.dispatchEvent(selectedObjectsChangeEvent.withPlusValue(this.selectedObjects));
             
-            // TODO: changes to selectedIndexes must be reflected in selections
             if(!internalSet) {
                 // update the selections only if the selectedContentIndexes is set directly
                 this._updateSelections();                
