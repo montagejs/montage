@@ -33,15 +33,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         value: false,
         enumerable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} false
-    */
-    USE_FLATTENING: {
-        enumerable: false,
-        value: false
-    },
 
 /**
   Description TODO
@@ -289,14 +280,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   Description TODO
   @private
 */
-    _iterationFragment: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
     _refreshingItems: {
         value: false
     },
@@ -410,7 +393,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             // We caught the need to remove these items before they got inserted
             // just don't bother appending them
             deletedItem = this._itemsToAppend.pop();
-            this._deletedItems.push(deletedItem);
+            // TODO: make _deletedItems usable in _addItem
+            //this._deletedItems.push(deletedItem);
             if (--itemsToAppendCount <= this._nextDeserializedItemIx) {
                 this._nextDeserializedItemIx = itemsToAppendCount;
             }
@@ -444,66 +428,51 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Function} callback The callback method.
     */
     expandComponent: {value: function expandComponent(callback) {
-        var self = this,
-            childComponents = this.childComponents,
-            childComponent;
-
-        this.setupIterationSerialization();
-        this._iterationChildComponentsCount = childComponents.length;
-
-        if (this._iterationChildComponentsCount > 0) {
-            this._templateId = childComponents[0]._suuid || childComponents[0].uuid;
-            this._iterationTemplate = Template.templateWithComponent(this);
-        } else {
-            this._iterationTemplate = Template.create().initWithComponent(this);
+        this._setupIterationTemplate();
+        this._isComponentExpanded = true;
+        if (callback) {
+            callback();
         }
-        this._iterationTemplate.optimize();
+    }},
 
-        if (logger.isDebug) {
-            logger.debug(this._iterationTemplate.exportToString());
-        }
+    _setupIterationTemplate: {
+        value: function() {
+            var element = this._element,
+                childComponents = this.childComponents,
+                childComponent;
+            
+            this.setupIterationSerialization();
+            this._iterationChildComponentsCount = childComponents.length;
+            this._iterationChildCount = element.childNodes.length;
+            this._iterationChildElementCount = element.children.length;
 
-        // just needed to create the iteration Template, so we get rid of it.
-        this.removeIterationSerialization();
+            if (this._iterationChildComponentsCount > 0) {
+                this._templateId = childComponents[0]._suuid || childComponents[0].uuid;
+                this._iterationTemplate = Template.templateWithComponent(this);
+            } else {
+                this._iterationTemplate = Template.create().initWithComponent(this);
+            }
+            this._iterationTemplate.optimize();
+            this._removeOriginalContent = true;
+            
+            if (logger.isDebug) {
+                logger.debug(this._iterationTemplate.exportToString());
+            }
 
-        while ((childComponent = this.childComponents.shift())) {
-            if (childComponent.needsDraw) {
+            // just needed to create the iteration Template, so we get rid of it.
+            this.removeIterationSerialization();
+
+            while ((childComponent = childComponents.shift())) {
                 childComponent.needsDraw = false;
             }
-        }
-        this.childComponents = [];
-
-        this._iterationFragment = this.element.ownerDocument.createDocumentFragment();
-
-        if (this.USE_FLATTENING) {
-            this._iterationTemplate.flatten(function() {
-                if (logger.debug) {
-                    logger.debug(self, "Flattened version:  " + self._iterationTemplate.exportToString());
-                }
-                self._isComponentExpanded = true;
-                // if objects property was set before we could add the items do it now (we needed the iteration template in place)
-                if (self.objects && (self.objects.length !== self._items.length)) {
-                    self._refreshItems();
-                }
-
-                if (callback) {
-                    callback();
-                }
-            });
-        } else {
-            this._isComponentExpanded = true;
-            // if objects property was set before we could add the items do it now (we needed the iteration template in place)
+            
             if (this.objects && (this.objects.length !== this._items.length)) {
                 this._refreshItems();
             }
-
-            if (callback) {
-                callback();
-            }
         }
+    },
 
-    }},
-
+    // called on iteration instantiation
     templateDidLoad: {value: function() {
         var range = document.createRange(),
             item = this._deserializedItem;
@@ -549,11 +518,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     */
     prepareForDraw: {
         value: function() {
-
-            this._iterationChildCount = this.element.childNodes.length;
-            this._iterationChildElementCount = this.element.childElementCount;
-
-            this.element.innerHTML = "";
             this._refreshSelectionTracking();
         }
     },
@@ -927,12 +891,17 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             activatedCount,
             activatableElementCount,
             iterationElement;
-
+            
+        if (this._removeOriginalContent) {
+            this._removeOriginalContent = false;
+            repetitionElement.innerHTML = "";
+        }
+        
         // Before we remove any nodes, make sure we "deselect" them
         //but only for single element iterations
         if (1 === this._iterationChildElementCount) {
 
-            iterationElements = this.element.children;
+            iterationElements = repetitionElement.children;
 
             if (this._activeIndexesToClearOnDraw &&
                 this._activeIndexesToClearOnDraw.length > 0) {
@@ -979,7 +948,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 rangeToRemove.setEnd(repetitionElement, iItem.end);
 
                 rangeToRemove.extractContents();
-                //TODO do we need to do anything with the bindings that are attached?
             }
             this._itemsToRemove = [];
         }
@@ -1018,7 +986,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // basically we have a couple of ways to attack this; leaving it like this for now prior to optimization
         if (null !== this.selectedIndexes && this.selectedIndexes.length > 0 && 1 === this._iterationChildElementCount) {
 
-            iterationElements = this.element.children;
+            iterationElements = repetitionElement.children;
             selectionCount = this.selectedIndexes.length;
             selectableElementCount = Math.min(selectionCount, iterationElements.length);
 
@@ -1154,7 +1122,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
         this.eventManager.registerEventHandlerForElement(this, item.element);
         if (logger.debug) {
-            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.element);
+            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " , item.element);
         }
     }}
 });
