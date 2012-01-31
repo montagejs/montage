@@ -7,9 +7,9 @@
 var Montage = require("montage").Montage,
 Component = require("ui/component").Component,
 TextInput = require("ui/text-input").TextInput;
-    
+
 var TextArea = exports.TextArea = Montage.create(TextInput, {
-    
+
     textContent: {
         get: function() {
             return this.value;
@@ -18,7 +18,7 @@ var TextArea = exports.TextArea = Montage.create(TextInput, {
             this.value = v;
         }
     }
-    
+
 });
 
 TextArea.addAttributes({
@@ -26,7 +26,7 @@ TextArea.addAttributes({
         cols: null,
         dirname: null,
         disabled: {dataType: 'boolean'},
-        form: null,        
+        form: null,
         maxlength: null,
         name: null,
         placeholder: null,

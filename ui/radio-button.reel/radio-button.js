@@ -40,7 +40,7 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
                 this._valueSyncedWithInputField = false;
                 this.needsDraw = true;
             }
-            
+
             if(this._checked === true) {
                 if(this.name && this.name !== null) {
                     // dispatch an event to all other radiobuttons with the same name
@@ -51,20 +51,20 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
                     anEvent.type = "checked";
                     RadioButton.dispatchEvent(anEvent);
                     RadioButton.addEventListener('checked', this);
-                }                
-            }                        
+                }
+            }
         }
     },
-    
-    
+
+
     handleChecked:{
         value: function(evt) {
             // if we receive this event, it means that some other radiobutton with the same name
-            // has been checked. So, mark this as unchecked. 
+            // has been checked. So, mark this as unchecked.
             if(this.name === evt.detail.name) {
                 this.checked = false;
                 RadioButton.removeEventListener('checked', this);
-            }            
+            }
         }
     },
 

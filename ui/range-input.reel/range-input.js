@@ -10,7 +10,7 @@ var Montage = require("montage").Montage,
  * The input type="range" field
  */
 var RangeInput = exports.RangeInput = Montage.create(TextInput, {
-    
+
 });
 
 RangeInput.addAttributes({

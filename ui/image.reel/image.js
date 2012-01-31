@@ -6,7 +6,7 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl;
-    
+
 /**
  * The <img> native control with binding support for the standard attributes
  */
