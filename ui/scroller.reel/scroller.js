@@ -154,13 +154,13 @@ exports.Scroller = Montage.create(Component, {
         }
     },
     
-    handleScrollStart: {
+    handleTranslateStart: {
         value: function(event) {
             this._scrollBars.opacity = .5;
         }
     },
 
-    handleScrollEnd: {
+    handleTranslateEnd: {
         value: function(event) {
             this._scrollBars.opacity = 0;
         }

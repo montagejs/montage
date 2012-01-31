@@ -502,10 +502,10 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
             var self = this;
 
             this.translateY = this._translateY - (event.wheelDeltaY * 20) / 120;
-            this._dispatchScrollStart();
+            this._dispatchTranslateStart();
             window.clearTimeout(this._translateEndTimeout);
             this._translateEndTimeout = window.setTimeout(function () {
-                self._dispatchScrollEnd();
+                self._dispatchTranslateEnd();
             }, 400);
             event.preventDefault();
         }
@@ -534,7 +534,7 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
             this._pointerX=x;
             this._pointerY=y;
             if (this._isFirstMove) {
-                this._dispatchScrollStart();
+                this._dispatchTranslateStart();
                 this._isFirstMove = false;
             }
         }
@@ -567,25 +567,25 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
         }
     },
 
-    _dispatchScrollStart: {
+    _dispatchTranslateStart: {
         enumerable: false,
         value: function () {
-            var scrollEndEvent = document.createEvent("CustomEvent");
+            var translateStartEvent = document.createEvent("CustomEvent");
 
-            scrollEndEvent.initCustomEvent("scrollStart", true, true, null);
-            scrollEndEvent.type = "scrollStart";
-            this.dispatchEvent(scrollEndEvent);
+            translateStartEvent.initCustomEvent("translateStart", true, true, null);
+            translateStartEvent.type = "translateStart";
+            this.dispatchEvent(translateStartEvent);
         }
     },
 
-    _dispatchScrollEnd: {
+    _dispatchTranslateEnd: {
         enumerable: false,
         value: function () {
-            var scrollEndEvent = document.createEvent("CustomEvent");
+            var translateEndEvent = document.createEvent("CustomEvent");
 
-            scrollEndEvent.initCustomEvent("scrollEnd", true, true, null);
-            scrollEndEvent.type = "scrollEnd";
-            this.dispatchEvent(scrollEndEvent);
+            translateEndEvent.initCustomEvent("translateEnd", true, true, null);
+            translateEndEvent.type = "translateEnd";
+            this.dispatchEvent(translateEndEvent);
         }
     },
 
@@ -737,7 +737,7 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
                 if (self.isAnimating) {
                     self.needsFrame=true;
                 } else {
-                    this._dispatchScrollEnd();
+                    this._dispatchTranslateEnd();
                 }
             };
             this._animationInterval();
