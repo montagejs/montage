@@ -33,15 +33,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         value: false,
         enumerable: false
     },
-/**
-        Description TODO
-        @type {Property}
-        @default {Boolean} false
-    */
-    USE_FLATTENING: {
-        enumerable: false,
-        value: false
-    },
 
 /**
   Description TODO
@@ -233,7 +224,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   Description TODO
   @private
 */
-    _childComponentsCount: {
+    _iterationChildComponentsCount: {
         enumerable: false,
         serializable: true,
         value: null
@@ -289,14 +280,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   Description TODO
   @private
 */
-    _iterationFragment: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
     _refreshingItems: {
         value: false
     },
@@ -332,7 +315,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             // or well I'm trying a flag right
             if (neededItemCount > 0) {
                 // _addItem might be completly synchrounous since we cache both template and deserializer so we need to set this before adding any item otherwise it will trigger a draw after every iteration template instantiation.
-                this._expectedChildComponentsCount += (this._childComponentsCount||1) * neededItemCount;
+                this._expectedChildComponentsCount += (this._iterationChildComponentsCount||1) * neededItemCount;
                 this.canDrawGate.setField("iterationLoaded", false);
                 // Need to add more items
                 for (i = 0; i < neededItemCount; i++) {
@@ -373,10 +356,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // for clarity sake
         this._itemsToAppend.push(this._currentItem);
         index = items.length + this._itemsToAppend.length - 1;
-
         self._canDraw = false;
-        componentsCount = this._childComponentsCount;
-
+        componentsCount = this._iterationChildComponentsCount;
         this._iterationTemplate.instantiateWithComponent(this, function() {
             if (componentsCount === 0) {
                 if (++self._childLoadedCount === self._expectedChildComponentsCount) {
@@ -384,11 +365,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 }
             } else {
                 childComponents = self.childComponents;
-                componentStartIndex = index * self._childComponentsCount;
+                componentStartIndex = index * self._iterationChildComponentsCount;
                 componentEndIndex = componentStartIndex + componentsCount;
                 for (var i = componentStartIndex; i < componentEndIndex; i++) {
                     childComponent = childComponents[i];
-                    childComponent.element.id = childComponent.element.id + "-" + index;
                     childComponent.needsDraw = true;
                     childComponent.loadComponentTree(function() {
                         if (++self._childLoadedCount === self._expectedChildComponentsCount) {
@@ -405,13 +385,14 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 */
     _deleteItem: {value: function() {
 
-        var deletedItem, itemIndex, removedComponents, childComponents = this.childComponents, childComponentsCount = this._childComponentsCount,
+        var deletedItem, itemIndex, removedComponents, childComponents = this.childComponents, childComponentsCount = this._iterationChildComponentsCount,
             itemsToAppendCount = this._itemsToAppend.length;
         if (itemsToAppendCount > 0) {
             // We caught the need to remove these items before they got inserted
             // just don't bother appending them
             deletedItem = this._itemsToAppend.pop();
-            this._deletedItems.push(deletedItem);
+            // TODO: make _deletedItems usable in _addItem
+            //this._deletedItems.push(deletedItem);
             if (--itemsToAppendCount <= this._nextDeserializedItemIx) {
                 this._nextDeserializedItemIx = itemsToAppendCount;
             }
@@ -426,7 +407,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             this._childLoadedCount -= childComponentsCount;
             this._expectedChildComponentsCount -= childComponentsCount;
             for (var i = 0, l = removedComponents.length; i < l; i++) {
-                this.cleanupDeletedComponentTree(removedComponents[i]);
+                removedComponents[i].cleanupDeletedComponentTree();
             }
         } else {
             this._childLoadedCount--;
@@ -445,66 +426,51 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Function} callback The callback method.
     */
     expandComponent: {value: function expandComponent(callback) {
-        var self = this,
-            childComponents = this.childComponents,
-            childComponent;
-
-        this.setupIterationSerialization();
-        this._childComponentsCount = childComponents.length;
-
-        if (this._childComponentsCount > 0) {
-            this._templateId = childComponents[0]._suuid || childComponents[0].uuid;
-            this._iterationTemplate = Template.templateWithComponent(this);
-        } else {
-            this._iterationTemplate = Template.create().initWithComponent(this);
+        this._setupIterationTemplate();
+        this._isComponentExpanded = true;
+        if (callback) {
+            callback();
         }
-        this._iterationTemplate.optimize();
+    }},
 
-        if (logger.isDebug) {
-            logger.debug(this._iterationTemplate.exportToString());
-        }
+    _setupIterationTemplate: {
+        value: function() {
+            var element = this._element,
+                childComponents = this.childComponents,
+                childComponent;
 
-        // just needed to create the iteration Template, so we get rid of it.
-        this.removeIterationSerialization();
+            this.setupIterationSerialization();
+            this._iterationChildComponentsCount = childComponents.length;
+            this._iterationChildCount = element.childNodes.length;
+            this._iterationChildElementCount = element.children.length;
 
-        while ((childComponent = this.childComponents.shift())) {
-            if (childComponent.needsDraw) {
+            if (this._iterationChildComponentsCount > 0) {
+                this._templateId = childComponents[0]._suuid || childComponents[0].uuid;
+                this._iterationTemplate = Template.templateWithComponent(this);
+            } else {
+                this._iterationTemplate = Template.create().initWithComponent(this);
+            }
+            this._iterationTemplate.optimize();
+            this._removeOriginalContent = true;
+
+            if (logger.isDebug) {
+                logger.debug(this._iterationTemplate.exportToString());
+            }
+
+            // just needed to create the iteration Template, so we get rid of it.
+            this.removeIterationSerialization();
+
+            while ((childComponent = childComponents.shift())) {
                 childComponent.needsDraw = false;
             }
-        }
-        this.childComponents = [];
 
-        this._iterationFragment = this.element.ownerDocument.createDocumentFragment();
-
-        if (this.USE_FLATTENING) {
-            this._iterationTemplate.flatten(function() {
-                if (logger.debug) {
-                    logger.debug(self, "Flattened version:  " + self._iterationTemplate.exportToString());
-                }
-                self._isComponentExpanded = true;
-                // if objects property was set before we could add the items do it now (we needed the iteration template in place)
-                if (self.objects && (self.objects.length !== self._items.length)) {
-                    self._refreshItems();
-                }
-
-                if (callback) {
-                    callback();
-                }
-            });
-        } else {
-            this._isComponentExpanded = true;
-            // if objects property was set before we could add the items do it now (we needed the iteration template in place)
             if (this.objects && (this.objects.length !== this._items.length)) {
                 this._refreshItems();
             }
-
-            if (callback) {
-                callback();
-            }
         }
+    },
 
-    }},
-
+    // called on iteration instantiation
     templateDidLoad: {value: function() {
         var range = document.createRange(),
             item = this._deserializedItem;
@@ -513,6 +479,31 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         delete item.element;
         item.fragment = range.extractContents();
     }},
+
+    contentWillChange: {
+        value: function(content) {
+            this._refreshingItems = true;
+            this.reset();
+        }
+    },
+
+    contentDidChange: {
+        value: function() {
+            this._refreshingItems = false;
+            this._setupIterationTemplate();
+            this._skipCurrentDraw = true;
+        }
+    },
+
+    reset: {
+        value: function() {
+            this._items = [];
+            this._itemsToAppend = [];
+            this._nextDeserializedItemIx = 0;
+            this._itemsToRemove = [];
+            this._deletedItems = [];
+        }
+    },
 
     deserializedFromTemplate: {value: function deserializedFromTemplate() {
         this.setupIterationDeserialization();
@@ -550,11 +541,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     */
     prepareForDraw: {
         value: function() {
-
-            this._iterationChildCount = this.element.childNodes.length;
-            this._iterationChildElementCount = this.element.childElementCount;
-
-            this.element.innerHTML = "";
             this._refreshSelectionTracking();
         }
     },
@@ -929,11 +915,21 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             activatableElementCount,
             iterationElement;
 
+        if (this._removeOriginalContent) {
+            this._removeOriginalContent = false;
+            repetitionElement.innerHTML = "";
+            // even if there were items to remove we don't need to do that anymore.
+            if (this._skipCurrentDraw) {
+                this._skipCurrentDraw = false;
+                return;
+            }
+        }
+
         // Before we remove any nodes, make sure we "deselect" them
         //but only for single element iterations
         if (1 === this._iterationChildElementCount) {
 
-            iterationElements = this.element.children;
+            iterationElements = repetitionElement.children;
 
             if (this._activeIndexesToClearOnDraw &&
                 this._activeIndexesToClearOnDraw.length > 0) {
@@ -980,7 +976,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 rangeToRemove.setEnd(repetitionElement, iItem.end);
 
                 rangeToRemove.extractContents();
-                //TODO do we need to do anything with the bindings that are attached?
             }
             this._itemsToRemove = [];
         }
@@ -1003,8 +998,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 //now that the item has been appended, we add it to our items array
                 this._items.push(iItem);
                 // Tell childComponents that are associated with this new item
-                componentStartIndex = (itemCount + i) * this._childComponentsCount;
-                componentEndIndex = componentStartIndex + this._childComponentsCount;
+                componentStartIndex = (itemCount + i) * this._iterationChildComponentsCount;
+                componentEndIndex = componentStartIndex + this._iterationChildComponentsCount;
             }
 
             repetitionElement.appendChild(addFragment);
@@ -1019,7 +1014,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // basically we have a couple of ways to attack this; leaving it like this for now prior to optimization
         if (null !== this.selectedIndexes && this.selectedIndexes.length > 0 && 1 === this._iterationChildElementCount) {
 
-            iterationElements = this.element.children;
+            iterationElements = repetitionElement.children;
             selectionCount = this.selectedIndexes.length;
             selectableElementCount = Math.min(selectionCount, iterationElements.length);
 
@@ -1155,23 +1150,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
         this.eventManager.registerEventHandlerForElement(this, item.element);
         if (logger.debug) {
-            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.element);
+            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " , item.element);
         }
-    }},
-
-    /**
-     Remove all bindings and starts buffering the needsDraw.
-     @function
-     @param {Property} rootComponent The root component of the tree do cleanup.
-     */
-    cleanupDeletedComponentTree: {value: function(rootComponent) {
-        rootComponent.needsDraw = false;
-        rootComponent.traverseComponentTree(function(component) {
-            Object.deleteBindings(component);
-            component.canDrawGate.setField("componentTreeLoaded", false);
-            component.blockDrawGate.setField("element", false);
-            component.blockDrawGate.setField("drawRequested", false);
-            component.needsDraw = false;
-        });
     }}
 });
