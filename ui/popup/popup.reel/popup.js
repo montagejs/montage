@@ -304,7 +304,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
             var el = document.createElement('div');
             el.classList.add('montage-popup-modal-mask');
             el.style['z-index'] = 6999;
-            el.classList.add('montage-hide');
+            el.classList.add('montage-invisible');
             
             document.body.appendChild(el);            
             return el;
@@ -368,7 +368,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             this._modalDialogMask = document.querySelector('.montage-popup-modal-mask');
             this._modalDialogMask = this._modalDialogMask || this._createModalMask();
-            this._modalDialogMask.classList.remove('montage-hide');
+            this._modalDialogMask.classList.remove('montage-invisible');
         }
     },
     
@@ -388,7 +388,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 }                
             }    
             if(count <= 0) {
-                this._modalDialogMask.classList.add('montage-hide');
+                this._modalDialogMask.classList.add('montage-invisible');
             }                    
         }
     },
@@ -413,9 +413,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // For the first release, we position inside the didDraw
                 //this._positionPopup();
 
-                this.element.classList.remove('montage-hide');
+                this.element.classList.remove('montage-invisible');
                 this.content.element.style.display = 'block';
-                this.content.element.classList.remove('montage-hide');
+                this.content.element.classList.remove('montage-invisible');
                 // TODO do we want the panel to be focusable?
                 // this.content.element.setAttribute("tabindex", "0"); // Make the alert focusable
 
@@ -426,10 +426,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     }, this.autoDismiss);
                 }
             } else {
-                if (!this.element.classList.contains('montage-hide')) {
-                    this.element.classList.add('montage-hide');
+                if (!this.element.classList.contains('montage-invisible')) {
+                    this.element.classList.add('montage-invisible');
                 }
-                this.content.element.classList.add('montage-hide');
+                this.content.element.classList.add('montage-invisible');
                 if(this._popupSlot) {
                     this._popupSlot.content = null;
                 }

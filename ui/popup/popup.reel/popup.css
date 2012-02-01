@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /* these need to be moved to montage.css when that is created */
-.montage-hide {
+.montage-invisible {
     display: none;
 }
 .clearfix:after {
