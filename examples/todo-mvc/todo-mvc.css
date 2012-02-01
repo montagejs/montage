@@ -8,6 +8,10 @@ html {
    background-color: hsl(0,0%,94%);
 }
 
+input{font-size:100%;margin:0;vertical-align:baseline;*vertical-align:middle;}
+input{line-height:normal;*overflow:visible;}
+button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
+
 .montage-app-bootstrapping,
 .montage-app-loading {
    color: hsl(0,0%,60%);
@@ -15,6 +19,7 @@ html {
    font: 16px/400px "Lucida Grande", Lucida, Verdana, sans-serif;
    text-shadow: 0 -1px 2px hsla(0,0%,98%,0.9);
 }
+
 
 .main,
 #splash {

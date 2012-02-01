@@ -20,22 +20,27 @@
                     "value": "To be implemented"
                 }
             },
-            "button-group": {
-                "module": "components/button-group-example.reel",
-                "name": "ButtonGroupExample",
+            "toggle-button": {
+                "module": "components/toggle-button-example.reel",
+                "name": "ToggleButtonExample",
                 "properties": {
                 }
-            },                        
+            },
             "button": {
                 "module": "components/button-example.reel",
                 "name": "ButtonExample",
                 "properties": {
-                    
                 }
             },
             "checkbox": {
                 "module": "components/checkbox-example.reel",
                 "name": "CheckboxExample",
+                "properties": {
+                }
+            },
+            "radio-button": {
+                "module": "components/radio-button-example.reel",
+                "name": "RadioButtonExample",
                 "properties": {
                 }
             },
@@ -99,17 +104,48 @@
                 "properties": {
                 }
             },
-            
+            "textarea": {
+                "module": "components/textarea-example.reel",
+                "name": "TextareaExample",
+                "properties": {
+                }
+            },
+            "range-input": {
+                "module": "components/range-input-example.reel",
+                "name": "RangeInputExample",
+                "properties": {
+                }
+            },
+            "number-input": {
+                "module": "components/number-input-example.reel",
+                "name": "NumberInputExample",
+                "properties": {
+                }
+            },
+            "select-input": {
+                "module": "components/select-input-example.reel",
+                "name": "SelectInputExample",
+                "properties": {
+                }
+            },
+            "anchor": {
+                "module": "components/anchor-example.reel",
+                "name": "AnchorExample",
+                "properties": {
+                }
+            },
+
             "content": {
                 "module": "montage/ui/substitution.reel",
                 "name": "Substitution",
                 "properties": {
                     "element": {"#": "content"},
                     "switchComponents": {
-                        "button-group": {"@": "button-group"},
+                        "toggle-button": {"@": "toggle-button"},
                         "button": {"@": "button"},
                         "combo-box": {"@": "tbi"},
                         "checkbox": {"@": "checkbox"},
+                        "radio-button": {"@": "radio-button"},
                         "image": {"@": "image"},
                         "popup1": {"@": "popup"},
                         "progress": {"@": "progress"},
@@ -119,25 +155,30 @@
                         "repetition": {"@": "repetition"},
                         "tabs": {"@": "tabs"},
                         "slider": {"@": "slider"},
-                        "input-text": {"@": "input-text"}
+                        "input-text": {"@": "input-text"},
+                        "textarea": {"@": "textarea"},
+                        "number-input": {"@": "number-input"},
+                        "range-input": {"@": "range-input"},
+                        "select-input": {"@": "select-input"},
+                        "anchor": {"@": "anchor"}
                     },
                     "delegate": {"@": "owner"}
                 },
                 "bindings": {
                     "switchValue": {
                         "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "sandbox.selectedItem.value",
+                        "boundObjectPropertyPath": "sandbox.selectedItem",
                         "oneway": true
                     }
                 }
             },
-            
+
             "owner": {
                 "module": "content.reel",
                 "name": "content",
                 "properties": {
                     "element": {"#": "content"}
-                }                
+                }
             }
         }
     </script>

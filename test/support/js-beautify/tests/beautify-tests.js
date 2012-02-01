@@ -308,7 +308,7 @@ function run_beautifier_tests(test_obj)
 
 
 
-    opts.jslint_happy = true; 
+    opts.jslint_happy = true;
 
     bt('a=typeof(x)', 'a = typeof (x)');
     bt('x();\n\nfunction(){}', 'x();\n\nfunction () {}');

@@ -120,23 +120,21 @@ if (typeof window !== "undefined") {
      */
     exports.SerializationCompiler = function(config, compile) {
         return function(module) {
-            module = compile(module);
+            compile(module);
+            if (!module.factory)
+                return;
             var defaultFactory = module.factory;
             module.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
                 for (var symbol in exports) {
+                    var object = exports[symbol];
                     // avoid attempting to reinitialize an aliased property
-                    if (
-                        Object.prototype.hasOwnProperty.call(
-                            exports[symbol],
-                            "_montage_metadata"
-                        )
-                    ) {
-                        exports[symbol]._montage_metadata.aliases.push(symbol);
-                        exports[symbol]._montage_metadata.objectName = symbol;
-                    } else if (!Object.isSealed(exports[symbol])) {
+                    if (object.hasOwnProperty("_montage_metadata")) {
+                        object._montage_metadata.aliases.push(symbol);
+                        object._montage_metadata.objectName = symbol;
+                    } else if (!Object.isSealed(object)) {
                         Object.defineProperty(
-                            exports[symbol],
+                            object,
                             "_montage_metadata",
                             {
                                 value: {
@@ -164,12 +162,13 @@ if (typeof window !== "undefined") {
      */
     var reelExpression = /([^\/]+)\.reel$/;
     exports.ReelLoader = function (config, load) {
-        return function (id, callback) {
+        return function (id, module) {
             var match = reelExpression.exec(id);
             if (match) {
-                return load(id + "/" + match[1], callback);
+                module.redirect = id + "/" + match[1];
+                return module;
             } else {
-                return load(id, callback);
+                return load(id, module);
             }
         };
     };
@@ -182,21 +181,18 @@ if (typeof window !== "undefined") {
      */
     exports.TemplateCompiler = function(config, compile) {
         return function(module) {
+            if (!module.location)
+                return;
             var root = module.location.match(/(.*\/)?(?=[^\/]+\.html$)/);
             if (root) {
                 module.dependencies = module.dependencies || [];
-                var originalFactory = module.factory;
-                module.factory = function(require, exports, module) {
-                    if (originalFactory) {
-                        originalFactory(require, exports, module);
-                    }
-                    // Use module.exports in case originalFactory changed it.
-                    module.exports.root = module.exports.root || root;
-                    module.exports.content = module.exports.content || module.text;
+                module.exports = {
+                    root: root,
+                    content: module.text
                 };
                 return module;
             } else {
-                return compile(module);
+                compile(module);
             }
         };
     };
@@ -220,8 +216,9 @@ if (typeof window !== "undefined") {
         var relativeElement = document.createElement("a");
         exports.resolve = function (base, relative) {
             base = String(base);
-            if (!/^\w+:/.test(base))
-                throw new Error("Can't resolve from relative base");
+            if (!/^[\w\-]+:/.test(base)) {
+                throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
+            }
             var restore = baseElement.href;
             baseElement.href = base;
             relativeElement.href = relative;

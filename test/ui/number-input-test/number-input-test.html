@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>NumberInputTest</title>
+    <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+     <script type="text/montage-serialization">
+{
+    "num1": {
+        "module": "montage/ui/number-input.reel",
+        "name": "NumberInput",
+        "properties": {
+            "element": {"#": "num1"}
+        }
+    },
+
+    "num2": {
+        "module": "montage/ui/number-input.reel",
+        "name": "NumberInput",
+        "properties": {
+            "element": {"#": "num2"}
+        }
+    },
+
+    "num3": {
+        "module": "montage/ui/number-input.reel",
+        "name": "NumberInput",
+        "properties": {
+            "element": {"#": "num3"},
+            "accept": "",
+            "alt": "num3",
+            "autocomplete": "on",
+            "autofocus": "true",
+            "checked": "false",
+            "dirname": "dirname",
+            "disabled": "true",
+            "form": "form",
+            "formaction": "formaction",
+            "formenctype": "formenctype",
+            "formmethod": "formmethod",
+            "formnovalidate": "formnovalidate",
+            "formtarget": "formtarget",
+            "height": "200",
+            "maxlength": "200",
+            "name": "num3",
+            "pattern": "",
+            "placeholder": "enter text",
+            "readonly": "true",
+            "required": "true",
+            "size": "20",
+            "src": "src",
+            "width": "200"
+        }
+    },
+
+    "test": {
+        "module": "ui/number-input-test/number-input-test",
+        "name": "NumberInputTest",
+        "properties": {
+            "num1": {"@": "num1"},
+            "num2": {"@": "num2"},
+            "num3": {"@": "num3"}
+        }
+    },
+
+    "application": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "delegate": {"@": "test"}
+
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <form id="input-form" class="form-stacked">
+        <label for="num1">Required Text</label>
+        <input type="number" placeholder="Enter number" id="num1" required maxlength="20" size="10" min="0" max="100" step="5"/>
+
+        <label for="num2">Disabled Initially</label>
+        <input type="number" id="num2" disabled value="10" />
+
+        <label for="num3"></label>
+        <input type="text" id="num3"  value="0" max="20" min="0" step="2"  width="100" height="100" multiple="true" name="num3" list="list1" />
+
+    </form>
+</body>
+</html>

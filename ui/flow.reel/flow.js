@@ -4,7 +4,7 @@ var Montage = require("montage").Montage,
 var Flow = exports.Flow = Montage.create(Component, {
 
     // TODO: Review _externalUpdate
-    
+
     _externalUpdate: {
         enumerable: false,
         value: true

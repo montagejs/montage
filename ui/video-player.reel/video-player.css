@@ -69,7 +69,7 @@ MARK:    Controller
 .montage-video-player .controller {
     display: -webkit-box;
     position: relative;
-    max-width: 1280px;    
+    max-width: 1280px;
     color: #ffffff;
     margin: 0 auto;
     overflow: hidden;
@@ -152,7 +152,7 @@ MARK:    Button Panel
 .montage-video-player .play                   { background-image: url("images/play.png"); }
 .montage-video-player .play.playing          { background-image: url("images/pause.png"); }
 
-.montage-video-player .ff, 
+.montage-video-player .ff,
 .montage-video-player .rw,
 .montage-video-player .repeat
 { display: none; } /* Temporarly disabled */
@@ -177,7 +177,7 @@ MARK:    Volume Panel
 .montage-video-player .controller-progress {
     height: 15px;
 	box-shadow: inset 0 0px 3px 1px hsla(0,0%,0%,.5);
-	background: -webkit-repeating-linear-gradient(left, hsl(0,0%,25%) 0, hsl(0,0%,25%) 3px, 
+	background: -webkit-repeating-linear-gradient(left, hsl(0,0%,25%) 0, hsl(0,0%,25%) 3px,
 														hsl(0,0%,10%) 3px, hsl(0,0%,10%) 5px);
 }
 .montage-video-player .controller-progress:before {
@@ -190,7 +190,7 @@ MARK:    Volume Panel
 .montage-video-player .volume-progress {
     width: 50%;
     height: 100%;
-    background: -webkit-repeating-linear-gradient(left, hsl(195,90%,50%) 0, hsl(195,90%,50%) 3px, 
+    background: -webkit-repeating-linear-gradient(left, hsl(195,90%,50%) 0, hsl(195,90%,50%) 3px,
     													transparent 3px, transparent 5px);
     -webkit-transition: width .1s ease-in-out;
 }
@@ -201,16 +201,16 @@ MARK:    Volume Panel
 }
 
 .montage-video-player .volume-minus        { background-image: url("images/volume-down.png"); }
-.montage-video-player .volume-minus:active { 
+.montage-video-player .volume-minus:active {
 	background-color: transparent;
-	background-image: url("images/volume-down.png"), 
-	-webkit-linear-gradient(right, hsla(0,0%,0%,0), hsla(0,0%,0%,.5) ); 
+	background-image: url("images/volume-down.png"),
+	-webkit-linear-gradient(right, hsla(0,0%,0%,0), hsla(0,0%,0%,.5) );
 }
 .montage-video-player .volume-plus         { background-image: url("images/volume-up.png"); }
-.montage-video-player .volume-plus:active { 
+.montage-video-player .volume-plus:active {
 	background-color: transparent;
-	background-image: url("images/volume-up.png"), 
-	-webkit-linear-gradient(left, hsla(0,0%,0%,0), hsla(0,0%,0%,.5) ); 
+	background-image: url("images/volume-up.png"),
+	-webkit-linear-gradient(left, hsla(0,0%,0%,0), hsla(0,0%,0%,.5) );
 }
 
 .montage-video-player  .controller-volume-panel .mute               { display: none; }  /* also MUTE[muted] */

@@ -34,7 +34,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
     msg: {
         value: 'Are you sure?'
     },
-    
+
     /**
         Text to display on the OK button
         @type {Property}
@@ -43,7 +43,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
     okLabel: {
         value: 'OK'
     },
-    
+
     /**
         Text to display on the Cancel button
         @type {Property}
@@ -52,7 +52,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
     cancelLabel: {
         value: 'Cancel'
     },
-    
+
 /**
   Description TODO
   @private
@@ -164,9 +164,9 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
                 confirm = Confirm.create();
                 popup.content = confirm;
             }
-            
+
             confirm = popup.content;
-            
+
             if (typeof(options) === "string") {
                 confirm.msg = options;
                 confirm.okLabel = "OK";
@@ -176,7 +176,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
                 confirm.okLabel = options.okLabel || "OK";
                 confirm.cancelLabel = options.cancelLabel || "Cancel";
             }
-            
+
             confirm.okCallback = okCallback || null;
             confirm.cancelCallback = cancelCallback || null;
 

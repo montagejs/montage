@@ -1,13 +1,8 @@
 var Montage = require("montage").Montage,
-    Scroll = require("ui/scroll").Scroll,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component
+    TranslateComposer = require("ui/composer/translate-composer").TranslateComposer;
 
-var Scroller = exports.Scroller = Montage.create(Component, {
-
-    _scroll: {
-        enumerable: false,
-        value: null
-    },
+exports.Scroller = Montage.create(Component, {
 
     _scrollX: {
         enumerable: false,
@@ -37,6 +32,14 @@ var Scroller = exports.Scroller = Montage.create(Component, {
             this._scrollY = value;
             this.needsDraw = true;
         }
+    },
+
+    _maxTranslateX: {
+        value: 0
+    },
+
+    _maxTranslateY: {
+        value: 0
     },
 
     _axis: {
@@ -139,7 +142,7 @@ var Scroller = exports.Scroller = Montage.create(Component, {
         enumerable: false,
         value: null
     },
-    
+
     templateDidLoad: {
         value: function () {
             var orphanedFragment,
@@ -150,28 +153,16 @@ var Scroller = exports.Scroller = Montage.create(Component, {
             this._content.appendChild(orphanedFragment);
         }
     },
-    
-    prepareForDraw: {
-        value: function () {
-            var self = this;
-            
-            this._scroll = Montage.create(Scroll);
-            this._scroll.element = this._element;
-            this._scroll.component = this;
-            Object.defineBinding(this._scroll, "scrollX", {boundObject: this, boundObjectPropertyPath: "scrollX", oneway: false});
-            Object.defineBinding(this._scroll, "scrollY", {boundObject: this, boundObjectPropertyPath: "scrollY", oneway: false});
-            Object.defineBinding(this._scroll, "axis", {boundObject: this, boundObjectPropertyPath: "axis", oneway: false});
-            Object.defineBinding(this._scroll, "hasBouncing", {boundObject: this, boundObjectPropertyPath: "hasBouncing", oneway: false});
-            Object.defineBinding(this._scroll, "hasMomentum", {boundObject: this, boundObjectPropertyPath: "hasMomentum", oneway: false});
-            Object.defineBinding(this._scroll, "bouncingDuration", {boundObject: this, boundObjectPropertyPath: "bouncingDuration", oneway: false});
-            Object.defineBinding(this._scroll, "momentumDuration", {boundObject: this, boundObjectPropertyPath: "momentumDuration", oneway: false});
-            this._scroll.deserializedFromTemplate();
-            this._scroll.addEventListener("scrollStart", function () {
-                self._scrollBars.opacity = .5;
-            }, false);
-            this._scroll.addEventListener("scrollEnd", function () {
-                self._scrollBars.opacity = 0;
-            }, false);
+
+    handleTranslateStart: {
+        value: function(event) {
+            this._scrollBars.opacity = .5;
+        }
+    },
+
+    handleTranslateEnd: {
+        value: function(event) {
+            this._scrollBars.opacity = 0;
         }
     },
 
@@ -182,18 +173,18 @@ var Scroller = exports.Scroller = Montage.create(Component, {
             this._top = this._element.offsetTop;
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
-            this._scroll.maxScrollX = this._content.scrollWidth - this._width;
-            if (this._scroll.maxScrollX < 0) {
-                this._scroll.maxScrollX = 0;
+            this._maxTranslateX = this._content.scrollWidth - this._width;
+            if (this._maxTranslateX < 0) {
+                this._.maxTranslateX = 0;
             }
-            this._scroll.maxScrollY = this._content.offsetHeight - this._height;
-            if (this._scroll.maxScrollY < 0) {
-                this._scroll.maxScrollY = 0;
+            this._maxTranslateY = this._content.offsetHeight - this._height;
+            if (this._maxTranslateY < 0) {
+                this._maxTranslateY = 0;
             }
-            var delegateValue = this.callDelegateMethod("didSetMaxScroll", {x: this._scroll.maxScrollX, y: this._scroll.maxScrollY});
+            var delegateValue = this.callDelegateMethod("didSetMaxScroll", {x: this._maxTranslateX, y: this._maxTranslateY});
             if (delegateValue) {
-                this._scroll.maxScrollX = delegateValue.x;
-                this._scroll.maxScrollY = delegateValue.y;
+                this._maxTranslateX = delegateValue.x;
+                this._maxTranslateY = delegateValue.y;
             }
             switch (this._displayScrollbars) {
                 case "horizontal":
@@ -209,15 +200,15 @@ var Scroller = exports.Scroller = Montage.create(Component, {
                     this._scrollBars.displayVertical = true;
                     break;
                 case "auto":
-                    if (this._scroll._maxScrollX && this._scroll._maxScrollY) {
+                    if (this._maxTranslateX && this._maxTranslateY) {
                         this._scrollBars.displayHorizontal = true;
                         this._scrollBars.displayVertical = true;
                     } else {
-                        if (this._scroll._maxScrollX) {
+                        if (this._maxTranslateX) {
                             this._scrollBars.displayHorizontal = true;
                             this._scrollBars.displayVertical = false;
                         } else {
-                            if (this._scroll._maxScrollY) {
+                            if (this._maxTranslateY) {
                                 this._scrollBars.displayHorizontal = false;
                                 this._scrollBars.displayVertical = true;
                             } else {
@@ -249,7 +240,7 @@ var Scroller = exports.Scroller = Montage.create(Component, {
                     this._scrollBars.verticalLength = 1;
                     this._scrollBars.verticalScroll = 0;
                 }
-            }            
+            }
         }
     },
 

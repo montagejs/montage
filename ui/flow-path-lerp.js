@@ -1,27 +1,27 @@
 var Montage = require("montage").Montage;
-    
+
 var FlowPathLerp = exports.FlowPathLerp = Montage.create(Montage, {
-	
+
     _path1: {
         enumerable: false,
         value: null
     },
-    
+
     _path2: {
         enumerable: false,
         value: null
     },
-    
+
     _interpolant: {
         enumerable: false,
         value: 0
     },
-    
+
     path1: {
         get: function () {
             return this._path1;
         },
-        set: function (value) {         
+        set: function (value) {
             this._path1 = value;
             this.resultPath = true;
         }
@@ -31,12 +31,12 @@ var FlowPathLerp = exports.FlowPathLerp = Montage.create(Montage, {
         get: function () {
             return this._path2;
         },
-        set: function (value) {         
+        set: function (value) {
             this._path2 = value;
-            this.resultPath = true;            
+            this.resultPath = true;
         }
     },
-    
+
     interpolant: {
         get: function () {
             return this._interpolant;
@@ -46,19 +46,19 @@ var FlowPathLerp = exports.FlowPathLerp = Montage.create(Montage, {
             this.resultPath = true;
         }
     },
-    
+
     _resultPath: {
         enumerable: false,
         value: null
     },
-    
+
     resultPath: {
         get: function () {
             return this._resultPath;
         },
         set: function () {
             var self = this;
-            
+
             this._resultPath = {
                 value: function (slide) {
                     var v1=self._path1.value(slide),
@@ -67,7 +67,7 @@ var FlowPathLerp = exports.FlowPathLerp = Montage.create(Montage, {
                         m2=self._interpolant,
                         result={},
                         i;
-                    
+
                     for (i in v1) {
                         if (v1.hasOwnProperty(i)&&(i!="style")) {
                             if (v2.hasOwnProperty(i)) {
@@ -80,7 +80,7 @@ var FlowPathLerp = exports.FlowPathLerp = Montage.create(Montage, {
                                 result[i]=v1[i];
                             }
                         }
-                    }                    
+                    }
                     for (i in v2) {
                         if (v2.hasOwnProperty(i)&&(i!="style")&&(!v1.hasOwnProperty(i))) {
                             result[i]=v2[i];

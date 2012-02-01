@@ -3928,7 +3928,7 @@ var JSHINT = (function (setup) {
 
     JSHINT.edition = '2011-04-16';
 
-    return itself; 
+    return itself;
 });
 
 // Make JSHINT a CommonJS module, if possible.

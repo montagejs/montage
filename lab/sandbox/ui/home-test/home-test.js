@@ -6,7 +6,7 @@ exports.HomeTest = Montage.create(Montage, {
         value: {
             value: function (slide) {
                 var path={
-                        translateX: 10+slide.time,                        
+                        translateX: 10+slide.time,
                         transformOriginY: (slide.index&1)?"top":"bottom",
                         rotateX: Math.abs(slide.speed)/1600
                     };
@@ -22,12 +22,12 @@ exports.HomeTest = Montage.create(Montage, {
                         marginBottom: "7px"
                     }
                 }
-                
+
                 return path;
             }
         }
     }
-    
+
 });
 
 /*
@@ -37,21 +37,21 @@ var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
         value: function() {
             var scroll = Montage.create(Scroll),
                 flow = Montage.create(Flow),
-                flowOffset = Montage.create(FlowOffset),      
+                flowOffset = Montage.create(FlowOffset),
                 flowIndexFromTarget = Montage.create(FlowIndexFromTarget),
                 slide=[],
                 i;
 
             scroll.element = document.getElementById("flow");
-           
-            for (i=0; i<16; i++) {            
+
+            for (i=0; i<16; i++) {
                 slide[i]=document.createElement("img");
                 slide[i].src="images/"+((i&1)?(17-(i>>1)):(i>>1))+".jpg";
             }
-            
+
             flow.element = document.getElementById("flow");
             flow.nodeList = slide;
-            flow.needsDraw = true;            
+            flow.needsDraw = true;
             flowOffset.numberOfNodes=16;
             flowOffset.scale=145;
             flow.path={
@@ -61,7 +61,7 @@ var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
                             transformOriginY: (slide.index&1)?"top":"bottom",
                             rotateX: Math.abs(slide.speed)/1600
                         };
-                    
+
                     if (slide.index&1) {
                         path.style={
                             top: "50%",
@@ -72,11 +72,11 @@ var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
                             bottom: "50%",
                             paddingBottom: "7px"
                         }
-                    }                    
+                    }
                     return path;
                 }
             };
-            
+
             Object.defineBinding(flow, "nodeOffset", {boundObject: flowOffset, boundObjectPropertyPath: "offset"});
             Object.defineBinding(scroll, "scrollX", {boundObject: flowOffset, boundObjectPropertyPath: "origin"});
             Object.defineBinding(scroll, "maxScrollX", {boundObject: flowOffset, boundObjectPropertyPath: "length"});

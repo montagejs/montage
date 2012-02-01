@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Anchor Example</title>
+    <script type="text/montage-serialization">
+{
+
+    "data": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "data",
+                "oneway": true
+            }
+        }
+    },
+
+    "list1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "data"},
+            "axis": "horizontal"
+        }
+    },
+
+    "link": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
+                "oneway": true
+            },
+            "textContent": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+
+    "desc": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
+                "oneway": true
+            }
+        }
+    },
+
+
+    "owner": {
+        "module": "components/image-example.reel",
+        "name": "AnchorExample",
+        "properties": {
+            "element": {"#": "example-root"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        }
+    }
+}
+    </script>
+
+    <style>
+        .thumb {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #fff;
+        }
+        .thumbs-list .selected {
+            border: 5px solid #FE4365;
+        }
+        .img-main {
+            width: 480px;
+            height: 480px;
+        }
+    </style>
+
+
+</head>
+<body>
+    <div id="example-root">
+        <div class="row">
+            <div class="span8">
+                <h3>Anchor</h3>
+                <p>
+                    The Anchor component wraps an &lt;a> element.
+                    </p>
+            </div>
+        </div>
+
+
+
+                <div class="row">
+                    <div class="span12">
+
+                        <h4>Demo</h4>
+                            <div class="demo">
+                                <p>
+                                     Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
+                                 </p>
+
+                                <table id="list1" class="bordered-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Description</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="table-row">
+                                        <tr>
+                                            <td><a id="link" target="_blank"></a></td>
+                                            <td><span id="desc"></span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <section>
+                        <a href="m-js/examples/sink/components/anchor-input-example.reel" target="_blank">View Demo Source</a>
+                    </section>
+
+                    <section>
+                        <h4>Component Properties</h4>
+                        <table>
+                          <thead>
+                            <tr>
+                              <th>Name</th>
+                              <th>Description</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            <tr>
+                              <td>textContent</td>
+                              <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                            </tr>
+                            <tr>
+                              <td>href</td>
+                              <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                            </tr>
+                            <tr>
+                              <td>hreflang</td>
+                              <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                            </tr>
+                            <tr>
+                              <td>media</td>
+                              <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                            </tr>
+                            <tr>
+                              <td>rel</td>
+                              <td>...</td>
+                            </tr>
+                            <tr>
+                              <td>target</td>
+                              <td>...</td>
+                            </tr>
+                            <tr>
+                              <td>type</td>
+                              <td>...</td>
+                            </tr>
+
+                          </tbody>
+                        </table>
+                        <p>
+                            <a href="" target="_blank">View full Documentation</a>
+                        </p>
+                    </section>
+
+
+
+    </div>
+
+</body>
+</html>

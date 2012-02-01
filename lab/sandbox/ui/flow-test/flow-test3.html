@@ -25,25 +25,20 @@
                     }
                 }
             },
-            "scroll1": {
-                "module": "montage/ui/scroll",
-                "name": "Scroll",
+            "translateComposer1": {
+                "module": "montage/ui/composer/translate-composer",
+                "name": "TranslateComposer",
                 "properties": {
                     "pointerSpeedMultiplier": 3,
                     "component": {"@": "flow1"}
                 },
                 "bindings": {
-                    "element": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "_element",
-                        "oneway": true
-                    },
-                    "maxScrollX": {
+                    "maxTranslateX": {
                         "boundObject": {"@": "flow1"},
                         "boundObjectPropertyPath": "length",
                         "oneway": true
                     },
-                    "scrollX": {
+                    "translateX": {
                         "boundObject": {"@": "flow1"},
                         "boundObjectPropertyPath": "origin"
                     }
@@ -59,9 +54,9 @@
                         "oneway": true
                     },
                     "pointerPosition": {
-                        "boundObject": {"@": "scroll1"},
+                        "boundObject": {"@": "translateComposer1"},
                         "boundObjectPropertyPath": "pointerStartEventPosition",
-                        "oneway": true                    
+                        "oneway": true
                     }
                 }
             },
@@ -98,12 +93,12 @@
                     "selectedSlideIndex": {
                         "boundObject": {"@": "nearest"},
                         "boundObjectPropertyPath": "nearestNeighborComponent",
-                        "oneway": true  
+                        "oneway": true
                     }
                 }
             },
-            
-            
+
+
             "path1": {
                 "module": "montage/ui/flow-path",
                 "name": "FlowPath",
@@ -162,7 +157,7 @@
             right: 0;
             bottom: 0;
             -webkit-perspective: 800px;
-            background: -webkit-gradient(linear, left top, left bottom, from(#000), to(#777));            
+            background: -webkit-gradient(linear, left top, left bottom, from(#000), to(#777));
         }
         .image {
             position: absolute;

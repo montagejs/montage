@@ -2573,6 +2573,15 @@ var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends 
 @class module:montage/core/converter/date-converter.DateConverter
 */
 var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends module:montage/core/converter/date-converter.DateConverter# */ {
+    /**
+     Specifies whether the converter allows partial conversion.
+     @type {Property}
+     @default {Boolean} true
+     */
+    allowPartialConversion: {
+        value: false
+    },
+
 /**
         @type {Property}
         @default {Function} Montage.create(DateValidator)

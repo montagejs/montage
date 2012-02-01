@@ -94,6 +94,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._contentController) {
                 Object.deleteBinding(this, "objects");
                 Object.deleteBinding(this, "selectedIndexes");
+                Object.deleteBinding(this, "selections");
             }
 
             this._contentController = value;
@@ -107,7 +108,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                 // And bind what we need from the new contentController
                 var objectsBindingDescriptor,
-                    selectedIndexesBindingDescriptor;
+                    selectedIndexesBindingDescriptor,
+                    selectionsBindingDescriptor;
 
                 objectsBindingDescriptor = {
                     boundObject: this._contentController,
@@ -120,11 +122,17 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                     boundObjectPropertyPath: "selectedIndexes"
                 };
 
+                selectionsBindingDescriptor = {
+                    boundObject: this._contentController,
+                    boundObjectPropertyPath: "selections"
+                };
+
                 // If we're ready for bindings...go ahead an install
                 // TODO: Look at changing this once the new serialization has been implemented
                 if (this._hasBeenDeserialized) {
                     Object.defineBinding(this, "objects", objectsBindingDescriptor);
                     Object.defineBinding(this, "selectedIndexes", selectedIndexesBindingDescriptor);
+                    Object.defineBinding(this, "selections", selectionsBindingDescriptor);
                 } else {
                     // otherwise we need to defer it until later; we haven't been deserialized yet
                     if (!this._controllerBindingsToInstall) {
@@ -133,6 +141,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                     this._controllerBindingsToInstall.objects = objectsBindingDescriptor;
                     this._controllerBindingsToInstall.selectedIndexes = selectedIndexesBindingDescriptor;
+                    this._controllerBindingsToInstall.selections = selectionsBindingDescriptor;
                 }
             }
 
@@ -173,6 +182,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this._refreshItems();
             }
+
         },
         modify: function(modificationType, newValue, oldValue) {
             this.selectedIndexes = null;
@@ -363,7 +373,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // for clarity sake
         this._itemsToAppend.push(this._currentItem);
         index = items.length + this._itemsToAppend.length - 1;
-        
+
         self._canDraw = false;
         componentsCount = this._childComponentsCount;
 
@@ -449,7 +459,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             this._iterationTemplate = Template.create().initWithComponent(this);
         }
         this._iterationTemplate.optimize();
-        
+
         if (logger.isDebug) {
             logger.debug(this._iterationTemplate.exportToString());
         }
@@ -589,11 +599,36 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             this._selectedIndexes = value;
 
+
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
         }
     },
+
+
+    // parse array with same length as objects but contains true / false(falsy)
+    // only applicable if contentController is used with the Repetition
+    selections: {
+        get: function() {
+            if(this.contentController) {
+                return this.contentController.selections;
+            }
+            return null;
+        },
+        set: function(v) {
+            if(this.contentController) {
+                this.contentController.selections = v;
+            }
+        },
+        modify: function(v) {
+            if(this.contentController) {
+                this.contentController.selections = this.selections;
+            }
+        }
+    },
+
+
 /**
   Description TODO
   @private
@@ -934,6 +969,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
         }
 
+
         // Remove items pending removal
         if (this._itemsToRemove.length && this._itemsToRemove.length > 0) {
             rangeToRemove = document.createRange();
@@ -1063,7 +1099,29 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
 
                 usefulType = type.replace(/objectAtCurrentIteration/, 'objects.' + currentIndex);
-            } else {
+            }   else {
+                return null;
+            }
+        } else if(bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/selectionAtCurrentIteration/)) {
+            if (this._currentItem) {
+                currentIndex = this._items.length + this._nextDeserializedItemIx - 1;
+                usefulBindingDescriptor = {};
+                var descriptorKeys = Object.keys(bindingDescriptor);
+                var descriptorKeyCount = descriptorKeys.length;
+                var iDescriptorKey;
+                for (var i = 0; i < descriptorKeyCount; i++) {
+                    iDescriptorKey = descriptorKeys[i];
+                    usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
+                }
+
+                //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
+
+                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'selections.' + currentIndex);
+                usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
+
+                usefulType = type.replace(/selectionAtCurrentIteration/, 'selections.' + currentIndex);
+
+            }   else {
                 return null;
             }
         }
@@ -1090,15 +1148,14 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Property} deserializer TODO
     */
     deserializeIteration: {value: function(deserializer) {
-        var item = this._itemsToAppend[this._nextDeserializedItemIx++],
-            newChildComponents = deserializer.get("childComponents");
+        var item = this._itemsToAppend[this._nextDeserializedItemIx++];
 
         this._deserializedItem = item;
         item.element = deserializer.get("element");
 
         this.eventManager.registerEventHandlerForElement(this, item.element);
         if (logger.debug) {
-            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.range);
+            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " + item.element);
         }
     }},
 

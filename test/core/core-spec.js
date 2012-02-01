@@ -118,7 +118,7 @@ function() {
             it("should have a collection of binding descriptors", function() {
                 expect(Object.getPropertyDescriptor(Montage, "_bindingDescriptors")).toBeTruthy();
             });
-            
+
             describe("defineProperty",
             function() {
                 var foo;
