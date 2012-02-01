@@ -29,7 +29,7 @@ exports.TempConverter = Montage.create(Converter, {
     }
 
 });
-    
+
 exports.NumberInputExample = Montage.create(Component, {
     prepareForDraw: {
         value: function() {

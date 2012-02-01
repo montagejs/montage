@@ -7,45 +7,45 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.SampleForm = Montage.create(Component, {
-    
+
     hasTemplate: {value: false},
-    
+
     json: {value: null},
-    
+
     _firstName: {value: null},
     firstName: {
-        set: function(v) {console.log('firstName = ' + v);this._firstName = v; this._evaluateJson();}, 
+        set: function(v) {console.log('firstName = ' + v);this._firstName = v; this._evaluateJson();},
         get: function(){ return this._firstName;}
     },
-    
+
     _lastName: {value: null},
     lastName: {
-        set: function(v) {this._lastName = v; this._evaluateJson();}, 
+        set: function(v) {this._lastName = v; this._evaluateJson();},
         get: function(){ return this._lastName;}
     },
-    
+
     _email: {value: null},
     email: {
-        set: function(v) {this._email = v; this._evaluateJson();}, 
+        set: function(v) {this._email = v; this._evaluateJson();},
         get: function(){ return this._email;}
     },
-    
+
     _url: {value: null},
     url: {
-        set: function(v) {this._url = v; this._evaluateJson();}, 
+        set: function(v) {this._url = v; this._evaluateJson();},
         get: function(){ return this._url;}
     },
-    
+
     option1: {
         set: function(v) {
             console.log('option 1', v);
-        }, 
+        },
         get: function(){ return false;}
     },
     option2: {
         set: function(v) {
             console.log('option 2', v);
-        }, 
+        },
         get: function(){ return this._option2;}
     },
     states: {
@@ -66,7 +66,7 @@ exports.SampleForm = Montage.create(Component, {
             ]
         }
     },
-    
+
     _selectedCountry: {value: null},
     selectedCountry: {
         get: function() {return this._selectedCountry;},
@@ -82,18 +82,18 @@ exports.SampleForm = Montage.create(Component, {
             }
         }
     },
-    
+
     _selectedState: {value: null},
     selectedState: {
         get: function() {return this._selectedState;},
         set: function(value) {
             if(this._selectedState !== value) {
-                this._selectedState = value;                
+                this._selectedState = value;
                 this._evaluateJson();
             }
         }
     },
-    
+
     _evaluateJson: {
         value: function() {
             this.json = JSON.stringify({
@@ -106,20 +106,20 @@ exports.SampleForm = Montage.create(Component, {
             });
         }
     },
-    
+
     prepareForDraw: {
         value: function() {
             // programatically override the maxlength property of the firstName component
             this.fname.maxlength = "10";
-            
+
             // select a Country programatically
             //this.countries.contentController.selectedIndexes = [2];
         }
     },
-    
+
     handleSubmitAction: {
         value: function(e) {
-                        
+
         }
     }
 });

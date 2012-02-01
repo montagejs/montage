@@ -37,7 +37,7 @@
                     "bindings": {
                         "value": {
                             "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "red"                            
+                            "boundObjectPropertyPath": "red"
                         }
                     }
                 },
@@ -120,7 +120,7 @@
                         }
                     }
                 },
-                
+
                 "sharpness": {
                     "module": "montage/ui/bluemoon/slider.reel",
                     "name": "Slider",
@@ -142,7 +142,7 @@
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
-                        "element": {"#": "sharpness-amount-value"}                       
+                        "element": {"#": "sharpness-amount-value"}
                     },
                     "bindings": {
                         "value": {
@@ -153,7 +153,7 @@
                         }
                     }
                 },
-                
+
                 "reset": {
                     "module": "montage/ui/button.reel",
                     "name": "Button",
@@ -173,7 +173,7 @@
 
         <style>
             .slider-example .demo{
-                
+
             }
             .slider-example .control {
                 background-color: whitesmoke;
@@ -184,8 +184,8 @@
                 vertical-align: middle;
             }
             .slider-example .range-value {
-                padding: 2px;  
-                border: 1px solid #aaa;              
+                padding: 2px;
+                border: 1px solid #aaa;
             }
             #reset {
                 margin-top: 10px;
@@ -213,45 +213,45 @@
                     <h6>Color</h6>
                     <div class="control">
                         <div>
-                            Red: 
+                            Red:
                             <div id="color-red" />
                             <span id="red-value" class="range-value">0.5</span>
                         </div>
                         <div>
-                            Green: 
+                            Green:
                             <div id="color-green"  />
                             <span id="green-value" class="range-value"/>
                         </div>
                         <div>
-                            Blue: 
+                            Blue:
                             <div id="color-blue"  />
                             <span id="blue-value" class="range-value" />
                         </div>
-                        
-                        
+
+
                     </div>
-                    
-                    
+
+
                     <h6>Sharpen</h6>
                     <div class="control">
                         <div>
-                            Amount: 
+                            Amount:
                             <div id="sharpness-amount" />
                             <span id="sharpness-amount-value" class="range-value">0.5</span>
                         </div>
                     </div>
-                   
-                    
+
+
                     <button id="reset" class="btn cancel small">Reset</button>
-                    
+
                 </div>
             </div>
             </div>
-            
+
             <section>
                 <a href="m-js/examples/sink/components/slider-example.reel" target="_blank">View Demo Source</a>
             </section>
-            
+
             <section>
                 <h4>Component Properties</h4>
                 <table>

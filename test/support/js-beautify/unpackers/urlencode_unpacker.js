@@ -7,7 +7,7 @@
 // if (Urlencoded.detect(some_string)) {
 //     var unpacked = Urlencoded.unpack(some_string);
 // }
-// 
+//
 //
 
 var Urlencoded = {

@@ -26,10 +26,10 @@
                 "boundObjectPropertyPath": "departments",
                 "oneway": true
             }
-        }        
+        }
     },
-    
-    
+
+
     "statesController": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
@@ -48,7 +48,7 @@
             "contentController": {"@": "statesController"},
             "textPropertyPath": "name",
             "valuePropertyPath": "code"
-        }         
+        }
     },
 
     "country": {
@@ -58,7 +58,7 @@
             "element": {"#": "country"}
         }
     },
-    
+
     "test": {
         "module": "ui/select-input-test/select-input-test",
         "name": "SelectInputTest",
@@ -83,13 +83,13 @@
             }
         }
     },
-    
+
     "application": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
             "delegate": {"@": "test"}
-            
+
         }
     }
 }
@@ -102,7 +102,7 @@
          <select id="dept" required="true">
              <option>Please select a Department</option>
          </select>
-        
+
         <label for="country">Country</label>
         <select id="country" required>
             <option value="">Please select a Country</option>
@@ -110,7 +110,7 @@
             <option value="INR" >India</option>
             <option value="FR">France</option>
             <option value="GER">Germany</option>
-        </select>                     
+        </select>
 
         <label for="state">State</label>
         <select id="state" required="true"></select>

@@ -24,11 +24,11 @@ var Textfield = exports.Textfield = Montage.create(EditableText,/** @lends modul
         enumerable: true,
         value: null
     },
-    
+
     _placeholder: {
         value: null
     },
-    
+
     placeholder: {
         get: function() {
             return this._placeholder;
@@ -48,7 +48,7 @@ var Textfield = exports.Textfield = Montage.create(EditableText,/** @lends modul
         enumerable: false,
         value: function() {
             this.element.classList.add('montage-textfield');
-            
+
             this.element.placeholder = this._placeholder;
         }
     }

@@ -573,7 +573,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
     _isElementInput: {value: false},
     prepareForDraw: {
         value: function() {
-            
+
             if(!this._element.tabIndex) {
                 this._element.tabIndex = 0;
             }

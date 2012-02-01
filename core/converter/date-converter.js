@@ -2581,7 +2581,7 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
     allowPartialConversion: {
         value: false
     },
-    
+
 /**
         @type {Property}
         @default {Function} Montage.create(DateValidator)

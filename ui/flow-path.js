@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage;
-    
+
 var FlowPath = exports.FlowPath = Montage.create(Montage, {
 
     _translateX: {
@@ -15,7 +15,7 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _translateY: {
 	    enumerable: false,
 	    value: null
@@ -43,7 +43,7 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _rotateX: {
 	    enumerable: false,
 	    value: null
@@ -57,7 +57,7 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _rotateY: {
 	    enumerable: false,
 	    value: null
@@ -71,7 +71,7 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _rotateZ: {
 	    enumerable: false,
 	    value: null
@@ -99,7 +99,7 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _opacity: {
 	    enumerable: false,
 	    value: null
@@ -113,12 +113,12 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
 	_updatePath: {
 	    enumerable: false,
 	    value: function () {
 	        var path = [];
-	        
+
 	        if (this._translateX) {
 	            path.push("path.translateX="+this._translateX);
 	        }
@@ -146,21 +146,21 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
 	        this.evalPath=path;
 	    }
 	},
-	
+
 	// we should be cautious with this eval, but I wanted to try serializing paths directly
-	
+
 	_evalPath: {
 	    enumerable: false,
 	    value: null
 	},
-	
+
 	evalPath: {
 	    get: function () {
 	        return this._evalPath;
 	    },
 	    set: function (value) {
 	        var error=false;
-	        
+
 	        if (typeof value === "string") {
 	            try {
 	                eval("var func=function(slide){var path={};path.style={};"+value+";return path;}");
@@ -176,10 +176,10 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
 	                this._evalPath = value;
 	            }
 	        } else {
-	            this._evalPath = value.join(";\r\n")+";";	        
-    	        eval("var func=function(slide){var path={};path.style={};"+this._evalPath+"return path;}");	        
+	            this._evalPath = value.join(";\r\n")+";";
+    	        eval("var func=function(slide){var path={};path.style={};"+this._evalPath+"return path;}");
     	    }
-	        
+
 	        if (!error) {
 	            this.path = {
 	                value: func
@@ -187,7 +187,7 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
     	    }
 	    }
 	},
-	
+
     _path: {
         enumerable: false,
         value: {
@@ -196,14 +196,14 @@ var FlowPath = exports.FlowPath = Montage.create(Montage, {
             }
         }
     },
-    
+
     path: {
         get: function () {
             return this._path;
         },
-        set: function (value) {         
+        set: function (value) {
             this._path = value;
         }
     }
-    
+
 });

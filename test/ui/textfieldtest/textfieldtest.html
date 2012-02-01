@@ -19,7 +19,7 @@
             "element": {"#": "textfield1"}
         }
     },
-    
+
     "textfield2": {
         "module": "montage/ui/textfield.reel",
         "name": "Textfield",
@@ -27,7 +27,7 @@
             "element": {"#": "textfield2"}
         }
     },
-    
+
     "txt3": {
         "module": "montage/ui/textfield.reel",
         "name": "Textfield",
@@ -38,7 +38,7 @@
             "autocomplete": "on",
             "autofocus": "true",
             "checked": "false",
-            "dirname": "dirname",    
+            "dirname": "dirname",
             "disabled": "true",
             "form": "form",
             "formaction": "formaction",
@@ -61,8 +61,8 @@
             "width": "200"
         }
     },
-    
-    
+
+
     "dateconverter1": {
         "module": "montage/core/converter/date-converter",
         "name": "DateConverter",
@@ -78,7 +78,7 @@
             "converter": {"@": "dateconverter1"}
         }
     },
-    
+
     "test": {
         "module": "ui/textfieldtest/textfieldtest",
         "name": "TextfieldTest",
@@ -89,13 +89,13 @@
             "txt3": {"@": "txt3"}
         }
     },
-    
+
     "application": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
             "delegate": {"@": "test"}
-            
+
         }
     }
 }
@@ -106,13 +106,13 @@
     <form id="input-form" class="form-stacked">
         <label for="textfield1">Required Text</label>
         <input type="text" placeholder="Enter first name" id="textfield1" required maxlength="20" size="10" />
-    
+
         <label for="textfield2">Disabled Initially</label>
         <input type="text" id="textfield2" disabled="true" value="Foo" />
-        
+
         <label for="txt3"></label>
         <input type="text" id="txt3"  value="bar" src="src" size="20" max="20" min="0" step="2"  width="100" height="100" multiple="true" name="txt3" list="list1" />
-        
+
         <label for="date1"></label>
         <input type="date" id="date1"  value="12-31-2012" />
     </form>

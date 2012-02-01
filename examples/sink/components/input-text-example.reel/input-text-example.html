@@ -36,7 +36,7 @@
                         }
                     }
                 },
-                
+
                 "lname": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -51,7 +51,7 @@
                         }
                     }
                 },
-                
+
                 "email": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -66,7 +66,7 @@
                         }
                     }
                 },
-                
+
                 "phone": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -100,7 +100,7 @@
                         }
                     ]
                 },
-                
+
                 "url": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -115,7 +115,7 @@
                         }
                     }
                 },
-                
+
                 "zip": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -130,7 +130,7 @@
                         }
                     }
                 },
-                
+
                 "zip": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -145,7 +145,7 @@
                         }
                     }
                 },
-                
+
                 "dateConverter": {
                     "module": "montage/core/converter/date-converter",
                     "name": "DateConverter",
@@ -153,7 +153,7 @@
                         "pattern": "MM-dd-yyyy"
                     }
                 },
-                
+
                 "dob": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -165,7 +165,7 @@
                         "value": {
                             "boundObject": {"@": "owner"},
                             "boundObjectPropertyPath": "dob",
-                            "oneway": false                            
+                            "oneway": false
                         }
                     }
                 },
@@ -198,7 +198,7 @@
                         }
                     ]
                 },
-                                
+
                 "echo": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
@@ -245,13 +245,13 @@
             <p>
                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
                  </p>
-                 
+
                  <form class="form-stacked">
                      <label for="fname">Text</label>
                      <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
                      <label for="lname">Text</label>
                      <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
-                     
+
                      <label for="pwd1">Password</label>
                      <input type="password" id="pwd" value="abcdef" />
 
@@ -260,23 +260,23 @@
 
                      <label for="url1">URL</label>
                      <input type="url" id="url" value="http://www.google.com" />
-                     
+
                      <label for="tel1">Phone Number</label>
                      <input type="tel" id="phone" value="" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
                      <button class="btn" id="edit-phone">Edit Phone Number</button>
-                     
+
                      <label for="zipcode">US Postal code</label>
                       <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
 
                      <label for="date1">Date of Birth</label>
                      <input type="date" id="dob" value="" pattern=""/>
                      <div id="dob-error" class="error"></div>
-                     
+
                      <div style="margin-top: 10px;">
                          <button class="btn" id="update">Update</button>
                     </div>
                  </form>
-            
+
                  <pre id="echo"></pre>
             </div>
 

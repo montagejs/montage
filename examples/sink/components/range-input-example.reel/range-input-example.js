@@ -4,73 +4,73 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component, 
+    Component = require("montage/ui/component").Component,
     //stringToNumericValue = require('montage/core/converter/number-converter').stringToNumericValue;
     Pixastic = require("pixastic.custom.js").Pixastic;
 
 exports.RangeInputExample = Montage.create(Component, {
-    
+
     image: {value: null},
-    
+
     _colorAdjust : {value: null},
     _red: {value: null},
     red: {
         set: function(v) {
             this._red = v;
-            this._colorAdjust = true; 
+            this._colorAdjust = true;
             this.needsDraw = true;
         },
-        get: function() {return this._red;} 
+        get: function() {return this._red;}
     },
     _green: {value: null},
     green: {
         set: function(v) {
             this._green = v;
-            this._colorAdjust = true; 
+            this._colorAdjust = true;
             this.needsDraw = true;},
-        get: function() {return this._green;} 
+        get: function() {return this._green;}
     },
     _blue: {value: null},
     blue: {
         set: function(v) {
             this._blue = v;
-            this._colorAdjust = true; 
+            this._colorAdjust = true;
             this.needsDraw = true;
         },
-        get: function() {return this._blue;} 
+        get: function() {return this._blue;}
     },
-    
+
     // Glow
     _glowAmount: {value: null},
     glowAmount: {
         set: function(v) {this._glowAmount = v; this.needsDraw = true;},
-        get: function() {return this._glowAmount;} 
+        get: function() {return this._glowAmount;}
     },
     _glowRadius: {value: null},
     glowRadius: {
         set: function(v) {this._glowRadius = v; this.needsDraw = true;},
-        get: function() {return this._glowRadius;} 
+        get: function() {return this._glowRadius;}
     },
-    
+
     // Sharpen
     _sharpnessChanged: {value: null},
     _sharpnessAmount: {value: null},
     sharpnessAmount: {
         set: function(v) {
-            this._sharpnessAmount = v; 
-            this._sharpnessChanged = true; 
+            this._sharpnessAmount = v;
+            this._sharpnessChanged = true;
             this.needsDraw = true;
         },
-        get: function() {return this._sharpnessAmount;} 
+        get: function() {return this._sharpnessAmount;}
     },
-    
+
     _applyEffect: {
         value: function() {
-            
+
             // unfortunately, this is required to be done (Pixastic)
             var img = document.getElementById("image");
-                        
-            var self = this, resultImg = img;   
+
+            var self = this, resultImg = img;
 
             if(this._colorAdjust === true) {
                 Pixastic.process(img, "coloradjust", {
@@ -80,7 +80,7 @@ exports.RangeInputExample = Montage.create(Component, {
                 });
                 this._colorAdjust = false;
             }
-            
+
 
             if(this._sharpnessChanged) {
                 Pixastic.process(img, "sharpen", {
@@ -91,14 +91,14 @@ exports.RangeInputExample = Montage.create(Component, {
 
         }
     },
-    
+
     prepareForDraw: {
         value: function() {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
     },
-    
+
     draw: {
         value: function() {
             if(Pixastic && this.image.complete) {
@@ -106,7 +106,7 @@ exports.RangeInputExample = Montage.create(Component, {
             }
         }
     },
-    
+
     handleResetAction: {
         value: function() {
             Pixastic.revert(document.getElementById("image"));

@@ -25,7 +25,7 @@ var globalEval = eval;
  */
 var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deserializer.Deserializer# */ {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
-    
+
     _objects: {value: null},
    /**
   @private
@@ -378,7 +378,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         this._compileAndDeserialize();
         return this._compiledDeserializationFunctionString;
     }},
-    
+
     /**
      * Optimizes the current serialization for a specific document.
      * @function
@@ -389,16 +389,16 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             var idAttributeName = Deserializer._MONTAGE_ID_ATTRIBUTE,
                 elements = doc.querySelectorAll('*[' + idAttributeName + ']'),
                 ids = this._optimizedIds = {};
-            
+
             for (var i = 0, element; (element = elements[i]); i++) {
                 if (!element.id) {
                     var attribute = element.getAttribute(idAttributeName);
-                    element.setAttribute("id", ids[attribute] = "_" + idAttributeName + "_" + attribute); 
+                    element.setAttribute("id", ids[attribute] = "_" + idAttributeName + "_" + attribute);
                 }
             }
         }
     },
-    
+
 /**
   @private
 */
@@ -574,11 +574,11 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     }
                     return '[' + properties.join(",\n") + ']';
                     break;
-                    
+
                 case "elementByMontageId":
                     var id = self._optimizedIds[value],
                         node;
-                    
+
                     if (id) {
                         node = element.getElementById(id);
                         idsToRemove.push(id);
@@ -589,15 +589,15 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                             id = value;
                         }
                     }
-                    
+
                     if (!node) {
                         console.log("Warning: Element " + Deserializer._MONTAGE_ID_ATTRIBUTE + "='" + value + "' not found in template " + self._origin);
                     }
-                    
+
                     if (deserialize) {
                         parent[key] = node;
                     }
-                    
+
                     if (id) {
                         return 'element.getElementById("' + id + '")';
                     } else {
@@ -706,7 +706,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             });
         }
     },
-    
+
     /**
      Deserializes a serialization of a single object using a root element to find elements' references.
      @function

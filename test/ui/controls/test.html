@@ -8,7 +8,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>HTML Form Elements</title>
-    
+
     <!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
     <meta name="HandheldFriendly" content="True">
     <meta name="MobileOptimized" content="320">
@@ -33,7 +33,7 @@
 
     <!-- Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading -->
     <meta http-equiv="cleartype" content="on">
-    
+
     <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
         <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
          <script type="text/montage-serialization">
@@ -55,7 +55,7 @@
                     "boundObject": {"@": "sample-form"},
                     "boundObjectPropertyPath": "firstName",
                     "oneway": false
-                }                
+                }
             }
         },
         "lname": {
@@ -71,19 +71,19 @@
                     "boundObjectPropertyPath": "lastName",
                     "oneway": false
                 }
-            }            
+            }
         },
-        
+
         "statesController": {
             "name": "ArrayController",
             "module": "montage/ui/controller/array-controller",
             "properties": {
                 "selectObjectsOnAddition": true,
                 "automaticallyOrganizeObjects": true,
-                "content": []                                                       
+                "content": []
             }
         },
-        
+
         "state": {
             "module": "montage/ui/select-input.reel",
             "name": "SelectInput",
@@ -92,17 +92,17 @@
                 "contentController": {"@": "statesController"},
                 "textProperty": "name",
                 "valueProperty": "code"
-            }         
+            }
         },
-        
+
         "country": {
             "module": "montage/ui/select-input.reel",
             "name": "SelectInput",
             "properties": {
                 "element": {"#": "country"}
-            }           
+            }
         },
-        
+
         "sample-form": {
             "module": "ui/controls/sample-form.reel",
             "name": "SampleForm",
@@ -121,10 +121,10 @@
                 }
             }
         }
-        
+
     }
         </script>
-        
+
         <style>
             form input:invalid {
                 border: 1px solid #E73525;
@@ -138,9 +138,9 @@
 </head>
 <body>
 
-    <div class="container"> 
+    <div class="container">
         <section>
-            <form id="input-form" class="form-stacked">            
+            <form id="input-form" class="form-stacked">
                 <div class="row">
                     <div class="span8">
                         <fieldset>
@@ -150,8 +150,8 @@
 
                             <label for="lname">Last Name</label>
                             <input type="text" placeholder="Enter last name" id="lname" required  value="Bar" title="this is a title"/>
-                            
-                            
+
+
                             <label for="country">Country</label>
                             <select id="country" required>
                                 <option value="">Please select a Country</option>
@@ -160,14 +160,14 @@
                                 <option value="FR">France</option>
                                 <option value="GER">Germany</option>
                             </select>
-                            
+
                             <label for="state">State</label>
                             <select id="state">
                                 <option>Please select a country...</option>
                             </select>
-                            
-                            
-                            
+
+
+
                         </fieldset>
                     </div>
                 </div>

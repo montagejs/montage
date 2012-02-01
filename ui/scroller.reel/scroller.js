@@ -142,7 +142,7 @@ exports.Scroller = Montage.create(Component, {
         enumerable: false,
         value: null
     },
-    
+
     templateDidLoad: {
         value: function () {
             var orphanedFragment,
@@ -153,7 +153,7 @@ exports.Scroller = Montage.create(Component, {
             this._content.appendChild(orphanedFragment);
         }
     },
-    
+
     handleTranslateStart: {
         value: function(event) {
             this._scrollBars.opacity = .5;
@@ -240,7 +240,7 @@ exports.Scroller = Montage.create(Component, {
                     this._scrollBars.verticalLength = 1;
                     this._scrollBars.verticalScroll = 0;
                 }
-            }            
+            }
         }
     },
 

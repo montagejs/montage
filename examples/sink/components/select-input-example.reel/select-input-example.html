@@ -54,7 +54,7 @@
                         }
                     }
                 },
-                
+
                 "lname": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -69,7 +69,7 @@
                         }
                     }
                 },
-                
+
                 "dept": {
                     "module": "montage/ui/select-input.reel",
                     "name": "SelectInput",
@@ -84,10 +84,10 @@
                             "boundObjectPropertyPath": "departments",
                             "oneway": true
                         }
-                    }        
+                    }
                 },
-                
-                
+
+
                 "statesController": {
                     "name": "ArrayController",
                     "module": "montage/ui/controller/array-controller",
@@ -106,7 +106,7 @@
                         "contentController": {"@": "statesController"},
                         "textPropertyPath": "name",
                         "valuePropertyPath": "code"
-                    }         
+                    }
                 },
 
                 "country": {
@@ -116,7 +116,7 @@
                         "element": {"#": "country"}
                     }
                 },
-                
+
 
                 "update": {
                     "module": "montage/ui/button.reel",
@@ -132,7 +132,7 @@
                         }
                     ]
                 },
-                                
+
                 "echo": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
@@ -179,18 +179,18 @@
             <p>
                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
                  </p>
-                 
+
                  <form class="form-stacked">
                      <label for="fname">First Name</label>
                      <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
                      <label for="lname">Last Name</label>
                      <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
-                     
+
                      <label for="dept">Department</label>
                       <select id="dept" required="true" multiple="true" size="3">
                           <option>Please select a Department</option>
                       </select>
-                     
+
                      <label for="country">Country</label>
                      <select id="country" required>
                          <option value="">Please select a Country</option>
@@ -198,18 +198,18 @@
                          <option value="INR" >India</option>
                          <option value="FR">France</option>
                          <option value="GER">Germany</option>
-                     </select>                     
+                     </select>
 
                      <label for="state">State</label>
                      <select id="state" required="true">
                          <option>Please select a country...</option>
                      </select>
-                     
+
                      <div style="margin-top: 10px;">
                          <button class="btn" id="update">Update</button>
                     </div>
                  </form>
-            
+
                  <pre id="echo"></pre>
             </div>
 

@@ -7,9 +7,9 @@ var Montage = require("montage").Montage,
         TestPageLoader = require("support/testpageloader").TestPageLoader;
 
 var testPage = TestPageLoader.queueTest("textfieldtest", function() {
-    
+
     var test = testPage.test;
-    
+
     var DATE_CLASS = '[object Date]';
     var FUNCTION_CLASS = '[object Function]',
         BOOLEAN_CLASS = '[object Boolean]',
@@ -30,8 +30,8 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
     var isNumber = function(object) {
         return _toString.call(object) === NUMBER_CLASS;
     };
-    
-    
+
+
     describe("ui/textfield-spec", function() {
         describe("initialization", function() {
             it("should load", function() {
@@ -62,15 +62,15 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
 
                         expect(field.value).toBe(value);
                     });
-                    
+
                     it("should mark empty value as invalid for required fields", function() {
                         var field = testPage.test.txt1,
                         value = "";
                         field.value = value;
-                       
+
                         expect(field.element.checkValidity()).toBe(false);
                     });
-                    
+
                     it("should accept the value even if disabled", function() {
                         var field = testPage.test.txt2,
                         value = 10;
@@ -78,8 +78,8 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
 
                         expect(field.value).toBe(value);
                     });
-                    
-                    
+
+
                     describe("when using converter for the value", function() {
                         // date field
                         it("should a valid value", function() {
@@ -97,82 +97,82 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
 
                             expect(field.error).not.toBeNull();
                         });
-                        
+
                     });
 
                 });
-                
+
                 describe("when setting disabled and readonly flags", function() {
                     it("should accept boolean values for disabled", function() {
                         var field = testPage.test.txt2;
                         field.disabled = true;
-                        expect(field.disabled).toBe(true);                        
+                        expect(field.disabled).toBe(true);
                     });
                     it("should accept truthy values for disabled", function() {
                         var field = testPage.test.txt2;
                         field.disabled = "true";
-                        expect(field.disabled).toBe(true);                        
+                        expect(field.disabled).toBe(true);
                     });
                     it("should accept boolean values for disabled 2", function() {
                         var field = testPage.test.txt2;
                         field.disabled = "disabled";
-                        expect(field.disabled).toBe(true);                        
+                        expect(field.disabled).toBe(true);
                     });
                     it("should accept falsy values for disabled", function() {
                         var field = testPage.test.txt2;
                         field.disabled = false;
-                        expect(field.disabled).toBe(false);                        
+                        expect(field.disabled).toBe(false);
                     });
                     it("should accept falsy values for disabled 2", function() {
                         var field = testPage.test.txt2;
                         field.disabled = null;
-                        expect(field.disabled).toBe(false);                        
+                        expect(field.disabled).toBe(false);
                     });
-                    
+
                     // readonly
                     it("should accept boolean values for readonly", function() {
                         var field = testPage.test.txt2;
                         field.readonly = true;
-                        expect(field.readonly).toBe(true);                        
+                        expect(field.readonly).toBe(true);
                     });
                     it("should accept truthy values for readonly", function() {
                         var field = testPage.test.txt2;
                         field.readonly = "true";
-                        expect(field.readonly).toBe(true);                        
+                        expect(field.readonly).toBe(true);
                     });
                     it("should accept boolean values for readonly 2", function() {
                         var field = testPage.test.txt2;
                         field.readonly = "readonly";
-                        expect(field.readonly).toBe(true);                        
+                        expect(field.readonly).toBe(true);
                     });
                     it("should accept falsy values for readonly", function() {
                         var field = testPage.test.txt2;
                         field.readonly = false;
-                        expect(field.readonly).toBe(false);                        
+                        expect(field.readonly).toBe(false);
                     });
                     it("should accept falsy values for readonly 2", function() {
                         var field = testPage.test.txt2;
                         field.readonly = null;
-                        expect(field.readonly).toBe(false);                        
+                        expect(field.readonly).toBe(false);
                     });
                 });
-                
+
                 // test set/get of standard and global attributes
                 describe("when setting standard attributes", function() {
                     it("should use values from binding if provided", function() {
                         var field = testPage.test.txt3;
-                        
-                        expect(field.width).toBe("200");   
-                        expect(field.height).toBe("200");                        
+
+                        expect(field.width).toBe("200");
+                        expect(field.height).toBe("200");
                     });
-                    
+
                     it("should accept values from markup if provided", function() {
                         var field = testPage.test.txt3;
-                        
-                        expect(field.src).toBe("src");   
-                        expect(field.multiple).toBe(true); 
+
+                        expect(field.src).toBe("src");
+                        expect(field.multiple).toBe(true);
                         expect(field.list).toBe("list1");
-                                          
+
                     });
                 });
 

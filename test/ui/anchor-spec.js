@@ -7,10 +7,10 @@ var Montage = require("montage").Montage,
         TestPageLoader = require("support/testpageloader").TestPageLoader;
 
 var testPage = TestPageLoader.queueTest("anchor-test", function() {
-    
+
     var test = testPage.test;
-    
-    
+
+
     describe("ui/anchor-spec", function() {
         describe("initialization", function() {
             it("should load", function() {
@@ -50,7 +50,7 @@ var testPage = TestPageLoader.queueTest("anchor-test", function() {
                     });
                     /*
                     // TODO: No support for converter for Anchor.textContent
-                    
+
                     describe("when using converter for the value", function() {
                         // date field
                         it("should a valid value", function() {
@@ -68,20 +68,20 @@ var testPage = TestPageLoader.queueTest("anchor-test", function() {
 
                             expect(field.error).not.toBeNull();
                         });
-                        
+
                     });
                     */
 
                 });
-                
+
                 // test set/get of standard and global attributes
                 describe("when setting standard attributes", function() {
                     it("should use values from binding if provided", function() {
-                        var field = test.link2;                        
-                        expect(field.href).toBe("http://www.google.com");   
+                        var field = test.link2;
+                        expect(field.href).toBe("http://www.google.com");
                     });
-                    
-                    
+
+
                 });
 
                 // TODO

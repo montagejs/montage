@@ -19,7 +19,7 @@
             "element": {"#": "num1"}
         }
     },
-    
+
     "num2": {
         "module": "montage/ui/number-input.reel",
         "name": "NumberInput",
@@ -27,7 +27,7 @@
             "element": {"#": "num2"}
         }
     },
-    
+
     "num3": {
         "module": "montage/ui/number-input.reel",
         "name": "NumberInput",
@@ -38,7 +38,7 @@
             "autocomplete": "on",
             "autofocus": "true",
             "checked": "false",
-            "dirname": "dirname",    
+            "dirname": "dirname",
             "disabled": "true",
             "form": "form",
             "formaction": "formaction",
@@ -58,7 +58,7 @@
             "width": "200"
         }
     },
-    
+
     "test": {
         "module": "ui/number-input-test/number-input-test",
         "name": "NumberInputTest",
@@ -68,13 +68,13 @@
             "num3": {"@": "num3"}
         }
     },
-    
+
     "application": {
         "module": "montage/ui/application",
         "name": "Application",
         "properties": {
             "delegate": {"@": "test"}
-            
+
         }
     }
 }
@@ -85,10 +85,10 @@
     <form id="input-form" class="form-stacked">
         <label for="num1">Required Text</label>
         <input type="number" placeholder="Enter number" id="num1" required maxlength="20" size="10" min="0" max="100" step="5"/>
-    
+
         <label for="num2">Disabled Initially</label>
         <input type="number" id="num2" disabled value="10" />
-        
+
         <label for="num3"></label>
         <input type="text" id="num3"  value="0" max="20" min="0" step="2"  width="100" height="100" multiple="true" name="num3" list="list1" />
 

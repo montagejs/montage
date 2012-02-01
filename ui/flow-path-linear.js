@@ -1,12 +1,12 @@
 var Montage = require("montage").Montage;
-    
+
 var FlowPathLinear = exports.FlowPathLinear = Montage.create(Montage, {
-	
+
     _variable: {
         enumerable: false,
         value: "time"
     },
-    
+
     variable: {
         get: function () {
             return this._variable;
@@ -23,12 +23,12 @@ var FlowPathLinear = exports.FlowPathLinear = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _origin: {
         enumerable: false,
         value: 0
     },
-    
+
     origin: {
         get: function () {
             return this._origin;
@@ -43,7 +43,7 @@ var FlowPathLinear = exports.FlowPathLinear = Montage.create(Montage, {
         enumerable: false,
         value: 1
     },
-    
+
     multiplier: {
         get: function () {
             return this._multiplier;
@@ -53,12 +53,12 @@ var FlowPathLinear = exports.FlowPathLinear = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _path: {
         enumerable: false,
         value: "0"
     },
-    
+
     path: {
         get: function () {
             return this._path;
@@ -67,7 +67,7 @@ var FlowPathLinear = exports.FlowPathLinear = Montage.create(Montage, {
             this._path = value;
         }
     },
-    
+
     _updatePath: {
         enumerable: false,
         value: function () {

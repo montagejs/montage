@@ -19,7 +19,7 @@ var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
     country: {
         value: null
     },
-    
+
     departments: {
         value: [
             {name: 'Please select a Department', code: ''},
@@ -30,7 +30,7 @@ var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
             {name: 'Information Technology', code: 'IT'}
         ]
     },
-    
+
     states: {
         value: {
             'USA': [
@@ -52,7 +52,7 @@ var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
         }
     },
 
-    
+
     _selectedCountry: {value: null},
     selectedCountry: {
         get: function() {return this._selectedCountry;},
@@ -67,23 +67,23 @@ var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
             }
         }
     },
-    
+
     _selectedState: {value: null},
     selectedState: {
         get: function() {return this._selectedState;},
         set: function(value) {
             if(this._selectedState !== value) {
-                this._selectedState = value;                
+                this._selectedState = value;
             }
         }
     },
-    
+
     _selectedDept: {value: null},
     selectedDept: {
         get: function() {return this._selectedDept;},
         set: function(value) {
             if(this._selectedDept !== value) {
-                this._selectedDept = value;                
+                this._selectedDept = value;
             }
         }
     },

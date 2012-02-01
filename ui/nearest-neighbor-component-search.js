@@ -1,40 +1,40 @@
 var Montage = require("montage").Montage;
-    
+
 var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Montage.create(Montage, {
 
     _componentList: {
         enumerable: false,
         value: null
     },
-    
+
     componentList: {
         get: function () {
             return this._componentList;
         },
         set: function (value) {
             var i;
-            
+
             this._componentList=value;
         }
     },
-    
+
     _pointerPosition: {
    	    enumerable: false,
         value: null
     },
-    
+
 	pointerPosition: {
 	    get: function () {
 	        return this._pointerPosition;
 	    },
 	    set: function (value) {
 	        var nearest = null;
-	        
+
             this._pointerPosition=value;
             if ((this._componentList)&&(this._componentList.length)) {
                 var target = value.target,
                     nearest;
-                
+
                 for (i=0; i<this._componentList.length; i++) {
                     this._componentList[i]._element.setAttribute("data-nn-index", i);
                 }
@@ -60,12 +60,12 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
             }
 	    }
 	},
-	
+
     _hasNearestNeighborComponentSearch: {
         enumerable: false,
         value: true
     },
-    
+
     hasNearestNeighborComponentSearch: {
         get: function () {
             return this._hasNearestNeighborComponentSearch;
@@ -74,16 +74,16 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
             if (value===true) {
                 this._hasNearestNeighborComponentSearch=true;
             } else {
-                this._hasNearestNeighborComponentSearch=false;            
+                this._hasNearestNeighborComponentSearch=false;
             }
         }
     },
-    
+
     _nearestNeighborComponentSearchMethod: {
         enumerable: false,
         value: "precise"
     },
-    
+
     nearestNeighborComponentSearchMethod: {
         get: function () {
             return this._nearestNeighborComponentSearchMethod;
@@ -96,14 +96,14 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
             }
         }
     },
-    
+
     _pointToQuadSquaredDistance: {
         enumerable: false,
         value: function (pX, pY, q) {
 			var dist, iDist,
 				i, j, u, x, y, div,
 				dist=1e20, a, b;
-			
+
 			q[0]-=pX; q[1]-=pY;	q[2]-=pX; q[3]-=pY;
 			q[4]-=pX; q[5]-=pY;	q[6]-=pX; q[7]-=pY;
 			for (i=0; i<8; i+=2) {
@@ -133,7 +133,7 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
 			return dist;
 		}
 	},
-	
+
 	_searchPreciseNearestNeighborComponent: {
 	    enumerable: false,
 	    value: function () {
@@ -149,7 +149,7 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
                 convert=window.webkitConvertPointFromNodeToPage,
                 nearest=null,
                 index;
-                
+
             for (i=0; i<length; i++) {
                 element=this._componentList[i].element;
                 point.y=0;
@@ -167,7 +167,7 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
                 quad[4]=v2.x;
                 quad[5]=v2.y;
                 quad[6]=v3.x;
-                quad[7]=v3.y;						
+                quad[7]=v3.y;
                 iDistance=this._pointToQuadSquaredDistance(pageX, pageY, quad);
                 if (iDistance < distance) {
                     distance=iDistance;
@@ -178,7 +178,7 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
             return nearest;
 	    }
 	},
-	
+
 	_searchMidpointNearestNeighborComponent: {
 	    enumerable: false,
 	    value: function () {
@@ -193,12 +193,12 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
                 convert=window.webkitConvertPointFromNodeToPage,
                 nearest=null,
                 index;
-                
+
             for (i=0; i<length; i++) {
                 element=this._componentList[i].element;
                 point.x=element.offsetWidth>>1;
-                point.y=element.offsetHeight>>1;						
-                v=convert(element, point);				
+                point.y=element.offsetHeight>>1;
+                v=convert(element, point);
                 iDistance=(pageX-v.x)*(pageX-v.x)+(pageY-v.y)*(pageY-v.y);
                 if (iDistance < distance) {
                     distance=iDistance;
@@ -207,14 +207,14 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
                 }
             }
             return nearest;
-	    }	
+	    }
 	},
-	
+
     _nearestNeighborComponent: {
 	    enumerable: false,
         value: null
     },
-    
+
     nearestNeighborComponent: {
         get: function () {
 	        return this._nearestNeighborComponent;

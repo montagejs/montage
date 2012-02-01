@@ -33,7 +33,7 @@
                     "bindings": {
                         "value": {
                             "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "red"                            
+                            "boundObjectPropertyPath": "red"
                         }
                     }
                 },
@@ -108,7 +108,7 @@
                         }
                     }
                 },
-                
+
                 "sharpness": {
                     "module": "montage/ui/range-input.reel",
                     "name": "RangeInput",
@@ -137,7 +137,7 @@
                         }
                     }
                 },
-                
+
                 "reset": {
                     "module": "montage/ui/button.reel",
                     "name": "Button",
@@ -157,7 +157,7 @@
 
         <style>
             .range-input-example .demo{
-                
+
             }
             .range-input-example .control {
                 background-color: whitesmoke;
@@ -168,8 +168,8 @@
                 vertical-align: middle;
             }
             .range-input-example .range-value {
-                padding: 2px;  
-                border: 1px solid #aaa;              
+                padding: 2px;
+                border: 1px solid #aaa;
             }
             #reset {
                 margin-top: 10px;
@@ -197,45 +197,45 @@
                     <h6>Color</h6>
                     <div class="control">
                         <div>
-                            Red: 
+                            Red:
                             <input id="color-red" type="range" min="-1" max="1" step="0.1" value="0"/>
                             <span id="red-value" class="range-value">0.5</span>
                         </div>
                         <div>
-                            Green: 
+                            Green:
                             <input id="color-green" type="range" min="-1" max="1" step="0.1" value="0" />
                             <span id="green-value" class="range-value"/>
                         </div>
                         <div>
-                            Blue: 
+                            Blue:
                             <input id="color-blue" type="range" min="-1" max="1" step="0.1" value="0" />
                             <span id="blue-value" class="range-value" />
                         </div>
-                        
-                        
+
+
                     </div>
-                    
-                    
+
+
                     <h6>Sharpen</h6>
                     <div class="control">
                         <div>
-                            Amount: 
+                            Amount:
                             <input id="sharpness-amount" type="range" min="0" max="1" step="0.05" value="0"/>
                             <span id="sharpness-amount-value" class="range-value">0.5</span>
                         </div>
                     </div>
-                   
-                    
+
+
                     <button id="reset" class="btn cancel small">Reset</button>
-                    
+
                 </div>
             </div>
             </div>
-            
+
             <section>
                 <a href="m-js/examples/sink/components/range-input-example.reel" target="_blank">View Demo Source</a>
             </section>
-            
+
             <section>
                 <h4>Component Properties</h4>
                 <table>

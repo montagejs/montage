@@ -4,11 +4,11 @@ body {
 
 
 .jasmine_reporter a:visited, .jasmine_reporter a {
-  color: #303; 
+  color: #303;
 }
 
 .jasmine_reporter a:hover, .jasmine_reporter a:active {
-  color: blue; 
+  color: blue;
 }
 
 .run_spec {
@@ -59,7 +59,7 @@ body {
 }
 
 .suite .suite {
-  margin: 5px; 
+  margin: 5px;
 }
 
 .suite.passed {

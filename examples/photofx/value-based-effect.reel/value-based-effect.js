@@ -27,11 +27,11 @@ exports.ValueBasedEffect = Montage.create(Component, {
             }
             this._originalSliderValue = this._value;
             this._value = value;
-            
+
             document.application.undoManager.add(this.name.toLowerCase() + " change", this._commitSliderValue, this, this._originalSliderValue);
-            
+
         },
-        
+
         get: function() {
             return this._value;
         }
@@ -43,7 +43,7 @@ exports.ValueBasedEffect = Montage.create(Component, {
     },
 
     /* These are not raised by RangeInput and hence I moved the undomanager call to the value's setter
-    
+
     handleValueSliderMontageinteractionstart: {
         value: function() {
             this._originalSliderValue = this.sliderValue;
@@ -84,7 +84,7 @@ exports.ValueBasedEffect = Montage.create(Component, {
             }
 
             this.value = value;
-            
+
         }
     },
 

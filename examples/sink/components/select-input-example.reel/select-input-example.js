@@ -8,10 +8,10 @@ var Montage = require("montage/core/core").Montage,
 
 exports.SelectInputExample = Montage.create(Component, {
     json: {value: null},
-    
+
     firstName: {value: null},
     lastName: {value: null},
-    
+
     departments: {
         value: [
             {name: 'Please select a Department', code: ''},
@@ -22,9 +22,9 @@ exports.SelectInputExample = Montage.create(Component, {
             {name: 'Information Technology', code: 'IT'}
         ]
     },
-    
+
     dept: {value: null},
-    
+
     states: {
         value: {
             'USA': [
@@ -43,7 +43,7 @@ exports.SelectInputExample = Montage.create(Component, {
             ]
         }
     },
-    
+
     _selectedCountry: {value: null},
     selectedCountry: {
         get: function() {return this._selectedCountry;},
@@ -58,39 +58,39 @@ exports.SelectInputExample = Montage.create(Component, {
             }
         }
     },
-    
+
     _selectedState: {value: null},
     selectedState: {
         get: function() {return this._selectedState;},
         set: function(value) {
             if(this._selectedState !== value) {
-                this._selectedState = value;                
+                this._selectedState = value;
             }
         }
     },
-    
+
     _selectedDepts: {value: null},
     selectedDepts: {
         get: function() {return this._selectedDepts;},
         set: function(value) {
-            this._selectedDepts = (value || []);              
+            this._selectedDepts = (value || []);
         }
     },
-        
+
     prepareForDraw: {
         value: function() {
-            
+
             this.firstName = "John";
             this.lastName = "FooBar";
-            
+
             this.dept.contentController.selectedIndexes = [2, 4, 5];
-            // The following code does not trigger the selection. The selection is 
+            // The following code does not trigger the selection. The selection is
             // managed by the contentController
             //this.selectedDept = this.departments[3];
-            
+
         }
     },
-    
+
     handleUpdateAction: {
         value: function(event) {
             this.json = JSON.stringify({
@@ -98,7 +98,7 @@ exports.SelectInputExample = Montage.create(Component, {
                 lastName: this.lastName,
                 country: this.selectedCountry,
                 state: this.selectedState,
-                departments: this.selectedDepts             
+                departments: this.selectedDepts
             });
         }
     }

@@ -5,7 +5,7 @@
  </copyright> */
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
-    
+
 // similar to jquery.closest. Find the closest ancestor of el matching the type
 var findClosestOfType = function(el, type, context) {
 	if(el.tagName.toLowerCase() === type) {
@@ -26,24 +26,24 @@ var findClosestOfType = function(el, type, context) {
 		return el;
 	}
 	return null;
-	
+
 };
 
 exports.Sidebar = Montage.create(Component, {
-    
+
     // the main component
     sandbox: {
         value: null
     },
-    
+
     sidebarList: {
         value: null
     },
-    
+
     montageComponents: {
         value: null
     },
-    
+
     prepareForDraw: {
         value: function() {
             if(window.Touch) {
@@ -53,7 +53,7 @@ exports.Sidebar = Montage.create(Component, {
             }
         }
     },
-    
+
     handleNavItemClicked: {
         value: function(href) {
             console.log("nav item clicked = " + href);
@@ -61,7 +61,7 @@ exports.Sidebar = Montage.create(Component, {
             this.sandbox.selectedItem = hash;
         }
     },
-    
+
     _highlightSelection: {
         value: function($li) {
             var $ul = findClosestOfType($li, 'div', this.element);
@@ -74,22 +74,22 @@ exports.Sidebar = Montage.create(Component, {
             }
         }
     },
-    
+
     handleEvent: {
         value: function(event) {
-            
-            var target = event.target;            
+
+            var target = event.target;
             var $li = findClosestOfType(target, 'li', this.element);
-            
+
             if($li) {
                 var a = $li.querySelector('a');
                 if(a) {
                     this._highlightSelection($li);
                     this.handleNavItemClicked(a.href);
                     event.preventDefault();
-                }                
+                }
             }
         }
     }
-    
+
 });

@@ -373,8 +373,8 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
                 if(this.modal === true) {
                     this._modalDialogMask = document.querySelector('.montage-popup-modal-mask');
-                    this._modalDialogMask = this._modalDialogMask || this._createModalMask(); 
-                    this.element.classList.add('montage-modal');               
+                    this._modalDialogMask = this._modalDialogMask || this._createModalMask();
+                    this.element.classList.add('montage-modal');
                 } else {
                     this.element.classList.remove('montage-modal');
                 }

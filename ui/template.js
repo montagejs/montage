@@ -48,7 +48,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     @private
 */
     _isLoaded: {value: false},
-    
+
     /**
     Creates a new Template instance from an HTML document element.
     @function
@@ -59,7 +59,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         return this;
     }},
-    
+
     __templatesById: {value: {}},
     __templateCallbacksByModuleId: {value: {}},
 
@@ -123,7 +123,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
      @private
     */
     _deserializer: {value:null},
-    
+
     /**
     The deserializer object used by the template.
     @type {module:montage/core/deserializer.Deserializer}
@@ -224,7 +224,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         }
         // make sure we use the same require used to create this component to instantiate this reel
         this._deserializer = this._createDeserializer(this._ownerSerialization);
-        
+
         return this;
     }},
 
@@ -358,7 +358,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         this.insertStylesInDocumentIfNeeded(doc);
         this.insertScriptsInDocumentIfNeeded(doc);
     }},
-    
+
     /**
      @private
     */
@@ -366,7 +366,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         enumerable: false,
         value: null
     },
-    
+
     /**
      @private
     */
@@ -374,7 +374,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         enumerable: false,
         value: null
     },
-    
+
     /**
      @private
     */
@@ -382,10 +382,10 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         enumerable: false,
         value: null
     },
-    
+
     /**
      Inserts all styles found in the Template object into the document given.
-     This function is idempotent, it will not insert styles that are already in the document. 
+     This function is idempotent, it will not insert styles that are already in the document.
      @function
      @param {HTMLDocument} doc The document to insert the styles.
      */
@@ -497,7 +497,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
     /**
      Inserts all scripts found in the Template object into the document given.
-     This function is idempotent, it will not insert scripts that are already in the document. 
+     This function is idempotent, it will not insert scripts that are already in the document.
      @function
      @param {HTMLDocument} doc The document to insert the scripts.
      */
@@ -555,7 +555,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         documentHead.appendChild(container);
     }},
-    
+
     /**
      <i>This function is meant to work with insertScriptsInDocumentIfNeeded, insertStylesInDocumentIfNeeded and setupDocument</i>.
      This function informs the caller when the Template styles have been loaded into the document.
@@ -619,7 +619,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         return htmlDocument;
     }},
-    
+
     // indexed by module id
     /**
         @private
@@ -628,7 +628,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         enumerable: false,
         value: {}
     },
-    
+
     /**
      Creates an HTMLDocument from an HTML file at the given module id.
      @function
@@ -651,7 +651,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             });
         }
     }},
-    
+
     /**
      Searches for an inline serialization in a document and returns it if found.
      @function
@@ -669,7 +669,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             return null;
         }
     }},
-    
+
     /**
      Searches for an external serialization in a document and returns its content if found.
      @function
@@ -710,7 +710,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             callback(null);
         }
     }},
-    
+
     /**
      Gets the configured Deserializer object ready to deserialize the Template serialization if any.
      @function
@@ -736,7 +736,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             }
         }
     }},
-    
+
     /**
      @private
     */
@@ -787,7 +787,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         serializer.set("owner", this._ownerSerialization);
         serializer.set("markup", this._document.body.innerHTML);
     }},
-    
+
     /**
      @private
      */

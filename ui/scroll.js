@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
-    
+
 var Scroll = exports.Scroll = Montage.create(Montage, {
 
     _externalUpdate: {
@@ -48,7 +48,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
         value: function () {
             var oldComponentDraw = this.component.draw,
                 self = this;
-            
+
             this.component.draw = function () {
                 self.draw();
                 oldComponentDraw.call(self.component);
@@ -135,7 +135,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
                     if (!this._isSelfUpdate) {
                         this.isAnimating = false;
                     }
-                }   
+                }
                 this._scrollY=tmp;
             }
         }
@@ -176,7 +176,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
         },
         set: function (value) {
             var tmp=isNaN(value)?0:value>>0;
-            
+
             if (tmp<0) {
                 tmp=0;
             }
@@ -305,7 +305,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
         enumerable: false,
         value: false
     },
-    
+
     _start: {
         enumerable: false,
         value: function (x, y, target) {
@@ -353,7 +353,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             this._start(event.clientX, event.clientY, event.target);
         }
     },
-    
+
     handleMousedown: {
         enumerable: false,
         value: function (event) {
@@ -365,7 +365,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
 
         }
     },
-    
+
     captureMousemove: {
         enumerable: false,
         value: function (event) {
@@ -379,14 +379,14 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
 
         }
     },
-    
+
     captureMouseup: {
         enumerable: false,
         value: function (event) {
             this._end(event);
         }
     },
-    
+
     _releaseInterest: {
         value: function() {
 
@@ -404,7 +404,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             this._observedPointer = null;
         }
     },
-    
+
     captureTouchstart: {
         enumerable: false,
         value: function (event) {
@@ -422,7 +422,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             }
         }
     },
-    
+
     handleTouchstart: {
         value: function(event) {
             if (!this.eventManager.componentClaimingPointer(this._observedPointer)) {
@@ -436,7 +436,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             }
         }
     },
-    
+
     captureTouchmove: {
         enumerable: false,
         value: function (event) {
@@ -457,7 +457,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             }
         }
     },
-    
+
     captureTouchend: {
         enumerable: false,
         value: function (event) {
@@ -470,7 +470,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             }
         }
     },
-    
+
     _analyzeMovement: {
         value: function(velocity) {
 
@@ -527,17 +527,17 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             this.eventManager.claimPointer(this._observedPointer, this);
         }
     },
-    
+
     _scrollEndTimeout: {
         enumerable: false,
         value: null
     },
-    
+
     handleMousewheel: {
         enumerable: false,
         value: function (event) {
             var self = this;
-            
+
             this.scrollY = this._scrollY - (event.wheelDeltaY * 20) / 120;
             this._dispatchScrollStart();
             window.clearTimeout(this._scrollEndTimeout);
@@ -605,7 +605,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             return 3*(k*k*t*p1y+k*tmp*p2y)+tmp*t;
         }
     },
-    
+
     _dispatchScrollStart: {
         enumerable: false,
         value: function () {
@@ -616,7 +616,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             this.dispatchEvent(scrollEndEvent);
         }
     },
-    
+
     _dispatchScrollEnd: {
         enumerable: false,
         value: function () {
@@ -627,7 +627,7 @@ var Scroll = exports.Scroll = Montage.create(Montage, {
             this.dispatchEvent(scrollEndEvent);
         }
     },
-    
+
     _end: {
         enumerable: false,
         value: function (event) {
