@@ -20,10 +20,17 @@
     border:  1px solid hsl(0, 0%, 97%);
     border-width:  1px 0;
     border-bottom-color: hsl(0,0%,62%);
+    
+    text-align: left;
+}
+
+.EffectsPanel .effectsList .effect-toggle-switch {
+    float: right;
 }
 
 .EffectsPanel .effectsList .montage-toggle {
     display: inline-block;
     margin-right: 10px;
     margin-bottom: -4px;
+    
 }

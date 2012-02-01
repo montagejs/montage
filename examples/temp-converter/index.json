@@ -5,7 +5,7 @@
     },
 
     "celsiusTextfield": {
-        "module": "montage/ui/bluemoon/textfield.reel",
+        "module": "montage/ui/textfield.reel",
         "name": "Textfield",
         "properties": {
             "element": {"#": "celsius"}
@@ -20,7 +20,7 @@
     },
 
     "fahrenheitTextfield": {
-        "module": "montage/ui/bluemoon/textfield.reel",
+        "module": "montage/ui/textfield.reel",
         "name": "Textfield",
         "properties": {
             "element": {"#": "fahrenheit"},

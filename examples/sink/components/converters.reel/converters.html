@@ -18,7 +18,7 @@
         }
     },
     "textfield1": {
-        "module": "montage/ui/bluemoon/textfield.reel",
+        "module": "montage/ui/textfield.reel",
         "name": "Textfield",
         "properties": {
             "value": "Hello World",
@@ -84,10 +84,9 @@
         }
     },
     "textarea1": {
-        "module": "montage/ui/bluemoon/textarea.reel",
+        "module": "montage/ui/textarea.reel",
         "name": "TextArea",
-        "properties": {
-            "value": "Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget.",
+        "properties": {            
             "element": {"#": "textarea1"}
         }
     },
@@ -121,7 +120,7 @@
         }
     },
     "textfield2": {
-        "module": "montage/ui/bluemoon/textfield.reel",
+        "module": "montage/ui/textfield.reel",
         "name": "Textfield",
         "properties": {
             "converter": {"@": "dateconverter1"},
@@ -240,7 +239,7 @@
         }
     },
     "textfield3": {
-        "module": "montage/ui/bluemoon/textfield.reel",
+        "module": "montage/ui/textfield.reel",
         "name": "Textfield",
         "properties": {
             "converter": {"@": "numberconverter1"},
@@ -349,7 +348,7 @@
         }
     },
     "celsiusTextfield": {
-        "module": "montage/ui/bluemoon/textfield.reel",
+        "module": "montage/ui/textfield.reel",
         "name": "Textfield",
         "properties": {
             "element": {"#": "celsius"},
@@ -364,7 +363,7 @@
         }
     },
     "fahrenheitTextfield": {
-        "module": "montage/ui/bluemoon/textfield.reel",
+        "module": "montage/ui/textfield.reel",
         "name": "Textfield",
         "properties": {
             "element": {"#": "fahrenheit"},
@@ -500,8 +499,10 @@
 
             <div>
                 <p>Type some text in the textarea:</p>
-                <textarea id="textarea1" style="font-size: 1em;"></textarea>
+                <form>
+                <textarea id="textarea1" style="width: 400px; height: 100px;">Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget</textarea>
                 <p id="text4"></p>
+                </form>
             </div>
 <h6>Serialization</h6>
             <pre class="prettyprint">
@@ -694,7 +695,7 @@ exports.TempConverter = Montage.create(Converter, {
 <h6>Serialization</h6>
 <pre class="prettyprint linenums">
  "celsiusTextfield": {
-     "module": "montage/ui/bluemoon/textfield.reel",
+     "module": "montage/ui/textfield.reel",
      "name": "Textfield",
      "properties": {
          "element": {"#": "celsius"},
@@ -710,7 +711,7 @@ exports.TempConverter = Montage.create(Converter, {
  },
 
  "fahrenheitTextfield": {
-     "module": "montage/ui/bluemoon/textfield.reel",
+     "module": "montage/ui/textfield.reel",
      "name": "Textfield",
      "properties": {
          "element": {"#": "fahrenheit"},

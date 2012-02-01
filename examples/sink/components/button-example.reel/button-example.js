@@ -10,6 +10,19 @@ exports.ButtonExample = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
+            var szn, dszr, e, entry, szn_pre;
+
+            dszr = this._template._deserializer;
+            szn = JSON.parse(dszr._serializationString);
+
+
+            for (e in szn) {
+                entry = szn[e];
+                szn_pre = this.element.querySelector('pre[data-serialization-entry="'+e+'"]');
+                if (szn_pre) {
+                    szn_pre.innerHTML = '"'+e+'": ' + JSON.stringify(entry, null, "    ");
+                }
+            }
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
@@ -17,13 +30,7 @@ exports.ButtonExample = Montage.create(Component, {
 
     log: {
         value: function(msg) {
-            this.logger.innerHTML = this.logger.innerHTML + "<br/>" + msg;
-        }
-    },
-
-    clearLog: {
-        value: function() {
-            this.logger.innerHTML = "";
+            this.logger.log(msg);
         }
     },
 

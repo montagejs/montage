@@ -13,10 +13,11 @@
     <script type="text/montage-serialization">
         {
             "invertToggle": {
-                "module": "montage/ui/bluemoon/toggle.reel",
-                "name": "Toggle",
+                "module": "montage/ui/toggle-switch.reel",
+                "name": "ToggleSwitch",
                 "properties": {
-                    "element": {"#": "invertToggle"}
+                    "element": {"#": "invertToggle"},
+                    "name": "ON"
                 },
                 "bindings": {
                     "value": {
@@ -26,9 +27,10 @@
                 }
             },
             "desaturateToggle": {
-                "module": "montage/ui/bluemoon/toggle.reel",
-                "name": "Toggle",
+                "module": "montage/ui/toggle-switch.reel",
+                "name": "ToggleSwitch",
                 "properties": {
+                    "name": "ON",
                     "element": {"#": "desaturateToggle"}
                 },
                 "bindings": {
@@ -43,7 +45,7 @@
                 "name": "ValueBasedEffect",
                 "properties": {
                     "element": {"#": "multiplyControl"},
-                    "name": "Multiply",
+                    "name": "ON",
                     "minValue": 1,
                     "maxValue": 20
                 },
@@ -105,9 +107,9 @@
 
     <div id="EffectsPanel" class="EffectsPanel">
         <ul class="effectsList">
-            <li><span id="invertToggle"></span>Invert Colors</li>
-            <li><span id="desaturateToggle"></span>Desaturate</li>
-            <li><div id="multiplyControl"></div></li>
+            <li>Invert Colors<span id="invertToggle" class="effect-toggle-switch"></span></li>
+            <li>Desaturate<span id="desaturateToggle" class="effect-toggle-switch"></span></li>
+            <li>Multiply<div id="multiplyControl" class=""></div></li>
         </ul>
         <div id="colorInfoPanel"></div>
         <div id="photoInfoPanel"></div>

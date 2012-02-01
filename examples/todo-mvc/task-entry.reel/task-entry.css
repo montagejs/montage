@@ -26,5 +26,6 @@
 }
 .taskEntry .completionField .text {
     display: block;
-    font-size: 24px;
+    font-size: 18px;
+    margin-left: 5px;
 }

@@ -17,47 +17,199 @@
                     }
                 },
 
-                "text1": {
-                    "module": "montage/ui/bluemoon/textfield.reel",
+                "fname": {
+                    "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
                     "properties": {
-                        "element": {"#": "text1"},
-                        "value": "Enter some text..."
-                    }
-                },
-
-                "echo1": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
-                    "properties": {
-                        "element": {"#": "echo1"}
+                        "element": {"#": "fname"}
                     },
                     "bindings": {
                         "value": {
-                            "boundObject": {"@": "text1"},
-                            "boundObjectPropertyPath": "value"
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "firstName",
+                            "oneway": false
+                        },
+                        "title": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "firstName",
+                            "oneway": false
+                        }
+                    }
+                },
+                
+                "lname": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "lname"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "lastName",
+                            "oneway": false
+                        }
+                    }
+                },
+                
+                "email": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "email"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "email",
+                            "oneway": false
+                        }
+                    }
+                },
+                
+                "phone": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "phone"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "phone",
+                            "oneway": false
+                        },
+                        "readonly": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "phoneReadOnly",
+                            "oneway": false
+                        }
+                    }
+                },
+                "edit-phone": {
+                    "module": "montage/ui/button.reel",
+                    "name": "Button",
+                    "properties": {
+                        "element": {"#": "edit-phone"},
+                        "identifier": "editPhone"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
+                },
+                
+                "url": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "url"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "url",
+                            "oneway": false
+                        }
+                    }
+                },
+                
+                "zip": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "zip"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "zip",
+                            "oneway": false
+                        }
+                    }
+                },
+                
+                "zip": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "zip"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "zip",
+                            "oneway": false
+                        }
+                    }
+                },
+                
+                "dateConverter": {
+                    "module": "montage/core/converter/date-converter",
+                    "name": "DateConverter",
+                    "properties": {
+                        "pattern": "MM-dd-yyyy"
+                    }
+                },
+                
+                "dob": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "dob"},
+                        "converter": {"@": "dateConverter"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "dob",
+                            "oneway": false                            
+                        }
+                    }
+                },
+                "dob-error": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "dob-error"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "dob"},
+                            "boundObjectPropertyPath": "errorMessage",
+                            "oneway": "true"
                         }
                     }
                 },
 
-                "textarea1": {
-                    "module": "montage/ui/bluemoon/textarea.reel",
-                    "name": "TextArea",
+                "update": {
+                    "module": "montage/ui/button.reel",
+                    "name": "Button",
                     "properties": {
-                        "element": {"#": "textarea1"},
-                        "value": "Enter some text..."
-                    }
+                        "element": {"#": "update"},
+                        "identifier": "update"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
                 },
-                "echo2": {
+                                
+                "echo": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
-                        "element": {"#": "echo2"}
+                        "element": {"#": "echo"}
                     },
                     "bindings": {
                         "value": {
-                            "boundObject": {"@": "textarea1"},
-                            "boundObjectPropertyPath": "value"
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "json",
+                            "oneway": "true"
                         }
                     }
                 }
@@ -65,7 +217,13 @@
         </script>
 
         <style>
-
+            .input-text-example .error {
+                color: #E73525;
+                padding: 2px 0;
+            }
+            .input-text-example pre {
+                border: 0;
+            }
         </style>
     </head>
     <body>
@@ -74,88 +232,123 @@
                 <div class="span8">
                     <h3>Textfield</h3>
                     <p>
-                        The Textfield component wraps an HTML <code>&lt;input&gt;</code> text field. The example uses <a href="http://tetsubo.org/docs/montage/data-binding/" target="_blank">data binding</a> to echo the text you enter in a <code>&lt;p></code> element, which is used to represent a DynamicText component.
+                        The Textfield component wraps an HTML <code>&lt;input&gt;</code> text field.
                     </p>
-                </div>
-            </div>
-
-            <input type="text" id="text1" />
-            <p id="echo1"></p>
-
-<h6>HTML</h6>
- <pre class="prettyprint">
-&lt;input type="text" id="text1" /&gt;
-&lt;p id="echo1"&gt;&lt;/p&gt;
-</pre>
-
-<h6>Serialization</h6>
-<pre class="prettyprint">
-"text1": {
-    "module": "montage/ui/bluemoon/textfield.reel",
-    "name": "Textfield",
-    "properties": {
-        "element": {"#": "text1"},
-        "value": "Enter some text..."
-    }
-},
-
-"echo1": {
-    "module": "montage/ui/dynamic-text.reel",
-    "name": "DynamicText",
-    "properties": {
-        "element": {"#": "echo1"}
-    },
-    "bindings": {
-        "value": {
-            "boundObject": {"@": "text1"},
-            "boundObjectPropertyPath": "value"
-        }
-    }
-}
-</pre>
-
-            <div class="row">
-                <div class="span8">
-                    <h3>TextArea</h3>
                     <p>
-                        The TextArea component wraps an HTML <code>&lt;textarea></code> element.
+                        <a href="" target="_blank">View Documentation</a>
                     </p>
                 </div>
             </div>
 
-            <textarea id="textarea1"></textarea>
-            <p id="echo2"></p>
+            <h4>Demo</h4>
+            <div class="demo">
+            <p>
+                 Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
+                 </p>
+                 
+                 <form class="form-stacked">
+                     <label for="fname">Text</label>
+                     <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
+                     <label for="lname">Text</label>
+                     <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
+                     
+                     <label for="pwd1">Password</label>
+                     <input type="password" id="pwd" value="abcdef" />
 
-            <h6>HTML</h6>
-            <pre class="prettyprint">
-&lt;textarea id="textarea1"&gt;&lt;/textarea&gt;
-&lt;p id="echo2"&gt;&lt;/p&gt;
-        </pre>
+                     <label for="email1">Email</label>
+                     <input type="email" id="email" value="foo@bar.com" />
 
-            <h6>Serialization</h6>
-            <pre class="prettyprint linenums">
-"textarea1": {
-    "module": "montage/ui/bluemoon/textarea.reel",
-    "name": "TextArea",
-    "properties": {
-        "element": {"#": "textarea1"}
-        "value": "Enter some text..."
-    }
-},
-"echo2": {
-    "module": "montage/ui/dynamic-text.reel",
-    "name": "DynamicText",
-    "properties": {
-        "element": {"#": "echo2"}
-    },
-    "bindings": {
-        "value": {
-            "boundObject": {"@": "textarea1"},
-            "boundObjectPropertyPath": "value"
-        }
-    }
-}
-            </pre>
+                     <label for="url1">URL</label>
+                     <input type="url" id="url" value="http://www.google.com" />
+                     
+                     <label for="tel1">Phone Number</label>
+                     <input type="tel" id="phone" value="" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
+                     <button class="btn" id="edit-phone">Edit Phone Number</button>
+                     
+                     <label for="zipcode">US Postal code</label>
+                      <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
+
+                     <label for="date1">Date of Birth</label>
+                     <input type="date" id="dob" value="" pattern=""/>
+                     <div id="dob-error" class="error"></div>
+                     
+                     <div style="margin-top: 10px;">
+                         <button class="btn" id="update">Update</button>
+                    </div>
+                 </form>
+            
+                 <pre id="echo"></pre>
+            </div>
+
+            <section>
+                <a href="m-js/examples/sink/components/input-text-example.reel" target="_blank">View Demo Source</a>
+            </section>
+
+            <section>
+                <h4>Component Properties</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>value</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+                    <tr>
+                      <td>converter</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+                    <tr>
+                      <td>error</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+                    <tr>
+                      <td>autocomplete</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>disabled</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>readonly</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>name</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>multiple</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>pattern</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>size</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>placeholder</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>required</td>
+                      <td>...</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>
+                    <a href="" target="_blank">View full Documentation</a>
+                </p>
+            </section>
+
 
     </body>
 </html>

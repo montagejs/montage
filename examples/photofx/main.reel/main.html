@@ -95,7 +95,7 @@
             },
 
             "addPhotosButton": {
-                "module": "montage/ui/bluemoon/button.reel",
+                "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "addPhotosButton"},
@@ -126,7 +126,7 @@
             },
 
             "removePhotoButton": {
-                "module": "montage/ui/bluemoon/button.reel",
+                "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "removePhotoButton"},
@@ -161,7 +161,7 @@
             },
 
             "toggleControlsButton": {
-                "module": "montage/ui/bluemoon/button.reel",
+                "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "toggleControlsButton"},
@@ -177,7 +177,7 @@
             },
 
             "undoButton": {
-                "module": "montage/ui/bluemoon/button.reel",
+                "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "undoButton"},
@@ -205,7 +205,7 @@
             },
 
             "redoButton": {
-                "module": "montage/ui/bluemoon/button.reel",
+                "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "redoButton"},
@@ -241,9 +241,9 @@
     <div id="main" class="PhotoFX main">
 
         <div class="mainMenu">
-            <div id="toggleControlsButton" class="text ToggleControlsButton">✎</div>
-            <div id="undoButton" class="text UndoButton">⤺</div>
-            <div id="redoButton" class="text RedoButton">⤻</div>
+            <button id="toggleControlsButton" class="btn primary ToggleControlsButton">✎</button>
+            <button id="undoButton" class="btn UndoButton">⤺ Undo Multiply</button>
+            <button id="redoButton" class="btn RedoButton">⤻ Redo Multiply</button>
         </div>
 
         <div class="editArea">
@@ -259,9 +259,9 @@
             </div>
             <div id="supportsCrossOriginCanvasCondition">
                 <div class="controlPanel">
-                    <div id="addPhotosButton" class="text AddPhotosButton">Add Photos…</div>
+                    <button id="addPhotosButton" class="text AddPhotosButton btn success">Add Photos…</button>
                     <div id="removeSelectionCondition">
-                        <div id="removePhotoButton" class="text RemovePhotosButton">Remove Photo</div>
+                        <button id="removePhotoButton" class="text RemovePhotosButton btn danger">Remove Photo</button>
                     </div>
                 </div>
             </div>

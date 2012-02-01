@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "module": "components/range-input-example.reel",
+                    "name": "RangeInputExample",
+                    "properties": {
+                        "element": {"#": "range-input-example"},
+                        "image": {"#": "image"}
+                    }
+                },
+                "roundTo2Decimals": {
+                    "module": "montage/core/converter/number-converter",
+                    "name": "NumberConverter",
+                    "properties": {
+                        "decimals": 2
+                    }
+                },
+                "red": {
+                    "module": "montage/ui/range-input.reel",
+                    "name": "RangeInput",
+                    "properties": {
+                        "element": {"#": "color-red"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "red"                            
+                        }
+                    }
+                },
+                "red-value": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "red-value"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "red",
+                            "converter": {"@": "roundTo2Decimals"},
+                            "oneway": true
+                        }
+                    }
+                },
+                "green": {
+                    "module": "montage/ui/range-input.reel",
+                    "name": "RangeInput",
+                    "properties": {
+                        "element": {"#": "color-green"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "green"
+                        }
+                    }
+                },
+                "green-value": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "green-value"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "green",
+                            "converter": {"@": "roundTo2Decimals"},
+                            "oneway": true
+                        }
+                    }
+                },
+                "blue": {
+                    "module": "montage/ui/range-input.reel",
+                    "name": "RangeInput",
+                    "properties": {
+                        "element": {"#": "color-blue"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "blue"
+                        }
+                    }
+                },
+                "blue-value": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "blue-value"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "blue",
+                            "converter": {"@": "roundTo2Decimals"},
+                            "oneway": true
+                        }
+                    }
+                },
+                
+                "sharpness": {
+                    "module": "montage/ui/range-input.reel",
+                    "name": "RangeInput",
+                    "properties": {
+                        "element": {"#": "sharpness-amount"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "sharpnessAmount"
+                        }
+                    }
+                },
+                "sharpness-amount-value": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "sharpness-amount-value"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "sharpnessAmount",
+                            "converter": {"@": "roundTo2Decimals"},
+                            "oneway": true
+                        }
+                    }
+                },
+                
+                "reset": {
+                    "module": "montage/ui/button.reel",
+                    "name": "Button",
+                    "properties": {
+                        "element": {"#": "reset"},
+                        "identifier": "reset"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
+                }
+            }
+        </script>
+
+        <style>
+            .range-input-example .demo{
+                
+            }
+            .range-input-example .control {
+                background-color: whitesmoke;
+                padding: 5px;
+            }
+            .range-input-example input[type=range] {
+                width: 100px;
+                vertical-align: middle;
+            }
+            .range-input-example .range-value {
+                padding: 2px;  
+                border: 1px solid #aaa;              
+            }
+            #reset {
+                margin-top: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="range-input-example" class="range-input-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>Range Input</h3>
+                    <p>
+                        The Range Input component wraps an HTML input "range" type.
+                    </p>
+                </div>
+            </div>
+
+            <h4>Demo</h4>
+            <div class="demo">
+            <div class="row">
+                <div class="span6">
+                    <img id="image" src="images/IMG_1416.jpg" style="height: 300px; width: 450px;" class="image"/>
+                </div>
+                <div class="span6">
+                    <h6>Color</h6>
+                    <div class="control">
+                        <div>
+                            Red: 
+                            <input id="color-red" type="range" min="-1" max="1" step="0.1" value="0"/>
+                            <span id="red-value" class="range-value">0.5</span>
+                        </div>
+                        <div>
+                            Green: 
+                            <input id="color-green" type="range" min="-1" max="1" step="0.1" value="0" />
+                            <span id="green-value" class="range-value"/>
+                        </div>
+                        <div>
+                            Blue: 
+                            <input id="color-blue" type="range" min="-1" max="1" step="0.1" value="0" />
+                            <span id="blue-value" class="range-value" />
+                        </div>
+                        
+                        
+                    </div>
+                    
+                    
+                    <h6>Sharpen</h6>
+                    <div class="control">
+                        <div>
+                            Amount: 
+                            <input id="sharpness-amount" type="range" min="0" max="1" step="0.05" value="0"/>
+                            <span id="sharpness-amount-value" class="range-value">0.5</span>
+                        </div>
+                    </div>
+                   
+                    
+                    <button id="reset" class="btn cancel small">Reset</button>
+                    
+                </div>
+            </div>
+            </div>
+            
+            <section>
+                <a href="m-js/examples/sink/components/range-input-example.reel" target="_blank">View Demo Source</a>
+            </section>
+            
+            <section>
+                <h4>Component Properties</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                        <td>value</td>
+                        <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                      </tr>
+                    <tr>
+                      <td>min</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+                    <tr>
+                      <td>max</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>step</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>required</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>readonly</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>name</td>
+                      <td>...</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>
+                    <a href="" target="_blank">View full Documentation</a>
+                </p>
+            </section>
+
+        </div>
+    </body>
+</html>

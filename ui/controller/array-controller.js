@@ -47,8 +47,8 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             //TODO for right now assume that any content change invalidates the selection completely; we'll need to address this of course
             this.selectedObjects = null;
-
             this.organizeObjects();
+            this._initSelections();
         }
     },
 
@@ -599,7 +599,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             return this._selectedContentIndexes;
         },
-        set: function(value) {
+        set: function(value, internalSet) {
             var selectedIndexesChangeEvent,
                 selectedObjectsChangeEvent;
 
@@ -642,8 +642,77 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             this.dispatchEvent(selectedIndexesChangeEvent.withPlusValue(this.selectedIndexes));
             this.dispatchEvent(selectedObjectsChangeEvent.withPlusValue(this.selectedObjects));
+            
+            if(!internalSet) {
+                // update the selections only if the selectedContentIndexes is set directly
+                this._updateSelections();                
+            }
+            
         }
     },
+    
+    
+    _initSelections: {
+        value: function() {
+            // create an array with null values with same
+            // length as organizedObjects
+            var len = this._organizedObjects.length;
+            var arr = [];
+            arr[0] = null;
+            arr[len-1] = null;
+            
+            this._selections = arr;
+            //Object.getPropertyDescriptor(this, "selections").set.call(this, arr, true);
+        }
+    },
+    
+    _updateSelections: {
+        value: function() {    
+                   
+            if(this.selectedIndexes) {
+                this._initSelections();
+                var arr = this._selections;
+                var selectedIndexes = this.selectedIndexes || [];                                
+                var len = selectedIndexes.length, i=0, index;
+                
+                for(i=0; i< len; i++) {
+                    index = selectedIndexes[i];
+                    if(index < arr.length-1) {
+                        arr[index] = true;
+                    }                    
+                }                               
+            } 
+            
+            Object.getPropertyDescriptor(this, "selections").set.call(this, arr, true);
+            
+        }
+    },
+    
+    // parse array with same length as objects but contains true / false(falsy)
+    _selections: {value: null},
+    selections: {
+        get: function() {
+            return this._selections;
+        },
+        set: function(v, internalSet) {
+            this._selections = v;
+            if(this._selections) {
+                
+                if(!internalSet) {
+                    var arr = [];
+                    this._selections.forEach(function(item, i) {
+                        if(item) {
+                            arr.push(i);
+                        }
+                    });
+                    // use the internalSet flag to prevent setting the selections again,
+                    Object.getPropertyDescriptor(this, "selectedIndexes").set.call(this, arr, true);
+                }                
+                 
+            }
+        }
+    },
+    
 
     /**
      Initalizes the ArrayController with the specified content.

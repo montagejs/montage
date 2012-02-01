@@ -13,8 +13,8 @@ require("montage/ui/list.reel");
 require("montage/ui/scrollview.reel");
 require("montage/ui/bluemoon/slider.reel"),
 require("montage/ui/tabs.reel");
-require("montage/ui/bluemoon/textarea.reel");
-require("montage/ui/bluemoon/textfield.reel");
+require("montage/ui/textarea.reel");
+require("montage/ui/textfield.reel");
 require("montage/ui/bluemoon/toggle.reel");
 
 exports.Other = Montage.create(Component, {});

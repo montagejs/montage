@@ -52,7 +52,7 @@ input {
     position: absolute;
     top: 10px;
     left: 10px;
-    opacity: 0.2;
+    /*opacity: 0.9;*/
     z-index: 5000;
 }
 
@@ -85,13 +85,13 @@ input {
     text-align: center;
 }
 
-.PhotoPanel .controlPanel .montage-button {
+.PhotoPanel .controlPanel button {
     margin-bottom: 8px;
 }
 
 .EffectsPanel,
 .PhotoPanel .controlPanel {
-    width: 270px
+    width: 270px;
 }
 
 .EffectsPanel {
@@ -108,8 +108,7 @@ input {
 
 .PhotoFX .mainMenu .UndoButton,
 .PhotoFX .mainMenu .RedoButton {
-    width: 12em;
-
+    /*width: 12em;*/
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
