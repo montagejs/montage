@@ -32,6 +32,7 @@ exports.PopupExample = Montage.create(Component, {
             var popup = this._bookmarkMenuPopup;
             if(!popup) {
                 popup = Popup.create();
+                popup.modal = true;
                 popup.content = this.bookmarkMenu;
                 popup.anchor = this.btnBookmark;
                 this._bookmarkMenuPopup = popup;

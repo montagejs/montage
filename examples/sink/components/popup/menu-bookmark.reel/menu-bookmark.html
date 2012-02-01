@@ -47,11 +47,36 @@
             }
         ]
     },
+
+    "button3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "ShowActionSheet",
+            "element": {"#": "action-bookmark-test"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    "actionsheet": {
+        "module": "components/popup/action-sheet.reel",
+        "name": "ActionSheet",
+        "properties": {
+        }
+    },
+
     "owner": {
         "module": "components/popup/menu-bookmark.reel",
         "name": "MenuBookmark",
         "properties": {
-            "element": {"#": "menu-container"}
+            "element": {"#": "menu-container"},
+            "actionSheet": {"@": "actionsheet"},
+            "btnActionSheet": {"@": "button3"}
         }
     }
 }
@@ -64,8 +89,9 @@
             <h3 class="title">Bookmark</h3>
             <div class="content">
                 <div class="action-container">
-                    <button class="btn primary action" id="action-bookmark" style="margin: 10px 0;">Add Bookmark</button>
-                    <button class="btn action" id="action-bookmark-fav">Bookmark &amp; Favorite</button>
+                    <div class="submit action" id="action-bookmark" style="margin: 10px 0;">Add Bookmark</div>
+                    <div class="text action" id="action-bookmark-fav">Bookmark &amp; Favorite</div>
+                    <div class="text action" id="action-bookmark-test">Show Action Sheet &raquo;</div>
                 </div>
                 <div class="msg-container">
                     <label>Add a custom label</label>

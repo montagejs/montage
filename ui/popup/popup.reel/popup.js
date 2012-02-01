@@ -5,7 +5,7 @@
  </copyright> */
 
 /**
-	@module "montage/ui/popup/popup.reel"
+    @module "montage/ui/popup/popup.reel"
     @requires montage/core/core
     @requires montage/ui/component
 */
@@ -190,7 +190,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     */
     prepareForDraw: {
         value: function() {
-
+            this.type = this.type || 'custom';
         }
     },
 
@@ -224,7 +224,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     _calculatePosition: {
         value: function() {
-            var pos, delegate = this.delegate, anchor = this.anchor, type = (this.type || 'custom');
+            var pos, delegate = this.delegate, anchor = this.anchor, type = this.type;
 
             if(delegate && (typeof delegate.positionPopup === 'function')) {
                 var anchorPosition;
@@ -303,8 +303,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             var el = document.createElement('div');
             el.classList.add('montage-popup-modal-mask');
-            el.style['z-index'] = 9000;
-            el.classList.add('montage-hide');
+            el.style['z-index'] = 6999;
+            el.classList.add('montage-invisible');
+
             document.body.appendChild(el);
             return el;
         }
@@ -341,7 +342,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     show: {
         value: function() {
-            var type = this.type || "custom",
+            var type = this.type,
                 self = this;
             this.application.getPopupSlot(type, this, function(slot) {
                 self._popupSlot = slot;
@@ -355,11 +356,40 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             this._removeEventListeners();
 
-            var type = this.type || "custom",
+            var type = this.type,
                 self = this;
-            this.application.getPopupSlot(type, null, function() {
-                self.displayed = false;
-            });
+
+            this.application.returnPopupSlot(type);
+            this.displayed = false;
+        }
+    },
+
+    _showModalMask: {
+        value: function() {
+            this._modalDialogMask = document.querySelector('.montage-popup-modal-mask');
+            this._modalDialogMask = this._modalDialogMask || this._createModalMask();
+            this._modalDialogMask.classList.remove('montage-invisible');
+        }
+    },
+
+    _hideModalMask: {
+        value: function() {
+            // check to see if there is at least one modal dialog in the DOM
+            // See https://github.com/Motorola-Mobility/montage/issues/32
+            var activePopups = this.application._getActivePopupSlots();
+            var count = 0;
+            if(activePopups && activePopups.length > 0) {
+                // look to see if any content is a modal
+                var i, len = activePopups.length;
+                for(i=0; i< len; i++) {
+                    if(activePopups[i].content && activePopups[i].content.modal === true) {
+                        count++;
+                    }
+                }
+            }
+            if(count <= 0) {
+                this._modalDialogMask.classList.add('montage-invisible');
+            }
         }
     },
 
@@ -372,8 +402,6 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // kishore - does the above restriction make sense ? should we restrict it ?
 
                 if(this.modal === true) {
-                    this._modalDialogMask = document.querySelector('.montage-popup-modal-mask');
-                    this._modalDialogMask = this._modalDialogMask || this._createModalMask();
                     this.element.classList.add('montage-modal');
                 } else {
                     this.element.classList.remove('montage-modal');
@@ -384,9 +412,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // For the first release, we position inside the didDraw
                 //this._positionPopup();
 
-                this.element.classList.remove('montage-hide');
+                this.element.classList.remove('montage-invisible');
                 this.content.element.style.display = 'block';
-                this.content.element.classList.remove('montage-hide');
+                this.content.element.classList.remove('montage-invisible');
                 // TODO do we want the panel to be focusable?
                 // this.content.element.setAttribute("tabindex", "0"); // Make the alert focusable
 
@@ -397,10 +425,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     }, this.autoDismiss);
                 }
             } else {
-                if (!this.element.classList.contains('montage-hide')) {
-                    this.element.classList.add('montage-hide');
+                if (!this.element.classList.contains('montage-invisible')) {
+                    this.element.classList.add('montage-invisible');
                 }
-                this.content.element.classList.add('montage-hide');
+                this.content.element.classList.add('montage-invisible');
                 if(this._popupSlot) {
                     this._popupSlot.content = null;
                 }
@@ -415,8 +443,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             if (this._displayed) {
                 this.content.element.focus();
+
                 if(this.modal === true) {
-                    this._modalDialogMask.classList.remove('montage-hide');
+                    this._showModalMask();
                 }
 
                 this.position = this.position || this._calculatePosition();
@@ -424,7 +453,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
             } else {
                 if(this.modal === true) {
-                    this._modalDialogMask.classList.add('montage-hide');
+                    this._hideModalMask();
                 }
             }
             // kishore: invoking this event in didDraw as we need the dimensions of the content.

@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /* these need to be moved to montage.css when that is created */
-.montage-hide {
+.montage-invisible {
     display: none;
 }
 .clearfix:after {
@@ -25,13 +25,12 @@
 
 .montage-popup-modal-mask {
     position: fixed;
-    background-color: #000;
     left: 0;
     top: 0;
     right: 0;
     bottom: 0;
+    background-color: #000;
     opacity: 0.8;
-    z-index: 9000;
 }
 
 .montage-popup-container {
