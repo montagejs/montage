@@ -6,7 +6,7 @@
         <script type="text/montage-serialization">
 {
     "textfield1": {
-        "module": "montage/ui/bluemoon/textfield.reel",
+        "module": "montage/ui/textfield.reel",
         "name": "Textfield",
         "properties": {
             "element": {"#": "txt-label"}
@@ -20,7 +20,7 @@
         }
     },
     "button1": {
-        "module": "montage/ui/bluemoon/button.reel",
+        "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
             "element": {"#": "action-bookmark"},
@@ -34,7 +34,7 @@
         ]
     },
     "button2": {
-        "module": "montage/ui/bluemoon/button.reel",
+        "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
             "identifier": "Addandfavorite",
@@ -64,8 +64,8 @@
             <h3 class="title">Bookmark</h3>
             <div class="content">
                 <div class="action-container">
-                    <div class="submit action" id="action-bookmark" style="margin: 10px 0;">Add Bookmark</div>
-                    <div class="text action" id="action-bookmark-fav">Bookmark &amp; Favorite</div>
+                    <button class="btn primary action" id="action-bookmark" style="margin: 10px 0;">Add Bookmark</button>
+                    <button class="btn action" id="action-bookmark-fav">Bookmark &amp; Favorite</button>
                 </div>
                 <div class="msg-container">
                     <label>Add a custom label</label>

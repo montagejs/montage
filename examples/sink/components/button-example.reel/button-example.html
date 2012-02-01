@@ -3,11 +3,10 @@
 	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-
     <script type="text/montage-serialization">
 {
     "button1": {
-        "module": "montage/ui/bluemoon/button.reel",
+        "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
             "element": {"#": "button1"},
@@ -23,7 +22,7 @@
 
 
     "button2": {
-        "module": "montage/ui/bluemoon/button.reel",
+        "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
             "element": {"#": "button2"}
@@ -37,7 +36,7 @@
     },
 
     "button3": {
-        "module": "montage/ui/bluemoon/button.reel",
+        "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
             "element": {"#": "button3"},
@@ -51,13 +50,62 @@
         ]
     },
 
+    "copy": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "copy"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+    "cut": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "cut"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+    "paste": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "paste"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
+
+
+    "logger": {
+        "module": "logger.reel",
+        "name": "Logger",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    },
 
     "owner": {
         "module": "components/button-example.reel",
         "name": "ButtonExample",
         "properties": {
             "element": {"#": "buttontest"},
-            "logger": {"#": "event-log"}
+            "logger": {"@": "logger"}
         }
     }
 }
@@ -76,9 +124,14 @@
             margin-top: 10px;
         }
 
+        .settings:before {
+            content: url(images/settings.png);
+            vertical-align: middle;
+            display: inline-block;
+            padding-right: 0.5em;
+        }
+
     </style>
-
-
 </head>
 <body>
     <div id="buttontest" class="button-example">
@@ -96,24 +149,12 @@
         <section>
 
             <p>Default Button with an identifier to link it to an action handler</p>
-            <div class="text" id="button1">Button One</div>
+
+            <button class="text btn" id="button1">Button One</button>
+
             <h6>Serialization</h6>
-            <pre class="prettyprint">
-"button1": {
-    "module": "montage/ui/bluemoon/button.reel",
-    "name": "Button",
-    "properties": {
-        "element": {"#": "button1"},
-        "identifier": "button1"
-    },
-    "listeners": [
-        {
-            "type": "action",
-            "listener": {"@": "owner"}
-        }
-    ]
-}
-            </pre>
+            <pre class="prettyprint" data-serialization-entry="button1"></pre>
+
 
             <h6>HTML</h6>
             <pre class="prettyprint">
@@ -144,25 +185,22 @@ exports.ButtonExample = Montage.create(Component, {
             </pre>
 
             <p>Submit Button without a specific handler. In this case, handleAction will be called on action.</p>
-            <div class="submit" id="button2">I am a Submit Button</div>
+            <input type="submit" class="btn submit" id="button2" value="I am a Submit Button"/>
             <h6>Serialization</h6>
             <pre class="prettyprint">&lt;div class="submit" id="button2"&gt;I am a Submit Button&lt;/div&gt;</pre>
 
 
             <p>Cancel Button with a specific handler - handleButton3Action</p>
-            <div class="cancel" id="button3">I am a Cancel Button</div>
+            <div class="btn cancel" id="button3">I am a Cancel Button</div>
             <h6>Serialization</h6>
             <pre class="prettyprint">&lt;div class="cancel" id="button3"&gt;I am a Cancel Button&lt;/div&gt;</pre>
 
-            <div id="event-log" class="eventlog alert-message block-message info">
-                <h6>Event Log</h6>
-            </div>
         </section>
 
         <section>
             <h6>Handling Button Click/Touch Events</h6>
             <p>To setup a handler for a Button, implement a function with the following naming convention:
-            <pre class="prettyprint">"handle" + < button Identifier capitalized > + "Action"</pre>
+            <pre class="prettyprint">"handle" + &lt; button Identifier capitalized &gt; + "Action"</pre>
             </p>
             <p>
                 Eg: for button with identifier = "button1":
@@ -178,6 +216,33 @@ handleButton1Action: {
 
         </section>
 
+        <section>
+            <h4>Button group</h4>
+
+            <p>Putting buttons in a group is a matter of wrapping the buttons in an
+            element and giving it a class.</p>
+
+            <div class="btn-group">
+                <button class="btn" id="copy">Copy</button>
+                <button class="btn" id="cut">Cut</button>
+                <button class="btn" id="paste">Paste</button>
+            </div>
+        </section>
+
+        <section>
+            <h4>Image</h4>
+
+            <p>It is recommended that images are added to buttons using CSS, either by
+            setting a background image, or by using the <code>:before</code> and
+            <code>:after</code> pseudo elements with the <code>content</code>
+            property, as follows:</p>
+
+            <button class="btn settings" id="image">Settings</button>
+
+            <div id="logger">
+                <h2>Logger</h2>
+            </div>
+        </section>
     </div>
 </body>
 </html>

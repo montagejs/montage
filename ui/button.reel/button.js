@@ -3,20 +3,13 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-/**
-	@module "montage/ui/bluemoon/button.reel"
-    @requires montage/core/core
-    @requires montage/ui/component
-*/
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
-
+    Component = require("ui/component").Component,
+    NativeControl = require("ui/native-control").NativeControl;
 /**
- @class module:"montage/ui/bluemoon/button.reel".Button
- @classdesc Button component implementation. Turns any div element into a multi-state labeled button.
- @extends module:montage/ui/component.Component
+ * The Text input
  */
-exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon/button.reel".Button# */ {
+var Button = exports.Button = Montage.create(NativeControl, {
 
 /**
   Description TODO
@@ -45,122 +38,14 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
-    _busy: {
-        enumerable: false,
-        value: false
-    },
-
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
-    */
-    busy: {
-        get: function () {
-            return this._busy;
-        },
-        set: function (value) {
-            if ((value === true) && (!this._disabled)) {
-                this._busy = true;
-            } else {
-                this._busy = false;
-            }
-            this.needsDraw = true;
-        }
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _disabled: {
-        enumerable: false,
-        value: false
-    },
-
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
-    */
-    disabled: {
-        get: function () {
-            return this._disabled;
-        },
-        set: function (value) {
-            if (value === true) {
-                this._disabled = true;
-                this.busy = false;
-            } else {
-                this._disabled = false;
-            }
-            this.needsDraw = true;
-        }
-    },
-
     //TODO we should prefer positive properties like enabled vs disabled, get rid of disabled
-
     enabled: {
         dependencies: ["disabled"],
         get: function () {
-            return !!this._disabled;
+            return !this._disabled;
         },
         set: function (value) {
             this.disabled = !value;
-        }
-    },
-
-    /**
-     * When behavior is toggle, @link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed
-     * the pressed property contains the equivalent of the aria-pressed attribute: "true"||"false"||"mixed"
-     * @private
-     */
-    _pressed: {
-        value: "false",
-        enumerable: false
-    },
-    /**
-        Description TODO
-        @type {Function}
-        @default {Boolean} "false"
-    */
-    pressed: {
-        get: function() {
-            return this._pressed;
-        },
-        set: function(value) {
-            if (value !== this._pressed) {
-                this._pressed = value;
-                this.needsDraw = true;
-            }
-        }
-    },
-    /**
-     * Used when a button is associated with an input tag. For buttons, the title comes from it's value attribute.
-     * If the value property is undefined, it will be initialized from the button's input element if the element is an input type.
-     * @private
-     */
-    _value: {
-        enumerable: false,
-        value: undefined
-    },
-    /**
-        Description TODO
-        @type {Function}
-        @default undefined
-    */
-    value: {
-        serializable: true,
-        get: function () {
-            return this._value;
-        },
-        set: function (value) {
-            this._value = value;
-            this.needsDraw = true;
         }
     },
 
@@ -174,141 +59,63 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
     },
 
     /**
-     * @private
-     */
-    _title: {
-        enumerable: false,
-        value: undefined
-    },
-    /**
-        Description Text to show in the tooltip displayed by hovering over this button
-        @type {Function}
-        @default undefined
+      Stores the node that contains this button's value. Only used for
+      non-`<input>` elements.
+      @private
     */
-    title: {
-        serializable: true,
-        get: function () {
-            return this._title;
+    _labelNode: {value:undefined, enumerable: false},
+
+    _label: { value: undefined, enumerable: false },
+    /**
+        The label for the button.
+
+        In an `<input>` element this is the value property. On any other element
+        (including `<button>`) this is the first child node which is a text node.
+        If one isn't found it will be created.
+
+        @type {Property}
+        @default {String} element value
+    */
+    label: {
+        get: function() {
+            return this._label;
         },
-        set: function (value) {
-            this._title = value;
+        set: function(value) {
+            if (value && value.length > 0 && this.converter) {
+                try {
+                    value = this.converter.convert(value);
+                    if (this.error) {
+                        this.error = null;
+                    }
+                } catch(e) {
+                    // unable to convert - maybe error
+                    this.error = e;
+                }
+            }
+
+            this._label = value;
+            if (this._isInputElement) {
+                this._value = value;
+            }
+
             this.needsDraw = true;
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
-    _valueNode: {value:undefined, enumerable: false},
-
-/**
-        Used when a button is associate with an input tag.<br>
-        For buttons, the title comes from it's value attribute.<br>
-        valueActive, if set, is used when the button is in active state (mousedown / touchstart).
-        @type {String}
-        @default undefined
-    */
-    valueActive: {
-        serializable: true,
-        value: undefined
-    },
-
- /**
-  Description TODO
-  @private
-*/
-    _valueNodeActiveNode: {value:undefined, enumerable: false},
-
-
     /**
-     Used when a button is associate with an input tag.<br>
-     For buttons, the title comes from its value attribute.<br>
-     When behavior is toggle, @link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed the button has multiple states and may need different titles for that.<br>
-     So, pressedValue would contain the value to use when pressed is true.
-     @type {String}
-     @default undefined
-     */
-    pressedValue: {
-        serializable: true,
-        value: undefined
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _pressedValueNode: {value:undefined, enumerable: false},
-
-/**
-        Used when a button is associate with an input tag.<br>
-        For buttons, the title comes from its <code>value</code> attribute.<br>
-        When behavior is toggle, {@link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed} the button has multiple states and may need different titles for that.<br>
-        So, pressedValue would contain the value to use when pressed is true.
-        @type {String}
-        @default undefined
+    True when the button is being interacted with, either through mouse click or
+    touch event.
+    @private
     */
-    pressedValueActive: {
-        serializable: true,
-        value: undefined
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _pressedValueActiveNode: {value:undefined, enumerable: false},
-
-/**
-        Used when a button is associate with an input tag.<br>
-        For buttons, the title comes from it's value attribute.<br>
-        When behavior is toggle, {@link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed} the button has multiple states and may need different titles for that.<br>
-        So, <code>mixedValue</code> would contain the value to use when pressed is mixed.
-        @type {String}
-        @default undefined
-    */
-    mixedValue: {
-        serializable: true,
-        value: undefined
-    },
-
- /**
-  Description TODO
-  @private
-*/
-    _mixedValueNode: {value:undefined, enumerable: false},
-
-/**
-        Used when a button is associated with an input tag.<br>
-        For buttons, the title comes from its <code>value</code> attribute.<br>
-        When behavior is toggle, {@link http://www.w3.org/TR/wai-aria/states_and_properties#aria-pressed} the button has multiple states and may need different titles for that.<br>
-        So, <code>mixedValue</code> would contain the value to use when pressed is mixed.
-        @type {String}
-        @default undefined
-    */
-    mixedValueActive: {
-        serializable: true,
-        value: undefined
-    },
-
-/**
-  Description TODO
-  @private
-*/
-    _mixedValueActiveNode: {value:undefined, enumerable: false},
-
-/**
-  Description TODO
-  @private
-*/
     _active: {
+        enumerable: false,
         value: false
     },
 
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
+    /**
+    Description TODO
+    @type {Function}
+    @default {Boolean} false
     */
     active: {
         get: function() {
@@ -319,58 +126,21 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             this.needsDraw = true;
         }
     },
-/**
-  Description TODO
-  @private
-*/
-    _behavior: {
-        value: "transient",
-        enumerable: false
-    },
-
-    /**
-        Behavior describes how the button interprets events:
-        <ul>
-            <li><b>transient</b> is the default, trigger an action on click</li>
-            <li><b>toggle</b> maintains a state from off -> click -> on -> click -> off</li>
-            <li><b>mixed</b> maintains a state from off -> click -> on -> click -> mixed -> off</li>
-        </ul>
-        @type {Function}
-        @default {String} "transient"
-    */
-    behavior: {
-        serializable: true,
-        get: function() {
-            return this._behavior;
-        },
-        set: function(value) {
-            if (value !== this._behavior) {
-                //Sanity check on behavior
-                value = ((value === "transient") || (value === "toggle") || (value === "mixed")) ? value : "transient";
-                this._behavior = value;
-                this.needsDraw = true;
-            }
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _observedPointer: {
-        enumerable: true,
-        value: null
-    },
 
     // Low-level event listeners
- /**
+
+    /**
     Description TODO
     @function
     @param {Event} event The handleMousedown event
     */
     handleMousedown: {
         value: function(event) {
-            if (!this._disabled && !this._busy) {
-                this._acknowledgeIntent("mouse");
+            if (this._observedPointer !== null) {
+                return;
+            }
+            if (!this._disabled) {
+                this._startInteraction("mouse");
             }
 
             event.preventDefault();
@@ -380,7 +150,7 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             }
         }
     },
-/**
+    /**
     Description TODO
     @function
     @param {Event} event The handleMouseup event
@@ -390,20 +160,19 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             this._interpretInteraction(event);
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     @param {Event} event The handleTouchstart event
     */
     handleTouchstart: {
         value: function(event) {
-
             if (this._observedPointer !== null) {
                 return;
             }
-
-            if (!this._disabled && !this._busy) {
-                this._acknowledgeIntent(event.changedTouches[0].identifier);
+            if (!this._disabled) {
+                this._startInteraction(event.changedTouches[0].identifier);
             }
 
             // NOTE preventingDefault disables the magnifying class
@@ -415,16 +184,14 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             }
         }
     },
-/**
+    /**
     Description TODO
     @function
     @param {Event} event The handleTouchend event
     */
     handleTouchend: {
         value: function(event) {
-
-            var i = 0,
-                changedTouchCount = event.changedTouches.length;
+            var i = 0, changedTouchCount = event.changedTouches.length;
 
             for (; i < changedTouchCount; i++) {
                 if (event.changedTouches[i].identifier === this._observedPointer) {
@@ -435,55 +202,59 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
 
         }
     },
-/**
+    /**
     Description TODO
     @function
     @param {Event} event The handleTouchcancel event
     */
     handleTouchcancel: {
         value: function(event) {
-
-            var i = 0,
-                changedTouchCount = event.changedTouches.length;
+            var i = 0, changedTouchCount = event.changedTouches.length;
 
             for (; i < changedTouchCount; i++) {
                 if (event.changedTouches[i].identifier === this._observedPointer) {
-                    this._releaseInterest();
-
-                    this.active = false;
+                    this._endInteraction();
                     return;
                 }
             }
 
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} pointer TODO
-    @param {Component} demandingComponent TODO
-    @returns {Boolean} true TODO
+
+    /**
+    If we have to surrender the pointer we are no longer active. This will
+    stop the action event being dispatched.
     */
     surrenderPointer: {
-        value: function(pointer, demandingComponent) {
-
-            this._releaseInterest();
-
-            this.active = false;
+        value: function(pointer, component) {
+            if (pointer === this._observedPointer) {
+                this._endInteraction();
+            }
             return true;
         }
     },
 
     // Internal state management
-/**
-  Description TODO
-  @private
-*/
-    _acknowledgeIntent: {
-        value: function(pointer) {
 
-            this._observedPointer = pointer;
+    /**
+    Stores the pointer that pressed down the button. Needed for multitouch.
+    @private
+    */
+    _observedPointer: {
+        enumerable: true,
+        value: null
+    },
+
+    /**
+    Called when the user starts interacting with the component. Adds release
+    (touch and mouse) listeners.
+    @private
+    */
+    _startInteraction: {
+        value: function(pointer) {
             this.eventManager.claimPointer(pointer, this);
+            this._observedPointer = pointer;
+            this.active = true;
 
             if (window.Touch) {
                 document.addEventListener("touchend", this);
@@ -491,19 +262,18 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             } else {
                 document.addEventListener("mouseup", this);
             }
-
-            this.active = true;
         },
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+    Called when the user has interacted with the button. Decides whether to
+    dispatch an action event.
+    @private
+    */
     _interpretInteraction: {
         value: function(event) {
-
-            if (!this.active) {
+            if (!this._active) {
                 return;
             }
 
@@ -513,22 +283,18 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             }
 
             if (this.element === target) {
-                this._shouldDispatchActionEvent = true;
                 this._dispatchActionEvent();
-                this.updateState();
             }
 
-            this._releaseInterest();
-
-            this.active = false;
+            this._endInteraction();
         },
         enumerable: false
     },
-/**
-  Description TODO
-  @private
-*/
-    _releaseInterest: {
+    /**
+    Called when all interaction is over. Removes listeners.
+    @private
+    */
+    _endInteraction: {
         value: function() {
             if (window.Touch) {
                 document.removeEventListener("touchend", this);
@@ -537,100 +303,93 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 document.removeEventListener("mouseup", this);
             }
 
-            this.eventManager.forfeitPointer(this._observedPointer, this);
+            if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                this.eventManager.forfeitPointer(this._observedPointer, this);
+            }
             this._observedPointer = null;
+            this.active = false;
         }
     },
-/**
-    Description TODO
-    @function
-    */
-    updateState: {
-        value: function() {
-            var newState;
 
-            if (this._behavior !== "transient") {
-                switch (this._pressed) {
-                    case "false":
-                        newState = "true";
-                        break;
-                    case "true":
-                        newState = (this._behavior === "toggle") ? "false" : "mixed";
-                        break;
-                    case "mixed":
-                        newState = "false";
-                        break;
-                }
-                this.pressed = newState;
-            }
-            this.needsDraw = true;
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _isElementInput: {value: false},
-    prepareForDraw: {
+    /**
+    Description TODO
+    @private
+    */
+    _isInputElement: {value: false},
+
+    deserializedFromTemplate: {
         value: function() {
-            
-            if(!this._element.tabIndex) {
-                this._element.tabIndex = 0;
-            }
+            var o = Object.getPrototypeOf(Button).deserializedFromTemplate.call(this);
 
             this._element.classList.add("montage-button");
             this._element.setAttribute("aria-role", "button");
 
-            if (!!(this._isElementInput = (this._element.tagName === "INPUT")) && this.value === undefined) {
-                this._valueNode = this._element.getAttributeNode("value");
-                this.value = this._element.value;
-            }
-            else {
+            this._isInputElement = (this._element.tagName === "INPUT");
+            // Only take the value from the element if it hasn't been set
+            // elsewhere (i.e. in the serialization)
+            if (this._isInputElement) {
+                // NOTE: This might not be the best way to do this
+                // With an input element value and label are one and the same
+                Object.defineProperty(this, "value", {
+                    get: function() {
+                        return this._label;
+                    },
+                    set: function(value) {
+                        this.label = value;
+                    }
+                });
+
+                if (this._label === undefined) {
+                    this._label = this._element.value;
+                }
+            } else {
                 if (!this._element.firstChild) {
                     this._element.appendChild(document.createTextNode(""));
-
                 }
-                this._valueNode = this._element.firstChild;
-                if (this.value === undefined) {
-                    this.value = this._valueNode.data;
+                this._labelNode = this._element.firstChild;
+                if (this._label === undefined) {
+                    this._label = this._labelNode.data;
                 }
             }
+
+            this.needsDraw = true;
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     */
     prepareForActivationEvents: {
         value: function() {
-
             if (window.Touch) {
                 this._element.addEventListener("touchstart", this);
             } else {
-                this.element.addEventListener("mousedown", this);
+                this._element.addEventListener("mousedown", this);
             }
 
         }
     },
 
     /**
-      Retrieves the display value for the button, running it through a converter if needed
-      @private
-    */
-    _convertValue: {
-        value: function(value) {
-            if (this.converter) {
-                return this.converter.convert(value);
-            }
-            return value;
-        }
-    },
-/**
-    Description TODO
+    Draws the label to the DOM.
     @function
     */
+    _drawLabel: {
+        enumerable: false,
+        value: function(value) {
+            if (this._isInputElement) {
+                this._element.setAttribute("value", value);
+            } else {
+                this._labelNode.data = value;
+            }
+        }
+    },
+
     draw: {
         value: function() {
+            // Call super method
+            Object.getPrototypeOf(Button).draw.call(this);
 
             if (this._disabled) {
                 this._element.classList.add("disabled");
@@ -638,106 +397,20 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 this._element.classList.remove("disabled");
             }
 
-            if (this._busy) {
-                this._element.setAttribute("aria-busy", true);
-                this._element.classList.add("busy");
-            } else {
-                this._element.setAttribute("aria-busy", false);
-                this._element.classList.remove("busy");
-            }
-
-            if (this._behavior !== "transient") {
-
-                this._element.setAttribute("aria-pressed", this._pressed);
-
-                if (this._pressed === "true" && this.pressedValue) {
-                    if (this._isElementInput) {
-                        this._valueNode.value = this._convertValue(this.pressedValue);
-                    }
-                    else {
-                        if (!this._pressedValueNode) {
-                            this._pressedValueNode = document.createTextNode("");
-                            this._pressedValueNode.data = this._convertValue(this.pressedValue);
-                        }
-                        //TODO use replace now
-                        this._valueNode.data = this._convertValue(this.pressedValue);
-                    }
-                }
-                else if (this._pressed === "mixed" && this.mixedValue) {
-                    if (this._isElementInput) {
-                        this._element.setAttribute("value", this._convertValue(this.mixedValue));
-                    }
-                    else {
-                        this._element.firstChild.data = this._convertValue(this.mixedValue);
-                    }
-                }
-                else if ((this._pressed === "false") && (typeof this.value !== "undefined")) {
-                    if (this._isElementInput) {
-                        this._element.setAttribute("value", this._convertValue(this.value));
-                    }
-                    else {
-                        this._element.firstChild.data = this._convertValue(this.value);
-                    }
-                }
-            } else {
-                if (this._isElementInput) {
-                    this._element.setAttribute("value", this._convertValue(this.value));
-                } else {
-                    this._element.firstChild.data = this._convertValue(this.value);
-                }
-            }
-            if (this.valueActive) {
-                if (this.active) {
-                    if (this._behavior === "transient" || this._pressed === "false") {
-                        if (this._isElementInput) {
-                            this._element.setAttribute("value", this._convertValue(this.valueActive));
-                        }
-                        else {
-                            this._element.firstChild.data = this._convertValue(this.valueActive);
-                        }
-                    }
-                    else if (this._pressed === "true" && this.pressedValueActive) {
-                        if (this._isElementInput) {
-                            this._element.setAttribute("value", this._convertValue(this.pressedValueActive));
-                        }
-                        else {
-                            this._element.firstChild.data = this._convertValue(this.pressedValueActive);
-                        }
-                    }
-                    else if (this._pressed === "mixed" && this.mixedValueActive) {
-                        if (this._isElementInput) {
-                            this._element.setAttribute("value", this._convertValue(this.mixedValueActive));
-                        }
-                        else {
-                            this._element.firstChild.data = this._convertValue(this.mixedValueActive);
-                        }
-                    }
-                }
-                /* Right now, we don't handle active-pressed */
-                else if (this._behavior === "transient") {
-                    if (this._isElementInput) {
-                        this._element.setAttribute("value", this._convertValue(this.value));
-                    }
-                    else {
-                        this._element.firstChild.data = this._convertValue(this.value);
-                    }
-                }
-            }
-
-            this._element.setAttribute("title", this.title || "");
+            this._drawLabel(this.label);
         }
     }
+});
 
-}, module);
-/**
-    @class module:montage/ui/button.ToggleButton
-*/
-exports.ToggleButton = Montage.create(exports.Button,/** @lends module:montage/ui/button.ToggleButton# */ {
-/**
-  Description TODO
-  @private
-*/
-    _behavior: {
-        value: "toggle"
-    }
+Button.addProperties({
+    autofocus: {value: false, dataType: 'boolean'},
+    disabled: {value: false, dataType: 'boolean'},
+    form: null,
+    formaction: null,
+    formenctype: null,
+    formmethod: null,
+    formnovalidate: null,
+    formtarget: null,
+    name: null,
+    value: null
 });

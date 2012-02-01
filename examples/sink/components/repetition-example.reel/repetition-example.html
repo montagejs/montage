@@ -62,12 +62,194 @@
             }
         }
     },
+    
+    "controller": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "data",
+                "oneway": true
+            }
+        }
+    },
+
+    "list1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "controller"},
+            "axis": "horizontal"
+        }
+    },
+
+    "link": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
+                "oneway": true
+            },
+            "textContent": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+    
+    "desc": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
+                "oneway": true
+            }
+        }
+    },
+    
+    
+    "selection": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "selection"}
+        },
+        "bindings": {
+            "checked": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "selectionAtCurrentIteration"
+            }
+        }
+    },
+    
+    "selected-value": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "selected-value"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "jsonSelectedItems"
+            }
+        }
+    },
+    
+    "answers-controller": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "answers",
+                "oneway": true
+            }
+        }
+    },
+
+    "list2": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "list2-rows"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "answers-controller"}
+        }
+    },
+    
+    "answer-selection": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "answer-selection"}
+        },
+        "bindings": {
+            "checked": {
+                "boundObject": {"@": "list2"},
+                "boundObjectPropertyPath": "selectionAtCurrentIteration"
+            }
+        }
+    },
+    
+    "answer-text": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "answer-text"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list2"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration",
+                "oneway": true
+            }
+        }
+    },
+    
+    "selected-answer": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "selected-answer"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "selectedAnswer"
+            }
+        }
+    },
 
     "owner": {
         "module": "components/image-example.reel",
         "name": "ImageExample",
         "properties": {
-            "element": {"#": "example-root"}
+            "element": {"#": "example-root"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ],
+            "answers": [
+                "Very Satisfied", "Satisfied", "Neutral", "Unsatisfied", "Very Unsatisfied", "Dont want to answer"
+            ]
+        },
+        "bindings": {
+            "selectedItems": {
+                "boundObject": {"@": "controller"},
+                "boundObjectPropertyPath": "selectedObjects"
+            },
+            "selectedAnswer": {
+                "boundObject": {"@": "answers-controller"},
+                "boundObjectPropertyPath": "selectedObjects.0"
+            }
         }
     }
 }
@@ -95,6 +277,10 @@
             display: inline-block;
             vertical-align: top;
         }
+        
+        table tr.selected {
+            background-color: #F5D663;
+        }
 
     </style>
 
@@ -112,16 +298,102 @@
             </div>
         </div>
 
-        <div class="row">
-            <div class="span8">
-                <div class="repetition" id="repetition">
-                    <div class="item">
-                        <img id="thumb" class="thumb" />
-                        <h3 id="title" class="title"></h3>
-                    </div>
+        <h4>Demo: Simple Repetition</h4>
+        
+        <div class="demo">
+            <div class="repetition" id="repetition">
+                <div class="item">
+                    <img id="thumb" class="thumb" />
+                    <h3 id="title" class="title"></h3>
                 </div>
             </div>
         </div>
+        
+        <h4>Demo: Repetition supporting multiple Selections using checkbox</h4>
+        
+        <div class="demo">
+            <table id="list1" class="bordered-table">
+                <thead>
+                    <tr>
+                        <th>Selection</th>
+                        <th>Name</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="table-row">
+                    <tr>
+                         <td><input type="checkbox" id="selection" /></td>
+                        <td><a id="link" target="_blank"></a></td>
+                        <td><span id="desc"></span></td>
+                    </tr>
+                </tbody>
+            </table> 
+            
+            <div>
+                <h5>Your selections: </h5>
+                <span id="selected-value"  style="width: 400px;"></span>
+            </div>
+        </div>
+        
+        
+        <h4>Demo: Repetition supporting single Selection using a Radiobutton</h4>
+        
+       
+        <div class="demo">
+            
+            <h5>Overall, how satisfied are you with our product?</h5>
+             
+            <table id="list2" class="bordered-table" style="width: auto;">
+                <tbody id="list2-rows">
+                    <tr>
+                         <td><input type="radio" id="answer-selection" name="answer-selection" /></td>
+                        <td><span id="answer-text"></span></td>
+                    </tr>
+                </tbody>
+            </table> 
+            
+            <div>
+                <h5>You selected: </h5>
+                <span id="selected-answer"  style="width: 400px;"></span>
+            </div>
+        </div>
+        
+        <section>
+            <a href="m-js/examples/sink/components/repetition-example.reel" target="_blank">View Demo Source</a>
+        </section>
+
+        
+        <section>
+            <h4>Component Properties</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>contentController</td>
+                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                </tr>
+                <tr>
+                  <td>objects</td>
+                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                </tr>
+                <tr>
+                  <td>isSelectionEnabled</td>
+                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                </tr>               
+                
+              </tbody>
+            </table>
+            <p>
+                <a href="" target="_blank">View full Documentation</a>
+            </p>
+        </section>
+        
+        
 
         <section>
             <h6>Serialization</h6>

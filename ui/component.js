@@ -1230,6 +1230,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
 });
 
+
+
 /* @extends montage/ui/component.Component */
 /**
  * @class module:montage/ui/component.RootComponent

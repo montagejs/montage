@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>HTML Form Elements</title>
+    
+    <!-- Mobile viewport optimization http://goo.gl/b9SaQ -->
+    <meta name="HandheldFriendly" content="True">
+    <meta name="MobileOptimized" content="320">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Home screen icon  Mathias Bynens http://goo.gl/6nVq0 -->
+    <!-- For iPhone 4 with high-resolution Retina display: -->
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="img/h/apple-touch-icon.png">
+    <!-- For first-generation iPad: -->
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="img/m/apple-touch-icon.png">
+    <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
+    <link rel="apple-touch-icon-precomposed" href="img/l/apple-touch-icon-precomposed.png">
+    <!-- For nokia devices: -->
+    <link rel="shortcut icon" href="img/l/apple-touch-icon.png">
+
+    <!--iOS web app, deletable if not needed -->
+    <!--the script prevents links from opening in mobile safari. https://gist.github.com/1042026
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <script>(function(a,b,c){if(c in b&&b[c]){var d,e=a.location,f=/^(a|html)$/i;a.addEventListener("click",function(a){d=a.target;while(!f.test(d.nodeName))d=d.parentNode;"href"in d&&(d.href.indexOf("http")||~d.href.indexOf(e.host))&&(a.preventDefault(),e.href=d.href)},!1)}})(document,window.navigator,"standalone")</script>
+    <link rel="apple-touch-startup-image" href="img/l/splash.png">-->
+
+    <!-- Mobile IE allows us to activate ClearType technology for smoothing fonts for easy reading -->
+    <meta http-equiv="cleartype" content="on">
+    
+    <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
+        <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+         <script type="text/montage-serialization">
+    {
+        "fname": {
+            "module": "montage/ui/textfield.reel",
+            "name": "Textfield",
+            "properties": {
+                "element": {"#": "fname"},
+                "maxlength": "10"
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "firstName",
+                    "oneway": false
+                },
+                "title": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "firstName",
+                    "oneway": false
+                }                
+            }
+        },
+        "lname": {
+            "module": "montage/ui/textfield.reel",
+            "name": "Textfield",
+            "properties": {
+                "element": {"#": "lname"},
+                "maxlength": "10"
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "sample-form"},
+                    "boundObjectPropertyPath": "lastName",
+                    "oneway": false
+                }
+            }            
+        },
+        
+        "statesController": {
+            "name": "ArrayController",
+            "module": "montage/ui/controller/array-controller",
+            "properties": {
+                "selectObjectsOnAddition": true,
+                "automaticallyOrganizeObjects": true,
+                "content": []                                                       
+            }
+        },
+        
+        "state": {
+            "module": "montage/ui/select-input.reel",
+            "name": "SelectInput",
+            "properties": {
+                "element": {"#": "state"},
+                "contentController": {"@": "statesController"},
+                "textProperty": "name",
+                "valueProperty": "code"
+            }         
+        },
+        
+        "country": {
+            "module": "montage/ui/select-input.reel",
+            "name": "SelectInput",
+            "properties": {
+                "element": {"#": "country"}
+            }           
+        },
+        
+        "sample-form": {
+            "module": "ui/controls/sample-form.reel",
+            "name": "SampleForm",
+            "properties": {
+                "element": {"#": "input-form"},
+                "firstName": "ABC",
+                "lastName": "XYZ",
+                "fname": {"@": "fname"},
+                "statesController": {"@": "statesController"}
+            },
+            "bindings": {
+                "selectedCountry": {
+                    "boundObject": {"@": "country"},
+                    "boundObjectPropertyPath": "selectedObjects.0",
+                    "oneway": true
+                }
+            }
+        }
+        
+    }
+        </script>
+        
+        <style>
+            form input:invalid {
+                border: 1px solid #E73525;
+                border-style: dashed;
+            }
+            section {
+                margin: 20px 0;
+            }
+        </style>
+
+</head>
+<body>
+
+    <div class="container"> 
+        <section>
+            <form id="input-form" class="form-stacked">            
+                <div class="row">
+                    <div class="span8">
+                        <fieldset>
+                            <legend>A Simple Form</legend>
+                            <label for="fname">First Name</label>
+                            <input type="text" placeholder="Enter first name" id="fname" required value="Foo" title="this is a title" />
+
+                            <label for="lname">Last Name</label>
+                            <input type="text" placeholder="Enter last name" id="lname" required  value="Bar" title="this is a title"/>
+                            
+                            
+                            <label for="country">Country</label>
+                            <select id="country" required>
+                                <option value="">Please select a Country</option>
+                                <option value="USA">United States of America</option>
+                                <option value="INR" selected="true">India</option>
+                                <option value="FR">France</option>
+                                <option value="GER">Germany</option>
+                            </select>
+                            
+                            <label for="state">State</label>
+                            <select id="state">
+                                <option>Please select a country...</option>
+                            </select>
+                            
+                            
+                            
+                        </fieldset>
+                    </div>
+                </div>
+            </form>
+        </section>
+
+    </div>
+</body>
+</html>

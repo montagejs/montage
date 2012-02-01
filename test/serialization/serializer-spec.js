@@ -122,7 +122,7 @@ describe("serialization/serializer-spec", function() {
         });
     });
 
-    describe("Objects serialization", function() {
+    describe("Objects serialization", function(){
         /*
         it("should serialize a class object with no properties", function() {
             var object = objects.Empty;

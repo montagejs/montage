@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>TextfieldTest</title>
+    <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+     <script type="text/montage-serialization">
+{
+    "link1": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "link1"}
+        }
+    },
+    
+    "link2": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "link2"},
+            "href": "http://www.google.com"
+        }
+    },
+    
+    "link3": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "link3"}
+        }
+    },
+    
+    
+    "test": {
+        "module": "ui/anchor-test/anchor-test",
+        "name": "AnchorTest",
+        "properties": {
+            "link1": {"@": "link1"},
+            "link2": {"@": "link2"},
+            "link3": {"@": "link3"}
+        }
+    },
+    
+    "application": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "delegate": {"@": "test"}
+            
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <table id="list1" class="bordered-table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+            </tr>
+        </thead>
+        <tbody id="table-row">
+            <tr>
+                <td><a id="link1" target="_blank"></a></td>
+                <td><span id="desc"></span></td>
+            </tr>
+            <tr>
+                <td><a id="link2" target="_blank">Foo</a></td>
+                <td><span id="desc"></span></td>
+            </tr>
+            <tr>
+                <td><a id="link3" target="_blank">Bar</a></td>
+                <td><span id="desc"></span></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

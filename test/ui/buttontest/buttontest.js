@@ -6,24 +6,4 @@
 var Montage = require("montage").Montage,
     Button = require("montage/ui/bluemoon/button.reel").Button;
 
-var ButtonTest = exports.ButtonTest = Montage.create(Montage, {
-    deserializedFromTemplate: {
-        value: function() {
-
-            this.buttonElement = document.getElementById("testButton");
-            this.buttonComponent = Montage.create(Button);
-            this.buttonComponent.element = this.buttonElement;
-            this.buttonComponent.needsDraw = true;
-
-            return this;
-        }
-    },
-
-    buttonElement: {
-        value: null
-    },
-
-    buttonComponent: {
-        value: null
-    }
-});
+var ButtonTest = exports.ButtonTest = Montage.create(Montage, {});
