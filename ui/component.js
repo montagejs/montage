@@ -7,7 +7,6 @@
 	@module montage/ui/component
     @requires montage/core/core
     @requires montage/core/event/mutable-event
-    @requires montage/core/bitfield
     @requires montage/ui/reel
     @requires montage/core/gate
     @requires montage/core/logger | component
@@ -16,7 +15,6 @@
 */
 var Montage = require("montage").Montage,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
-    BitField = require("core/bitfield").BitField,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
     logger = require("core/logger").logger("component"),
@@ -891,11 +889,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
     /**
-    Callback for the <code>_canDrawBitField</code>.<br>
+    Callback for the <code>_canDrawGate</code>.<br>
     Propagates to the parent and adds the component to the draw list.
     @function
     @param {Property} gate
-    @see _canDrawBitField
+    @see _canDrawGate
     */
     gateDidBecomeTrue: {
         value: function(gate) {
