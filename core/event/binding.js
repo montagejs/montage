@@ -505,8 +505,6 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             localPrevValue = event.minus,
             localTarget = event.target,
             type = event.type,
-            changeType = event.propertyChange,
-            localPropertyName = event.propertyName,
             boundObjectValue,
             sourceObjectValue,
             dotIndex,
@@ -676,8 +674,6 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
         localPrevValue = null;
         localTarget = null;
         type = null;
-        changeType = null;
-        localPropertyName = null;
         dotIndex = null;
         nextPathComponent = null;
         atSignIndex = null;
