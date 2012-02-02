@@ -40,6 +40,7 @@ var Draw = exports.Draw = Montage.create(Montage, {
     },
     deserializedFromTemplate: {
         value: function() {
+            window.test = this;
             this.loadComponents();
             this.componentA.needsDraw = true;
             this.componentA1.needsDraw = true;
@@ -66,10 +67,11 @@ var Draw = exports.Draw = Montage.create(Montage, {
     },
     componentB2: {
         value: null
+    },
+    componentC: {
+        value: null
+    },
+    componentC1: {
+        value: null
     }
 });
-
-window.test = Montage.create(Draw);
-if (window.parent && typeof window.parent.loaded === "function") {
-    window.parent.loaded();
-}
