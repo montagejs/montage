@@ -3,6 +3,90 @@ var Montage = require("montage").Montage,
 
 var Flow = exports.Flow = Montage.create(Component, {
 
+    _externalUpdate: {
+        enumerable: false,
+        value: true
+    },
+
+    _cameraPosition: {
+        enumerable: false,
+        value: [0, 0, 800]
+    },
+
+    _cameraFocusPoint: {
+        enumerable: false,
+        value: [0, 0, 0]
+    },
+
+    _cameraFov: {
+        enumerable: false,
+        value: 50
+    },
+
+    _cameraRoll: {
+        enumerable: false,
+        value: 0
+    },
+
+    cameraPosition: {
+        get: function () {
+            return this._cameraPosition;
+        },
+        set: function (value) {
+            this._cameraPosition = value;
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+        }
+    },
+
+    cameraFocusPoint: {
+        get: function () {
+            return this._cameraFocusPoint;
+        },
+        set: function (value) {
+            this._cameraFocusPoint = value;
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+        }
+    },
+
+    cameraFov: {
+        get: function () {
+            return this._cameraFov;
+        },
+        set: function (value) {
+            this._cameraFov = value;
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+        }
+    },
+
+    cameraRoll: {
+        get: function () {
+            return this._cameraRoll;
+        },
+        set: function (value) {
+            this._cameraRoll = value;
+            this._isCameraUpdated = true;
+            this.needsDraw = true;
+        }
+    },
+
+    _splineTranslatePath: {
+        enumerable: false,
+        value: null
+    },
+
+    splineTranslatePath: {
+        get: function () {
+            return this._splineTranslatePath;
+        },
+        set: function (value) {
+            this._splineTranslatePath = value;
+            this.needsDraw = true;
+        }
+    },
+
     // TODO: Review _externalUpdate
 
     _externalUpdate: {
@@ -12,73 +96,7 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     _isCameraUpdated: {
         enumerable: false,
-        value: false
-    },
-
-    // Camera rotation based in CSS3 rotate3D axis/angle system
-
-    _cameraRotationAxisX: {
-        enumerable: false,
-        value: 0
-    },
-
-    _cameraRotationAxisY: {
-        enumerable: false,
-        value: 0
-    },
-
-    _cameraRotationAxisZ: {
-        enumerable: false,
-        value: 1
-    },
-
-    _cameraRotationAngle: {
-        enumerable: false,
-        value: 0
-    },
-
-    cameraRotationAxisX: {
-        get: function () {
-            return this._cameraRotationAxisX;
-        },
-        set: function (value) {
-            this._cameraRotationAxisX = value;
-            this._isCameraUpdated = true;
-            this.needsDraw = true;
-        }
-    },
-
-    cameraRotationAxisY: {
-        get: function () {
-            return this._cameraRotationAxisY;
-        },
-        set: function (value) {
-            this._cameraRotationAxisY = value;
-            this._isCameraUpdated = true;
-            this.needsDraw = true;
-        }
-    },
-
-    cameraRotationAxisZ: {
-        get: function () {
-            return this._cameraRotationAxisZ;
-        },
-        set: function (value) {
-            this._cameraRotationAxisZ = value;
-            this._isCameraUpdated = true;
-            this.needsDraw = true;
-        }
-    },
-
-    cameraRotationAngle: {
-        get: function () {
-            return this._cameraRotationAngle;
-        },
-        set: function (value) {
-            this._cameraRotationAngle = value;
-            this._isCameraUpdated = true;
-            this.needsDraw = true;
-        }
+        value: true
     },
 
     _path: {
@@ -156,7 +174,21 @@ var Flow = exports.Flow = Montage.create(Component, {
     prepareForDraw: {
         enumerable: false,
         value: function () {
+            var self = this;
+
             this._repetitionComponents = this._repetition._childComponents;
+            window.addEventListener("resize", function () {
+                self._isCameraUpdated = true;
+                self.needsDraw = true;
+            }, false);
+        }
+    },
+
+    willDraw: {
+        enumerable: false,
+        value: function () {
+            this._width = this._element.offsetWidth;
+            this._height = this._element.offsetHeight;
         }
     },
 
@@ -176,14 +208,44 @@ var Flow = exports.Flow = Montage.create(Component, {
                 j,
                 jPath,
                 iOffset,
-                iStyle;
+                iStyle,
+                pos;
 
             if (this.isAnimating) {
                 this._animationInterval();
             }
             if (this._isCameraUpdated) {
-                this._repetition._element.style.webkitTransform = "rotate3d("+this._cameraRotationAxisX+","+this._cameraRotationAxisY+","+this._cameraRotationAxisZ+","+this._cameraRotationAngle+"rad)";
+                var perspective = Math.tan(((90 - this.cameraFov * .5) * Math.PI * 2) / 360) * this._height * .5,
+                    x = -this.cameraPosition[0],
+                    y = -this.cameraPosition[1],
+                    z = -this.cameraPosition[2] + perspective;
+
+                var vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
+                    vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
+                    vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
+                    yAngle = Math.atan2(vX, vZ),
+                    tmpZ,
+                    rX, rY, rZ,
+                    xAngle;
+
+                tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
+                xAngle = Math.atan2(vY, tmpZ);
+                
+                /*rX = vector[0];
+                rY = vector[1] * Math.cos(-xAngle) - vector[2] * Math.sin(-xAngle);
+                rZ = vector[1] * Math.sin(-xAngle) + vector[2] * Math.cos(-xAngle);
+                return [
+                    rX * Math.cos(yAngle) + rZ * Math.sin(yAngle),
+                    rY,
+                    rX * -Math.sin(yAngle) + rZ * Math.cos(yAngle)
+                ];*/
+
+                this._element.style.webkitPerspective = perspective + "px";
+                this._repetition._element.style.webkitTransform = "translate3d(" + x + "px, " + y + "px, " + z + "px) rotateX("+(-xAngle)+"rad)";
                 this._isCameraUpdated = false;
+            }
+            if (this._splineTranslatePath) {
+                this._splineTranslatePath._computeDensitySummation();
             }
             //if (this._externalUpdate) {
                 for (i=0; i<length; i++) {
@@ -193,14 +255,30 @@ var Flow = exports.Flow = Montage.create(Component, {
                     slide.time=iOffset.time;
                     slide.speed=iOffset.speed;
                     iPath=this._path.value(slide);
-                    if (typeof iPath.translateX==="undefined") {
-                        iPath.translateX=0;
-                    }
-                    if (typeof iPath.translateY==="undefined") {
-                        iPath.translateY=0;
-                    }
-                    if (typeof iPath.translateZ==="undefined") {
-                        iPath.translateZ=0;
+                    if (this._splineTranslatePath) {
+                        pos = this._splineTranslatePath.getPositionAtTime(slide.time/300);
+                        if (pos) {
+                            iPath.translateX = pos[0];
+                            iPath.translateY = pos[1];
+                            iPath.translateZ = pos[2];
+                            if (iStyle.display !== "block") {
+                                iStyle.display = "block";
+                            }
+                        } else {
+                            if (iStyle.display !== "none") {
+                                iStyle.display = "none";
+                            }
+                        }
+                    } else {
+                        if (typeof iPath.translateX==="undefined") {
+                            iPath.translateX=0;
+                        }
+                        if (typeof iPath.translateY==="undefined") {
+                            iPath.translateY=0;
+                        }
+                        if (typeof iPath.translateZ==="undefined") {
+                            iPath.translateZ=0;
+                        }
                     }
                     transform="translate3d(";
                     transform+=(typeof iPath.translateX==="number")?iPath.translateX+"px,":iPath.translateX+",";

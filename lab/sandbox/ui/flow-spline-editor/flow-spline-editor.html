@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Flow Spline Editor</title>
+    <script src="../../../../montage.js" data-package="."></script>
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "montage/lab/sandbox/ui/flow-spline-editor/flow-spline-editor.js",
+                "name": "FlowSplineEditor"
+            },
+            "editor": {
+                "module": "spline-editor.reel",
+                "name": "SplineEditor",
+                "properties": {
+                    "element": {"#": "spline-editor"}
+                },
+                "bindings": {
+                    "cameraPosition": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "cameraPosition"
+                    },
+                    "cameraFocusPoint": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "cameraFocusPoint"
+                    },
+                    "cameraFov": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "cameraFov"
+                    },
+                    "cameraRoll": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "cameraRoll"
+                    }
+                }
+            },
+            "flow": {
+                "module": "montage/ui/flow.reel",
+                "name": "Flow",
+                "properties": {
+                    "element": {"#": "flow"},
+                    "objects": [
+                        "We win together",
+                        "A long text here that should occupy several lines in the example. Phasellus vulputate, diam in luctus fringilla, justo odio pharetra purus, eget congue elit felis sed lorem. Praesent aliquam sem vitae neque rutrum eu rhoncus nibh interdum. Vivamus sed ligula quis ipsum aliquam euismod. Sed nec eros nunc, sit amet fringilla lorem. Phasellus ac libero mi, quis sollicitudin arcu. Quisque luctus commodo congue. Maecenas hendrerit neque nisl. Morbi a ultricies felis.",
+                        "We do the right thing",
+                        "We are passionate about what we do",
+                        "We are obsessed with product superiority",
+                        "We make things simple",
+                        "We are customer centric",
+                        "Lorem Ipsum 0",
+                        "Lorem Ipsum 1",
+                        "Lorem Ipsum 2",
+                        "Lorem Ipsum 3",
+                        "Lorem Ipsum 4",
+                        "Lorem Ipsum 5",
+                        "Lorem Ipsum 6",
+                        "Lorem Ipsum 7",
+                        "Lorem Ipsum 8"
+                    ],
+                    "scale": 300
+                },
+                "bindings": {
+                    "splineTranslatePath": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "spline"
+                    },
+                    "needsDraw": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "hasSplineUpdated"
+                    }
+                }
+            },
+            "scroll": {
+                "module": "montage/ui/scroll",
+                "name": "Scroll",
+                "properties": {
+                    "component": {"@": "flow"},
+                    "maxScrollX": 100000
+                },
+                "bindings": {
+                    "element": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "_element",
+                        "oneway": true
+                    },
+                    "scrollX": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "origin"
+                    }
+                }
+            },
+            "nearest": {
+                "module": "montage/ui/nearest-neighbor-component-search",
+                "name": "NearestNeighborComponentSearch",
+                "bindings": {
+                    "componentList": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "_repetitionComponents",
+                        "oneway": true
+                    },
+                    "pointerPosition": {
+                        "boundObject": {"@": "scroll"},
+                        "boundObjectPropertyPath": "pointerStartEventPosition",
+                        "oneway": true
+                    }
+                }
+            },
+            "slide": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "slide"}
+                }
+            }
+        }
+    </script>
+    <style>
+        html {
+            background: #555;
+        }
+        .flow {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 500px;
+        }
+        .slide {
+            position: absolute;
+            left: 50%;
+            top: 50%;
+            margin-left: -100px;
+            margin-top: -100px;
+            width: 200px;
+            height: 200px;
+            background: white;
+            -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+            border-radius: 40px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="spline-editor" class="spline-editor"></div>
+    <div id="flow" class="flow">
+        <div id="slide" class="slide"></div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,10 @@
+.spline-editor {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 500px;
+}
+.spline-editor .top-view {
+	border-bottom: 1px solid #000;
+}
