@@ -83,7 +83,10 @@
                 </div>
             </div>
 
-            <div>
+            <h4>Demo</h4>
+
+            <div class="demo">
+                
                 <h5>Progress bar bound to ProgressExample.uploadProgress property</h5>
                 <div class="progress montage-progress" id="progress1"></div>
 
@@ -93,30 +96,32 @@
 
                 <input id="text1" type="number" />
             </div>
-
-            <h6>Serialization</h6>
-            <pre class="prettyprint linenums">
-"progress1": {
-    "module": "montage/ui/bluemoon/progress.reel",
-    "name": "Progress",
-    "properties": {
-        "element": {"#": "progress1"},
-        "value": 30
-    },
-    "bindings": {
-        "value": {
-            "boundObject": {"@": "owner"},
-            "boundObjectPropertyPath": "uploadProgress"
-        }
-    }
-}
-            </pre>
-
-            <h6>HTML Markup</h6>
-            Define the Progress Component and bind the "value" property of this Component to the "uploadProgress" property of the example Object.
-<pre class="prettyprint linenums">
-    &lt;div class=&quot;progress montage-progress&quot; id=&quot;progress1&quot; /&gt;
-</pre>
+            
+            <section>
+                <a href="m-js/examples/sink/components/progress-example.reel" target="_blank">View Demo Source</a>
+            </section>
+            
+            <section>
+                <h4>Component Properties</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                        <td>value</td>
+                        <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                      </tr>
+                    
+                  </tbody>
+                </table>
+                <p>
+                    <a href="" target="_blank">View full Documentation</a>
+                </p>
+            </section>
 
         </div>
     </body>
