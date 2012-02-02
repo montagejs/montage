@@ -148,6 +148,12 @@ var testPage = TestPageLoader.queueTest("template", function() {
             });
         });
 
+        it("should be able to reference the template object", function() {
+            var component = application.delegate.template;
+            
+            expect(component.templateReference).toBe(component._template);
+        });
+
         it("TODO should load external scripts", function() {
             var component = application.delegate.script;
             expect(component).not.toBeUndefined();

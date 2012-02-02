@@ -264,8 +264,9 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                         instances = Object.create(externalObjects);
                         instances.owner = owner;
                         instances.application = defaultApplication;
+                        instances.template = self;
                     } else {
-                        instances = {owner: owner, application: defaultApplication};
+                        instances = {owner: owner, application: defaultApplication, template: self};
                     }
 
                     if (owner && owner._element) {

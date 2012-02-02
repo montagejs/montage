@@ -31,7 +31,8 @@
                         "array"
                     ],
                     "slowstyle": {"@": "componentslowstyle1"},
-                    "script": {"@": "componentscript1"}
+                    "script": {"@": "componentscript1"},
+                    "template": {"@": "componenttemplate"}
                 }
             },
             "actioneventlistener1": {
@@ -106,6 +107,13 @@
                     "element": {"#": "componentscript2"}
                 }
             },
+            "componenttemplate": {
+                "module": "reel/template/componenttemplate.reel",
+                "name": "ComponentTemplate",
+                "properties": {
+                    "element": {"#": "componenttemplate"}
+                }
+            },
             "application": {
                 "module": "montage/ui/application",
                 "name": "Application",
@@ -144,5 +152,7 @@
     <div id="componentscript2" class="componentscript2"></div>
 
     <div id="externalserialization" class="externalserialization"></div>
+    
+    <div id="componenttemplate" class="componenttemplate"></div>
 </body>
 </html>
