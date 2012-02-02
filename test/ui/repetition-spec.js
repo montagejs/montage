@@ -567,5 +567,34 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             });
         });
 
+        describe("Repetition content change", function() {
+            it("should rebuild the repetition", function() {
+                var list11 = querySelector(".list11").controller,
+                    content = querySelectorAll(".list11 > li");
+                
+                expect(content.length).toBe(3);
+                for (var i = 0; i < content.length; i++) {
+                    expect(content[i].textContent).toBe("X");
+                }
+                
+                var newContent = content[0].ownerDocument.createElement("div");
+                newContent.textContent = "Y";
+                
+                list11.content = newContent;
+                
+                testPage.waitForDraw();
+
+                // it requires 2 draws for the change to take effect, one for changing the contents and another to recreate the repetition
+                runs(function() {
+                    testPage.waitForDraw();
+                    runs(function() {
+                        var content = list11.content;
+                        for (var i = 0; i < content.length; i++) {
+                            expect(content[i].textContent).toBe("Y");
+                        }
+                    });
+                });
+            });
+        });
     });
 });
