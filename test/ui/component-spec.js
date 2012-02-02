@@ -9,10 +9,67 @@ var Montage = require("montage").Montage,
 
 var testPage = TestPageLoader.queueTest("draw", function() {
 
+    var querySelector = function(s) {
+        return testPage.querySelector(s);
+    };
+
     describe("ui/component-spec", function() {
         describe("draw test", function() {
             it("should load", function() {
                 expect(testPage.loaded).toBeTruthy();
+            });
+
+            describe("originalContent", function() {
+                it("should contain the original content of the component markup", function() {
+                    var originalContent = testPage.test.repetition.originalContent;
+                    expect(originalContent.length).toBe(2);
+                    expect(originalContent[0].outerHTML).toBe("<h3>Original Content</h3>");
+                    expect(originalContent[1].outerHTML).toBe("<p>here</p>");
+                });
+            });
+            
+            describe("content", function() {
+                it("should contain the current content of the component markup", function() {
+                    var content = testPage.test.repetition.content;
+                    expect(content.length).toBe(6);
+                });
+                
+                it("should change the content of the component for markup", function() {
+                    var componentC = testPage.test.componentC,
+                        content = componentC.content,
+                        newContent = componentC._element.ownerDocument.createElement("div");
+                    
+                    expect(content.length).toBe(3);
+                    newContent.setAttribute("class", "markup");
+                    testPage.test.componentC.content = newContent;
+                    // should only draw at draw cycle.
+                    expect(componentC.content).toEqual(content);
+                    
+                    testPage.waitForDraw();
+
+                    runs(function() {
+                        expect(componentC.content.length).toBe(1);
+                        expect(componentC.content[0].outerHTML).toBe('<div class="markup"></div>');
+                    });
+                });
+                
+                it("should change the content of the component for another component", function() {
+                    var componentC = testPage.test.componentC,
+                        componentC1 = testPage.test.componentC1,
+                        content = componentC.content,
+                        newContent = componentC1._element;
+                    
+                    testPage.test.componentC.content = newContent;
+                    // should only draw at draw cycle.
+                    expect(componentC.content).toEqual(content);
+                    testPage.waitForDraw();
+
+                    runs(function() {
+                        expect(componentC.content.length).toBe(1);
+                        expect(componentC.content[0].outerHTML).toBe('<div data-montage-id="componentC1">C1</div>');
+                        expect(componentC.content[0].controller).toBe(componentC1);
+                    });
+                });
             });
 
             describe("calling willDraw prior to drawing", function() {
