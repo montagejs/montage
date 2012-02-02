@@ -21,7 +21,7 @@
 }
 .action-sheet-container .action {
     margin: 3px 0;
-    width: 60%;
     text-align: center;
     display: block;
+    width: 150px;
 }
