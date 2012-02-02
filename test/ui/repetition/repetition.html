@@ -434,6 +434,14 @@
                     "element": {"#": "repetitionControllerText"},
                     "value": "foo"
                 }
+            },
+            "repetition14": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list11"},
+                    "objects": [1, 2, 3]
+                }
             }
          }
     </script>
@@ -534,6 +542,9 @@
         <li id="repetitionControllerText" class="repetitionControllerText"></li>
     </ul>
 
-
+    <h2>Repetition with content change</h2>
+    <ul data-montage-id="list11" class="list11">
+        <li>X</li>
+    </ul>
 </body>
 </html>

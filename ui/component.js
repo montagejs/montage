@@ -525,7 +525,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     
     content: {
         get: function() {
-            return Array.prototype.slice.call(this._element.childNodes, 0);
+            if (this._element) {
+                return Array.prototype.slice.call(this._element.childNodes, 0);
+            } else {
+                return null;
+            }
         },
         set: function(value) {
             var components = [],
