@@ -19,7 +19,6 @@
 
 var Montage = require("montage").Montage,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
-    ActionEventListener = require("core/event/action-event-listener").ActionEventListener,
     Serializer = require("core/serializer").Serializer,
     Deserializer = require("core/deserializer").Deserializer,
     defaultEventManager;
