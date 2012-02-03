@@ -296,7 +296,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     states: {
         enumerable: true,
         get: function() {
-            this.updateStates();
+            if (this._statesDirty || !this._states) {
+                this.updateStates();
+            }
             return this._states;
         }
     },
@@ -313,7 +315,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 action,
                 states,
                 state,
-                statesChanged = false,
                 hasFocus = this._hasFocus;
 
             if (this._states == null || this._statesDirty) {
@@ -339,16 +340,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
                         if (states[key] !== state) {
                             states[key] = state;
-                            statesChanged = true;
                         }
                     }
-
-                    if (statesChanged) {
-                        this._states = states;
-                        // As we do not use a setter, we need to manually dispatch a change event
-                        this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("states" , this._states));
-                    }
-
                 }
             }
 
