@@ -24,9 +24,6 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
     var isDate = function(object) {
         return _toString.call(object) === DATE_CLASS;
     };
-    var isString = function(object) {
-        return _toString.call(object) === STRING_CLASS;
-    };
     var isNumber = function(object) {
         return _toString.call(object) === NUMBER_CLASS;
     };
@@ -51,6 +48,33 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
                 });
                 it("txt2 should be disabled", function() {
                     expect(testPage.test.txt2.disabled).toBe(true);
+                });
+
+                it("txt2 should not have the min/max/step element attributes", function() {
+                    // these attributes are defined at the NumberInput/RangeInput
+                    var instance = testPage.test.txt2;
+
+                    expect(instance._getElementAttributeDescriptor('min')).toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('max')).toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('step')).toBe(undefined);
+
+
+                });
+
+                it("txt2 should have the element attributes defined by TextInput and NativeControl", function() {
+                    // these attributes are defined at the NumberInput/RangeInput
+                    var instance = testPage.test.txt2;
+
+                    expect(instance._getElementAttributeDescriptor('name')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('placeholder')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('pattern')).not.toBe(undefined);
+
+                    expect(instance._getElementAttributeDescriptor('contenteditable')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('title')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('style')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('class')).not.toBe(undefined);
+
+
                 });
 
                 describe("when setting the value", function() {
@@ -175,6 +199,7 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
 
                     });
                 });
+
 
                 // TODO
                 if (window.Touch) {
