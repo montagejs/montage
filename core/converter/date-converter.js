@@ -2617,6 +2617,9 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
     */
     revert: {
         value: function(v) {
+            if(isDate(v)) {
+                return v;
+            }
             this.validator.pattern = this.pattern;
 
             var result = this.validator.validate(v);
