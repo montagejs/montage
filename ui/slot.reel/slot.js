@@ -247,7 +247,10 @@ var Slot = exports.Slot = Montage.create(Component, /** @lends module:"montage/u
 
                 // Introduce to the componentTree if content appended was a component
                 if (this._contentToAppend && (typeof this._contentToAppend.element !== "undefined")) {
-                    this.childComponents = [this._contentToAppend];
+                    this._contentToAppend.attachToParentComponent();
+                    // HACK: gets around the issue of the component never being part of the draw loop again because of the idempotence of the needsDraw = true.
+                    this._contentToAppend.needsDraw = false;
+                    this._contentToAppend.needsDraw = true;
                 }
             }
 
