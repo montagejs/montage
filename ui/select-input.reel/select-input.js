@@ -155,8 +155,8 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     deserializedFromTemplate: {
         value: function() {
             // @todo - Need a better way to do this.
-            var fn = Object.getPrototypeOf(SelectInput).deserializedFromTemplate;
-            fn.call(this);
+//            var fn = Object.getPrototypeOf(SelectInput).deserializedFromTemplate;
+ //           fn.call(this);
 
             /*
             1) If <option> is provided in the markup but contentController is not,
@@ -192,7 +192,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
     _refreshOptions: {
         value: function() {
-            console.log('==== refreshOptions ====');
+            //console.log('==== refreshOptions ====');
             var arr = this.content||[], len = arr.length, i, option;
             var text, value;
             for(i=0; i< len; i++) {
@@ -288,8 +288,8 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     handleChange: {
         value: function(e) {
             // get selected values and set it on the contentController
-            console.log('selection changed');
-            console.log(this.element.selectedOptions);
+            //console.log('selection changed');
+            //console.log(this.element.selectedOptions);
 
             //var selectedOptions = this.element.selectedOptions || [];
             // select.selectedOptions does not work on Chrome !

@@ -124,9 +124,9 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
       }
     },
 
-    deserializedFromTemplate: {
+    _elementSet: {
         value: function() {
-            Object.getPrototypeOf(ToggleButton).deserializedFromTemplate.call(this);
+            Object.getPrototypeOf(ToggleButton)._elementSet.call(this);
 
             // If we haven't set the (un)pressedLabel of the initial state,
             // then take it from the label
