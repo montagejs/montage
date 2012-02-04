@@ -208,17 +208,19 @@ exports.SwipeComposer = Montage.create(Composer, /** @lends module:montage/ui/co
                 }
             }
 
-            swipeEvent = document.createEvent("CustomEvent");
-            swipeEvent.initCustomEvent("swipemove", true, false, null);
-            swipeEvent.direction = direction;
-            swipeEvent.angle = this._startSwipeAngle;
-            swipeEvent.velocity = this._findVelocity((event.timeStamp - this._startTimestamp));
-            swipeEvent.startX = this._startX;
-            swipeEvent.startY = this._startY;
-            swipeEvent.dX = this._deltaX;
-            swipeEvent.dY = this._deltaY;
+            if (dX != 0 || dY != 0) {
+                swipeEvent = document.createEvent("CustomEvent");
+                swipeEvent.initCustomEvent("swipemove", true, false, null);
+                swipeEvent.direction = direction;
+                swipeEvent.angle = this._startSwipeAngle;
+                swipeEvent.velocity = this._findVelocity((event.timeStamp - this._startTimestamp));
+                swipeEvent.startX = this._startX;
+                swipeEvent.startY = this._startY;
+                swipeEvent.dX = this._deltaX;
+                swipeEvent.dY = this._deltaY;
 
-            this.dispatchEvent(swipeEvent);
+                this.dispatchEvent(swipeEvent);
+            }
         }
     },
 
