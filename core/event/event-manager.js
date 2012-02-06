@@ -1873,9 +1873,9 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 if (target) {
                     associatedComponent = this.eventHandlerForElement(target);
                     if (associatedComponent) {
-                        if (!associatedComponent._preparedForActivationEvents && typeof associatedComponent.prepareForActivationEvents === "function") {
+                        if (!associatedComponent._preparedForActivationEvents) {
 
-                            associatedComponent.prepareForActivationEvents();
+                            associatedComponent._prepareForActivationEvents();
                             associatedComponent._preparedForActivationEvents = true;
 
                         } else if (associatedComponent._preparedForActivationEvents) {

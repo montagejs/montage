@@ -34,6 +34,25 @@ var serializationTestPage = TestPageLoader.queueTest("composer-serialization", {
     });
 });
 
+var serializationLazyLoadTestPage = TestPageLoader.queueTest("composer-serialization", {src: "ui/composer/composer-serialization-lazyload-test.html", firstDraw: false}, function() {
+    describe("ui/composer-spec", function() {
+        it("should load", function() {
+            expect(serializationLazyLoadTestPage.loaded).toBeTruthy();
+        });
+
+        describe("lazy load serialized composer", function() {
+            it("load method should not have been called", function() {
+                expect(serializationLazyLoadTestPage.test.simpleTestComposer._loadWasCalled).toBeFalsy();
+            });
+            it("load method should be called as the result of an activation event", function() {
+                serializationLazyLoadTestPage.mouseEvent(EventInfo.create().initWithElementAndPosition(serializationLazyLoadTestPage.test.dynamicText, 0, 0), "mousedown", function() {
+                    expect(serializationLazyLoadTestPage.test.simpleTestComposer._loadWasCalled).toBeTruthy();
+                });
+            });
+        });
+    });
+});
+
 var simpleTestPage = TestPageLoader.queueTest("composer-programmatic", {src: "ui/composer/composer-test-page.html", firstDraw: false}, function() {
     describe("ui/composer-spec", function() {
         it("should load", function() {
@@ -58,6 +77,25 @@ var simpleTestPage = TestPageLoader.queueTest("composer-programmatic", {src: "ui
 //            it("should have its unload method called", function() {
 //
 //            });
+        });
+    });
+});
+
+var programmaticLazyLoadTestPage = TestPageLoader.queueTest("composer-serialization", {src: "ui/composer/composer-programmatic-lazyload.html", firstDraw: false}, function() {
+    describe("ui/composer-spec", function() {
+        it("should load", function() {
+            expect(programmaticLazyLoadTestPage.loaded).toBeTruthy();
+        });
+
+        describe("lazy load serialized composer", function() {
+            it("load method should not have been called", function() {
+                expect(programmaticLazyLoadTestPage.test.simpleTestComposer._loadWasCalled).toBeFalsy();
+            });
+            it("load method should be called as the result of an activation event", function() {
+                programmaticLazyLoadTestPage.mouseEvent(EventInfo.create().initWithElementAndPosition(programmaticLazyLoadTestPage.test.dynamicTextC.element, 0, 0), "mousedown", function() {
+                    expect(programmaticLazyLoadTestPage.test.simpleTestComposer._loadWasCalled).toBeTruthy();
+                });
+            });
         });
     });
 });
@@ -99,9 +137,7 @@ var swipeTestPage = TestPageLoader.queueTest("swipe-composer", {src:"ui/composer
                     });
                  });
             });
-
-        }
-        );
+        });
     });
 });
 

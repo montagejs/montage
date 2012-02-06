@@ -6,7 +6,8 @@
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     logger = require("montage/core/logger").logger("Simple"),
-    SimpleTestComposer = require("ui/composer/simple-test-composer").SimpleTestComposer;
+    SimpleTestComposer = require("ui/composer/simple-test-composer").SimpleTestComposer,
+    LazyLoadComposer = require("ui/composer/simple-test-composer").LazyLoadTestComposer;
 
 exports.Test = Montage.create(Montage, {
 });
@@ -20,6 +21,21 @@ exports.ProgrammaticTest = Montage.create(Montage, {
     deserializedFromTemplate: {
         value: function() {
             this.simpleTestComposer = SimpleTestComposer.create();
+            this.dynamicTextC.addComposer(this.simpleTestComposer);
+        }
+    }
+
+});
+
+exports.ProgrammaticLazyTest = Montage.create(Montage, {
+
+    simpleTestComposer: {
+        value: null
+    },
+
+    deserializedFromTemplate: {
+        value: function() {
+            this.simpleTestComposer = LazyLoadComposer.create();
             this.dynamicTextC.addComposer(this.simpleTestComposer);
         }
     }

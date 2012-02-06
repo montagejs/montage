@@ -18,7 +18,7 @@ var Montage = require("montage").Montage,
  @classdesc Used to test that the framework is calling a composer's methods
  @extends module:montage/ui/composer/composer.Composer
  */
-exports.SimpleTestComposer = Montage.create(Composer, /** @lends module:montage/ui/composer/swipe-composer.SwipeComposer# */ {
+exports.SimpleTestComposer = Montage.create(Composer, {
 
     _loadWasCalled: {
         value: false
@@ -51,5 +51,43 @@ exports.SimpleTestComposer = Montage.create(Composer, /** @lends module:montage/
         }
     }
 
+});
+
+exports.LazyLoadTestComposer = Montage.create(Composer, {
+
+    lazyLoad: {
+        value: true
+    },
+
+    _loadWasCalled: {
+        value: false
+    },
+
+/**
+    Description TODO
+    @function
+    @param {Element}
+    */
+    load: {
+        value: function() {
+            this._loadWasCalled = true;
+        }
+    },
+
+/**
+    Description TODO
+    @function
+    */
+    unload: {
+        value: function() {
+
+        }
+    },
+
+    frame: {
+        value: function(timestamp) {
+
+        }
+    }
 
 });
