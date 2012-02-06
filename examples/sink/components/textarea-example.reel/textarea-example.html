@@ -14,6 +14,12 @@
                     "name": "TextareaExample",
                     "properties": {
                         "element": {"#": "textarea-example"}
+                    },
+                    "bindings": {
+                        "info": {
+                            "boundObject": {"@": "info"},
+                            "boundObjectPropertyPath": "value"
+                        }
                     }
                 },
 
@@ -56,12 +62,6 @@
                     "name": "TextArea",
                     "properties": {
                         "element": {"#": "info"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "info"
-                        }
                     }
                 },
                 "update": {
@@ -134,7 +134,7 @@
                      </textarea>
 
                      <div style="margin-top: 10px;">
-                          <button class="btn" id="update">Update</button>
+                          <button class="btn" id="update" type="button">Update</button>
                      </div>
 
                 </form>
