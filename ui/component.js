@@ -1049,6 +1049,27 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: null
     },
+
+    /**
+     * Called to add event listeners on demand
+     * @type function
+     * @private
+     */
+    _prepareForActivationEvents: {
+        value: function() {
+            var i = this.composerList.length, composer;
+            for (i = 0; i < this.composerList.length; i++) {
+                composer = this.composerList[i];
+                if (composer.lazyLoad) {
+                    composer._load();
+                }
+            }
+            if (typeof this.prepareForActivationEvents === "function") {
+                this.prepareForActivationEvents();
+            }
+        }
+    },
+
 /**
   Description TODO
   @private
@@ -1299,7 +1320,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.composerList.push(composer);
 
             if (!this._firstDraw) {  // prepareForDraw has already happened so do the loading here
-                composer._load();
+                if (!composer.lazyLoad) {
+                    composer._load();
+                } else if (this._preparedForActivationEvents) { // even though it's lazyLoad prepareForActivationEvents has already happened
+                    composer._load();
+                }
             }
         }
     },
@@ -1673,7 +1698,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     */
     addToDrawCycle: {
         value: function(component) {
-            var needsDrawListIndex = this._readyToDrawListIndex, length;
+            var needsDrawListIndex = this._readyToDrawListIndex, length, composer;
 
             if (needsDrawListIndex.hasOwnProperty(component.uuid)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
@@ -1696,10 +1721,13 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     component.prepareForDraw();
                 }
 
-                // Load any composers that have been added
+                // Load any non lazyLoad composers that have been added
                 length = component.composerList.length;
                 for (i = 0; i < length; i++) {
-                    component.composerList[i]._load();
+                    composer = component.composerList[i];
+                    if (!composer.lazyLoad) {
+                        composer._load();
+                    }
                 }
 
                 // Will we expose a different property, firstDraw, for components to check
