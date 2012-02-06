@@ -10,8 +10,37 @@ var Montage = require("montage").Montage,
 var testPage = TestPageLoader.queueTest("checktest", function() {
     var test = testPage.test;
 
-    var click = function(component, el, fn) {
-        el = el || component.element;
+    var mousedown = function(el) {
+        var downEvent = document.createEvent("MouseEvent");
+        downEvent.initMouseEvent("mousedown", true, true, el.view, null,
+                el.offsetLeft, el.offsetTop,
+                el.offsetLeft, el.offsetTop,
+                false, false, false, false,
+                el, null);
+        el.dispatchEvent(downEvent);
+        return downEvent;
+    };
+    var mouseup = function(el) {
+        var upEvent = document.createEvent("MouseEvent");
+        upEvent.initMouseEvent("mouseup", true, true, el.view, null,
+                el.offsetLeft, el.offsetTop,
+                el.offsetLeft, el.offsetTop,
+                false, false, false, false,
+                el, null);
+        el.dispatchEvent(upEvent);
+        return upEvent;
+    };
+    var clickEvent = function(el) {
+        var clickEvent = document.createEvent("MouseEvent");
+        clickEvent.initMouseEvent("click", true, true, el.view, null,
+                el.offsetLeft, el.offsetTop,
+                el.offsetLeft, el.offsetTop,
+                false, false, false, false,
+                el, null);
+        el.dispatchEvent(clickEvent);
+        return clickEvent;
+    };
+    var addListener = function(component, fn) {
         var buttonSpy = {
             doSomething: fn || function(event) {
                 return 1+1;
@@ -22,14 +51,19 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
         var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
         component.addEventListener("action", actionListener);
 
-        // Faking a click doesn't actually do anything, so we
-        // have to set the checkedness, and trigger the change
-        // event manually.
-        el.checked = !el.checked;
-        change(el);
-
-        // Return this so that it can be checked in tha calling function.
         return buttonSpy.doSomething;
+    };
+    var click = function(component, el, fn) {
+        el = el || component.element;
+
+        var listener = addListener(component, fn);
+
+        mousedown(el);
+        mouseup(el);
+        clickEvent(el);
+
+        // Return this so that it can be checked in the calling function.
+        return listener;
     };
     var change = function(el) {
         var changeEvent = document.createEvent("HTMLEvents");
@@ -140,9 +174,73 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                 });
             });
 
+            it("checks when the label is clicked", function() {
+                expect(test.check1.checked).toBe(true);
+
+
+                var listener = addListener(test.check1);
+                clickEvent(testPage.getElementById("label"));
+                expect(listener).toHaveBeenCalled();
+                expect(test.check1.checked).toBe(false);
+            })
+
             describe("action event", function() {
                 it("should fire when clicked", function() {
                     expect(click(test.check1)).toHaveBeenCalled();
+                });
+            });
+
+            describe("inside a scroll view", function() {
+                it("fires an action event when clicked", function() {
+                    expect(test.scroll_check.checked).toBe(false);
+
+                    expect(click(test.scroll_check)).toHaveBeenCalled();
+                    expect(test.scroll_check.checked).toBe(true);
+                });
+                it("checks when the label is clicked", function() {
+                    expect(test.scroll_check.checked).toBe(true);
+
+
+                    var listener = addListener(test.scroll_check);
+                    clickEvent(testPage.getElementById("scroll_label"));
+                    expect(listener).toHaveBeenCalled();
+                    expect(test.scroll_check.checked).toBe(false);
+                })
+                it("doesn't fire an action event when scrollview is dragged", function() {
+                    var el = test.scroll_check.element;
+                    var scroll_el = test.scroll.element;
+
+                    var listener = addListener(test.scroll_check);
+
+                    // mousedown
+                    mousedown(el);
+
+                    expect(test.scroll_check.checked).toBe(false);
+                    expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(false);
+
+                    // Mouse move doesn't happen instantly
+                    waits(10);
+                    runs(function() {
+                        // mouse move up
+                        var moveEvent = document.createEvent("MouseEvent");
+                        // Dispatch to scroll view, but use the coordinates from the
+                        // button
+                        moveEvent.initMouseEvent("mousemove", true, true, scroll_el.view, null,
+                                el.offsetLeft, el.offsetTop - 100,
+                                el.offsetLeft, el.offsetTop - 100,
+                                false, false, false, false,
+                                0, null);
+                        scroll_el.dispatchEvent(moveEvent);
+
+                        expect(test.scroll_check.checked).toBe(false);
+                        expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(true);
+
+                        // mouse up
+                        mouseup(el);
+
+                        expect(listener).not.toHaveBeenCalled();
+                    });
+
                 });
             });
 

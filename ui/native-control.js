@@ -259,6 +259,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
         enumerable: false,
         value: function(event) {
             if (event.type === "touchstart") {
+                // TODO: Get first identifier which isn't claimed
                 this._observedPointer = event.changedTouches[0].identifier;
                 document.addEventListener("touchend", this);
                 document.addEventListener("touchcancel", this);

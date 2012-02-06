@@ -240,8 +240,49 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         expect(l).not.toHaveBeenCalled();
                     });
                 });
-
             }
+
+            describe("inside a scroll view", function() {
+                it("fires an action event when clicked", function() {
+                    testButton(test.scroll_button, "scroll button");
+                });
+                it("doesn't fire an action event when scrollview is dragged", function() {
+                    var el = test.scroll_button.element;
+                    var scroll_el = test.scroll.element;
+
+                    var listener = addListener(test.scroll_button);
+
+                    // mousedown
+                    mousedown(el);
+
+                    expect(test.scroll_button.active).toBe(true);
+                    expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(false);
+
+                    // Mouse move doesn't happen instantly
+                    waits(10);
+                    runs(function() {
+                        // mouse move up
+                        var moveEvent = document.createEvent("MouseEvent");
+                        // Dispatch to scroll view, but use the coordinates from the
+                        // button
+                        moveEvent.initMouseEvent("mousemove", true, true, scroll_el.view, null,
+                                el.offsetLeft, el.offsetTop - 100,
+                                el.offsetLeft, el.offsetTop - 100,
+                                false, false, false, false,
+                                0, null);
+                        scroll_el.dispatchEvent(moveEvent);
+
+                        expect(test.scroll_button.active).toBe(false);
+                        expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(true);
+
+                        // mouse up
+                        mouseup(el);
+
+                        expect(listener).not.toHaveBeenCalled();
+                    });
+
+                });
+            });
         });
 
         describe("toggle button", function() {
