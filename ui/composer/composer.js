@@ -40,6 +40,20 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
         }
     },
 
+
+    /**
+     * This property controls when a composer's load method is called.  If `false`
+     * the composer's load method is called immediately as part of the next draw
+     * cycle after addComposer has been called on its associated component.  If
+     * `true` loading of the composer is delayed until its associated component
+     * has prepareForActivationEvents called.
+     * @property
+     * @default false
+     */
+    lazyLoad: {
+        value: false
+    },
+
     _needsFrame: {
         value: false
     },

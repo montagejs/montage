@@ -5,25 +5,31 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    SwipeComposer = require("montage/ui/event/composer/swipe-composer").SwipeComposer;
+    SwipeComposer = require("montage/ui/composer/swipe-composer").SwipeComposer;
 
-var Swipe = exports.Swipe = Montage.create(Component, {
-
-    hasTemplate: {value: false},
+exports.Swipe = Montage.create(Montage, {
 
     deserializedFromTemplate: {
         value: function() {
-            document.addEventListener("swipe", this, false);
             var dummyComponent = Montage.create(Component);
             dummyComponent.hasTemplate = false;
             dummyComponent.element = document.body;
             dummyComponent.needsDraw = true;
+            this.swipeComposer = SwipeComposer.create();
+            dummyComponent.addComposer(this.swipeComposer);
+            this.swipeComposer.addEventListener("swipe", this, false);
+            this.swipeComposer.addEventListener("swipemove", this, false);
         }
     },
 
     handleSwipe: {
         value: function(event) {
-            alert("Swiped");
+        }
+    },
+
+    handleSwipemove: {
+        value: function(event) {
         }
     }
+
 });
