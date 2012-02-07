@@ -9,13 +9,6 @@ var Montage = require("montage").Montage,
     ArrayController = require("ui/controller/array-controller").ArrayController,
     NativeControl = require("ui/native-control").NativeControl;
 
-var STRING_CLASS = '[object String]';
-var _toString = Object.prototype.toString;
-
-var isString = function(object) {
-    return _toString.call(object) === STRING_CLASS;
-};
-
 var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
     _fromInput: {value: null},
@@ -197,7 +190,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             var text, value;
             for(i=0; i< len; i++) {
                 option = document.createElement('option');
-                if(isString(arr[i])) {
+                if(String.isString(arr[i])) {
                     text = value = arr[i];
                 } else {
                     text = arr[i][this.textPropertyPath || 'text'];
@@ -242,7 +235,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             var arr = this.content||[], len = arr.length, i;
             var text, value;
             for(i=0; i< len; i++) {
-                if(isString(arr[i])) {
+                if(String.isString(arr[i])) {
                     value = arr[i];
                 } else {
                     value = arr[i][this.valuePropertyPath  || 'value'];

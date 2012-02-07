@@ -24,9 +24,6 @@ var testPage = TestPageLoader.queueTest("number-input-test", function() {
     var isDate = function(object) {
         return _toString.call(object) === DATE_CLASS;
     };
-    var isString = function(object) {
-        return _toString.call(object) === STRING_CLASS;
-    };
     var isNumber = function(object) {
         return _toString.call(object) === NUMBER_CLASS;
     };

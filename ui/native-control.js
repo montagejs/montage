@@ -11,11 +11,6 @@ var isUndefined = function(obj) {
    return (typeof obj === 'undefined');
 };
 
-var STRING_CLASS = '[object String]';
-var _toString = Object.prototype.toString;
-var isString = function(object) {
-    return _toString.call(object) === STRING_CLASS;
-};
 
 /**
  * Base component for all native controls.
@@ -136,7 +131,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
                 if(props.hasOwnProperty(prop)) {
                     obj = props[prop];
                     // Make sure that the descriptor is of the correct form.
-                    if(obj === null || isString(obj)) {
+                    if(obj === null || String.isString(obj)) {
                         desc = {value: obj, dataType: "string"};
                         props[prop] = desc;
                     } else {

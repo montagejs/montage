@@ -20,16 +20,6 @@ var FUNCTION_CLASS = '[object Function]',
 
 var _toString = Object.prototype.toString;
 
-// TODO should maybe move these into String.isString and Number.isNumber to parallel Array.isArray
-
-/**
-    @exports module:montage/core/converter#isString
-    @function
-*/
-var isString = function(object) {
-    return _toString.call(object) === STRING_CLASS;
-};
-exports.isString = isString;
 
 /**
     @exports module:montage/core/converter#isNumber
