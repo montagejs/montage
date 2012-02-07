@@ -30,7 +30,15 @@
 
 "use strict";
 
-var TIMER;
+var GET = "get",
+    PUT = "put",
+    DELETE = "delete",
+    POST = "post",
+    APPLY = "apply",
+    KEYS = "keys",
+    THEN = "then",
+    TIMER;
+
 try {
     // bootstrapping can't handle relative identifiers
     TIMER = require("core/next-tick");
@@ -76,7 +84,7 @@ var Creatable = Object.create(Object.prototype, {
         },
         writable: true,
         configurable: true
-    },
+    }
 });
 
 // Common implementation details of FulfilledPromise, RejectedPromise, and
@@ -335,7 +343,7 @@ var PrimordialPromise = Creatable.create({
                         this.Promise.reject(reason, error)
                     );
                 }
-            },
+            }
 
         })
     },
@@ -370,7 +378,7 @@ var PrimordialPromise = Creatable.create({
             }
 
         })
-    },
+    }
 
 });
 
@@ -433,11 +441,11 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                         toPromise(value)
                             .sendPromise(
                             fulfill,
-                            "then",
+                            THEN,
                             reject
                         )
                     },
-                    "then",
+                    THEN,
                     function (reason, error, rejection) {
                         if (done) {
                             return;
@@ -473,51 +481,51 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
     get: {
         value: function () {
-            return this.send("get", arguments);
+            return this.send(GET, arguments);
         }
     },
 
     put: {
         value: function () {
-            return this.send("put", arguments);
+            return this.send(PUT, arguments);
         }
     },
 
     "delete": {
         value: function () {
-            return this.send("delete", arguments);
+            return this.send(DELETE, arguments);
         }
     },
 
     post: {
         value: function () {
-            return this.send("post", arguments);
+            return this.send(POST, arguments);
         }
     },
 
     invoke: {
         value: function (name /*, ...args*/) {
             var args = Array.prototype.slice.call(arguments, 1);
-            return this.send("post", [name, args]);
+            return this.send(POST, [name, args]);
         }
     },
 
     apply: {
         value: function () {
-            return this.send("apply", arguments);
+            return this.send(APPLY, arguments);
         }
     },
 
     call: {
         value: function (thisp /*, ...args*/) {
             var args = Array.prototype.slice.call(arguments, 1);
-            return this.send("apply", [thisp, args]);
+            return this.send(APPLY, [thisp, args]);
         }
     },
 
     keys: {
         value: function () {
-            return this.send("keys", []);
+            return this.send(KEYS, []);
         }
     },
 
