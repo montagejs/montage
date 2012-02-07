@@ -11,6 +11,10 @@ var URL = require("core/mini-url");
 
 var global = typeof global !== "undefined" ? global : window;
 
+var GETString = "GET";
+var applicationJavascriptMimeType = "application/javascript";
+var fileProtocolString = "file:";
+
 Require.getLocation = function() {
     return URL.resolve(window.location, ".");
 };
@@ -24,7 +28,11 @@ Require.overlays = ["browser", "montage"];
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 Require.read = function (url) {
 
+<<<<<<< Updated upstream
     if (URL.resolve(window.location, url).indexOf("file:") === 0) {
+=======
+    if (URL.parse(url).scheme.indexOf(fileProtocolString) === 0) {
+>>>>>>> Stashed changes
         throw new Error("XHR does not function for file: protocol");
     }
 
@@ -44,8 +52,8 @@ Require.read = function (url) {
     }
 
     try {
-        request.open("GET", url, true);
-        request.overrideMimeType("application/javascript");
+        request.open(GETString, url, true);
+        request.overrideMimeType(applicationJavascriptMimeType);
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
                 onload();
@@ -77,6 +85,12 @@ if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
     globalEval = new Function("evalString", "return eval(evalString)");
 }
 
+var __FILE__String = "__FILE__",
+	DoubleUnderscoreString = "__"
+	globalEvalConstantA = "(function ",
+	globalEvalConstantB = "(require, exports, module) {",
+	globalEvalConstantC = "//*/\n})\n//@ sourceURL=";
+	
 Require.Compiler = function (config) {
     return function(module) {
         if (module.factory || module.text === void 0)
@@ -91,10 +105,10 @@ Require.Compiler = function (config) {
         //      TODO: investigate why this isn't working in Firebug.
         // 3. set displayName property on the factory function (Safari, Chrome)
 
-        var displayName = "__FILE__"+module.location.replace(/\.\w+$|\W/g, "__");
+        var displayName = __FILE__String+module.location.replace(/\.\w+$|\W/g, DoubleUnderscoreString);
 
         try {
-            module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+"\n//@ sourceURL="+module.location);
+            module.factory = globalEval(globalEvalConstantA+displayName+globalEvalConstantB+module.text+globalEvalConstantC+module.location);
         } catch (exception) {
             throw new SyntaxError("in " + module.location + ": " + exception.message);
         }

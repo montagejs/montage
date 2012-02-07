@@ -12,6 +12,16 @@
 // TODO note the comps/promiseSend/sendPromise and argument order
 //      changes from Q
 
+
+var getString = "get",
+	putString = "put",
+	deleteString = "delete",
+	postString = "post",
+	applyString = "apply",
+	keysString = "keys",
+	thenString = "then";
+
+
 // This module is used during the boot-strapping, so it can be required as
 // a normal CommonJS module, but alternately bootstraps Montage if there
 // is a bootstrap global variable.
@@ -433,11 +443,11 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                         toPromise(value)
                             .sendPromise(
                             fulfill,
-                            "then",
+                            thenString,
                             reject
                         )
                     },
-                    "then",
+                    thenString,
                     function (reason, error, rejection) {
                         if (done) {
                             return;
@@ -473,51 +483,51 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
     get: {
         value: function () {
-            return this.send("get", arguments);
+            return this.send(getString, arguments);
         }
     },
 
     put: {
         value: function () {
-            return this.send("put", arguments);
+            return this.send(putString, arguments);
         }
     },
 
     "delete": {
         value: function () {
-            return this.send("delete", arguments);
+            return this.send(deleteString, arguments);
         }
     },
 
     post: {
         value: function () {
-            return this.send("post", arguments);
+            return this.send(postString, arguments);
         }
     },
 
     invoke: {
         value: function (name /*, ...args*/) {
             var args = Array.prototype.slice.call(arguments, 1);
-            return this.send("post", [name, args]);
+            return this.send(postString, [name, args]);
         }
     },
 
     apply: {
         value: function () {
-            return this.send("apply", arguments);
+            return this.send(applyString, arguments);
         }
     },
 
     call: {
         value: function (thisp /*, ...args*/) {
             var args = Array.prototype.slice.call(arguments, 1);
-            return this.send("apply", [thisp, args]);
+            return this.send(applyString, [thisp, args]);
         }
     },
 
     keys: {
         value: function () {
-            return this.send("keys", []);
+            return this.send(keysString, []);
         }
     },
 
