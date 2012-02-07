@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- /*global require, exports*/
+/*global require, exports*/
 /**
 	@module montage/ui/composer/press-composer
     @requires montage
@@ -102,6 +102,7 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
             }
 
             this.component.eventManager.claimPointer(this._observedPointer, this);
+
             this._dispatchPressstart(event);
         }
     },
@@ -158,6 +159,10 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
 
                 this._endInteraction(event);
                 return true;
+            } else {
+                // TODO only dispatch if we're still in press
+                // TODO add a _pressed property
+                this._dispatchPresscancel(event);
             }
 
             this._endInteraction(event);
@@ -185,13 +190,23 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
         }
     },
 
+    /**
+    Checks if we are observing one of the changed touches. Returns the index
+    of the changed touch if one matches, otherwise returns false. Make sure
+    to check against <code>!== false</code> or <code>=== false</code> as the
+    matching index might be 0.
+
+    @function
+    @private
+    @returns {Number,Boolean} The index of the matching touch, or false
+    */
     _changedTouchisObserved: {
         value: function(changedTouches) {
             var i = 0, changedTouchCount = event.changedTouches.length;
 
             for (; i < changedTouchCount; i++) {
                 if (event.changedTouches[i].identifier === this._observedPointer) {
-                    return true;
+                    return i;
                 }
             }
             return false;
@@ -226,14 +241,14 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
                 return;
             }
 
-            if (this._changedTouchisObserved(event.changedTouches)) {
+            if (this._changedTouchisObserved(event.changedTouches) !== false) {
                 this._interpretInteraction(event);
             }
         }
     },
     handleTouchcancel: {
         value: function(event) {
-            if (this._observedPointer === null || this._changedTouchisObserved(event.changedTouches)) {
+            if (this._observedPointer === null || this._changedTouchisObserved(event.changedTouches) !== false) {
                 this._endInteraction(event);
             }
         }
@@ -257,23 +272,34 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
 
     // Event dispatch
 
+    _createPressEvent: {
+        enumerable: false,
+        value: function(name, event) {
+            console.log(name);
+            var pressEvent, detail, index;
+
+            if (event) {
+                pressEvent = event;
+                pressEvent.type = name;
+            } else {
+                pressEvent = document.createEvent("CustomEvent");
+                pressEvent.initCustomEvent(name, true, true, null);
+            }
+
+            pressEvent.pointer = this._observedPointer;
+
+            return pressEvent;
+        }
+    },
+
     /**
     Dispatch the pressstart event
     @private
     */
     _dispatchPressstart: {
+        enumerable: false,
         value: function (event) {
-            // TODO: somehow pass through the preventDefault method of the
-            // click event?
-
-            var pressEvent = document.createEvent("CustomEvent");
-            // TODO make this look like a mouse/touch event
-            // clientX, screenX etc.
-            pressEvent.clientX = this._X;
-            pressEvent.clientY = this._Y;
-            pressEvent.identifier = this._fingerId;
-            pressEvent.initCustomEvent("pressstart", true, true, null);
-            this.dispatchEvent(pressEvent);
+            this.dispatchEvent(this._createPressEvent("pressstart", event));
         }
     },
 
@@ -282,18 +308,9 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
     @private
     */
     _dispatchPress: {
+        enumerable: false,
         value: function (event) {
-            // TODO: somehow pass through the preventDefault method of the
-            // click event?
-
-            var pressEvent = document.createEvent("CustomEvent");
-            // TODO make this look like a mouse/touch event
-            // clientX, screenX etc.
-            pressEvent.clientX = this._X;
-            pressEvent.clientY = this._Y;
-            pressEvent.identifier = this._fingerId;
-            pressEvent.initCustomEvent("press", true, true, null);
-            this.dispatchEvent(pressEvent);
+            this.dispatchEvent(this._createPressEvent("press", event));
         }
     },
 
@@ -302,18 +319,9 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
     @private
     */
     _dispatchPresscancel: {
+        enumerable: false,
         value: function (event) {
-            // TODO: somehow pass through the preventDefault method of the
-            // click event?
-
-            var pressEvent = document.createEvent("CustomEvent");
-            // TODO make this look like a mouse/touch event
-            // clientX, screenX etc.
-            pressEvent.clientX = this._X;
-            pressEvent.clientY = this._Y;
-            pressEvent.identifier = this._fingerId;
-            pressEvent.initCustomEvent("presscancel", true, true, null);
-            this.dispatchEvent(pressEvent);
+            this.dispatchEvent(this._createPressEvent("presscancel", event));
         }
     }
 
