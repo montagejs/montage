@@ -31,7 +31,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
             //var component = Object.getPrototypeOf(NativeControl);
             // call super set
             Object.getPropertyDescriptor(Component, "element").set.call(this, value);
-            this._elementSet();
+            this.didSetElement();
         }
     },
 
@@ -148,7 +148,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
         }
     },
 
-    _elementSet: {
+    didSetElement: {
         value: function() {
             // The element is now ready, so we can read the attributes that
             // have been set on it.

@@ -317,9 +317,9 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     _isInputElement: {value: false},
 
-    _elementSet: {
+    didSetElement: {
         value: function() {
-            var o = NativeControl._elementSet.call(this);
+            var o = NativeControl.didSetElement.call(this);
 
             this._element.classList.add("montage-button");
             this._element.setAttribute("aria-role", "button");

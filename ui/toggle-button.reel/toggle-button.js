@@ -124,9 +124,9 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
       }
     },
 
-    _elementSet: {
+    didSetElement: {
         value: function() {
-            Object.getPrototypeOf(ToggleButton)._elementSet.call(this);
+            Object.getPrototypeOf(ToggleButton).didSetElement.call(this);
 
             // If we haven't set the (un)pressedLabel of the initial state,
             // then take it from the label
