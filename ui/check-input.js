@@ -3,10 +3,11 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global require, exports */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    NativeControl = require("ui/native-control").NativeControl;
+    NativeControl = require("ui/native-control").NativeControl,
+    PressComposer = require("ui/composer/press-composer").PressComposer;
 
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
@@ -19,10 +20,17 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
-    /**
-        Description TODO
-        @function
-    */
+    prepareForActivationEvents: {
+        value: function() {
+            var pressComposer = PressComposer.create();
+            this.addComposer(pressComposer);
+            pressComposer.addEventListener("pressstart", this, false);
+            pressComposer.addEventListener("press", this, false);
+            // TODO need to listen to this?
+            //pressComposer.addEventListener("presscancel", this, false);
+        }
+    },
+
     prepareForDraw: {
         enumerable: false,
         value: function() {
@@ -30,16 +38,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
-    handleChange: {
-        enumerable: false,
-        value: function(event) {
-            if (this._observedPointer === null || this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                Object.getPropertyDescriptor(this, "checked").set.call(this,
-                    this.element.checked, true);
-                this._dispatchActionEvent();
-            }
-        }
-    },
+
 
     /**
     Fake the checking of the element.
@@ -63,7 +62,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
-    /*
+    /**
     Stores if we need to fake checking.
 
     When preventDefault is called on touchstart and touchend events (e.g. by
@@ -73,52 +72,37 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     @default false
     @private
     */
-    _shouldFakeChecking: {
+    _shouldFakeCheck: {
         enumerable: false,
         value: false
     },
 
-    // _startInteraction and _endInteraction should be on nativecomponent,
-    // but this should be a callback implemented by each component?
-    _interpretInteraction: {
+    // Handlers
+
+    handlePressstart: {
         value: function(event) {
-            var isTarget = Object.getPrototypeOf(CheckInput)._interpretInteraction.call(this, event, false);
-
-            if (isTarget) {
-                if (this._shouldFakeChecking && this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                    this._shouldFakeChecking = false;
-                    this._fakeCheck();
-                }
-
-                // If this was a mouseup event then don't end the interaction
-                // because we need to handle/preventDefault on the click event
-                if (event.type !== "mouseup") {
-                    this._endInteraction(event);
-                }
-            } else {
-                this._endInteraction(event);
-            }
-
-            return isTarget;
+            console.log(event.detail);
+            this._shouldFakeCheck = event.defaultPrevented;
         }
     },
 
-    handleTouchstart: {
+
+    handlePress: {
         value: function(event) {
-            this._shouldFakeChecking = event.defaultPrevented;
-            this._startInteraction(event);
+            if (this._shouldFakeCheck) {
+                this._shouldFakeCheck = false;
+                this._fakeCheck();
+            }
         }
     },
-    handleTouchend: {
-        value: function(event) {
-            if (this._observedPointer === null) {
-                this._endInteraction(event);
-                return;
-            }
 
-            if (this._changedTouchisObserved(event.changedTouches)) {
-                this._shouldFakeChecking = this._shouldFakeChecking || event.defaultPrevented;
-                this._interpretInteraction(event);
+    handleChange: {
+        enumerable: false,
+        value: function(event) {
+            if (this._observedPointer === null || this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                Object.getPropertyDescriptor(this, "checked").set.call(this,
+                    this.element.checked, true);
+                this._dispatchActionEvent();
             }
         }
     }
