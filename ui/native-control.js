@@ -60,11 +60,10 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
 
 
     _getElementAttributeDescriptor: {
-        value: function(aName, instance) {
-            var value;
+        value: function(aName) {
+            var value, instance = this;
             // walk up the prototype chain from the instance to NativeControl's prototype
             while(instance && !isUndefined(instance._elementAttributeDescriptors)) {
-
                 value = instance._elementAttributeDescriptors[aName];
                 if(value) {
                     break;
