@@ -47,7 +47,6 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
      * cycle after addComposer has been called on its associated component.  If
      * `true` loading of the composer is delayed until its associated component
      * has prepareForActivationEvents called.
-     * @property
      * @default false
      */
     lazyLoad: {
