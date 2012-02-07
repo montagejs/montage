@@ -84,7 +84,7 @@ var Creatable = Object.create(Object.prototype, {
         },
         writable: true,
         configurable: true
-    },
+    }
 });
 
 // Common implementation details of FulfilledPromise, RejectedPromise, and
@@ -343,7 +343,7 @@ var PrimordialPromise = Creatable.create({
                         this.Promise.reject(reason, error)
                     );
                 }
-            },
+            }
 
         })
     },
@@ -378,7 +378,7 @@ var PrimordialPromise = Creatable.create({
             }
 
         })
-    },
+    }
 
 });
 
