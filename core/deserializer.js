@@ -62,7 +62,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
       @private
     */
     // list of ids that were just created for optimization
-    _optimizedIds: {value: {}},
+    _optimizedIds: {value: Object.create(null)},
 
     _indexedDeserializationUnits: {value: {}},
 
@@ -388,7 +388,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         value: function(doc) {
             var idAttributeName = Deserializer._MONTAGE_ID_ATTRIBUTE,
                 elements = doc.querySelectorAll('*[' + idAttributeName + ']'),
-                ids = this._optimizedIds = {};
+                ids = this._optimizedIds = Object.create(null);
 
             for (var i = 0, element; (element = elements[i]); i++) {
                 if (!element.id) {
