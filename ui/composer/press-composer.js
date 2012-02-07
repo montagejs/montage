@@ -108,65 +108,45 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
     },
 
     /**
-    Basic interaction interpreter. Generally should be overridden.
-
-    In overriding function it should be used as follows:
-    <code><pre>
-    _interpretInteraction: function(event) {
-        var isTarget = Object.getPrototypeOf(YOUR_CLASS_NAME)._interpretInteraction.call(this, event, false);
-        // Your own code here
-        // This example will not end in the interaction when a mouseup is
-        // received on the element, so that you can preventDefault when you
-        // receive a click.
-        if (isTarget && event.type !== "mouseup") {
-            this._endInteraction(event);
-        } else {
-            this._endInteraction(event);
-        }
-
-        return isTarget;
-    }
-    </pre></code>
+    Decides what should be done based on an interaction.
 
     @param {Event} event The event that caused this to be called.
-    @param {Boolean} [endInteraction=true] Whether _endInteraction should be
-        called from this function. Set to false if you want to perform
-        additional actions yourself before ending the interaction.
-    @returns {Boolean} Whether this component's element was the target of the event.
     */
     _interpretInteraction: {
         value: function(event) {
+            var isSurrendered, target;
+
             if (this._observedPointer === null) {
                 this._endInteraction(event);
-                return false;
+                return;
             }
 
-            var target = event.target;
+            isSurrendered = !this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this);
+            if (isSurrendered && (event.type === "click" || event.type === "touchend")) {
+                // Pointer surrendered, so prevent the default action
+                event.preventDefault();
+                // No need to dispatch an event as presscancel was dispatched
+                // in surrenderPointer, just end the interaction.
+                this._endInteraction(event);
+                return;
+            }
 
+            target = event.target;
             while (target !== this._element && target && target.parentNode) {
                 target = target.parentNode;
             }
 
-            if (this._element === target) {
-                // preventDefault if another component has claimed the pointer
-                if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                    this._dispatchPress(event);
-                } else {
-                    // TODO: should this be here, or handled by the component?
-                    event.preventDefault();
-                    this._dispatchPresscancel(event);
-                }
-
+            if (target && (event.type === "click" || event.type === "touchend")) {
+                this._dispatchPress(event);
                 this._endInteraction(event);
-                return true;
-            } else {
-                // TODO only dispatch if we're still in press
-                // TODO add a _pressed property
-                this._dispatchPresscancel(event);
+                return;
             }
 
-            this._endInteraction(event);
-            return false;
+            if (!isSurrendered && !target && (event.type === "mouseup" || event.type === "touchend")) {
+                this._dispatchPresscancel(event);
+                this._endInteraction(event);
+                return;
+            }
         }
     },
 
