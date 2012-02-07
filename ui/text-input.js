@@ -8,39 +8,6 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl;
 
-    // Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
-
-exports.StandardInputAttributes = {
-    accept: null,
-    alt: null,
-    autocomplete: null,
-    autofocus: {dataType: "boolean"},
-    checked: {dataType: "boolean"},
-    dirname: null,
-    disabled: {dataType: 'boolean'},
-    form: null,
-    formaction: null,
-    formenctype: null,
-    formmethod: null,
-    formnovalidate: null,
-    formtarget: null,
-    height: null,
-    list: null,
-    max: null,
-    maxlength: null,
-    min: null,
-    multiple: {dataType: 'boolean'},
-    name: null,
-    pattern: null,
-    placeholder: null,
-    readonly: {dataType: 'boolean'},
-    required: {dataType: 'boolean'},
-    size: null,
-    src: null,
-    step: null,
-    width: null
-    // "type" is not bindable and "value" is handled as a special attribute
-};
 
 var TextInput = exports.TextInput =  Montage.create(NativeControl, {
 
@@ -81,29 +48,33 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
         },
         set: function(value, fromInput) {
 
-            if (value && value.length > 0 && this.converter) {
-                var convertedValue;
-                try {
-                    convertedValue = this.converter.revert(value);
-                    if (this.error) {
-                        this.error = null;
-                    }
-                    this._value = convertedValue;
+            if(value !== this._value) {
+                if(this.converter) {
+                    var convertedValue;
+                    try {
+                        convertedValue = this.converter.revert(value);
+                        if (this.error) {
+                            this.error = null;
+                        }
+                        this._value = convertedValue;
 
-                } catch(e) {
-                    // unable to convert - maybe error
-                    this.error = e;
-                    this._valueSyncedWithInputField = false;
+                    } catch(e) {
+                        // unable to convert - maybe error
+                        this.error = e;
+                        this._valueSyncedWithInputField = false;
+                    }
+
+                } else {
+                    this._value = value;
                 }
-            } else {
-                this._value = value;
-            }
-            if(fromInput) {
-                this._valueSyncedWithInputField = true;
-                //this.needsDraw = true;
-            } else {
-                this._valueSyncedWithInputField = false;
-                this.needsDraw = true;
+
+                if(fromInput) {
+                    this._valueSyncedWithInputField = true;
+                    //this.needsDraw = true;
+                } else {
+                    this._valueSyncedWithInputField = false;
+                    this.needsDraw = true;
+                }
             }
         }
     },
@@ -202,8 +173,8 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
   @private
 */
     _setElementValue: {
-        value: function(v) {
-            this.element.value = v;
+        value: function(value) {
+            this.element.value = (value || '');
         }
     },
 /**
@@ -302,3 +273,33 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
 
 });
 
+// Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
+
+TextInput.addAttributes({
+    accept: null,
+    alt: null,
+    autocomplete: null,
+    autofocus: {dataType: "boolean"},
+    checked: {dataType: "boolean"},
+    dirname: null,
+    disabled: {dataType: 'boolean'},
+    form: null,
+    formaction: null,
+    formenctype: null,
+    formmethod: null,
+    formnovalidate: null,
+    formtarget: null,
+    height: null,
+    list: null,
+    maxlength: null,
+    multiple: {dataType: 'boolean'},
+    name: null,
+    pattern: null,
+    placeholder: null,
+    readonly: {dataType: 'boolean'},
+    required: {dataType: 'boolean'},
+    size: null,
+    src: null,
+    width: null
+    // "type" is not bindable and "value" is handled as a special attribute
+});

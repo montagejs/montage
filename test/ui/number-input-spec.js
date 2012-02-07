@@ -24,9 +24,6 @@ var testPage = TestPageLoader.queueTest("number-input-test", function() {
     var isDate = function(object) {
         return _toString.call(object) === DATE_CLASS;
     };
-    var isString = function(object) {
-        return _toString.call(object) === STRING_CLASS;
-    };
     var isNumber = function(object) {
         return _toString.call(object) === NUMBER_CLASS;
     };
@@ -51,6 +48,32 @@ var testPage = TestPageLoader.queueTest("number-input-test", function() {
                 });
                 it("num2 should be disabled", function() {
                     expect(testPage.test.num2.disabled).toBe(true);
+                });
+
+                it("num1 should have the min/max/step element attributes", function() {
+                    // these attributes are defined at the NumberInput/RangeInput
+                    var instance = testPage.test.num1;
+                    console.log('test min/max');
+                    expect(instance._getElementAttributeDescriptor('min')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('max')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('step')).not.toBe(undefined);
+
+                });
+
+                it("num1 should have the element attributes defined by TextInput and NativeControl", function() {
+                    // these attributes are defined at the NumberInput/RangeInput
+                    var instance = testPage.test.num1;
+
+                    expect(instance._getElementAttributeDescriptor('name')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('placeholder')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('pattern')).not.toBe(undefined);
+
+                    expect(instance._getElementAttributeDescriptor('contenteditable')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('title')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('style')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('class')).not.toBe(undefined);
+
+
                 });
 
                 describe("when setting the value", function() {

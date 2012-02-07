@@ -11,47 +11,30 @@ var isUndefined = function(obj) {
    return (typeof obj === 'undefined');
 };
 
-var extend = function(destination, source) {
-  for (var property in source) {
-      destination[property] = source[property];
-  }
-  return destination;
-};
-
-var STRING_CLASS = '[object String]';
-var _toString = Object.prototype.toString;
-var isString = function(object) {
-    return _toString.call(object) === STRING_CLASS;
-};
 
 /**
  * Base component for all native controls.
  */
-exports.NativeControl = Montage.create(Component, {
+var NativeControl = exports.NativeControl = Montage.create(Component, {
 
     hasTemplate: {
         value: false
     },
 
-    //http://www.w3.org/TR/html5/elements.html#global-attributes
-    _baseElementProperties: {
-        value: {
-            accesskey: null,
-            contenteditable: null, // true, false, inherit
-            contextmenu: null,
-            'class': null,
-            dir: null,
-            draggable: {dataType: 'boolean'},
-            dropzone: null, // copy/move/link
-            hidden: {dataType: 'boolean'},
-            //id: null,
-            lang: null,
-            spellcheck: null,
-            style: null,
-            tabindex: null,
-            title: null
+    element: {
+        serializable: true,
+        enumerable: true,
+        get: function() {
+            return this._element;
+        },
+        set: function(value) {
+            //var component = Object.getPrototypeOf(NativeControl);
+            // call super set
+            Object.getPropertyDescriptor(Component, "element").set.call(this, value);
+            this.didSetElement();
         }
     },
+
 
     /** Stores values that need to be set on the element. Cleared each draw
      * cycle.
@@ -64,9 +47,28 @@ exports.NativeControl = Montage.create(Component, {
     /** Stores the descriptors of the properties that can be set on this
      * control
      */
-    _propertyDescriptors: {
+
+    _elementAttributeDescriptors: {
        value: {},
        distinct: true
+    },
+
+
+    _getElementAttributeDescriptor: {
+        value: function(aName) {
+            var value, instance = this;
+            // walk up the prototype chain from the instance to NativeControl's prototype
+            while(instance && !isUndefined(instance._elementAttributeDescriptors)) {
+                value = instance._elementAttributeDescriptors[aName];
+                if(value) {
+                    break;
+                } else {
+                    instance = Object.getPrototypeOf(instance);
+                }
+            }
+
+            return value;
+        }
     },
 
     /**
@@ -86,7 +88,7 @@ exports.NativeControl = Montage.create(Component, {
                     return function(value) {
                         var attrName = '_' + name;
 
-                        var desc = this._propertyDescriptors[name];
+                        var desc = this._getElementAttributeDescriptor(name, this);
                         // if requested dataType is boolean (eg: checked, readonly etc)
                         // coerce the value to boolean
                         if(desc && "boolean" === desc.dataType) {
@@ -123,19 +125,15 @@ exports.NativeControl = Montage.create(Component, {
     addAttributes: {
         value: function(props) {
             var i, desc, prop, obj;
-            var standardAttributes = {};
-            standardAttributes = extend(standardAttributes, this._baseElementProperties);
-            standardAttributes = extend(standardAttributes, props);
+            this._elementAttributeDescriptors = props;
 
-            this._propertyDescriptors = standardAttributes;
-
-            for(prop in standardAttributes) {
-                if(standardAttributes.hasOwnProperty(prop)) {
-                    obj = standardAttributes[prop];
+            for(prop in props) {
+                if(props.hasOwnProperty(prop)) {
+                    obj = props[prop];
                     // Make sure that the descriptor is of the correct form.
-                    if(obj === null || isString(obj)) {
+                    if(obj === null || String.isString(obj)) {
                         desc = {value: obj, dataType: "string"};
-                        standardAttributes[prop] = desc;
+                        props[prop] = desc;
                     } else {
                         desc = obj;
                     }
@@ -150,7 +148,7 @@ exports.NativeControl = Montage.create(Component, {
         }
     },
 
-    deserializedFromTemplate: {
+    didSetElement: {
         value: function() {
             // The element is now ready, so we can read the attributes that
             // have been set on it.
@@ -163,9 +161,7 @@ exports.NativeControl = Montage.create(Component, {
 
                 if(isUndefined(this._elementAttributeValues[name])) {
                     this._elementAttributeValues[name] = value;
-                    // since deserializedFromTemplate is called *after* the initial binding
-                    // is done, override the values only if a value does not already exist
-                    if(isUndefined(this[name]) || this[name] === null) {
+                    if(isUndefined(this[name]) || this[name] == null) {
                         this[name] = value;
                     }
                 }
@@ -177,8 +173,6 @@ exports.NativeControl = Montage.create(Component, {
             if(('textContent' in this) && textContent && ("" !== textContent)) {
                 if(isUndefined(this._elementAttributeValues['textContent'])) {
                     this._elementAttributeValues['textContent'] = textContent;
-                    // since deserializedFromTemplate is called *after* the initial binding
-                    // is done, override the values only if a value does not already exist
                     if(isUndefined(this['textContent']) || this['textContent'] === null) {
                         this['textContent'] = textContent;
                     }
@@ -187,10 +181,10 @@ exports.NativeControl = Montage.create(Component, {
 
             // Set defaults for any properties that weren't serialised or set
             // as attributes on the element.
-            for (d in this._propertyDescriptors) {
-                desc = this._propertyDescriptors[d];
+            for (d in this._elementAttributeDescriptors) {
+                desc = this._elementAttributeDescriptors[d];
                 if (this["_"+d] === null && desc !== null && "value" in desc) {
-                    this["_"+d] = this._propertyDescriptors[d].value;
+                    this["_"+d] = this._elementAttributeDescriptors[d].value;
                 }
             }
 
@@ -209,7 +203,8 @@ exports.NativeControl = Montage.create(Component, {
                         continue;
                     }
                     var val = this[i];
-                    desc = this._propertyDescriptors[i];
+                    //desc = this._elementAttributeDescriptors[i];
+                    desc = this._getElementAttributeDescriptor(i, this);
                     if(desc && desc.dataType === 'boolean') {
                         if(val === true) {
                             el[i] = true;
@@ -219,7 +214,7 @@ exports.NativeControl = Montage.create(Component, {
                             el.removeAttribute(i);
                         }
                     } else {
-                        if(!isUndefined(val) && val !== null) {
+                        if(!isUndefined(val)) {
                             if(i === 'textContent') {
                                 el.textContent = val;
                             } else {
@@ -237,4 +232,22 @@ exports.NativeControl = Montage.create(Component, {
 
         }
     }
+});
+
+//http://www.w3.org/TR/html5/elements.html#global-attributes
+NativeControl.addAttributes({
+    accesskey: null,
+    contenteditable: null, // true, false, inherit
+    contextmenu: null,
+    'class': null,
+    dir: null,
+    draggable: {dataType: 'boolean'},
+    dropzone: null, // copy/move/link
+    hidden: {dataType: 'boolean'},
+    //id: null,
+    lang: null,
+    spellcheck: null,
+    style: null,
+    tabindex: null,
+    title: null
 });
