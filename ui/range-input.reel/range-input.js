@@ -14,11 +14,7 @@ var RangeInput = exports.RangeInput = Montage.create(TextInput, {
 });
 
 RangeInput.addAttributes({
-        disabled: {dataType: 'boolean'},
-        max: null,
-        min: null,
-        name: null,
-        readonly: {dataType: 'boolean'},
-        required: {dataType: 'boolean'},
-        step: null
+    max: {dataType: 'number'},
+    min: {dataType: 'number'},
+    step: null // number or 'any'
 });

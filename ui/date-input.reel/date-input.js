@@ -10,22 +10,10 @@ var Montage = require("montage").Montage,
  * The Component wrapper for input type="date"
  */
 var DateInput = exports.DateInput = Montage.create(TextInput, {
-    hasTemplate: {value: true}
 });
 
 DateInput.addAttributes({
-        autocomplete: null,
-        disabled: {dataType: 'boolean'},
-        list: null, // list of autocomplete options
-        max: null,
-        maxlength: null,
-        min: null,
-        multiple: null,
-        name: null,
-        pattern: null,
-        placeholder: null,
-        readonly: {dataType: 'boolean'},
-        required: {dataType: 'boolean'},
-        size: null,
-        src: null
+    max: null,
+    min: null,
+    step: null // 'any' or a floating point number
 });
