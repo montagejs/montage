@@ -529,6 +529,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 }
 
                 this._adjustPadding();
+                this._markDirty();
                 delete this._needsResetContent;
             }
 
@@ -1364,9 +1365,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     thisRef._dispatchEditorEvent("editorChange");
                 };
 
-            // Clear the cached value
-            this._dirtyValue = true;
-            this._dirtyTextValue = true;
+            if (!this._needsResetContent) {
+                // Clear the cached value
+                this._dirtyValue = true;
+                this._dirtyTextValue = true;
+            }
 
             if (!this._forceUpdateValuesTimeout) {
                 this._forceUpdateValuesTimeout = setTimeout(updateValues, 1000);
