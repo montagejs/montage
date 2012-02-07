@@ -12,16 +12,6 @@
 // TODO note the comps/promiseSend/sendPromise and argument order
 //      changes from Q
 
-
-var getString = "get",
-	putString = "put",
-	deleteString = "delete",
-	postString = "post",
-	applyString = "apply",
-	keysString = "keys",
-	thenString = "then";
-
-
 // This module is used during the boot-strapping, so it can be required as
 // a normal CommonJS module, but alternately bootstraps Montage if there
 // is a bootstrap global variable.
@@ -40,7 +30,15 @@ var getString = "get",
 
 "use strict";
 
-var TIMER;
+var GET = "get",
+    PUT = "put",
+    DELETE = "delete",
+    POST = "post",
+    APPLY = "apply",
+    KEYS = "keys",
+    THEN = "then",
+    TIMER;
+
 try {
     // bootstrapping can't handle relative identifiers
     TIMER = require("core/next-tick");
@@ -443,11 +441,11 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                         toPromise(value)
                             .sendPromise(
                             fulfill,
-                            thenString,
+                            THEN,
                             reject
                         )
                     },
-                    thenString,
+                    THEN,
                     function (reason, error, rejection) {
                         if (done) {
                             return;
@@ -483,51 +481,51 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
     get: {
         value: function () {
-            return this.send(getString, arguments);
+            return this.send(GET, arguments);
         }
     },
 
     put: {
         value: function () {
-            return this.send(putString, arguments);
+            return this.send(PUT, arguments);
         }
     },
 
     "delete": {
         value: function () {
-            return this.send(deleteString, arguments);
+            return this.send(DELETE, arguments);
         }
     },
 
     post: {
         value: function () {
-            return this.send(postString, arguments);
+            return this.send(POST, arguments);
         }
     },
 
     invoke: {
         value: function (name /*, ...args*/) {
             var args = Array.prototype.slice.call(arguments, 1);
-            return this.send(postString, [name, args]);
+            return this.send(POST, [name, args]);
         }
     },
 
     apply: {
         value: function () {
-            return this.send(applyString, arguments);
+            return this.send(APPLY, arguments);
         }
     },
 
     call: {
         value: function (thisp /*, ...args*/) {
             var args = Array.prototype.slice.call(arguments, 1);
-            return this.send(applyString, [thisp, args]);
+            return this.send(APPLY, [thisp, args]);
         }
     },
 
     keys: {
         value: function () {
-            return this.send(keysString, []);
+            return this.send(KEYS, []);
         }
     },
 

@@ -20,7 +20,7 @@ var Montage = require("montage").Montage,
     Deserializer = require("core/deserializer").Deserializer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     AT_TARGET = 2,
-	UnderscoreString = "_";
+    UNDERSCORE = "_";
 
 
 /**
@@ -920,7 +920,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                                     if ("value" in currentPropertyDescriptor) {
 
                                         //Create internal storage:
-                                        Object.defineProperty(currentObject, (internalStorageProperty = UnderscoreString + key), {
+                                        Object.defineProperty(currentObject, (internalStorageProperty = UNDERSCORE + key), {
                                             value: currentObject.getProperty(key),
                                             configurable: true,
                                             writable: true
@@ -1011,7 +1011,7 @@ Object.defineProperty(Object.prototype, "addEventListener", {
                                 //TODO this is all duplicated from above, clean it up
 
                                 //Create internal storage:
-                                Object.defineProperty(currentObject, (internalStorageProperty = UnderscoreString + key), {
+                                Object.defineProperty(currentObject, (internalStorageProperty = UNDERSCORE + key), {
                                     value: currentObject.getProperty(key),
                                     configurable: true,
                                     writable: true

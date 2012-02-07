@@ -12,13 +12,13 @@
  */
 require("core/shim");
 
-var AttributePropertiesString = "AttributeProperties",
-	UnderscoreString = "_",
-	__proto__String = "__proto__",
-	valueString = "value",
-	enumerableString = "enumerable",
-	serializableString = "serializable",
-	modifyString = "modify";
+var ATTRIBUTE_PROPERTIES = "AttributeProperties",
+    UNDERSCORE = "_",
+    PROTO = "__proto__",
+    VALUE = "value",
+    ENUMERABLE = "enumerable",
+    SERIALIZABLE = "serializable",
+    MODIFY = "modify";
 
 
 
@@ -88,14 +88,14 @@ Object.defineProperty(M, "create", {
     }
 });
 
-var extendedPropertyAttributes = [serializableString, modifyString];
+var extendedPropertyAttributes = [SERIALIZABLE, MODIFY];
 
 // Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"
 /**
 @member external:Object#extendedPropertyAttributes
 */
 extendedPropertyAttributes.forEach(function(name) {
-    Object.defineProperty(Object.prototype, UnderscoreString + name + AttributePropertiesString, {
+    Object.defineProperty(Object.prototype, UNDERSCORE + name + ATTRIBUTE_PROPERTIES, {
         enumerable: false,
         configurable: false,
         writable: false,
@@ -122,11 +122,11 @@ Object.defineProperty(M, "defineProperty", {
     value: function(obj, prop, descriptor) {
         var dependencies = descriptor.dependencies;
         //reset defaults appropriately for framework.
-        if (__proto__String in descriptor) {
-            descriptor.__proto__ = (valueString in descriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+        if (PROTO in descriptor) {
+            descriptor.__proto__ = (VALUE in descriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
             var defaults;
-            if (valueString in descriptor) {
+            if (VALUE in descriptor) {
                 if (typeof descriptor.value === "function") {
                     defaults = _defaultFunctionValueProperty;
                 } else {
@@ -143,7 +143,7 @@ Object.defineProperty(M, "defineProperty", {
         }
 
 
-        if (!descriptor.hasOwnProperty(enumerableString) && prop.charAt(0) === UnderscoreString) {
+        if (!descriptor.hasOwnProperty(ENUMERABLE) && prop.charAt(0) === UNDERSCORE) {
             descriptor.enumerable = false;
         }
         if (dependencies) {
@@ -156,13 +156,13 @@ Object.defineProperty(M, "defineProperty", {
 
         }
 
-        if (serializableString in descriptor) {
+        if (SERIALIZABLE in descriptor) {
             // get the _serializableAttributeProperties property or creates it through the entire chain if missing.
-            getAttributeProperties(obj, serializableString)[prop] = descriptor.serializable;
+            getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
         }
 
-        if (modifyString in descriptor) {
-            getAttributeProperties(obj, modifyString)[prop] = descriptor.modify;
+        if (MODIFY in descriptor) {
+            getAttributeProperties(obj, MODIFY)[prop] = descriptor.modify;
         }
 
         //this is added to enable value properties with [] or Objects that are new for every instance
@@ -278,7 +278,7 @@ Object.defineProperty(M, "defineProperty", {
                         }
                     });
                 }
-            })(UnderscoreString + prop, descriptor.value);
+            })(UNDERSCORE + prop, descriptor.value);
 
         } else {
             return Object.defineProperty(obj, prop, descriptor);
@@ -400,7 +400,7 @@ M.defineProperty(M, "removeDependencyFromProperty", {value: function(obj, indepe
 }});
 
 function getAttributeProperties(proto, attributeName) {
-    var attributePropertyName = UnderscoreString + attributeName + AttributePropertiesString;
+    var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES;
 
     if (proto.hasOwnProperty(attributePropertyName)) {
         return proto[attributePropertyName];
@@ -484,7 +484,7 @@ M.defineProperty(M, "getSerializablePropertyNames", {value: function(anObject) {
      */
 M.defineProperty(M, "getPropertyAttribute", {value: function(anObject, propertyName, attributeName) {
 
-    var attributePropertyName = UnderscoreString + attributeName + AttributePropertiesString,
+    var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
         attributes = anObject[attributePropertyName];
 
     if (attributes) {
@@ -501,7 +501,7 @@ M.defineProperty(M, "getPropertyAttribute", {value: function(anObject, propertyN
      */
 M.defineProperty(M, "getPropertyAttributes", {value: function(anObject, attributeName) {
     var attributeValues = {},
-        attributePropertyName = UnderscoreString + attributeName + AttributePropertiesString,
+        attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
         attributes = anObject[attributePropertyName];
 
     if (!attributes) {
@@ -633,7 +633,7 @@ var uuidGetGenerator = function() {
                 });
             }
             //This is really because re-defining the property on DOMWindow actually doesn't work, so the original property with the getter is still there and return this._uuid if there.
-            if (this instanceof Element || !info.isInstance || !(valueString in Object.getOwnPropertyDescriptor(this, "uuid")) || !(__proto__String in this /* lame way to detect IE */)) {
+            if (this instanceof Element || !info.isInstance || !(VALUE in Object.getOwnPropertyDescriptor(this, "uuid")) || !(PROTO in this /* lame way to detect IE */)) {
                 //This is needed to workaround some bugs in Safari where re-defining uuid doesn't work for DOMWindow.
                 this._uuid = uuid;
             }
@@ -856,7 +856,7 @@ Object.defineProperty(Object.prototype, "setProperty", {
 
                 // For these mutation/addition/removal events, use the 'modify' attribute of this property's descriptor
                 if (changeEvent && (changeEvent.currentTarget === lastObjectAtPath) &&
-                    (modify = M.getPropertyAttribute(setObject, aPropertyPath, modifyString))) {
+                    (modify = M.getPropertyAttribute(setObject, aPropertyPath, MODIFY))) {
                     modify.call(setObject, changeEvent.type, changeEvent.newValue, changeEvent.prevValue);
                 }
             }

@@ -5,15 +5,13 @@
  </copyright> */
 bootstrap("require/browser", function (require) {
 
-var Require = require("require/require");
-var Promise = require("core/promise").Promise;
-var URL = require("core/mini-url");
-
-var global = typeof global !== "undefined" ? global : window;
-
-var GETString = "GET";
-var applicationJavascriptMimeType = "application/javascript";
-var fileProtocolString = "file:";
+var Require = require("require/require"),
+    Promise = require("core/promise").Promise,
+    URL = require("core/mini-url"),
+    GET = "GET",
+    APPLICATION_JAVASCRIPT_MIMETYPE = "application/javascript",
+    FILE_PROTOCOL = "file:",
+    global = typeof global !== "undefined" ? global : window;
 
 Require.getLocation = function() {
     return URL.resolve(window.location, ".");
@@ -28,11 +26,7 @@ Require.overlays = ["browser", "montage"];
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 Require.read = function (url) {
 
-<<<<<<< Updated upstream
-    if (URL.resolve(window.location, url).indexOf("file:") === 0) {
-=======
-    if (URL.parse(url).scheme.indexOf(fileProtocolString) === 0) {
->>>>>>> Stashed changes
+    if (URL.resolve(window.location, url).indexOf(FILE_PROTOCOL) === 0) {
         throw new Error("XHR does not function for file: protocol");
     }
 
@@ -52,8 +46,8 @@ Require.read = function (url) {
     }
 
     try {
-        request.open(GETString, url, true);
-        request.overrideMimeType(applicationJavascriptMimeType);
+        request.open(GET, url, true);
+        request.overrideMimeType(APPLICATION_JAVASCRIPT_MIMETYPE);
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
                 onload();
@@ -86,11 +80,11 @@ if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
 }
 
 var __FILE__String = "__FILE__",
-	DoubleUnderscoreString = "__"
-	globalEvalConstantA = "(function ",
-	globalEvalConstantB = "(require, exports, module) {",
-	globalEvalConstantC = "//*/\n})\n//@ sourceURL=";
-	
+    DoubleUnderscoreString = "__"
+    globalEvalConstantA = "(function ",
+    globalEvalConstantB = "(require, exports, module) {",
+    globalEvalConstantC = "//*/\n})\n//@ sourceURL=";
+
 Require.Compiler = function (config) {
     return function(module) {
         if (module.factory || module.text === void 0)
