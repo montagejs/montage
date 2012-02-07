@@ -192,18 +192,19 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 expect(test.converterbutton.element.value).toBe("PASS");
             });
 
-            it("correctly releases the pointer", function() {
-                var l = addListener(test.scroll_button);
+            // TODO should be transplanted to the press-composer-spec
+            // it("correctly releases the pointer", function() {
+            //     var l = addListener(test.scroll_button);
 
-                mousedown(test.scroll_button.element);
-                expect(test.scroll_button.active).toBe(true);
-                test.scroll_button.surrenderPointer(test.scroll_button._observedPointer, null);
-                expect(test.scroll_button.active).toBe(false);
-                mouseup(test.scroll_button.element);
+            //     mousedown(test.scroll_button.element);
+            //     expect(test.scroll_button.active).toBe(true);
+            //     test.scroll_button.surrenderPointer(test.scroll_button._observedPointer, null);
+            //     expect(test.scroll_button.active).toBe(false);
+            //     mouseup(test.scroll_button.element);
 
-                expect(l).not.toHaveBeenCalled();
+            //     expect(l).not.toHaveBeenCalled();
 
-            });
+            // });
 
             if (window.Touch) {
 

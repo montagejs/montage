@@ -3,11 +3,13 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+ /*global require, exports*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    NativeControl = require("ui/native-control").NativeControl;
+    NativeControl = require("ui/native-control").NativeControl,
+    PressComposer = require("ui/composer/press-composer").PressComposer;
 /**
- * The Text input
+ * The Button input
  */
 var Button = exports.Button = Montage.create(NativeControl, {
 
@@ -127,135 +129,60 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    // Low-level event listeners
-
-    /**
-    Description TODO
-    @function
-    @param {Event} event The handleMousedown event
-    */
-    handleMousedown: {
-        value: function(event) {
-            if (this._observedPointer !== null) {
-                return;
-            }
-            if (!this._disabled) {
-                this._startInteraction(event);
-            }
-
-            event.preventDefault();
-
-            if (!this._preventFocus) {
-                this._element.focus();
-            }
+    prepareForActivationEvents: {
+        value: function() {
+            var pressComposer = PressComposer.create();
+            this.addComposer(pressComposer);
+            pressComposer.addEventListener("pressstart", this, false);
+            pressComposer.addEventListener("press", this, false);
+            pressComposer.addEventListener("presscancel", this, false);
         }
     },
 
+    // Handlers
+
     /**
-    Description TODO
-    @function
-    @param {Event} event The handleTouchstart event
+    Called when the user starts interacting with the component.
     */
-    handleTouchstart: {
+    handlePressstart: {
         value: function(event) {
-            if (this._observedPointer !== null) {
-                return;
-            }
-            if (!this._disabled) {
-                this._startInteraction(event);
-            }
-
-            // NOTE preventingDefault disables the magnifying class
-            // sadly it also disables double tapping on the button to zoom...
-            event.preventDefault();
-
-            if (!this._preventFocus) {
-                this._element.focus();
-            }
-        }
-    },
-
-    // Internal state management
-
-    /**
-    Stores the pointer that pressed down the button. Needed for multitouch.
-    @private
-    */
-    _observedPointer: {
-        enumerable: true,
-        value: null
-    },
-
-    /**
-    Called when the user starts interacting with the component. Adds release
-    (touch and mouse) listeners.
-    @private
-    */
-    _startInteraction: {
-        value: function(event) {
-            Object.getPrototypeOf(Button)._startInteraction.call(this, event);
             this.active = true;
+
+            event.preventDefault();
+
+            if (!this._preventFocus) {
+                this._element.focus();
+            }
         }
     },
 
     /**
-    Called when the user has interacted with the button. Decides whether to
-    dispatch an action event.
+    Called when the user has interacted with the button.
+    */
+    handlePress: {
+        value: function(event) {
+            this.active = false;
+            this._dispatchActionEvent();
+        }
+    },
+
+    /**
+    Called when all interaction is over.
+    */
+    handlePresscancel: {
+        value: function(event) {
+            this.active = false;
+        }
+    },
+
+    /**
+    If this is an input element then the label is handled differently.
     @private
     */
-    _interpretInteraction: {
-        value: function(event) {
-            var isTarget = Object.getPrototypeOf(Button)._interpretInteraction.call(this, event, false);
-            if (isTarget) {
-                if (
-                    this.active &&
-                    (event.type === "mouseup" || event.type === "touchend") &&
-                    this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)
-                ) {
-                    this._dispatchActionEvent();
-                }
-
-                // Don't end interaction when mouseup on element as we need to
-                // prevent default on the click event if we've lost the pointer,
-                // which comes after mouseup
-                if (event.type !== "mouseup") {
-                    this._endInteraction(event);
-                }
-            } else {
-                this._endInteraction(event);
-            }
-
-            return isTarget;
-        },
+    _isInputElement: {
+        value: false,
         enumerable: false
     },
-    /**
-    Called when all interaction is over. Removes listeners.
-    @private
-    */
-    _endInteraction: {
-        value: function(event) {
-            Object.getPrototypeOf(Button)._endInteraction.call(this, event);
-            this.active = false;
-        }
-    },
-
-    /**
-    If we have to surrender the pointer we are no longer active. This will
-    stop the action event being dispatched.
-    */
-    surrenderPointer: {
-        value: function(pointer, component) {
-            this.active = false;
-            return true;
-        }
-    },
-
-    /**
-    Description TODO
-    @private
-    */
-    _isInputElement: {value: false},
 
     didSetElement: {
         value: function() {
