@@ -134,6 +134,8 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     */
     _interpretInteraction: {
         value: function(event) {
+            // TODO maybe the code should be moved out to handleClick and
+            // handleMouseup
             var isSurrendered, target, isTarget;
 
             if (this._observedPointer === null) {
@@ -148,7 +150,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
             }
             isTarget = target === this.component.element;
 
-            if (isSurrendered && (event.type === "click" || event.type === "touchend")) {
+            if (isSurrendered && event.type === "click") {
                 // Pointer surrendered, so prevent the default action
                 event.preventDefault();
                 // No need to dispatch an event as presscancel was dispatched
@@ -157,15 +159,13 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                 return;
             }
 
-
-
-            if (isTarget && (event.type === "click" || event.type === "touchend")) {
+            if (!isSurrendered && isTarget && event.type === "click") {
                 this._dispatchPress(event);
                 this._endInteraction(event);
                 return;
             }
 
-            if (!isSurrendered && !isTarget && (event.type === "mouseup" || event.type === "touchend")) {
+            if (!isSurrendered && !isTarget && event.type === "mouseup") {
                 this._dispatchPresscancel(event);
                 this._endInteraction(event);
                 return;
@@ -291,7 +291,6 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     _createPressEvent: {
         enumerable: false,
         value: function(name, event) {
-            console.log("createPressEvent", name, this.pressed);
             var pressEvent, detail, index;
 
             if (event) {
