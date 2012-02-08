@@ -107,9 +107,22 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                 return false;
             }
 
+            var i = 0, changedTouchCount;
+
             if (event.type === "touchstart") {
-                // TODO: Get first identifier which isn't claimed
-                this._observedPointer = event.changedTouches[0].identifier;
+                changedTouchCount = event.changedTouches.length;
+                for (; i < changedTouchCount; i++) {
+                    if (!this.component.eventManager.componentClaimingPointer(event.changedTouches[i].identifier)) {
+                        this._observedPointer = event.changedTouches[i].identifier;
+                        break;
+                    }
+                 }
+
+                if (this._observedPointer === null) {
+                    // All touches have been claimed
+                    return false;
+                }
+
                 document.addEventListener("touchend", this);
                 document.addEventListener("touchcancel", this);
             } else if (event.type === "mousedown") {
