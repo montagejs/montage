@@ -55,19 +55,19 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
 
 
     _getElementAttributeDescriptor: {
-        value: function(aName) {
-            var value, instance = this;
+        value: function(attributeName) {
+            var attributeDescriptor, instance = this;
             // walk up the prototype chain from the instance to NativeControl's prototype
             while(instance && !isUndefined(instance._elementAttributeDescriptors)) {
-                value = instance._elementAttributeDescriptors[aName];
-                if(value) {
+                attributeDescriptor = instance._elementAttributeDescriptors[attributeName];
+                if(attributeDescriptor) {
                     break;
                 } else {
                     instance = Object.getPrototypeOf(instance);
                 }
             }
 
-            return value;
+            return attributeDescriptor;
         }
     },
 
@@ -123,25 +123,25 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
     * Add the specified properties as properties of this Component
     */
     addAttributes: {
-        value: function(props) {
-            var i, desc, prop, obj;
-            this._elementAttributeDescriptors = props;
+        value: function(properties) {
+            var i, descriptor, property, object;
+            this._elementAttributeDescriptors = properties;
 
-            for(prop in props) {
-                if(props.hasOwnProperty(prop)) {
-                    obj = props[prop];
+            for(property in properties) {
+                if(properties.hasOwnProperty(property)) {
+                    object = properties[property];
                     // Make sure that the descriptor is of the correct form.
-                    if(obj === null || String.isString(obj)) {
-                        desc = {value: obj, dataType: "string"};
-                        props[prop] = desc;
+                    if(object === null || String.isString(object)) {
+                        descriptor = {value: object, dataType: "string"};
+                        properties[property] = descriptor;
                     } else {
-                        desc = obj;
+                        descriptor = object;
                     }
 
-                    // Only add the internal prop, and getter and setter if
+                    // Only add the internal property, and getter and setter if
                     // they don't already exist.
-                    if(isUndefined(this[prop])) {
-                        this.defineAttribute(prop, desc);
+                    if(isUndefined(this[property])) {
+                        this.defineAttribute(property, descriptor);
                     }
                 }
             }
@@ -152,12 +152,12 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
         value: function() {
             // The element is now ready, so we can read the attributes that
             // have been set on it.
-            var attrs = this.element.attributes || [];
-            var i=0, len = attrs.length, name, value, d, desc;
+            var attributes = this.element.attributes || [];
+            var i=0, length = attributes.length, name, value, attributeName, descriptor;
 
-            for(i=0; i< len; i++) {
-                name = attrs[i].name;
-                value = attrs[i].value;
+            for(i=0; i< length; i++) {
+                name = attributes[i].name;
+                value = attributes[i].value;
 
                 if(isUndefined(this._elementAttributeValues[name])) {
                     this._elementAttributeValues[name] = value;
@@ -181,10 +181,10 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
 
             // Set defaults for any properties that weren't serialised or set
             // as attributes on the element.
-            for (d in this._elementAttributeDescriptors) {
-                desc = this._elementAttributeDescriptors[d];
-                if (this["_"+d] === null && desc !== null && "value" in desc) {
-                    this["_"+d] = this._elementAttributeDescriptors[d].value;
+            for (attributeName in this._elementAttributeDescriptors) {
+                descriptor = this._elementAttributeDescriptors[attributeName];
+                if (this["_"+attributeName] === null && descriptor !== null && "value" in descriptor) {
+                    this["_"+attributeName] = this._elementAttributeDescriptors[attributeName].value;
                 }
             }
 
@@ -195,31 +195,30 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
     draw: {
         enumerable: false,
         value: function() {
-            var el = this.element, desc;
+            var element = this.element, descriptor;
 
-            for(var i in this._elementAttributeValues) {
-                if(this._elementAttributeValues.hasOwnProperty(i)) {
-                    if(i === 'value') {
+            for(var attributeName in this._elementAttributeValues) {
+                if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
+                    if(attributeName === 'value') {
                         continue;
                     }
-                    var val = this[i];
-                    //desc = this._elementAttributeDescriptors[i];
-                    desc = this._getElementAttributeDescriptor(i, this);
-                    if(desc && desc.dataType === 'boolean') {
-                        if(val === true) {
-                            el[i] = true;
-                            el.setAttribute(i, i.toLowerCase());
+                    var value = this[attributeName];
+                    descriptor = this._getElementAttributeDescriptor(attributeName, this);
+                    if(descriptor && descriptor.dataType === 'boolean') {
+                        if(value === true) {
+                            element[attributeName] = true;
+                            element.setAttribute(attributeName, attributeName.toLowerCase());
                         } else {
-                            el[i] = false;
-                            el.removeAttribute(i);
+                            element[attributeName] = false;
+                            element.removeAttribute(attributeName);
                         }
                     } else {
-                        if(!isUndefined(val)) {
-                            if(i === 'textContent') {
-                                el.textContent = val;
+                        if(!isUndefined(value)) {
+                            if(attributeName === 'textContent') {
+                                element.textContent = value;
                             } else {
                                 //https://developer.mozilla.org/en/DOM/element.setAttribute
-                                el.setAttribute(i, val);
+                                element.setAttribute(attributeName, value);
                             }
 
                         }
