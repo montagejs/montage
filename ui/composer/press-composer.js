@@ -15,7 +15,7 @@ var Montage = require("montage").Montage,
     @class module:montage/ui/composer/press-composer.PressComposer
     @extends module:montage/ui/composer/composer.Composer
 */
-exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/event/composer/press-composer.PressComposer# */ {
+var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/event/composer/press-composer.PressComposer# */ {
 
     /**
     @event
@@ -66,9 +66,23 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
         }
     },
 
-    pressed: {
+    UNPRESSED: {
+        value: 0
+    },
+    PRESSED: {
+        value: 1
+    },
+    CANCELLED: {
+        value: 2
+    },
+
+    _state: {
+        enumerable: false,
+        value: 0
+    },
+    state: {
         get: function() {
-            return  this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this);
+            return this._state;
         }
     },
 
@@ -176,6 +190,7 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
                 this.component.eventManager.forfeitPointer(this._observedPointer, this);
             }
             this._observedPointer = null;
+            this._state = PressComposer.UNPRESSED;
         }
     },
 
@@ -300,6 +315,7 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
     _dispatchPressstart: {
         enumerable: false,
         value: function (event) {
+            this._state = PressComposer.PRESSED;
             this.dispatchEvent(this._createPressEvent("pressstart", event));
         }
     },
@@ -312,6 +328,7 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
         enumerable: false,
         value: function (event) {
             this.dispatchEvent(this._createPressEvent("press", event));
+            this._state = PressComposer.UNPRESSED;
         }
     },
 
@@ -322,6 +339,7 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
     _dispatchPresscancel: {
         enumerable: false,
         value: function (event) {
+            this._state = PressComposer.CANCELLED;
             this.dispatchEvent(this._createPressEvent("presscancel", event));
         }
     }

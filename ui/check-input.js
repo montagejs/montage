@@ -81,25 +81,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         value: false
     },
 
-    /**
-    Stores whether this checkbox has been cancelled.
-
-    Needed so that when the press is canceled we don't change our checked value.
-    This is needed because the checkbox changes its value, fires the change
-    event, fires the click event, where if we preventDefault the value of the
-    checkbox gets reset. In our change handler we need to know whether to
-    interpret the new checked value or not.
-
-    We can't use the opposite, a _pressed property, because we also have to
-    support the keyboard and _pressed doesn't get set on keydown.
-    @default false
-    @private
-    */
-    _cancelled: {
-        enumerable: false,
-        value: false
-    },
-
     // Handlers
 
     handlePressstart: {
@@ -127,7 +108,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     handleChange: {
         enumerable: false,
         value: function(event) {
-            if (!this._cancelled) {
+            if (!this._pressComposer || this._pressComposer.state !== PressComposer.CANCELLED) {
                 Object.getPropertyDescriptor(this, "checked").set.call(this,
                     this.element.checked, true);
                 this._dispatchActionEvent();
