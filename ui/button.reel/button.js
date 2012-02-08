@@ -317,9 +317,9 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     _isInputElement: {value: false},
 
-    deserializedFromTemplate: {
+    didSetElement: {
         value: function() {
-            var o = Object.getPrototypeOf(Button).deserializedFromTemplate.call(this);
+            var o = NativeControl.didSetElement.call(this);
 
             this._element.classList.add("montage-button");
             this._element.setAttribute("aria-role", "button");
@@ -411,6 +411,7 @@ Button.addAttributes({
     formmethod: null,
     formnovalidate: null,
     formtarget: null,
+    type: {value: 'button'},
     name: null,
     value: null
 });

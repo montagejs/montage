@@ -5,13 +5,10 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    TextInput = require("ui/text-input").TextInput,
-    StandardInputAttributes = require("ui/text-input").StandardInputAttributes;
+    TextInput = require("ui/text-input").TextInput;
 /**
  * The Text input
  */
 var Textfield = exports.Textfield = Montage.create(TextInput, {
 });
 
-// Standard <input> tag attributes - http://www.w3.org/TR/html5/the-input-element.html#the-input-element
-Textfield.addAttributes(StandardInputAttributes);

@@ -26,6 +26,31 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
             describe("once loaded", function() {
 
+                it("select should have the Select element attributes", function() {
+                    // these attributes are defined at the NumberInput/RangeInput
+                    var instance = test.dept;
+
+                    expect(instance._getElementAttributeDescriptor('multiple')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('name')).not.toBe(undefined);
+                    expect(instance._getElementAttributeDescriptor('size')).not.toBe(undefined);
+
+                });
+
+                it("select should have the element attributes defined by NativeControl", function() {
+                    // these attributes are defined at the NumberInput/RangeInput
+                    var instance = testPage.test.dept;
+
+                    expect(instance._getElementAttributeDescriptor('placeholder')).toBe(undefined);;
+                    expect(instance._getElementAttributeDescriptor('pattern')).toBe(undefined);;
+
+                    expect(instance._getElementAttributeDescriptor('contenteditable')).not.toBe(undefined);;
+                    expect(instance._getElementAttributeDescriptor('title')).not.toBe(undefined);;
+                    expect(instance._getElementAttributeDescriptor('style')).not.toBe(undefined);;
+                    expect(instance._getElementAttributeDescriptor('class')).not.toBe(undefined);;
+
+
+                });
+
                 describe("Tests for Department select-input", function() {
                     it("dept's contentController is created", function() {
                         expect(test.dept.contentController).not.toBeNull();
@@ -37,6 +62,7 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
 
                 });
+
 
                 describe("Tests for Country select-input", function() {
                     it("country's contentController is created", function() {
