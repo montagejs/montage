@@ -237,8 +237,10 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
 
                         // mouse up
                         mouseup(el);
+                        clickEvent(el);
 
                         expect(listener).not.toHaveBeenCalled();
+                        expect(test.scroll_check.checked).toBe(false);
                     });
 
                 });
