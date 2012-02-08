@@ -11,6 +11,59 @@ var Montage = require("montage").Montage,
  */
 var RangeInput = exports.RangeInput = Montage.create(TextInput, {
 
+    prepareForActivationEvents: {
+        value: function() {
+            var el = this.element;
+            if (window.Touch) {
+                el.addEventListener("touchstart", this);
+                el.addEventListener("touchend", this);
+            } else {
+                el.addEventListener("mousedown", this);
+                el.addEventListener("mouseup", this);
+            }
+        }
+    },
+
+    _fireInteractionStartEvent: {
+        value: function() {
+            var interactionStartEvent = document.createEvent("CustomEvent");
+            interactionStartEvent.initCustomEvent("montage_range_interaction_start", true, true, null);
+            this.dispatchEvent(interactionStartEvent);
+        }
+    },
+
+    _fireInteractionEndEvent: {
+        value: function() {
+            var interactionEndEvent = document.createEvent("CustomEvent");
+            interactionEndEvent.initCustomEvent("montage_range_interaction_end", true, true, null);
+            this.dispatchEvent(interactionEndEvent);
+        }
+    },
+
+    handleMousedown: {
+        value: function(e) {
+            console.log('start value = ', this.value);
+            this._fireInteractionStartEvent(e);
+        }
+    },
+    handleTouchstart: {
+        value: function(e) {
+            this._fireInteractionStartEvent(e);
+        }
+    },
+    handleMouseup: {
+        value: function(e) {
+            console.log('end value = ', this.value);
+            this._fireInteractionEndEvent(e);
+        }
+    },
+    handleTouchend: {
+        value: function(e) {
+            this._fireInteractionEndEvent(e);
+        }
+    }
+
+
 });
 
 RangeInput.addAttributes({

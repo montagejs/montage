@@ -58,7 +58,19 @@
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "maxValue"
                     }
-                }
+                },
+                "listeners": [
+                    {
+                        "type": "montage_range_interaction_start",
+                        "listener": {"@": "owner"},
+                        "useCapture": false
+                    },
+                    {
+                        "type": "montage_range_interaction_end",
+                        "listener": {"@": "owner"},
+                        "useCapture": false
+                    }
+                ]
             },
             "numberconverter1": {
                 "module": "montage/core/converter/number-converter",
@@ -150,7 +162,7 @@
     <div id="control" class="ValueBasedEffect">
         <span id="toggle"></span> <span id="effectName"></span>
         <div class="valueControl">
-            <input type="range" id="valueSlider" class="slider" />
+            <input type="range" id="valueSlider" class="slider" name="multiply"/>
             <div id="valueDisplay" class="value"></div>
         </div>
 
