@@ -20,9 +20,14 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
+    _pressComposer: {
+        enumerable: false,
+        value: null
+    },
+
     prepareForActivationEvents: {
         value: function() {
-            var pressComposer = PressComposer.create();
+            var pressComposer = this._pressComposer = PressComposer.create();
             this.addComposer(pressComposer);
             pressComposer.addEventListener("pressstart", this, false);
             pressComposer.addEventListener("press", this, false);
@@ -81,7 +86,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
     handlePressstart: {
         value: function(event) {
-            console.log(event.detail);
             this._shouldFakeCheck = event.defaultPrevented;
         }
     },
@@ -99,7 +103,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     handleChange: {
         enumerable: false,
         value: function(event) {
-            if (this._observedPointer === null || this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+            if (this._pressComposer.pressed) {
                 Object.getPropertyDescriptor(this, "checked").set.call(this,
                     this.element.checked, true);
                 this._dispatchActionEvent();

@@ -66,6 +66,12 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
         }
     },
 
+    pressed: {
+        get: function() {
+            return  this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this);
+        }
+    },
+
     // Magic
 
     /**
