@@ -31,7 +31,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
             this.addComposer(pressComposer);
             pressComposer.addEventListener("pressstart", this, false);
             pressComposer.addEventListener("press", this, false);
-            pressComposer.addEventListener("presscancel", this, false);
         }
     },
 
@@ -99,12 +98,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
-    handlePresscancel: {
-        value: function(event) {
-            this._cancelled = true;
-        }
-    },
-
     handleChange: {
         enumerable: false,
         value: function(event) {
@@ -113,7 +106,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
                     this.element.checked, true);
                 this._dispatchActionEvent();
             }
-            this._cancelled = false;
         }
     }
 });
