@@ -19,7 +19,9 @@
             "repetition": {"@": "repetition"},
             "componentC": {"@": "componentC"},
             "componentC1": {"@": "componentC1"},
-            "componentNoelement": {"@": "componentNoelement"}
+            "componentNoelement": {"@": "componentNoelement"},
+            "componentD": {"@": "componentD"},
+            "componentDtarget": {"@": "componentDtarget"}
         }
     },
     "repetition": {
@@ -46,7 +48,7 @@
             "hasTemplate": false
         }
     },
-    
+
     "componentNoelement": {
         "module": "ui/draw/component-noelement.reel",
         "name": "ComponentNoelement",
@@ -54,7 +56,32 @@
             "value": "componentNoelement"
         }
     },
-    
+
+    "componentD": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentD"},
+            "hasTemplate": false
+        }
+    },
+    "componentD1": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentD1"},
+            "hasTemplate": false
+        }
+    },
+    "componentDtarget": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentDtarget"},
+            "hasTemplate": false
+        }
+    },
+
     "owner": {
         "module": "montage/ui/application",
         "name": "Application",
@@ -78,6 +105,12 @@
     <div id="fakeComponentC1"></div>
 </div>
 <div data-montage-id="componentC1">C1</div>
+<div id="componentD">
+    <h1>
+        <div id="componentD1">D1</div>
+    </h1>
+</div>
+<div id="componentDtarget"></div>
 <div id="repetition"><h3>Original Content</h3><p>here</p></div>
 </body>
 </html>
