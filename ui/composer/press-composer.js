@@ -120,7 +120,7 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
     */
     _interpretInteraction: {
         value: function(event) {
-            var isSurrendered, target;
+            var isSurrendered, target, isTarget;
 
             if (this._observedPointer === null) {
                 this._endInteraction(event);
@@ -128,6 +128,12 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
             }
 
             isSurrendered = !this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this);
+            target = event.target;
+            while (target !== this._element && target && target.parentNode) {
+                target = target.parentNode;
+            }
+            isTarget = target === this.component.element;
+
             if (isSurrendered && (event.type === "click" || event.type === "touchend")) {
                 // Pointer surrendered, so prevent the default action
                 event.preventDefault();
@@ -137,18 +143,15 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
                 return;
             }
 
-            target = event.target;
-            while (target !== this._element && target && target.parentNode) {
-                target = target.parentNode;
-            }
 
-            if (target && (event.type === "click" || event.type === "touchend")) {
+
+            if (isTarget && (event.type === "click" || event.type === "touchend")) {
                 this._dispatchPress(event);
                 this._endInteraction(event);
                 return;
             }
 
-            if (!isSurrendered && !target && (event.type === "mouseup" || event.type === "touchend")) {
+            if (!isSurrendered && !isTarget && (event.type === "mouseup" || event.type === "touchend")) {
                 this._dispatchPresscancel(event);
                 this._endInteraction(event);
                 return;
@@ -188,6 +191,10 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
     */
     _changedTouchisObserved: {
         value: function(changedTouches) {
+            if (this._observedPointer === null) {
+                return false;
+            }
+
             var i = 0, changedTouchCount = event.changedTouches.length;
 
             for (; i < changedTouchCount; i++) {
@@ -228,13 +235,21 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
             }
 
             if (this._changedTouchisObserved(event.changedTouches) !== false) {
-                this._interpretInteraction(event);
+                if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                    this._dispatchPress(event);
+                } else {
+                    event.preventDefault();
+                }
+                this._endInteraction(event);
             }
         }
     },
     handleTouchcancel: {
         value: function(event) {
             if (this._observedPointer === null || this._changedTouchisObserved(event.changedTouches) !== false) {
+                if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
+                    this._dispatchPresscancel(event);
+                }
                 this._endInteraction(event);
             }
         }
@@ -261,7 +276,7 @@ exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/eve
     _createPressEvent: {
         enumerable: false,
         value: function(name, event) {
-            console.log(name);
+            console.log("createPressEvent", name, this.pressed);
             var pressEvent, detail, index;
 
             if (event) {
