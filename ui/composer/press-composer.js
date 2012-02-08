@@ -10,7 +10,8 @@
     @requires montage/ui/composer/composer
 */
 var Montage = require("montage").Montage,
-    Composer = require("ui/composer/composer").Composer;
+    Composer = require("ui/composer/composer").Composer,
+    MutableEvent = require("core/event/mutable-event").MutableEvent;
 /**
     @class module:montage/ui/composer/press-composer.PressComposer
     @extends module:montage/ui/composer/composer.Composer
@@ -293,15 +294,21 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         value: function(name, event) {
             var pressEvent, detail, index;
 
-            if (event) {
-                pressEvent = event;
-                pressEvent.type = name;
-            } else {
-                pressEvent = document.createEvent("CustomEvent");
-                pressEvent.initCustomEvent(name, true, true, null);
+            if (!event) {
+                event = document.createEvent("CustomEvent");
+                event.initCustomEvent(name, true, true, null);
             }
 
+            pressEvent = PressEvent.create();
+            pressEvent.event = event;
+            pressEvent.type = name;
             pressEvent.pointer = this._observedPointer;
+
+            if (event.changedTouches &&
+                (index = this._changedTouchisObserved(event.changedTouches)) !== false
+            ) {
+                pressEvent.touch = event.changedTouches[index];
+            }
 
             return pressEvent;
         }
@@ -344,3 +351,71 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     }
 
 });
+
+
+var PressEvent = (function(){
+    var value, eventProps, typeProps, eventPropDescriptor, typePropDescriptor, i;
+
+    value = Montage.create(Montage, {
+        type: {
+            value: "press"
+        },
+        _event: {
+            enumerable: false,
+            value: null
+        },
+        event: {
+            get: function() {
+                return this._event;
+            },
+            set: function(value) {
+                this._event = value;
+            }
+        },
+        _touch: {
+            enumerable: false,
+            value: null
+        },
+        touch: {
+            get: function() {
+                return this._touch;
+            },
+            set: function(value) {
+                this._touch = value;
+            }
+        }
+    });
+
+    // These properties are available directly on the event
+    eventProps = ["altKey", "ctrlKey", "metaKey", "shiftKey",
+    "cancelBubble", "clipboardData", "currentTarget", "defaultPrevented",
+    "eventPhase", "returnValue", "srcElement", "timeStamp", "preventDefault",
+    "stopImmediatePropagation", "stopPropagation"];
+    // These properties are available on the event in the case of mouse, and
+    // on the _touch in the case of touch
+    typeProps = ["clientX", "clientY", "pageX", "pageY", "screenX", "screenY", "target"];
+
+    eventPropDescriptor = function(prop) {
+        return {
+            get: function() {
+                return this._event[prop];
+            }
+        };
+    };
+    typePropDescriptor = function(prop) {
+        return {
+            get: function() {
+                return (this._touch) ? this._touch[prop] : this._event[prop];
+            }
+        };
+    };
+
+    for (i = eventProps.length - 1; i >= 0; i--) {
+        Montage.defineProperty(value, eventProps[i], eventPropDescriptor(eventProps[i]));
+    }
+    for (i = typeProps.length - 1; i >= 0; i--) {
+        Montage.defineProperty(value, typeProps[i], typePropDescriptor(typeProps[i]));
+    }
+
+    return value;
+}());
