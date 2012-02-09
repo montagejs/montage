@@ -58,7 +58,31 @@ Require.Compiler = function (config) {
     };
 };
 
-Require.DefaultLoaderConstructor = function(config) {
+Require.Loader = function (config, load) {
+    return function (url, module) {
+        return Require.read(url)
+        .then(function (text) {
+            module.type = "javascript";
+            module.text = text;
+            module.location = url;
+        }, function (reason, error, rejection) {
+            return load(url, module);
+        });
+    };
+};
+
+Require.NodeLoader = function (config) {
+    return function (url, module) {
+        var id = url.slice(config.location.length);
+        return {
+            type: "native",
+            exports: require(id),
+            location: url
+        }
+    };
+};
+
+Require.makeLoader = function(config) {
     return Require.MappingsLoader(
         config,
         Require.ExtensionsLoader(
@@ -76,17 +100,6 @@ Require.DefaultLoaderConstructor = function(config) {
         )
     );
 };
-
-Require.NodeLoader = function (config) {
-    return function (url, module) {
-        var id = url.slice(config.location.length);
-        return {
-            type: "native",
-            exports: require(id),
-            location: url
-        }
-    };
-}
 
 Require.main = function () {
     var require = Require.Sandbox();

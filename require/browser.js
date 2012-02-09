@@ -81,6 +81,8 @@ Require.Compiler = function (config) {
     return function(module) {
         if (module.factory || module.text === void 0)
             return module;
+        if (config.define)
+            throw new Error("Can't use eval.");
 
         // Here we use a couple tricks to make debugging better in various browsers:
         // TODO: determine if these are all necessary / the best options
@@ -107,6 +109,80 @@ Require.Compiler = function (config) {
 
         return module;
     }
+};
+
+Require.XhrLoader = function (config) {
+    return function (url, module) {
+        return Require.read(url)
+        .then(function (text) {
+            module.type = "javascript";
+            module.text = text;
+            module.location = url;
+        });
+    };
+};
+
+var definitions = {};
+define = function (hash, id, module) {
+    definitions[hash][id].resolve(module);
+};
+
+Require.ScriptLoader = function (config) {
+    var hash = config.packageDescription.hash;
+    definitions[hash] = {};
+    return function (location, module) {
+
+        if (/\.js$/.test(location)) {
+            location = location.replace(/\.js/, ".load.js");
+        } else {
+            location += ".load.js";
+        }
+
+        var script = document.createElement("script");
+        script.onload = function() {
+            script.parentNode.removeChild(script);
+        };
+        script.onerror = function (error) {
+            script.parentNode.removeChild(script);
+        };
+        script.src = location;
+        script.defer = true;
+        document.getElementsByTagName("head")[0].appendChild(script);
+
+        var deferred = Promise.defer();
+        definitions[hash][module.id] = deferred;
+
+        return deferred.promise
+        .then(function (definition) {
+            delete definitions[hash][module.id];
+            for (var name in definition) {
+                module[name] = definition[name];
+            }
+            module.location = location;
+            module.directory = URL.resolve(location, ".");
+        });
+    };
+};
+
+Require.makeLoader = function (config) {
+    if (config.define) {
+        Loader = Require.ScriptLoader;
+    } else {
+        Loader = Require.XhrLoader;
+    }
+    return Require.MappingsLoader(
+        config,
+        Require.ExtensionsLoader(
+            config,
+            Require.PathsLoader(
+                config,
+                Require.MemoizedLoader(
+                    config,
+                    Loader(config)
+                )
+            )
+        )
+    );
 };
 
 });
