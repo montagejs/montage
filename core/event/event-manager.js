@@ -19,7 +19,6 @@
 
 var Montage = require("montage").Montage,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
-    ActionEventListener = require("core/event/action-event-listener").ActionEventListener,
     Serializer = require("core/serializer").Serializer,
     Deserializer = require("core/deserializer").Deserializer,
     defaultEventManager;
@@ -94,12 +93,12 @@ var EventListenerDescriptor = Montage.create(Montage, {
         serializable: true,
         value: null
     },
-    
+
     listener: {
         serializable: "reference",
         value: null
     },
-    
+
     capture: {
         serializable: true,
         value: null
@@ -114,19 +113,19 @@ Serializer.defineSerializationUnit("listeners", function(object) {
         descriptor,
         listenerDescriptor,
         listener;
-    
+
     for (var type in eventManager.registeredEventListeners) {
         descriptors = eventManager.registeredEventListeners[type];
         descriptor = descriptors && descriptors[uuid];
         if (descriptor) {
             for (var listenerUuid in descriptor.listeners) {
                 listener = descriptor.listeners[listenerUuid];
-                
+
                 eventListenerDescriptor = EventListenerDescriptor.create();
                 eventListenerDescriptor.type = type;
                 eventListenerDescriptor.listener = listener.listener;
                 eventListenerDescriptor.capture = listener.capture;
-                
+
                 eventListenerDescriptors.push(eventListenerDescriptor);
             }
         }
@@ -1874,9 +1873,9 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 if (target) {
                     associatedComponent = this.eventHandlerForElement(target);
                     if (associatedComponent) {
-                        if (!associatedComponent._preparedForActivationEvents && typeof associatedComponent.prepareForActivationEvents === "function") {
+                        if (!associatedComponent._preparedForActivationEvents) {
 
-                            associatedComponent.prepareForActivationEvents();
+                            associatedComponent._prepareForActivationEvents();
                             associatedComponent._preparedForActivationEvents = true;
 
                         } else if (associatedComponent._preparedForActivationEvents) {

@@ -73,7 +73,7 @@ describe("data/context-spec", function() {
                 expect(result).not.toBeNull();
                 expect(context.objectForId(result.objectId)).toBeNull();
                 expect(result.context).toBeNull();
-            }.bind(this));
+            });
         });
 
     });

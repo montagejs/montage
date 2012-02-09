@@ -11,11 +11,192 @@
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">
 {
+    "divbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "divbutton"}
+        }
+    },
+    "inputbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "inputbutton"}
+        }
+    },
+    "buttonbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "buttonbutton"}
+        }
+    },
+
+    "disabledbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "disabledbutton"}
+        }
+    },
+    "disabledinput": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "disabledinput"}
+        }
+    },
+    "disabledinputszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "disabledinputszn"},
+            "disabled": true
+        }
+    },
+    "enabledinputszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "enabledinputszn"},
+            "enabled": true
+        }
+    },
+    "buttonlabelszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "buttonlabelszn"},
+            "label": "pass"
+        }
+    },
+    "inputlabelszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "inputlabelszn"},
+            "label": "pass"
+        }
+    },
+    "buttonnested": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "buttonnested"}
+        }
+    },
+    "inputactionszn": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "inputactionszn"},
+            "action": {"->": {"arguments":[], "body": "window.actionFunction = true;"}}
+        }
+    },
+
+    "textinput": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "textinput"}
+        }
+    },
+    "converterbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "converterbutton"},
+            "converter": {"@": "uppercaseconverter"}
+        },
+        "bindings": {
+            "label": {
+                "boundObject": {"@": "textinput"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "uppercaseconverter": {
+        "module": "montage/core/converter/upper-case-converter",
+        "name": "UpperCaseConverter",
+        "properties": {
+
+        }
+    },
+
+    "toggleinput": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "toggleinput"},
+            "pressedLabel": "on",
+            "unpressedLabel": "off"
+        }
+    },
+    "toggleinput2": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "toggleinput2"},
+            "pressedLabel": "on",
+            "pressedClass": "active"
+        }
+    },
+    "toggleinput3": {
+        "module": "montage/ui/toggle-button.reel",
+        "name": "ToggleButton",
+        "properties": {
+            "element": {"#": "toggleinput3"},
+            "pressed": true,
+            "unpressedLabel": "off"
+        }
+    },
+
+    "scroll": {
+        "module": "montage/ui/scrollview.reel",
+        "name": "Scrollview",
+        "properties": {
+            "element": {"#": "scroll"}
+        }
+    },
+    "scroll_input": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "scroll_input"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"->": {"arguments": [], "body": "console.log('button action');"}}
+            }
+        ]
+    },
+
+
     "test": {
         "module": "ui/buttontest/buttontest",
         "name": "ButtonTest",
         "properties": {
-
+            "divbutton": {"@": "divbutton"},
+            "inputbutton": {"@": "inputbutton"},
+            "buttonbutton": {"@": "buttonbutton"},
+            "disabledbutton": {"@": "disabledbutton"},
+            "disabledinput": {"@": "disabledinput"},
+            "disabledinputszn": {"@": "disabledinputszn"},
+            "enabledinputszn": {"@": "enabledinputszn"},
+            "buttonlabelszn": {"@": "buttonlabelszn"},
+            "inputlabelszn": {"@": "inputlabelszn"},
+            "buttonnested": {"@": "buttonnested"},
+            "inputactionszn": {"@": "inputactionszn"},
+            "textinput": {"@": "textinput"},
+            "converterbutton": {"@": "converterbutton"},
+            "uppercaseconverter": {"@": "uppercaseconverter"},
+            "activelabel": {"@": "activelabel"},
+            "toggleinput": {"@": "toggleinput"},
+            "toggleinput2": {"@": "toggleinput2"},
+            "toggleinput3": {"@": "toggleinput3"},
+            "scroll_input": {"@": "scroll_input"}
         }
     },
     "application": {
@@ -30,6 +211,55 @@
 
 </head>
 <body>
-    <div id="testButton">Test Button</div>
+    <h1>Button test</h1>
+
+    <h2>Output</h2>
+    <span id="output">output</span>
+
+    <h2>Basic</h2>
+    <div id="divbutton">div button</div>
+    <input type="button" id="inputbutton" value="input button">
+    <button id="buttonbutton">button button</button>
+
+    <div id="testButton">test Button</div>
+    <div id="preventFocus">prevent focus</div>
+
+    <h2>Disabled</h2>
+    <button disabled id="disabledbutton" disabled>should be disabled</button>
+    <input type="button" id="disabledinput" value="should be disabled" disabled>
+
+    <input type="button" id="disabledinputszn" value="should be disabled">
+
+    <input type="button" id="enabledinputszn" value="should be enabled" disabled>
+
+    <h2>Label from serialization</h2>
+    <button id="buttonlabelszn">fail</button>
+    <input type="button" id="inputlabelszn" value="fail">
+
+    <h2>Nested elements</h2>
+    <button id="buttonnested"><span id="nestedelement">element nested in button</span></button>
+
+    <h2>Action property</h2>
+    <input type="button" id="inputactionszn" value="input with the action property set">
+
+    <h2>Converter</h2>
+    <input type="text" id="textinput" value="pass">
+    <input type="button" id="converterbutton" value="fail">
+
+    <h2>Scroll</h2>
+    <div id="scroll" style="background:#CCC; height: 300px">
+        <div>
+            <div style="background:#A00; height:260px; width:10px">.</div>
+            <input type="button" id="scroll_input" value="scroll input">
+            <div style="background:#A00; height:200px; width:10px">.</div>
+        </div>
+    </div>
+
+    <h1>Toggle button test</h1>
+    <input type="button" id="toggleinput" value="fail">
+    <input type="button" id="toggleinput2" value="off">
+    <input type="button" id="toggleinput3" value="on">
+
+    <input type="button" value="regular button" onclick="alert('hello');" />
 </body>
 </html>

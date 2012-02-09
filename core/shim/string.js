@@ -63,4 +63,19 @@ Object.defineProperties(String.prototype, /** @lends external:String.prototype#*
 
 });
 
+/**
+    Shim implementation of String.isString() for browsers that don't yet support it.
+    @function external:String.isString()
+    @param {object} obj The object to determine if its a String.
+    @returns {boolean} Object.prototype.toString.call(obj) === "[object String]"
+*/
+if (!String.isString) {
+    Object.defineProperty(String, "isString", {
+        value: function(obj) {
+            return Object.prototype.toString.call(obj) === "[object String]";
+        }
+    });
+}
+
+
 

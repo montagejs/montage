@@ -13,8 +13,8 @@
     <script type="text/montage-serialization">
         {
             "enabledToggle": {
-                "module": "montage/ui/toggle.reel",
-                "name": "Toggle",
+                "module": "montage/ui/toggle-switch.reel",
+                "name": "ToggleSwitch",
                 "properties": {
                     "element": {"#": "toggle"}
                 },
@@ -39,8 +39,8 @@
                 }
             },
             "valueSlider": {
-                "module": "montage/ui/slider.reel",
-                "name": "Slider",
+                "module": "montage/ui/range-input.reel",
+                "name": "RangeInput",
                 "properties": {
                     "element": {"#": "valueSlider"},
                     "identifier": "valueSlider"
@@ -50,27 +50,22 @@
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "sliderValue"
                     },
-                    "minValue": {
+                    "min": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "minValue"
                     },
-                    "maxValue": {
+                    "max": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "maxValue"
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "montageinteractionstart",
-                        "listener": {"@": "owner"},
-                        "useCapture": false
-                    },
-                    {
-                        "type": "montageinteractionend",
-                        "listener": {"@": "owner"},
-                        "useCapture": false
-                    }
-                ]
+                }
+            },
+            "numberconverter1": {
+                "module": "montage/core/converter/number-converter",
+                "name": "NumberConverter",
+                "properties": {
+                    "decimals": 2
+                }
             },
             "valueDisplay": {
                 "module": "montage/ui/dynamic-text.reel",
@@ -83,7 +78,7 @@
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "value",
                         "oneway": true,
-                        "boundValueMutator": {"->": {"arguments": ["n"], "body": "\n                                        return n.toFixed(2);\n                                    "}}
+                        "converter": {"@": "numberconverter1"}
                     }
                 }
             },
@@ -155,7 +150,7 @@
     <div id="control" class="ValueBasedEffect">
         <span id="toggle"></span> <span id="effectName"></span>
         <div class="valueControl">
-            <div id="valueSlider" class="slider"></div>
+            <input type="range" id="valueSlider" class="slider" />
             <div id="valueDisplay" class="value"></div>
         </div>
 

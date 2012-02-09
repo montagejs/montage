@@ -1,12 +1,12 @@
 var Montage = require("montage").Montage;
-    
+
 var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
-	
+
     _variable: {
         enumerable: false,
         value: "time"
     },
-    
+
     variable: {
         get: function () {
             return this._variable;
@@ -23,12 +23,12 @@ var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _smoothness: {
         enumerable: false,
         value: 0
     },
-    
+
     smoothness: {
         get: function () {
             return this._smoothness;
@@ -43,7 +43,7 @@ var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
         enumerable: false,
         value: 0
     },
-    
+
     scale: {
         get: function () {
             return this._scale;
@@ -58,7 +58,7 @@ var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
         enumerable: false,
         value: 0
     },
-    
+
     width: {
         get: function () {
             return this._width;
@@ -73,7 +73,7 @@ var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
         enumerable: false,
         value: 0
     },
-    
+
     origin: {
         get: function () {
             return this._origin;
@@ -83,12 +83,12 @@ var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _sigmoidCenter: {
         enumerable: false,
         value: 0
     },
-    
+
     sigmoidCenter: {
         get: function () {
             return this._sigmoidCenter;
@@ -98,12 +98,12 @@ var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _slope: {
         enumerable: false,
         value: 1
     },
-    
+
     slope: {
         get: function () {
             return this._slope;
@@ -113,12 +113,12 @@ var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
             this._updatePath();
         }
     },
-    
+
     _path: {
         enumerable: false,
         value: "0"
     },
-    
+
     path: {
         get: function () {
             return this._path;
@@ -127,13 +127,13 @@ var FlowPathSigmoid = exports.FlowPathSigmoid = Montage.create(Montage, {
             this._path = value;
         }
     },
-    
+
     _updatePath: {
         enumerable: false,
         value: function () {
             var s = "(slide."+this._variable+"-("+this._origin+"))";
-            
-            
+
+
 /**            parseInt((a/(1+Math.pow(c, -(j*d)))-(a/2)+j*b)*1000)/1000;
             this.path = "parseInt(("+this._a+"/(1+Math.pow("+this._c+", -"+s+"*("+this._d+")))-(("+this._a+")/2)+"+s+"*("+this._b+"))*1000)/1000";*/
             this.path = "((("+this._width+")/(1+Math.pow(2, (("+this._sigmoidCenter+")-"+s+")/("+this._smoothness+"))))-("+(this._width/2)+")+"+s+"*("+this._slope+"))*("+this._scale+")";

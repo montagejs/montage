@@ -25,20 +25,15 @@
                     }
                 }
             },
-            "scroll1": {
-                "module": "montage/ui/scroll",
-                "name": "Scroll",
+            "translateComposer1": {
+                "module": "montage/ui/composer/translate-composer",
+                "name": "TranslateComposer",
                 "properties": {
                     "component": {"@": "flow1"},
-                    "maxScrollY": 1000
+                    "maxTranslateY": 1000
                 },
                 "bindings": {
-                    "element": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "_element",
-                        "oneway": true
-                    },
-                    "scrollY": {
+                    "translateY": {
                         "boundObject": {"@": "flow1"},
                         "boundObjectPropertyPath": "origin"
                     }
@@ -54,9 +49,9 @@
                         "oneway": true
                     },
                     "pointerPosition": {
-                        "boundObject": {"@": "scroll1"},
+                        "boundObject": {"@": "translateComposer1"},
                         "boundObjectPropertyPath": "pointerStartEventPosition",
-                        "oneway": true                    
+                        "oneway": true
                     }
                 }
             },
@@ -107,7 +102,7 @@
                     "selectedSlideIndex": {
                         "boundObject": {"@": "nearest"},
                         "boundObjectPropertyPath": "nearestNeighborComponent",
-                        "oneway": true  
+                        "oneway": true
                     }
                 }
             },
@@ -121,7 +116,7 @@
                 }
             },
             "slider3": {
-                "module": "montage/ui/slider.reel",
+                "module": "montage/ui/bluemoon/slider.reel",
                 "name": "Slider",
                 "properties": {
                     "element": {"#": "slider3"},
@@ -131,7 +126,7 @@
                 }
             },
             "checkbox": {
-                "module": "montage/ui/checkbox.reel",
+                "module": "montage/ui/bluemoon/checkbox.reel",
                 "name": "Checkbox",
                 "properties": {
                     "element": {"#": "checkbox"}
@@ -151,7 +146,7 @@
             right: 380px;
             bottom: 0;
             -webkit-perspective: 800px;
-            background: #363636;            
+            background: #363636;
         }
         #rightPannel {
             position: absolute;
@@ -185,7 +180,7 @@
         Camera rotation angle
         <div id="slider3"></div>
         Elastic Scrolling <br>
-        <div id="checkbox"></div> 
+        <div id="checkbox"></div>
     </div>
 </body>
 </html>

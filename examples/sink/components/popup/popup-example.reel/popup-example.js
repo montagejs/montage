@@ -6,12 +6,15 @@ Confirm = require("montage/ui/popup/confirm.reel").Confirm,
 Notifier = require("montage/ui/popup/notifier.reel").Notifier;
 
 exports.PopupExample = Montage.create(Component, {
+    
+    logger: {value: null},
 
     log: {
         value: function(msg) {
-            this.logger.innerHTML = this.logger.innerHTML + "<br/>" + msg;
+            this.logger.log(msg);
         }
     },
+    
 
     // Bookmark
     handleAddbookmark: {
@@ -32,6 +35,7 @@ exports.PopupExample = Montage.create(Component, {
             var popup = this._bookmarkMenuPopup;
             if(!popup) {
                 popup = Popup.create();
+                popup.modal = true;
                 popup.content = this.bookmarkMenu;
                 popup.anchor = this.btnBookmark;
                 this._bookmarkMenuPopup = popup;
@@ -132,7 +136,7 @@ exports.PopupExample = Montage.create(Component, {
 
     handleShowLoadingAction: {
         value: function(evt) {
-            var logger = this.logger, self = this;
+            var self = this;
             this.log('Starting a long running transaction...');
             self.startLoading('Loading... please wait');
             setTimeout(function() {
@@ -170,7 +174,6 @@ exports.PopupExample = Montage.create(Component, {
 
     handleShowConfirmAction: {
         value: function(evt) {
-            var logger = this.logger;
             var self = this;
 
             Confirm.show('Are you sure?', function() {
@@ -188,7 +191,6 @@ exports.PopupExample = Montage.create(Component, {
     draw: {
         value: function() {
             if(!this.firstDraw) {
-                this.logger = document.querySelector('.eventlog');
                 var self = this;
                 var eventManager = this.eventManager;
 

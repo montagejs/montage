@@ -10,7 +10,7 @@ var Montage = require("montage/core/core").Montage,
 exports.Converters = Montage.create(Component, {
 
     _number: {
-        value: 9990.09
+        value: 9990
     },
 
     inputNumber: {
@@ -110,4 +110,28 @@ exports.TempConverter = Montage.create(Converter, {
         }
     }
 
+});
+
+var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
+    /**
+     Specifies whether the converter allows partial conversion.
+     @type {Property}
+     @default {Boolean} true
+     */
+    allowPartialConversion: {
+        value: true
+    },
+
+    convert: {
+        enumerable: false,
+        value: function(v) {
+            return !v;
+        }
+    },
+
+    revert: {
+        value: function(v) {
+            return !v;
+        }
+    }
 });

@@ -11,10 +11,10 @@ var Montage = require("montage/core/core").Montage,
 require("montage/ui/condition.reel");
 require("montage/ui/list.reel");
 require("montage/ui/scrollview.reel");
-require("montage/ui/slider.reel"),
+require("montage/ui/bluemoon/slider.reel"),
 require("montage/ui/tabs.reel");
 require("montage/ui/textarea.reel");
 require("montage/ui/textfield.reel");
-require("montage/ui/toggle.reel");
+require("montage/ui/bluemoon/toggle.reel");
 
 exports.Other = Montage.create(Component, {});

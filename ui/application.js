@@ -166,7 +166,22 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     _alertPopup: {value: null, enumerable: false},
     _confirmPopup: {value: null, enumerable: false},
     _notifyPopup: {value: null, enumerable: false},
+    _zIndex: {value: null},
 
+    _isSystemPopup: {value: function(type) {
+        return (type === 'alert' || type === 'confirm' || type === 'loading');
+    }},
+
+    _createPopupSlot: {value: function(zIndex) {
+        var slotEl = document.createElement('div');
+        document.body.appendChild(slotEl);
+        slotEl.style['z-index'] = zIndex;
+        slotEl.style.position = 'absolute';
+
+        var popupSlot = Slot.create();
+        popupSlot.element = slotEl;
+        return popupSlot;
+    }},
 
     getPopupSlot: {
         value: function(type, content, callback) {
@@ -174,16 +189,11 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             var self = this;
             require.async("ui/slot.reel/slot", function(exports) {
                 Slot = Slot || exports.Slot;
-
                 type = type || "custom";
-                // type = custom|alert|confirm
+                var isSystemPopup = self._isSystemPopup(type), zIndex, slotEl, popupSlot;
                 self.popupSlots = self.popupSlots || {};
-                var popupSlot = self.popupSlots[type];
-                // create a slot for this type of popup
-                if (!popupSlot) {
-                    var slotEl = document.createElement('div'), zIndex;
-                    slotEl.style.position = 'absolute';
 
+                if(isSystemPopup) {
                     switch (type) {
                         case "alert":
                             zIndex = 9004;
@@ -194,22 +204,62 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                         case "loading":
                             zIndex = 9002;
                             break;
-                        default:
-                            zIndex = 9001;
-                            break;
                     }
-                    slotEl.style['z-index'] = zIndex;
+                } else {
+                    // custom popup
+                    if(!self._zIndex) {
+                        self._zIndex = 7000;
+                    } else {
+                        self._zIndex = self._zIndex + 1;
+                    }
+                    zIndex = self._zIndex;
+                }
 
-                    document.body.appendChild(slotEl);
-                    popupSlot = Slot.create();
-                    popupSlot.element = slotEl;
-                    self.popupSlots[type] = popupSlot;
+                popupSlot = self.popupSlots[type];
+                if (!popupSlot) {
+                    popupSlot = self.popupSlots[type] = self._createPopupSlot(zIndex);
+                }
+                // use the new zIndex for custom popup
+                if(!isSystemPopup) {
+                    popupSlot.element.style['z-index'] = zIndex;
                 }
 
                 popupSlot.content = content;
                 callback.call(this, popupSlot);
 
             });
+        }
+    },
+
+    returnPopupSlot: {value: function(type) {
+        var self = this;
+        if(self.popupSlots && self.popupSlots[type]) {
+            var popupSlot = self.popupSlots[type];
+            popupSlot.content = null;
+            // is there a way to remove the Slot
+            // OR should we remove the slotEl from the DOM to clean up ?
+        }
+
+    }},
+
+    // private
+    _getActivePopupSlots: {
+        value: function() {
+            var arr = [];
+            if(this.popupSlots) {
+                var keys = Object.keys(this.popupSlots);
+                if(keys && keys.length > 0) {
+                    var i=0, len = keys.length, slot;
+                    for(i=0; i< len; i++) {
+                        slot = this.popupSlots[keys[i]];
+                        if(slot && slot.content !== null) {
+                            arr.push(slot);
+                        }
+
+                    }
+                }
+            }
+            return arr;
         }
     }
 

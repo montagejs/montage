@@ -11,7 +11,7 @@ exports.Content = Montage.create(Component, {
     sandbox: {
         value: null
     },
-    
+
     slotDidSwitchContent: {
         value: function(substitution, nodeShown, componentShown, nodeHidden, componentHidden) {
             console.log('substitution did switch content');
@@ -23,6 +23,6 @@ exports.Content = Montage.create(Component, {
             }
         }
     }
-    
-    
+
+
 });

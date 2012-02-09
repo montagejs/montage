@@ -6,7 +6,7 @@
 
 (function (definition) {
 
-    // Browser
+    // Boostrapping Browser
     if (typeof bootstrap !== "undefined") {
         bootstrap("require/require", function (require, exports) {
             var Promise = require("core/promise").Promise;
@@ -15,14 +15,17 @@
             require("require/browser");
         });
 
-    // Node
-    } else {
+    // Node Server
+    } else if (typeof process !== "undefined") {
         var Promise = (require)("../core/promise").Promise;
         var URL = (require)("../core/url");
         definition(exports, Promise, URL);
         require("./node");
         if (require.main == module)
             exports.main();
+
+    } else {
+        throw new Error("Can't support require on this platform");
     }
 
 })(function (Require, Promise, URL) {
@@ -46,18 +49,7 @@
         config.lib = URL.resolve(config.location, config.lib || ".");
         config.paths = config.paths || [config.lib];
         config.mappings = config.mappings || {}; // EXTENSION
-        config.exposedConfigs = config.exposedConfigs || [
-            "paths",
-            "mappings",
-            "base",
-            "location",
-            "packageDescription",
-            "packages",
-            "modules",
-            "module",
-            "load",
-            "loadPackage"
-        ];
+        config.exposedConfigs = config.exposedConfigs || Require.defaultExposedConfigs;
         config.makeLoader = config.makeLoader || Require.DefaultLoaderConstructor;
         config.load = config.load || config.makeLoader(config);
         config.makeCompiler = config.makeCompiler || Require.DefaultCompilerConstructor;
@@ -71,7 +63,10 @@
 
         function getModule(id) {
             if (!has(modules, id)) {
-                modules[id] = {"id": id};
+                modules[id] = {
+                    id: id,
+                    display: config.location + "#" + id // EXTENSION
+                };
             }
             return modules[id];
         }
@@ -84,57 +79,37 @@
             module.directory = URL.resolve(module.location, ".");
         }
 
-        // Ensures a module definition is loaded before returning or executing the callback.
-        // Supports multiple calls for the same topId by registering callback as a listener if it has already been initiated.
-        var loading = {};
-        function load(topId, viaId) {
-            if (!has(loading, topId)) {
-                var module = getModule(topId);
-
-                // instantiated or already loaded
+        // Ensures a module definition is loaded, compiled, analyzed
+        var load = memoize(function (topId, viaId) {
+            var module = getModule(topId);
+            return Promise.call(function () {
+                // already loaded, already instantiated, or redirection
                 if (
                     module.factory !== void 0 ||
-                    module.exports !== void 0
+                    module.exports !== void 0 ||
+                    module.redirect !== void 0
                 ) {
-                    loading[topId] = Promise.ref(module);
-                // preloaded
-                } else if (
-                    module.location !== void 0 &&
-                    module.factory !== void 0
-                ) {
-                    loading[topId] = Require.read(module.location)
-                    .then(function (text) {
-                        module.text = text;
-                        return module;
-                    });
+                    return module;
                 // load
                 } else {
-
-                    // Update the list of modules that need to load
-                    Require.progress.requiredModules.push(
-                        [config.location, topId].join("#")
-                    );
-
-                    loading[topId] = config.load(topId, module)
-                    .then(function (definition) {
-                        // TODO lace the module through instead of receiving the definition
-                        for (var name in definition) {
-                            module[name] = definition[name];
-                        }
-
-                        // Progress update
-                        Require.progress.loadedModules.push([
-                            config.location,
-                            topId
-                        ].join("#"));
-
+                    Require.progress.requiredModules.push(module.display);
+                    return Promise.call(config.load, null, topId, module)
+                    .then(function () {
+                        Require.progress.loadedModules.push(module.display);
                         return module;
                     });
-
                 }
-            }
-            return loading[topId];
-        }
+            })
+            .then(function (module) {
+                // analyze dependencies
+                config.compile(module);
+                var dependencies = module.dependencies = module.dependencies || [];
+                if (module.redirect !== void 0) {
+                    dependencies.push(module.redirect);
+                }
+                return module;
+            });
+        });
 
         // Load a module definition, and the definitions of its transitive
         // dependencies
@@ -148,19 +123,14 @@
             loading[id] = true; // this has happened before
             return load(id, viaId)
             .then(function (module) {
-
-                // analyze dependencies
-                config.compile(module);
-
                 // load the transitive dependencies using the magic of
                 // recursion.
-                return Promise.all((module.dependencies || [])
-                .map(function (depId) {
+                return Promise.all(module.dependencies.map(function (depId) {
                     depId = resolve(depId, id)
-                    // create dependees array, purely for debug purposes
+                    // create dependees set, purely for debug purposes
                     var module = getModule(depId);
-                    var dependees = module.dependees = module.dependees || [];
-                    dependees.push(id);
+                    var dependees = module.dependees = module.dependees || {};
+                    dependees[id] = true;
                     return deepLoad(depId, id, loading);
                 }))
                 .then(function () {
@@ -170,8 +140,19 @@
         }
 
         // Initializes a module by executing the factory function with a new module "exports" object.
-        function initModule(topId) {
+        function getExports(topId, viaId) {
             var module = getModule(topId);
+
+            // handle redirects
+            if (module.redirect !== void 0) {
+                return getExports(module.redirect, viaId);
+            }
+
+            // handle cross-package linkage
+            if (module.mappingRedirect !== void 0) {
+                return module.mappingRequire(module.mappingRedirect, viaId);
+            }
+
             // do not reinitialize modules
             if (module.exports !== void 0) {
                 return module.exports;
@@ -179,45 +160,28 @@
 
             // do not initialize modules that do not define a factory function
             if (module.factory === void 0) {
-                Require.warn("Can't require module "+JSON.stringify(topId));
-                throw new Error("Can't require module "+JSON.stringify(topId));
+                throw new Error("Can't require module " + JSON.stringify(topId) + " via " + JSON.stringify(viaId));
             }
 
-            if (module.location !== void 0) {
-
-                // HACK: look up canonical URI in previously initialized modules (different topId, same URI)
-                // TODO: Handle this at higher level?
-                var location = modules[topId].location;
-                if (has(locationsToIds, location)) {
-                    var canonicalId = locationsToIds[location];
-                    modules[topId] = modules[canonicalId];
-                    return modules[topId].exports;
-                }
-                locationsToIds[location] = topId;
-
-                module.directory = URL.resolve(module.location, "."); // EXTENSION
-
-            }
-
+            module.directory = URL.resolve(module.location, "."); // EXTENSION
             module.exports = {};
 
-            var requireArg = makeRequire(topId);
-            var exportsArg = module.exports;
-            var moduleArg = module;
-
             // Execute the factory function:
-            var returnValue = module.factory.call(global, requireArg, exportsArg, moduleArg);
+            var returnValue = module.factory.call(
+                // in the context of the module:
+                global, // this
+                makeRequire(topId), // require
+                module.exports, // exports
+                module // module
+            );
 
             // Modules should never have a return value.
             if (returnValue !== void 0) {
-                Require.warn('require: module "'+topId+'" returned a value.');
+                console.warn('require: module "'+topId+'" returned a value.');
             }
 
             // Update the list of modules that are ready to use
-            Require.progress.initializedModules.push([
-                config.location,
-                topId
-            ].join("#"));
+            Require.progress.initializedModules.push(module.display);
 
             return module.exports;
         }
@@ -257,7 +221,7 @@
             // Main synchronously executing "require()" function
             var require = function(id) {
                 var topId = resolve(id, viaId);
-                return initModule(topId);
+                return getExports(topId, viaId);
             };
 
             // Asynchronous "require.async()" which ensures async executation (even with synchronous loaders)
@@ -276,7 +240,6 @@
                     }
                     return rejection;
                 });
-
             };
 
             require.resolve = function (id) {
@@ -285,6 +248,7 @@
 
             require.load = load;
             require.deepLoad = deepLoad;
+            require.loadPackage = config.loadPackage;
             require.identify = identify;
             require.inject = inject;
             require.progress = Require.progress;
@@ -306,24 +270,6 @@
         loadedModules: [],
         initializedModules: []
     };
-
-    // TODO: other engines
-    function getStack() {
-        var stack = new Error().stack;
-        return stack && stack.split("\n").slice(1).map(function(l) {
-            var m = l.match(/^    at (?:([\w\.]+) \()?([^()]+?)(?::(\d+))?(?::(\d+))?\)?$/);
-            return m && { method : m[1], url : m[2], line : parseInt(m[3], 10), column : parseInt(m[4], 10) };
-        });
-    }
-
-    function getCurrentScriptURL() {
-        if (document.currentScript) {
-            return document.currentScript.src || null;
-        } else {
-            var frames, last;
-            return (frames = getStack()) && (last = frames.pop()) && last.url || null
-        }
-    }
 
     Require.PackageSandbox = function (location, config) {
         location = URL.resolve(location, ".");
@@ -421,17 +367,25 @@
 
         // The default "main" module of a package has the same name as the
         // package.
-        if (description.main === void 0)
-            description.main = description.name;
+        if (description.main !== void 0) {
 
-        // main, injects a definition for the main module, with
-        // only its path. makeRequire goes through special effort
-        // in deepLoad to re-initialize this definition with the
-        // loaded definition from the given path.
-        modules[""] = {
-            id: "",
-            location: URL.resolve(location, description.main)
-        };
+            // main, injects a definition for the main module, with
+            // only its path. makeRequire goes through special effort
+            // in deepLoad to re-initialize this definition with the
+            // loaded definition from the given path.
+            modules[""] = {
+                id: "",
+                redirect: description.main,
+                location: config.location
+            };
+
+            modules[description.name] = {
+                id: description.name,
+                redirect: "",
+                location: URL.resolve(location, description.name)
+            };
+
+        }
 
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};
@@ -533,17 +487,6 @@
         return Object.keys(o);
     };
 
-    // Executes a function asynchronously using whatever mechaism is available to the platform
-    // Used to ensure asynchronicity even when loader doesn't support async.
-    Require.executeAsynchronously = function(fn) {
-        if (typeof setTimeout === "function") {
-            setTimeout(fn, 1);
-        } else {
-            Require.warn("Require warning: Implement Require.executeAsynchronously(fn) for your platform.");
-            fn();
-        }
-    };
-
     // Built-in compiler/preprocessor "middleware":
 
     Require.DependenciesCompiler = function(config, compile) {
@@ -551,7 +494,7 @@
             if (!module.dependencies && module.text !== void 0) {
                 module.dependencies = Require.parseDependencies(module.text);
             }
-            module = compile(module);
+            compile(module);
             if (module && !module.dependencies) {
                 if (module.text || module.factory) {
                     module.dependencies = Require.parseDependencies(module.text || module.factory);
@@ -569,7 +512,7 @@
             if (module.text) {
                 module.text = module.text.replace(/^#!/, "//#!");
             }
-            return compile(module);
+            compile(module);
         }
     };
 
@@ -579,13 +522,23 @@
         }
         return function(module) {
             try {
-                return compile(module);
+                compile(module);
             } catch (error) {
                 config.lint(module);
                 throw error;
             }
         };
     }
+
+    Require.defaultExposedConfigs = [
+        "paths",
+        "mappings",
+        "location",
+        "packageDescription",
+        "packages",
+        "modules",
+        "module"
+    ];
 
     Require.DefaultCompilerConstructor = function(config) {
         return Require.ShebangCompiler(
@@ -609,7 +562,7 @@
                 config,
                 Require.PathsLoader(
                     config,
-                    Require.CachingLoader(
+                    Require.MemoizedLoader(
                         config,
                         Require.Loader(config)
                     )
@@ -627,7 +580,15 @@
         var prefixes = Object.keys(mappings);
         var length = prefixes.length;
 
-        var loadFromMappings = function (id, module) {
+        // finds a mapping to follow, if any
+        return function (id, module) {
+            if (Require.isAbsolute(id)) {
+                return load(id, module);
+            }
+            // TODO: remove this when all code has been migrated off of the autonomous name-space problem
+            if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/") {
+                console.warn("Package reflexive module ignored:", id);
+            }
             var i, prefix
             for (i = 0; i < length; i++) {
                 prefix = prefixes[i];
@@ -637,72 +598,41 @@
                     id.charAt(prefix.length) === "/"
                 ) {
                     var mapping = mappings[prefix];
-                    return loadFromMapping(prefix, mapping, id, module);
+                    var rest = id.slice(prefix.length + 1);
+                    return config.loadPackage(mapping)
+                    .then(function (mappingRequire) {
+                        module.mappingRedirect = rest;
+                        module.mappingRequire = mappingRequire;
+                        return mappingRequire.deepLoad(rest, config.location);
+                    });
                 }
             }
             return load(id, module);
-        };
-
-        var loadFromMapping = function (prefix, mapping, id, module) {
-            return config.loadPackage(mapping)
-            .then(function (pkg) {
-                var rest = id.slice(prefix.length + 1);
-                return pkg.deepLoad(rest, config.location)
-                .then(function () {
-                    return {
-                        factory: function (require, exports, module) {
-                            module.exports = pkg(rest);
-                        },
-                        location: pkg.location + "!" + rest // this is necessary for constructing unique URI's for chaching
-                    };
-                })
-            });
-        }
-
-        return function (id, module) {
-            if (Require.isAbsolute(id)) {
-                return load(id, module);
-            } else {
-                // TODO: remove this when all code has been migrated off of the autonomous name-space problem
-                if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/")
-                    console.warn("Package reflexive module ignored:", id);
-                // TODO fix this
-                if (id === config.name) {
-                    id = "";
-                }
-                // The package loader can inject some definitions for aliases
-                // into the package configuration.  These will only have
-                // location attributes and need to be replaced with factories.
-                // We intercept these aliases (usually the package's main
-                // module, not found in its lib location) here.
-                var module = config.module(id);
-                if (module.exports || module.factory) {
-                    return Promise.ref(module);
-                } else if (module.location !== void 0) {
-                    return load(module.location, module);
-                } else {
-                    return loadFromMappings(id, module);
-                }
-            }
         };
     };
 
     Require.ExtensionsLoader = function(config, load) {
         var extensions = config.extensions || ["js"];
-        var loadExtension = extensions.reduceRight(function (next, extension) {
+        var loadWithExtension = extensions.reduceRight(function (next, extension) {
             return function (id, module) {
                 return load(id + "." + extension, module)
                 .fail(function (error) {
                     return next(id, module);
                 });
             };
-        }, load);
-        return function(id, module) {
-            var needsExtension = Require.base(id).indexOf(".") < 0;
-            if (needsExtension) {
-                return loadExtension(id, module);
-            } else {
+        }, function (id, module) {
+            throw new Error(
+                "Can't find " + JSON.stringify(id) + " with extensions " +
+                JSON.stringify(extensions) + " in package at " +
+                JSON.stringify(config.location)
+            );
+        });
+        return function (id, module) {
+            if (Require.base(id).indexOf(".") !== -1) {
+                // already has an extension
                 return load(id, module);
+            } else {
+                return loadWithExtension(id, module);
             }
         }
     }
@@ -717,11 +647,12 @@
                     return next(id, module);
                 });
             };
-        }, function (id) {
+        }, function (id, module) {
             throw new Error("Can't find " + JSON.stringify(id) + " from paths " + JSON.stringify(config.paths) + " in package at " + JSON.stringify(config.location));
         });
         return function(id, module) {
             if (Require.isAbsolute(id)) {
+                // already fully qualified
                 return load(id, module);
             } else {
                 return loadFromPaths(id, module);
@@ -729,30 +660,24 @@
         };
     };
 
-    Require.CachingLoader = function (config, load) {
-        var cache = {};
-        return function (url, module) {
-            // remove search, anchor
-            url = URL.resolve(url, "");
-            if (!has(cache, url)) {
-                cache[url] = load(url, module);
-            }
-            return cache[url];
-        };
-    }
+    Require.MemoizedLoader = function (config, load) {
+        var cache = config.cache = config.cache || {};
+        return memoize(load, cache);
+    };
 
-    Require.Loader = function (config, next) {
+    Require.Loader = function (config, load) {
         return function (url, module) {
             return Require.read(url)
             .then(function (text) {
-                return {
-                    type: "javascript",
-                    text: text,
-                    location: url
-                };
+                module.type = "javascript";
+                module.text = text;
+                module.location = url;
             }, function (reason, error, rejection) {
-                if (next) {
-                    return next(url, module);
+                // This is a hook that allows a Loader to be chained to a
+                // fallback, such as the NodeLoader, if a local module can’t be
+                // found.
+                if (load) {
+                    return load(url, module);
                 } else {
                     return rejection;
                 }
@@ -760,19 +685,14 @@
         };
     };
 
-    if (typeof console === "undefined") {
-        console = {}
-        console.log =
-        console.warn =
-        console.error = function () {};
-    }
-
-    Require.enableLogging = false;
-    Require.log =
-    Require.warn =
-    Require.error = function () {
-        if (Require.enableLogging)
-            console.log.apply(console, arguments);
+    var memoize = function (callback, cache) {
+        cache = cache || {};
+        return function (key, arg) {
+            if (!has(cache, key)) {
+                cache[key] = Promise.call(callback, null, key, arg);
+            }
+            return cache[key];
+        };
     };
 
 });

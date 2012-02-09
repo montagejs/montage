@@ -6,8 +6,6 @@
 /**
 	@module montage/ui/component
     @requires montage/core/core
-    @requires montage/core/event/mutable-event
-    @requires montage/core/bitfield
     @requires montage/ui/reel
     @requires montage/core/gate
     @requires montage/core/logger | component
@@ -15,8 +13,6 @@
     @requires montage/core/event/event-manager
 */
 var Montage = require("montage").Montage,
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
-    BitField = require("core/bitfield").BitField,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
     logger = require("core/logger").logger("component"),
@@ -395,9 +391,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @function
     @param {Component} childComponent The childComponent
     */
-    addChildComponent: {
+    _addChildComponent: {
         value: function(childComponent) {
-            this.childComponents.push(childComponent);
+            if (this.childComponents.indexOf(childComponent) == -1) {
+                this.childComponents.push(childComponent);
+                childComponent._cachedParentComponent = this;
+            }
         }
     },
 /**
@@ -406,9 +405,22 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     attachToParentComponent: {
         value: function() {
+            this._cachedParentComponent = null;
+
             var parentComponent = this.parentComponent;
+
             if (parentComponent) {
-                parentComponent.addChildComponent(this);
+                parentComponent._addChildComponent(this);
+            }
+        }
+    },
+
+    detachFromParentComponent: {
+        value: function() {
+            var parentComponent = this.parentComponent;
+
+            if (parentComponent) {
+                parentComponent.removeChildComponent(this);
             }
         }
     },
@@ -425,10 +437,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
             if (ix > -1) {
                 childComponents.splice(ix, 1);
-            }
-
-            if (element && element.parentNode) {
-                element.parentNode.removeChild(element);
+                childComponent._cachedParentComponent = null;
             }
         }
     },
@@ -479,6 +488,89 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: null
     },
+
+    /**
+     * Remove all bindings and starts buffering the needsDraw.
+     * @function
+     */
+    cleanupDeletedComponentTree: {
+        value: function() {
+            this.needsDraw = false;
+            this.traverseComponentTree(function(component) {
+                Object.deleteBindings(component);
+                component.canDrawGate.setField("componentTreeLoaded", false);
+                component.blockDrawGate.setField("element", false);
+                component.blockDrawGate.setField("drawRequested", false);
+                component.needsDraw = false;
+            });
+        }
+    },
+
+    originalContent: {
+        value: null
+    },
+
+    _newContent: {
+        enumerable: false,
+        value: null
+    },
+
+    content: {
+        get: function() {
+            if (this._element) {
+                return Array.prototype.slice.call(this._element.childNodes, 0);
+            } else {
+                return null;
+            }
+        },
+        set: function(value) {
+            var components = [],
+                childNodes;
+
+            this._newContent = value;
+            this.needsDraw = true;
+
+            if (typeof this.contentWillChange === "function") {
+                this.contentWillChange(value);
+            }
+
+            // cleanup current content
+            components = this.childComponents;
+            for (var i = 0, component; (component = components[i]); i++) {
+                component.detachFromParentComponent();
+                component.cleanupDeletedComponentTree();
+            }
+
+            if (value instanceof Element) {
+                findAndDetachComponents(value);
+            } else {
+                for (var i = 0; i < value.length; i++) {
+                    findAndDetachComponents(value[i]);
+                }
+            }
+
+            // find the component fringe and detach them from the component tree
+            function findAndDetachComponents(node) {
+                var component = node.controller;
+
+                if (component) {
+                    component.detachFromParentComponent();
+                    components.push(component);
+                } else {
+                    var childNodes = node.childNodes;
+                    for (var i = 0, childNode; (childNode = childNodes[i]); i++) {
+                        findAndDetachComponents(childNode);
+                    }
+                }
+            }
+
+            // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
+            for (var i = 0, component; (component = components[i]); i++) {
+                this._addChildComponent(component);
+            }
+        }
+    },
+
 /**
     Description TODO
     @function
@@ -486,6 +578,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     deserializedFromSerialization: {
         value: function() {
             this.attachToParentComponent();
+            if (this._element) {
+                this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+            }
         }
     },
 
@@ -792,11 +887,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
     /**
-    Callback for the <code>_canDrawBitField</code>.<br>
+    Callback for the <code>_canDrawGate</code>.<br>
     Propagates to the parent and adds the component to the draw list.
     @function
     @param {Property} gate
-    @see _canDrawBitField
+    @see _canDrawGate
     */
     gateDidBecomeTrue: {
         value: function(gate) {
@@ -892,11 +987,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             // TODO: get a spec for this, what attributes should we merge?
             for (i = 0; (attribute = attributes[i]); i++) {
                 attributeName = attribute.nodeName;
-                if (attributeName === "id") {
+                if (attributeName === "id" || attributeName === "data-montage-id") {
                     continue;
+                } else {
+                    value = (template.getAttribute(attributeName) || "") + " " +
+                        attribute.nodeValue;
                 }
-                value = (template.getAttribute(attributeName) || "") + " " +
-                    attribute.nodeValue;
+
                 template.setAttribute(attributeName, value);
             }
 
@@ -946,14 +1043,57 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: null
     },
+
+    /**
+     * Called to add event listeners on demand
+     * @type function
+     * @private
+     */
+    _prepareForActivationEvents: {
+        value: function() {
+            var i = this.composerList.length, composer;
+            for (i = 0; i < this.composerList.length; i++) {
+                composer = this.composerList[i];
+                if (composer.lazyLoad) {
+                    composer._load();
+                }
+            }
+            if (typeof this.prepareForActivationEvents === "function") {
+                this.prepareForActivationEvents();
+            }
+        }
+    },
+
 /**
   Description TODO
   @private
 */
     _draw: {
         value: function() {
+            var contents = this._newContent,
+                element;
+
             this._canDrawTable = {};
             this._canDrawCount = 0;
+
+            if (contents) {
+                element = this._element;
+
+                element.innerHTML = "";
+
+                if (contents instanceof Element) {
+                    element.appendChild(contents);
+                } else {
+                    for (var i = 0, content; (content = contents[i]); i++) {
+                        element.appendChild(content);
+                    }
+                }
+
+                this._newContent = null;
+                if (typeof this.contentDidChange === "function") {
+                    this.contentDidChange();
+                }
+            }
         }
     },
     /**
@@ -1137,9 +1277,104 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function(pointer, demandingComponent) {
             return true;
         }
+    },
+
+    // Composers
+    /*
+        Variable to track this component's associated composers
+        @private
+     */
+    composerList: {
+        value: [],
+        distinct: true
+    },
+
+    /**
+        Adds the passed in composer to the component's composer list.
+        @function
+        @param {Composer} composer Composer object
+    */
+    addComposer: {  // What if the same composer instance is added to more than one component?
+        value: function(composer) {
+            this.addComposerForElement(composer, composer.element);
+        }
+    },
+
+    /**
+        Adds the passed in composer to the component's composer list and
+        sets the element of the composer to the passed in element.
+        @function
+        @param {Composer} composer Composer object
+        @param {Element} element Element
+    */
+    addComposerForElement: {
+        value: function(composer, element) {
+            composer.component = this;
+            composer.element = element;
+            this.composerList.push(composer);
+
+            if (!this._firstDraw) {  // prepareForDraw has already happened so do the loading here
+                if (!composer.lazyLoad) {
+                    composer._load();
+                } else if (this._preparedForActivationEvents) { // even though it's lazyLoad prepareForActivationEvents has already happened
+                    composer._load();
+                }
+            }
+        }
+    },
+
+    /**
+        Adds the passed in composer to the list of composers which will have their
+        frame method called during the next draw cycle.  It causes a draw cycle to be scheduled
+        iff one has not already been scheduled.
+        @function
+        @param {Composer} composer Composer object
+    */
+    scheduleComposer: {
+        value: function(composer) {
+            this.rootComponent.addToComposerList(composer);
+        }
+    },
+
+    /**
+        Removes the passed in composer from this component's composer list.  It takes care
+        of calling the composers unload method before removing it from the list.
+        @function
+        @param {Composer} composer Composer object
+    */
+    removeComposer: {
+        value: function(composer) {
+            var i, length;
+            length = this.composerList.length;
+            for (i = 0; i < length; i++) {
+                if (this.composerList[i].uuid === composer.uuid) {
+                    this.composerList[i].unload();
+                    this.composerList.splice(i, 1);
+                    break;
+                }
+            }
+        }
+    },
+
+    /**
+        A convenience method for removing all composers from a component.  This method
+        is responsible for calling unload on each composer before removing it.
+        @function
+    */
+    clearAllComposers: {
+        value: function() {
+            var length, i;
+            length = this.composerList.length;
+            for (i = 0; i < length; i++) {
+                this.composerList[i].unload();
+            }
+            this.composerList = [];
+        }
     }
 
 });
+
+
 
 /* @extends montage/ui/component.Component */
 /**
@@ -1319,6 +1554,36 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     },
 
     /**
+     * Adds the passed in composer to the list of composers to be executed
+     * in the next draw cycle and requests a draw cycle iff one has not been
+     * requested yet.
+     * @private
+     * @function
+     * @param {Composer} composer Composer object
+     */
+    addToComposerList: {
+        value: function(composer) {
+            this.composerList.push(composer);
+            if (drawLogger.isDebug) {
+                drawLogger.debug(this, composer, "Added to composer list");
+            }
+            // If a draw is already in progress this.drawTree() will not schedule another one, so track
+            // that a composer requested a draw in case a new draw does need to be scheduled when the
+            // current loop is done
+            this._scheduleComposerRequest = true;
+            this.drawTree();
+        }
+    },
+
+    /*
+        Flag to track if a composer is requesting a draw
+        @private
+     */
+    _scheduleComposerRequest: {
+        value: false
+    },
+
+    /**
         The value returned by requestAnimationFrame.<br>
         If a request has been scheduled but not run yet, else null.
         @type {Property}
@@ -1380,6 +1645,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                         console.groupEnd();
                     }
                     self._frameTime = null;
+                    if (self._scheduleComposerRequest) {
+                        self.drawTree();
+                    }
                 };
                 if (requestAnimationFrame) {
                     this.requestedAnimationFrame = requestAnimationFrame.call(window, _drawTree);
@@ -1387,6 +1655,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     //1000/17 = 60fps
                     this.requestedAnimationFrame = setTimeout(_drawTree, 16);
                 }
+                this._scheduleComposerRequest = false;
             }
         },
         enumerable: false
@@ -1423,7 +1692,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     */
     addToDrawCycle: {
         value: function(component) {
-            var needsDrawListIndex = this._readyToDrawListIndex;
+            var needsDrawListIndex = this._readyToDrawListIndex, length, composer;
 
             if (needsDrawListIndex.hasOwnProperty(component.uuid)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
@@ -1445,6 +1714,16 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 if (component.prepareForDraw) {
                     component.prepareForDraw();
                 }
+
+                // Load any non lazyLoad composers that have been added
+                length = component.composerList.length;
+                for (i = 0; i < length; i++) {
+                    composer = component.composerList[i];
+                    if (!composer.lazyLoad) {
+                        composer._load();
+                    }
+                }
+
                 // Will we expose a different property, firstDraw, for components to check
                 component._firstDraw = false;
             }
@@ -1453,19 +1732,25 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
 
 
     /**
-        We set <code>display:none</code> on the body so that we cannot inadvertently cause a repaint.<br>
         @function
         @returns !!needsDrawList.length
     */
-    /* TODO: Simplify this method if we are going to stick with needsDraw being called within a draw cycle always scheduling another draw.<br>
-        Instead it should probably be changed to draw newly requested components in the same cycle, but schedule a new cycle for any components that have already been drawn once in the cycle and          are requesting to be drawn again. */
     drawIfNeeded:{
         value: function drawIfNeeded() {
-            var body = this.element.body,
-                needsDrawList = this._readyToDrawList, component;
-            var j, i, start = 0, firstDrawEvent;
+            var needsDrawList = this._readyToDrawList, component, j, i, start = 0, firstDrawEvent,
+                composerList = this.composerList, composer, length;
             needsDrawList.length = 0;
             this._readyToDrawListIndex = {};
+            this.composerList = [];
+
+            // Process the composers first so that any components that need to be newly drawn due to composer changes
+            // get added in this cycle
+            length = composerList.length;
+            for (i = 0; i < length; i++) {
+                composer = composerList[i];
+                composer.needsFrame = false;
+                composer.frame(this._frameTime);
+            }
 
             this._drawIfNeeded();
             j = needsDrawList.length;

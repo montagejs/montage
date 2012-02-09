@@ -69,7 +69,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         enumerable: false,
         value: 0
     },
-    
+
     opacity: {
         get: function () {
             return this._opacity;
@@ -79,7 +79,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
             this.needsDraw = true;
         }
     },
-    
+
     _isDisplayUpdated: {
         enumerable: false,
         value: false
@@ -168,7 +168,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
                 this._bottomClip.style.height = this._bottom.style.height = (this._offsetHeight - 4) + "px";
                 this._bottomClip.style.clip = "rect(3px,6px," + (this._offsetHeight - 3) + "px,-1px)";
                 this._hasResizedVertical = false;
-            }            
+            }
             if (this._opacity) {
                 if (this._displayHorizontal) {
                     range = this._offsetWidth - 9 - (this._displayVertical ? 6 : 0);

@@ -25,24 +25,19 @@
                     }
                 }
             },
-            "scroll1": {
-                "module": "montage/ui/scroll",
-                "name": "Scroll",
+            "translateComposer1": {
+                "module": "montage/ui/composer/translate-composer",
+                "name": "TranslateComposer",
                 "properties": {
                     "component": {"@": "flow1"}
                 },
                 "bindings": {
-                    "element": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "_element",
-                        "oneway": true
-                    },
-                    "maxScrollX": {
+                    "maxTranslateX": {
                         "boundObject": {"@": "flow1"},
                         "boundObjectPropertyPath": "length",
                         "oneway": true
                     },
-                    "scrollX": {
+                    "translateX": {
                         "boundObject": {"@": "flow1"},
                         "boundObjectPropertyPath": "origin"
                     }
@@ -58,9 +53,9 @@
                         "oneway": true
                     },
                     "pointerPosition": {
-                        "boundObject": {"@": "scroll1"},
+                        "boundObject": {"@": "translateComposer1"},
                         "boundObjectPropertyPath": "pointerStartEventPosition",
-                        "oneway": true                    
+                        "oneway": true
                     }
                 }
             },
@@ -88,7 +83,7 @@
                     ],
                     "cameraRotationAxisX": 1,
                     "cameraRotationAxisY": 0,
-                    "cameraRotationAxisZ": 0                    
+                    "cameraRotationAxisZ": 0
                 },
                 "bindings": {
                     "path": {
@@ -104,12 +99,12 @@
                     "selectedSlideIndex": {
                         "boundObject": {"@": "nearest"},
                         "boundObjectPropertyPath": "nearestNeighborComponent",
-                        "oneway": true  
+                        "oneway": true
                     },
                     "scale": {
                         "boundObject": {"@": "slider2"},
                         "boundObjectPropertyPath": "value",
-                        "oneway": true  
+                        "oneway": true
                     }
                 }
             },
@@ -117,7 +112,7 @@
                 "module": "montage/ui/flow-path",
                 "name": "FlowPath",
                 "properties": {
-                    "evalPath": [                        
+                    "evalPath": [
                         "path.translateX = slide.time-slide.index*155+50",
                         "path.translateY = (slide.index%3)*240-150",
                         "path.translateZ = -slide.time/3",
@@ -164,7 +159,7 @@
                 }
             },
             "pathCode1": {
-                "module": "montage/ui/textarea.reel",
+                "module": "montage/ui/bluemoon/textarea.reel",
                 "name": "TextArea",
                 "properties": {
                     "element": {"#": "pathCode1"}
@@ -177,7 +172,7 @@
                 }
             },
             "pathCode2": {
-                "module": "montage/ui/textarea.reel",
+                "module": "montage/ui/bluemoon/textarea.reel",
                 "name": "TextArea",
                 "properties": {
                     "element": {"#": "pathCode2"}
@@ -190,7 +185,7 @@
                 }
             },
             "slider1": {
-                "module": "montage/ui/slider.reel",
+                "module": "montage/ui/bluemoon/slider.reel",
                 "name": "Slider",
                 "properties": {
                     "element": {"#": "slider"},
@@ -199,7 +194,7 @@
                 }
             },
             "slider2": {
-                "module": "montage/ui/slider.reel",
+                "module": "montage/ui/bluemoon/slider.reel",
                 "name": "Slider",
                 "properties": {
                     "element": {"#": "slider2"},
@@ -208,7 +203,7 @@
                 }
             },
             "slider3": {
-                "module": "montage/ui/slider.reel",
+                "module": "montage/ui/bluemoon/slider.reel",
                 "name": "Slider",
                 "properties": {
                     "element": {"#": "slider3"},
@@ -231,7 +226,7 @@
             right: 380px;
             bottom: 0;
             -webkit-perspective: 800px;
-            background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#bbb));            
+            background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#bbb));
         }
         #rightPannel {
             position: absolute;

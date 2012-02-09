@@ -2502,16 +2502,13 @@ var _toString = Object.prototype.toString;
 var isDate = function(object) {
     return _toString.call(object) === DATE_CLASS;
 };
-var isString = function(object) {
-    return _toString.call(object) === STRING_CLASS;
-};
 var isNumber = function(object) {
     return _toString.call(object) === NUMBER_CLASS;
 };
 
 var formatDate = function(v, format) {
     var date;
-    if (isString(v)) {
+    if (String.isString(v)) {
         // try to create a Date instance from the string
         // date must be a string that can be parsed by Date
         // see - http://www.w3schools.com/jsref/jsref_parse.asp
@@ -2573,6 +2570,15 @@ var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends 
 @class module:montage/core/converter/date-converter.DateConverter
 */
 var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends module:montage/core/converter/date-converter.DateConverter# */ {
+    /**
+     Specifies whether the converter allows partial conversion.
+     @type {Property}
+     @default {Boolean} true
+     */
+    allowPartialConversion: {
+        value: false
+    },
+
 /**
         @type {Property}
         @default {Function} Montage.create(DateValidator)
@@ -2596,7 +2602,7 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
     */
     convert: {
         value: function(v) {
-            if (isDate(v) || isString(v) || isNumber(v)) {
+            if (isDate(v) || String.isString(v) || isNumber(v)) {
                 return formatDate(v, this.pattern);
             }
             return v;
@@ -2608,6 +2614,9 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
     */
     revert: {
         value: function(v) {
+            if(isDate(v)) {
+                return v;
+            }
             this.validator.pattern = this.pattern;
 
             var result = this.validator.validate(v);

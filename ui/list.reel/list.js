@@ -23,23 +23,7 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
         enumerable: false,
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
-    _scrollview: {
-        enumerable: false,
-        value: null
-    },
-/**
-  Description TODO
-  @private
-*/
-    _orphanedChildren: {
-        enumerable: false,
-        value: null
-    },
-/**
+    /**
         Description TODO
         @type {Property}
         @default null
@@ -48,131 +32,25 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
         enumerable: false,
         value: null
     },
-
-    //TODO make some convenient forwarding property or something, this is a little tedious
-
-    // Properties to forward to the scrollview
- /**
-  Description TODO
-  @private
-*/
-    _axisForScrollview: {
-        enumerable: false,
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    axis: {
-        enumerable: false,
-        get: function() {
-            if (this._scrollview) {
-                return this._scrollview.axis;
-            } else {
-                return this._axisForScrollview;
-            }
-        },
-        set: function(value) {
-            if (this._scrollview) {
-                this._scrollview.axis = value;
-            } else {
-                this._axisForScrollview = value;
-            }
-        }
-    },
-
-    //Properties to forward to the repetition
-/**
-  Description TODO
-  @private
-*/
-    _objectsForRepetition: {
-        enumerable: false,
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
+    
     objects: {
-        enumerable: false,
-        get: function() {
-            if (this._repetition) {
-                return this._repetition.objects;
-            } else {
-                return this._objectsForRepetition;
-            }
-        },
-        set: function(value) {
-            if (this._repetition) {
-                this._repetition.objects = value;
-            } else {
-                this._objectsForRepetition = value;
-            }
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _contentControllerForRepetition: {
-        enumerable: false,
         value: null
     },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
+    
     contentController: {
-        enumerable: false,
-        get: function() {
-            if (this._repetition) {
-                return this._repetition.contentController;
-            } else {
-                return this._contentControllerForRepetition;
-            }
-        },
-        set: function(value) {
-            if (this._repetition) {
-                this._repetition.contentController = value;
-            } else {
-                this._contentControllerForRepetition = value;
-            }
-        }
+        value: null
     },
+    
+    axis: {
+        value: null
+    },
+
 /**
   Description TODO
   @private
 */
-    _isSelectionEnabledForRepetition: {
-        enumerable: false,
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
     isSelectionEnabled: {
-        enumerable: false,
-        get: function() {
-            if (this._repetition) {
-                return this._repetition.isSelectionEnabled;
-            } else {
-                return this._isSelectionEnabledForRepetition;
-            }
-        },
-        set: function(value) {
-            if (this._repetition) {
-                this._repetition.isSelectionEnabled = value;
-            } else {
-                this._isSelectionEnabledForRepetition = value;
-            }
-        }
+        value: null
     },
 
     // Initialization
@@ -213,58 +91,6 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
                 }
             } else {
                 return Object.prototype.propertyChangeBindingListener.apply(this, arguments);
-            }
-        }},
-
-/**
-    Description TODO
-    @function
-*/
-    deserializedFromTemplate: {
-        value: function() {
-            // The childComponents of the list need to be pulled aside for a moment so we can give them to the repetition
-            // This is logically where people think these components are ending up anyway
-            this._orphanedChildren = this.childComponents;
-            this.childComponents = null;
-        }
-    },
-
-/**
-    Description TODO
-    @function
- */
-    templateDidLoad: {
-        value: function() {
-            // Once we know that the template for the list itself has been deserialized we actually
-            // move the orphaned children of the list into the repetition
-            var orphanedFragment,
-                currentContentRange = this.element.ownerDocument.createRange();
-            currentContentRange.selectNodeContents(this.element);
-            orphanedFragment = currentContentRange.extractContents();
-
-            this._repetition.element.appendChild(orphanedFragment);
-            this._repetition.childComponents = this._orphanedChildren;
-            this._repetition.needsDraw = true;
-
-            if (this._objectsForRepetition !== null) {
-                this._repetition.objects = this._objectsForRepetition;
-                this._objectsForRepetition = null;
-            }
-
-            if (this._contentControllerForRepetition !== null) {
-                this._repetition.contentController = this._contentControllerForRepetition;
-                this._contentControllerForRepetition = null;
-            }
-
-            if (this._isSelectionEnabledForRepetition !== null) {
-                this._repetition.isSelectionEnabled = this._isSelectionEnabledForRepetition;
-                this._isSelectionEnabledForRepetition = null;
-            }
-
-            // Don't forget to pass along properties to the scrollview
-            if (this._axisForScrollview !== null) {
-                this._scrollview.axis = this._axisForScrollview;
-                this._axisForScrollview = null;
             }
         }
     }

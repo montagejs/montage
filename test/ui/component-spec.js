@@ -9,10 +9,78 @@ var Montage = require("montage").Montage,
 
 var testPage = TestPageLoader.queueTest("draw", function() {
 
+    var querySelector = function(s) {
+        return testPage.querySelector(s);
+    };
+
     describe("ui/component-spec", function() {
         describe("draw test", function() {
             it("should load", function() {
                 expect(testPage.loaded).toBeTruthy();
+            });
+
+            describe("originalContent", function() {
+                it("should contain the original content of the component markup", function() {
+                    var originalContent = testPage.test.repetition.originalContent;
+                    expect(originalContent.length).toBe(2);
+                    expect(originalContent[0].outerHTML).toBe("<h3>Original Content</h3>");
+                    expect(originalContent[1].outerHTML).toBe("<p>here</p>");
+                });
+            });
+            
+            describe("content", function() {
+                it("should contain the current content of the component markup", function() {
+                    var content = testPage.test.repetition.content;
+                    expect(content.length).toBe(6);
+                });
+                
+                it("should change the content of the component for markup", function() {
+                    var componentC = testPage.test.componentC,
+                        content = componentC.content,
+                        newContent = componentC._element.ownerDocument.createElement("div");
+                    
+                    expect(content.length).toBe(3);
+                    newContent.setAttribute("class", "markup");
+                    testPage.test.componentC.content = newContent;
+                    // should only draw at draw cycle.
+                    expect(componentC.content).toEqual(content);
+                    
+                    testPage.waitForDraw();
+
+                    runs(function() {
+                        expect(componentC.content.length).toBe(1);
+                        expect(componentC.content[0].outerHTML).toBe('<div class="markup"></div>');
+                    });
+                });
+                
+                it("should change the content of the component for another component", function() {
+                    var componentC = testPage.test.componentC,
+                        componentC1 = testPage.test.componentC1,
+                        content = componentC.content,
+                        newContent = componentC1._element;
+                    
+                    testPage.test.componentC.content = newContent;
+                    // should only draw at draw cycle.
+                    expect(componentC.content).toEqual(content);
+                    testPage.waitForDraw();
+
+                    runs(function() {
+                        expect(componentC.content.length).toBe(1);
+                        expect(componentC.content[0].outerHTML).toBe('<div data-montage-id="componentC1">C1</div>');
+                        expect(componentC.content[0].controller).toBe(componentC1);
+                    });
+                });
+
+                it("should change the content of the component for another component with root elements that are not components themselves", function() {
+                    var originalContent = testPage.test.componentD.originalContent,
+                        componentDtarget = testPage.test.componentDtarget;
+
+                    componentDtarget.content = originalContent;
+                    testPage.waitForDraw();
+                    runs(function() {
+                        expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div>D1</div>\n    </h1>\n");
+                    });
+                })
             });
 
             describe("calling willDraw prior to drawing", function() {
@@ -199,6 +267,19 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                             // Really just needs the waitForDraw to complete since componentB.draw has already been called
                             expect(testPage.test.componentB.draw).toHaveBeenCalled();
                         });
+                    });
+                });
+                
+                it("TODO: should draw a component that was assigned an element not part of the DOM tree when it's added to the DOM tree", function() {
+                    var component = testPage.test.componentNoelement,
+                        element = component.element;
+                    
+                    testPage.window.document.body.appendChild(element);
+                    component.needsDraw = true;
+                    
+                    testPage.waitForDraw();
+                    runs(function() {
+                        expect(element.textContent).toBe(component.value);
                     });
                 });
             });

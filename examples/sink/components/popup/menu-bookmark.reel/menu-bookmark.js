@@ -2,6 +2,8 @@
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var Notifier = require("montage/ui/popup/notifier.reel").Notifier;
+var Popup = require("montage/ui/popup/popup.reel").Popup;
+var ActionSheet = require("components/popup/action-sheet.reel").ActionSheet;
 
 exports.MenuBookmark = Montage.create(Component, {
     hasTemplate: {value: true},
@@ -19,6 +21,10 @@ exports.MenuBookmark = Montage.create(Component, {
         value: function() {
         }
     },
+
+    actionSheet: {value: null},
+    _actionSheetPopup: {value: null},
+    btnActionSheet: {value: null},
 
     handleAddbookmarkAction: {
         value: function(evt) {
@@ -42,6 +48,23 @@ exports.MenuBookmark = Montage.create(Component, {
             Notifier.show('Bookmark Added and favorited', 2000, {top: 1, right: 10});
         }
     },
+
+
+    handleShowActionSheetAction: {
+        value: function(value) {
+            var popup = this._actionSheetPopup;
+            if(!popup) {
+                popup = Popup.create();
+                popup.type = 'bookmark-action-sheet';
+                //popup.modal = true;
+                popup.content = this.actionSheet;
+                //popup.anchor = this.btnActionSheet;
+                this._actionSheetPopup = popup;
+            }
+            this._actionSheetPopup.show();
+        }
+    },
+
 
     prepareForDraw: {
         value: function() {

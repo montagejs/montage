@@ -13,11 +13,11 @@ var ScrollTest = exports.ScrollTest = Montage.create(Montage, {
             scrollYTextfield.element = document.getElementById("scrollY");
             scrollXTextfield.needsDraw = true;
             scrollYTextfield.needsDraw = true;
-            
+
             scrollArea.element=document.getElementById("dragAndDropArea");
             scrollArea.maxScrollX=1000;
             scrollArea.maxScrollY=500;
-            
+
             Object.defineBinding(scrollXTextfield, "value", {boundObject: scrollArea, boundObjectPropertyPath: "scrollX"});
             Object.defineBinding(scrollYTextfield, "value", {boundObject: scrollArea, boundObjectPropertyPath: "scrollY"});
         }

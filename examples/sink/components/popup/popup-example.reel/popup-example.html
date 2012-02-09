@@ -118,6 +118,14 @@
         "properties": {
         }
     },
+    
+    "logger": {
+        "module": "logger.reel",
+        "name": "Logger",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    },
 
     "owner": {
         "module": "components/popup/popup-example.reel",
@@ -131,7 +139,8 @@
             "bookmarkMenu": {"@": "menubookmark1"},
             "bookmarkMenu2": {"@": "menubookmark2"},
             "actionSheet": {"@": "actionsheet1"},
-            "btnBookmark": {"#": "action-show-bookmark-menu"}
+            "btnBookmark": {"#": "action-show-bookmark-menu"},
+            "logger": {"@": "logger"}
         }
     }
 }
@@ -197,42 +206,51 @@
             </div>
         </div>
 
+        <h4>Demo</h4>
 
-        <h5>System Popups</h5>
-        <section>
-            <div class="text small" id="action-show-alert">Show Alert</div>
-        </section>
-        <section>
-            <div class="text small" id="action-show-confirm">Confirm before Delete</div>
-        </section>
-        <section>
-            <div class="text small" id="action-show-loading">Show Loading</div>
-        </section>
-        <section>
-            <div class="text small" id="action-show-growl">Show Notification</div>
-        </section>
+        <div class="demo">
+            
+            <h5>System Popups</h5>
+            <section>
+                <button class="btn large" id="action-show-alert">Show Alert</button>
+                <button class="btn large" id="action-show-confirm">Confirm before Delete</button>
+            </section>
+            <section>
+                <button class="btn large" id="action-show-loading">Show Loading</button>
+                <button class="btn large" id="action-show-growl">Show Notification</button>
+            </section>
+            
+            <h5>Custom Popups</h5>
+            <section>
+                <p>Show a Custom popup anchored to the button.</p>
+                <button class="btn large" id="action-show-bookmark-menu">Show Menu (non-modal)</button>
 
-        <h5>Custom Popups</h5>
-        <section>
-            <p>Show a Custom popup anchored to the button.</p>
-            <div class="text small" id="action-show-bookmark-menu">Show Menu (non-modal)</div>
+            </section>
+            <section>
+                <p>Show a Modal popup anchored to the button</p>
+                <button class="btn large" id="action-show-critical-error">Show Critical Error</button>
 
-        </section>
-        <section>
-            <p>Show a Modal popup anchored to the button</p>
-            <div class="text small" id="action-show-critical-error">Show Critical Error</div>
+            </section>
+            
+            <section>
+                <div class="toolbar" style="text-align: center;">
+                    <img src="images/19-gear.png" class="menu action-show-settings-menu"></a>
+                    <img src="images/09-chat-2.png" class="menu action-show-action-sheet"></a>
+                </div>
+            </section>
+            
 
-        </section>
-        <section>
-            <div class="toolbar" style="text-align: center;">
-                <img src="images/19-gear.png" class="menu action-show-settings-menu"></a>
-                <img src="images/09-chat-2.png" class="menu action-show-action-sheet"></a>
-            </div>
-        </section>
-
-        <div class="eventlog alert-message block-message info">
-            <h6>Event Log</h6>
         </div>
+        
+        <section>
+            <a href="m-js/examples/sink/components/substitution-example.reel" target="_blank">View Demo Source</a>
+        </section>
+
+
+        
+        
+
+        
 
         <section>
         <h6>Popup API</h6>
@@ -267,6 +285,9 @@ this._bookmarkMenuPopup = popup;
 popup.show();
     </pre>
         </section>
+        
+        <div id="logger"></div>
+        
 
     </div>
 </body>

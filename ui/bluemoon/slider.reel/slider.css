@@ -1,0 +1,255 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+.montage-slider {
+    padding: 16px 17px 16px 18px;
+    overflow: hidden;
+}
+
+.montage-slider > div {
+    position: relative;
+    width: auto;
+    height: 23px;
+}
+
+.montage-slider .handlerbg,
+.montage-slider .handler,
+.montage-slider .handler2,
+.montage-slider .handler3,
+.montage-slider .handler4,
+.montage-slider .handlerDragArea {
+    left: 0;
+    right: 20px;
+    position: absolute;
+}
+
+.montage-slider .bghl {
+    position: absolute;
+    margin-top: 7px;
+    border-radius: 5px;
+    width: 100%;
+    height: 9px;
+    background: transparent;
+    -webkit-box-shadow: 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
+}
+
+.montage-slider .bg {
+    position: absolute;
+    margin-top: 7px;
+    border-radius: 5px;
+    width: 100%;
+    height: 9px;
+    background: rgba(160,160,160,.4);
+    -webkit-box-shadow: inset 0 1px 2px rgba(0,0,0,.3);
+}
+
+.montage-slider .handlerbg div {
+    position: absolute;
+    margin-left: -17px;
+    margin-top: -15px;
+    border-radius: 27px;
+    width: 53px;
+    height: 53px;
+    background: rgba(128,128,128,.4);
+    -webkit-box-shadow: 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
+    -webkit-transform: scale3d(.433962263, .433962263, 1);
+}
+
+.montage-slider .handler div {
+    position: absolute;
+    margin-left: -16px;
+    margin-top: -14px;
+    border-radius: 26px;
+    width: 51px;
+    height: 51px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#FEFEFE), to(#E6E6E6));
+    -webkit-transform: scale3d(.411764705, .411764705, 1);
+}
+
+.montage-slider .crop {
+    position: absolute;
+    left: 5px;
+    right: 5px;
+    margin-top: 8px;
+    height: 7px;
+    overflow: hidden;
+}
+
+.montage-slider .line {
+    position: absolute;
+    margin-left: -100%;
+    width: 100%;
+    height: 7px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#F8F8F8), to(#EFEFEF));
+}
+
+.montage-slider .scale {
+    position: absolute;
+    margin-left: 10000px;
+    width: 1px;
+    height: 1px;
+    visibility: hidden;
+}
+
+.montage-slider .line3 {
+    position: absolute;
+    margin-left: 1px;
+    margin-top: 8px;
+    border-radius: 4px;
+    width: 7px;
+    height: 7px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#F8F8F8), to(#EFEFEF));
+}
+
+.montage-slider .line2 {
+    position: absolute;
+    margin-left: -100%;
+    margin-top: 2px;
+    width: 100%;
+    height: 3px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
+}
+
+.montage-slider .line4 {
+    position: absolute;
+    margin-left: 3px;
+    margin-top: 10px;
+    border-radius: 2px;
+    width: 3px;
+    height: 3px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
+}
+
+.montage-slider .handler2 div {
+    position: absolute;
+    margin-left: -2px;
+    border-radius: 12px;
+    width: 23px;
+    height: 23px;
+    background: #878787;
+    -webkit-transform: scale3d(.565217391, .565217391, 1);
+}
+
+.montage-slider .handler3 div {
+    position: absolute;
+    margin-left: -1px;
+    margin-top: 1px;
+    border-radius: 11px;
+    width: 21px;
+    height: 21px;
+    background: -webkit-gradient(linear, left top, left bottom, from(#14BCFA), to(#0AA4DC));
+    -webkit-transform: scale3d(.523809523, .523809523, 1);
+}
+
+.montage-slider .handler4 div {
+    position: absolute;
+    margin-left: 5px;
+    margin-top: 7px;
+    border-radius: 5px;
+    width: 9px;
+    height: 9px;
+    background: #07739A;
+    -webkit-box-shadow: inset 0 2px 1px #05506B;
+    -webkit-transform: scale3d(.555555555, .555555555, 1);
+}
+
+.montage-slider .handlerDragArea div {
+    position: absolute;
+    margin-left: -17px;
+    margin-top: -15px;
+    border-radius: 27px;
+    width: 53px;
+    height: 53px;
+}
+
+.montage-slider.pressed .handlerbg div {
+    -webkit-transform: scale3d(1, 1, 1);
+}
+
+.montage-slider.pressed .handler div {
+    background: -webkit-gradient(linear, left top, left bottom, from(#e5e5e5), to(#ffffff));
+    -webkit-transform: scale3d(1, 1, 1);
+}
+
+.montage-slider.pressed .handler2 div {
+    -webkit-transform: scale3d(1, 1, 1);
+}
+
+.montage-slider.pressed .handler3 div {
+    -webkit-transform: scale3d(1, 1, 1);
+}
+
+.montage-slider.pressed .handler4 div {
+    -webkit-transform: scale3d(1, 1, 1);
+}
+
+.montage-slider.pressed .line {
+    background: -webkit-gradient(linear, left top, left bottom, from(#efefef), to(#f3f3f3));
+}
+
+.montage-slider.dark .bghl {
+    background: transparent;
+    -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
+}
+
+.montage-slider.dark .bg {
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(40,40,40,.6)), to(rgba(40,40,40,.5)));
+    -webkit-box-shadow: none;
+}
+
+.montage-slider.dark .handlerbg div {
+    background: -webkit-gradient(linear, left top, left bottom, from(rgba(40,40,40,.7)), to(rgba(40,40,40,.6)));
+    -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
+}
+
+.montage-slider.dark .handler div {
+    background: -webkit-gradient(linear, left top, left bottom, from(#757575), to(#5c5c5c));
+}
+
+.montage-slider.dark .line {
+    background: -webkit-gradient(linear, left top, left bottom, from(#6f6f6f), to(#656565));
+}
+
+.montage-slider.dark .line2 {
+    background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
+}
+
+.montage-slider.dark .line3 {
+    background: -webkit-gradient(linear, left top, left bottom, from(#6f6f6f), to(#656565));
+}
+
+.montage-slider.dark .line4 {
+    background: -webkit-gradient(linear, left top, left bottom, from(#35C9FF), to(#0A9BCF));
+}
+
+.montage-slider.dark .handler2 div {
+    background: #383838;
+}
+
+.montage-slider.dark .handler3 div {
+    background: -webkit-gradient(linear, left top, left bottom, from(#12BBF8), to(#0AA4DC));
+}
+
+.montage-slider.dark .handler4 div {
+    background: #07739A;
+    -webkit-box-shadow: inset 0 2px 1px #05506B;
+}
+
+.montage-slider.dark.pressed .handler div {
+    background: -webkit-gradient(linear, left top, left bottom, from(#5c5c5c), to(#757575));
+}
+
+.montage-slider.dark.pressed .handler2 div {
+    background: #2f2f2f;
+}
+
+.montage-slider.dark.pressed .handler3 div {
+    background: -webkit-gradient(linear, left top, left bottom, from(#10bcfc), to(#0AA2DA));
+}
+
+.montage-slider.dark.pressed .line {
+    background: -webkit-gradient(linear, left top, left bottom, from(#666666), to(#6a6a6a));
+}

@@ -10,7 +10,7 @@ exports.Main = Montage.create(Component, {
     _selectedItem: {value: null},
     selectedItem: {
         get: function() {return this._selectedItem;},
-        set: function(value) {this._selectedItem = value; console.log('selected item = ' + (value === null ? '' : value.value)); }
+        set: function(value) {this._selectedItem = value;}
     },
 
     templateDidLoad: {
@@ -21,7 +21,7 @@ exports.Main = Montage.create(Component, {
 
     deserializedFromTemplate: {
         value: function() {
-            console.log("main deserializedFromTemplate");            
+            console.log("main deserializedFromTemplate");
             //console.log('context = ' + window.location.hash);
         }
     },
@@ -29,7 +29,7 @@ exports.Main = Montage.create(Component, {
     prepareForDraw: {
         value: function() {
             console.log("main prepareForDraw");
-            
+
         }
     }
 

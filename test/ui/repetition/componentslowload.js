@@ -9,6 +9,7 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
 var ComponentSlowLoad = exports.ComponentSlowLoad = Montage.create(Component, {
+    hasTemplate: {value: false},
     delay: {value: 100},
 
     // This code makes the first instantiated component to load after the second

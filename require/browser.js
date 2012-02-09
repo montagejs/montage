@@ -5,11 +5,13 @@
  </copyright> */
 bootstrap("require/browser", function (require) {
 
-var Require = require("require/require");
-var Promise = require("core/promise").Promise;
-var URL = require("core/mini-url");
-
-var global = typeof global !== "undefined" ? global : window;
+var Require = require("require/require"),
+    Promise = require("core/promise").Promise,
+    URL = require("core/mini-url"),
+    GET = "GET",
+    APPLICATION_JAVASCRIPT_MIMETYPE = "application/javascript",
+    FILE_PROTOCOL = "file:",
+    global = typeof global !== "undefined" ? global : window;
 
 Require.getLocation = function() {
     return URL.resolve(window.location, ".");
@@ -24,7 +26,7 @@ Require.overlays = ["browser", "montage"];
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 Require.read = function (url) {
 
-    if (URL.resolve(window.location, url).indexOf("file:") === 0) {
+    if (URL.resolve(window.location, url).indexOf(FILE_PROTOCOL) === 0) {
         throw new Error("XHR does not function for file: protocol");
     }
 
@@ -35,7 +37,7 @@ Require.read = function (url) {
         if (xhrSuccess(request)) {
             response.resolve(request.responseText);
         } else {
-            response.reject("Can't XHR " + JSON.stringify(url));
+            onerror();
         }
     }
 
@@ -44,8 +46,8 @@ Require.read = function (url) {
     }
 
     try {
-        request.open("GET", url, true);
-        request.overrideMimeType("application/javascript");
+        request.open(GET, url, true);
+        request.overrideMimeType(APPLICATION_JAVASCRIPT_MIMETYPE);
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
                 onload();
@@ -77,6 +79,12 @@ if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
     globalEval = new Function("evalString", "return eval(evalString)");
 }
 
+var __FILE__String = "__FILE__",
+    DoubleUnderscoreString = "__"
+    globalEvalConstantA = "(function ",
+    globalEvalConstantB = "(require, exports, module) {",
+    globalEvalConstantC = "//*/\n})\n//@ sourceURL=";
+
 Require.Compiler = function (config) {
     return function(module) {
         if (module.factory || module.text === void 0)
@@ -91,11 +99,15 @@ Require.Compiler = function (config) {
         //      TODO: investigate why this isn't working in Firebug.
         // 3. set displayName property on the factory function (Safari, Chrome)
 
-        var displayName = "__FILE__"+module.location.replace(/\.\w+$|\W/g, "__");
+        var displayName = __FILE__String+module.location.replace(/\.\w+$|\W/g, DoubleUnderscoreString);
 
-        module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+"\n//@ sourceURL="+module.location);
+        try {
+            module.factory = globalEval(globalEvalConstantA+displayName+globalEvalConstantB+module.text+globalEvalConstantC+module.location);
+        } catch (exception) {
+            throw new SyntaxError("in " + module.location + ": " + exception.message);
+        }
 
-        // This should work and would be better, but Firebug does not show scripts executed via "new Function()" constructor.
+        // This should work and would be simpler, but Firebug does not show scripts executed via "new Function()" constructor.
         // TODO: sniff browser?
         // module.factory = new Function("require", "exports", "module", module.text + "\n//*/"+sourceURLComment);
 

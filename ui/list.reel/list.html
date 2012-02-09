@@ -16,6 +16,28 @@
             "element": {
                 "#": "repetition"
             }
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "originalContent",
+                "oneway": true
+            },
+            "objects": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "objects",
+                "oneway": true
+            },
+            "contentController": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "contentController",
+                "oneway": true
+            },
+            "isSelectionEnabled": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "isSelectionEnabled",
+                "oneway": true
+            }
         }
     },
     "scrollview1": {
@@ -24,6 +46,13 @@
         "properties": {
             "element": {
                 "#": "scrollView"
+            }
+        },
+        "bindings": {
+            "axis": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "axis",
+                "oneway": true
             }
         }
     },
@@ -36,9 +65,6 @@
             },
             "_repetition": {
                 "@": "repetition1"
-            },
-            "_scrollview": {
-                "@": "scrollview1"
             }
         }
     }
@@ -49,7 +75,7 @@
 <body>
     <div id="EA5D3E95-BA4E-4696-BBBE-B4DE2F6ED6C9">
         <div id="scrollView" class="montage-list-scrollView">
-            <div id="repetition"></div>
+            <div data-montage-id="repetition"></div>
         </div>
     </div>
 </body>
