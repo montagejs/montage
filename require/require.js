@@ -33,7 +33,6 @@
     if (!this)
         throw new Error("Require does not work in strict mode.");
 
-    var global = this;
     var globalEval = eval; // reassigning causes eval to not use lexical scope.
 
     // Non-CommonJS speced extensions should be marked with an "// EXTENSION" comment.
@@ -169,7 +168,7 @@
             // Execute the factory function:
             var returnValue = module.factory.call(
                 // in the context of the module:
-                global, // this
+                void 0, // this (defaults to global)
                 makeRequire(topId), // require
                 module.exports, // exports
                 module // module
