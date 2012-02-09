@@ -250,10 +250,16 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             if (!eventName) {
                 eventName = "click";
             }
-            doc = this.iframe.contentDocument,
-            event = doc.createEvent('MouseEvents');
+            eventInfo.clientX = eventInfo.clientX || eventInfo.target.offsetLeft;
+            eventInfo.clientY = eventInfo.clientY || eventInfo.target.offsetTop;
 
-            event.initMouseEvent(eventName, true, true, doc.defaultView, 1, null, null, eventInfo.clientX, eventInfo.clientY, false, false, false, false, 0, null);
+            var doc = this.iframe.contentDocument,
+                event = doc.createEvent('MouseEvents');
+
+            event.initMouseEvent(eventName, true, true, doc.defaultView,
+                null, null, null, eventInfo.clientX, eventInfo.clientY,
+                false, false, false, false,
+                0, null);
             eventInfo.target.dispatchEvent(event);
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {

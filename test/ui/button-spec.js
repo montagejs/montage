@@ -10,36 +10,6 @@ var Montage = require("montage").Montage,
 var testPage = TestPageLoader.queueTest("buttontest", function() {
     var test = testPage.test;
 
-    var mousedown = function(el) {
-        var downEvent = document.createEvent("MouseEvent");
-        downEvent.initMouseEvent("mousedown", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(downEvent);
-        return downEvent;
-    };
-    var mouseup = function(el) {
-        var upEvent = document.createEvent("MouseEvent");
-        upEvent.initMouseEvent("mouseup", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(upEvent);
-        return upEvent;
-    };
-    var clickEvent = function(el) {
-        var clickEvent = document.createEvent("MouseEvent");
-        clickEvent.initMouseEvent("click", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(clickEvent);
-        return clickEvent;
-    };
     var addListener = function(component, fn) {
         var buttonSpy = {
             doSomething: fn || function(event) {
@@ -58,9 +28,9 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
         var listener = addListener(component, fn);
 
-        mousedown(el);
-        mouseup(el);
-        clickEvent(el)
+        testPage.mouseEvent({target: el}, "mousedown");
+        testPage.mouseEvent({target: el}, "mouseup");
+        testPage.mouseEvent({target: el}, "click");
 
         // Return this so that it can be checked in tha calling function.
         return listener;
@@ -196,11 +166,11 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
             // it("correctly releases the pointer", function() {
             //     var l = addListener(test.scroll_button);
 
-            //     mousedown(test.scroll_button.element);
+            //     testpage.mouseEvent({target: test.scroll_button.element}, "mousedown");;
             //     expect(test.scroll_button.active).toBe(true);
             //     test.scroll_button.surrenderPointer(test.scroll_button._observedPointer, null);
             //     expect(test.scroll_button.active).toBe(false);
-            //     mouseup(test.scroll_button.element);
+            //     testPage.mouseEvent({target: test.scroll_button.element}, "mouseup");;
 
             //     expect(l).not.toHaveBeenCalled();
 
@@ -227,16 +197,16 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         // reset interaction
                         // test.inputbutton._endInteraction();
                         var l = addListener(test.inputbutton);
-                        mouseup(test.inputbutton.element);
+                        testPage.mouseEvent({target: test.inputbutton.element}, "mouseup");;
                         expect(l).not.toHaveBeenCalled();
                     });
 
                     it("does not dispatch an action event when a mouseup occurs away from the button after a mousedown on a button", function() {
                         var l = addListener(test.inputbutton);
 
-                        mousedown(test.inputbutton.element);
+                        testpage.mouseEvent({target: test.inputbutton.element}, "mousedown");;
                         // Mouse up somewhere else
-                        mouseup(test.divbutton.element);
+                        testPage.mouseEvent({target: test.divbutton.element}, "mouseup");;
 
                         expect(l).not.toHaveBeenCalled();
                     });
@@ -254,7 +224,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     var listener = addListener(test.scroll_button);
 
                     // mousedown
-                    mousedown(el);
+                    testPage.mouseEvent({target: el}, "mousedown");;
 
                     expect(test.scroll_button.active).toBe(true);
                     expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(false);
@@ -277,7 +247,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(true);
 
                         // mouse up
-                        mouseup(el);
+                        testPage.mouseEvent({target: el}, "mouseup");;
 
                         expect(listener).not.toHaveBeenCalled();
                     });
