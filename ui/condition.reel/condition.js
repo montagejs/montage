@@ -123,11 +123,8 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             if (this._removalStrategy === value) {
                 return;
             }
-            if (value === "hide") {
-                // was remove
-                this._slot.content = this.content;
-            } else if (this.condition) {
-                //was hide
+            if (value === "hide" || this.condition) {
+                // was remove OR was hide
                 this._slot.content = this.content;
             }
             this._removalStrategy = value;
@@ -170,9 +167,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
 
             var slotRoot = document.createElement("div");
             this.element.appendChild(slotRoot);
-
-            //this.content.parentNode.removeChild(this.content);
-            //slotRoot.appendChild(this.content);
 
             this._slot.element = slotRoot;
         }
