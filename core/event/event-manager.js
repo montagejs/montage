@@ -28,9 +28,7 @@ var Montage = require("montage").Montage,
 if (typeof window !== "undefined") { // client-side
 
 /* This is to handle browsers that have TouchEvents but don't have the global constructor function Touch */
-//if(TouchEvent && typeof window.Touch === "undefined") {
-// HACK: The commented expression fails because Chrome on the desktop also has TouchEvent and in the code we're either registering touch events OR mouse events on most components.
-if (typeof window.Touch === "undefined" && /Xoom|TouchPad/.test(navigator.userAgent)) {
+if (typeof window.Touch === "undefined" && "ontouchstart" in window) {
     window.Touch = function() {
     };
     (function() {
