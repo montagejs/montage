@@ -3,17 +3,25 @@
     "version": "0.3.1",
     "description": "A UI Framework",
     "main": "montage",
-    "exclude": [
-        "lab/benchmarks",
-        "lab/sandbox",
-        "examples",
-        "require/test",
-        "require/tests",
-        "etc"
-    ],
     "overlay": {
-        "montage": {
-            "main": "core/core"
+        "browser": {
+            "main": "core/core",
+            "exclude": [
+                "lab/benchmarks",
+                "lab/sandbox",
+                "examples",
+                "require/test",
+                "require/tests",
+                "etc",
+                "node.js"
+            ],
+            "resources": [
+                "montage.js",
+                "require/require.js",
+                "require/browser.js",
+                "core/next-tick.js",
+                "core/promise.js"
+            ]
         }
     },
     "bin": {
