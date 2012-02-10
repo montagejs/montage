@@ -10,6 +10,23 @@ var Montage = require("montage").Montage,
  * The Text input
  */
 var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
+    _fakeCheck: {
+        enumerable: false,
+        value: function() {
+            var changeEvent;
+            // NOTE: this may be BAD, modifying the element outside of
+            // the draw loop, but it's what a click/touch would
+            // actually have done
+
+            if (!this._element.checked) {
+                this._element.checked = true;
+                changeEvent = document.createEvent("HTMLEvents");
+                changeEvent.initEvent("change", true, true);
+                this._element.dispatchEvent(changeEvent);
+            }
+        }
+    },
+
     _checkedSyncedWithInputField: {
         enumerable: false,
         value: false
@@ -75,7 +92,7 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
             }
 
             // Call super
-            var fn = Object.getPrototypeOf(RadioButton).draw.call(this);
+            Object.getPrototypeOf(RadioButton).draw.call(this);
         }
     }
 });

@@ -70,6 +70,17 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                         expect(componentC.content[0].controller).toBe(componentC1);
                     });
                 });
+
+                it("should change the content of the component for another component with root elements that are not components themselves", function() {
+                    var originalContent = testPage.test.componentD.originalContent,
+                        componentDtarget = testPage.test.componentDtarget;
+
+                    componentDtarget.content = originalContent;
+                    testPage.waitForDraw();
+                    runs(function() {
+                        expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div>D1</div>\n    </h1>\n");
+                    });
+                })
             });
 
             describe("calling willDraw prior to drawing", function() {

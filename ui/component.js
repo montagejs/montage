@@ -439,10 +439,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 childComponents.splice(ix, 1);
                 childComponent._cachedParentComponent = null;
             }
-
-            if (element && element.parentNode) {
-                element.parentNode.removeChild(element);
-            }
         }
     },
 /**
