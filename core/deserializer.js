@@ -18,6 +18,14 @@ var Montage = require("montage").Montage,
 // By rebinding eval to a new name, it loses its ability to
 // capture the calling scope.
 var globalEval = eval;
+var canEval = true;
+
+// CSP doesn't let you eval
+try {
+    eval("");
+} catch(ex) {
+    canEval = false;
+}
 
 /**
  @class module:montage/core/deserializer.Deserializer
@@ -404,7 +412,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 */
     _compileAndDeserialize: {value: function(element, deserialize) {
         var self = this,
-            serialization = this._serialization,
+            serialization,
             exportsStrings = "",
             unitsStrings = "",
             objectsStrings = "",
@@ -417,6 +425,12 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             requireStrings = [],
             objectNamesCounter = {},
             label;
+
+        if (canEval) {
+            serialization = this._serialization;
+        } else {
+            serialization = JSON.parse(this._serializationString);
+        }
 
         for (label in serialization) {
             var objectDesc = serialization[label];
@@ -452,12 +466,14 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
         }
 
-        this._compiledDeserializationFunctionString = "(function() {\n" + requireStrings.join("\n") + "\nreturn function(element) {\nvar exports = {};\n" + exportsStrings + "\n\n" + objectsStrings + "\n\n" + unitsStrings + "\n\n" + cleanupStrings + "\nreturn exports;\n}}).call(this)";
+        if (canEval) {
+            this._compiledDeserializationFunctionString = "(function() {\n" + requireStrings.join("\n") + "\nreturn function(element) {\nvar exports = {};\n" + exportsStrings + "\n\n" + objectsStrings + "\n\n" + unitsStrings + "\n\n" + cleanupStrings + "\nreturn exports;\n}}).call(this)";
+            this._serializationString = this._serialization = serialization = null;
+        }
+
         if (logger.isDebug) {
             logger.debug(this._compiledDeserializationFunctionString);
         }
-
-        this._serialization = serialization = null;
 
         return exports;
 
