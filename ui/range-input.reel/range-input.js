@@ -5,7 +5,9 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    TextInput = require("ui/text-input").TextInput;
+    TextInput = require("ui/text-input").TextInput,
+    PressComposer = require("ui/composer/press-composer").PressComposer;
+    
 /**
  * The input type="range" field
  */
@@ -13,14 +15,11 @@ var RangeInput = exports.RangeInput = Montage.create(TextInput, {
 
     prepareForActivationEvents: {
         value: function() {
-            var el = this.element;
-            if (window.Touch) {
-                el.addEventListener("touchstart", this);
-                el.addEventListener("touchend", this);
-            } else {
-                el.addEventListener("mousedown", this);
-                el.addEventListener("mouseup", this);
-            }
+            var pressComposer = PressComposer.create();
+            this.addComposer(pressComposer);
+            pressComposer.addEventListener("pressstart", this, false);
+            pressComposer.addEventListener("press", this, false);
+            pressComposer.addEventListener("presscancel", this, false);
         }
     },
 
@@ -40,29 +39,19 @@ var RangeInput = exports.RangeInput = Montage.create(TextInput, {
         }
     },
 
-    handleMousedown: {
+    handlePressstart: {
         value: function(e) {
             console.log('start value = ', this.value);
             this._fireInteractionStartEvent(e);
         }
     },
-    handleTouchstart: {
-        value: function(e) {
-            this._fireInteractionStartEvent(e);
-        }
-    },
-    handleMouseup: {
+    
+    handlePress: {
         value: function(e) {
             console.log('end value = ', this.value);
             this._fireInteractionEndEvent(e);
         }
-    },
-    handleTouchend: {
-        value: function(e) {
-            this._fireInteractionEndEvent(e);
-        }
     }
-
 
 });
 
