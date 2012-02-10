@@ -63,22 +63,22 @@ if (typeof window !== "undefined") {
             // setup the reel loader
             config.makeLoader = function (config) {
                 return exports.ReelLoader(config,
-                    Require.DefaultLoaderConstructor(config));
+                    Require.makeLoader(config));
             };
 
             // setup serialization compiler
             config.makeCompiler = function (config) {
                 return exports.TemplateCompiler(config,
                     exports.SerializationCompiler(config,
-                        Require.DefaultCompilerConstructor(config)));
+                        Require.makeCompiler(config)));
             };
 
             var location = URL.resolve(config.location, params["package"] || ".");
 
-            Require.PackageSandbox(params.montageBase, config)
+            Require.loadPackage(params.montageBase, config)
             .then(function (montageRequire) {
                 montageRequire.inject("core/promise", Promise);
-                montageRequire.inject("core/shim/timeers", {});
+                montageRequire.inject("core/shim/timers", {});
 
                 // install the linter, which loads on the first error
                 config.lint = function (module) {
@@ -183,11 +183,12 @@ if (typeof window !== "undefined") {
         return function(module) {
             if (!module.location)
                 return;
-            var root = module.location.match(/(.*\/)?(?=[^\/]+\.html$)/);
-            if (root) {
+            var match = module.location.match(/(.*\/)?(?=[^\/]+\.html$)/);
+            if (match) {
                 module.dependencies = module.dependencies || [];
                 module.exports = {
-                    root: root,
+                    directory: match[1],
+                    root: match, // deprecated
                     content: module.text
                 };
                 return module;
@@ -216,7 +217,7 @@ if (typeof window !== "undefined") {
         var relativeElement = document.createElement("a");
         exports.resolve = function (base, relative) {
             base = String(base);
-            if (!/^[\w\-]+:/.test(base)) {
+            if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
                 throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
             }
             var restore = baseElement.href;
