@@ -53,6 +53,13 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
 
             this._condition = value;
             this.needsDraw = true;
+            if (this.removalStrategy === "remove") {
+                if (value) {
+                    this._slot.content = this.content;
+                } else {
+                    this._slot.content = null;
+                }
+            }
         },
         get: function() {
             return this._condition;
@@ -83,15 +90,59 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
 
             this._content = value;
             this.needsDraw = true;
+
+            if (this.removalStrategy === "remove") {
+                if (this.condition) {
+                    this._slot.content = value;
+                }
+            } else {
+                this._slot.content = value;
+            }
+
         }
     },
 
+    /**
+     @private
+     */
+    _removalStrategy:{
+        value: "remove",
+        enumerable:false
+    },
+
+    /**
+
+     */
     // TODO should this strategy be part of another class?
     // TODO expose the options as an exported enum
-    removalStrategy: {
-        enumerable: false,
-        value: "remove"
+    removalStrategy:{
+        get:function () {
+            return this._removalStrategy;
+        },
+        set:function (value) {
+            if (this._removalStrategy === value) {
+                return;
+            }
+            if (value === "hide" || this.condition) {
+                // was remove OR was hide
+                this._slot.content = this.content;
+            }
+            this._removalStrategy = value;
+        }
     },
+
+
+    /**
+
+     @param
+         @returns
+     */
+    didCreate:{
+        value:function () {
+            this._slot = Slot.create();
+        }
+    },
+
 
     /**
     Description TODO
@@ -117,10 +168,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             var slotRoot = document.createElement("div");
             this.element.appendChild(slotRoot);
 
-            this.content.parentNode.removeChild(this.content);
-            slotRoot.appendChild(this.content);
-
-            this._slot = Slot.create();
             this._slot.element = slotRoot;
         }
     },
@@ -133,14 +180,9 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
         value: function() {
 
             if (this.condition) {
-                this._slot.content = this.content;
                 this.element.classList.remove("montage-invisible");
             } else {
-                if ("hide" === this.removalStrategy) {
-                    this.element.classList.add("montage-invisible");
-                } else {
-                    this._slot.content = null;
-                }
+                this.element.classList.add("montage-invisible");
             }
 
         }
