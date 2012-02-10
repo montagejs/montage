@@ -8,7 +8,6 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>SelectInputTest</title>
-    <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
      <script type="text/montage-serialization">
 {
@@ -59,6 +58,22 @@
         }
     },
 
+    "scroll1": {
+        "module": "montage/ui/scrollview.reel",
+        "name": "Scrollview",
+        "properties": {
+            "element": {"#": "scroller"}
+        }
+    },
+
+    "country1": {
+        "module": "montage/ui/select-input.reel",
+        "name": "SelectInput",
+        "properties": {
+            "element": {"#": "country1"}
+        }
+    },
+
     "test": {
         "module": "ui/select-input-test/select-input-test",
         "name": "SelectInputTest",
@@ -97,24 +112,49 @@
 
 </head>
 <body>
-    <form id="input-form" class="form-stacked">
-        <label for="dept">Department</label>
-         <select id="dept" required="true">
-             <option>Please select a Department</option>
-         </select>
+    <h2>Select Input Test</h2>
+    <div class="row">
+        <div class="span8">
+            <form id="input-form" class="form-stacked">
+                <label for="dept">Department</label>
+                 <select id="dept" required="true">
+                     <option>Please select a Department</option>
+                 </select>
 
-        <label for="country">Country</label>
-        <select id="country" required>
-            <option value="">Please select a Country</option>
-            <option value="USA" selected="true">United States of America</option>
-            <option value="INR" >India</option>
-            <option value="FR">France</option>
-            <option value="GER">Germany</option>
-        </select>
+                <label for="country">Country</label>
+                <select id="country" required>
+                    <option value="">Please select a Country</option>
+                    <option value="USA" selected="true">United States of America</option>
+                    <option value="INR" >India</option>
+                    <option value="FR">France</option>
+                    <option value="GER">Germany</option>
+                </select>
 
-        <label for="state">State</label>
-        <select id="state" required="true"></select>
+                <label for="state">State</label>
+                <select id="state" required="true"></select>
 
-    </form>
+            </form>
+
+
+            <h2>Scroll</h2>
+            <form action="" method="get">
+            <div id="scroller" style="background:#CCC; height: 300px">
+                <div>
+                    <div style="background:#A00; height:260px; width:10px">.</div>
+                    <label for="country1">Country</label>
+                    <select id="country1" required>
+                        <option value="">Please select a Country</option>
+                        <option value="USA" selected="true">United States of America</option>
+                        <option value="INR" >India</option>
+                        <option value="FR">France</option>
+                        <option value="GER">Germany</option>
+                    </select>
+                    <div style="background:#A00; height:200px; width:10px">.</div>
+                </div>
+            </div>
+            </form>
+        </div>
+    </div>
+
 </body>
 </html>
