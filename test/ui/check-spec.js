@@ -10,36 +10,6 @@ var Montage = require("montage").Montage,
 var testPage = TestPageLoader.queueTest("checktest", function() {
     var test = testPage.test;
 
-    var mousedown = function(el) {
-        var downEvent = document.createEvent("MouseEvent");
-        downEvent.initMouseEvent("mousedown", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(downEvent);
-        return downEvent;
-    };
-    var mouseup = function(el) {
-        var upEvent = document.createEvent("MouseEvent");
-        upEvent.initMouseEvent("mouseup", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(upEvent);
-        return upEvent;
-    };
-    var clickEvent = function(el) {
-        var clickEvent = document.createEvent("MouseEvent");
-        clickEvent.initMouseEvent("click", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(clickEvent);
-        return clickEvent;
-    };
     var addListener = function(component, fn) {
         var buttonSpy = {
             doSomething: fn || function(event) {
@@ -58,9 +28,9 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
 
         var listener = addListener(component, fn);
 
-        mousedown(el);
-        mouseup(el);
-        clickEvent(el);
+        testPage.mouseEvent({target: el}, "mousedown");;
+        testPage.mouseEvent({target: el}, "mouseup");;
+        testPage.mouseEvent({target: el}, "click");;
 
         // Return this so that it can be checked in the calling function.
         return listener;
@@ -179,7 +149,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
 
 
                 var listener = addListener(test.check1);
-                clickEvent(testPage.getElementById("label"));
+                testPage.mouseEvent({target: testPage.getElementById("label")}, "click");;
                 expect(listener).toHaveBeenCalled();
                 expect(test.check1.checked).toBe(false);
             })
@@ -202,7 +172,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
 
 
                     var listener = addListener(test.scroll_check);
-                    clickEvent(testPage.getElementById("scroll_label"));
+                    testPage.mouseEvent({target: testPage.getElementById("scroll_label")}, "click");;
                     expect(listener).toHaveBeenCalled();
                     expect(test.scroll_check.checked).toBe(false);
                 })
@@ -213,7 +183,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                     var listener = addListener(test.scroll_check);
 
                     // mousedown
-                    mousedown(el);
+                    testPage.mouseEvent({target: el}, "mousedown");;
 
                     expect(test.scroll_check.checked).toBe(false);
                     expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(false);
@@ -236,8 +206,8 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                         expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(true);
 
                         // mouse up
-                        mouseup(el);
-                        clickEvent(el);
+                        testPage.mouseEvent({target: el}, "mouseup");;
+                        testPage.mouseEvent({target: el}, "click");;
 
                         expect(listener).not.toHaveBeenCalled();
                         expect(test.scroll_check.checked).toBe(false);

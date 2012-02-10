@@ -250,10 +250,16 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             if (!eventName) {
                 eventName = "click";
             }
-            doc = this.iframe.contentDocument,
-            event = doc.createEvent('MouseEvents');
+            eventInfo.clientX = eventInfo.clientX || eventInfo.target.offsetLeft;
+            eventInfo.clientY = eventInfo.clientY || eventInfo.target.offsetTop;
 
-            event.initMouseEvent(eventName, true, true, doc.defaultView, 1, null, null, eventInfo.clientX, eventInfo.clientY, false, false, false, false, 0, null);
+            var doc = this.iframe.contentDocument,
+                event = doc.createEvent('MouseEvents');
+
+            event.initMouseEvent(eventName, true, true, doc.defaultView,
+                null, null, null, eventInfo.clientX, eventInfo.clientY,
+                false, false, false, false,
+                0, null);
             eventInfo.target.dispatchEvent(event);
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
@@ -277,6 +283,9 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                 simulatedEvent = doc.createEvent("CustomEvent"),
                 touch = {};
 
+            eventInfo.clientX = eventInfo.clientX || eventInfo.target.offsetLeft;
+            eventInfo.clientY = eventInfo.clientY || eventInfo.target.offsetTop;
+
             touch.clientX = eventInfo.clientX;
             touch.clientY = eventInfo.clientY;
             touch.target = eventInfo.target;
@@ -285,6 +294,30 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             simulatedEvent.touches = [touch];
             simulatedEvent.changedTouches = [touch];
             eventInfo.target.dispatchEvent(simulatedEvent);
+            if (typeof callback === "function") {
+                if(this.willNeedToDraw) {
+                    this.waitForDraw();
+                    runs(callback);
+                } else {
+                    callback();
+                }
+            }
+            return eventInfo;
+        }
+    },
+
+    clickOrTouch: {
+        enumerable: false,
+        value: function(eventInfo, callback) {
+            if (window.Touch) {
+                this.touchEvent(eventInfo, "touchstart");
+                this.touchEvent(eventInfo, "touchend");
+                this.mouseEvent(eventInfo, "click");
+            } else {
+                this.mouseEvent(eventInfo, "mousedown");
+                this.mouseEvent(eventInfo, "mouseup");
+                this.mouseEvent(eventInfo, "click");
+            }
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
                     this.waitForDraw();
