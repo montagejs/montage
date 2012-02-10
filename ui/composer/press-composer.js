@@ -173,7 +173,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                 return;
             }
 
-            if (!isSurrendered && isTarget && event.type === "click") {
+            if (!isSurrendered && isTarget && event.type === "mouseup") {
                 this._dispatchPress(event);
                 this._endInteraction(event);
                 return;
