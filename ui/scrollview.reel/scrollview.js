@@ -20,6 +20,19 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
         enumerable: false,
         value: false
     },
+
+    /**
+    These elements perform some native action when clicked/touched and so we
+    should not preventDefault when a mousedown/touchstart happens on them.
+    @private
+    */
+    _NATIVE_ELEMENTS: {
+        value: ["A", "IFRAME", "EMBED", "OBJECT", "VIDEO", "AUDIO", "CANVAS",
+            "LABEL", "INPUT", "BUTTON", "SELECT", "TEXTAREA", "KEYGEN",
+            "DETAILS", "COMMAND"
+        ]
+    },
+
 /**
   Description TODO
   @private
@@ -356,6 +369,19 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
         enumerable: false,
         value: null
     },
+
+    /**
+    Returns if we should preventDefault on a touchstart/mousedown event.
+    @param {Event} The event
+    @returns {Boolean} Whether preventDefault should be called
+    @private
+    */
+    _shouldPreventDefault: {
+        value: function(event) {
+            return event.tagName && Scrollview._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
+        }
+    },
+
 /**
     Description TODO
     @function
@@ -364,13 +390,7 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
     captureMousedown: {
         enumerable: false,
         value: function (event) {
-
-            // TODO this is a bit of a temporary workaround to ensure that we allow input fields
-            //to receive the mousedown that gives them focus and sets the cursor a the mousedown coordinates
-            if (!(event.target.tagName &&
-                ("INPUT" === event.target.tagName || "SELECT" === event.target.tagName || "TEXTAREA" === event.target.tagName)) &&
-                    !event.target.isContentEditable) {
-
+            if (this._shouldPreventDefault(event)) {
                 event.preventDefault();
             }
 
@@ -458,8 +478,9 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
     captureTouchstart: {
         enumerable: false,
         value: function (event) {
-
-            event.preventDefault();
+            if (this._shouldPreventDefault(event)) {
+                event.preventDefault();
+            }
 
             // If already scrolling the scrollview, ignore any new touchstarts
             if (this._observedPointer !== null && this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
@@ -482,7 +503,9 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
             if (!this.eventManager.componentClaimingPointer(this._observedPointer)) {
 
                 if (event.targetTouches.length === 1) {
-                    event.preventDefault();
+                    if (this._shouldPreventDefault(event)) {
+                        event.preventDefault();
+                    }
 
                     this.eventManager.claimPointer(this._observedPointer, this);
                     this._start(event.targetTouches[0].clientX, event.targetTouches[0].clientY);
