@@ -105,6 +105,7 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
             var changeEvent = new _changeEventConstructor();
             changeEvent.type = "change@" + key;
             changeEvent.minus = minus;
+            changeEvent.plus = undefined;
             changeEvent.propertyChange = ChangeTypes.MODIFICATION;
             return changeEvent;
         }
