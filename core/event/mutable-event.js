@@ -51,6 +51,9 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
      */
     fromEvent: {
         value: function(event) {
+            if (typeof event._event !== "undefined") {
+                return event;
+            }
             var type = event.type,
                 constructor = _eventConstructorsByType[type],
                 newEvent;
@@ -105,6 +108,7 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
             var changeEvent = new _changeEventConstructor();
             changeEvent.type = "change@" + key;
             changeEvent.minus = minus;
+            changeEvent.plus = undefined;
             changeEvent.propertyChange = ChangeTypes.MODIFICATION;
             return changeEvent;
         }
