@@ -64,6 +64,8 @@ if (spec) {
         require.async("ui/application-spec"),
         require.async("ui/anchor-spec"),
         require.async("ui/button-spec"),
+        require.async("ui/check-spec"),
+        require.async("ui/range-input-spec"),
         require.async("ui/component-spec"),
         require.async("ui/composer-spec"),
         require.async("ui/dom-spec"),
