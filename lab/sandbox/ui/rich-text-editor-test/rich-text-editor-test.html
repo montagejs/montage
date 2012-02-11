@@ -113,6 +113,276 @@
                 ]
             },
 
+            "strikeToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "strikeButton" },
+                    "identifier": "strikeButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "strikethrough"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.strikethrough",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "subToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "subButton" },
+                    "identifier": "subButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "subscript"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.subscript",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "supToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "supButton" },
+                    "identifier": "supButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "superscript"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.superscript",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "indentButton": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "indentButton" },
+                    "identifier": "indentButton",
+                    "preventFocus": true,
+                    "action": "indent"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "outdentButton": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "outdentButton" },
+                    "identifier": "outdentButton",
+                    "preventFocus": true,
+                    "action": "outdent"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "unorderedlistToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "unorderedlistButton" },
+                    "identifier": "unorderedlistButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "insertunorderedlist"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.insertunorderedlist",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "orderedlistToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "orderedlistButton" },
+                    "identifier": "orderedlistButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "insertorderedlist"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.insertorderedlist",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "leftToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "leftButton" },
+                    "identifier": "leftButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "justifyleft"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.justifyleft",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "centerToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "centerButton" },
+                    "identifier": "centerButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "justifycenter"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.justifycenter",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "rightToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "rightButton" },
+                    "identifier": "rightButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "justifyright"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.justifyright",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+        "fullToggle": {
+            "module": "montage/ui/bluemoon/button.reel",
+            "name": "Button",
+            "properties": {
+                "element": {"#": "fullButton" },
+                "identifier": "fullButton",
+                "behavior": "toggle",
+                "preventFocus": true,
+                "action": "justifyfull"
+            },
+            "bindings": {
+                "pressed": {
+                    "boundObject": {"@": "editor"},
+                    "boundObjectPropertyPath": "states.justifyfull",
+                    "oneway": true
+                }
+            },
+            "listeners": [
+                {
+                    "type": "action",
+                    "listener": {"@": "editor"},
+                    "capture": false
+                }
+            ]
+        },
+
             "resetButton": {
                 "module": "montage/ui/button.reel",
                 "name": "Button",
@@ -146,9 +416,26 @@
     <header>
         <nav>
             <div class="button-group">
-                <button id="boldButton">Bold</button>
-                <button id="underlineButton">Underline</button>
-                <button id="italicButton">Italic</button>
+                <button id="boldButton" class="boldButton">B</button>
+                <button id="underlineButton" class="underlineButton">U</button>
+                <button id="italicButton" class="italicButton">I</button>
+                <button id="strikeButton" class="strikeButton">ABC</button>
+            </div>
+            <div class="button-group">
+                <button id="subButton" class="subButton">sub</button>
+                <button id="supButton" class="supButton">sup</button>
+            </div>
+            <div class="button-group">
+                <button id="outdentButton">&lt;</button>
+                <button id="indentButton">&gt;</button>
+                <button id="unorderedlistButton">•</button>
+                <button id="orderedlistButton">1.</button>
+            </div>
+            <div class="button-group">
+                <button id="leftButton">A...</button>
+                <button id="centerButton">..A..</button>
+                <button id="rightButton">..A</button>
+                <button id="fullButton">A.B</button>
             </div>
         </nav>
     </header>
