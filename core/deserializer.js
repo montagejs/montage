@@ -420,7 +420,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
             if ("module" in desc) {
                 moduleId = desc.module;
-            } else if (name = /*assignment*/(desc.prototype || desc.object)) {
+            } else if ("prototype" in desc || "object" in desc) {
+                name = desc.prototype || desc.object
                 objectLocation = name.split("[");
                 moduleId = objectLocation[0];
                 desc.module = moduleId;
@@ -538,12 +539,12 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         function deserializeObject(label, desc) {
             var moduleId,
                 name,
-                instance,
                 objectName,
                 fqn,
                 properties = desc.properties,
                 isType,
-                object,
+                object = self._objectLabels[label],
+                hasObject = object != null,
                 counter,
                 propertiesString,
                 objectLocation;
@@ -551,7 +552,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             if ("module" in desc) {
                 moduleId = desc.module;
                 objectName = name = desc.name;
-            } else {
+            } else  if ("prototype" in desc || "object" in desc) {
                 objectLocation = (desc.prototype || desc.object).split("[");
                 // this code is actually only used when canEval == false,
                 // module+name are added when the modules are parsed but it's
@@ -570,8 +571,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             fqn = moduleId + "." + name;
 
             if (deserialize) {
-                if (self._objectLabels[label]) {
-                    exports[label] = object = self._objectLabels[label];
+                if (hasObject) {
+                    exports[label] = object;
                 } else if (isType) {
                     exports[label] = object = modules[moduleId][name];
                 } else {
@@ -589,29 +590,35 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
             deserialized[label] = true;
 
-            if (fqn in requireStrings) {
-                objectName = requireStrings[fqn];
-            } else {
-                counter = (objectNamesCounter[name] || 0) + 1;
-                objectNamesCounter[name] = counter;
-                if (counter > 1) {
-                    objectName += counter;
-                }
-                requireStrings[fqn] = objectName;
-                requireStrings.push('var ' + objectName + ' = this._modules["' + moduleId + '"]["' + name + '"];');
-            }
-
             exportsStrings += 'if (this._objectLabels["' + label + '"]) {\n';
             exportsStrings += '  var ' + label + ' = exports. ' + label + ' = this._objectLabels["' + label + '"]\n';
             exportsStrings += '} else if(exports.' + label +') {';
             exportsStrings += '  var ' + label + ' = exports.' + label + ';\n';
-            exportsStrings += '} else {\n';
-            if (isType) {
-                exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + ';\n';
-            } else {
-                exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + '.create();\n';
-                exportsStrings += '  Montage.getInfoForObject(' + label + ').label = "' + label + '";\n';
-                exportsStrings += '  Object.defineProperty(' + label + ', "_suuid", {enumerable: false, value: "' + self.uuid + '-' + label + '"});\n';
+            if (!hasObject) {
+                // this block of code is only needed for when there's a
+                // prototype/object in the serialization, which is the common
+                // case, but we also support missing object creation
+                // information as long as the user defines an object to be used
+                if (fqn in requireStrings) {
+                    objectName = requireStrings[fqn];
+                } else {
+                    counter = (objectNamesCounter[name] || 0) + 1;
+                    objectNamesCounter[name] = counter;
+                    if (counter > 1) {
+                        objectName += counter;
+                    }
+                    requireStrings[fqn] = objectName;
+                    requireStrings.push('var ' + objectName + ' = this._modules["' + moduleId + '"]["' + name + '"];');
+                }
+
+                exportsStrings += '} else {\n';
+                if (isType) {
+                    exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + ';\n';
+                } else {
+                    exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + '.create();\n';
+                    exportsStrings += '  Montage.getInfoForObject(' + label + ').label = "' + label + '";\n';
+                    exportsStrings += '  Object.defineProperty(' + label + ', "_suuid", {enumerable: false, value: "' + self.uuid + '-' + label + '"});\n';
+                }
             }
             exportsStrings += '}\n';
 

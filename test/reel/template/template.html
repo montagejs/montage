@@ -32,7 +32,10 @@
                     ],
                     "slowstyle": {"@": "componentslowstyle1"},
                     "script": {"@": "componentscript1"},
-                    "template": {"@": "componenttemplate"}
+                    "template": {"@": "componenttemplate"},
+                    "daughter": {"@": "componentdaughter"},
+                    "granddaughter": {"@": "componentgranddaughter"},
+                    "granddaughtersister": {"@": "componentgranddaughtersister"}
                 }
             },
             "actioneventlistener1": {
@@ -114,6 +117,31 @@
                     "element": {"#": "componenttemplate"}
                 }
             },
+            "componentson": {
+                "module": "reel/template/componentson.reel",
+                "name": "ComponentSon",
+                "properties": {
+                    "element": {"#": "componentson"}
+                }
+            },
+            "componentdaughter": {
+                "module": "reel/template/componentdaughter.reel",
+                "name": "ComponentDaughter",
+                "properties": {
+                    "element": {"#": "componentdaughter"}
+                }
+            },
+            "componentgranddaughter": {
+                "module": "reel/template/componentgranddaughter.reel",
+                "name": "ComponentGranddaughter",
+                "properties": {
+                    "element": {"#": "componentgranddaughter"}
+                }
+            },
+            "componentgranddaughtersister": {
+                "module": "reel/template/componentgranddaughter.reel",
+                "name": "ComponentGranddaughter"
+            },
             "application": {
                 "module": "montage/ui/application",
                 "name": "Application",
@@ -154,5 +182,11 @@
     <div id="externalserialization" class="externalserialization"></div>
     
     <div id="componenttemplate" class="componenttemplate"></div>
+
+    <div id="componentson" class="componentson"></div>
+
+    <div data-montage-id="componentdaughter" class="componentdaughter"></div>
+    <div data-montage-id="componentgranddaughter" class="componentgranddaughter"></div>
+    <div data-montage-id="componentgranddaughtersister" class="componentgranddaughtersister"></div>
 </body>
 </html>
