@@ -4,29 +4,15 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
-    ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener;
+    TestPageLoader = require("support/testpageloader").TestPageLoader;
 
 var testPage = TestPageLoader.queueTest("buttontest", function() {
     var test = testPage.test;
 
-    var addListener = function(component, fn) {
-        var buttonSpy = {
-            doSomething: fn || function(event) {
-                return 1+1;
-            }
-        };
-        spyOn(buttonSpy, 'doSomething');
-
-        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-        component.addEventListener("action", actionListener);
-
-        return buttonSpy.doSomething;
-    };
     var click = function(component, el, fn) {
         el = el || component.element;
 
-        var listener = addListener(component, fn);
+        var listener = testPage.addListener(component, fn);
 
         testPage.mouseEvent({target: el}, "mousedown");
         testPage.mouseEvent({target: el}, "mouseup");
@@ -164,7 +150,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
             // TODO should be transplanted to the press-composer-spec
             // it("correctly releases the pointer", function() {
-            //     var l = addListener(test.scroll_button);
+            //     var l = testPage.addListener(test.scroll_button);
 
             //     testpage.mouseEvent({target: test.scroll_button.element}, "mousedown");;
             //     expect(test.scroll_button.active).toBe(true);
@@ -196,13 +182,13 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     it("does not dispatch an action event when a mouseup occurs after not previously receiving a mousedown", function() {
                         // reset interaction
                         // test.inputbutton._endInteraction();
-                        var l = addListener(test.inputbutton);
+                        var l = testPage.addListener(test.inputbutton);
                         testPage.mouseEvent({target: test.inputbutton.element}, "mouseup");;
                         expect(l).not.toHaveBeenCalled();
                     });
 
                     it("does not dispatch an action event when a mouseup occurs away from the button after a mousedown on a button", function() {
-                        var l = addListener(test.inputbutton);
+                        var l = testPage.addListener(test.inputbutton);
 
                         testpage.mouseEvent({target: test.inputbutton.element}, "mousedown");;
                         // Mouse up somewhere else
@@ -221,7 +207,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                     var el = test.scroll_button.element;
                     var scroll_el = test.scroll.element;
 
-                    var listener = addListener(test.scroll_button);
+                    var listener = testPage.addListener(test.scroll_button);
 
                     // mousedown
                     testPage.mouseEvent({target: el}, "mousedown");;

@@ -53,7 +53,9 @@
         "module": "ui/range-input-test/range-input-test",
         "name": "RangeInputTest",
         "properties": {
-            "range_input1": {"@": "range_input1"}
+            "range_input1": {"@": "range_input1"},
+            "scroll": {"@": "scroll"},
+            "scroll_range": {"@": "scroll_range"}
         }
     },
     "application": {
@@ -78,7 +80,7 @@
     <div id="scroll" style="background:#CCC; height: 300px">
         <div>
             <div style="background:#A00; height:50px; width:10px">.</div>
-            <input type="range" id="scroll_range" />
+            <input type="range" id="scroll_range" value="0" />
             <div style="background:#A00; height:400px; width:10px">.</div>
         </div>
     </div>
