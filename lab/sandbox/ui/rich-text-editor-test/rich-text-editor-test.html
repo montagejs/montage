@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <title>RichText Editor Test</title>
+    <link rel="stylesheet" href="rich-text-editor-test.css" />
+    <script src="../../../../montage.js"></script>
+    <script type="text/montage-serialization">
+        {
+            "editor": {
+                "module": "montage/lab/lib/ui/rich-text-editor.reel",
+                "name": "RichTextEditor",
+                "properties": {
+                    "element": {"#": "editor-frame" },
+                    "identifier": "editor",
+                    "delegate": {"@": "owner" }
+                },
+                "listeners": [
+                    {
+                        "type": "editorChange",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    },
+                    {
+                        "type": "editorSelect",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "boldToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "boldButton" },
+                    "identifier": "boldButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "bold"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.bold",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "underlineToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "underlineButton" },
+                    "identifier": "underlineButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "underline"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.underline",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "italicToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "italicButton" },
+                    "identifier": "italicButton",
+                    "behavior": "toggle",
+                    "preventFocus": true,
+                    "action": "italic"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "states.italic",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "resetButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "resetButton" },
+                    "identifier": "reset",
+                    "preventFocus": true
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "owner": {
+                "module": "rich-text-editor-test",
+                "name": "RichTextEditorTest",
+                "properties": {
+                    "editor": {"@": "editor"},
+                    "source": {"#": "source-frame"}
+                }
+            }
+
+        }
+    </script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="button-group">
+                <button id="boldButton">Bold</button>
+                <button id="underlineButton">Underline</button>
+                <button id="italicButton">Italic</button>
+            </div>
+        </nav>
+    </header>
+    <article>
+        <section class="source" id="source-frame"></section>
+        <section class="editor"><div id="editor-frame"></div></section>
+    </article>
+    <footer>
+        <button id="resetButton">Reset</button>
+    </footer>
+</body>
+</html>
