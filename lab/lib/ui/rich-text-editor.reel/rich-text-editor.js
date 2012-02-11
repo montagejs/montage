@@ -384,6 +384,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             italic: {enabled: true, needsValue:false, status: true},
             underline: {enabled: true, needsValue:false, status: true},
             strikethrough: {enabled: true, needsValue:false, status: true},
+            subscript: {enabled: true, needsValue:false, status: true},
+            superscript: {enabled: true, needsValue:false, status: true},
             indent: {enabled: true, needsValue:false, status: false},
             outdent: {enabled: true, needsValue:false, status: false},
             justifyleft: {enabled: true, needsValue:false, status: true},
