@@ -8,9 +8,9 @@ var Montage = require("montage").Montage,
 
 var changeSelection = function(select, selectedIndex) {
     select.options[selectedIndex].selected = true;
-    var evt = document.createEvent('Event');
-    evt.initEvent('change', true, true);
-    select.dispatchEvent(evt);
+    var event = document.createEvent('CustomEvent');
+    event.initEvent('change', true, true);
+    select.dispatchEvent(event);
 };
 
 var testPage = TestPageLoader.queueTest("select-input-test", function() {
@@ -86,13 +86,14 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
                     it("country's contentController must reflect selections", function() {
                         var select = test.country.element;
+
                         changeSelection(select, 1);
 
-                        testPage.waitForDraw();
-                        runs(function(){
+                        //testPage.waitForDraw();
+                        //runs(function(){
                             console.log('country contentController after change: ', test.country.contentController);
                             expect(test.country.contentController.selectedIndexes[0]).toBe(1);
-                        });
+                        //});
                     });
                 });
 

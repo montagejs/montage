@@ -202,7 +202,8 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     prepareForDraw: {
         enumerable: false,
         value: function() {
-
+            this.element.addEventListener("focus", this);
+            this.element.addEventListener('change', this);
         }
     },
 
@@ -211,10 +212,6 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             // add pressComposer to handle the claimPointer related work
             var pressComposer = PressComposer.create();
             this.addComposer(pressComposer);
-
-            var el = this.element;
-            el.addEventListener("focus", this);
-            el.addEventListener('change', this);
         }
     },
 
