@@ -67,11 +67,21 @@ var testPage = TestPageLoader.queueTest("template", function() {
                 script.setAttribute("type", Template._SCRIPT_TYPE);
                 script.textContent = Serializer.create().initWithRequire(require).serialize({owner: component});
                 htmlDocument.head.appendChild(script);
+                var latch,
+                    componentDeserializedFromTemplateCount,
+                    childDeserializedFromTemplateCount,
+                    template = Template.create().initWithDocument(htmlDocument);
 
-                var template = Template.create().initWithDocument(htmlDocument);
                 template.instantiateWithComponent(component, function() {
-                    expect(component.deserializedFromTemplateCount).toBe(0);
-                    expect(component.child.deserializedFromTemplateCount).toBe(1);
+                    componentDeserializedFromTemplateCount = component.deserializedFromTemplateCount;
+                    childDeserializedFromTemplateCount = component.child.deserializedFromTemplateCount;
+                    latch = true;
+                });
+
+                waitsFor(function() { return latch; });
+                runs(function() {
+                    expect(componentDeserializedFromTemplateCount).toBe(0);
+                    expect(childDeserializedFromTemplateCount).toBe(1);
                 });
             });
         });
@@ -107,6 +117,9 @@ var testPage = TestPageLoader.queueTest("template", function() {
                 component.element = element;
                 component.needsDraw = true;
                 testPage.waitForDraw();
+                runs(function() {
+                    expect(component.didDraw).toHaveBeenCalled();
+                });
             });
         });
 
