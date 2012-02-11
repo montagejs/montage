@@ -78,7 +78,7 @@ if (typeof window !== "undefined") {
             Require.PackageSandbox(params.montageBase, config)
             .then(function (montageRequire) {
                 montageRequire.inject("core/promise", Promise);
-                montageRequire.inject("core/shim/timeers", {});
+                montageRequire.inject("core/shim/timers", {});
 
                 // install the linter, which loads on the first error
                 config.lint = function (module) {

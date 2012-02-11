@@ -7,7 +7,8 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     ArrayController = require("ui/controller/array-controller").ArrayController,
-    NativeControl = require("ui/native-control").NativeControl;
+    NativeControl = require("ui/native-control").NativeControl,
+    PressComposer = require("ui/composer/press-composer").PressComposer;
 
 var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
@@ -158,18 +159,6 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         }
     },
 
-    /**
-    Description TODO
-    @function
-    */
-    prepareForDraw: {
-        enumerable: false,
-        value: function() {
-            var el = this.element;
-            el.addEventListener("focus", this);
-            el.addEventListener('change', this);
-        }
-    },
 
     _removeAll: {
         value: function(elem) {
@@ -203,6 +192,29 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                 }
                 this.element.appendChild(option);
             }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    prepareForDraw: {
+        enumerable: false,
+        value: function() {
+
+        }
+    },
+
+    prepareForActivationEvents: {
+        value: function() {
+            // add pressComposer to handle the claimPointer related work
+            var pressComposer = PressComposer.create();
+            this.addComposer(pressComposer);
+
+            var el = this.element;
+            el.addEventListener("focus", this);
+            el.addEventListener('change', this);
         }
     },
 

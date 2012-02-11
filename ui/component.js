@@ -6,7 +6,6 @@
 /**
 	@module montage/ui/component
     @requires montage/core/core
-    @requires montage/core/event/mutable-event
     @requires montage/ui/reel
     @requires montage/core/gate
     @requires montage/core/logger | component
@@ -14,7 +13,6 @@
     @requires montage/core/event/event-manager
 */
 var Montage = require("montage").Montage,
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
     logger = require("core/logger").logger("component"),
