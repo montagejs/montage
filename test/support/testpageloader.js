@@ -3,9 +3,7 @@
  */
 var Montage = require("montage").Montage,
     dom = require("montage/ui/dom"),
-    URL = require("montage/core/url"),
-    ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener;
-
+    URL = require("montage/core/url");
 
 var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     init: {
@@ -243,22 +241,6 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     window: {
         get: function() {
             return this.iframe.contentWindow;
-        }
-    },
-
-    addListener: {
-        value: function(component, fn) {
-            var buttonSpy = {
-                doSomething: fn || function(event) {
-                    return 1+1;
-                }
-            };
-            spyOn(buttonSpy, 'doSomething');
-
-            var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-            component.addEventListener("action", actionListener);
-
-            return buttonSpy.doSomething;
         }
     },
 

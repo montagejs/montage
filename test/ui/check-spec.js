@@ -10,10 +10,23 @@ var Montage = require("montage").Montage,
 var testPage = TestPageLoader.queueTest("checktest", function() {
     var test = testPage.test;
 
+    var addListener = function(component, fn) {
+        var buttonSpy = {
+            doSomething: fn || function(event) {
+                return 1+1;
+            }
+        };
+        spyOn(buttonSpy, 'doSomething');
+
+        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
+        component.addEventListener("action", actionListener);
+
+        return buttonSpy.doSomething;
+    };
     var click = function(component, el, fn) {
         el = el || component.element;
 
-        var listener = testPage.addListener(component, fn);
+        var listener = addListener(component, fn);
 
         testPage.mouseEvent({target: el}, "mousedown");;
         testPage.mouseEvent({target: el}, "mouseup");;
@@ -135,7 +148,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                 expect(test.check1.checked).toBe(true);
 
 
-                var listener = testPage.addListener(test.check1);
+                var listener = addListener(test.check1);
                 testPage.mouseEvent({target: testPage.getElementById("label")}, "click");;
                 expect(listener).toHaveBeenCalled();
                 expect(test.check1.checked).toBe(false);
@@ -158,7 +171,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                     expect(test.scroll_check.checked).toBe(true);
 
 
-                    var listener = testPage.addListener(test.scroll_check);
+                    var listener = addListener(test.scroll_check);
                     testPage.mouseEvent({target: testPage.getElementById("scroll_label")}, "click");;
                     expect(listener).toHaveBeenCalled();
                     expect(test.scroll_check.checked).toBe(false);
@@ -167,7 +180,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                     var el = test.scroll_check.element;
                     var scroll_el = test.scroll.element;
 
-                    var listener = testPage.addListener(test.scroll_check);
+                    var listener = addListener(test.scroll_check);
 
                     // mousedown
                     testPage.mouseEvent({target: el}, "mousedown");;
