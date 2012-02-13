@@ -1,3 +1,11 @@
+# v0.6.0
+
+-   Native Controls based on HTML5 input elements
+-   Composers to add aggregate events and time dependent behaviors as is needed for scroll momentum and bouncing.
+-   Component Contents to make it easier to use existing wrapper components such as repetition in your own.
+-   Condition Component API improvements to lazily load parts of your component tree and easily show or hide sections of your page.
+-   Misc bug fixes and optimizations mostly in the loading of the app and the require/package system..
+
 # v0.5.0
 
 -   Added UndoManager.
