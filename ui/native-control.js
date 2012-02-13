@@ -241,7 +241,7 @@ NativeControl.addAttributes({
     contextmenu: null,
     'class': null,
     dir: null,
-    draggable: {dataType: 'boolean'},
+    draggable: null,
     dropzone: null, // copy/move/link
     hidden: {dataType: 'boolean'},
     //id: null,
