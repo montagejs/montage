@@ -839,8 +839,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
      */
     deserializeObjectWithElement: {
         value: function(element, callback) {
-            return this.deserializeWithInstancesAndElementForDocument(null, element, null, function(exports) {
-                callback(exports ? exports.root : undefined);
+            return this.deserializeWithInstancesAndElementForDocument(null, element, null, function(exports, element) {
+                callback(exports ? exports.root : undefined, element);
             });
         }
     },
@@ -900,7 +900,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
                 self._invokeDeserializedFromSerialization(exports);
 
-                callback(exports);
+                callback(exports, body);
             });
         }
     },
@@ -924,7 +924,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 var exports = self._deserialize(sourceDocument);
 
                 self._invokeDeserializedFromSerialization(exports);
-                callback(exports);
+                callback(exports, sourceDocument);
             });
         }
     },
