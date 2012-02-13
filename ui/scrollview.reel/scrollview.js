@@ -378,7 +378,7 @@ var Scrollview = exports.Scrollview = Montage.create(Component, /** @lends modul
     */
     _shouldPreventDefault: {
         value: function(event) {
-            return event.tagName && Scrollview._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
+            return !!event.target.tagName && Scrollview._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
         }
     },
 
