@@ -181,7 +181,7 @@ exports.Scroller = Montage.create(Component, {
             this._height = this._element.offsetHeight;
             this._maxTranslateX = this._content.scrollWidth - this._width;
             if (this._maxTranslateX < 0) {
-                this._.maxTranslateX = 0;
+                this._maxTranslateX = 0;
             }
             this._maxTranslateY = this._content.offsetHeight - this._height;
             if (this._maxTranslateY < 0) {
