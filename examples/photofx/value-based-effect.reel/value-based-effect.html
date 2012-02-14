@@ -13,13 +13,16 @@
     <script type="text/montage-serialization">
         {
             "enabledToggle": {
-                "module": "montage/ui/toggle-switch.reel",
-                "name": "ToggleSwitch",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "toggle"}
+                    "element": {"#": "toggle"},
+                    "pressedClass": "success",
+                    "pressedLabel": "ON",
+                    "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "value": {
+                    "pressed": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "enabled"
                     }
@@ -160,7 +163,7 @@
 <body>
 
     <div id="control" class="ValueBasedEffect">
-        <span id="toggle"></span> <span id="effectName"></span>
+        <button id="toggle" class="btn" style="width: 60px;">ON</button>
         <div class="valueControl">
             <input type="range" id="valueSlider" class="slider" name="multiply"/>
             <div id="valueDisplay" class="value"></div>
