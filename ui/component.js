@@ -235,17 +235,23 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         get: function() {
             var cachedParentComponent = this._cachedParentComponent;
             if (cachedParentComponent == null) {
-                var anElement = this.element,
-                    aParentNode,
-                    eventManager = this.eventManager;
-                if (anElement) {
-                    while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
-                        anElement = aParentNode;
-                    }
-                    return (this._cachedParentComponent = aParentNode ? eventManager.eventHandlerForElement(aParentNode) : null);
-                }
+                return (this._cachedParentComponent = this.findParentComponent());
             } else {
                 return cachedParentComponent;
+            }
+        }
+    },
+
+    findParentComponent: {
+        value: function() {
+            var anElement = this.element,
+                aParentNode,
+                eventManager = this.eventManager;
+            if (anElement) {
+                while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
+                    anElement = aParentNode;
+                }
+                return aParentNode ? eventManager.eventHandlerForElement(aParentNode) : null;
             }
         }
     },
@@ -407,9 +413,20 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             this._cachedParentComponent = null;
 
-            var parentComponent = this.parentComponent;
+            var parentComponent = this.parentComponent,
+                childComponents,
+                childComponent;
 
             if (parentComponent) {
+                childComponents = parentComponent.childComponents;
+                for (var i = 0; (childComponent = childComponents[i]); i++) {
+                    var newParentComponent = childComponent.findParentComponent();
+                    if (newParentComponent === this) {
+                        parentComponent.removeChildComponent(childComponent);
+                        newParentComponent._addChildComponent(childComponent);
+                    }
+                }
+
                 parentComponent._addChildComponent(this);
             }
         }

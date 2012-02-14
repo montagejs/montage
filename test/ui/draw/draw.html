@@ -21,7 +21,9 @@
             "componentC1": {"@": "componentC1"},
             "componentNoelement": {"@": "componentNoelement"},
             "componentD": {"@": "componentD"},
-            "componentDtarget": {"@": "componentDtarget"}
+            "componentDtarget": {"@": "componentDtarget"},
+            "componentE": {"@": "componentE"},
+            "componentE11": {"@": "componentE11"}
         }
     },
     "repetition": {
@@ -81,7 +83,22 @@
             "hasTemplate": false
         }
     },
-
+    "componentE": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentE"},
+            "hasTemplate": false
+        }
+    },
+    "componentE11": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentE11"},
+            "hasTemplate": false
+        }
+    },
     "owner": {
         "module": "montage/ui/application",
         "name": "Application",
@@ -112,5 +129,10 @@
 </div>
 <div id="componentDtarget"></div>
 <div id="repetition"><h3>Original Content</h3><p>here</p></div>
+<div id="componentE">
+    <div id="componentE1">
+        <div id="componentE11"></div>
+    </div>
+</div>
 </body>
 </html>
