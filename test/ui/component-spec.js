@@ -391,6 +391,22 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     });
                 });
             });
+
+            describe("the component tree", function() {
+                it("should reorganize the component tree when a new component is added", function() {
+                    var Component = testPage.window.require("montage/ui/component").Component,
+                        componentE1 = Component.create(),
+                        element = testPage.window.document.getElementById("componentE1");
+
+                    componentE1.hasTemplate = false;
+                    componentE1.element = element;
+                    componentE1.attachToParentComponent();
+                    expect(testPage.test.componentE.childComponents.length).toBe(1);
+                    expect(testPage.test.componentE.childComponents[0]).toBe(componentE1);
+                    expect(componentE1.childComponents.length).toBe(1);
+                    expect(componentE1.childComponents[0]).toBe(testPage.test.componentE11);
+                });
+            })
         });
     });
 });

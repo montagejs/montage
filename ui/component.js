@@ -413,9 +413,20 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             this._cachedParentComponent = null;
 
-            var parentComponent = this.parentComponent;
+            var parentComponent = this.parentComponent,
+                childComponents,
+                childComponent;
 
             if (parentComponent) {
+                childComponents = parentComponent.childComponents;
+                for (var i = 0; (childComponent = childComponents[i]); i++) {
+                    var newParentComponent = childComponent.findParentComponent();
+                    if (newParentComponent === this) {
+                        parentComponent.removeChildComponent(childComponent);
+                        newParentComponent._addChildComponent(childComponent);
+                    }
+                }
+
                 parentComponent._addChildComponent(this);
             }
         }
