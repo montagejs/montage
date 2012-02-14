@@ -120,7 +120,10 @@ exports.Scroller = Montage.create(Component, {
             return this._momentumDuration;
         },
         set: function (value) {
-            this._momentumDuration = value;
+            this._momentumDuration = isNaN(parseInt(value, 10)) ? 1 : parseInt(value, 10);
+            if (this._momentumDuration < 1) {
+                this._momentumDuration = 1;
+            }
         }
     },
 
@@ -134,7 +137,10 @@ exports.Scroller = Montage.create(Component, {
             return this._bouncingDuration;
         },
         set: function (value) {
-            this._bouncingDuration = value;
+            this._bouncingDuration = isNaN(parseInt(value, 10)) ? 1 : parseInt(value, 10);
+            if (this._bouncingDuration < 1) {
+                this._bouncingDuration = 1;
+            }
         }
     },
 
