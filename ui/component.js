@@ -59,7 +59,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             var actionEvent = document.createEvent("CustomEvent");
             actionEvent.initCustomEvent("action", true, true, null);
-            actionEvent.type = "action";
             return actionEvent;
         }
     },
