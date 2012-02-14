@@ -124,7 +124,6 @@ var testPage = TestPageLoader.queueTest("template", function() {
 
                 var anEvent = document.createEvent("CustomEvent");
                 anEvent.initCustomEvent("action", true, true, null);
-                anEvent.type = "action";
 
                 component.dispatchEvent.call(component, anEvent);
                 expect(application.delegate.listener).toHaveBeenCalled();

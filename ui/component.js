@@ -59,7 +59,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             var actionEvent = document.createEvent("CustomEvent");
             actionEvent.initCustomEvent("action", true, true, null);
-            actionEvent.type = "action";
             return actionEvent;
         }
     },
@@ -406,19 +405,19 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     attachToParentComponent: {
         value: function() {
             this._cachedParentComponent = null;
-            
+
             var parentComponent = this.parentComponent;
-            
+
             if (parentComponent) {
                 parentComponent._addChildComponent(this);
             }
         }
     },
-    
+
     detachFromParentComponent: {
         value: function() {
             var parentComponent = this.parentComponent;
-            
+
             if (parentComponent) {
                 parentComponent.removeChildComponent(this);
             }
@@ -488,7 +487,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: null
     },
-    
+
     /**
      * Remove all bindings and starts buffering the needsDraw.
      * @function
@@ -505,16 +504,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             });
         }
     },
-    
+
     originalContent: {
         value: null
     },
-    
+
     _newContent: {
         enumerable: false,
         value: null
     },
-    
+
     content: {
         get: function() {
             if (this._element) {
@@ -526,21 +525,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         set: function(value) {
             var components = [],
                 childNodes;
-                
+
             this._newContent = value;
             this.needsDraw = true;
-            
+
             if (typeof this.contentWillChange === "function") {
                 this.contentWillChange(value);
             }
-            
+
             // cleanup current content
             components = this.childComponents;
             for (var i = 0, component; (component = components[i]); i++) {
                 component.detachFromParentComponent();
                 component.cleanupDeletedComponentTree();
             }
-            
+
             if (value instanceof Element) {
                 findAndDetachComponents(value);
             } else {
@@ -548,11 +547,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     findAndDetachComponents(value[i]);
                 }
             }
-            
+
             // find the component fringe and detach them from the component tree
             function findAndDetachComponents(node) {
                 var component = node.controller;
-                
+
                 if (component) {
                     component.detachFromParentComponent();
                     components.push(component);
@@ -563,14 +562,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
             }
-            
+
             // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
             for (var i = 0, component; (component = components[i]); i++) {
                 this._addChildComponent(component);
             }
         }
     },
-    
+
 /**
     Description TODO
     @function
@@ -993,7 +992,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     value = (template.getAttribute(attributeName) || "") + " " +
                         attribute.nodeValue;
                 }
-                
+
                 template.setAttribute(attributeName, value);
             }
 
@@ -1072,13 +1071,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             var contents = this._newContent,
                 element;
-            
+
             this._canDrawTable = {};
             this._canDrawCount = 0;
-            
+
             if (contents) {
                 element = this._element;
-                
+
                 element.innerHTML = "";
 
                 if (contents instanceof Element) {
@@ -1088,7 +1087,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                         element.appendChild(content);
                     }
                 }
-                
+
                 this._newContent = null;
                 if (typeof this.contentDidChange === "function") {
                     this.contentDidChange();

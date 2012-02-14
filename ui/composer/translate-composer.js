@@ -573,7 +573,6 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
             var translateStartEvent = document.createEvent("CustomEvent");
 
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
-            translateStartEvent.type = "translateStart";
             this.dispatchEvent(translateStartEvent);
         }
     },
@@ -584,7 +583,6 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
             var translateEndEvent = document.createEvent("CustomEvent");
 
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
-            translateEndEvent.type = "translateEnd";
             this.dispatchEvent(translateEndEvent);
         }
     },
