@@ -235,17 +235,23 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         get: function() {
             var cachedParentComponent = this._cachedParentComponent;
             if (cachedParentComponent == null) {
-                var anElement = this.element,
-                    aParentNode,
-                    eventManager = this.eventManager;
-                if (anElement) {
-                    while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
-                        anElement = aParentNode;
-                    }
-                    return (this._cachedParentComponent = aParentNode ? eventManager.eventHandlerForElement(aParentNode) : null);
-                }
+                return (this._cachedParentComponent = this.findParentComponent());
             } else {
                 return cachedParentComponent;
+            }
+        }
+    },
+
+    findParentComponent: {
+        value: function() {
+            var anElement = this.element,
+                aParentNode,
+                eventManager = this.eventManager;
+            if (anElement) {
+                while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
+                    anElement = aParentNode;
+                }
+                return aParentNode ? eventManager.eventHandlerForElement(aParentNode) : null;
             }
         }
     },
