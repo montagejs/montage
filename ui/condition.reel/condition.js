@@ -110,9 +110,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
         enumerable:false
     },
 
-    /**
-
-     */
     // TODO should this strategy be part of another class?
     // TODO expose the options as an exported enum
     removalStrategy:{
@@ -132,11 +129,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
     },
 
 
-    /**
-
-     @param
-         @returns
-     */
     didCreate:{
         value:function () {
             this._slot = Slot.create();
