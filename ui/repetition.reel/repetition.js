@@ -440,6 +440,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 childComponent;
 
             this.setupIterationSerialization();
+            this.setupIterationDeserialization();
             this._iterationChildComponentsCount = childComponents.length;
             this._iterationChildCount = element.childNodes.length;
             this._iterationChildElementCount = element.children.length;
@@ -506,7 +507,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     },
 
     deserializedFromTemplate: {value: function deserializedFromTemplate() {
-        this.setupIterationDeserialization();
         if (this._isComponentExpanded) {
             // this is setup just for the flattening of the template iteration, the iteration needs to be serialized once it's completely flatten.
             this.setupIterationSerialization();
