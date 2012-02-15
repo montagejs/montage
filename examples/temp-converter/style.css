@@ -12,17 +12,22 @@ html {
 
 body {
     margin: 0;
+    width: 100%;
     height: 100%;
-
     display: -webkit-box;
     -webkit-box-align: center;
     -webkit-box-pack: center;
+    
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-pack: center;
 }
+
 
 
 .converter {
    padding: 20px;
-   width: 280px;
+   width: 350px;
 
    text-shadow: #fff 0 1px 0;
 

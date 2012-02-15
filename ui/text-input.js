@@ -174,7 +174,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
 */
     _setElementValue: {
         value: function(value) {
-            this.element.value = (value || '');
+            this.element.value = (value == null ? '' : value);
         }
     },
 /**

@@ -16,8 +16,22 @@
                 "module": "app-delegate",
                 "name": "AppDelegate",
                 "properties": {
-                    "generateUUIDForm": {"#": "generateUUIDForm"}
                 }
+            },
+            "generate-uuid": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "generate-uuid"},
+                    "identifier": "generateUUID"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "appdelegate1"},
+                        "capture": false
+                    }
+                ]
             },
             "textfield1": {
                 "module": "montage/ui/textfield.reel",
@@ -55,11 +69,11 @@
 <body>
 
     <form id="generateUUIDForm">
-        <input class="submitButton" type="submit" value="Generate UUID" />
+        <button id="generate-uuid" class="" type="button">Generate UUID</button>
     </form>
 
     <ul id="testList">
-        <li><input type="text" id="uuid" readonly /></li>
+        <li><input type="text" id="uuid" readonly size="48" /></li>
     </ul>
 
 </body>
