@@ -91,7 +91,7 @@
             margin-left: 5px;
         }
 
-        .list .montage-list-scrollView {
+        .list .montage-list-scroller {
             height: 300px;
         }
 
@@ -129,7 +129,7 @@
             <div class="span8 description">
                 <h3>List</h3>
                 <p>
-                    The List component repeatedly generates new DOM structure based on a collection of data objects.  Like the Repetition component, the List component duplicates the contents of its associated HTML element, including any child elements. Those child elements may, in turn, be associated with other components. You can bind properties in the List's data source to each duplicated instance. The List also supports horizontal and vertical scrolling, with optional momentum and bounce behavior. In fact, List is composed of a Repetition component nested inside a ScrollView component.
+                    The List component repeatedly generates new DOM structure based on a collection of data objects.  Like the Repetition component, the List component duplicates the contents of its associated HTML element, including any child elements. Those child elements may, in turn, be associated with other components. You can bind properties in the List's data source to each duplicated instance. The List also supports horizontal and vertical scrolling, with optional momentum and bounce behavior. In fact, List is composed of a Repetition component nested inside a Scroller component.
                 </p>
                 <p>
                     In this example, each row in the List contains an image (&lt;img&gt;) and a title (&lt;h3&gt;) that are controlled, respectively, by Image and DynamicText components. An ArrayController manages the List's data.
@@ -266,13 +266,13 @@
 
 }
 
-.list .montage-list-scrollView {
+.list .montage-list-scroller {
     height: 300px;
 }
 
         </pre>
 
-        <p>The <code class="prettyprint">.list .montage-list-scrollView</code> CSS selector is added to make sure the underlying ScrollView component displays it scrollbars. Note that the <code>height</code> assigned to the selector matches the height of the list itself (300px).</p>
+        <p>The <code class="prettyprint">.list .montage-list-scroller</code> CSS selector is added to make sure the underlying Scroller component displays it scrollbars. Note that the <code>height</code> assigned to the selector matches the height of the list itself (300px).</p>
 
 </section>
 

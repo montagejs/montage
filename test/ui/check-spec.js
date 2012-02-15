@@ -163,7 +163,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                     expect(listener).toHaveBeenCalled();
                     expect(test.scroll_check.checked).toBe(false);
                 })
-                it("doesn't fire an action event when scrollview is dragged", function() {
+                it("doesn't fire an action event when scroller is dragged", function() {
                     var el = test.scroll_check.element;
                     var scroll_el = test.scroll.element;
 

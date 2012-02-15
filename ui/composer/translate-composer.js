@@ -341,8 +341,8 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
     },
 
     /**
-    Handle the mousedown that bubbled back up from beneath this scrollview
-    If nobody else claimed this pointer, the scrollview should handle it now
+    Handle the mousedown that bubbled back up from beneath the element
+    If nobody else claimed this pointer, we should handle it now
     @function
     @param {Event} event TODO
     */
@@ -404,7 +404,7 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
                 event.preventDefault();
             }
 
-            // If already scrolling the scrollview, ignore any new touchstarts
+            // If already scrolling, ignore any new touchstarts
             if (this._observedPointer !== null && this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 return;
             }
@@ -490,7 +490,7 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
 
             angle = velocity.angle;
 
-            // The motion is with the grain of the scrollview; we may want to see if we should claim the pointer
+            // The motion is with the grain of the element; we may want to see if we should claim the pointer
             if ("horizontal" === this.axis) {
 
                 isRight = (angle <= lowerRight && angle >= upperRight);

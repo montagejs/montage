@@ -203,7 +203,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 it("fires an action event when clicked", function() {
                     testButton(test.scroll_button, "scroll button");
                 });
-                it("doesn't fire an action event when scrollview is dragged", function() {
+                it("doesn't fire an action event when scroller is dragged", function() {
                     var el = test.scroll_button.element;
                     var scroll_el = test.scroll.element;
 

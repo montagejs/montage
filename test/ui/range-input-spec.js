@@ -35,7 +35,7 @@ var testPage = TestPageLoader.queueTest("range-input-test", function() {
                 expect(test.range_input1.value).toBeGreaterThan(0);
             });
 
-            describe("inside a scrollview", function() {
+            describe("inside a scroller", function() {
                 it("can be changed", function() {
                     expect(test.scroll_range.value).toBe("0");
 
