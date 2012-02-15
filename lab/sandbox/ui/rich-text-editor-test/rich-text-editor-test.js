@@ -1,5 +1,75 @@
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Converter = require("montage/core/converter/converter").Converter;
+
+
+/**
+* Converter to Turn boolean into string values
+*/
+exports.BooleanConverter = Montage.create(Converter, {
+    convert: {
+        enumerable: false,
+        value: function(value) {
+            return value ? "true" : "false";
+        }
+    },
+
+    revert: {
+        enumerable: false,
+        value: function(value) {
+            return value === "true";
+        }
+    }
+});
+
+/**
+* Converter to Turn a justify value into boolean string
+*/
+exports.ValueConverter = Montage.create(Converter, {
+    value: {value: null},
+    defaultValue: {value: undefined},
+
+    convert: {
+        enumerable: false,
+        value: function(value) {
+//            console.log("CONVERT VALUE:", this.value, value, value === this.value ? "true" : "false");
+            return value === this.value ? "true" : "false";
+        }
+    },
+
+    revert: {
+        enumerable: false,
+        value: function(value) {
+//            console.log("REVERT VALUE:", value, value === "true" ? this.value : this.defaultValue);
+            return value === "true" ? this.value : this.defaultValue;
+        }
+    }
+});
+
+/**
+* Converter to Turn a value into a array controller index
+*/
+exports.IndexesConverter = Montage.create(Converter, {
+    component : { value: null },
+
+    convert: {
+        enumerable: false,
+        value: function(value) {
+            var index = this.component._indexOf(value);
+            console.log("CONVERT:", value, index);
+            return index != -1 ? [index] : [0];
+        }
+    },
+
+    revert: {
+        enumerable: false,
+        value: function(index) {
+            var value = this.component.content[index].value;
+            console.log("REVERT:", index, value);
+            return value;
+        }
+    }
+});
 
 exports.RichTextEditorTest = Montage.create(Component, {
 
@@ -13,6 +83,7 @@ exports.RichTextEditorTest = Montage.create(Component, {
             } else {
                 this.loadDefaultContent();
             }
+            popup = this.popup;
         }
     },
 
@@ -104,7 +175,9 @@ exports.RichTextEditorTest = Montage.create(Component, {
     handleEditorSelect: {
         enumerable: false,
         value: function(editor) {
-            this.editor.updateStates();
+            /*
+                the delegate provide a change for the consumer to do something when the selection has changed
+             */
         }
     },
 

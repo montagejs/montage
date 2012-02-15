@@ -35,30 +35,26 @@
                 ]
             },
 
+            "booleanConverter": {
+                "module": "rich-text-editor-test",
+                "name": "BooleanConverter"
+            },
+
             "boldToggle": {
                 "module": "montage/ui/bluemoon/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "boldButton" },
-                    "identifier": "boldButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "bold"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.bold",
-                        "oneway": true
+                        "boundObjectPropertyPath": "bold",
+                        "converter": {"@": "booleanConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
             },
 
             "underlineToggle": {
@@ -66,25 +62,16 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "underlineButton" },
-                    "identifier": "underlineButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "underline"
+                    "preventFocus": true
                 },
                 "bindings": {
-                    "pressed": {
+                    "xpressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.underline",
-                        "oneway": true
+                        "boundObjectPropertyPath": "underline",
+                        "converter": {"@": "booleanConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
             },
 
             "italicToggle": {
@@ -92,25 +79,16 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "italicButton" },
-                    "identifier": "italicButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "italic"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.italic",
-                        "oneway": true
+                        "boundObjectPropertyPath": "italic",
+                        "converter": {"@": "booleanConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
             },
 
             "strikeToggle": {
@@ -118,25 +96,16 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "strikeButton" },
-                    "identifier": "strikeButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "strikethrough"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.strikethrough",
-                        "oneway": true
+                        "boundObjectPropertyPath": "strikethrough",
+                        "converter": {"@": "booleanConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
             },
 
             "subToggle": {
@@ -144,25 +113,16 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "subButton" },
-                    "identifier": "subButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "subscript"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.subscript",
-                        "oneway": true
+                        "boundObjectPropertyPath": "subscript",
+                        "converter": {"@": "booleanConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
             },
 
             "supToggle": {
@@ -170,25 +130,16 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "supButton" },
-                    "identifier": "supButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "superscript"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.superscript",
-                        "oneway": true
+                        "boundObjectPropertyPath": "superscript",
+                        "converter": {"@": "booleanConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
             },
 
             "indentButton": {
@@ -214,9 +165,8 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "outdentButton" },
-                    "identifier": "outdentButton",
-                    "preventFocus": true,
-                    "action": "outdent"
+                    "identifier": "outdent",
+                    "preventFocus": true
                 },
                 "listeners": [
                     {
@@ -225,6 +175,15 @@
                         "capture": false
                     }
                 ]
+            },
+
+            "unorderedListConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "unordered",
+                    "defaultValue": "none"
+                }
             },
 
             "unorderedlistToggle": {
@@ -232,25 +191,25 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "unorderedlistButton" },
-                    "identifier": "unorderedlistButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "insertunorderedlist"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.insertunorderedlist",
-                        "oneway": true
+                        "boundObjectPropertyPath": "liststyle",
+                        "converter": {"@": "unorderedListConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
+            },
+
+            "orderedListConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "ordered",
+                    "defaultValue": "none"
+                }
             },
 
             "orderedlistToggle": {
@@ -258,25 +217,24 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "orderedlistButton" },
-                    "identifier": "orderedlistButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "insertorderedlist"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.insertorderedlist",
-                        "oneway": true
+                        "boundObjectPropertyPath": "liststyle",
+                        "converter": {"@": "orderedListConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
+            },
+
+            "justifyLeftConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "left"
+                }
             },
 
             "leftToggle": {
@@ -284,25 +242,24 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "leftButton" },
-                    "identifier": "leftButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "justifyleft"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.justifyleft",
-                        "oneway": true
+                        "boundObjectPropertyPath": "justify",
+                        "converter": {"@": "justifyLeftConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
+            },
+
+            "justifyCenterConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "center"
+                }
             },
 
             "centerToggle": {
@@ -310,25 +267,24 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "centerButton" },
-                    "identifier": "centerButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "justifycenter"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.justifycenter",
-                        "oneway": true
+                        "boundObjectPropertyPath": "justify",
+                        "converter": {"@": "justifyCenterConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
+            },
+
+            "justifyRightConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "right"
+                }
             },
 
             "rightToggle": {
@@ -336,52 +292,81 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "rightButton" },
-                    "identifier": "rightButton",
                     "behavior": "toggle",
-                    "preventFocus": true,
-                    "action": "justifyright"
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "states.justifyright",
-                        "oneway": true
+                        "boundObjectPropertyPath": "justify",
+                        "converter": {"@": "justifyRightConverter"}
                     }
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
+                }
             },
 
-        "fullToggle": {
-            "module": "montage/ui/bluemoon/button.reel",
-            "name": "Button",
-            "properties": {
-                "element": {"#": "fullButton" },
-                "identifier": "fullButton",
-                "behavior": "toggle",
-                "preventFocus": true,
-                "action": "justifyfull"
-            },
-            "bindings": {
-                "pressed": {
-                    "boundObject": {"@": "editor"},
-                    "boundObjectPropertyPath": "states.justifyfull",
-                    "oneway": true
+            "justifyFullConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "full"
                 }
             },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "editor"},
-                    "capture": false
+
+            "fullToggle": {
+                "module": "montage/ui/bluemoon/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "fullButton" },
+                    "behavior": "toggle",
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "justify",
+                        "converter": {"@": "justifyFullConverter"}
+                    }
                 }
-            ]
-        },
+            },
+
+            "justificationController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                        {"text" : "Left", "value": "left"},
+                        {"text" : "Center", "value": "center"},
+                        {"text" : "Right", "value": "right"},
+                        {"text" : "Full", "value": "full"}
+                    ]
+                }
+            },
+
+            "indexesConverter": {
+                "module": "rich-text-editor-test",
+                "name": "IndexesConverter",
+                "properties": {
+                    "component": {"@": "justify"}
+                }
+            },
+
+            "justify": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "justification"},
+                    "contentController": {"@": "justificationController"}
+                },
+                "bindings": {
+                    "selectedIndexes": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "justify",
+                        "converter": {"@": "indexesConverter"}
+                    }
+                }
+            },
 
             "resetButton": {
                 "module": "montage/ui/button.reel",
@@ -405,7 +390,8 @@
                 "name": "RichTextEditorTest",
                 "properties": {
                     "editor": {"@": "editor"},
-                    "source": {"#": "source-frame"}
+                    "source": {"#": "source-frame"},
+  "popup": {"@": "justify"}
                 }
             }
 
@@ -436,6 +422,9 @@
                 <button id="centerButton">..A..</button>
                 <button id="rightButton">..A</button>
                 <button id="fullButton">A.B</button>
+
+                <select id="justification">
+                </select>
             </div>
         </nav>
     </header>
