@@ -15,6 +15,11 @@ var global = typeof global !== "undefined" ? global : window;
 
 var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
     describe("events/eventmanager-spec", function() {
+
+        var CAPTURING_PHASE = 1,
+            AT_TARGET = 2,
+            BUBBLING_PHASE = 3;
+
         it("should load", function() {
             expect(testPage.loaded).toBeTruthy();
         });
@@ -502,13 +507,13 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     var eventCaptureSpy = {
                         handleEvent: function(event) {
-                            expect(event.eventPhase).toBe(event.CAPTURING_PHASE);
+                            expect(event.eventPhase).toBe(CAPTURING_PHASE);
                         }
                     };
 
                     var eventBubbleSpy = {
                         handleEvent: function(event) {
-                            expect(event.eventPhase).toBe(event.BUBBLING_PHASE);
+                            expect(event.eventPhase).toBe(BUBBLING_PHASE);
                         }
                     };
 
@@ -528,7 +533,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     var eventSpy = {
                         handleEvent: function(event) {
-                            expect(event.eventPhase).toBe(event.CAPTURING_PHASE);
+                            expect(event.eventPhase).toBe(CAPTURING_PHASE);
                         }
                     };
 
@@ -545,7 +550,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 it("should present the event at the AT_TARGET when the current target is the proximal target when the listener registered for the capture phase", function() {
                     var eventSpy = {
                         handleEvent: function(event) {
-                            expect(event.eventPhase).toBe(event.AT_TARGET);
+                            expect(event.eventPhase).toBe(AT_TARGET);
                         }
                     };
 
@@ -562,7 +567,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 it("should present the event at the AT_TARGET when the current target is the proximal target when the listener registered for the bubble phase", function() {
                     var eventSpy = {
                         handleEvent: function(event) {
-                            expect(event.eventPhase).toBe(event.AT_TARGET);
+                            expect(event.eventPhase).toBe(AT_TARGET);
                         }
                     };
 
@@ -580,7 +585,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
                     var eventSpy = {
                         handleEvent: function(event) {
-                            expect(event.eventPhase).toBe(event.BUBBLING_PHASE);
+                            expect(event.eventPhase).toBe(BUBBLING_PHASE);
                         }
                     };
 
