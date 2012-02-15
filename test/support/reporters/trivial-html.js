@@ -206,7 +206,7 @@ jasmine.TrivialReporter.prototype.reportSpecResults = function(spec) {
                     }
                 }
                 var specFunction = block.func;
-                messagesDiv.appendChild(this.createDom('div', {className: 'code'}, js_beautify(typeof specFunction === "function" ? specFunction.toString() : "")));
+                messagesDiv.appendChild(this.createDom('div', {className: 'code'}, js_beautify(typeof specFunction === "function" ? specFunction.toString() : "").replace(/</, "&lt;").replace(/>/, "&gt;")));
             }
         }
     }
