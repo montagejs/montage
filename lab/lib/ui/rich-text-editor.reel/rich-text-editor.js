@@ -12,7 +12,7 @@ var Montage = require("montage").Montage,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
     Resizer = require("./rich-text-resizer").Resizer,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    Point = require("core/geometry/point").Point;
+    defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
     @class module:"montage/ui/rich-text-editor.reel".RichTextEditor
@@ -98,9 +98,39 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
-    _dirty: {
+    _needsFocus: {
+        value: false
+    },
+
+    /**
+      Description TODO
+      @type {Function}
+    */
+    focus: {
+        value: function() {
+            this._needsFocus = true;
+            this.needsDraw = true;
+        }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _isActiveElement: {
         enumerable: false,
         value: false
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    isActiveElement: {
+        enumerable: true,
+        get: function() {
+            return this._isActiveElement;
+        }
     },
 
     /**
@@ -273,79 +303,45 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
     /**
       Description TODO
-      @private
-    */
-    _statesDirty: {
-        enumerable: false,
-        value: false
-    },
-
-    /**
-      Description TODO
-      @private
-    */
-    _states: {
-        enumerable: false,
-        value: null
-    },
-
-    /**
-      Description TODO
-     @type {Function}
-    */
-    states: {
-        enumerable: true,
-        get: function() {
-            if (this._statesDirty || !this._states) {
-                this.updateStates();
-            }
-            return this._states;
-        }
-    },
-
-    /**
-      Description TODO
      @type {Function}
     */
     updateStates: {
         enumerable: true,
         value: function() {
-            var actions = this._actions,
-                key,
-                action,
-                states,
+            var commands = ["bold", "underline", "italic", "strikethrough", "subscript", "superscript",
+                            {name:"justify", method: this._justifyGetState},
+                            {name:"liststyle", method: this._liststyleGetState},
+                            "fontname", "fontsize", "hilitecolor", "forecolor"
+                ],
+                nbrCommands = commands.length,
+                command,
+                propertyName,
                 state,
-                hasFocus = this._hasFocus;
+                method,
+                i;
 
-            if (this._states == null || this._statesDirty) {
-                this._states = this._states || {};
+            if (this.element.firstChild == document.activeElement) {
+                for (i = 0; i < nbrCommands; i ++) {
+                    command = commands[i];
 
-                if (hasFocus) {
-                    this._statesDirty = false;
-                    states = this._states;
-                    for (key in actions) {
-                        action = actions[key];
-                        state = "false";
-                        if (action.enabled && action.status) {
-                            state = document.queryCommandValue(key);
-                            if (typeof state == "boolean") {
-                                state = state ? "true" : "false";
-                            }
+                    if (typeof command == "object") {
+                        method = command.method;
+                        command = command.name;
+                    } else {
+                        method = this._getState;
+                    }
 
-                            // Clean up font name
-                            if (key == "fontname") {
-                                state = state.replace(/'/g, "");
-                            }
-                        }
-
-                        if (states[key] !== state) {
-                            states[key] = state;
+                    propertyName = "_" + command;
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@" + command, this)) {
+                        state = method.call(this, command);
+                        if (this[propertyName] !== state) {
+                            this[propertyName] = state;
+                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue(command , state));
                         }
                     }
                 }
-            }
 
-            return this._states;
+            }
         }
     },
 
@@ -373,87 +369,200 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         }
     },
 
+    // Commands Helpers
+    _getState: {
+        value: function(key) {
+            var state;
+
+            if (this.element.firstChild == document.activeElement) {
+                state = document.queryCommandValue(key);
+                // Convert string to boolean
+                if (state == "true") {
+                    state = true;
+                } if (state == "false") {
+                    state = false;
+                }
+                return state;
+            } else {
+                return this["_" + key];
+            }
+        }
+    },
+
+    _genericCommandGetter : {
+        value: function(key) {
+            var propertyName = "_" + key;
+            this[propertyName] = this._getState(key);
+            return this[propertyName];
+        }
+    },
+
+    _genericCommandSetter : {
+        value: function(key, value) {
+            var state = this._getState(key); // Make sure the state is up-to-date
+            if (state !== value) {
+                this.doAction(key, typeof value == "boolean" ? false : value);
+            }
+        }
+    },
+
+    // Edit Actions & Properties
     /**
       Description TODO
       @private
     */
-    _actions: {
-        enumerable: false,
-        value: {
-            bold: {enabled: true, needsValue:false, status: true},
-            italic: {enabled: true, needsValue:false, status: true},
-            underline: {enabled: true, needsValue:false, status: true},
-            strikethrough: {enabled: true, needsValue:false, status: true},
-            subscript: {enabled: true, needsValue:false, status: true},
-            superscript: {enabled: true, needsValue:false, status: true},
-            indent: {enabled: true, needsValue:false, status: false},
-            outdent: {enabled: true, needsValue:false, status: false},
-            justifyleft: {enabled: true, needsValue:false, status: true},
-            justifycenter: {enabled: true, needsValue:false, status: true},
-            justifyright: {enabled: true, needsValue:false, status: true},
-            justifyfull: {enabled: true, needsValue:false, status: true},
-            insertorderedlist: {enabled: true, needsValue:false, status: true},
-            insertunorderedlist: {enabled: true, needsValue:false, status: true},
-            fontname: {enabled: true, needsValue:true, status: true},
-            fontsize: {enabled: true, needsValue:true, status: true},
-            hilitecolor: {enabled: true, needsValue:true, status: true},
-            forecolor: {enabled: true, needsValue:true, status: true}
-        }
-    },
+    _bold: { value: false },
 
     /**
       Description TODO
      @type {Function}
     */
-    actions: {
-        enumerable: false,
-        get: function() {
-            var actions = this._actions,
-                action,
-                actionsArray = [];
-
-            for (action in actions) {
-                actionsArray.push(action);
-            }
-
-            return actionsArray;
-        }
-    },
-
-    /**
-      Description TODO
-     @type {Function}
-    */
-    enabledActions: {
+    bold: {
         enumerable: true,
-        serializable: true,
+        get: function() { return this._genericCommandGetter("bold"); },
+        set: function(value) { this._genericCommandSetter("bold", value); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _underline: { value: false },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    underline: {
+        enumerable: true,
+        get: function() { return this._genericCommandGetter("underline"); },
+        set: function(value) { this._genericCommandSetter("underline", value); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _italic: { value: false },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    italic: {
+        enumerable: true,
+        get: function() { return this._genericCommandGetter("italic"); },
+        set: function(value) { this._genericCommandSetter("italic", value); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _strikethrough: { value: false },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    strikethrough: {
+        enumerable: false,
+        get: function() { return this._genericCommandGetter("strikethrough"); },
+        set: function(value) { this._genericCommandSetter("strikethrough", value); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _subscript: { value: false },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    subscript: {
+        enumerable: true,
+        get: function() { return this._genericCommandGetter("subscript"); },
+        set: function(value) { this._genericCommandSetter("subscript", value); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _superscript: { value: false },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    superscript: {
+        enumerable: true,
+        get: function() { return this._genericCommandGetter("superscript"); },
+        set: function(value) { this._genericCommandSetter("superscript", value); }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    indent: {
+        enumerable: true,
+        value: function() { this.doAction("indent"); }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    outdent: {
+        enumerable: true,
+        value: function() { this.doAction("outdent"); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _liststyleGetState: {
+        enumerable: false,
+        value: function() {
+            if (this._getState("insertorderedlist")) {
+               return "ordered"
+            } else if (this._getState("insertunorderedlist")) {
+                return "unordered"
+            } else {
+                return "none";     // default
+            }
+        }
+    },
+    /**
+      Description TODO
+      @private
+    */
+    _liststyle: { value: "none" },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    liststyle: {
+        enumerable: true,
         get: function() {
-            var actions = this._actions,
-                action,
-                actionsArray = [];
-
-            for (action in actions) {
-                if (actions[action].enabled) {
-                    actionsArray.push(action);
-                }
-            }
-
-            return actionsArray;
+            this._liststyle = this._liststyleGetState();
+            return this._liststyle;
         },
-        set: function(enabledActions) {
-            var actions = this._actions,
-                nbrEnabledActions = enabledActions.length,
-                action,
-                i;
+        set: function(value) {
+            var state = this._liststyleGetState();
 
-            for (action in actions) {
-                actions[action].enabled = false;
-            }
-
-            for (i = 0; i < nbrEnabledActions; i ++) {
-                action = enabledActions[i];
-                if (actions[action] !== undefined) {
-                    actions[action].enabled = true;
+            if (state != value) {
+                if (value == "none") {
+                    this.doAction(state == "ordered" ? "insertorderedlist" : "insertunorderedlist");
+                } else if (value == "ordered") {
+                    this.doAction("insertorderedlist");
+                } else if (value == "unordered") {
+                    this.doAction("insertunorderedlist");
                 }
             }
         }
@@ -463,21 +572,112 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
-    _needsFocus: {
-        value: false
+    _justifyGetState: {
+        enumerable: false,
+        value: function() {
+            if (this._getState("justifyleft")) {
+               return "left"
+            } else if (this._getState("justifycenter")) {
+                return "center"
+            } else if (this._getState("justifyright")) {
+                return "right"
+            } else if (this._getState("justifyfull")) {
+                return "full"
+            } else {
+                return "left";     // default
+            }
+        }
     },
 
     /**
       Description TODO
-      @type {Function}
+      @private
     */
-    focus: {
-        value: function() {
-            this._needsFocus = true;
-            this.needsDraw = true;
+    _justify: { value: "left" },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    justify: {
+        enumerable: true,
+        get: function() {
+            this._justify = this._justifyGetState();
+            return this._justify;
+        },
+        set: function(value) {
+            var state = this._justifyGetState();
+            if (state != value && ["left", "center", "right", "full"].indexOf(value) !== -1) {
+                this.doAction("justify" + value);
+            }
         }
     },
-    
+
+    /**
+      Description TODO
+      @private
+    */
+    _fontname: { value: "" },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    fontname: {
+        enumerable: true,
+        get: function() { return this._genericCommandGetter("fontname"); },
+        set: function(value) { this._genericCommandSetter("fontname", value); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _fontsize: { value: 0 },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    fontsize: {
+        enumerable: true,
+        get: function() { return this._genericCommandGetter("fontsize"); },
+        set: function(value) { this._genericCommandSetter("fontsize", value); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _hilitecolor: { value: "" },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    hilitecolor: {
+        enumerable: true,
+        get: function() { return this._genericCommandGetter("hilitecolor"); },
+        set: function(value) { this._genericCommandSetter("hilitecolor", value); }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _forecolor: { value: "" },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    forecolor: {
+        enumerable: true,
+        get: function() { return this._genericCommandGetter("forecolor"); },
+        set: function(value) { this._genericCommandSetter("forecolor", value); }
+    },
+
+
     // Component Callbacks
     /**
     Description TODO
@@ -486,8 +686,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     prepareForDraw: {
         enumerable: false,
         value: function() {
-            var el = this.element,
-                div;
+            var el = this.element;
 
             if (this._resizer) {
                 this._resizer.initialize(this);
@@ -525,11 +724,19 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (this._value && !this._dirtyValue) {
                     editorElement.firstChild.innerHTML = this._value;
                     // Since this property affects the textValue, we need to fire a change event for it as well
-                    this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , this.textValue));
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
+                        this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , this.textValue));
+                    }
                 } else if (this._textValue && !this._dirtyTextValue) {
-                    editorElement.firstChild.innerText = this._textValue;
+                    if (editorElement.firstChild.innerText) {
+                        editorElement.firstChild.innerText = this._textValue;
+                    } else {
+                        editorElement.firstChild.textContent = this._textValue;
+                    }
                     // Since this property affects the value, we need to fire a change event for it as well
-                    this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , this.value));
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
+                        this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , this.value));
+                    }
                 } else {
                     editorElement.firstChild.innerHTML = "";
                 }
@@ -671,10 +878,18 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             var thisRef = this,
                 el = this.element,
                 content = el.firstChild,
+                isActive,
                 savedRange,
                 timer;
 
             this._hasFocus = true;
+            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("hasFocus" , true));
+            isActive = (content && content === document.activeElement);
+            if (isActive != this._isActiveElement) {
+                this._isActiveElement = isActive;
+                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , true));
+            }
+
             if (this._needsSelectionReset) {
                 var node = this._lastInnerNode(),
                     range,
@@ -734,10 +949,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             // Force use css for styling (if supported)
             document.execCommand("styleWithCSS", false, true);
 
-            // Update the states if they are dirty
-            if (this._statesDirty) {
-                this.updateStates();
-            }
+            // Update the states now that we have focus
+            this.updateStates();
         }
     },
 
@@ -748,7 +961,17 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleBlur: {
         enumerable: false,
         value: function() {
-            var el = this.element;
+            var el = this.element,
+                content = el.firstChild,
+                isActive;
+
+            this._hasFocus = false;
+            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("hasFocus" , false));
+            isActive = (content && content === document.activeElement);
+            if (isActive != this._isActiveElement) {
+                this._isActiveElement = isActive;
+                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , true));
+            }
 
             // Force a selectionchange when we lose the focus
             this.handleSelectionchange();
@@ -765,8 +988,6 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             if (this._hasSelectionChangeEvent === false) {
                 el.removeEventListener("keydup", this);
             }
-
-            this._hasFocus = false;
         }
     },
 
@@ -816,12 +1037,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     handleShortcut: {
         enumerable: false,
         value: function(event, action) {
-            if (this._actions[action] && this._actions[action].enabled) {
-                this.doAction(action);
-                return true;
-            }
-
-            return false;
+            this.doAction(action);
+            return true;
         }
     },
 
@@ -953,11 +1170,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 this.needsDraw = true;
             }
 
-            this._statesDirty = true;
             if (this._selectionChangeTimer) {
                 clearTimeout(this._selectionChangeTimer);
             }
             this._selectionChangeTimer = setTimeout(function() {
+                thisRef.updateStates();
                 thisRef._dispatchEditorEvent("editorSelect");
             }, 50);
         }
@@ -1119,7 +1336,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     data = event.dataTransfer.getData("text/plain") || event.dataTransfer.getData("text");
                     if (data) {
                         var div = document.createElement('div');
-                        div.innerText = data;
+                        if (div.innerText) {
+                            div.innerText = data;
+                        } else {
+                            div.textContent = data;
+                        }
                         data = div.innerHTML;
                     }
                 }
@@ -1179,7 +1400,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 if (data) {
                     // Convert plain text to html
                     div = document.createElement('div');
-                    div.innerText = data;
+                    if (div.innerText) {
+                        div.innerText = data;
+                    } else {
+                        div.textContent = data;
+                    }
                     data = div.innerHTML;
                 }
             }
@@ -1294,22 +1519,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             var target = event.currentTarget,
                 action = target.action || target.identifier,
                 value = false;
-            if (action) {
-                if (this._actions[action].needsValue) {
-                    value = target.actionValue;
-                    if (value !== undefined) {
-                        value = target[value];
-                        if (value === undefined) {
-                            value = target.actionValue;
-                        }
-                    } else {
-                        value = target.value;
-                    }
 
-                    if (value === undefined) {
-                        value = false;
-                    }
-                }
+            if (action) {
                 this.doAction(action, value);
             }
         }
@@ -1322,11 +1533,12 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     doAction: {
         enumerable: true,
         value: function(action, value) {
-            // Check if the action is valid and enabled
-            if (this._actions[action] && this._actions[action].enabled === true) {
+            // Make sure we are the active element before calling execCommand
+            if (this.element.firstChild == document.activeElement) {
                 if (value === undefined) {
                     value = false;
                 }
+
                 document.execCommand(action, false, value);
 
                 this.handleSelectionchange();
@@ -1366,8 +1578,13 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     delete thisRef._forceUpdateValuesTimeout;
                     clearTimeout(thisRef._updateValuesTimeout);
                     delete thisRef._updateValuesTimeout;
-                    thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , thisRef.value));
-                    thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , thisRef.textValue));
+
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
+                        thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , thisRef.value));
+                    }
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
+                        thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , thisRef.textValue));
+                    }
                     thisRef._dispatchEditorEvent("editorChange");
                 };
 
