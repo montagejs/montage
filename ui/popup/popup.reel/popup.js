@@ -303,7 +303,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         value: function() {
             var el = document.createElement('div');
             el.classList.add('montage-popup-modal-mask');
-            el.style['z-index'] = 6999;
+            el.style.zIndex = 6999;
             el.classList.add('montage-invisible');
 
             document.body.appendChild(el);
