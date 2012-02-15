@@ -155,6 +155,7 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
                 // this keeps us from having to keep track of the range or risk losing
                 // a reference to the elements when they're extracted
                 conditionContentRange.surroundContents(this.content);
+                conditionContentRange.deleteContents(); //remove the contents that are part of the original structure
             }
 
             var slotRoot = document.createElement("div");
