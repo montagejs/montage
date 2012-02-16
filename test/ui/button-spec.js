@@ -209,11 +209,13 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
 
                     var listener = testPage.addListener(test.scroll_button);
 
+                    var press_composer = test.scroll_button.composerList[0];
+
                     // mousedown
-                    testPage.mouseEvent({target: el}, "mousedown");;
+                    testPage.mouseEvent({target: el}, "mousedown");
 
                     expect(test.scroll_button.active).toBe(true);
-                    expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(false);
+                    expect(test.scroll_button.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(true);
 
                     // Mouse move doesn't happen instantly
                     waits(10);
@@ -230,7 +232,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         scroll_el.dispatchEvent(moveEvent);
 
                         expect(test.scroll_button.active).toBe(false);
-                        expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(true);
+                        expect(test.scroll_button.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(false);
 
                         // mouse up
                         testPage.mouseEvent({target: el}, "mouseup");;
