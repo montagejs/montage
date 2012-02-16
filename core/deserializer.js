@@ -89,6 +89,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     _reset: {value: function() {
         this._serializationString = null;
         this._requiredModuleIds = null;
+        this._areModulesLoaded = false;
         this._parseFunction = null;
         this._serialization = null;
         this._compiledDeserializationFunction = null;
@@ -350,7 +351,12 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             this._parseForModules();
         }
 
-        this._loadModules(this._requiredModuleIds, callback);
+        if (this._requiredModuleIds.length > 0) {
+            this._loadModules(this._requiredModuleIds, callback);
+        } else {
+            this._areModulesLoaded = true;
+            return callback();
+        }
     }},
 
     /**
