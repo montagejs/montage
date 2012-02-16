@@ -45,3 +45,11 @@ var conditionTestPage = TestPageLoader.queueTest("ui/condition", {src: "ui/condi
         });
     });
 });
+
+var nestedConditionTestPage = TestPageLoader.queueTest("ui/nested-condition", {src: "ui/condition/nested-condition-test-page.html", firstDraw: false}, function() {
+    describe("ui/nested-condition-spec", function() {
+        it("should load", function() {
+            expect(nestedConditionTestPage.loaded).toBeTruthy();
+        });
+    });
+});
