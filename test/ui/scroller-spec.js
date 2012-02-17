@@ -35,7 +35,7 @@ var testPage = TestPageLoader.queueTest("scroller-test", function() {
             describe("adding content", function() {
                 var delegateSpy = {
                     didSetMaxScroll: function(event) {
-                        return 1+1;
+                        var x = 2;
                     }
                 };
                 var delegate = spyOn(delegateSpy, 'didSetMaxScroll');
