@@ -92,6 +92,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         this._areModulesLoaded = false;
         this._parseFunction = null;
         this._serialization = null;
+        this._serializationMetadata = null;
         this._compiledDeserializationFunction = null;
         this._compiledDeserializationFunctionString = null;
         this._origin = null;
@@ -342,6 +343,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         if (!this._compiledDeserializationFunctionString) {
             try {
                 this._serialization = JSON.parse(this._serializationString);
+                this._serializationMetadata = this._serialization.$metadata;
+                delete this._serialization.$metadata;
             } catch (ex) {
                 if (logger.isError) {
                     this._reportParseError(this._serializationString, this._origin);
@@ -383,7 +386,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         var serialization = this._serialization,
             moduleIds = this._requiredModuleIds = [],
             modules = this._modules,
-            desc, moduleId;
+            aliases = this._serializationMetadata ? (this._serializationMetadata.aliases) : null,
+            desc, moduleId, name;
 
         for (var label in serialization) {
             desc = serialization[label];
@@ -392,6 +396,9 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             if ("module" in desc) {
                 moduleId = desc.module;
             } else if (name = /*assignment*/(desc.instance || desc.type)) {
+                if (aliases && name in aliases) {
+                    name = aliases[name];
+                }
                 objectLocation = name.split("#");
                 moduleId = objectLocation[0];
                 desc.module = moduleId;
@@ -454,7 +461,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             optimizedIds = this._optimizedIds,
             requireStrings = [],
             objectNamesCounter = {},
-            label;
+            label,
+            aliases = this._serializationMetadata ? this._serializationMetadata.aliases : null;
 
         if (canEval) {
             serialization = this._serialization;
@@ -498,7 +506,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
         if (canEval) {
             this._compiledDeserializationFunctionString = "(function() {\n" + requireStrings.join("\n") + "\nreturn function(element) {\nvar exports = {};\n" + exportsStrings + "\n\n" + objectsStrings + "\n\n" + unitsStrings + "\n\n" + cleanupStrings + "\nreturn exports;\n}}).call(this)";
-            this._serializationString = this._serialization = serialization = null;
+            this._serializationString = this._serialization = this._serializationMetadata = serialization = null;
         }
 
         if (logger.isDebug) {
@@ -524,12 +532,16 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 moduleId = desc.module;
                 objectName = name = desc.name;
             } else {
-                objectLocation = (desc.instance || desc.type).split("#");
                 // this code is actually only used when canEval == false,
                 // module+name are added when the modules are parsed but it's
                 // slow to redo the _serializationString in order to keep the
                 // added module+name when we do JSON.parse(_serializationString)
                 // at canEval == false.
+                name = desc.instance || desc.type;
+                if (aliases && name in aliases) {
+                    name = aliases[name];
+                }
+                objectLocation = name.split("#");
                 moduleId = objectLocation[0];
                 if (objectLocation.length == 2) {
                     objectName = name = objectLocation[1];
