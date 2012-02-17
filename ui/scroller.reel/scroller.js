@@ -162,7 +162,7 @@ exports.Scroller = Montage.create(Component, {
 
     handleTranslateStart: {
         value: function(event) {
-            this._scrollBars.opacity = .5;
+            this._scrollBars.opacity = 0.5;
         }
     },
 
@@ -179,6 +179,7 @@ exports.Scroller = Montage.create(Component, {
             this._top = this._element.offsetTop;
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
+
             this._maxTranslateX = this._content.scrollWidth - this._width;
             if (this._maxTranslateX < 0) {
                 this._maxTranslateX = 0;
@@ -192,6 +193,7 @@ exports.Scroller = Montage.create(Component, {
                 this._maxTranslateX = delegateValue.x;
                 this._maxTranslateY = delegateValue.y;
             }
+
             switch (this._displayScrollbars) {
                 case "horizontal":
                     this._scrollBars.displayHorizontal = true;
@@ -206,23 +208,9 @@ exports.Scroller = Montage.create(Component, {
                     this._scrollBars.displayVertical = true;
                     break;
                 case "auto":
-                    if (this._maxTranslateX && this._maxTranslateY) {
-                        this._scrollBars.displayHorizontal = true;
-                        this._scrollBars.displayVertical = true;
-                    } else {
-                        if (this._maxTranslateX) {
-                            this._scrollBars.displayHorizontal = true;
-                            this._scrollBars.displayVertical = false;
-                        } else {
-                            if (this._maxTranslateY) {
-                                this._scrollBars.displayHorizontal = false;
-                                this._scrollBars.displayVertical = true;
-                            } else {
-                                this._scrollBars.displayHorizontal = false;
-                                this._scrollBars.displayVertical = false;
-                            }
-                        }
-                    }
+                    // Only display the scroll bars if we can scroll in that direction
+                    this._scrollBars.displayHorizontal = !!this._maxTranslateX;
+                    this._scrollBars.displayVertical = !!this._maxTranslateY;
                     break;
                 case "none":
                     this._scrollBars.displayHorizontal = false;
