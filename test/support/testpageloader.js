@@ -348,6 +348,41 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
         }
     },
 
+    dragElementOffsetTo: {
+        enumerable: false,
+        value: function(element, offsetX, offsetY, downCallback, moveCallback, upCallback) {
+            var self = this;
+
+            // mousedown
+            self.mouseEvent({target: element}, "mousedown");
+
+            if (downCallback) {
+                downCallback();
+            }
+
+            // Mouse move doesn't happen instantly
+            waits(10);
+            runs(function() {
+                var eventInfo = self.mouseEvent({
+                    target: element,
+                    clientX: element.offsetLeft + offsetX,
+                    clientY: element.offsetTop + offsetY
+                }, "mousemove");
+
+                if (moveCallback) {
+                    moveCallback();
+                }
+
+                // mouse up
+                self.mouseEvent(eventInfo, "mouseup");
+
+                if (upCallback) {
+                    upCallback();
+                }
+            });
+        }
+    },
+
     evaluateNode: {
         enumerable: false,
         value: function(xpathExpression, contextNode, namespaceResolver, resultType, result) {
@@ -357,7 +392,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             if (!resultType) {
                 resultType = XPathResult.FIRST_ORDERED_NODE_TYPE;
             }
-            pathResult = this.iframe.contentDocument.evaluate(xpathExpression, contextNode, namespaceResolver, resultType, result);
+            var pathResult = this.iframe.contentDocument.evaluate(xpathExpression, contextNode, namespaceResolver, resultType, result);
             if (pathResult) {
                 switch (pathResult.resultType) {
                     case XPathResult.NUMBER_TYPE:

@@ -11,36 +11,6 @@ var Montage = require("montage").Montage,
 var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
     var test = testPage.test;
 
-    var dragElementOffsetTo = function(element, offsetX, offsetY, downCallback, moveCallback, upCallback) {
-        // mousedown
-        testPage.mouseEvent({target: element}, "mousedown");
-
-        if (downCallback) {
-            downCallback();
-        }
-
-        // Mouse move doesn't happen instantly
-        waits(10);
-        runs(function() {
-            var eventInfo = testPage.mouseEvent({
-                target: element,
-                clientX: element.offsetLeft + offsetX,
-                clientY: element.offsetTop + offsetY
-            }, "mousemove");
-
-            if (moveCallback) {
-                moveCallback();
-            }
-
-            // mouse up
-            testPage.mouseEvent(eventInfo, "mouseup");
-
-            if (upCallback) {
-                upCallback();
-            }
-        });
-    };
-
     describe("ui/translate-composer-spec", function() {
         it("should load", function() {
             expect(testPage.loaded).toBe(true);
@@ -53,8 +23,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
 
             describe("translateX", function() {
                 it("updates as the mouse moves", function() {
-                    testPage.mouseEvent({target: test.example.element}, "mousedown");
-                    dragElementOffsetTo(test.example.element, 20, 0, null, null, function() {
+                    testPage.dragElementOffsetTo(test.example.element, 20, 0, null, null, function() {
                         expect(test.translate_composer.translateX).toBeGreaterThan(19);
                     });
                 });
@@ -65,8 +34,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
             });
             describe("translateY", function() {
                 it("updates as the mouse moves", function() {
-                    testPage.mouseEvent({target: test.example.element}, "mousedown");
-                    dragElementOffsetTo(test.example.element, 0, 20, null, null, function() {
+                    testPage.dragElementOffsetTo(test.example.element, 0, 20, null, null, function() {
                         expect(test.translate_composer.translateY).toBeGreaterThan(19);
                     });
                 });
@@ -77,8 +45,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
             });
             describe("maxTranslateX", function() {
                 it ("limits translateX", function() {
-                    testPage.mouseEvent({target: test.example.element}, "mousedown");
-                    dragElementOffsetTo(test.example.element, 500, 0, null, null, function() {
+                    testPage.dragElementOffsetTo(test.example.element, 500, 0, null, null, function() {
                         // wait for the bounce to finish
                         waits(test.translate_composer.bouncingDuration);
                         runs(function() {
@@ -89,8 +56,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
             });
             describe("maxTranslateY", function() {
                 it ("limits translateY", function() {
-                    testPage.mouseEvent({target: test.example.element}, "mousedown");
-                    dragElementOffsetTo(test.example.element, 0, 500, null, null, function() {
+                    testPage.dragElementOffsetTo(test.example.element, 0, 500, null, null, function() {
                         // wait for the bounce to finish
                         waits(test.translate_composer.bouncingDuration);
                         runs(function() {
@@ -107,8 +73,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     test.translate_composer.translateX = 0;
                     test.translate_composer.axis = "horizontal";
 
-                    testPage.mouseEvent({target: test.example.element}, "mousedown");
-                    dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         runs(function() {
                             expect(test.translate_composer.translateX).toBeGreaterThan(49);
                             expect(test.translate_composer.translateY).toBe(0);
@@ -120,8 +85,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     test.translate_composer.translateX = 0;
                     test.translate_composer.axis = "vertical";
 
-                    testPage.mouseEvent({target: test.example.element}, "mousedown");
-                    dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         runs(function() {
                             expect(test.translate_composer.translateX).toBe(0);
                             expect(test.translate_composer.translateY).toBeGreaterThan(49);
@@ -133,8 +97,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     test.translate_composer.translateX = 0;
                     test.translate_composer.axis = null;
 
-                    testPage.mouseEvent({target: test.example.element}, "mousedown");
-                    dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         runs(function() {
                             expect(test.translate_composer.translateX).toBeGreaterThan(49);
                             expect(test.translate_composer.translateY).toBeGreaterThan(49);

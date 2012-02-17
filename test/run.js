@@ -71,6 +71,7 @@ if (spec) {
         require.async("ui/composer/translate-composer-spec"),
         require.async("ui/dom-spec"),
         require.async("ui/firstdraw-spec"),
+        require.async("ui/scroller-spec"),
         require.async("ui/list-spec"),
         require.async("ui/number-input-spec"),
         require.async("ui/repetition-spec"),
