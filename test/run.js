@@ -68,6 +68,7 @@ if (spec) {
         require.async("ui/range-input-spec"),
         require.async("ui/component-spec"),
         require.async("ui/composer-spec"),
+        require.async("ui/composer/translate-composer-spec"),
         require.async("ui/dom-spec"),
         require.async("ui/firstdraw-spec"),
         require.async("ui/list-spec"),

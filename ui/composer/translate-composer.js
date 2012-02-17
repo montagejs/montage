@@ -15,7 +15,7 @@ var Montage = require("montage").Montage,
     @class module:montage/ui/composer/translate-composer.TranslateComposer
     @extends module:montage/ui/composer/composer.Composer
 */
-exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui/event/composer/translate-composer.TranslateComposer# */ {
+var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui/event/composer/translate-composer.TranslateComposer# */ {
 
     /**
     These elements perform some native action when clicked/touched and so we
