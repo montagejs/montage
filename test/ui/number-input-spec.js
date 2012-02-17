@@ -115,19 +115,6 @@ var testPage = TestPageLoader.queueTest("number-input-test", function() {
                         });
                     });
 
-                    it("should error out if invalid value is set", function() {
-                        var field = testPage.test.num2,
-                        value = 'XYZ';
-                        field.value = value;
-
-                        testPage.waitForDraw();
-                        runs(function(){
-                            // browser empties the content if value is invalid
-                            expect(field.element.value).toBe('');
-                        });
-
-                    });
-
                     /*
                     describe("when using converter for the value", function() {
                         // date field

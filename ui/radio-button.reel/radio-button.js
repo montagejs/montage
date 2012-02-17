@@ -65,7 +65,6 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
                     anEvent.initCustomEvent("checked", true, true, {
                         name: this.name
                     });
-                    anEvent.type = "checked";
                     RadioButton.dispatchEvent(anEvent);
                     RadioButton.addEventListener('checked', this);
                 }

@@ -3,6 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/*global expect */
 var Montage = require("montage").Montage,
         TestPageLoader = require("support/testpageloader").TestPageLoader;
         EventInfo = require("support/testpageloader").EventInfo;
@@ -33,7 +34,8 @@ var testPage = TestPageLoader.queueTest("slidertest", function() {
                         eventInfo.move(25,0);
                         eventInfo = testPage.mouseEvent(eventInfo, "mousemove", function() {
                             eventInfo = testPage.mouseEvent(eventInfo, "mouseup", function() {
-                                expect(testSliderHandle.parentElement.style.webkitTransform).toEqual("translate3d("+(~~((25+25)*100)/testSlider._width)+"%, 0px, 0px)");
+                                // Regex. "px" on "0" is optional
+                                expect(testSliderHandle.parentElement.style.webkitTransform).toMatch("translate3d\\("+(~~((25+25)*100)/testSlider._width)+"%, 0(px)?, 0(px)?\\)");
                             });
                         });
 
