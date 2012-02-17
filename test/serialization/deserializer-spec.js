@@ -377,6 +377,208 @@ describe("serialization/deserializer-spec", function() {
         });
     });
 
+    describe("User Objects Deserialization With Short Object Location", function() {
+        it("should deserialize using prototype: module[name]", function() {
+            var latch, objects;
+
+            deserializer.initWithObject({
+                root: {
+                    prototype: "montage[Montage]",
+                    properties: {
+                        number: 15,
+                        string: "string"
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    info = Montage.getInfoForObject(root);
+
+                expect(Montage.isPrototypeOf(root));
+                expect(root.instance).toBeUndefined();
+            });
+        });
+
+        it("should deserialize using prototype: module", function() {
+            var latch, objects;
+
+            deserializer.initWithObject({
+                root: {
+                    prototype: "montage",
+                    properties: {
+                        number: 15,
+                        string: "string"
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    info = Montage.getInfoForObject(root);
+
+                expect(Montage.isPrototypeOf(root));
+                expect(info.moduleId).toBe("core/core");
+                expect(info.objectName).toBe("Montage");
+                expect(info.isInstance).toBe(true);
+                expect(root.instance).toBeUndefined();
+            });
+        });
+
+        it("should deserialize using prototype: module-name.reel", function() {
+            var latch, objects;
+
+            deserializer.initWithObject({
+                root: {
+                    prototype: "serialization/module-name.reel",
+                    properties: {
+                        number: 15,
+                        string: "string"
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    info = Montage.getInfoForObject(root);
+
+                expect(info.moduleId).toBe("serialization/module-name.reel/module-name");
+                expect(info.objectName).toBe("ModuleName");
+                expect(info.isInstance).toBe(true);
+            });
+        });
+
+        it("should deserialize using object: module[name]", function() {
+            var latch, objects;
+
+            deserializer.initWithObject({
+                root: {
+                    object: "montage[Montage]",
+                    properties: {
+                        number: 15,
+                        string: "string"
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    info = Montage.getInfoForObject(root);
+
+                expect(root).toBe(Montage);
+                expect(info.moduleId).toBe("core/core");
+                expect(info.objectName).toBe("Montage");
+                expect(info.isInstance).toBe(false);
+                expect(root.type).toBeUndefined();
+            });
+        });
+
+        it("should deserialize using object: module", function() {
+            var latch, objects;
+
+            deserializer.initWithObject({
+                root: {
+                    object: "montage",
+                    properties: {
+                        number: 15,
+                        string: "string"
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    info = Montage.getInfoForObject(root);
+
+                expect(root).toBe(Montage);
+                expect(info.moduleId).toBe("core/core");
+                expect(info.objectName).toBe("Montage");
+                expect(info.isInstance).toBe(false);
+                expect(root.type).toBeUndefined();
+            });
+        });
+
+        it("should deserialize using instance after compilation", function() {
+            var latch, objects;
+
+            deserializer.initWithObject({
+                root: {
+                    prototype: "montage",
+                    properties: {
+                        number: 15,
+                        string: "string"
+                    }
+                }
+            }).deserialize(function() {
+                deserializer.deserialize(function(objs) {
+                    latch = true;
+                    objects = objs;
+                });
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    info = Montage.getInfoForObject(root);
+
+                expect(Montage.isPrototypeOf(root));
+                expect(info.moduleId).toBe("core/core");
+                expect(info.objectName).toBe("Montage");
+                expect(info.isInstance).toBe(true);
+            });
+        });
+
+        it("should deserialize using type after compilation", function() {
+            var latch, objects;
+
+            deserializer.initWithObject({
+                root: {
+                    object: "montage",
+                    properties: {
+                        number: 15,
+                        string: "string"
+                    }
+                }
+            }).deserialize(function() {
+                deserializer.deserialize(function(objs) {
+                    latch = true;
+                    objects = objs;
+                });
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    info = Montage.getInfoForObject(root);
+
+                expect(root).toBe(Montage);
+                expect(info.moduleId).toBe("core/core");
+                expect(info.objectName).toBe("Montage");
+                expect(info.isInstance).toBe(false);
+            })
+        });
+    });
+
     describe("Element Reference Deserialization", function() {
         var root = document.createElement("div");
 
