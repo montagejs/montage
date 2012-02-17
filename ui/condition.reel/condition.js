@@ -143,19 +143,14 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
     prepareForDraw: {
         enumerable: false,
         value: function() {
-
+            var i, childList, childElement;
             if (!this.content) {
                 this.content = document.createElement("div");
-
-                var conditionContentRange = document.createRange();
-                conditionContentRange.selectNodeContents(this._element);
-
-                // TODO not wrap the range if it is a range of a single element
-                // we want to only deal with single elements when appending and removing;
-                // this keeps us from having to keep track of the range or risk losing
-                // a reference to the elements when they're extracted
-                conditionContentRange.surroundContents(this.content);
-                conditionContentRange.deleteContents(); //remove the contents that are part of the original structure
+                childList = Array.prototype.slice.call(this._element.childNodes, 0);
+                for (i = 0; (childElement = childList[i]); i++) {
+                    childElement.parentElement.removeChild(childElement);
+                    this.content.appendChild(childElement);
+                }
             }
 
             var slotRoot = document.createElement("div");

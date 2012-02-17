@@ -14,6 +14,14 @@ exports.Test = Montage.create(Montage, {
 
     removeValue: {
         value: false
+    },
+
+    outerCondition: {
+        value: true
+    },
+
+    innerCondition: {
+        value: true
     }
 
 });
