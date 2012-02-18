@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+        <script type="text/montage-serialization">
+{
+    "translateComposer1": {
+        "module": "montage/ui/composer/translate-composer",
+        "name": "TranslateComposer",
+        "properties": {
+            "component": {"@": "owner"},
+            "axis": "horizontal",
+            "hasBouncing": false,
+            "hasMomentum": false,
+            "invertAxis": true
+        },
+        "bindings": {
+            "maxTranslateX": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "sliderWidth",
+                "oneway": true
+            },
+            "translateX": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "sliderLeft",
+                "oneway": true
+            },
+            "translateX": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "positionX"
+            }
+        }
+    },
+    "owner": {
+        "module": "components/slider-polyfill-example.reel/range-input-polyfill.reel",
+        "name": "RangeInputPolyfill",
+        "properties": {
+            "element": {"#": "slider"},
+            "sliderEl": {"#": "slider"}, 
+            "handleEl": {"#": "slider-handle"},
+            "translateComposer": {"@": "translateComposer1"}
+        },
+        "bindings": {
+            "positionX": {
+                "boundObject": {"@": "translateComposer1"},
+                "boundObjectPropertyPath": "translateX",
+                "oneway": true
+            }
+        }
+    }
+}
+    </script>
+    
+    <style>
+        div.slider {
+           display: inline-block;
+           border-radius: 4px;
+           position: relative;
+           height: 10px;
+           width: 400px;
+           background-color: #eee; 
+           border: 1px solid #aaa;
+           cursor: default;
+        }
+        .slider-handle {
+            top: -0.4em;
+            position: absolute;
+            z-index: 2;
+            cursor: pointer;
+            
+            width: 1.2em;
+            height: 1.2em;
+            background-color: #aaa;
+            color: #fff;
+            padding: 2px;
+            border: 1px solid #333;
+            border-radius: 10px;
+        }
+        
+        .slider-handle:hover {
+            background-color: #999;
+        }
+    </style>
+
+    </head>
+    <body>
+        <div id="slider" class="slider">
+            <a draggable="true" href="#" id="slider-handle" class="slider-handle"></a>
+        </div>
+
+    </body>
+</html>
