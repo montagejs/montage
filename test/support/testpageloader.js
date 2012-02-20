@@ -77,8 +77,12 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     callNext: {
         value: function() {
             if (!this.loading && this.testQueue.length !== 0) {
-                this.loadTest(this.testQueue.shift());
-                this.loading = true;
+                var self = this;
+                this.unloadTest();
+                setTimeout(function() {
+                    self.loadTest(self.testQueue.shift());
+                    self.loading = true;
+                }, 0);
             }
         }
     },
@@ -87,13 +91,20 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
         value: function(test) {
             var testName = test.testName,
                 testCallback = test.callback,
-                timeoutLength = test.timeoutLength;
+                timeoutLength = test.timeoutLength,
+                src;
             this.loaded = false;
             if (test.src) {
-                this.iframe.src = "../test/" + test.src;
+                src = "../test/" + test.src;
             } else {
-                this.iframe.src = URL.resolve(test.directory, (testName.indexOf("/") > -1 ? testName : testName + "/" + testName) + ".html");
+                src = URL.resolve(test.directory, (testName.indexOf("/") > -1 ? testName : testName + "/" + testName) + ".html");
             }
+            if (test.newWindow) {
+                this.testWindow = window.open(src, "test-window");
+            } else {
+                this.iframe.src = src;
+           }
+
             var theTestPage = this;
 
             //kick off jasmine tests
@@ -118,7 +129,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             //set the timeout so that the jasmine suite runs if the pages fails to load.
             var pageLoadTimedOut = function() {
                 console.log("Page load timed out for test named: " + test.testName);
-                resumeJasmineTests()
+                resumeJasmineTests();
             };
 
             if (!timeoutLength) {
@@ -127,7 +138,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             var pageLoadTimeout = setTimeout(pageLoadTimedOut, timeoutLength);
 
             //
-            var iframeLoad = function() {
+            var frameLoad = function() {
                 // implement global function that montage is looking for at load
                 // this is little bit ugly and I'd like to find a better solution
                 theTestPage.window.montageWillLoad = function() {
@@ -169,10 +180,21 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                             theTestPage.willNeedToDraw = true;
                         };
                     });
+                };
+                if (theTestPage.testWindow) {
+                    theTestPage.testWindow.removeEventListener("load", frameLoad, true);
+                } else {
+                    theTestPage.iframe.removeEventListener("load", frameLoad, true);
                 }
-                theTestPage.iframe.removeEventListener("load", iframeLoad, true);
+
+            };
+            if (this.testWindow) {
+                this.testWindow.addEventListener("load", frameLoad, true);
+            } else {
+                this.iframe.addEventListener("load", frameLoad, true);
             }
-            this.iframe.addEventListener("load", iframeLoad, true);
+
+
 
 
 
@@ -189,7 +211,12 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
         enumerable: false,
         value: function(testName) {
             this.loaded = false;
-            this.iframe.src = "";
+            if (this.testWindow) {
+                this.testWindow.close();
+                this.testWindow = null;
+            } else {
+                this.iframe.src = "";
+            }
             return this;
         }
     },
@@ -207,6 +234,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                 return theTestPage.drawHappened == numDraws;
             }, "component drawing",1000);
             if(forceDraw) {
+                var root = COMPONENT.__root__;
                 root['drawTree']();
             }
         }
@@ -215,21 +243,21 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     getElementById: {
         enumerable: false,
         value: function(elementId) {
-            return this.iframe.contentDocument.getElementById(elementId);
+            return this.document.getElementById(elementId);
         }
     },
 
     querySelector: {
         enumerable: false,
         value: function(selector) {
-            return this.iframe.contentDocument.querySelector(selector);
+            return this.document.querySelector(selector);
         }
     },
 
     querySelectorAll: {
         enumerable: false,
         value: function(selector) {
-            return this.iframe.contentDocument.querySelectorAll(selector);
+            return this.document.querySelectorAll(selector);
         }
     },
 
@@ -240,9 +268,23 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
         }
     },
 
+    document: {
+        get: function() {
+            if (this.testWindow) {
+                return this.testWindow.document;
+            } else {
+                return this.iframe.contentDocument;
+            }
+        }
+    },
+
     window: {
         get: function() {
-            return this.iframe.contentWindow;
+            if (this.testWindow) {
+                return this.testWindow;
+            } else {
+                return this.iframe.contentWindow;
+            }
         }
     },
 
@@ -297,7 +339,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             if (!eventName) {
                 eventName = "touchstart";
             }
-            var doc = this.iframe.contentDocument,
+            var doc = this.document,
                 simulatedEvent = doc.createEvent("CustomEvent"),
                 touch = {};
 
@@ -352,12 +394,12 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
         enumerable: false,
         value: function(xpathExpression, contextNode, namespaceResolver, resultType, result) {
             if (!contextNode) {
-                contextNode = this.iframe.contentDocument;
+                contextNode = this.document;
             }
             if (!resultType) {
                 resultType = XPathResult.FIRST_ORDERED_NODE_TYPE;
             }
-            pathResult = this.iframe.contentDocument.evaluate(xpathExpression, contextNode, namespaceResolver, resultType, result);
+            pathResult = this.document.evaluate(xpathExpression, contextNode, namespaceResolver, resultType, result);
             if (pathResult) {
                 switch (pathResult.resultType) {
                     case XPathResult.NUMBER_TYPE:
@@ -408,6 +450,10 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     },
 
     iframe: {
+        value: null
+    },
+
+    testWindow: {
         value: null
     }
 });

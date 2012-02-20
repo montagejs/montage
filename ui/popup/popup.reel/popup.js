@@ -272,29 +272,22 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     };
                 }
             }
-            return pos;
+            this.position = pos;
         }
     },
 
     _positionPopup: {
         value: function() {
             //console.log('--> position popup');
-            var pos = this.position;
+            this._calculatePosition();
+            var position = this.position;
             var popupSlot = this._popupSlot;
 
-            if(pos) {
-                if (pos.top) {
-                    popupSlot.element.style.top = pos.top + 'px';
-                }
-                if (pos.left) {
-                    popupSlot.element.style.left = pos.left + 'px';
-                }
-                if (pos.right) {
-                    popupSlot.element.style.right = pos.right + 'px';
-                }
-                if (pos.bottom) {
-                    popupSlot.element.style.bottom = pos.bottom + 'px';
-                }
+            if(position) {
+                popupSlot.element.style.top = (position.top ? position.top + 'px' : '');
+                popupSlot.element.style.left = (position.left ? position.left + 'px' : '');
+                popupSlot.element.style.right = (position.right ? position.right + 'px' : '');
+                popupSlot.element.style.bottom = (position.bottom ? position.bottom + 'px' : '');
             }
         }
     },
@@ -448,7 +441,6 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     this._showModalMask();
                 }
 
-                this.position = this.position || this._calculatePosition();
                 this._positionPopup();
 
             } else {
@@ -514,9 +506,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // an optimization to call positionPopup fewer times
                 window.clearTimeout(this._timeoutId);
                 this._timeoutId = setTimeout(function() {
-                    //self._positionPopup();
-                    self.position = self._calculatePosition();
-                    self._positionPopup();
+                    self.needsDraw = true;
                 }, 100);
             }
          }
