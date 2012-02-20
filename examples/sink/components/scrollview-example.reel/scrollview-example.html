@@ -149,21 +149,6 @@
                     }
                 },
 
-                "zip": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "zip"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "zip",
-                            "oneway": false
-                        }
-                    }
-                },
-
                 "dateConverter": {
                     "module": "montage/core/converter/date-converter",
                     "name": "DateConverter",
@@ -201,7 +186,7 @@
                         }
                     }
                 },
-                
+
                 "dept": {
                     "module": "montage/ui/select-input.reel",
                     "name": "SelectInput",
@@ -248,12 +233,12 @@
                         "element": {"#": "country"}
                     }
                 },
-                
+
                 "invert-converter": {
                     "module": "components/converters.reel",
                     "name": "InvertConverter"
                 },
-                
+
                 "agree-checkbox": {
                     "module": "montage/ui/checkbox.reel",
                     "name": "Checkbox",
@@ -284,7 +269,7 @@
                         }
                     }
                 },
-                
+
                 "scroller": {
                     "module": "montage/ui/scrollview.reel",
                     "name": "Scrollview",
@@ -367,7 +352,7 @@
                              <label for="date1">Date of Birth</label>
                              <input type="date" id="dob" value="" name="dob" pattern=""/>
                              <div id="dob-error" class="error"></div>
-                             
+
                              <label for="dept">Department</label>
                                 <select id="dept" required="true" multiple="true" size="3">
                                     <option>Please select a Department</option>
@@ -387,16 +372,16 @@
                                    <option>Please select a country...</option>
                                </select>
 
-                              
-                               
+
+
                              <div style="margin-top: 10px;">
                                  <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label>
                                  <button class="btn" id="update" type="button" disabled>Update</button>
                              </div>
                          </form>
-                         
+
                          <pre id="echo"></pre>
-                         
+
                     <div>
                 </div>
 
