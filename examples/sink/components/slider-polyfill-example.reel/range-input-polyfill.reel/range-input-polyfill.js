@@ -65,6 +65,8 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
    
 
    _sliding: {value: false},
+   
+   percent: {value: null},
    _valueSyncedWithPosition: {value: null},
    _value: {value: null},
     value: {
@@ -117,7 +119,7 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
     _calculateValueFromPosition: {
         value: function() {
             if(this.sliderWidth > 0) {
-                var percent = (this.positionX / this.sliderWidth) * 100;
+                var percent = this.percent = (this.positionX / this.sliderWidth) * 100;
                 console.log('percent = ', percent);                
                 var value = (this.min + ((percent/100) * (this.max - this.min)));               
                 Object.getPropertyDescriptor(this, "value").set.call(this, value, true);    
@@ -136,6 +138,7 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
                 var positionX = (percent/100)*this.sliderWidth;
                 //console.log('calculated position = ' + positionX);
                 Object.getPropertyDescriptor(this, "positionX").set.call(this, positionX, true);   
+                this.percent = percent;
                 this._valueSyncedWithPosition = true;             
             } else {
                 this._valueSyncedWithPosition = false;
@@ -225,8 +228,17 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
 
     draw: {
         value: function() {
-            console.log("positioning the handle to :", this.positionX);
-            this.handleEl.style['left'] = this.positionX + 'px';
+            //console.log("positioning the handle to :", this.percent);
+            if(this.handleEl.style.webkitTransform) {
+                // detection for webkitTransform to use Hardware acceleration where available
+                this.handleEl.style.webkitTransform = 'translate(' + this.positionX + 'px)';
+            } else {
+                this.handleEl.style['left'] = this.positionX + 'px';
+                // Unfortunately, Firefox does not expose style['transform'] via Javascript (yet, as of 10.0.2)
+                // hence the follg code does not work on Firefox though transform/translate does 
+                // work if it is set in the CSS 
+                // this.handleEl.style.transform = 'translate(' + this.positionX + 'px)';
+            }
         }
     },
     
