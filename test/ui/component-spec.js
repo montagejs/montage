@@ -282,6 +282,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                         expect(element.textContent).toBe(component.value);
                     });
                 });
+
+                it("should correctly append styles attributes", function() {
+                   var style = testPage.test.componentStyle.element.getAttribute("style");
+
+                   expect(style).toBe("border: 1px solid black; margin: 2px");
+                });
             });
 
             describe("didDraw calling after draw", function() {
