@@ -11,6 +11,9 @@ var Montage = require("montage").Montage,
  * The input type="range" field
  */
 var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, {
+    
+    DEFAULT_WIDTH: {value: 300},
+    HANDLE_ADJUST: {value: 5},
 
     hasTemplate: {value: true},
 
@@ -47,7 +50,21 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
            this.needsDraw = true;
        }
    },
+   
+   /** Width of the slider in px. Default = 300 */
+   _width: {value: null},
+   width: {
+         get: function() {
+             return this._width;
+         },
+         set: function(value) {
+             this._width =  String.isString(value) ? parseFloat(value) : value;
+             this.needsDraw = true;
+         }
+     },
+   
 
+   _sliding: {value: false},
    _valueSyncedWithPosition: {value: null},
    _value: {value: null},
     value: {
@@ -56,6 +73,7 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
        },
        set: function(value, fromInput) {
            this._value =  String.isString(value) ? parseFloat(value) : value;
+           //console.log('this._value = ', this._value);
 
            if(fromInput) {
                this._valueSyncedWithPosition = true;
@@ -82,26 +100,27 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
             return this._positionX;
         },
         set: function(value, fromValue) {
-            console.log('translateX = ' + value);
-            if(value && !isNaN(value)) {
+            
+            if(value !== null && !isNaN(value)) {
+                console.log('position change to = ' + value);
                 this._positionX = value;
                 if(!fromValue) {
-                    this._calculateValue();
-                } 
+                    this._calculateValueFromPosition();
+                    this._valueSyncedWithPosition = true;
+                }  
                 this.needsDraw = true;                
             }
            
         }
     },
 
-    _calculateValue: {
+    _calculateValueFromPosition: {
         value: function() {
             if(this.sliderWidth > 0) {
                 var percent = (this.positionX / this.sliderWidth) * 100;
-                console.log('percent = ' + percent);
-                var value = (this.min + ((percent/100) * (this.max - this.min)));
-                console.log('value = ' + value);
-                Object.getPropertyDescriptor(this, "value").set.call(this, value, true);                
+                console.log('percent = ', percent);                
+                var value = (this.min + ((percent/100) * (this.max - this.min)));               
+                Object.getPropertyDescriptor(this, "value").set.call(this, value, true);    
             }
 
         }
@@ -115,12 +134,18 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
                 var range = (this.max - this.min);
                 percent = ((this.value-this.min)/range) * 100;                                    
                 var positionX = (percent/100)*this.sliderWidth;
-                console.log('calculated position = ' + positionX);
-                Object.getPropertyDescriptor(this, "positionX").set.call(this, positionX, true);                
-            }
-            // @todo - handle scenario where value is intially set but we are unable to position the 
-            // handle as sliderWidth is not available
-             
+                //console.log('calculated position = ' + positionX);
+                Object.getPropertyDescriptor(this, "positionX").set.call(this, positionX, true);   
+                this._valueSyncedWithPosition = true;             
+            } else {
+                this._valueSyncedWithPosition = false;
+            }            
+        }
+    },
+    
+    templateDidLoad: {
+        value: function() {
+            
         }
     },
 
@@ -129,21 +154,27 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
             
             // read initial values from the input type=range  
                     
-            /*
+            
             this.min = this.min || this.element.getAttribute('min') || 0;
             this.max = this.max || this.element.getAttribute('max') || 100;            
             this.step = this.step || this.element.getAttribute('step') || 1;
             this.value = this.value || this.element.getAttribute('value') || 0;
-            */
             
+                        
         }
     },
 
     prepareForDraw: {
         value: function() {
-            this.minX = this.sliderLeft = this.sliderEl.offsetLeft;
-            this.sliderWidth = this.sliderEl.offsetWidth; // - (10);
+            this.minX = this.sliderLeft = this.element.offsetLeft;
+            this.sliderWidth =  (this.width || RangeInputPolyfill.DEFAULT_WIDTH); //this.element.offsetWidth || 300;            
+            this.element.style.width = (this.sliderWidth + RangeInputPolyfill.HANDLE_ADJUST) + 'px';
+            
             this.maxX = this.sliderLeft + this.sliderWidth;
+            
+            if(!this._valueSyncedWithPosition) {
+                this._calculatePositionFromValue();
+            }
         }
     },
 
@@ -157,6 +188,8 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
     
     handleTranslateStart: {
         value: function(e) {
+            this._valueSyncedWithPosition = false;
+            this._sliding = true;
             console.log('translateStart', e);
         }
     },
@@ -164,14 +197,19 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
     handleTranslateEnd: {
         value: function(e) {
             
-            var position = this.translateComposer._pointerX;
-            console.log('translateEnd positionX', position);
-            
-            var positionX = ((position-10)- this.sliderLeft);
-            if(positionX > 0 && (positionX <= this.sliderWidth)) {
-                this.positionX = positionX;                
+            if(this._sliding === true) {
+                this._sliding = false;
+            } else {
+                // do this only when the user clicks the slider directly instead of
+                // sliding the handle
+                var position = this.translateComposer._pointerX;
+                var positionX = ((position)- this.sliderLeft);
+                if(positionX > 0 && (positionX <= this.sliderWidth)) {
+                    this.positionX = positionX;                
+                }
+                
             }
-            
+                        
         }
     },
 
@@ -187,6 +225,7 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
 
     draw: {
         value: function() {
+            console.log("positioning the handle to :", this.positionX);
             this.handleEl.style['left'] = this.positionX + 'px';
         }
     },

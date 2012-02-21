@@ -96,7 +96,7 @@ exports.SliderPolyfillExample = Montage.create(Component, {
         value: function() {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
-            this.red = 0.3;
+            //this.red = 0.3;
         }
     },
 

@@ -44,14 +44,8 @@
             "sliderEl": {"#": "slider"}, 
             "handleEl": {"#": "slider-handle"},
             "translateComposer": {"@": "translateComposer1"}
-        },
-        "bindings": {
-            "positionX": {
-                "boundObject": {"@": "translateComposer1"},
-                "boundObjectPropertyPath": "translateX",
-                "oneway": true
-            }
         }
+        
     }
 }
     </script>
@@ -61,14 +55,13 @@
            display: inline-block;
            border-radius: 4px;
            position: relative;
-           height: 10px;
-           width: 400px;
-           background-color: #eee; 
+           height: 5px;
+           background-color: #404040; 
            border: 1px solid #aaa;
            cursor: default;
         }
         .slider-handle {
-            top: -0.4em;
+            top: -0.6em;
             position: absolute;
             z-index: 2;
             cursor: pointer;
@@ -90,7 +83,7 @@
     </head>
     <body>
         <div id="slider" class="slider">
-            <a draggable="true" href="#" id="slider-handle" class="slider-handle"></a>
+            <span draggable="true" href="#" id="slider-handle" class="slider-handle"></span>
         </div>
 
     </body>

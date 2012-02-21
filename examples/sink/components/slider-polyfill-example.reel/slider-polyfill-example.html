@@ -15,13 +15,8 @@
                     "properties": {
                         "element": {"#": "slider-polyfill-example"},
                         "image": {"#": "image"}
-                    },
-                    "bindings": {
-                        "red": {
-                            "boundObject": {"@": "red"},
-                            "boundObjectPropertyPath": "value"
-                        }
                     }
+                    
                 },
                 "roundTo2Decimals": {
                     "module": "montage/core/converter/number-converter",
@@ -29,14 +24,19 @@
                     "properties": {
                         "decimals": 2
                     }
+                    
                 },
                 "red": {
                     "module": "components/slider-polyfill-example.reel/range-input-polyfill.reel",
                     "name": "RangeInputPolyfill",
                     "properties": {
-                        "element": {"#": "color-red"},
-                        "min": -1,
-                        "max": "1"                 
+                        "element": {"#": "color-red"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "red"
+                        }
                     }
                     
                 },
@@ -56,90 +56,91 @@
                     }
                 },
                 "green": {
-                    "module": "components/slider-polyfill-example.reel/range-input-polyfill.reel",
-                    "name": "RangeInputPolyfill",
-                    "properties": {
-                        "element": {"#": "color-green"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "green"
+                        "module": "components/slider-polyfill-example.reel/range-input-polyfill.reel",
+                        "name": "RangeInputPolyfill",
+                        "properties": {
+                            "element": {"#": "color-green"}
+                        },
+                        "bindings": {
+                            "value": {
+                                "boundObject": {"@": "owner"},
+                                "boundObjectPropertyPath": "green"
+                            }
                         }
-                    }
-                },
-                "green-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
-                    "properties": {
-                        "element": {"#": "green-value"}
                     },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "green",
-                            "converter": {"@": "roundTo2Decimals"},
-                            "oneway": true
+                    "green-value": {
+                        "module": "montage/ui/dynamic-text.reel",
+                        "name": "DynamicText",
+                        "properties": {
+                            "element": {"#": "green-value"}
+                        },
+                        "bindings": {
+                            "value": {
+                                "boundObject": {"@": "owner"},
+                                "boundObjectPropertyPath": "green",
+                                "converter": {"@": "roundTo2Decimals"},
+                                "oneway": true
+                            }
                         }
-                    }
-                },
-                "blue": {
-                    "module": "components/slider-polyfill-example.reel/range-input-polyfill.reel",
-                    "name": "RangeInputPolyfill",
-                    "properties": {
-                        "element": {"#": "color-blue"}
                     },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "blue"
+                    "blue": {
+                        "module": "components/slider-polyfill-example.reel/range-input-polyfill.reel",
+                        "name": "RangeInputPolyfill",
+                        "properties": {
+                            "element": {"#": "color-blue"}
+                        },
+                        "bindings": {
+                            "value": {
+                                "boundObject": {"@": "owner"},
+                                "boundObjectPropertyPath": "blue"
+                            }
                         }
-                    }
-                },
-                "blue-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
-                    "properties": {
-                        "element": {"#": "blue-value"}
                     },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "blue",
-                            "converter": {"@": "roundTo2Decimals"},
-                            "oneway": true
+                    "blue-value": {
+                        "module": "montage/ui/dynamic-text.reel",
+                        "name": "DynamicText",
+                        "properties": {
+                            "element": {"#": "blue-value"}
+                        },
+                        "bindings": {
+                            "value": {
+                                "boundObject": {"@": "owner"},
+                                "boundObjectPropertyPath": "blue",
+                                "converter": {"@": "roundTo2Decimals"},
+                                "oneway": true
+                            }
                         }
-                    }
-                },
+                    },
 
-                "sharpness": {
-                    "module": "montage/ui/range-input.reel",
-                    "name": "RangeInput",
-                    "properties": {
-                        "element": {"#": "sharpness-amount"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "sharpnessAmount"
+                    "sharpness": {
+                        "module": "components/slider-polyfill-example.reel/range-input-polyfill.reel",
+                        "name": "RangeInputPolyfill",
+                        "properties": {
+                            "element": {"#": "sharpness-amount"},
+                            "width": "200"                                          
+                        },
+                        "bindings": {
+                            "value": {
+                                "boundObject": {"@": "owner"},
+                                "boundObjectPropertyPath": "sharpnessAmount"
+                            }
                         }
-                    }
-                },
-                "sharpness-amount-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
-                    "properties": {
-                        "element": {"#": "sharpness-amount-value"}
                     },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "sharpnessAmount",
-                            "converter": {"@": "roundTo2Decimals"},
-                            "oneway": true
+                    "sharpness-amount-value": {
+                        "module": "montage/ui/dynamic-text.reel",
+                        "name": "DynamicText",
+                        "properties": {
+                            "element": {"#": "sharpness-amount-value"}
+                        },
+                        "bindings": {
+                            "value": {
+                                "boundObject": {"@": "owner"},
+                                "boundObjectPropertyPath": "sharpnessAmount",
+                                "converter": {"@": "roundTo2Decimals"},
+                                "oneway": true
+                            }
                         }
-                    }
-                },
+                    },
 
                 "reset": {
                     "module": "montage/ui/button.reel",
@@ -194,32 +195,30 @@
             <h4>Demo</h4>
             <div class="demo">
             <div class="row">
-                <div class="span6">
+                <div class="span8">
                     <img id="image" src="images/IMG_1416.jpg" style="height: 300px; width: 450px;" class="image"/>
                 </div>
-                <div class="span6">
+                <div class="span8">
                     <h6>Color</h6>
-                    <div class="control">
-                        <div>
+                    <section class="control">
+                        <section>
                             Red:
-                            <div style="height: 20px;">
-                            <input id="color-red" type="range" min="-1" max="1" step="0.1" value="0.2"/>                            
-                            </div>
+                            <input id="color-red" type="range" min="-1" max="1" step="0.1" value="0"/>                            
                             <span id="red-value" class="range-value">0.5</span>
-                        </div>
-                        <div>
+                        </section>
+                        <section>
                             Green:
                             <input id="color-green" type="range" min="-1" max="1" step="0.1" value="0" />
                             <span id="green-value" class="range-value"/>
-                        </div>
-                        <div>
+                        </section>
+                        <section>
                             Blue:
                             <input id="color-blue" type="range" min="-1" max="1" step="0.1" value="0" />
                             <span id="blue-value" class="range-value" />
-                        </div>
+                        </section>
 
 
-                    </div>
+                    </section>
 
 
                     <h6>Sharpen</h6>
