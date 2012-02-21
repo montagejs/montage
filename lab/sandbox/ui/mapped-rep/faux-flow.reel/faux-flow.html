@@ -25,6 +25,28 @@
                 "name": "Repetition",
                 "properties": {
                     "element": {"#": "repetition"}
+                },
+                "bindings": {
+                    "content": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "originalContent",
+                        "oneway": true
+                    },
+                    "objects": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "objects",
+                        "oneway": true
+                    },
+                    "contentController": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "contentController",
+                        "oneway": true
+                    },
+                    "isSelectionEnabled": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "isSelectionEnabled",
+                        "oneway": true
+                    }
                 }
             }
 
@@ -35,7 +57,7 @@
 <body>
 
     <div id="fauxFlow" class="FauxFlow">
-        <div id="repetition"></div>
+        <div data-montage-id="repetition"></div>
     </div>
 
 </body>
