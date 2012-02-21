@@ -404,8 +404,8 @@ var PressEvent = (function(){
 
     // These properties are available directly on the event
     eventProps = ["altKey", "ctrlKey", "metaKey", "shiftKey",
-    "cancelBubble", "clipboardData", "currentTarget", "defaultPrevented",
-    "eventPhase", "returnValue", "srcElement", "timeStamp", "preventDefault",
+    "cancelBubble", "currentTarget", "defaultPrevented",
+    "eventPhase", "timeStamp", "preventDefault",
     "stopImmediatePropagation", "stopPropagation"];
     // These properties are available on the event in the case of mouse, and
     // on the _touch in the case of touch
