@@ -35,8 +35,8 @@
     },
 
     "scroll": {
-        "module": "montage/ui/scrollview.reel",
-        "name": "Scrollview",
+        "module": "montage/ui/scroller.reel",
+        "name": "Scroller",
         "properties": {
             "element": {"#": "scroll"}
         }
@@ -78,11 +78,9 @@
     <h2>Scroll</h2>
     <form action="" method="get">
     <div id="scroll" style="background:#CCC; height: 300px">
-        <div>
-            <div style="background:#A00; height:50px; width:10px">.</div>
-            <input type="range" id="scroll_range" value="0" />
-            <div style="background:#A00; height:400px; width:10px">.</div>
-        </div>
+        <div style="background:#A00; height:50px; width:10px">.</div>
+        <input type="range" id="scroll_range" value="0" />
+        <div style="background:#A00; height:400px; width:10px">.</div>
     </div>
     </form>
 

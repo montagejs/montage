@@ -10,7 +10,7 @@
     background: hsl(120, 2%, 89%);
 }
 
-.SearchPanel .SearchResultsList .montage-list-scrollView {
+.SearchPanel .SearchResultsList .montage-list-scroller {
     height: 350px;
 }
 

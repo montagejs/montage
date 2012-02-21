@@ -163,17 +163,19 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                     expect(listener).toHaveBeenCalled();
                     expect(test.scroll_check.checked).toBe(false);
                 })
-                it("doesn't fire an action event when scrollview is dragged", function() {
+                it("doesn't fire an action event when scroller is dragged", function() {
                     var el = test.scroll_check.element;
                     var scroll_el = test.scroll.element;
 
                     var listener = testPage.addListener(test.scroll_check);
 
+                    var press_composer = test.scroll_check.composerList[0];
+
                     // mousedown
-                    testPage.mouseEvent({target: el}, "mousedown");;
+                    testPage.mouseEvent({target: el}, "mousedown");
 
                     expect(test.scroll_check.checked).toBe(false);
-                    expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(false);
+                    expect(test.scroll_check.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(true);
 
                     // Mouse move doesn't happen instantly
                     waits(10);
@@ -190,7 +192,7 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                         scroll_el.dispatchEvent(moveEvent);
 
                         expect(test.scroll_check.checked).toBe(false);
-                        expect(test.scroll.eventManager.isPointerClaimedByComponent(test.scroll._observedPointer, test.scroll)).toBe(true);
+                        expect(test.scroll_check.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(false);
 
                         // mouse up
                         testPage.mouseEvent({target: el}, "mouseup");;
