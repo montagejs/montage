@@ -108,11 +108,7 @@ var Slot = exports.Slot = Montage.create(Component, /** @lends module:"montage/u
                     if (this.delegate && typeof this.delegate.slotElementForComponent === "function") {
                         nodeToAppend = this.delegate.slotElementForComponent(this, this._contentToAppend, nodeToAppend);
                     }
-                    this._contentToAppend.element = nodeToAppend;
-                }
-
-                if (!this._contentToAppend.parentComponent) {
-                    this._contentToAppend._cachedParentComponent = this;
+                    this._contentToAppend.setElementWithParent(nodeToAppend, this);
                 }
 
                 // The child component will need to draw; this may trigger a draw for the slot itself
@@ -140,7 +136,6 @@ var Slot = exports.Slot = Montage.create(Component, /** @lends module:"montage/u
             if (child.element.parentElement == null) {
                 // by the time a child component lets us know it's about to prepare to draw for the first time
                 // we know we need to append its element to our own element.
-                // This happens outside of any drawing for better or worse right now.
                 this._element.appendChild(child.element);
                 this.needsDraw = true;
             }
@@ -282,7 +277,7 @@ var Slot = exports.Slot = Montage.create(Component, /** @lends module:"montage/u
             // If the old content was a component, remove it from the component tree
             if (this._contentToRemove && this._contentToRemove.parentComponent) {
                 // TODO may also need to remove this from my drawlist, possibly elsewhere too
-                this._contentToRemove._cachedParentComponent = null;
+                this._contentToRemove.detachFromParentComponent();
             }
 
             var removedContent = this._contentToRemove;

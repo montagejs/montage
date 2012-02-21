@@ -298,8 +298,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
                 for (i = 0; (iChild = children[i]); i++) {
                     if ((iComponent = iChild.controller)) {
-                        this.childComponents.push(iComponent);
-                        iComponent._cachedParentComponent = this;
+                        iComponent.attachToParentComponent();
                         iComponent.needsDraw = true;
                     }
                 }
@@ -342,8 +341,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
             // based on its template
             this._mainComponent = exports[this.mainName].create();
             this.childComponents.push(this._mainComponent);
-            this._mainComponent._cachedParentComponent = this;
-            this._mainComponent.element = document.createElement("div");
+            this._mainComponent.setElementWithParent(document.createElement("div"), this);
             this._mainComponent.needsDraw = true;
         }
     },
