@@ -184,25 +184,21 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
     draw: {
         enumerable: false,
         value: function() {
+            Object.getPrototypeOf(TextInput).draw.call(this);
 
-            var t = this.element;
+            var el = this.element;
 
             if (!this._valueSyncedWithInputField) {
                 this._setElementValue(this.converter ? this.converter.convert(this._value) : this._value);
             }
 
-
             if (this.error) {
-                t.classList.add('montage-text-invalid');
-                t.title = this.error.message || '';
+                el.classList.add('montage-text-invalid');
+                el.title = this.error.message || '';
             } else {
-                t.classList.remove("montage-text-invalid");
-                t.title = '';
+                el.classList.remove("montage-text-invalid");
+                el.title = '';
             }
-
-            var fn = Object.getPrototypeOf(TextInput).draw;
-            fn.call(this);
-
         }
     },
 /**
