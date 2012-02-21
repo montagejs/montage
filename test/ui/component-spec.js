@@ -412,7 +412,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     expect(componentE1.childComponents.length).toBe(1);
                     expect(componentE1.childComponents[0]).toBe(testPage.test.componentE11);
                 });
-            })
+            });
+
+            it("should use the label as identifier if no identifier is given", function() {
+                expect(testPage.test.componentWithoutIdentifier.identifier).toBe("componentWithoutIdentifier");
+                expect(testPage.test.componentWithIdentifier.identifier).toBe("anIdentifier");
+            });
         });
     });
 });

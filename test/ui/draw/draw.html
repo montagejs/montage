@@ -24,7 +24,9 @@
             "componentDtarget": {"@": "componentDtarget"},
             "componentE": {"@": "componentE"},
             "componentE11": {"@": "componentE11"},
-            "componentStyle": {"@": "componentStyle"}
+            "componentStyle": {"@": "componentStyle"},
+            "componentWithoutIdentifier": {"@": "componentWithoutIdentifier"},
+            "componentWithIdentifier": {"@": "componentWithIdentifier"}
         }
     },
     "repetition": {
@@ -105,6 +107,17 @@
         "name": "ComponentStyle",
         "properties": {
             "element": {"#": "component-style"}
+        }
+    },
+    "componentWithoutIdentifier": {
+        "module": "montage/ui/component",
+        "name": "Component"
+    },
+    "componentWithIdentifier": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "identifier": "anIdentifier"
         }
     },
     "owner": {
