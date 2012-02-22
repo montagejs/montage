@@ -104,7 +104,7 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
         set: function(value, fromValue) {
             
             if(value !== null && !isNaN(value)) {
-                console.log('position change to = ' + value);
+                //console.log('position change to = ' + value);
                 this._positionX = value;
                 if(!fromValue) {
                     this._calculateValueFromPosition();
@@ -120,7 +120,6 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
         value: function() {
             if(this.sliderWidth > 0) {
                 var percent = this.percent = (this.positionX / this.sliderWidth) * 100;
-                console.log('percent = ', percent);                
                 var value = (this.min + ((percent/100) * (this.max - this.min)));               
                 Object.getPropertyDescriptor(this, "value").set.call(this, value, true);    
             }
@@ -193,7 +192,7 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
         value: function(e) {
             this._valueSyncedWithPosition = false;
             this._sliding = true;
-            console.log('translateStart', e);
+            //console.log('translateStart', e);
         }
     },
 
