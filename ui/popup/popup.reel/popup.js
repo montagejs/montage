@@ -195,12 +195,12 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
             var position, delegate = this.delegate, anchor = this.anchor, type = this.type;
 
             // if a delegate is provided, use that to get the position
-            if(delegate && (typeof delegate.positionPopup === 'function')) {
+            if(delegate && (typeof delegate.willPositionPopup === 'function')) {
                 var anchorPosition;
                 if(anchor) {
                     anchorPosition = this._getElementPosition(anchor);
                 }
-                position = delegate.positionPopup(this, anchor, anchorPosition);
+                position = delegate.willPositionPopup(this, anchor, anchorPosition);
             } else if(this.position !== null) {
                 // If a position has been specified but no delegate has been provided
                 // we assume that the position is static and hence use that
@@ -303,7 +303,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     /**
     * Show the Popup. The Popup is displayed at a position determined by the following conditions:
-    * 1) If a delegate is provided and the positionPopup function is implemented, the position is always determined by the delegate
+    * 1) If a delegate is provided and the willPositionPopup function is implemented, the position is always determined by the delegate
     * 2) If Popup.position has been set, the Popup is always displayed at this location
     * 3) If an anchor has been set, the popup is displayed below the anchor
     * 4) If no positional hints are provided, the Popup is displayed at the center of the screen
@@ -368,9 +368,6 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     draw: {
         value: function() {
             if (this.displayed) {
-                // custom, alert, confirm, notify
-                // only one popup of each type can be displayed at the same time
-                // kishore - does the above restriction make sense ? should we restrict it ?
 
                 if(this.modal === true) {
                     this.element.classList.add('montage-modal');
@@ -387,7 +384,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this.content.element.style.display = 'block';
                 this.content.element.classList.remove('montage-invisible');
                 // TODO do we want the panel to be focusable?
-                // this.content.element.setAttribute("tabindex", "0"); // Make the alert focusable
+                this.content.element.setAttribute("tabindex", "0"); // Make the popup content focusable
 
                 if (this.autoDismiss) {
                     var self = this;
@@ -413,13 +410,14 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     didDraw: {
         value: function() {
             if (this._displayed) {
-                this.content.element.focus();
 
                 if(this.modal === true) {
                     this._showModalMask();
                 }
 
                 this._positionPopup();
+                // focus the content to enable key events such as ENTER/ESC
+                this.content.element.focus();
 
             } else {
                 if(this.modal === true) {
