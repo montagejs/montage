@@ -59,7 +59,7 @@ exports.SliderPolyfillExample = Montage.create(Component, {
     draw: {
         value: function() {
 
-            this.result.style['background-color'] = this.resultHex;
+            this.result.style.backgroundColor = this.resultHex;
 
         }
     },
