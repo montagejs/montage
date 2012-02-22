@@ -75,7 +75,6 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
        },
        set: function(value, fromInput) {
            this._value =  String.isString(value) ? parseFloat(value) : value;
-           //console.log('this._value = ', this._value);
 
            if(fromInput) {
                this._valueSyncedWithPosition = true;
@@ -104,7 +103,6 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
         set: function(value, fromValue) {
             
             if(value !== null && !isNaN(value)) {
-                //console.log('position change to = ' + value);
                 this._positionX = value;
                 if(!fromValue) {
                     this._calculateValueFromPosition();
@@ -135,7 +133,6 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
                 var range = (this.max - this.min);
                 percent = ((this.value-this.min)/range) * 100;                                    
                 var positionX = (percent/100)*this.sliderWidth;
-                //console.log('calculated position = ' + positionX);
                 Object.getPropertyDescriptor(this, "positionX").set.call(this, positionX, true);   
                 this.percent = percent;
                 this._valueSyncedWithPosition = true;             
@@ -144,18 +141,11 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
             }            
         }
     },
-    
-    templateDidLoad: {
-        value: function() {
-            
-        }
-    },
 
     deserializedFromTemplate: {
         value: function() {
             
-            // read initial values from the input type=range  
-                    
+            // read initial values from the input type=range                      
             
             this.min = this.min || this.element.getAttribute('min') || 0;
             this.max = this.max || this.element.getAttribute('max') || 100;            
@@ -192,7 +182,6 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
         value: function(e) {
             this._valueSyncedWithPosition = false;
             this._sliding = true;
-            //console.log('translateStart', e);
         }
     },
 
@@ -227,23 +216,19 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
 
     draw: {
         value: function() {
-            //console.log("positioning the handle to :", this.percent);
-            if(this.handleEl.style.webkitTransform) {
+            var el = this.handleEl;            
+            
+            if(el.style.webkitTransform != null) {
                 // detection for webkitTransform to use Hardware acceleration where available
-                this.handleEl.style.webkitTransform = 'translate(' + this.positionX + 'px)';
+                el.style.webkitTransform = 'translate(' + this.positionX + 'px)';
+            } else if(el.style.MozTransform != null) {
+                el.style.MozTransform = 'translate(' + this.positionX + 'px)';
+            } else if(el.style.transform != null) {
+                el.style.transform = 'translate(' + this.positionX + 'px)';
             } else {
-                this.handleEl.style['left'] = this.positionX + 'px';
-                // Unfortunately, Firefox does not expose style['transform'] via Javascript (yet, as of 10.0.2)
-                // hence the follg code does not work on Firefox though transform/translate does 
-                // work if it is set in the CSS 
-                // this.handleEl.style.transform = 'translate(' + this.positionX + 'px)';
+                // fallback
+                el.style['left'] = this.positionX + 'px';                
             }
-        }
-    },
-    
-    didDraw: {
-        value: function() {
-
         }
     }
 });
