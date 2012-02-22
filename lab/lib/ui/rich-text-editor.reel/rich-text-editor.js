@@ -317,6 +317,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 command,
                 propertyName,
                 state,
+                prevState,
                 method,
                 i;
 
@@ -333,10 +334,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
                     propertyName = "_" + command;
                     if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@" + command, this)) {
+                        prevState = this[propertyName];
                         state = method.call(this, command);
-                        if (this[propertyName] !== state) {
+                        if (state !== prevState) {
                             this[propertyName] = state;
-                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue(command , state));
+                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue(command , prevState).withPlusValue(state));
                         }
                     }
                 }
@@ -528,12 +530,16 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     _liststyleGetState: {
         enumerable: false,
         value: function() {
-            if (this._getState("insertorderedlist")) {
-               return "ordered"
-            } else if (this._getState("insertunorderedlist")) {
-                return "unordered"
+            if (this.element.firstChild == document.activeElement) {
+                if (this._getState("insertorderedlist")) {
+                   return "ordered"
+                } else if (this._getState("insertunorderedlist")) {
+                    return "unordered"
+                } else {
+                    return "none";     // default
+                }
             } else {
-                return "none";     // default
+                return this._liststyle;
             }
         }
     },
@@ -575,16 +581,20 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     _justifyGetState: {
         enumerable: false,
         value: function() {
-            if (this._getState("justifyleft")) {
-               return "left"
-            } else if (this._getState("justifycenter")) {
-                return "center"
-            } else if (this._getState("justifyright")) {
-                return "right"
-            } else if (this._getState("justifyfull")) {
-                return "full"
+            if (this.element.firstChild == document.activeElement) {
+                if (this._getState("justifyleft")) {
+                   return "left"
+                } else if (this._getState("justifycenter")) {
+                    return "center"
+                } else if (this._getState("justifyright")) {
+                    return "right"
+                } else if (this._getState("justifyfull")) {
+                    return "full"
+                } else {
+                    return "left";     // default
+                }
             } else {
-                return "left";     // default
+                return this._justify;
             }
         }
     },
@@ -714,7 +724,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 editorElement = this.element,
                 element,
                 range,
-                offset;
+                offset,
+                prevValue;
 
             if (this._needsResetContent === true) {
                 // Reset the editor content in order to reset the browser undo stack
@@ -725,7 +736,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     editorElement.firstChild.innerHTML = this._value;
                     // Since this property affects the textValue, we need to fire a change event for it as well
                     if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
-                        this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , this.textValue));
+                        prevValue = this._textValue;
+                        if (this.textValue !== prevValue) {
+                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(text.value));
+                        }
                     }
                 } else if (this._textValue && !this._dirtyTextValue) {
                     if (editorElement.firstChild.innerText) {
@@ -735,7 +749,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     }
                     // Since this property affects the value, we need to fire a change event for it as well
                     if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
-                        this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , this.value));
+                        prevValue = this._value;
+                        if (this.value !== prevValue) {
+                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(this.value));
+                        }
                     }
                 } else {
                     editorElement.firstChild.innerHTML = "";
@@ -883,11 +900,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 timer;
 
             this._hasFocus = true;
-            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("hasFocus" , true));
+            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("hasFocus" , false).withPlusValue(true));
             isActive = (content && content === document.activeElement);
             if (isActive != this._isActiveElement) {
                 this._isActiveElement = isActive;
-                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , true));
+                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , false).withPlusValue(true));
             }
 
             if (this._needsSelectionReset) {
@@ -966,11 +983,11 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                 isActive;
 
             this._hasFocus = false;
-            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("hasFocus" , false));
+            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("hasFocus" , true).withPlusValue(false));
             isActive = (content && content === document.activeElement);
             if (isActive != this._isActiveElement) {
                 this._isActiveElement = isActive;
-                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , true));
+                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , !isActive).withPlusValue(isActive));
             }
 
             // Force a selectionchange when we lose the focus
@@ -1533,16 +1550,26 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     doAction: {
         enumerable: true,
         value: function(action, value) {
+            var savedActiveElement = document.activeElement,
+                editorElement = this.element.firstChild;
+
             // Make sure we are the active element before calling execCommand
-            if (this.element.firstChild == document.activeElement) {
-                if (value === undefined) {
-                    value = false;
-                }
+            if (editorElement != savedActiveElement) {
+                editorElement.focus();
+            }
 
-                document.execCommand(action, false, value);
+            if (value === undefined) {
+                value = false;
+            }
 
-                this.handleSelectionchange();
-                this._markDirty();
+            document.execCommand(action, false, value);
+
+            this.handleSelectionchange();
+            this._markDirty();
+
+            // Reset the focus
+            if (editorElement != savedActiveElement) {
+                savedActiveElement.focus();
             }
         }
     },
@@ -1573,6 +1600,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         enumerable: false,
         value: function() {
             var thisRef = this,
+                prevValue;
                 updateValues = function() {
                     clearTimeout(thisRef._forceUpdateValuesTimeout);
                     delete thisRef._forceUpdateValuesTimeout;
@@ -1580,10 +1608,16 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                     delete thisRef._updateValuesTimeout;
 
                     if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
-                        thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , thisRef.value));
+                        prevValue = thisRef._value;
+                        if (thisRef.value !== prevValue) {
+                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(thisRef.value));
+                        }
                     }
                     if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
-                        thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , thisRef.textValue));
+                        prevValue = thisRef._textValue;
+                        if (thisRef.textValue !== prevValue) {
+                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(thisRef.textValue));
+                        }
                     }
                     thisRef._dispatchEditorEvent("editorChange");
                 };
