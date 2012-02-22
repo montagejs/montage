@@ -404,48 +404,48 @@
             </div>
         </div>
 
-        
+
         <h4>Demo</h4>
 
         <div class="demo">
             <h4>String converters</h4>
             The following examples demonstrate how to use a string converter on a DynamicText field to format its assigned value before being displayed. The value of the input text field (which is controlled by a Montage Textfield object.) This is done by creating a new converter object, and assinging that object to a DynamicText component's <code>converter</code> property.
-            
+
             <input type="text" id="textfield1" placeholder="Enter some text here" />
 
             <p> 1) Dynamic text bound to the textfield without any converter<p>
             <div id="text1" class="text example"></div>
-            
+
             <p>2) Dynamic text with an UpperCase converter</p>
             <div id="text2" class="text"></div>
-            
+
             <p>3) Dynamic text with a LowerCase converter</p>
             <div id="text3" class="text"></div>
-            
+
             <textarea id="textarea1" style="width: 400px; height: 100px;">Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget</textarea>
             <p id="text4"></p>
-            
-            
+
+
             <h4>Number to string converters </h4>
             <input id="txt-number" type="number" name="txt-number" step="5"  />
-            
+
             <p>Default - Number rounded to 2 decimals</p>
             <div id="num1" class="text"></div>
-            
+
             <p>Number in human readable form (K,M etc). Set property "shorten" to true.</p>
             <div id="num2" class="text"></div>
-            
+
             <p>Number in human readable form with 4 decimals</p>
             <div id="num3" class="text"></div>
-            
+
             <p>Number rounded to nearest integer</p>
             <div id="num4" class="text"></div>
-            
-            
+
+
             <h4>Date Converters </h4>
             <input id="txt-date" type="text" placeholder="Enter a Date in the mm-dd-yyyy format" />
             <p>For date format patterns, see: <a target="_new" href="http://www.ruby-doc.org/core/classes/Time.html#M000392">here</a></p>
-            
+
             <div>Default Date.toString()</div>
             <div id="date1" class="text"></div>
 
@@ -459,14 +459,14 @@
 
             <div>Pattern: 'c' ISO-8601 format </div>
             <div id="date5" class="text"></div>
-            
+
         </div>
 
 
 
 
         <h3>Custom converter: Temperature Converter</h3>
-        
+
         <p>The following example demonstrates how to create and use a custom converter, in this case to convert from degrees C to degrees F. The custom object extends the base Converter object which defines two methodsThe base Converter class that is extended by specific converter classes. A Converter has two primary convert() and revert().</p>
 
         <div class="demo">
@@ -478,7 +478,7 @@
                     <input type="number" name="fahrenheit" id="fahrenheit" >
             </section>
         </div>
-        
+
         <section>
            <p>1) Implement the custom converter (see components/converters.reel/converters.js in project code). </p>
 <pre class="prettyprint linenums">
@@ -549,12 +549,12 @@ exports.TempConverter = Montage.create(Converter, {
 </pre>
 
         </section>
-        
-        
+
+
         <section>
-            <a href="m-js/examples/sink/components/substitution-example.reel" target="_blank">View Demo Source</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/converters.reel" target="_blank">View source on GitHub</a>
         </section>
-        
+<!--
         <section>
             <h4>Converter API</h4>
             <table>
@@ -573,14 +573,14 @@ exports.TempConverter = Montage.create(Converter, {
                   <td>revert</td>
                   <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
                 </tr>
-                
+
               </tbody>
             </table>
             <p>
                 <a href="" target="_blank">View full Documentation</a>
             </p>
         </section>
-
+ -->
     </div>
 
 </body>
