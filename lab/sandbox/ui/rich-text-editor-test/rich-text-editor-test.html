@@ -19,17 +19,17 @@
                 "properties": {
                     "element": {"#": "editor-frame" },
                     "identifier": "editor",
-                    "delegate": {"@": "owner" }
+                    "delegate": {"@": "tester" }
                 },
                 "listeners": [
                     {
                         "type": "editorChange",
-                        "listener": {"@": "owner"},
+                        "listener": {"@": "tester"},
                         "capture": false
                     },
                     {
                         "type": "editorSelect",
-                        "listener": {"@": "owner"},
+                        "listener": {"@": "tester"},
                         "capture": false
                     }
                 ]
@@ -379,22 +379,45 @@
                 "listeners": [
                     {
                         "type": "action",
-                        "listener": {"@": "owner"},
+                        "listener": {"@": "tester"},
                         "capture": false
                     }
                 ]
             },
 
-            "owner": {
+            "checkbox-source": {
+                "module": "montage/ui/checkbox.reel",
+                "name": "Checkbox",
+                "properties": {
+                    "element": {"#": "checkbox-source"},
+                    "identifier": "showRawSource"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "tester"}
+                    }
+                ]
+            },
+
+            "tester": {
                 "module": "rich-text-editor-test",
                 "name": "RichTextEditorTest",
                 "properties": {
                     "editor": {"@": "editor"},
                     "source": {"#": "source-frame"},
+                    "showSource": {"@": "checkbox-source"},
   "popup": {"@": "justify"}
                 }
-            }
+            },
 
+            "owner": {
+                "module": "montage/ui/application",
+                "name": "Application",
+                "properties": {
+                    "delegate": {"@": "tester"}
+                }
+            }
         }
     </script>
 </head>
@@ -428,12 +451,13 @@
             </div>
         </nav>
     </header>
-    <article>
+    <article class="hideSource">
         <section class="source" id="source-frame"></section>
         <section class="editor"><div id="editor-frame"></div></section>
     </article>
     <footer>
         <button id="resetButton">Reset</button>
+        <label class="checkbox inline" id="show-source"><input id="checkbox-source" type="checkbox" /> Show raw output </label>
     </footer>
 </body>
 </html>

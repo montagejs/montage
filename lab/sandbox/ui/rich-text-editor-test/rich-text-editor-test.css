@@ -65,7 +65,7 @@ article {
     right: 0;
 }
 
-section.editor {
+.editor {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -79,7 +79,12 @@ section.editor {
     border: 1px solid #B9B9B9
 }
 
-section.source {
+.hideSource .editor {
+    right: 0;
+    margin: 10px;
+}
+
+.source {
     position: absolute;
     top: 0;
     bottom: 0;
@@ -94,6 +99,10 @@ section.source {
 
     font-family: "courier monaco";
     font-size: 1.5rem;
+}
+
+.hideSource .source {
+    display: none;
 }
 
 .source pre {
@@ -122,7 +131,7 @@ section.source {
 
 /* Button Group --------------------- */
 
- nav {
+nav {
     display: -webkit-box;
     -webkit-box-align: center;
     box-sizing: border-box;
@@ -216,4 +225,12 @@ button[aria-pressed="true"], nav button[aria-pressed="true"]:hover {
     border: 1px solid #0CAAE5;
     border-bottom: 1px solid #2389B0;
     color: #2389B0;
+}
+
+
+/* other controls */
+
+#show-source {
+    position: absolute;
+    right: 20px;
 }

@@ -56,7 +56,7 @@ exports.IndexesConverter = Montage.create(Converter, {
         enumerable: false,
         value: function(value) {
             var index = this.component._indexOf(value);
-            console.log("CONVERT:", value, index);
+//            console.log("CONVERT:", value, index);
             return index != -1 ? [index] : [0];
         }
     },
@@ -65,7 +65,7 @@ exports.IndexesConverter = Montage.create(Converter, {
         enumerable: false,
         value: function(index) {
             var value = this.component.content[index].value;
-            console.log("REVERT:", index, value);
+//            console.log("REVERT:", index, value);
             return value;
         }
     }
@@ -73,9 +73,10 @@ exports.IndexesConverter = Montage.create(Converter, {
 
 exports.RichTextEditorTest = Montage.create(Component, {
 
-    templateDidLoad: {
+    deserializedFromTemplate: {
         value: function() {
-            var savedValue = localStorage.getItem("savedValue");
+            var savedValue = localStorage.getItem("savedValue"),
+                savedShowSource = localStorage.getItem("savedShowSource");
 
             if (savedValue) {
                 this.editor.value = savedValue;
@@ -83,7 +84,14 @@ exports.RichTextEditorTest = Montage.create(Component, {
             } else {
                 this.loadDefaultContent();
             }
+
+            if (savedShowSource === "true") {
+                this.showSource.checked = savedShowSource;
+            }
+
             popup = this.popup;
+
+            this.draw();
         }
     },
 
@@ -111,11 +119,27 @@ exports.RichTextEditorTest = Montage.create(Component, {
 
     handleAction: {
         value: function(event) {
-            console.log("Action:", event.target.identifier);
-            switch (event.target.identifier) {
+            var target = event.target;
+
+            switch (target.identifier) {
                 case "reset":
                     this.loadDefaultContent();
                     break;
+
+                case "showRawSource":
+                    localStorage.setItem("savedShowSource", this.showSource.checked);
+                    this.draw();
+                    break;
+            }
+        }
+    },
+
+    draw: {
+        value: function() {
+            if (this.showSource.checked) {
+                this.source.parentNode.classList.remove("hideSource");
+            } else {
+                this.source.parentNode.classList.add("hideSource");
             }
         }
     },
