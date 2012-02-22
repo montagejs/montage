@@ -11,7 +11,7 @@ var Montage = require("montage").Montage,
 * A Delegate to position the popup using custom logic
 */
 var TestPopupPositionDelegate = Montage.create(Montage, {
-    positionPopup: {
+    willPositionPopup: {
        value: function(popup, anchor, anchorPosition) {
            if(anchor && anchorPosition) {
                if(window.innerHeight > 500 ){

@@ -1006,7 +1006,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (attributeName === "id" || attributeName === "data-montage-id") {
                     continue;
                 } else {
-                    value = (template.getAttribute(attributeName) || "") + " " +
+                    value = (template.getAttribute(attributeName) || "") + (attributeName === "style" ? "; " : " ") +
                         attribute.nodeValue;
                 }
 

@@ -89,6 +89,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     _reset: {value: function() {
         this._serializationString = null;
         this._requiredModuleIds = null;
+        this._areModulesLoaded = false;
         this._parseFunction = null;
         this._serialization = null;
         this._compiledDeserializationFunction = null;
@@ -350,7 +351,12 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             this._parseForModules();
         }
 
-        this._loadModules(this._requiredModuleIds, callback);
+        if (this._requiredModuleIds.length > 0) {
+            this._loadModules(this._requiredModuleIds, callback);
+        } else {
+            this._areModulesLoaded = true;
+            return callback();
+        }
     }},
 
     /**
@@ -364,16 +370,40 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 /**
   @private
 */
+    _findObjectNameRegExp: {
+        value: /([^\/]+?)(\.reel)?$/
+    },
+    _toCamelCaseRegExp: {
+        value: /(?:^|-)([^-])/g
+    },
+    _replaceToCamelCase: {
+        value: function(_, g1) { return g1.toUpperCase() }
+    },
     _parseForModules: {value: function() {
         var serialization = this._serialization,
             moduleIds = this._requiredModuleIds = [],
-            modules = this._modules;
+            modules = this._modules,
+            desc, moduleId;
 
         for (var label in serialization) {
-            var desc = serialization[label];
-            var moduleId = desc.module;
+            desc = serialization[label];
+            moduleId = null;
 
-            if (moduleId && moduleIds.indexOf(moduleId) == -1 && !modules[moduleId]) {
+            if ("module" in desc) {
+                moduleId = desc.module;
+            } else if (name = /*assignment*/(desc.prototype || desc.object)) {
+                objectLocation = name.split("[");
+                moduleId = objectLocation[0];
+                desc.module = moduleId;
+                if (objectLocation.length == 2) {
+                    desc.name = objectLocation[1].slice(0, -1);
+                } else {
+                    this._findObjectNameRegExp.test(moduleId);
+                    desc.name = RegExp.$1.replace(this._toCamelCaseRegExp, this._replaceToCamelCase);
+                }
+            }
+
+            if (moduleId && !modules[moduleId] && moduleIds.indexOf(moduleId) == -1) {
                 moduleIds.push(moduleId);
             }
         }
@@ -478,18 +508,44 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         return exports;
 
         function deserializeObject(label, desc) {
-            var moduleId = desc.module,
-                name = desc.name,
-                objectName = name,
-                fqn = moduleId + "." + name,
+            var moduleId,
+                name,
+                instance,
+                objectName,
+                fqn,
                 properties = desc.properties,
+                isType,
                 object,
                 counter,
-                propertiesString;
+                propertiesString,
+                objectLocation;
+
+            if ("module" in desc) {
+                moduleId = desc.module;
+                objectName = name = desc.name;
+            } else {
+                objectLocation = (desc.prototype || desc.object).split("[");
+                // this code is actually only used when canEval == false,
+                // module+name are added when the modules are parsed but it's
+                // slow to redo the _serializationString in order to keep the
+                // added module+name when we do JSON.parse(_serializationString)
+                // at canEval == false.
+                moduleId = objectLocation[0];
+                if (objectLocation.length == 2) {
+                    objectName = name = objectLocation[1].slice(0, -1);
+                } else {
+                    self._findObjectNameRegExp.test(moduleId);
+                    objectName = name = RegExp.$1.replace(self._toCamelCaseRegExp, function(_, g1) { return g1.toUpperCase() });
+                }
+            }
+            isType = "object" in desc;
+            fqn = moduleId + "." + name;
 
             if (deserialize) {
                 if (self._objectLabels[label]) {
                     exports[label] = object = self._objectLabels[label];
+                } else if (isType) {
+                    exports[label] = object = modules[moduleId][name];
                 } else {
                     if (!(name in modules[moduleId])) {
                         console.log("Warning: Object \"" + name + "\" not found at \"" + moduleId + "\" referenced from " + self._origin + ".");
@@ -508,7 +564,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
 
             if (fqn in requireStrings) {
-                name = requireStrings[fqn];
+                objectName = requireStrings[fqn];
             } else {
                 counter = (objectNamesCounter[name] || 0) + 1;
                 objectNamesCounter[name] = counter;
@@ -520,11 +576,15 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
 
             exportsStrings += 'if (this._objectLabels["' + label + '"]) {\n';
-            exportsStrings += '  var ' + label + ' = exports. ' + label + ' = this._objectLabels["' + label + '"]\n';
+            exportsStrings += '  var ' + label + ' = exports.' + label + ' = this._objectLabels["' + label + '"]\n';
             exportsStrings += '} else {\n';
-            exportsStrings += '  var ' + label + ' = exports. ' + label + ' = ' + objectName + '.create();\n';
-            exportsStrings += '  Montage.getInfoForObject(' + label + ').label = "' + label + '";\n';
-            exportsStrings += '  Object.defineProperty(' + label + ', "_suuid", {enumerable: false, value: "' + self.uuid + '-' + label + '"});\n';
+            if (isType) {
+                exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + ';\n';
+            } else {
+                exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + '.create();\n';
+                exportsStrings += '  Montage.getInfoForObject(' + label + ').label = "' + label + '";\n';
+                exportsStrings += '  Object.defineProperty(' + label + ', "_suuid", {enumerable: false, value: "' + self.uuid + '-' + label + '"});\n';
+            }
             exportsStrings += '}\n';
 
             propertiesString = deserializeValue(properties);
@@ -535,6 +595,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
             delete desc.module;
             delete desc.name;
+            delete desc.object;
             delete desc.properties;
 
             propertiesString = deserializeValue(desc);
