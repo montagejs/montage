@@ -1564,6 +1564,9 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
             document.execCommand(action, false, value);
 
+            // Force an update states right away
+            this.updateStates();
+
             this.handleSelectionchange();
             this._markDirty();
 
