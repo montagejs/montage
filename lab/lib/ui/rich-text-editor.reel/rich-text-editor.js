@@ -311,7 +311,8 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
             var commands = ["bold", "underline", "italic", "strikethrough", "subscript", "superscript",
                             {name:"justify", method: this._justifyGetState},
                             {name:"liststyle", method: this._liststyleGetState},
-                            "fontname", "fontsize", "hilitecolor", "forecolor"
+                            {name:"fontname", method: this._fontnameGetState},
+                            "fontsize", "backcolor", "forecolor"
                 ],
                 nbrCommands = commands.length,
                 command,
@@ -627,6 +628,21 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
+    _fontnameGetState: {
+        enumerable: false,
+        value: function() {
+            this._fontname = this._getState("fontname");
+            if (this._fontname) {
+                this._fontname = this._fontname.replace(/\"|\'/g, "");
+            }
+
+            return this._fontname;
+        }
+    },
+    /**
+      Description TODO
+      @private
+    */
     _fontname: { value: "" },
 
     /**
@@ -635,7 +651,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
     */
     fontname: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("fontname"); },
+        get: function() {
+            this._fontname = this._fontnameGetState();
+            return this._fontname;
+        },
         set: function(value) { this._genericCommandSetter("fontname", value); }
     },
 
@@ -659,16 +678,16 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
-    _hilitecolor: { value: "" },
+    _backcolor: { value: "" },
 
     /**
       Description TODO
      @type {Function}
     */
-    hilitecolor: {
+    backcolor: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("hilitecolor"); },
-        set: function(value) { this._genericCommandSetter("hilitecolor", value); }
+        get: function() { return this._genericCommandGetter("backcolor"); },
+        set: function(value) { this._genericCommandSetter("backcolor", value); }
     },
 
     /**
@@ -1552,6 +1571,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         value: function(action, value) {
             var savedActiveElement = document.activeElement,
                 editorElement = this.element.firstChild;
+
+            if (!editorElement) {
+                return;
+            }
 
             // Make sure we are the active element before calling execCommand
             if (editorElement != savedActiveElement) {
