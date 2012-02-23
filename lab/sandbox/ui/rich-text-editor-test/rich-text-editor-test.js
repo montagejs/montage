@@ -4,25 +4,6 @@ var Montage = require("montage").Montage,
 
 
 /**
-* Converter to Turn boolean into string values
-*/
-exports.BooleanConverter = Montage.create(Converter, {
-    convert: {
-        enumerable: false,
-        value: function(value) {
-            return value ? "true" : "false";
-        }
-    },
-
-    revert: {
-        enumerable: false,
-        value: function(value) {
-            return value === "true";
-        }
-    }
-});
-
-/**
 * Converter to Turn a justify value into boolean string
 */
 exports.ValueConverter = Montage.create(Converter, {
@@ -32,16 +13,14 @@ exports.ValueConverter = Montage.create(Converter, {
     convert: {
         enumerable: false,
         value: function(value) {
-//            console.log("CONVERT VALUE:", this.value, value, value === this.value ? "true" : "false");
-            return value === this.value ? "true" : "false";
+            return value === this.value ? true : false;
         }
     },
 
     revert: {
         enumerable: false,
         value: function(value) {
-//            console.log("REVERT VALUE:", value, value === "true" ? this.value : this.defaultValue);
-            return value === "true" ? this.value : this.defaultValue;
+            return value === true ? this.value : this.defaultValue;
         }
     }
 });
@@ -52,21 +31,21 @@ exports.ValueConverter = Montage.create(Converter, {
 exports.IndexesConverter = Montage.create(Converter, {
     component : { value: null },
 
+
     convert: {
         enumerable: false,
-        value: function(value) {
-            var index = this.component._indexOf(value);
-//            console.log("CONVERT:", value, index);
-            return index != -1 ? [index] : [0];
+        value: function(indexes) {
+            var index = indexes && indexes.length ? indexes[0] : 0,
+                value = this.component.content[index].value;
+            return value;
         }
     },
 
     revert: {
         enumerable: false,
-        value: function(index) {
-            var value = this.component.content[index].value;
-//            console.log("REVERT:", index, value);
-            return value;
+        value: function(value) {
+            var index = this.component._indexOf(value);
+            return index != -1 ? [index] : [0];
         }
     }
 });
@@ -89,7 +68,8 @@ exports.RichTextEditorTest = Montage.create(Component, {
                 this.showSource.checked = savedShowSource;
             }
 
-            popup = this.popup;
+// For debugging purpose only...
+editor = this.editor;
 
             this.draw();
         }

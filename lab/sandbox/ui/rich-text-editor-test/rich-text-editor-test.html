@@ -32,123 +32,106 @@
                         "listener": {"@": "tester"},
                         "capture": false
                     }
-                ]
-            },
-
-            "booleanConverter": {
-                "module": "rich-text-editor-test",
-                "name": "BooleanConverter"
+                ],
+                "bindings": {
+                    "justify": {
+                        "boundObject": {"@": "justify"},
+                        "boundObjectPropertyPath": "contentController.selectedIndexes",
+                        "converter": {"@": "indexesConverter"},
+                        "oneway": false
+                    }
+                }
             },
 
             "boldToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "boldButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
+                    "element": {"#": "boldToggle"}
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "bold",
-                        "converter": {"@": "booleanConverter"}
+                        "boundObjectPropertyPath": "bold"
                     }
                 }
             },
 
             "underlineToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "underlineButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
+                    "element": {"#": "underlineToggle" }
                 },
                 "bindings": {
-                    "xpressed": {
+                    "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "underline",
-                        "converter": {"@": "booleanConverter"}
+                        "boundObjectPropertyPath": "underline"
                     }
                 }
             },
 
             "italicToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "italicButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
+                    "element": {"#": "italicToggle" }
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "italic",
-                        "converter": {"@": "booleanConverter"}
+                        "boundObjectPropertyPath": "italic"
                     }
                 }
             },
 
             "strikeToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "strikeButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
+                    "element": {"#": "strikeToggle" }
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "strikethrough",
-                        "converter": {"@": "booleanConverter"}
+                        "boundObjectPropertyPath": "strikethrough"
                     }
                 }
             },
 
             "subToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "subButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
+                    "element": {"#": "subToggle" }
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "subscript",
-                        "converter": {"@": "booleanConverter"}
+                        "boundObjectPropertyPath": "subscript"
                     }
                 }
             },
 
             "supToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "supButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
+                    "element": {"#": "supToggle" }
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "superscript",
-                        "converter": {"@": "booleanConverter"}
+                        "boundObjectPropertyPath": "superscript"
                     }
                 }
             },
 
             "indentButton": {
-                "module": "montage/ui/bluemoon/button.reel",
+                "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "indentButton" },
-                    "identifier": "indentButton",
-                    "preventFocus": true,
                     "action": "indent"
                 },
                 "listeners": [
@@ -161,12 +144,11 @@
             },
 
             "outdentButton": {
-                "module": "montage/ui/bluemoon/button.reel",
+                "module": "montage/ui/button.reel",
                 "name": "Button",
                 "properties": {
                     "element": {"#": "outdentButton" },
-                    "identifier": "outdent",
-                    "preventFocus": true
+                    "action": "outdent"
                 },
                 "listeners": [
                     {
@@ -187,12 +169,10 @@
             },
 
             "unorderedlistToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "unorderedlistButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
+                    "element": {"#": "unorderedlistToggle" }
                 },
                 "bindings": {
                     "pressed": {
@@ -213,118 +193,16 @@
             },
 
             "orderedlistToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "orderedlistButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
+                    "element": {"#": "orderedlistToggle" }
                 },
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
                         "boundObjectPropertyPath": "liststyle",
                         "converter": {"@": "orderedListConverter"}
-                    }
-                }
-            },
-
-            "justifyLeftConverter": {
-                "module": "rich-text-editor-test",
-                "name": "ValueConverter",
-                "properties": {
-                    "value": "left"
-                }
-            },
-
-            "leftToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "leftButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
-                },
-                "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "justify",
-                        "converter": {"@": "justifyLeftConverter"}
-                    }
-                }
-            },
-
-            "justifyCenterConverter": {
-                "module": "rich-text-editor-test",
-                "name": "ValueConverter",
-                "properties": {
-                    "value": "center"
-                }
-            },
-
-            "centerToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "centerButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
-                },
-                "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "justify",
-                        "converter": {"@": "justifyCenterConverter"}
-                    }
-                }
-            },
-
-            "justifyRightConverter": {
-                "module": "rich-text-editor-test",
-                "name": "ValueConverter",
-                "properties": {
-                    "value": "right"
-                }
-            },
-
-            "rightToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "rightButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
-                },
-                "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "justify",
-                        "converter": {"@": "justifyRightConverter"}
-                    }
-                }
-            },
-
-            "justifyFullConverter": {
-                "module": "rich-text-editor-test",
-                "name": "ValueConverter",
-                "properties": {
-                    "value": "full"
-                }
-            },
-
-            "fullToggle": {
-                "module": "montage/ui/bluemoon/button.reel",
-                "name": "Button",
-                "properties": {
-                    "element": {"#": "fullButton" },
-                    "behavior": "toggle",
-                    "preventFocus": true
-                },
-                "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "justify",
-                        "converter": {"@": "justifyFullConverter"}
                     }
                 }
             },
@@ -357,14 +235,8 @@
                 "name": "SelectInput",
                 "properties": {
                     "element": {"#": "justification"},
-                    "contentController": {"@": "justificationController"}
-                },
-                "bindings": {
-                    "selectedIndexes": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "justify",
-                        "converter": {"@": "indexesConverter"}
-                    }
+                    "contentController": {"@": "justificationController"},
+                    "preventFocus": true
                 }
             },
 
@@ -406,8 +278,7 @@
                 "properties": {
                     "editor": {"@": "editor"},
                     "source": {"#": "source-frame"},
-                    "showSource": {"@": "checkbox-source"},
-  "popup": {"@": "justify"}
+                    "showSource": {"@": "checkbox-source"}
                 }
             },
 
@@ -425,27 +296,22 @@
     <header>
         <nav>
             <div class="button-group">
-                <button id="boldButton" class="boldButton">B</button>
-                <button id="underlineButton" class="underlineButton">U</button>
-                <button id="italicButton" class="italicButton">I</button>
-                <button id="strikeButton" class="strikeButton">ABC</button>
+                <button id="boldToggle" class="boldButton">B</button>
+                <button id="underlineToggle" class="underlineButton">U</button>
+                <button id="italicToggle" class="italicButton">I</button>
+                <button id="strikeToggle" class="strikeButton">ABC</button>
             </div>
             <div class="button-group">
-                <button id="subButton" class="subButton">sub</button>
-                <button id="supButton" class="supButton">sup</button>
+                <button id="subToggle" class="subButton">sub</button>
+                <button id="supToggle" class="supButton">sup</button>
             </div>
             <div class="button-group">
                 <button id="outdentButton">&lt;</button>
                 <button id="indentButton">&gt;</button>
-                <button id="unorderedlistButton">•</button>
-                <button id="orderedlistButton">1.</button>
+                <button id="unorderedlistToggle">•</button>
+                <button id="orderedlistToggle">1.</button>
             </div>
             <div class="button-group">
-                <button id="leftButton">A...</button>
-                <button id="centerButton">..A..</button>
-                <button id="rightButton">..A</button>
-                <button id="fullButton">A.B</button>
-
                 <select id="justification">
                 </select>
             </div>
