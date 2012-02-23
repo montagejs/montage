@@ -74,6 +74,9 @@ article {
 .editor .montage-editor {
     outline: none;
 }
+.readonly {
+    background-color: #F0F0F0;
+}
 
 .hideSource .editor {
     right: 0;
@@ -142,21 +145,6 @@ nav > .btn-group {
 }
 
 /* Format Buttons */
-.strikeButton {
-    text-decoration: line-through; font-stretch: ultra-condensed;
-    width: 40px;
-}
-
-.subButton {
-    font-stretch: ultra-condensed;
-    width: 40px;
-}
-
-.supButton {
-    font-stretch: ultra-condensed;
-    width: 40px;
-}
-
 button.font-styles  {
     height: 2.2em;
     width: 3em;
@@ -269,7 +257,17 @@ button[aria-pressed="true"], nav button[aria-pressed="true"]:hover {
 
 /* other controls */
 
+#resetButton {
+    margin-left: 5px;
+}
+
 #show-source {
     position: absolute;
-    right: 20px;
+    right: 10px;
+}
+
+#read-only {
+    position: absolute;
+    right: 50%;
+    margin-right: 10px;
 }

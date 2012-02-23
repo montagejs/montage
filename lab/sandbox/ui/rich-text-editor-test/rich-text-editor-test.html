@@ -19,7 +19,8 @@
                 "properties": {
                     "element": {"#": "editor-frame" },
                     "identifier": "editor",
-                    "delegate": {"@": "tester" }
+                    "delegate": {"@": "tester" },
+                    "readonly": false
                 },
                 "listeners": [
                     {
@@ -420,6 +421,21 @@
                 ]
             },
 
+            "checkbox-readonly": {
+                "module": "montage/ui/checkbox.reel",
+                "name": "Checkbox",
+                "properties": {
+                    "element": {"#": "checkbox-readonly"},
+                    "identifier": "readonly"
+                },
+                "bindings": {
+                    "checked": {
+                        "boundObject": {"@": "editor"},
+                        "boundObjectPropertyPath": "readonly"
+                    }
+                }
+            },
+
             "checkbox-source": {
                 "module": "montage/ui/checkbox.reel",
                 "name": "Checkbox",
@@ -442,6 +458,13 @@
                     "editor": {"@": "editor"},
                     "source": {"#": "source-frame"},
                     "showSource": {"@": "checkbox-source"}
+                },
+                "bindings": {
+                    "readonly": {
+                        "boundObject": {"@": "checkbox-readonly"},
+                        "boundObjectPropertyPath": "checked",
+                        "oneway": true
+                    }
                 }
             },
 
@@ -493,6 +516,7 @@
     </article>
     <footer>
         <button id="resetButton" class="btn">Reset</button>
+        <label class="checkbox inline" id="read-only"><input id="checkbox-readonly" type="checkbox" /> Read only </label>
         <label class="checkbox inline" id="show-source"><input id="checkbox-source" type="checkbox" /> Show raw output </label>
     </footer>
 </body>

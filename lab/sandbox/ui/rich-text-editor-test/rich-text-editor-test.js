@@ -158,6 +158,20 @@ editor = this.editor;
         }
     },
 
+    _readonly: { value: false },
+    readonly: {
+        get: function() { return this._readonly },
+        set: function(value) {
+            this._readonly = value;
+            if (value) {
+                this.editor.element.parentNode.classList.add("readonly");
+            } else {
+                this.editor.element.parentNode.classList.remove("readonly");
+            }
+            console.log("READONLY:", value)
+        }
+    },
+
     handleAction: {
         value: function(event) {
             var target = event.target;
