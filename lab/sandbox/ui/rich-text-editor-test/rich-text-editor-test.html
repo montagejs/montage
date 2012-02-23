@@ -37,8 +37,27 @@
                     "justify": {
                         "boundObject": {"@": "justify"},
                         "boundObjectPropertyPath": "contentController.selectedIndexes",
-                        "converter": {"@": "indexesConverter"},
-                        "oneway": false
+                        "converter": {"@": "indexesConverter"}
+                    },
+                    "fontname": {
+                        "boundObject": {"@": "fontname"},
+                        "boundObjectPropertyPath": "contentController.selectedIndexes",
+                        "converter": {"@": "fontnameConverter"}
+                    },
+                    "fontsize": {
+                        "boundObject": {"@": "fontsize"},
+                        "boundObjectPropertyPath": "contentController.selectedIndexes",
+                        "converter": {"@": "fontsizeConverter"}
+                    },
+                    "backcolor": {
+                        "boundObject": {"@": "backcolor"},
+                        "boundObjectPropertyPath": "contentController.selectedIndexes",
+                        "converter": {"@": "backcolorConverter"}
+                    },
+                    "forecolor": {
+                        "boundObject": {"@": "forecolor"},
+                        "boundObjectPropertyPath": "contentController.selectedIndexes",
+                        "converter": {"@": "forecolorConverter"}
                     }
                 }
             },
@@ -235,8 +254,152 @@
                 "name": "SelectInput",
                 "properties": {
                     "element": {"#": "justification"},
-                    "contentController": {"@": "justificationController"},
-                    "preventFocus": true
+                    "contentController": {"@": "justificationController"}
+                }
+            },
+
+            "fontnameController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                        {"text" : "Arial", "value": "Arial"},
+                        {"text" : "Arial Black", "value": "Arial Black"},
+                        {"text" : "Courier New", "value": "Courier New"},
+                        {"text" : "Garamond", "value": "Garamond"},
+                        {"text" : "Georgia", "value": "Georgia"},
+                        {"text" : "Open Sans", "value": "Open Sans"},
+                        {"text" : "Tahoma", "value": "Tahoma"},
+                        {"text" : "Times", "value": "Times New Roman"},
+                        {"text" : "Trebuchet", "value": "Trebuchet MS"},
+                        {"text" : "Verdana", "value": "Verdana"}
+                    ]
+                }
+            },
+
+            "fontnameConverter": {
+                "module": "rich-text-editor-test",
+                "name": "FontnameConverter",
+                "properties": {
+                    "component": {"@": "fontname"}
+                }
+            },
+
+            "fontname": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "fontname"},
+                    "contentController": {"@": "fontnameController"}
+                }
+            },
+
+            "fontsizeController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                        {"text" : "8pt", "value": "1"},
+                        {"text" : "10pt", "value": "2"},
+                        {"text" : "12pt", "value": "3"},
+                        {"text" : "14pt", "value": "4"},
+                        {"text" : "18pt", "value": "5"},
+                        {"text" : "24pt", "value": "6"},
+                        {"text" : "36pt", "value": "7"}
+                    ]
+                }
+            },
+
+            "fontsizeConverter": {
+                "module": "rich-text-editor-test",
+                "name": "IndexesConverter",
+                "properties": {
+                    "component": {"@": "fontsize"}
+                }
+            },
+
+            "fontsize": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "fontsize"},
+                    "contentController": {"@": "fontsizeController"}
+                }
+            },
+
+            "backcolorController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                        {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
+                        {"text" : "Black", "value": "rgb(0, 0, 0)"},
+                        {"text" : "Blue", "value": "rgb(0, 0, 139)"},
+                        {"text" : "Gray", "value": "rgb(139, 139, 139)"},
+                        {"text" : "Green", "value": "rgb(0, 139, 0)"},
+                        {"text" : "Red", "value": "rgb(139, 0, 0)"},
+                        {"text" : "Yellow", "value": "rgb(255, 255, 0)"},
+                        {"text" : "White", "value": "rgb(255, 255, 255)"}
+                    ]
+                }
+            },
+
+            "backcolorConverter": {
+                "module": "rich-text-editor-test",
+                "name": "IndexesConverter",
+                "properties": {
+                    "component": {"@": "backcolor"}
+                }
+            },
+
+            "backcolor": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "backcolor"},
+                    "contentController": {"@": "backcolorController"}
+                }
+            },
+
+            "forecolorController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                    {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
+                    {"text" : "Black", "value": "rgb(0, 0, 0)"},
+                    {"text" : "Blue", "value": "rgb(0, 0, 255)"},
+                    {"text" : "Gray", "value": "rgb(51, 51, 51)"},
+                    {"text" : "Green", "value": "rgb(0, 255, 0)"},
+                    {"text" : "Red", "value": "rgb(255, 0, 0)"},
+                    {"text" : "Yellow", "value": "rgb(255, 255, 0)"},
+                    {"text" : "White", "value": "rgb(255, 255, 255)"}
+                    ]
+                }
+            },
+
+            "forecolorConverter": {
+                "module": "rich-text-editor-test",
+                "name": "IndexesConverter",
+                "properties": {
+                    "component": {"@": "forecolor"}
+                }
+            },
+
+            "forecolor": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "forecolor"},
+                    "contentController": {"@": "forecolorController"}
                 }
             },
 
@@ -312,8 +475,15 @@
                 <button id="orderedlistToggle" class="btn font-styles">1.</button>
             </div>
             <div class="btn-group">
-                <select id="justification">
-                </select>
+                <select id="justification" class="font-styles" style="min-width: 70px"></select>
+            </div>
+            <div class="btn-group">
+                <select id="fontname" class="font-styles" style="min-width: 70px"></select>
+                <select id="fontsize" class="font-styles" style="min-width: 70px"></select>
+            </div>
+            <div class="btn-group">
+                <select id="forecolor" class="font-styles" style="min-width: 70px"></select>
+                <select id="backcolor" class="font-styles" style="min-width: 70px"></select>
             </div>
         </nav>
     </header>

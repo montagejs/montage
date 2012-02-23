@@ -30,13 +30,14 @@ exports.ValueConverter = Montage.create(Converter, {
 */
 exports.IndexesConverter = Montage.create(Converter, {
     component : { value: null },
-
+    debug : { value: false },
 
     convert: {
         enumerable: false,
         value: function(indexes) {
             var index = indexes && indexes.length ? indexes[0] : 0,
                 value = this.component.content[index].value;
+            if (this.debug) {console.log("CONVERT:", indexes, value)}
             return value;
         }
     },
@@ -45,6 +46,66 @@ exports.IndexesConverter = Montage.create(Converter, {
         enumerable: false,
         value: function(value) {
             var index = this.component._indexOf(value);
+            if (this.debug) {console.log("REVERT:", value, index != -1 ? [index] : [0])}
+            return index != -1 ? [index] : [0];
+        }
+    }
+});
+
+exports.RIndexesConverter = Montage.create(Converter, {
+    component : { value: null },
+
+
+    convert: {
+        enumerable: false,
+        value: function(value) {
+            var index = this.component._indexOf(value);
+            console.log("CONVERT:", value, index);
+            return index != -1 ? [index] : [0];
+        }
+    },
+
+    revert: {
+        enumerable: false,
+        value: function(indexes) {
+            console.log("REVERT:", value);
+            var index = indexes && indexes.length ? indexes[0] : 0,
+                value = this.component.content[index].value;
+            return value;
+        }
+    }
+});
+
+exports.FontnameConverter = Montage.create(Converter, {
+    component : { value: null },
+    debug : { value: false },
+
+    convert: {
+        enumerable: false,
+        value: function(indexes) {
+            var index = indexes && indexes.length ? indexes[0] : 0,
+                value = this.component.content[index].value;
+            if (this.debug) {console.log("CONVERT:", indexes, value)}
+            return value;
+        }
+    },
+
+    revert: {
+        enumerable: false,
+        value: function(value) {
+            var fontNames = value ? value.replace(" ,", ",").split(",") : null ,
+                nbrFontnames = fontNames ? fontNames.length : 0,
+                i,
+                index = -1;
+
+            for (i = 0; i < nbrFontnames; i ++) {
+                index = this.component._indexOf(fontNames[i]);
+                if (index !== -1) {
+                    break;
+                }
+            }
+
+            if (this.debug) {console.log("REVERT:", value, index != -1 ? [index] : [0])}
             return index != -1 ? [index] : [0];
         }
     }
