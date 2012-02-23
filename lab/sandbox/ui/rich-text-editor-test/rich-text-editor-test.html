@@ -295,23 +295,23 @@
 <body>
     <header>
         <nav>
-            <div class="button-group">
-                <button id="boldToggle" class="boldButton">B</button>
-                <button id="underlineToggle" class="underlineButton">U</button>
-                <button id="italicToggle" class="italicButton">I</button>
-                <button id="strikeToggle" class="strikeButton">ABC</button>
+            <div class="btn-group">
+                <button id="boldToggle" class="btn font-styles" style="font-weight: bold;">B</button>
+                <button id="italicToggle" class="btn font-styles" style="font-family: serif; font-style: italic;">I</button>
+                <button id="underlineToggle" class="btn font-styles" style="text-decoration: underline;">U</button>
+                <button id="strikeToggle" class="btn font-styles" style="text-decoration: line-through; ">ABC</button>
             </div>
-            <div class="button-group">
-                <button id="subToggle" class="subButton">sub</button>
-                <button id="supToggle" class="supButton">sup</button>
+            <div class="btn-group">
+                <button id="subToggle" class="btn font-styles">sub</button>
+                <button id="supToggle" class="btn font-styles">sup</button>
             </div>
-            <div class="button-group">
-                <button id="outdentButton">&lt;</button>
-                <button id="indentButton">&gt;</button>
-                <button id="unorderedlistToggle">•</button>
-                <button id="orderedlistToggle">1.</button>
+            <div class="btn-group">
+                <button id="outdentButton" class="btn font-styles">&lt;</button>
+                <button id="indentButton" class="btn font-styles">&gt;</button>
+                <button id="unorderedlistToggle" class="btn font-styles">•</button>
+                <button id="orderedlistToggle" class="btn font-styles">1.</button>
             </div>
-            <div class="button-group">
+            <div class="btn-group">
                 <select id="justification">
                 </select>
             </div>
@@ -322,7 +322,7 @@
         <section class="editor"><div id="editor-frame"></div></section>
     </article>
     <footer>
-        <button id="resetButton">Reset</button>
+        <button id="resetButton" class="btn">Reset</button>
         <label class="checkbox inline" id="show-source"><input id="checkbox-source" type="checkbox" /> Show raw output </label>
     </footer>
 </body>
