@@ -137,6 +137,39 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
       Description TODO
       @private
     */
+    _readonly: {
+        enumerable: false,
+        value: false
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    readonly: {
+        enumerable: true,
+        get: function() {
+            return this._readonly;
+        },
+        set: function(value) {
+            if (this._readonly !== value) {
+                this._readonly = value;
+                if (value) {
+                    // Reset the resizer and Active link popup
+                    if (this._resizer) {
+                        this._needsHideResizer = true;
+                    }
+                    this._needsActiveLinkOn = null;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
     _value: {
         enumerable: false,
         value: ""
@@ -741,6 +774,7 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
         value: function() {
             var thisRef = this,
                 editorElement = this.element,
+                editorInnerElement,
                 element,
                 range,
                 offset,
@@ -748,11 +782,13 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
 
             if (this._needsResetContent === true) {
                 // Reset the editor content in order to reset the browser undo stack
-                editorElement.innerHTML = '<div class="montage-editor editor-' + this._uniqueId + '" contentEditable="true"></div>';
+                editorElement.innerHTML = '<div class="montage-editor editor-' + this._uniqueId + '" contentEditable="'
+                    + (this._readonly ? 'false' : 'true')+'"></div>';
+                editorInnerElement = editorElement.firstChild;
 
                 // Set the contentEditable value
                 if (this._value && !this._dirtyValue) {
-                    editorElement.firstChild.innerHTML = this._value;
+                    editorInnerElement.innerHTML = this._value;
                     // Since this property affects the textValue, we need to fire a change event for it as well
                     if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
                         prevValue = this._textValue;
@@ -761,10 +797,10 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                         }
                     }
                 } else if (this._textValue && !this._dirtyTextValue) {
-                    if (editorElement.firstChild.innerText) {
-                        editorElement.firstChild.innerText = this._textValue;
+                    if (editorInnerElement.innerText) {
+                        editorInnerElement.innerText = this._textValue;
                     } else {
-                        editorElement.firstChild.textContent = this._textValue;
+                        editorInnerElement.textContent = this._textValue;
                     }
                     // Since this property affects the value, we need to fire a change event for it as well
                     if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
@@ -774,12 +810,22 @@ exports.RichTextEditor = Montage.create(Component,/** @lends module:"montage/ui/
                         }
                     }
                 } else {
-                    editorElement.firstChild.innerHTML = "";
+                    editorInnerElement.innerHTML = "";
                 }
 
                 this._adjustPadding();
                 this._markDirty();
                 delete this._needsResetContent;
+            } else {
+                editorInnerElement = editorElement.firstChild;
+            }
+
+            if (this._readonly) {
+                editorInnerElement.setAttribute("contentEditable", "false");
+                editorElement.classList.add("readonly")
+            } else {
+                editorInnerElement.setAttribute("contentEditable", "true");
+                editorElement.classList.remove("readonly")
             }
 
             if (this._resizer) {
