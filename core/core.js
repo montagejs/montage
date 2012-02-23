@@ -713,13 +713,17 @@ if (!Object.seal) {
  */
 Object.defineProperty(M, "callDelegateMethod", {
     value: function(name) {
-        var delegate, delegateFunctionName, delegateFunction;
+        var delegate = this.delegate, delegateFunctionName, delegateFunction;
         if (typeof this.identifier === "string") {
             delegateFunctionName = this.identifier + name.toCapitalized();
-        } else {
-            delegateFunctionName = name;
+            if (delegate && typeof (delegateFunction = delegate[delegateFunctionName]) === "function") {
+                // remove first argument
+                Array.prototype.shift.call(arguments);
+                return delegateFunction.apply(delegate, arguments);
+            }
         }
-        if ((delegate = this.delegate) && typeof (delegateFunction = delegate[delegateFunctionName]) === "function") {
+
+        if (delegate && typeof (delegateFunction = delegate[name]) === "function") {
             // remove first argument
             Array.prototype.shift.call(arguments);
             return delegateFunction.apply(delegate, arguments);
