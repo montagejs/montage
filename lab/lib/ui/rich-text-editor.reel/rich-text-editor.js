@@ -206,7 +206,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 this._activeLinkBox.hide();
             }
             this._activeLinkBox = value;
-            this._activeLinkBox.initialize(this);
+            if (this._activeLinkBox) {
+                this._activeLinkBox.initialize(this);
+            }
         }
     },
 
@@ -226,7 +228,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 delete this._needsHideResizer;
             }
             this._resizer = value;
-            this._resizer.initialize(this);
+            if (this._resizer) {
+                this._resizer.initialize(this);
+            }
         }
     },
 
