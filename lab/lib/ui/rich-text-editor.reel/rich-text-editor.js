@@ -55,14 +55,14 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
       Description TODO
      @type {Function}
     */
-    readonly: {
+    readOnly: {
         enumerable: true,
         get: function() {
-            return this._readonly;
+            return this._readOnly;
         },
         set: function(value) {
-            if (this._readonly !== value) {
-                this._readonly = value;
+            if (this._readOnly !== value) {
+                this._readOnly = value;
                 if (value) {
                     // Reset the resizer and Active link popup
                     if (this._resizer) {

@@ -96,7 +96,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
-    _readonly: {
+    _readOnly: {
         enumerable: false,
         value: false
     },
@@ -382,7 +382,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             if (this._needsResetContent === true) {
                 // Reset the editor content in order to reset the browser undo stack
                 editorElement.innerHTML = '<div class="montage-editor editor-' + this._uniqueId + '" contentEditable="'
-                    + (this._readonly ? 'false' : 'true')+'"></div>';
+                    + (this._readOnly ? 'false' : 'true')+'"></div>';
                 editorInnerElement = editorElement.firstChild;
 
                 // Set the contentEditable value
@@ -419,7 +419,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 editorInnerElement = editorElement.firstChild;
             }
 
-            if (this._readonly) {
+            if (this._readOnly) {
                 editorInnerElement.setAttribute("contentEditable", "false");
                 editorElement.classList.add("readonly")
             } else {
