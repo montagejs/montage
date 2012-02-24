@@ -146,6 +146,102 @@
                             "oneway": "true"
                         }
                     }
+                },
+                
+                "justify-comparator-left": {
+                    "module": "components/select-input-example.reel",
+                    "name": "JustifyConverter",
+                    "properties": {
+                        "justify": "left"
+                    }
+                },
+                "justify-comparator-right": {
+                    "module": "components/select-input-example.reel",
+                    "name": "JustifyConverter",
+                    "properties": {
+                        "justify": "right"
+                    }
+                },
+                "justify-comparator-center": {
+                    "module": "components/select-input-example.reel",
+                    "name": "JustifyConverter",
+                    "properties": {
+                        "justify": "center"
+                    }
+                },
+                
+                
+                "justify-left": {
+                    "module": "montage/ui/toggle-button.reel",
+                    "name": "ToggleButton",
+                    "properties": {
+                        "element": {"#": "justify-left"},
+                        "pressedClass": "success"                        
+                    },
+                    "bindings": {
+                        "pressed": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify",
+                            "converter": {"@": "justify-comparator-left"}
+                        }
+                    }
+                },
+                "justify-center": {
+                    "module": "montage/ui/toggle-button.reel",
+                    "name": "ToggleButton",
+                    "properties": {
+                        "element": {"#": "justify-center"},
+                        "pressedClass": "success"                        
+                    },
+                    "bindings": {
+                        "pressed": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify",
+                            "converter": {"@": "justify-comparator-center"}
+                        }
+                    }
+                },
+                "justify-right": {
+                    "module": "montage/ui/toggle-button.reel",
+                    "name": "ToggleButton",
+                    "properties": {
+                        "element": {"#": "justify-right"},
+                        "pressedClass": "success"                        
+                    },
+                    "bindings": {
+                        "pressed": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify",
+                            "converter": {"@": "justify-comparator-right"}
+                        }
+                    }
+                },
+                "justify-select": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "justify-select"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify"
+                        }
+                    }
+                },
+                "justify-result": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "justify-result"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify",
+                            "oneway": "true"
+                        }
+                    }
                 }
             }
         </script>
@@ -157,6 +253,11 @@
             }
             .select-input-example pre {
                 border: 0;
+            }
+            
+            .select-input-example .justify {
+                width: 40px;
+                padding: 5px;
             }
         </style>
     </head>
@@ -212,6 +313,29 @@
 
                  <pre id="echo"></pre>
             </div>
+            
+            <section>
+                <div class="demo">
+                    <div style="height: 40px;">
+                        <button id="justify-none" class="btn justify">-</button>
+                        <button id="justify-left" class="btn justify">L</button>
+                        <button id="justify-center" class="btn justify">C</button>
+                        <button id="justify-right" class="btn justify">R</button>
+                    </div>  
+                    <div>
+                        <select id="justify-select" class="justify-select">
+                                <option value=""></option>
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                        </select>
+                        
+                        <p>
+                            Justify selection: <span id="justify-result"></span>
+                        </p>
+                    </div>
+                </div>
+            </section>
 
             <section>
                 <a href="m-js/examples/sink/components/select-input-example.reel" target="_blank">View Demo Source</a>
