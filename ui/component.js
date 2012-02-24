@@ -474,7 +474,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     ownerComponent: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -902,6 +901,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         // this call will be synchronous if the template is cached.
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
+
+    templateDidDeserializeObject: {
+        value: function(object) {
+            if (Component.isPrototypeOf(object)) {
+                object.ownerComponent = this;
+            }
+        }
+    },
+
     /**
     Callback for the <code>_canDrawGate</code>.<br>
     Propagates to the parent and adds the component to the draw list.
