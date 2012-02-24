@@ -10,6 +10,10 @@ body {
     overflow: hidden;
 
     background-color: #E7E7E7;
+
+/    -moz-user-select: -moz-none;
+    -webkit-user-select: none;
+/    user-select: none;
 }
 
 body,
@@ -69,10 +73,15 @@ article {
     background-color: #FFFFFF;
     border: 1px solid #B9B9B9;
     outline: none;
+
 }
 
 .editor .montage-editor {
     outline: none;
+
+    -moz-user-select: -moz-text;
+    -webkit-user-select: text;
+    user-select: text;
 }
 .readonly {
     background-color: #F0F0F0;
@@ -98,6 +107,10 @@ article {
 
     font-family: "courier monaco";
     font-size: 1.5rem;
+
+    -moz-user-select: -moz-text;
+    -webkit-user-select: text;
+    user-select: text;
 }
 
 .hideSource .source {
