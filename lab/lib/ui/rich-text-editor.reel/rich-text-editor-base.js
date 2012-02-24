@@ -10,8 +10,9 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
-    Resizer = require("./rich-text-resizer").Resizer,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
+    ActiveLinkBox = require("./rich-text-activelink-box.js").ActiveLinkBox,
+    Resizer = require("./rich-text-resizer").Resizer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
@@ -52,15 +53,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       @private
     */
     _selectionChangeTimer: {
-        enumerable: false,
-        value: null
-    },
-
-    /**
-      Description TODO
-      @private
-    */
-    _activeLink: {
         enumerable: false,
         value: null
     },
@@ -143,6 +135,15 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _sanitizer: {
         enumerable: false,
         value: Sanitizer.create()
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _activeLinkBox: {
+        enumerable: false,
+        value: ActiveLinkBox.create()
     },
 
     /**
@@ -344,9 +345,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function() {
             var el = this.element;
 
+            if (this._activeLinkBox) {
+                this._activeLinkBox.initialize(this);
+            }
             if (this._resizer) {
                 this._resizer.initialize(this);
             }
+
             el.classList.add('montage-editor-frame');
 
             el.addEventListener("focus", this);
@@ -452,11 +457,15 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this._resizer.draw();
             }
 
-            if (this._needsActiveLinkOn !== false && this._needsActiveLinkOn != this._activeLink) {
-                this._showActiveLink(this._needsActiveLinkOn);
-                this._needsActiveLinkOn = false;
+            if (this._activeLinkBox) {
+                if (this._needsActiveLinkOn !== false && this._needsActiveLinkOn != this._activeLinkBox.activeLink)
+                {
+                    this._activeLinkBox.show(this._needsActiveLinkOn);
+                    this._needsActiveLinkOn = false;
+                } else {
+                    this._needsActiveLinkOn = false;
+                }
             }
-
         }
     },
 
@@ -620,7 +629,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 el.addEventListener("keydup", this);
             }
 
-            // Turn off image resize (if supported)
+            // Turn off image resize (if supported) as we provide our own
             document.execCommand("enableObjectResizing", false, false);
             // Force use css for styling (if supported)
             document.execCommand("styleWithCSS", false, true);
@@ -678,8 +687,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this.handleSelectionchange();
             }
 
-            if (this._activeLink) {
-                this._hideActiveLink();
+            if (this._activeLinkBox && this._activeLinkBox.activeLink) {
+                this._activeLinkBox.hide();
             }
 
             this._markDirty();
@@ -697,8 +706,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this.handleSelectionchange();
             }
 
-            if (this._activeLink) {
-                this._hideActiveLink();
+            if (this._activeLinkBox && this._activeLinkBox.activeLink) {
+                this._activeLinkBox.hide();
             }
 
             this.handleDragend(event);
@@ -825,25 +834,27 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 }
             }
 
-            //Check if we are inside an anchor
-            range = this._selectedRange;
-            if (range && range.collapsed) {
-                element = range.commonAncestorContainer;
-                while (element && element != this._element) {
-                    if (element.nodeName == "A") {
-                        hideLinkPopup = false;
-                        if (element != this._activeLink) {
-                            this._needsActiveLinkOn = element;
-                            this.needsDraw = true;
+            if (this._activeLinkBox) {
+                //Check if we are inside an anchor
+                range = this._selectedRange;
+                if (range && range.collapsed) {
+                    element = range.commonAncestorContainer;
+                    while (element && element != this._element) {
+                        if (element.nodeName == "A") {
+                            hideLinkPopup = false;
+                            if (element != this._activeLink) {
+                                this._needsActiveLinkOn = element;
+                                this.needsDraw = true;
+                            }
+                            break;
                         }
-                        break;
+                        element = element.parentElement;
                     }
-                    element = element.parentElement;
                 }
-            }
-            if (hideLinkPopup) {
-                this._needsActiveLinkOn = null;
-                this.needsDraw = true;
+                if (hideLinkPopup) {
+                    this._needsActiveLinkOn = null;
+                    this.needsDraw = true;
+                }
             }
 
             if (this._selectionChangeTimer) {
@@ -905,7 +916,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             event.stopPropagation();
 
             // Remove the link popup
-            if (this._needsActiveLinkOn === false && this._activeLink) {
+            if (this._activeLinkBox && this._needsActiveLinkOn === false && this._activeLinkBox.activeLink) {
                 this._needsActiveLinkOn = null;
                 this.needsDraw = true;
             }
@@ -1429,161 +1440,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 rangeA.startOffset == rangeB.startOffset &&
                 rangeA.endContainer == rangeB.endContainer &&
                 rangeA.endOffset == rangeB.endOffset);
-        }
-    },
-
-    /**
-    Description TODO
-    @private
-    @function
-    */
-    _showActiveLink: {
-        enumerable: false,
-        value: function(element) {
-            var editorElement = this._element.firstChild,
-                popup,
-                parentNode,
-                nextSibling,
-                w, h, l, t,
-                left, right, leftWidth, rightWidth,
-                style,
-                popupExtraWidth = 53; // This is depending of the popup css
-
-            var offsetLeft,
-                offsetTop,
-                _findOffset = function(node) {
-                    offsetLeft = node.offsetLeft;
-                    offsetTop = node.offsetTop;
-
-                    while ((node = node.offsetParent) && node != editorElement) {
-                        offsetLeft += node.offsetLeft;
-                        offsetTop += node.offsetTop;
-                    }
-                };
-
-
-            if (this._activeLink != element) {
-                this._hideActiveLink();
-                if (element) {
-
-                    _findOffset(element);
-
-                    parentNode = element.parentNode;
-                    nextSibling = element.nextSibling;
-
-                    oh = editorElement.offsetHeight;
-                    ow = editorElement.offsetWidth;
-                    st = editorElement.scrollTop;
-                    sl = editorElement.scrollLeft;
-
-                    w  = element.offsetWidth -1,
-                    h  = element.offsetHeight -1,
-                    l  = offsetLeft,
-                    t  = offsetTop,
-
-                    style = "";
-
-                    // Should we display the popup on top or below the element?
-                    if (t > 60 && t - st + h + 50 > oh) {
-                        style = "bottom: " + (oh - t + 5) + "px;";
-                    } else {
-                        style = "top: " + (t + h + 5 ) + "px;";
-                    }
-
-                    // Should we display the popup aligned on the left or right of the element?
-                    left = sl;
-                    right = sl + ow;
-                    leftWidth = right - l;
-                    rightWidth = l + w - left;
-
-                    if (leftWidth  > rightWidth) {
-                        //Let's align the popup to the left of the element or to the far left
-                        if (leftWidth < 150) {
-                            style += " left: " + (left + 5) + "px;";
-                            style += " max-width: " + (ow - 10 - popupExtraWidth) + "px;";
-                        } else {
-                            style += " left: " + (left + l) + "px;";
-                            style += " max-width: " + (leftWidth - 5 - popupExtraWidth) + "px;";
-                        }
-                    } else {
-                        if (rightWidth < 150) {
-                            style += " right: " + (left + 6) + "px;";
-                            style += " max-width: " + (ow - 10 - popupExtraWidth) + "px;";
-                        } else {
-                            style += " right: " + (right - (left + l + w + 10)) + "px;";
-                            style += " max-width: " + (rightWidth - popupExtraWidth) + "px;";
-                        }
-                    }
-
-                    popup = document.createElement("DIV");
-                    popup.className = "montage-link-popup";
-                    popup.setAttribute("contentEditable", "false");
-                    popup.setAttribute("style", style);
-                    popup.innerHTML = '<a href="' + element.href + '" target="_blank">' + element.href + '</a>';
-                    editorElement.insertBefore(popup, null);
-
-                    this._activeLink = element;
-                }
-            }
-        }
-    },
-
-    /**
-    Description TODO
-    @private
-    @function
-    */
-    _hideActiveLink: {
-        enumerable: false,
-        value: function() {
-            var popups,
-                nbrPopups,
-                popup,
-                i;
-
-            if (this._activeLink) {
-                popups = this._element.firstChild.getElementsByClassName("montage-link-popup");
-                nbrPopups = popups.length;
-
-                // Note: We should not have more than one popup, this is just in case...
-                for (i = 0; i < nbrPopups; i ++) {
-                    popup = popups[0];
-                    popup.parentNode.removeChild(popup);
-                }
-
-                this._activeLink = null;
-            }
-        }
-    },
-
-    /**
-    Description TODO
-    @private
-    @function
-    */
-    _cleanupActiveLink: {
-        enumerable: false,
-        value: function(contentNode) {
-            var cleanContentNode = contentNode,
-                popups = contentNode.getElementsByClassName("montage-link-popup"),
-                nbrPopups,
-                popup,
-                i;
-
-            if (popups) {
-                // We don't want to hide the popup, just return a copy of the content without any popup
-                cleanContentNode = contentNode.cloneNode(true);
-                popups = cleanContentNode.getElementsByClassName("montage-link-popup");
-                nbrPopups = popups.length;
-
-                // Note: We should not have more than one popup, this is just in case...
-                for (i = 0; i < nbrPopups; i ++) {
-                    popup = popups[0];
-                    popup.parentNode.removeChild(popup);
-                }
-            }
-
-            return cleanContentNode;
         }
     },
 

@@ -87,11 +87,14 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 content;
 
             if (this._dirtyValue) {
-                if (this._resizer) {
-                    contentNode = this._resizer.cleanup(contentNode);
+                if (contentNode) {
+                    if (this._resizer) {
+                        contentNode = this._resizer.cleanup(contentNode);
+                    }
+                    if (this._activeLinkBox) {
+                        contentNode = this._activeLinkBox.cleanup(contentNode);
+                    }
                 }
-
-                contentNode = this._cleanupActiveLink(contentNode);
 
                 content = contentNode ? contentNode.innerHTML : "";
                 if (content == "<br>") {
@@ -139,7 +142,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                     if (this._resizer) {
                         contentNode = this._resizer.cleanup(contentNode);
                     }
-                    contentNode = this._cleanupActiveLink(contentNode);
+                    if (this._activeLinkBox) {
+                        contentNode = this._activeLinkBox.cleanup(contentNode);
+                    }
                 }
 
                 this._textValue = contentNode ? this._innerText(contentNode) : "";
@@ -190,6 +195,25 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
       Description TODO
      @type {Function}
     */
+    activeLinkBox: {
+        enumerable: false,
+        get: function() {
+            return  this._activeLinkBox;
+        },
+        set: function(value) {
+             // force hide the current activeLinkBox
+            if (this._activeLinkBox) {
+                this._activeLinkBox.hide();
+            }
+            this._activeLinkBox = value;
+            this._activeLinkBox.initialize(this);
+        }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
     resizer: {
         enumerable: false,
         get: function() {
@@ -198,7 +222,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         set: function(value) {
             // force hide the current resizer
             if (this._resizer){
-                this._resizer.hide(true);
+                this._resizer.hide();
                 delete this._needsHideResizer;
             }
             this._resizer = value;
