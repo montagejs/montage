@@ -5,12 +5,12 @@
  </copyright> */
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;    
+    Component = require("ui/component").Component;    
 
 /**
  * The input type="range" field
  */
-var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, {
+var RangeInput = exports.RangeInput = Montage.create(Component, {
     
     DEFAULT_WIDTH: {value: 300},
     HANDLE_ADJUST: {value: 5},
@@ -159,8 +159,8 @@ var RangeInputPolyfill = exports.RangeInputPolyfill = Montage.create(Component, 
     prepareForDraw: {
         value: function() {
             this.minX = this.sliderLeft = this.element.offsetLeft;
-            this.sliderWidth =  (this.width || RangeInputPolyfill.DEFAULT_WIDTH); //this.element.offsetWidth || 300;            
-            this.element.style.width = (this.sliderWidth + RangeInputPolyfill.HANDLE_ADJUST) + 'px';
+            this.sliderWidth =  (this.width || RangeInput.DEFAULT_WIDTH); //this.element.offsetWidth || 300;            
+            this.element.style.width = (this.sliderWidth + RangeInput.HANDLE_ADJUST) + 'px';
             
             this.maxX = this.sliderLeft + this.sliderWidth;
             
