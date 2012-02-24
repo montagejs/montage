@@ -27,7 +27,8 @@ var Slot = exports.Slot = Montage.create(Component, /** @lends module:"montage/u
     */
     delegate: {
         enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 /**
         Description TODO
