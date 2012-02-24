@@ -18,6 +18,14 @@
             "element": {"#": "range_input1"}
         }
     },
+    "range_input2": {
+        "module": "montage/ui/range-input.reel",
+        "name": "RangeInput",
+        "properties": {
+            "element": {"#": "range_input2"},
+            "value": 1
+        }
+    },
     "output": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
@@ -35,8 +43,8 @@
     },
 
     "scroll": {
-        "module": "montage/ui/scrollview.reel",
-        "name": "Scrollview",
+        "module": "montage/ui/scroller.reel",
+        "name": "Scroller",
         "properties": {
             "element": {"#": "scroll"}
         }
@@ -54,6 +62,7 @@
         "name": "RangeInputTest",
         "properties": {
             "range_input1": {"@": "range_input1"},
+            "range_input2": {"@": "range_input2"},
             "scroll": {"@": "scroll"},
             "scroll_range": {"@": "scroll_range"}
         }
@@ -72,17 +81,21 @@
 <body>
     <h1>RangeInput test</h1>
 
-    <input type="range" data-montage-id="range_input1" value="0"/>
-    <span data-montage-id="output">0</span>
+    <p>
+        <input type="range" data-montage-id="range_input1" value="0"/>
+        <span data-montage-id="output">0</span>
+    </p>
+
+    <p>
+        <input type="range" id="hello" data-montage-id="range_input2"/>
+    </p>
 
     <h2>Scroll</h2>
     <form action="" method="get">
     <div id="scroll" style="background:#CCC; height: 300px">
-        <div>
-            <div style="background:#A00; height:50px; width:10px">.</div>
-            <input type="range" id="scroll_range" value="0" />
-            <div style="background:#A00; height:400px; width:10px">.</div>
-        </div>
+        <div style="background:#A00; height:50px; width:10px">.</div>
+        <input type="range" id="scroll_range" value="0" />
+        <div style="background:#A00; height:400px; width:10px">.</div>
     </div>
     </form>
 

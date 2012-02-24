@@ -23,7 +23,8 @@
             "componentD": {"@": "componentD"},
             "componentDtarget": {"@": "componentDtarget"},
             "componentE": {"@": "componentE"},
-            "componentE11": {"@": "componentE11"}
+            "componentE11": {"@": "componentE11"},
+            "componentStyle": {"@": "componentStyle"}
         }
     },
     "repetition": {
@@ -99,6 +100,13 @@
             "hasTemplate": false
         }
     },
+    "componentStyle": {
+        "module": "ui/draw/component-style.reel",
+        "name": "ComponentStyle",
+        "properties": {
+            "element": {"#": "component-style"}
+        }
+    },
     "owner": {
         "module": "montage/ui/application",
         "name": "Application",
@@ -134,5 +142,6 @@
         <div id="componentE11"></div>
     </div>
 </div>
+<div style="margin: 2px" id="component-style"></div>
 </body>
 </html>

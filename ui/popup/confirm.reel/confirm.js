@@ -115,7 +115,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
                 this.okCallback.call(this, evt);
             }
             var anEvent = document.createEvent("CustomEvent");
-            anEvent.initCustomEvent("montage_confirm_ok", true, true);
+            anEvent.initCustomEvent("montage_confirm_ok", true, true, null);
             this.dispatchEvent(anEvent);
 
             this.popup.hide();
@@ -132,7 +132,7 @@ var Confirm = exports.Confirm = Montage.create(Component, /** @lends module:"mon
                 this.cancelCallback.call(this, evt);
             }
             var anEvent = document.createEvent("CustomEvent");
-            anEvent.initCustomEvent("montage_confirm_cancel", true, true);
+            anEvent.initCustomEvent("montage_confirm_cancel", true, true, null);
             this.dispatchEvent(anEvent);
 
             this.popup.hide();

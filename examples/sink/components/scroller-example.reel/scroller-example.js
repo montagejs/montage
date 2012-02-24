@@ -6,7 +6,7 @@
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
-exports.ScrollviewExample = Montage.create(Component, {
+exports.ScrollerExample = Montage.create(Component, {
     json: {value: null},
 
     firstName: {value: null},
@@ -19,11 +19,7 @@ exports.ScrollviewExample = Montage.create(Component, {
     dob: {value: null},
 
     phoneReadOnly: {value: null},
-    
-    json: {value: null},
 
-    firstName: {value: null},
-    lastName: {value: null},
 
     departments: {
         value: [
@@ -104,14 +100,14 @@ exports.ScrollviewExample = Montage.create(Component, {
             this.dob = new Date(Date.now());
 
             this.phoneReadOnly = true;
-            
+
             this.dept.contentController.selectedIndexes = [2, 4, 5];
         }
     },
 
     handleUpdateAction: {
         value: function(event) {
-            
+
             this.json = JSON.stringify({
                 firstName: this.firstName,
                 lastName: this.lastName,
@@ -125,7 +121,7 @@ exports.ScrollviewExample = Montage.create(Component, {
                 departments: this.selectedDepts
 
             });
-            
+
         }
     },
 

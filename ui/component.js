@@ -59,7 +59,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             var actionEvent = document.createEvent("CustomEvent");
             actionEvent.initCustomEvent("action", true, true, null);
-            actionEvent.type = "action";
             return actionEvent;
         }
     },
@@ -1007,7 +1006,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (attributeName === "id" || attributeName === "data-montage-id") {
                     continue;
                 } else {
-                    value = (template.getAttribute(attributeName) || "") + " " +
+                    value = (template.getAttribute(attributeName) || "") + (attributeName === "style" ? "; " : " ") +
                         attribute.nodeValue;
                 }
 

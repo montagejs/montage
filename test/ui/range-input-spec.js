@@ -21,6 +21,13 @@ var testPage = TestPageLoader.queueTest("range-input-test", function() {
                 expect(test.range_input1).toBeDefined();
             });
 
+            describe("value", function() {
+                it("can be set from the serialization", function() {
+                    expect(test.range_input2.value).toBe(1);
+                    expect(test.range_input2.element.value).toBe("1");
+                });
+            });
+
             it("can be changed", function() {
                 expect(test.range_input1.value).toBe("0");
 
@@ -35,7 +42,7 @@ var testPage = TestPageLoader.queueTest("range-input-test", function() {
                 expect(test.range_input1.value).toBeGreaterThan(0);
             });
 
-            describe("inside a scrollview", function() {
+            describe("inside a scroller", function() {
                 it("can be changed", function() {
                     expect(test.scroll_range.value).toBe("0");
 

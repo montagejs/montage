@@ -15,10 +15,11 @@ exports.Logger = Montage.create(Component, {
     value: false
   },
 
-  prepareForDraw: {
+  prepareForActivationEvents: {
     enumerable: false,
     value: function() {
       this.element.addEventListener('click', this);
+      this.element.addEventListener('touchend', this);
     }
   },
 
@@ -80,6 +81,12 @@ exports.Logger = Montage.create(Component, {
   },
 
   handleClick: {
+    value: function(ev) {
+      this._open = !this._open;
+      this.needsDraw = true;
+    }
+  },
+  handleTouchend: {
     value: function(ev) {
       this._open = !this._open;
       this.needsDraw = true;

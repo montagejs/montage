@@ -103,7 +103,10 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     _startInteraction: {
         enumerable: false,
         value: function(event) {
-            if ("disabled" in this.component && this.component.disabled) {
+            if (
+                ("disabled" in this.component && this.component.disabled) ||
+                this._observedPointer !== null
+            ) {
                 return false;
             }
 
@@ -401,8 +404,8 @@ var PressEvent = (function(){
 
     // These properties are available directly on the event
     eventProps = ["altKey", "ctrlKey", "metaKey", "shiftKey",
-    "cancelBubble", "clipboardData", "currentTarget", "defaultPrevented",
-    "eventPhase", "returnValue", "srcElement", "timeStamp", "preventDefault",
+    "cancelBubble", "currentTarget", "defaultPrevented",
+    "eventPhase", "timeStamp", "preventDefault",
     "stopImmediatePropagation", "stopPropagation"];
     // These properties are available on the event in the case of mouse, and
     // on the _touch in the case of touch

@@ -69,7 +69,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     Stores if we need to fake checking.
 
     When preventDefault is called on touchstart and touchend events (e.g. by
-    the scrollview component) the checkbox doesn't check itself, so we need
+    the scroller component) the checkbox doesn't check itself, so we need
     to fake it later.
 
     @default false
