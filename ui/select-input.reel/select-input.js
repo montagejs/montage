@@ -29,7 +29,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                 this._flag = false;                  
             }                    
             
-            this.needsDraw = !this._fromInput;                                              
+            this.needsDraw = this._flag || !this._fromInput;                                              
         },
         get: function() {
             return this.__selectedIndexes;
@@ -153,6 +153,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                 }
             }       
         }
+        //dependencies: ["_selectedIndexes"]
     },
     
     _value: {value: null},
@@ -176,6 +177,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
             
                                 
         }
+        //dependencies: ["_selectedIndexes"]
     },
 
     // -------------------
@@ -377,6 +379,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                 // if it is from input, it is not set externally
                 this._flag = false;
                 this.contentController.selectedIndexes = arr;
+                //this._selectedIndexes = arr;
             }
         }
     }

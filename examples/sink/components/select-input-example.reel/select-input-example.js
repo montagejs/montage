@@ -122,7 +122,7 @@ exports.SelectInputExample = Montage.create(Component, {
             this.firstName = "John";
             this.lastName = "FooBar";
 
-            this.dept.contentController.selectedIndexes = [2, 4, 5];
+            //this.dept.contentController.selectedIndexes = [2, 4, 5];
             // The following code does not trigger the selection. The selection is
             // managed by the contentController
             //this.selectedDept = this.departments[3];
