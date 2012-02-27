@@ -34,6 +34,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
       @type {Function}
     */
     focus: {
+        enumerable: true,
         value: function() {
             this._needsFocus = true;
             this.needsDraw = true;
@@ -241,14 +242,21 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     updateStates: {
         enumerable: true,
         value: function() {
-            var commands = ["bold", "underline", "italic", "strikethrough", "subscript", "superscript",
-                            {name:"justify", method: this._justifyGetState},
-                            {name:"liststyle", method: this._liststyleGetState},
-                            {name:"fontname", method: this._fontnameGetState},
-                            "fontsize", "backcolor", "forecolor"
+            var commands = [{property: "bold"},
+                            {property: "underline"},
+                            {property: "italic"},
+                            {property: "strikeThrough"},
+                            {property: "baselineShift", method: this._baselineShiftGetState},
+                            {property: "justify", method: this._justifyGetState},
+                            {property: "listStyle", method: this._listStyleGetState},
+                            {property: "fontName", method: this._fontNameGetState},
+                            {property: "fontSize"},
+                            {property: "backColor"},
+                            {property: "foreColor"}
                 ],
                 nbrCommands = commands.length,
                 command,
+                commandName,
                 propertyName,
                 state,
                 prevState,
@@ -260,19 +268,19 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                     command = commands[i];
 
                     if (typeof command == "object") {
-                        method = command.method;
-                        command = command.name;
+                        propertyName = command.property;
+                        commandName = command.name || propertyName.toLowerCase();
+                        method = command.method || this._getState;
                     } else {
-                        method = this._getState;
+                        continue;
                     }
 
-                    propertyName = "_" + command;
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@" + command, this)) {
-                        prevState = this[propertyName];
-                        state = method.call(this, command);
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@" + propertyName, this)) {
+                        prevState = this["_" + propertyName];
+                        state = method.call(this, propertyName, commandName);
                         if (state !== prevState) {
-                            this[propertyName] = state;
-                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue(command , prevState).withPlusValue(state));
+                            this["_" + propertyName] = state;
+                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue(propertyName , prevState).withPlusValue(state));
                         }
                     }
                 }
@@ -304,8 +312,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     */
     bold: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("bold"); },
-        set: function(value) { this._genericCommandSetter("bold", value); }
+        get: function() { return this._genericCommandGetter("bold", "bold"); },
+        set: function(value) { this._genericCommandSetter("bold", "bold", value); }
     },
 
     /**
@@ -314,8 +322,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     */
     underline: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("underline"); },
-        set: function(value) { this._genericCommandSetter("underline", value); }
+        get: function() { return this._genericCommandGetter("underline", "underline"); },
+        set: function(value) { this._genericCommandSetter("underline", "underline", value); }
     },
 
     /**
@@ -324,38 +332,47 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     */
     italic: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("italic"); },
-        set: function(value) { this._genericCommandSetter("italic", value); }
+        get: function() { return this._genericCommandGetter("italic", "italic"); },
+        set: function(value) { this._genericCommandSetter("italic", "italic", value); }
     },
 
     /**
       Description TODO
      @type {Function}
     */
-    strikethrough: {
+    strikeThrough: {
         enumerable: false,
-        get: function() { return this._genericCommandGetter("strikethrough"); },
-        set: function(value) { this._genericCommandSetter("strikethrough", value); }
+        get: function() { return this._genericCommandGetter("strikeThrough", "strikethrough"); },
+        set: function(value) { this._genericCommandSetter("strikeThrough", "strikethrough", value); }
     },
 
     /**
       Description TODO
      @type {Function}
     */
-    subscript: {
+    baselineShift: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("subscript"); },
-        set: function(value) { this._genericCommandSetter("subscript", value); }
-    },
+        get: function() {
+            this._baselineShift = this._baselineShiftGetState();
+            return this._baselineShift;
+        },
+        set: function(value) {
+            var state = this._baselineShiftGetState();
 
-    /**
-      Description TODO
-     @type {Function}
-    */
-    superscript: {
-        enumerable: true,
-        get: function() { return this._genericCommandGetter("superscript"); },
-        set: function(value) { this._genericCommandSetter("superscript", value); }
+            if (state != value) {
+                if (value == "baseline") {
+                    if (state == "subscript") {
+                        this.doAction("subscript");
+                    } else if (state == "superscript") {
+                        this.doAction("superscript");
+                    }
+                } else if (value == "subscript") {
+                    this.doAction("subscript");
+                } else if (value == "superscript") {
+                    this.doAction("superscript");
+                }
+            }
+        }
     },
 
     /**
@@ -380,14 +397,14 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
       Description TODO
      @type {Function}
     */
-    liststyle: {
+    listStyle: {
         enumerable: true,
         get: function() {
-            this._liststyle = this._liststyleGetState();
+            this._liststyle = this._listStyleGetState();
             return this._liststyle;
         },
         set: function(value) {
-            var state = this._liststyleGetState();
+            var state = this._listStyleGetState();
 
             if (state != value) {
                 if (value == "none") {
@@ -423,42 +440,42 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
       Description TODO
      @type {Function}
     */
-    fontname: {
+    fontName: {
         enumerable: true,
         get: function() {
-            this._fontname = this._fontnameGetState();
-            return this._fontname;
+            this._fontName = this._fontNameGetState();
+            return this._fontName;
         },
-        set: function(value) { this._genericCommandSetter("fontname", value); }
+        set: function(value) { this._genericCommandSetter("fontName", "fontname", value); }
     },
 
     /**
       Description TODO
      @type {Function}
     */
-    fontsize: {
+    fontSize: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("fontsize"); },
-        set: function(value) { this._genericCommandSetter("fontsize", value); }
+        get: function() { return this._genericCommandGetter("fontSize", "fontsize"); },
+        set: function(value) { this._genericCommandSetter("fontSize", "fontsize", value); }
     },
 
     /**
       Description TODO
      @type {Function}
     */
-    backcolor: {
+    backColor: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("backcolor"); },
-        set: function(value) { this._genericCommandSetter("backcolor", value); }
+        get: function() { return this._genericCommandGetter("backColor", "backcolor"); },
+        set: function(value) { this._genericCommandSetter("backColor", "backcolor", value); }
     },
 
     /**
       Description TODO
      @type {Function}
     */
-    forecolor: {
+    foreColor: {
         enumerable: true,
-        get: function() { return this._genericCommandGetter("forecolor"); },
-        set: function(value) { this._genericCommandSetter("forecolor", value); }
+        get: function() { return this._genericCommandGetter("foreColor", "forecolor"); },
+        set: function(value) { this._genericCommandSetter("foreColor", "forecolor", value); }
     }
 });

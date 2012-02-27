@@ -166,11 +166,11 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
     // Commands Helpers
     _getState: {
-        value: function(key) {
+        value: function(property, command) {
             var state;
 
             if (this.element.firstChild == document.activeElement) {
-                state = document.queryCommandValue(key);
+                state = document.queryCommandValue(command);
                 // Convert string to boolean
                 if (state == "true") {
                     state = true;
@@ -179,24 +179,24 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 }
                 return state;
             } else {
-                return this["_" + key];
+                return this["_" + property];
             }
         }
     },
 
     _genericCommandGetter : {
-        value: function(key) {
-            var propertyName = "_" + key;
-            this[propertyName] = this._getState(key);
+        value: function(property, command) {
+            var propertyName = "_" + property;
+            this[propertyName] = this._getState(property, command);
             return this[propertyName];
         }
     },
 
     _genericCommandSetter : {
-        value: function(key, value) {
-            var state = this._getState(key); // Make sure the state is up-to-date
+        value: function(property, command, value) {
+            var state = this._getState(property, command); // Make sure the state is up-to-date
             if (state !== value) {
-                this.doAction(key, typeof value == "boolean" ? false : value);
+                this.doAction(command, typeof value == "boolean" ? false : value);
             }
         }
     },
@@ -224,37 +224,52 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
-    _strikethrough: { value: false },
+    _strikeThrough: { value: false },
 
     /**
       Description TODO
       @private
     */
-    _subscript: { value: false },
-
-    /**
-      Description TODO
-      @private
-    */
-    _superscript: { value: false },
-
-    /**
-      Description TODO
-      @private
-    */
-    _liststyleGetState: {
+    _baselineShiftGetState: {
         enumerable: false,
         value: function() {
             if (this.element.firstChild == document.activeElement) {
-                if (this._getState("insertorderedlist")) {
+                if (this._getState("baselineShift", "subscript")) {
+                   return "subscript"
+                } else if (this._getState("baselineShift", "superscript")) {
+                    return "superscript"
+                } else {
+                    return "baseline";     // default
+                }
+            } else {
+                return this._baselineShift;
+            }
+        }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _baselineShift: { value: "baseline" },
+
+    /**
+      Description TODO
+      @private
+    */
+    _listStyleGetState: {
+        enumerable: false,
+        value: function() {
+            if (this.element.firstChild == document.activeElement) {
+                if (this._getState("listStyle", "insertorderedlist")) {
                    return "ordered"
-                } else if (this._getState("insertunorderedlist")) {
+                } else if (this._getState("listStyle", "insertunorderedlist")) {
                     return "unordered"
                 } else {
                     return "none";     // default
                 }
             } else {
-                return this._liststyle;
+                return this._listStyle;
             }
         }
     },
@@ -262,7 +277,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
-    _liststyle: { value: "none" },
+    _listStyle: { value: "none" },
 
     /**
       Description TODO
@@ -272,13 +287,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         enumerable: false,
         value: function() {
             if (this.element.firstChild == document.activeElement) {
-                if (this._getState("justifyleft")) {
+                if (this._getState("justify", "justifyleft")) {
                    return "left"
-                } else if (this._getState("justifycenter")) {
+                } else if (this._getState("justify", "justifycenter")) {
                     return "center"
-                } else if (this._getState("justifyright")) {
+                } else if (this._getState("justify", "justifyright")) {
                     return "right"
-                } else if (this._getState("justifyfull")) {
+                } else if (this._getState("justify", "justifyfull")) {
                     return "full"
                 } else {
                     return "left";     // default
@@ -299,40 +314,40 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
-    _fontnameGetState: {
+    _fontNameGetState: {
         enumerable: false,
         value: function() {
-            this._fontname = this._getState("fontname");
-            if (this._fontname) {
-                this._fontname = this._fontname.replace(/\"|\'/g, "");
+            this._fontName = this._getState("fontName", "fontname");
+            if (this._fontName) {
+                this._fontName = this._fontName.replace(/\"|\'/g, "");
             }
 
-            return this._fontname;
+            return this._fontName;
         }
     },
     /**
       Description TODO
       @private
     */
-    _fontname: { value: "" },
+    _fontName: { value: "" },
 
     /**
       Description TODO
       @private
     */
-    _fontsize: { value: 0 },
+    _fontSize: { value: 0 },
 
     /**
       Description TODO
       @private
     */
-    _backcolor: { value: "" },
+    _backColor: { value: "" },
 
     /**
       Description TODO
       @private
     */
-    _forecolor: { value: "" },
+    _foreColor: { value: "" },
 
 
     // Component Callbacks
