@@ -612,5 +612,36 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 });
             });
         });
+
+        describe("manual objects changes", function() {
+            var list13 = querySelector(".list13").controller;
+            var object = {array: [1, 2, 3]};
+
+            it("should add an iteration when an object is pushed", function() {
+                list13.objects.push(4);
+                testPage.waitForDraw();
+                runs(function() {
+                    expect(querySelectorAll(".list13 > li").length).toBe(4);
+                });
+            });
+
+            it("should fire refresh items once if a binding to objects is in place", function() {
+                spyOn(list13, "_refreshItems").andCallThrough();
+                testPage.window.Object.defineBinding(list13, "objects", {
+                    boundObject: object,
+                    boundObjectPropertyPath: "array",
+                    oneway: true
+                });
+
+                expect(list13._refreshItems.callCount).toBe(1);
+            });
+
+            it("should fire refresh items once if a binding to objects is removed", function() {
+                spyOn(list13, "_refreshItems").andCallThrough();
+                testPage.window.Object.deleteBinding(list13, "objects");
+                list13.objects.push(4);
+                expect(list13._refreshItems.callCount).toBe(1);
+            });
+        });
     });
 });
