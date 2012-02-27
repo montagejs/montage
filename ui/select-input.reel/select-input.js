@@ -390,7 +390,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 //http://www.w3.org/TR/html5/the-button-element.html#the-select-element
 
 SelectInput.addAttributes({
-        autofocus: null,
+        autofocus: {dataType: 'boolean'},
         disabled: {dataType: 'boolean'},
         form: null,
         multiple: {dataType: 'boolean'},
