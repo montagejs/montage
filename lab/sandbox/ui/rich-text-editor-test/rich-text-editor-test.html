@@ -19,8 +19,7 @@
                 "properties": {
                     "element": {"#": "editor-frame" },
                     "identifier": "editor",
-                    "delegate": {"@": "tester" },
-                    "readonly": false
+                    "delegate": {"@": "tester" }
                 },
                 "listeners": [
                     {
@@ -40,22 +39,22 @@
                         "boundObjectPropertyPath": "contentController.selectedIndexes",
                         "converter": {"@": "indexesConverter"}
                     },
-                    "fontname": {
+                    "fontName": {
                         "boundObject": {"@": "fontname"},
                         "boundObjectPropertyPath": "contentController.selectedIndexes",
                         "converter": {"@": "fontnameConverter"}
                     },
-                    "fontsize": {
+                    "fontSize": {
                         "boundObject": {"@": "fontsize"},
                         "boundObjectPropertyPath": "contentController.selectedIndexes",
                         "converter": {"@": "fontsizeConverter"}
                     },
-                    "backcolor": {
+                    "backColor": {
                         "boundObject": {"@": "backcolor"},
                         "boundObjectPropertyPath": "contentController.selectedIndexes",
                         "converter": {"@": "backcolorConverter"}
                     },
-                    "forecolor": {
+                    "foreColor": {
                         "boundObject": {"@": "forecolor"},
                         "boundObjectPropertyPath": "contentController.selectedIndexes",
                         "converter": {"@": "forecolorConverter"}
@@ -114,8 +113,17 @@
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "strikethrough"
+                        "boundObjectPropertyPath": "strikeThrough"
                     }
+                }
+            },
+
+            "subscriptConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "subscript",
+                    "defaultValue": "baseline"
                 }
             },
 
@@ -128,8 +136,18 @@
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "subscript"
+                        "boundObjectPropertyPath": "baselineShift",
+                        "converter": {"@": "subscriptConverter"}
                     }
+                }
+            },
+
+            "superscriptConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "superscript",
+                    "defaultValue": "baseline"
                 }
             },
 
@@ -142,7 +160,8 @@
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "superscript"
+                        "boundObjectPropertyPath": "baselineShift",
+                        "converter": {"@": "superscriptConverter"}
                     }
                 }
             },
@@ -197,7 +216,7 @@
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "liststyle",
+                        "boundObjectPropertyPath": "listStyle",
                         "converter": {"@": "unorderedListConverter"}
                     }
                 }
@@ -221,7 +240,7 @@
                 "bindings": {
                     "pressed": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "liststyle",
+                        "boundObjectPropertyPath": "listStyle",
                         "converter": {"@": "orderedListConverter"}
                     }
                 }
@@ -425,13 +444,12 @@
                 "module": "montage/ui/checkbox.reel",
                 "name": "Checkbox",
                 "properties": {
-                    "element": {"#": "checkbox-readonly"},
-                    "identifier": "readonly"
+                    "element": {"#": "checkbox-readonly"}
                 },
                 "bindings": {
                     "checked": {
                         "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "readonly"
+                        "boundObjectPropertyPath": "readOnly"
                     }
                 }
             },
@@ -460,7 +478,7 @@
                     "showSource": {"@": "checkbox-source"}
                 },
                 "bindings": {
-                    "readonly": {
+                    "readOnly": {
                         "boundObject": {"@": "checkbox-readonly"},
                         "boundObjectPropertyPath": "checked",
                         "oneway": true

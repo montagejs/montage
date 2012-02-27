@@ -60,7 +60,7 @@ exports.RIndexesConverter = Montage.create(Converter, {
         enumerable: false,
         value: function(value) {
             var index = this.component._indexOf(value);
-            console.log("CONVERT:", value, index);
+            if (this.debug) {console.log("CONVERT:", value, index);}
             return index != -1 ? [index] : [0];
         }
     },
@@ -68,7 +68,7 @@ exports.RIndexesConverter = Montage.create(Converter, {
     revert: {
         enumerable: false,
         value: function(indexes) {
-            console.log("REVERT:", value);
+            if (this.debug) {console.log("REVERT:", value);}
             var index = indexes && indexes.length ? indexes[0] : 0,
                 value = this.component.content[index].value;
             return value;
@@ -158,17 +158,16 @@ editor = this.editor;
         }
     },
 
-    _readonly: { value: false },
-    readonly: {
-        get: function() { return this._readonly },
+    _readOnly: { value: false },
+    readOnly: {
+        get: function() { return this._readOnly },
         set: function(value) {
-            this._readonly = value;
+            this._readOnly = value;
             if (value) {
                 this.editor.element.parentNode.classList.add("readonly");
             } else {
                 this.editor.element.parentNode.classList.remove("readonly");
             }
-            console.log("READONLY:", value)
         }
     },
 
