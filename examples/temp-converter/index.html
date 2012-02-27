@@ -14,12 +14,19 @@
 <body>
     <div class="converter">
         <div id="title">Temperature converter</div>
-        <label>Celsius:
-            <input type="number" name="celsius" id="celsius"/>
-        </label>
-        <label>Fahrenheit:
-            <input type="number" name="fahrenheit" id="fahrenheit" >
-        </label>
+        <div class="controls">
+            <section>
+                <label>Celsius:
+                    <input type="number" name="celsius" id="celsius"/>
+                </label>
+                <label>Fahrenheit:
+                    <input type="number" name="fahrenheit" id="fahrenheit" >
+                </label>
+            </section>
+            <section class="barometerTrack">
+                <input type="range" name="barometer" min="-13" max="122" id="barometer" />
+            </section>
+        </div>
     </div>
 </body>
 </html>
