@@ -80,7 +80,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     runs(function() {
                         expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div>D1</div>\n    </h1>\n");
                     });
-                })
+                });
+
+                it("should preverve the owner component of transplanted components", function() {
+                   var componentLayout = testPage.test.componentLayout; expect(componentLayout.leftComponent.ownerComponent).not.toBe(componentLayout);
+                   expect(componentLayout.rightComponent.ownerComponent).not.toBe(componentLayout);
+                });
             });
 
             describe("calling willDraw prior to drawing", function() {
@@ -412,7 +417,26 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     expect(componentE1.childComponents.length).toBe(1);
                     expect(componentE1.childComponents[0]).toBe(testPage.test.componentE11);
                 });
-            })
+            });
+
+            describe("the owner component property", function() {
+                var Component = testPage.window.require("montage/ui/component").Component;
+                var componentOwner = testPage.test.componentOwner;
+
+                var leaf1 = componentOwner.leaf1;
+                var leaf2 = componentOwner.leaf2;
+                var branch = componentOwner.branch;
+                var branchLeaf1 = branch.leaf1;
+                var branchLeaf2 = branch.leaf2;
+
+                it("should be the component that loaded the template", function() {
+                    expect(leaf1.ownerComponent).toBe(componentOwner);
+                    expect(leaf2.ownerComponent).toBe(componentOwner);
+                    expect(branch.ownerComponent).toBe(componentOwner);
+                    expect(branchLeaf1.ownerComponent).toBe(branch);
+                    expect(branchLeaf2.ownerComponent).toBe(branch);
+                });
+            });
         });
     });
 });
