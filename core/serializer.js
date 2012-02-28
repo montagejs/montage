@@ -270,11 +270,16 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }},
 
     _generateLabelForObject: {value: function(object) {
-        var objectName = Montage.getInfoForObject(object).objectName.toLowerCase(),
-            index = this._objectNamesIndex[objectName] || 1;
+        var objectName = object.identifier ||  Montage.getInfoForObject(object).objectName.toLowerCase(),
+            index = this._objectNamesIndex[objectName];
 
-        this._objectNamesIndex[objectName] = index + 1;
-        return objectName + index;
+        if (index) {
+            this._objectNamesIndex[objectName] = index + 1;
+            return objectName + index;
+        } else {
+            this._objectNamesIndex[objectName] = 2;
+            return objectName;
+        }
     }},
 
     _applySerializationUnits: {value: function(serializedUnits, object) {

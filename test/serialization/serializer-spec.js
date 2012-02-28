@@ -169,7 +169,7 @@ describe("serialization/serializer-spec", function() {
             object.prop2 = simple;
 
             serialization = serializer.serializeObject(object);
-             expect(stripPP(serialization)).toBe('{"simple1":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"root":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{"prop1":["with","a","reference"],"prop2":{"@":"simple1"}}}}');
+             expect(stripPP(serialization)).toBe('{"simple":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"root":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{"prop1":["with","a","reference"],"prop2":{"@":"simple"}}}}');
         });
 
         it("should serialize an instance object that references itself", function() {
@@ -189,7 +189,7 @@ describe("serialization/serializer-spec", function() {
             object2.prop = object1;
 
             serialization = serializer.serializeObject(object1);
-            expect(stripPP(serialization)).toBe('{"oneprop1":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"root"}}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"oneprop1"}}}}');
+            expect(stripPP(serialization)).toBe('{"oneprop":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"root"}}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"oneprop"}}}}');
         });
 
         it("should serialize an instance object with a custom serialization", function() {
@@ -207,7 +207,7 @@ describe("serialization/serializer-spec", function() {
             object.prop = object;
 
             serialization = serializer.serializeObject(object);
-            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomRef]","properties":{"object":{"@":"empty1"}}}}');
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomRef]","properties":{"object":{"@":"empty"}}}}');
         });
 
         it("should serialize a function in an Object literal", function() {
@@ -246,7 +246,7 @@ describe("serialization/serializer-spec", function() {
             };
 
             serialization = serializer.serialize(labels);
-            expect(stripPP(serialization)).toBe('{"simple1":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"graphA":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"simple1"}}},"graphB":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{"prop1":"string","prop2":42}}}');
+            expect(stripPP(serialization)).toBe('{"simple":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"graphA":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"simple"}}},"graphB":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{"prop1":"string","prop2":42}}}');
         });
 
         describe("Serialization options", function() {
@@ -287,8 +287,19 @@ describe("serialization/serializer-spec", function() {
                     }
                 }
 
-                expect(stripPP(serialization)).toBe('{"oneprop1":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":"prop1"}},"root":{"prototype":"serialization/testobjects-v2[SerializableAttribute]","properties":{"prop1a":{"@":"oneprop1"},"prop1b":{"@":"oneprop1"},"prop2a":{"@":"oneprop2"},"prop2b":{"@":"oneprop2"}}}}');
+                expect(stripPP(serialization)).toBe('{"oneprop":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":"prop1"}},"root":{"prototype":"serialization/testobjects-v2[SerializableAttribute]","properties":{"prop1a":{"@":"oneprop"},"prop1b":{"@":"oneprop"},"prop2a":{"@":"oneprop2"},"prop2b":{"@":"oneprop2"}}}}');
                 expect(length).toBe(1);
+            });
+
+            it("should serialize an object using its identifier property as the label", function() {
+                var object = objects.OneProp.create();
+                var simple = objects.Simple.create();
+
+                object.prop = simple;
+                simple.identifier = "myprop";
+
+                serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"myprop":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"myprop"}}}}');
             });
         });
 
@@ -305,7 +316,7 @@ describe("serialization/serializer-spec", function() {
             }
 
             expect(length).toBe(1);
-            expect(externalObjects["empty1"]).toBe(object.object);
+            expect(externalObjects["empty"]).toBe(object.object);
         });
     });
 });
