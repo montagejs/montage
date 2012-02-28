@@ -18,7 +18,7 @@ exports.ProgressExample = Montage.create(Component, {
 
     draw: {
         value: function() {
-            console.log('draw DynamicTextExample');
+            console.log('draw progress');
         }
     },
 
@@ -38,7 +38,7 @@ exports.ProgressExample = Montage.create(Component, {
                 clearInterval(this._intervalId);
             }
             this._intervalId = setInterval(function() {
-                self.uploadProgress = self.uploadProgress + 5;
+                self.uploadProgress = self.uploadProgress + 10;
                 if(self.uploadProgress > 100) {
                     self.uploadProgress = 0;
                 }
