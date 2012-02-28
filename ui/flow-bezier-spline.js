@@ -1,5 +1,5 @@
 var Montage = require("montage").Montage,
-    CubicBezierSpline = exports.CubicBezierSpline = Montage.create(Montage, {
+    FlowBezierSpline = exports.FlowBezierSpline = Montage.create(Montage, {
 
     vectors: {
         get: function () {
@@ -24,6 +24,40 @@ var Montage = require("montage").Montage,
             this._densities = value;
             this._densitiesLength = this._densities.length;
             this._densitySummation = null;
+        }
+    },
+
+    _parameters: {
+        value: {
+            rotateX: {
+                data: [0, 1, 0],
+                units: "rad"
+            },
+            rotateY: {
+                data: [1, 2, 0],
+                units: "rad"
+            },
+            rotateZ: {
+                data: [3, 0, 0],
+                units: "rad"
+            },
+            opacity: {
+                data: [0, 1, 1, .5],
+                units: ""
+            }
+        }
+    },
+
+    parameters: {
+        get: function () {
+            if (!this._parameters) {
+                this._parameters = [];
+            }
+            return this._parameters;
+        },
+        set: function (value) {
+            this._parameters = value;
+            this._parametersLength = this._parameters.length;
         }
     },
 
@@ -94,8 +128,9 @@ var Montage = require("montage").Montage,
                 a, b, c,
                 t, y,
                 start,
-                i;
-            
+                parameters = {},
+                i, j;
+
             if ((time >= 0) && (time < this.maxTime)) {
                 if (this._previousIndex && (time >= this._densitySummation[this._previousIndex - 1])) {
                     i = this._previousIndex;
@@ -120,10 +155,21 @@ var Montage = require("montage").Montage,
                     t = (time - start) / a;
                 }
                 y = 1 - t;
+                // TODO: Redo this and create getParametersAtTime or getPositionAndParametersAtTime
+                for (j in this._parameters) {
+                    if (this._parameters.hasOwnProperty(j)) {
+                        if ((typeof this._parameters[j].data[i] !== "undefined") && (typeof this._parameters[j].data[i + 1] !== "undefined")) {
+                            parameters[j] = (this._parameters[j].data[i] * y + this._parameters[j].data[i + 1] * t) + this._parameters[j].units;
+                        } else {                        
+                            parameters[j] = this._parameters[j].data[this._parameters[j].data.length - 1] + this._parameters[j].units;
+                        }
+                    }
+                }
                 return [
                     p0[0]*(y*y*y)+p1[0]*(y*y*t*3)+p2[0]*(y*t*t*3)+p3[0]*(t*t*t),
                     p0[1]*(y*y*y)+p1[1]*(y*y*t*3)+p2[1]*(y*t*t*3)+p3[1]*(t*t*t),
-                    p0[2]*(y*y*y)+p1[2]*(y*y*t*3)+p2[2]*(y*t*t*3)+p3[2]*(t*t*t)
+                    p0[2]*(y*y*y)+p1[2]*(y*y*t*3)+p2[2]*(y*t*t*3)+p3[2]*(t*t*t),
+                    parameters
                 ];
             } else {
                 return null;
@@ -133,7 +179,7 @@ var Montage = require("montage").Montage,
 
     transform: {
         value: function (matrix) {
-            var spline = Montage.create(CubicBezierSpline),
+            var spline = Montage.create(FlowBezierSpline),
                 vectors = this.vectors,
                 length = vectors.length,
                 iVector,
@@ -151,6 +197,175 @@ var Montage = require("montage").Montage,
             }
             return spline;
         }
-    }
+    },
 
+    deCasteljau: {
+        value: function (b0, b1, b2, b3, t) {
+            var t1 = 1 - t,
+                p1x = t1 * b0[0] + t * b1[0], p2x = t1 * b1[0] + t * b2[0], p3x = t1 * b2[0] + t * b3[0],
+                p4x = t1 * p1x + t * p2x, p5x = t1 * p2x + t * p3x, p6x = t1 * p4x + t * p5x,
+                p1y = t1 * b0[1] + t * b1[1], p2y = t1 * b1[1] + t * b2[1], p3y = t1 * b2[1] + t * b3[1],
+                p4y = t1 * p1y + t * p2y, p5y = t1 * p2y + t * p3y, p6y = t1 * p4y + t * p5y,
+                p1z = t1 * b0[2] + t * b1[2], p2z = t1 * b1[2] + t * b2[2], p3z = t1 * b2[2] + t * b3[2],
+                p4z = t1 * p1z + t * p2z, p5z = t1 * p2z + t * p3z, p6z = t1 * p4z + t * p5z;
+
+            return [
+                [b0, [p1x, p1y, p1z], [p4x, p4y, p4z], [p6x, p6y, p6z]],
+                [[p6x, p6y, p6z], [p5x, p5y, p5z], [p3x, p3y, p3z], b3]
+            ];
+        }
+    },
+
+    cubic: {
+        enumerable: false,
+        value: function (a, b, c, d, x) {
+            return ((a * x + b) * x + c) * x + d;
+        }
+    },
+
+    cubeRoot: {
+        enumerable: false,
+        value: function (value) {
+            return (value > 0) ? Math.pow(value, 1/3) : -Math.pow(-value, 1/3);
+        }
+    },
+
+    cubicRealRoots: {
+        enumerable: false,
+        value: function (a, b, c, d) {
+            var epsilon = 1e-100;
+
+            if ((a < -epsilon) || (a > epsilon)) {
+                var dv = 1 / a,
+                    A = b * dv,
+                    B = c * dv,
+                    Q = (3 * B - A * A) * (1 / 9),
+                    R = (4.5 * A * B - 13.5 * d * dv - A * A * A) * (1 / 27),
+                    D = Q * Q * Q + R * R;
+
+                if (D > epsilon) {
+                    var sqD = Math.sqrt(D);
+                    
+                    return [this.cubeRoot(R + sqD) + this.cubeRoot(R - sqD) + A * (-1 / 3)];
+                } else {
+                    if (D > -epsilon) {
+                        if ((R < -epsilon) || (R > epsilon)) {
+                            var S = this.cubeRoot(R),
+                                r1 = S * 2 + A * (-1 / 3),
+                                r2 = A * (-1 / 3) - S;
+                            
+                            if (r1 < r2) {
+                                return [r1, r2];
+                            } else {
+                                return [r2, r1];
+                            }
+                        } else {
+                            return [A * (-1 / 3)];
+                        }
+                    } else {
+                        var O = Math.acos(R / Math.sqrt(-Q * Q * Q)) * (1 / 3),
+                            tmp1 = Math.sqrt(-Q),
+                            sinO = tmp1 * Math.sin(O) * 1.7320508075688772,
+                            tmp2 = A * (-1 / 3);
+
+                        tmp1 *= Math.cos(O);
+                        return [tmp2 - tmp1 - sinO, tmp2 - tmp1 + sinO,	tmp2 + tmp1 * 2];
+                    }
+                }
+            } else {
+                if ((b < -epsilon) || (b > epsilon)) {
+                    var sq = c * c - 4 * b * d;
+
+                    if (sq >= 0) {
+                        sq = Math.sqrt(sq);
+                        return [(-c - sq) / (2 * b), (sq - c) / (2 * b)];
+                    } else {
+                        return [];
+                    }
+                } else {
+                    if ((c < -epsilon) || (c > epsilon)) {
+                        return [-d / c];
+                    } else {
+                        return [];
+                    }
+                }
+            }
+        }
+    },
+
+    reflectionMatrix: {
+        enumerable: false,
+        value: function (planeNormal) {
+            var angleZ = Math.atan2(planeNormal[0], planeNormal[1]),
+                sinZ = Math.sin(angleZ),
+                cosZ = Math.cos(angleZ),
+                angleX = Math.atan2(-planeNormal[2], planeNormal[0] * sinZ + planeNormal[1] * cosZ);
+
+            return [sinZ, Math.cos(angleX) * cosZ, -Math.sin(angleX) * cosZ];
+        }
+    },
+
+    reflectedY: {
+        enumerable: false,
+        value: function (x, y, z, matrix) {
+            return x * matrix[0] + y * matrix[1] + z * matrix[2];
+        }
+    },
+
+    planeBezierIntersection: {
+        enumerable: false,
+        value: function (planeOrigin, planeNormal, b0, b1, b2, b3) {
+            var matrix = this.reflectionMatrix(planeNormal), // TODO: cache for matrix and cache for cubicRealRoots
+                d = this.reflectedY(b0[0] - planeOrigin[0], b0[1] - planeOrigin[1], b0[2] - planeOrigin[2], matrix),
+                r1 = this.reflectedY(b1[0] - planeOrigin[0], b1[1] - planeOrigin[1], b1[2] - planeOrigin[2], matrix),
+                r2 = this.reflectedY(b2[0] - planeOrigin[0], b2[1] - planeOrigin[1], b2[2] - planeOrigin[2], matrix),
+                r3 = this.reflectedY(b3[0] - planeOrigin[0], b3[1] - planeOrigin[1], b3[2] - planeOrigin[2], matrix);
+
+            return this.cubicRealRoots(
+                (r1 - r2) * 3 + r3 - d,
+                (d + r2) * 3 - 6 * r1,
+                (r1 - d) * 3,
+                d
+            );
+        }
+    },
+
+    directedPlaneBezierIntersection: {
+        enumerable: false,
+        value: function (planeOrigin, planeNormal, b0, b1, b2, b3) {
+            var matrix = this.reflectionMatrix(planeNormal), // TODO: cache for matrix and cache for cubicRealRoots
+                d = this.reflectedY(b0[0] - planeOrigin[0], b0[1] - planeOrigin[1], b0[2] - planeOrigin[2], matrix),
+                r1 = this.reflectedY(b1[0] - planeOrigin[0], b1[1] - planeOrigin[1], b1[2] - planeOrigin[2], matrix),
+                r2 = this.reflectedY(b2[0] - planeOrigin[0], b2[1] - planeOrigin[1], b2[2] - planeOrigin[2], matrix),
+                r3 = this.reflectedY(b3[0] - planeOrigin[0], b3[1] - planeOrigin[1], b3[2] - planeOrigin[2], matrix),
+                a = (r1 - r2) * 3 + r3 - d,
+                b = (d + r2) * 3 - 6 * r1,
+                c = (r1 - d) * 3,
+                r = this.cubicRealRoots(a, b, c, d),
+                min,
+                max = 0,
+                mid,
+                i = 0,
+                segments = [];
+
+            while ((i < r.length) && (r[i] <= 0)) {
+                i++;
+            }
+            while ((i < r.length) && (r[i] < 1)) {
+                min = max;
+                max = r[i];
+                mid = (min + max) * .5;
+                if (this.cubic(a, b, c, d, mid) >= 0) {
+                    segments.push([min, max]);
+                }
+                i++;
+            }
+            mid = (max + 1) * .5;
+            if (this.cubic(a, b, c, d, mid) >= 0) {
+                segments.push([max, 1]);
+            }
+
+            return segments;
+        }
+    }
 });

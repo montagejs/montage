@@ -1,5 +1,6 @@
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
+    Component = require("ui/component").Component,
+    FlowBezierSpline = require("ui/flow-bezier-spline").FlowBezierSpline;
 
 var Flow = exports.Flow = Montage.create(Component, {
 
@@ -87,73 +88,9 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    // TODO: Review _externalUpdate
-
-    _externalUpdate: {
-        enumerable: false,
-        value: true
-    },
-
     _isCameraUpdated: {
         enumerable: false,
         value: true
-    },
-
-    _path: {
-        enumerable: false,
-        value: {
-            value: function (slide) {
-                return {
-                    translateX: slide.time,
-                    translateY: 0,
-                    translateZ: 0,
-                    scale: 1,
-                    rotateX: 0,
-                    rotateY: 0,
-                    rotateZ: 0,
-                    transformOriginX: 0,
-                    transformOriginY: 0,
-                    transformOriginZ: 0,
-                    style: {}
-                };
-            }
-        }
-    },
-
-    path: {
-        get: function () {
-            return this._path;
-        },
-        set: function (value) {
-            this._path = value;
-            this.needsDraw = true;
-        }
-    },
-
-    _rotationOrder: {
-        enumerable: false,
-        value: "xyz"
-    },
-
-    rotationOrder: {
-        get: function () {
-            return this._rotationOrder;
-        },
-        set: function (value) {
-            switch (value) {
-                case "xzy":
-                case "yxz":
-                case "yzx":
-                case "zxy":
-                case "zyx":
-                    this._rotationOrder=value;
-                    break;
-                default:
-                    this._rotationOrder="xyz";
-                    break;
-            }
-            this.needsDraw = true;
-        }
     },
 
     _width: {
@@ -176,6 +113,9 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function () {
             var self = this;
 
+            if (!this._splineTranslatePath) {
+                this.splineTranslatePath = Object.create(FlowBezierSpline);
+            }
             this._repetitionComponents = this._repetition._childComponents;
             window.addEventListener("resize", function () {
                 self._isCameraUpdated = true;
@@ -197,16 +137,11 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function () {
             var i,
                 length = this.numberOfNodes,
-                slide={
-                    index: null,
-                    time: null,
-                    speed: null
-                },
+                slide = {},
                 transform,
                 origin,
-                iPath,
+                iPath = {},
                 j,
-                jPath,
                 iOffset,
                 iStyle,
                 pos;
@@ -216,130 +151,64 @@ var Flow = exports.Flow = Montage.create(Component, {
             }
             if (this._isCameraUpdated) {
                 var perspective = Math.tan(((90 - this.cameraFov * .5) * Math.PI * 2) / 360) * this._height * .5,
-                    x = -this.cameraPosition[0],
-                    y = -this.cameraPosition[1],
-                    z = -this.cameraPosition[2] + perspective;
-
-                var vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
+                    vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
                     vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
                     vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
-                    yAngle = Math.atan2(vX, vZ),
+                    yAngle = Math.atan2(-vX, -vZ),
                     tmpZ,
-                    rX, rY, rZ,
                     xAngle;
 
                 tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
-                xAngle = Math.atan2(vY, tmpZ);
-                
-                /*rX = vector[0];
-                rY = vector[1] * Math.cos(-xAngle) - vector[2] * Math.sin(-xAngle);
-                rZ = vector[1] * Math.sin(-xAngle) + vector[2] * Math.cos(-xAngle);
-                return [
-                    rX * Math.cos(yAngle) + rZ * Math.sin(yAngle),
-                    rY,
-                    rX * -Math.sin(yAngle) + rZ * Math.cos(yAngle)
-                ];*/
-
+                xAngle = Math.atan2(-vY, -tmpZ);
                 this._element.style.webkitPerspective = perspective + "px";
-                this._repetition._element.style.webkitTransform = "translate3d(" + x + "px, " + y + "px, " + z + "px) rotateX("+(-xAngle)+"rad)";
+                this._repetition._element.style.webkitTransform =
+                    "translate3d(" + 0 + "px, " + 0 + "px, " + perspective + "px) rotateX(" + xAngle + "rad) rotateY(" + (-yAngle) + "rad) " +
+                    "translate3d(" + (-this.cameraPosition[0]) + "px, " + (-this.cameraPosition[1]) + "px, " + (-this.cameraPosition[2]) + "px)";
                 this._isCameraUpdated = false;
             }
             if (this._splineTranslatePath) {
                 this._splineTranslatePath._computeDensitySummation();
-            }
-            //if (this._externalUpdate) {
-                for (i=0; i<length; i++) {
-                    iStyle=this._repetitionComponents[i].element.style;
-                    iOffset=this._offset.value(i);
-                    slide.index=i;
-                    slide.time=iOffset.time;
-                    slide.speed=iOffset.speed;
-                    iPath=this._path.value(slide);
-                    if (this._splineTranslatePath) {
-                        pos = this._splineTranslatePath.getPositionAtTime(slide.time/300);
-                        if (pos) {
-                            iPath.translateX = pos[0];
-                            iPath.translateY = pos[1];
-                            iPath.translateZ = pos[2];
-                            if (iStyle.display !== "block") {
-                                iStyle.display = "block";
-                            }
-                        } else {
-                            if (iStyle.display !== "none") {
-                                iStyle.display = "none";
+                for (i = 0; i < length; i++) {
+                    iStyle = this._repetitionComponents[i].element.style;
+                    iOffset = this._offset.value(i);
+                    slide.index = i;
+                    slide.time = iOffset.time;
+                    slide.speed = iOffset.speed;
+                    iPath = {};
+                    iPath.style = {};
+                    pos = this._splineTranslatePath.getPositionAtTime(slide.time / 300);
+                    if (pos) {
+                        iPath.translateX = pos[0];
+                        iPath.translateY = pos[1];
+                        iPath.translateZ = pos[2];
+                        if (iStyle.display !== "block") {
+                            iStyle.display = "block";
+                        }
+                        iPath.rotateX = pos[3].rotateX;
+                        iPath.rotateY = pos[3].rotateY;
+                        iPath.rotateZ = pos[3].rotateZ;
+                        iPath.style.opacity = pos[3].opacity;
+
+                        transform = "translate3d(" + iPath.translateX + "px," + iPath.translateY + "px," + iPath.translateZ + "px) ";
+                        //transform += (typeof iPath.scale !== "undefined") ? "scale("+iPath.scale+") " : "";
+                        transform += (typeof iPath.rotateZ !== "undefined") ? "rotateZ(" + iPath.rotateZ + ") " : "";
+                        transform += (typeof iPath.rotateY !== "undefined") ? "rotateY(" + iPath.rotateY + ") " : "";
+                        transform += (typeof iPath.rotateX !== "undefined") ? "rotateX(" + iPath.rotateX + ") " : "";
+                        iStyle.webkitTransform = transform;
+                        if (typeof iPath.style !== "undefined") {
+                            for (j in iPath.style) {
+                                if ((iPath.style.hasOwnProperty(j)) && (iStyle[j] !== iPath.style[j])) {
+                                    iStyle[j] = iPath.style[j];
+                                }
                             }
                         }
                     } else {
-                        if (typeof iPath.translateX==="undefined") {
-                            iPath.translateX=0;
-                        }
-                        if (typeof iPath.translateY==="undefined") {
-                            iPath.translateY=0;
-                        }
-                        if (typeof iPath.translateZ==="undefined") {
-                            iPath.translateZ=0;
-                        }
-                    }
-                    transform="translate3d(";
-                    transform+=(typeof iPath.translateX==="number")?iPath.translateX+"px,":iPath.translateX+",";
-                    transform+=(typeof iPath.translateY==="number")?iPath.translateY+"px,":iPath.translateY+",";
-                    transform+=(typeof iPath.translateZ==="number")?iPath.translateZ+"px) ":iPath.translateZ+") ";
-                    transform+=(typeof iPath.scale!=="undefined")?"scale("+iPath.scale+") ":"";
-                    switch (this._rotationOrder) {
-                        case "xyz":
-                            transform+=(typeof iPath.rotateZ!=="undefined")?"rotateZ("+iPath.rotateZ+"rad) ":"";
-                            transform+=(typeof iPath.rotateY!=="undefined")?"rotateY("+iPath.rotateY+"rad) ":"";
-                            transform+=(typeof iPath.rotateX!=="undefined")?"rotateX("+iPath.rotateX+"rad) ":"";
-                            break;
-                        case "xzy":
-                            transform+=(typeof iPath.rotateY!=="undefined")?"rotateY("+iPath.rotateY+"rad) ":"";
-                            transform+=(typeof iPath.rotateZ!=="undefined")?"rotateZ("+iPath.rotateZ+"rad) ":"";
-                            transform+=(typeof iPath.rotateX!=="undefined")?"rotateX("+iPath.rotateX+"rad) ":"";
-                            break;
-                        case "yxz":
-                            transform+=(typeof iPath.rotateZ!=="undefined")?"rotateZ("+iPath.rotateZ+"rad) ":"";
-                            transform+=(typeof iPath.rotateX!=="undefined")?"rotateX("+iPath.rotateX+"rad) ":"";
-                            transform+=(typeof iPath.rotateY!=="undefined")?"rotateY("+iPath.rotateY+"rad) ":"";
-                            break;
-                        case "yzx":
-                            transform+=(typeof iPath.rotateX!=="undefined")?"rotateX("+iPath.rotateX+"rad) ":"";
-                            transform+=(typeof iPath.rotateZ!=="undefined")?"rotateZ("+iPath.rotateZ+"rad) ":"";
-                            transform+=(typeof iPath.rotateY!=="undefined")?"rotateY("+iPath.rotateY+"rad) ":"";
-                            break;
-                        case "zxy":
-                            transform+=(typeof iPath.rotateY!=="undefined")?"rotateY("+iPath.rotateY+"rad) ":"";
-                            transform+=(typeof iPath.rotateX!=="undefined")?"rotateX("+iPath.rotateX+"rad) ":"";
-                            transform+=(typeof iPath.rotateZ!=="undefined")?"rotateZ("+iPath.rotateZ+"rad) ":"";
-                            break;
-                        case "zyx":
-                            transform+=(typeof iPath.rotateX!=="undefined")?"rotateX("+iPath.rotateX+"rad) ":"";
-                            transform+=(typeof iPath.rotateY!=="undefined")?"rotateY("+iPath.rotateY+"rad) ":"";
-                            transform+=(typeof iPath.rotateZ!=="undefined")?"rotateZ("+iPath.rotateZ+"rad) ":"";
-                            break;
-                    }
-                    iStyle.webkitTransform=transform;
-                    if (typeof iPath.transformOriginX==="undefined") {
-                        iPath.transformOriginX="50%";
-                    }
-                    if (typeof iPath.transformOriginY==="undefined") {
-                        iPath.transformOriginY="50%";
-                    }
-                    if (typeof iPath.transformOriginZ==="undefined") {
-                        iPath.transformOriginZ=0;
-                    }
-                    origin=(typeof iPath.transformOriginX==="number")?iPath.transformOriginX+"px ":iPath.transformOriginX+" ";
-                    origin+=(typeof iPath.transformOriginY==="number")?iPath.transformOriginY+"px ":iPath.transformOriginY+" ";
-                    origin+=(typeof iPath.transformOriginZ==="number")?iPath.transformOriginZ+"px":iPath.transformOriginZ;
-                    iStyle.webkitTransformOrigin=origin;
-                    if (typeof iPath.style!=="undefined") {
-                        for (j in iPath.style) {
-                            if ((iPath.style.hasOwnProperty(j))&&(iStyle[j]!==iPath.style[j])) {
-                                iStyle[j]=iPath.style[j];
-                            }
+                        if (iStyle.display !== "none") {
+                            iStyle.display = "none";
                         }
                     }
                 }
-            //}
+            }
         }
     },
 
