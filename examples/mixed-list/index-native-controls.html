@@ -38,11 +38,16 @@
                     }
                 }
             },
+            "substitutionDelegate": {
+                "module": "mixed-list",
+                "name": "SubstitutionDelegate"
+            },
             "substitution": {
                 "module": "montage/ui/substitution.reel",
                 "name": "Substitution",
                 "properties": {
                     "element": {"#": "substitution"},
+                    "delegate": {"@": "substitutionDelegate"},
                     "switchComponents": {
                         "boolean": {"@": "toggle"},
                         "range": {"@": "slider"},
@@ -59,10 +64,14 @@
                 }
             },
             "toggle": {
-                "module": "montage/ui/bluemoon/toggle.reel",
-                "name": "Toggle",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "pressedLabel": "ON",
+                    "unpressedLabel": "OFF"
+                },
                 "bindings": {
-                    "value": {
+                    "pressed": {
                         "boundObject": {"@": "list"},
                         "boundObjectPropertyPath": "objectAtCurrentIteration.value",
                         "oneway": true
@@ -70,8 +79,8 @@
                 }
             },
             "slider": {
-                "module": "montage/ui/bluemoon/slider.reel",
-                "name": "Slider",
+                "module": "montage/ui/range-input.reel",
+                "name": "RangeInput",
                 "properties": {
 
                 },
@@ -84,7 +93,7 @@
                 }
             },
             "checkbox": {
-                "module": "montage/ui/bluemoon/checkbox.reel",
+                "module": "montage/ui/checkbox.reel",
                 "name": "Checkbox",
                 "properties": {
 

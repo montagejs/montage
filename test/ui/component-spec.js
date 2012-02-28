@@ -281,7 +281,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     });
                 });
 
-                it("TODO: should draw a component that was assigned an element not part of the DOM tree when it's added to the DOM tree", function() {
+                it("should draw a component that was assigned an element not part of the DOM tree when it's added to the DOM tree", function() {
                     var component = testPage.test.componentNoelement,
                         element = component.element;
 
