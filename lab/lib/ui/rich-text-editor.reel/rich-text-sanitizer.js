@@ -16,27 +16,27 @@ var Montage = require("montage").Montage;
 exports.Sanitizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-text-sanitizer.js".Sanitizer# */ {
 
     willSetValue: {
-        value: function(value, identifier)  {
-            return this._scopeCSS(value, identifier);
+        value: function(value, uniqueId)  {
+            return this._scopeCSS(value, uniqueId);
         }
     },
 
     didGetValue: {
-        value: function(value, identifier)  {
-            return this._unscopeCSS(value, identifier);
+        value: function(value, uniqueId)  {
+            return this._unscopeCSS(value, uniqueId);
         }
     },
 
     willInsertHTMLData: {
-        value: function(data, identifier)  {
-            return this._scopeCSS(this._removeScript(data), identifier);
+        value: function(data, uniqueId)  {
+            return this._scopeCSS(this._removeScript(data), uniqueId);
         }
     },
 
     _scopeCSS: {
         enumerable: true,
-        value: function(htmlFragment, identifier) {
-            var identifierSelector = ".editor-" + identifier+ " ";
+        value: function(htmlFragment, uniqueId) {
+            var identifierSelector = ".editor-" + uniqueId+ " ";
 
             if (typeof htmlFragment == "string") {
                 // Extract the style tag and its content
@@ -72,7 +72,7 @@ exports.Sanitizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-te
 
     _unscopeCSS: {
         enumerable: true,
-        value: function(htmlFragment, identifier) {
+        value: function(htmlFragment, uniqueId) {
 
             if (typeof htmlFragment == "string") {
                 // Extract the style tag and its content

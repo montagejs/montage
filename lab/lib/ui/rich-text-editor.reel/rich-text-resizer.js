@@ -21,6 +21,12 @@ exports.Resizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-text
         value: null
     },
 
+    initialize: {
+        value: function(editor) {
+            this._editor = editor;
+        }
+    },
+
     _element: {
         value: null
     },
@@ -28,12 +34,6 @@ exports.Resizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-text
     element: {
         get: function() {
             return this._element;
-        }
-    },
-
-    initialize: {
-        value: function(editor) {
-            this._editor = editor;
         }
     },
 

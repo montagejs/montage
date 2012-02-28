@@ -350,6 +350,60 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _foreColor: { value: "" },
 
 
+    /**
+      Description TODO
+     @type {Function}
+    */
+    _updateStates: {
+        enumerable: true,
+        value: function() {
+            var commands = [{property: "bold"},
+                            {property: "underline"},
+                            {property: "italic"},
+                            {property: "strikeThrough"},
+                            {property: "baselineShift", method: this._baselineShiftGetState},
+                            {property: "justify", method: this._justifyGetState},
+                            {property: "listStyle", method: this._listStyleGetState},
+                            {property: "fontName", method: this._fontNameGetState},
+                            {property: "fontSize"},
+                            {property: "backColor"},
+                            {property: "foreColor"}
+                ],
+                nbrCommands = commands.length,
+                command,
+                commandName,
+                propertyName,
+                state,
+                prevState,
+                method,
+                i;
+
+            if (this.element.firstChild == document.activeElement) {
+                for (i = 0; i < nbrCommands; i ++) {
+                    command = commands[i];
+
+                    if (typeof command == "object") {
+                        propertyName = command.property;
+                        commandName = command.name || propertyName.toLowerCase();
+                        method = command.method || this._getState;
+                    } else {
+                        continue;
+                    }
+
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@" + propertyName, this)) {
+                        prevState = this["_" + propertyName];
+                        state = method.call(this, propertyName, commandName);
+                        if (state !== prevState) {
+                            this["_" + propertyName] = state;
+                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue(propertyName , prevState).withPlusValue(state));
+                        }
+                    }
+                }
+
+            }
+        }
+    },
+
     // Component Callbacks
     /**
     Description TODO
@@ -650,7 +704,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             document.execCommand("styleWithCSS", false, true);
 
             // Update the states now that we have focus
-            this.updateStates();
+            this._updateStates();
         }
     },
 
@@ -876,9 +930,9 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 clearTimeout(this._selectionChangeTimer);
             }
             this._selectionChangeTimer = setTimeout(function() {
-                thisRef.updateStates();
+                thisRef._updateStates();
                 thisRef._dispatchEditorEvent("editorSelect");
-            }, 50);
+            }, 100);
         }
     },
 
@@ -1010,6 +1064,9 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                                     document.execCommand("insertimage", false, data);
                                     thisRef._markDirty();
                                 }
+                            } else if (typeof response == "string") {
+                                document.execCommand("inserthtml", false, response);
+                                thisRef._markDirty();
                             }
                         }
                         reader.onprogress = function(e) {
@@ -1254,7 +1311,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             document.execCommand(action, false, value);
 
             // Force an update states right away
-            this.updateStates();
+            this._updateStates();
 
             this.handleSelectionchange();
             this._markDirty();
@@ -1326,7 +1383,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             if (this._updateValuesTimeout) {
                 clearTimeout(this._updateValuesTimeout);
             }
-            this._updateValuesTimeout = setTimeout(updateValues, 200);
+            this._updateValuesTimeout = setTimeout(updateValues, 100);
         }
     },
 

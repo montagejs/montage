@@ -239,60 +239,6 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
       Description TODO
      @type {Function}
     */
-    updateStates: {
-        enumerable: true,
-        value: function() {
-            var commands = [{property: "bold"},
-                            {property: "underline"},
-                            {property: "italic"},
-                            {property: "strikeThrough"},
-                            {property: "baselineShift", method: this._baselineShiftGetState},
-                            {property: "justify", method: this._justifyGetState},
-                            {property: "listStyle", method: this._listStyleGetState},
-                            {property: "fontName", method: this._fontNameGetState},
-                            {property: "fontSize"},
-                            {property: "backColor"},
-                            {property: "foreColor"}
-                ],
-                nbrCommands = commands.length,
-                command,
-                commandName,
-                propertyName,
-                state,
-                prevState,
-                method,
-                i;
-
-            if (this.element.firstChild == document.activeElement) {
-                for (i = 0; i < nbrCommands; i ++) {
-                    command = commands[i];
-
-                    if (typeof command == "object") {
-                        propertyName = command.property;
-                        commandName = command.name || propertyName.toLowerCase();
-                        method = command.method || this._getState;
-                    } else {
-                        continue;
-                    }
-
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@" + propertyName, this)) {
-                        prevState = this["_" + propertyName];
-                        state = method.call(this, propertyName, commandName);
-                        if (state !== prevState) {
-                            this["_" + propertyName] = state;
-                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue(propertyName , prevState).withPlusValue(state));
-                        }
-                    }
-                }
-
-            }
-        }
-    },
-
-    /**
-      Description TODO
-     @type {Function}
-    */
     allowDrop: {
         enumerable: true,
         serializable: true,

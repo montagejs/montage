@@ -14,16 +14,6 @@ var Montage = require("montage").Montage;
     @extends module:montage/core/core.Montage
 */
 exports.ActiveLinkBox = Montage.create(Montage,/** @lends module:"montage/ui/rich-text-activelink-box.js".ActiveLinkBox# */ {
-    _activeLink: {
-        enumerable: false,
-        value: null
-    },
-
-    activeLink: {
-        get: function() {
-            return this._activeLink;
-        }
-    },
 
     _editor: {
         enumerable: false,
@@ -33,6 +23,17 @@ exports.ActiveLinkBox = Montage.create(Montage,/** @lends module:"montage/ui/ric
     initialize: {
         value: function(editor) {
             this._editor = editor;
+        }
+    },
+
+    _activeLink: {
+        enumerable: false,
+        value: null
+    },
+
+    activeLink: {
+        get: function() {
+            return this._activeLink;
         }
     },
 
