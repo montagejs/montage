@@ -26,14 +26,14 @@ exports.ActiveLinkBox = Montage.create(Montage,/** @lends module:"montage/ui/ric
         }
     },
 
-    _activeLink: {
+    _element: {
         enumerable: false,
         value: null
     },
 
-    activeLink: {
+    element: {
         get: function() {
-            return this._activeLink;
+            return this._element;
         }
     },
 
@@ -62,7 +62,7 @@ exports.ActiveLinkBox = Montage.create(Montage,/** @lends module:"montage/ui/ric
                 };
 
 
-            if (this._activeLink != element) {
+            if (this._element != element) {
                 this.hide();
                 if (element) {
 
@@ -122,7 +122,7 @@ exports.ActiveLinkBox = Montage.create(Montage,/** @lends module:"montage/ui/ric
                     popup.innerHTML = '<a href="' + element.href + '" target="_blank">' + element.href + '</a>';
                     editorElement.insertBefore(popup, null);
 
-                    this._activeLink = element;
+                    this._element = element;
                 }
             }
         }
@@ -134,7 +134,7 @@ exports.ActiveLinkBox = Montage.create(Montage,/** @lends module:"montage/ui/ric
                 nbrPopups,
                 popup,
                 i;
-            if (this._activeLink) {
+            if (this._element) {
                 popups = this._editor.element.firstChild.getElementsByClassName("montage-link-popup");
                 nbrPopups = popups.length;
 
@@ -144,7 +144,7 @@ exports.ActiveLinkBox = Montage.create(Montage,/** @lends module:"montage/ui/ric
                     popup.parentNode.removeChild(popup);
                 }
 
-                this._activeLink = null;
+                this._element = null;
             }
         }
     },

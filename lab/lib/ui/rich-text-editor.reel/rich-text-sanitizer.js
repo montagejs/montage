@@ -27,7 +27,7 @@ exports.Sanitizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-te
         }
     },
 
-    willInsertHTMLData: {
+    willInsertHtmlData: {
         value: function(data, uniqueId)  {
             return this._scopeCSS(this._removeScript(data), uniqueId);
         }

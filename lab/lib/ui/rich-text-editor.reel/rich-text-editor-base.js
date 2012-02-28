@@ -527,7 +527,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             }
 
             if (this._activeLinkBox) {
-                if (this._needsActiveLinkOn !== false && this._needsActiveLinkOn != this._activeLinkBox.activeLink)
+                if (this._needsActiveLinkOn !== false && this._needsActiveLinkOn != this._activeLinkBox.element)
                 {
                     this._activeLinkBox.show(this._needsActiveLinkOn);
                     this._needsActiveLinkOn = false;
@@ -756,7 +756,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this.handleSelectionchange();
             }
 
-            if (this._activeLinkBox && this._activeLinkBox.activeLink) {
+            if (this._activeLinkBox && this._activeLinkBox.element) {
                 this._activeLinkBox.hide();
             }
 
@@ -775,7 +775,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this.handleSelectionchange();
             }
 
-            if (this._activeLinkBox && this._activeLinkBox.activeLink) {
+            if (this._activeLinkBox && this._activeLinkBox.element) {
                 this._activeLinkBox.hide();
             }
 
@@ -985,7 +985,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             event.stopPropagation();
 
             // Remove the link popup
-            if (this._activeLinkBox && this._needsActiveLinkOn === false && this._activeLinkBox.activeLink) {
+            if (this._activeLinkBox && this._needsActiveLinkOn === false && this._activeLinkBox.element) {
                 this._needsActiveLinkOn = null;
                 this.needsDraw = true;
             }
@@ -1079,8 +1079,9 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         if (delegateMethod) {
                             response = delegateMethod.call(this.delegate, this, file);
                         }
-                        if (response === true) {
-                            // TODO: for now, we do nothing, up to the consumer to deal with that case
+                        if (typeof response == "string") {
+                            document.execCommand("inserthtml", false, response);
+                            thisRef._markDirty();
                         }
                     }
                 }
@@ -1089,7 +1090,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 if (data) {
                     // Sanitize Fragment (CSS & JS)
                     if (this._sanitizer) {
-                        data = this._sanitizer.willInsertHTMLData(data, this._uniqueId);
+                        data = this._sanitizer.willInsertHtmlData(data, this._uniqueId);
                     }
                 } else {
                     data = event.dataTransfer.getData("text/plain") || event.dataTransfer.getData("text");
@@ -1152,7 +1153,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             if (data && isHTML) {
                 // Sanitize Fragment (CSS & JS)
                 if (this._sanitizer) {
-                    data = this._sanitizer.willInsertHTMLData(data, this._uniqueId);
+                    data = this._sanitizer.willInsertHtmlData(data, this._uniqueId);
                 }
             } else {
                 data = clipboardData.getData("text/plain") ||  clipboardData.getData("text");
