@@ -43,8 +43,8 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
         set: function(val) {
             if(val !== this._value) {
                 this._value = val;
-                if(this._value > this._maximumValue) {
-                    this._value = this._maximumValue;
+                if(this._value > this._max) {
+                    this._value = this._max;
                 }
                 if(this._value < 0) {
                     this._value = 0;
@@ -57,7 +57,7 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
   Description TODO
   @private
 */
-    _maximumValue: {
+    _max: {
         enumerable: false,
         value: 100
     },
@@ -66,15 +66,15 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
         @type {Function}
         @default {Number} 100
     */
-    maximumValue: {
+    max: {
         get: function() {
-            return this._maximumValue;
+            return this._max;
         },
         set: function(val) {
-            if(val !== this._maximumValue) {
-                this._maximumValue = val;
-                if(this._maximumValue <= 0) {
-                    this._maximumValue = 1; // Prevent divide by zero errors
+            if(val !== this._max) {
+                this._max = val;
+                if(this._max <= 0) {
+                    this._max = 1; // Prevent divide by zero errors
                 }
                 this.needsDraw = true;
             }
@@ -120,7 +120,7 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
     draw: {
         enumerable: false,
         value: function() {
-            var ratio = this._value / this._maximumValue;
+            var ratio = this._value / this._max;
             // constrain to interval [0, 1]
             ratio = Math.min(Math.max(ratio, 0), 1);
             // map into [0, 100]

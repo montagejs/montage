@@ -9,7 +9,7 @@ var Montage = require("montage").Montage,
 
 var Checkbox = exports.Checkbox = Montage.create(CheckInput, {});
 Checkbox.addAttributes({
-    autofocus: 'off', // on/off
+    autofocus: {value: false, dataType: 'boolean'},
     disabled: {value: false, dataType: 'boolean'},
     checked: {value: false, dataType: 'boolean'},
     form: null,
