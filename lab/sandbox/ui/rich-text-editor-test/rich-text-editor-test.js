@@ -270,6 +270,13 @@ editor = this.editor;
                 true: the richtext field will handle the drop itself
                 false or null: the drop is canceled
              */
+
+            console.log("DROP FILE:", file)
+            if (!data) {
+                data = '<html><body><div style="padding: 4px; border: 1px solid gray;">' + file.name + ' (FileReader not supported)</div></body></html>';
+                console.log("DATA:", data)
+                return data;
+            }
             return true;
         }
     },
