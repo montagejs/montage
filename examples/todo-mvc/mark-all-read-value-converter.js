@@ -16,9 +16,9 @@ exports.MarkAllReadValueConverter = Montage.create(Converter, {
             }
 
             if (0 === unfinishedTasks.length) {
-                return "Mark all incomplete";
+                return "Mark all as incomplete";
             } else {
-                return "Mark all complete";
+                return "Mark all as complete";
             }
         }
     }
