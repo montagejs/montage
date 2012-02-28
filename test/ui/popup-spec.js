@@ -23,7 +23,7 @@ var testPage = TestPageLoader.queueTest("popuptest", {newWindow: true}, function
                     testPage.testWindow.resizeTo(800, 600);
                     test.showPopup();
 
-                    testPage.waitForDraw(2);
+                    testPage.waitForDraw();
                     runs(function() {
                         var popupPosition = EventInfo.positionOfElement(test.testPopup.popup.element);
                         expect(popupPosition.y).toBe(10);
