@@ -6,11 +6,31 @@ var util = require("util"),
     Q = require("./q.js");
 
 var SCREENING_HOST = "127.0.0.1",
-    SCREENING_PORT = "8082",
+    SCREENING_PORT = "8081",
     API_URL = "/screening/api/v1",
     API_KEY = 5150;
 
-var DEBUG = true;
+var TEST_URL = "127.0.0.1:80/montage/test/run.html";
+
+var DEBUG = false;
+
+var opts = process.argv.slice();
+// remove "node" and filename
+opts.shift();
+opts.shift();
+if (opts.length > 0) {
+    if (opts[0] === "--help") {
+        console.log("Usage: " + process.argv.slice(0, 2).join(" ") + " [--debug] [host [port [test_url]]]");
+        return;
+    }
+    if (opts[0] === "--debug") {
+        DEBUG = true;
+        opts.shift();
+    }
+    SCREENING_HOST = opts.shift() || SCREENING_HOST;
+    SCREENING_PORT = opts.shift() || SCREENING_PORT;
+    TEST_URL = opts.shift() || TEST_URL;
+}
 
 // setup
 var screening_request = function(path, method, body) {
@@ -61,15 +81,16 @@ var screening_request = function(path, method, body) {
 };
 
 // store script here or in a file
-var script = fs.readFileSync("jasmine-tests.screening.js", "utf8");
+var script = fs.readFileSync("jasmine-tests.screening.js", "utf8").replace("%TEST_URL%", TEST_URL);
 
 // find the agent
 screening_request("agents").then(function(data) {
     return data[0];
 }).then(function(agent) {
     // run the script on screening
+    console.log("Running " + TEST_URL + " on " + SCREENING_HOST + ":" + SCREENING_PORT + " on " + agent.id);
     return screening_request(
-        ["agents", agent.id, "execute_serialized_code"].join("/"),
+        ["agents", encodeURI(agent.id), "execute_serialized_code"].join("/"),
         "POST",
         JSON.stringify({code: script, name: "jasmine-tests.screening.js"})
     );
@@ -78,7 +99,9 @@ screening_request("agents").then(function(data) {
     var done = Q.defer();
     var poll = setInterval(function() {
         screening_request("test_results/" + data.testId).then(function(data) {
+            process.stdout.write(".");
             if (data.status !== "RUNNING") {
+                console.log();
                 clearInterval(poll);
                 done.resolve(data);
             }

@@ -1,6 +1,6 @@
 var agent = new Agent();
 
-agent.gotoUrl("http://localhost:8081/montage/test/run.html");
+agent.gotoUrl("%TEST_URL%");
 
 var previousUpdate = 0;
 
