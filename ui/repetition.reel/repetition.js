@@ -433,6 +433,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     }},
 
+    // we don't want to reinitialize the ownerComponent again
+    templateDidDeserializeObject: {
+        value: null
+    },
+
     _setupIterationTemplate: {
         value: function() {
             var element = this._element,

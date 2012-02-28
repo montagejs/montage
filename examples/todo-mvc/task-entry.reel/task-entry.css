@@ -4,27 +4,25 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
+.taskEntry {
+	padding: 15px 20px 15px 0;
+	position: relative;
+	font-size: 24px;
+	border-bottom: 1px solid #cccccc;
+}
 
-.taskEntry .completionField .labelText
-{
+.taskEntry .completionField .labelText {
     display: none;
 }
 
-.taskEntry.completed
-{
-    opacity: 0.4;
-    text-decoration: line-through;
-}
-
-.taskEntry .completionField {
-    display: -webkit-box;
-    -webkit-box-align: center;
-}
-
-.taskEntry .completionField .Checkbox {
-    display: block;
+.taskEntry .completionField .completedCheckbox {
+    vertical-align: middle;
 }
 .taskEntry .completionField .text {
-    font-size: 18px;
     margin-left: 5px;
+}
+
+.taskEntry.completed .completionField .text {
+    opacity: 0.4;
+    text-decoration: line-through;
 }
