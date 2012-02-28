@@ -4,7 +4,26 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    SelectInput = require("montage/ui/select-input.reel").SelectInput;
+    SelectInput = require("montage/ui/select-input.reel").SelectInput,
+    Converter = require("montage/core/converter/converter").Converter;
+
+
+
+exports.JustifyConverter = Montage.create(Converter, {
+    justify: {value: null},
+
+    convert: {
+        value: function(value) {
+            return (value === this.justify);
+        }
+    },
+
+    revert: {
+        value: function(value) {
+            return (value === true ? this.justify : "");
+        }
+    }
+});
 
 var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
 
@@ -17,6 +36,10 @@ var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
     },
 
     country: {
+        value: null
+    },
+
+    justifySelect: {
         value: null
     },
 
@@ -87,4 +110,23 @@ var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
             }
         }
     },
+
+    _justify: {value: null},
+       justify: {
+           get: function() {
+               return this._justify;
+           },
+           set: function(value) {
+               this._justify = value;
+               this.needsDraw = true;
+               console.log('JUSTIFY - ', value);
+           }
+       },
+
+       prepareForDraw: {
+           value: function() {
+               this.justify = "center";
+
+           }
+       }
 });

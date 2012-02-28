@@ -117,6 +117,43 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
                 });
 
 
+                describe("#208: Ability to bind to SelectInput.value", function() {
+                    it("Value should be set to the bound value initially", function() {
+                        var justifySelect = test.justifySelect;
+                        test.justify = 'center';
+
+                        testPage.waitForDraw();
+
+                        runs(function(){
+                            expect(justifySelect.value).toBe("center");
+                        });
+
+                    });
+
+
+                    it("Verify Select.value changes when bound value changes", function() {
+                        var justifySelect = test.justifySelect;
+                        test.justify = 'right';
+                        expect(justifySelect.value).toBe("right");
+
+                    });
+
+
+                    it("Verify bound value (justify) to change when Selection changes", function() {
+                        var justifySelect = test.justifySelect;
+
+                        changeSelection(justifySelect.element, 1);
+                        expect(justifySelect.value).toBe("left");
+
+                        changeSelection(justifySelect.element, 2);
+                        expect(justifySelect.value).toBe("center");
+                        expect(test.justify).toBe("center");
+
+                    });
+
+
+                });
+
                 // test set/get of standard and global attributes
                 describe("when setting standard attributes", function() {
 
