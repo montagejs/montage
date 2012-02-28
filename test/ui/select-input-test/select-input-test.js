@@ -126,7 +126,7 @@ var SelectInputTest = exports.SelectInputTest = Montage.create(Montage, {
        prepareForDraw: {
            value: function() {
                this.justify = "center";
-
+               this.dept.values = ['HRD', 'SWE'];
            }
        }
 });

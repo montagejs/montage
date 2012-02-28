@@ -154,6 +154,47 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
                 });
 
+                describe("#208: Ability to bind to SelectInput.values", function() {
+                    it("Value should be set to the bound value initially", function() {
+                        var dept = test.dept;
+                        dept.values = ['SWE', 'IT'];
+
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(dept.values.length).toBe(2);
+                            expect(dept.contentController.selectedIndexes[1]).toBe(5);
+                        });
+
+                    });
+
+
+                    it("Verify Select.values changes when bound value changes", function() {
+                        var dept = test.dept;
+                        dept.contentController.selectedIndexes = [2, 4, 5];
+                        testPage.waitForDraw();
+
+                        runs(function(){
+                            expect(dept.values[2]).toBe('IT');
+                        });
+
+
+                    });
+
+
+                    it("Verify bound value (justify) to change when Selection changes", function() {
+                        var dept = test.dept;
+
+                        changeSelection(dept.element, 1);
+                        expect(dept.values[0]).toBe("HRD");
+
+                        changeSelection(dept.element, 2);
+                        expect(dept.values[0]).toBe("SWE");
+
+                    });
+
+
+                });
+
                 // test set/get of standard and global attributes
                 describe("when setting standard attributes", function() {
 

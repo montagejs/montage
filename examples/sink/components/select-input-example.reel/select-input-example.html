@@ -13,8 +13,138 @@
                     "module": "components/select-input-example.reel",
                     "name": "InputTextExample",
                     "properties": {
-                        "element": {"#": "select-input-example"}
-                    }                    
+                        "element": {"#": "select-input-example"},
+                        "statesController": {"@": "statesController"},
+                        "dept": {"@": "dept"}
+                    },
+                    "bindings": {
+                        "selectedCountry": {
+                            "boundObject": {"@": "country"},
+                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
+                            "oneway": true
+                        },
+                        "selectedState": {
+                            "boundObject": {"@": "state"},
+                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
+                            "oneway": true
+                        },
+                        "selectedDepts": {
+                            "boundObject": {"@": "dept"},
+                            "boundObjectPropertyPath": "contentController.selectedObjects"
+                        }
+                    }                   
+                },
+                "fname": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "fname"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "firstName",
+                            "oneway": false
+                        },
+                        "title": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "firstName",
+                            "oneway": false
+                        }
+                    }
+                },
+
+                "lname": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "lname"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "lastName",
+                            "oneway": false
+                        }
+                    }
+                },
+
+                "dept": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "dept"},
+                        "textPropertyPath": "name",
+                        "valuePropertyPath": "code"
+                    },
+                    "bindings": {
+                        "content": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "departments",
+                            "oneway": true
+                        }
+                    }
+                },
+
+
+                "statesController": {
+                    "name": "ArrayController",
+                    "module": "montage/ui/controller/array-controller",
+                    "properties": {
+                        "selectObjectsOnAddition": true,
+                        "automaticallyOrganizeObjects": true,
+                        "content": []
+                    }
+                },
+
+                "state": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "state"},
+                        "contentController": {"@": "statesController"},
+                        "textPropertyPath": "name",
+                        "valuePropertyPath": "code"
+                    }
+                },
+
+                "country": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "country"}
+                    }
+                },
+
+
+                "update": {
+                    "module": "montage/ui/button.reel",
+                    "name": "Button",
+                    "properties": {
+                        "element": {"#": "update"},
+                        "identifier": "update"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
+                },
+
+                "echo": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "echo"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "json",
+                            "oneway": "true"
+                        }
+                    }
                 },
                 "justify-comparator-left": {
                     "module": "components/select-input-example.reel",
@@ -142,10 +272,52 @@
             </div>
 
             <h4>Demo</h4>
+            <div class="demo">
+                <p>
+                 An example using SelectInput component in a Form. Make changes to the form by selecting a different Country for instance and click the 'Update' button to see the result.
+                 </p>
+
+                 <form class="form-stacked">
+                     <label for="fname">First Name</label>
+                     <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
+                     <label for="lname">Last Name</label>
+                     <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
+
+                     <label for="dept">Department</label>
+                      <select id="dept" required="true" multiple="true" size="3">
+                          <option>Please select a Department</option>
+                      </select>
+
+                     <label for="country">Country</label>
+                     <select id="country" required>
+                         <option value="">Please select a Country</option>
+                         <option value="USA" selected="true">United States of America</option>
+                         <option value="INR" >India</option>
+                         <option value="FR">France</option>
+                         <option value="GER">Germany</option>
+                     </select>
+
+                     <label for="state">State</label>
+                     <select id="state" required="true">
+                         <option>Please select a country...</option>
+                     </select>
+
+                     <div style="margin-top: 10px;">
+                         <button class="btn" id="update">Update</button>
+                    </div>
+                 </form>
+
+                 <pre id="echo"></pre>
+            </div>
 
             
             <section>
                 <div class="demo">
+                    
+                    <p>
+                             This example demonstrates two-way binding to the 'value' property of SelectInput. Changing the toggle buttons change the SelectInput's value and changing the SelectInput's selection changes the ToggleButton selection.
+                    </p>
+                             
                     <div style="height: 40px;">
                         <button id="justify-none" class="btn justify">-</button>
                         <button id="justify-left" class="btn justify">L</button>

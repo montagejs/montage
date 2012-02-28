@@ -165,8 +165,6 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         },
         set: function(value) {
             this._value = value;
-            console.log('value set = ', value);
-            console.log('flag:', this._synching);
 
             if(!this._synching) {
                 if(value == null) {
@@ -318,7 +316,6 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
     didDraw: {
         value: function() {
-            console.log('synch values after draw');
             this._synchValues();
         }
     },

@@ -102,15 +102,6 @@ exports.SelectInputExample = Montage.create(Component, {
         },
         set: function(value) {
             this._justify = value;
-            console.log('JUSTIFY - ', value);
-            /*
-            this.leftJustified = this.rightJustified = this.centerJustified = false;
-            switch(this._justify) {
-                case 'left': this.leftJustified = true; break;
-                case 'center': this.centerJustified = true; break;
-                case 'right': this.rightJustified = true; break;                
-            }
-            */
         }
     },
     
@@ -122,11 +113,7 @@ exports.SelectInputExample = Montage.create(Component, {
             this.firstName = "John";
             this.lastName = "FooBar";
 
-            //this.dept.contentController.selectedIndexes = [2, 4, 5];
-            // The following code does not trigger the selection. The selection is
-            // managed by the contentController
-            //this.selectedDept = this.departments[3];
-            
+            this.dept.contentController.selectedIndexes = [2, 4, 5];            
             this.justify = "center";
 
         }
