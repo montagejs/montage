@@ -26,7 +26,9 @@
             "componentE11": {"@": "componentE11"},
             "componentStyle": {"@": "componentStyle"},
             "componentWithoutIdentifier": {"@": "componentWithoutIdentifier"},
-            "componentWithIdentifier": {"@": "componentWithIdentifier"}
+            "componentWithIdentifier": {"@": "componentWithIdentifier"},
+            "componentOwner": {"@": "componentOwner"},
+            "componentLayout": {"@": "componentLayout"}
         }
     },
     "repetition": {
@@ -120,6 +122,36 @@
             "identifier": "anIdentifier"
         }
     },
+    "componentOwner": {
+        "prototype": "ui/draw/component-owner.reel",
+        "properties": {
+            "element": {"#": "component-owner"}
+        }
+    },
+    "componentLayout": {
+        "prototype": "ui/draw/component-layout.reel",
+        "properties": {
+            "element": {"#": "component-layout"},
+            "left": {"#": "component-layout-left"},
+            "right": {"#": "component-layout-right"},
+            "leftComponent": {"@": "componentLayoutLeft"},
+            "rightComponent": {"@": "componentLayoutRight"}
+        }
+    },
+    "componentLayoutLeft": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "component-layout-left"},
+            "hasTemplate": false
+        }
+    },
+    "componentLayoutRight": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "component-layout-right"},
+            "hasTemplate": false
+        }
+    },
     "owner": {
         "module": "montage/ui/application",
         "name": "Application",
@@ -156,5 +188,9 @@
     </div>
 </div>
 <div style="margin: 2px" id="component-style"></div>
+<div id="component-owner"></div>
+<div id="component-layout"></div>
+<div id="component-layout-left">Left</div>
+<div id="component-layout-right">Right</div>
 </body>
 </html>

@@ -324,6 +324,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     _invokeTemplateDidLoadWithOwner: {
         value: function(deserializer, owner) {
             var objects = deserializer.getObjectsFromLastDeserialization(),
+                hasTemplateDidDeserializeObject = owner && typeof owner.templateDidDeserializeObject === "function",
                 i,
                 object;
 
@@ -334,6 +335,9 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                     }
                     if (typeof object.deserializedFromTemplate === "function") {
                         object.deserializedFromTemplate(owner);
+                    }
+                    if (hasTemplateDidDeserializeObject) {
+                        owner.templateDidDeserializeObject(object);
                     }
                 }
             }
