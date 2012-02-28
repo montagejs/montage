@@ -109,7 +109,7 @@ var Slot = exports.Slot = Montage.create(Component, /** @lends module:"montage/u
                     if (this.delegate && typeof this.delegate.slotElementForComponent === "function") {
                         nodeToAppend = this.delegate.slotElementForComponent(this, this._contentToAppend, nodeToAppend);
                     }
-                    this._contentToAppend.setElementWithParent(nodeToAppend, this);
+                    this._contentToAppend.setElementWithParentComponent(nodeToAppend, this);
                 }
 
                 // The child component will need to draw; this may trigger a draw for the slot itself

@@ -341,7 +341,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
             // based on its template
             this._mainComponent = exports[this.mainName].create();
             this.childComponents.push(this._mainComponent);
-            this._mainComponent.setElementWithParent(document.createElement("div"), this);
+            this._mainComponent.setElementWithParentComponent(document.createElement("div"), this);
             this._mainComponent.needsDraw = true;
         }
     },

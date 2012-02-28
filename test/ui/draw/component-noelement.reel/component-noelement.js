@@ -7,7 +7,7 @@ exports.ComponentNoelement = Montage.create(Component, {
     deserializedFromSerialization: {
         value: function() {
             var element = document.createElement("div");
-            this.setElementWithParent(element, this.parentOfNoElement);
+            this.setElementWithParentComponent(element, this.parentOfNoElement);
             this.needsDraw = true;
         }
     },
