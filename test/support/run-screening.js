@@ -126,16 +126,18 @@ screening_request("agents").then(function(data) {
     var asserts = data.asserts;
     for (var i = 0, len = asserts.length; i < len; i++) {
         var assert = asserts[i];
+        var short_message = "unknown";
+        if (assert.message !== null) {
+            short_message = assert.message.split("\n", 1)[0];
+        }
+
         if (assert.success) {
-            output += '  <testcase classname="run.html" name="' + escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue) + ')" />\n';
+            output += '  <testcase classname="run.html" name="' + escapeBadXmlChars(short_message) + '" />\n';
         } else {
-            var short_message = "fail";
-            if (assert.message !== null) {
-                short_message = assert.message.split("\n", 1)[0];
-            }
+
             // TODO escape string
-            output += '  <testcase classname="run.html" name="'+ escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">\n';
-            output += '    <failure type="'+ escapeBadXmlChars(short_message) +'">'+ escapeBadXmlChars(assert.message) +'</failure>\n';
+            output += '  <testcase classname="run.html" name="' + escapeBadXmlChars(short_message) + '">\n';
+            output += '    <failure type="' + escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">'+ escapeBadXmlChars(assert.message) +'</failure>\n';
             output += '  </testcase>\n';
         }
     }
