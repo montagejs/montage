@@ -1,0 +1,96 @@
+/* Montage Skeleton */
+
+button {
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 3px;
+}
+
+.buttonGroup button {
+    margin: 0;
+    border-radius: 0;
+    margin-left: -1px;
+}
+.buttonGroup button:first-child {
+    border-radius: 3px 0 0 3px;
+}
+.buttonGroup button:last-child {
+    border-radius: 0 3px 3px 0;
+}
+
+
+input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 3px;
+}
+
+input[type="radio"] {
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+}
+
+select {
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 3px;
+}
+
+input[type="text"] {
+    width: 150px;
+    height: 30px;
+    padding: 6px;
+    background-color: hsl(0,0%,100%);
+}
+
+input[type="search"] {
+    width: 120px;
+    height: 30px;
+    background-color: hsl(0,0%,100%);
+    border-radius: 3px 0 0 3px;
+}
+input[type="search"] + button {
+    margin: 0;
+    border-left: none;
+    border-radius: 0 3px 3px 0;
+}
+
+textarea {
+    width: 150px;
+    min-width: 150px;
+    height: 60px;
+    min-height: 60px;
+    padding: 5px;
+    resize: both;
+    background-color: hsl(0,0%,100%);
+}
+
+input[type="range"] {
+    width: 150px;
+    height: 20px;
+    border-radius: 10px;
+}
+
+progress {
+    width: 150px;
+    height: 20px;
+    border-radius: 10px;
+}
+
+meter {
+    width: 150px;
+    height: 20px;
+    border-radius: 10px;
+}
+
+menu {
+    padding: 0;
+    background-color: hsl(0,0%,85%);
+}
+menu > button {
+    margin: 0;
+    border-radius: 0;
+    border-top: none;
+    border-bottom: none;
+}
