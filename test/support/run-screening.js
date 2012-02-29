@@ -80,6 +80,11 @@ var screening_request = function(path, method, body) {
     return deferred.promise;
 };
 
+var escapeBadXmlChars = function(string) {
+    console.log("escape", string);
+    return string.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+};
+
 // store script here or in a file
 var script = fs.readFileSync("jasmine-tests.screening.js", "utf8").replace("%TEST_URL%", TEST_URL);
 
@@ -115,21 +120,23 @@ screening_request("agents").then(function(data) {
     var output = "";
 
     // building xml by concatenating strings, woo!
+    // but seriously, this is a really bad idea, but I don't want to include a
+    // full library just for this.
     output += '<testsuite>\n';
 
     var asserts = data.asserts;
     for (var i = 0, len = asserts.length; i < len; i++) {
         var assert = asserts[i];
         if (assert.success) {
-            output += '  <testcase name="'+assert.assertType+'('+assert.expectedValue+', '+assert.actualValue+')" />\n';
+            output += '  <testcase name="' + escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue) + ')" />\n';
         } else {
             var short_message = "fail";
             if (assert.message !== null) {
-                short_message = assert.message.split("\n", 1);
+                short_message = assert.message.split("\n", 1)[0];
             }
             // TODO escape string
-            output += '  <testcase name="'+assert.assertType+'('+assert.expectedValue+', '+assert.actualValue+')">\n';
-            output += '    <failure type="'+short_message+'">'+assert.message+'</failure>\n';
+            output += '  <testcase name="'+ escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">\n';
+            output += '    <failure type="'+ escapeBadXmlChars(short_message) +'">'+ escapeBadXmlChars(assert.message) +'</failure>\n';
             output += '  </testcase>\n';
         }
     }
