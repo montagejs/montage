@@ -6,6 +6,41 @@
     <script type="text/montage-serialization">
 {
 
+    "link1" : {
+        "name": "Anchor",
+        "module": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "link1"}
+        },
+        "bindings": {
+            "textContent": {
+                "boundObject": {"@": "linkTextInput"},
+                "boundObjectPropertyPath": "value",
+                "deferred": false
+            },
+            "href": {
+                "boundObject": {"@": "urlTextInput"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+
+    "linkTextInput": {
+        "prototype": "montage/ui/textfield.reel",
+        "properties": {
+            "element": {"#": "linkText"},
+            "value": "Motorola"
+        }
+    },
+
+    "urlTextInput": {
+        "prototype": "montage/ui/textfield.reel",
+        "properties": {
+            "element": {"#": "linkURL"},
+            "value": "http://www.motorola.com"
+        }
+    },
+
     "data": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
@@ -120,7 +155,31 @@
                     <div class="span12">
 
                         <h4>Demo</h4>
+
                             <div class="demo">
+                                    <p>
+                                        A very simple link editor, the <code>textContent</code> and <code>href</code> properties of the Anchor comopnent below are bound to the values of the two input text fields.
+
+                                    <div>
+                                        <p><a href="http://www.motorola.com" id="link1" target="_blank">Motorola</a></p>
+
+                                        Link text:
+                                        <input id="linkText" autofocus type="text" name="" value="">
+                                        URL:
+                                        <input id="linkURL" type="text" name="" value="" placeholder="http://...">
+
+                                     </div>
+                                 </p>
+
+                                 <div class=>
+
+                                 </div><!-- / -->
+
+                            </div>
+
+                            <div class="demo">
+
+
                                 <p>
                                      Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
                                  </p>

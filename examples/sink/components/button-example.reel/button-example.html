@@ -37,6 +37,21 @@
         ]
     },
 
+    "settingsButton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "settings"},
+            "identifier": "settings"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
     "copy": {
         "module": "montage/ui/button.reel",
         "name": "Button",
@@ -124,7 +139,7 @@
 
 
                 <div class="sourceview" id="source">
-                    <ul class="sourcelinks">
+                    <ul class="">
                     <li><a href="#" onclick="toggle_visibility('.demo1 #html', event);">HTML markup</a>
                     <div class="sourceitem" id="html">
 
@@ -150,6 +165,13 @@
             }
         ]
     },
+    "logger": {
+        "module": "logger.reel",
+        "name": "Logger",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    },
     "owner": {
         "module": "components/button-example.reel",
         "name": "ButtonExample",
@@ -157,7 +179,8 @@
             "element": {"#": "buttontest"},
             "logger": {"@": "logger"}
         }
-    }
+    },
+
 }
 </pre>
                     </div>
@@ -176,6 +199,12 @@ exports.ButtonExample = Montage.create(Component, {
         }
     },
 
+    log: {
+        value: function(msg) {
+            this.logger.log(msg);
+        }
+    },
+
 });
                         </pre>
                     </div>
@@ -189,7 +218,7 @@ exports.ButtonExample = Montage.create(Component, {
 
             <input type="submit" class="btn submit" id="button2" value="Submit"/>
 
-            <p>Submit Button without a specific handler. In this case, the <code>handleAction()</code> method defined in <strong>button-example.html</strong> will be called on when the <code>"action"</code> event is dispatched.</p>&mdash;
+            <p>Submit Button without a specific handler. In this case, the <code>handleAction()</code> method defined in <strong>button-example.html</strong> will be called on when the <code>"action"</code> event is dispatched.</p>
                 <div class="sourceview" id="source">
                     <ul>
                     <li><a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML markup</a>
@@ -228,11 +257,24 @@ exports.ButtonExample = Montage.create(Component, {
                     <li><a href="#" onclick="toggle_visibility('.demo2 #javascript', event);">JavaScript</a>
                     <div class="sourceitem" id="javascript">
                         <pre class="prettyprint" >
-    handleButton3Action: {
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.ButtonExample = Montage.create(Component, {
+
+    handleAction: {
         value: function() {
-            this.log("Cancel Button clicked");
+            this.log("Fallback action handler invoked as there is no specific handler for this button");
         }
-    }                        </pre>
+    }
+
+    log: {
+        value: function(msg) {
+            this.logger.log(msg);
+        }
+    },
+
+});                    </pre>
                     </div>
                 </li>
                 </ul>
@@ -317,19 +359,60 @@ exports.ButtonExample = Montage.create(Component, {
 
             <h4>Image</h4>
 
-            <p>To add an image to a Button use CSS, either by
-            setting a background image, or by using the <code>:before</code> and
+            <p>To add an image icon to a Button use CSS, either by
+            setting a background image, or with the <code>:before</code> and
             <code>:after</code> pseudo elements with the <code>content</code>
             property:</p>
 
-            <button class="btn settings" id="image">Settings</button>
+            <button class="btn settings" id="settings">Settings</button>
 
-            <pre class="prettyprint" style="margin-top: 5px;">
-// HTML
-&lt;button class="btn settings" id="image"&gt;Settings&lt;/button&gt;</pre>
+            <div class="demo demo4">
+                <ul>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.demo4 #html', event);">HTML</a>
+                        <div class="sourceitem" id="html">
+                <pre class="prettyprint">
+&lt;button class="btn settings" id="settings"&gt;Settings&lt;/button&gt;
+</pre>
+                        </div><!-- / -->
+                    </li>
 
-<pre class="prettyprint">
-// CSS
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.demo4 #serialization', event);">Serialization</a>
+                        <div class="sourceitem" id="serialization">
+                <pre class="prettyprint">
+{
+    "settingsButton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "settings"},
+            "identifier": "settings"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "owner": {
+        "module": "components/button-example.reel",
+        "name": "ButtonExample",
+        "properties": {
+            "element": {"#": "buttontest"},
+            "logger": {"@": "logger"}
+        }
+    }
+}
+</pre>
+                        </div><!-- / -->
+                    </li>
+
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.demo4 #css', event);">CSS</a>
+                        <div class="sourceitem" id="css">
+                <pre class="prettyprint">
 .settings:before {
     content: url(images/settings.png);
     vertical-align: middle;
@@ -337,11 +420,13 @@ exports.ButtonExample = Montage.create(Component, {
     padding-right: 0.5em;
 }
 </pre>
+                        </div><!-- / -->
+                    </li>
 
-        </div>
+            </div>
 
 
-<!--
+<!-- Commenting out until API reference has these items documented. then will link to those pages. - Tim
         <section>
             <h4>Component Properties</h4>
             <table>
@@ -418,9 +503,8 @@ handleButton1Action: {
         <section>
 
 
-            <div class="logger">
-                <h2>Logger</h2>
-            </div>
+        <div id="logger"></div>
+
         </section>
     </div>
 </body>

@@ -1,4 +1,4 @@
-.main-content h4,
+  .main-content h4,
 .main-content h5,
 .main-content h6 {
     line-height: 36px;
@@ -119,12 +119,19 @@ footer {
   overflow: auto;
 }
 
+.sourceitem .prettyprint pre {
+  white-space: ;
+  word-wrap: ;
+  overflow: auto;
+}
+
 .sourceitem {
   display:none;
 }
 
 .sourcelinks {
-  list-style-image: url('/images/arrow-icon.gif');
+  list-style-image: url('../images/arrow-icon.gif');
+  list-style-position:inside;
 }
 
 /* borrowed from Bootstrap v2 */
