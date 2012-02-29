@@ -135,11 +135,13 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                     }
 
                     this.contentController = contentController;
-
-                    if(selectedIndexes.length > 0) {
-                        this._fromInput = true;
-                        this.contentController.selectedIndexes = selectedIndexes;
+                    if(selectedIndexes.length === 0 && len > 0) {
+                        // nothing was marked as selected by default. Select the first one (gh-122)
+                        selectedIndexes = [0];
                     }
+                    this._fromInput = true;
+                    this.contentController.selectedIndexes = selectedIndexes;
+                    
                 }
             }
 

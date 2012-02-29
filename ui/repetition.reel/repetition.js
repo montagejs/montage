@@ -15,7 +15,8 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     Template = require("ui/template").Template,
     logger = require("core/logger").logger("repetition"),
-    Gate = require("core/gate").Gate;
+    Gate = require("core/gate").Gate,
+    ChangeTypeModification = require("core/event/mutable-event").ChangeTypes.MODIFICATION;
 /**
  @class module:"montage/ui/repetition.reel".Repetition
  @extends module:montage/ui/component.Component
@@ -25,6 +26,25 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
      Description TODO
      */
     hasTemplate: {value: false},
+
+    didCreate: {
+        value: function() {
+            this.addEventListener("change@objects", this._onObjectsChange, false);
+        }
+    },
+
+    _onObjectsChange: {
+        enumerable: false,
+        value: function(event) {
+            if(event._event.propertyChange !== ChangeTypeModification) {
+                this.selectedIndexes = null;
+
+                if (this._isComponentExpanded) {
+                    this._refreshItems();
+                }
+            }
+        }
+    },
 
 /**
     @private
@@ -174,13 +194,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 this._refreshItems();
             }
 
-        },
-        modify: function(modificationType, newValue, oldValue) {
-            this.selectedIndexes = null;
-
-            if (this._isComponentExpanded) {
-                this._refreshItems();
-            }
         }
     },
 /**
@@ -432,6 +445,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             callback();
         }
     }},
+
+    // we don't want to reinitialize the ownerComponent again
+    templateDidDeserializeObject: {
+        value: null
+    },
 
     _setupIterationTemplate: {
         value: function() {

@@ -115,6 +115,11 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
                     });
                 });
+                
+                describe("Test that if no option is marked as selected, we set the first one as selected (gh-122)", function() {
+                    var selectInput = test.noDefaultSelection;
+                    expect(selectInput.contentController.selectedIndexes.length).toBe(1);
+                });
 
 
                 // test set/get of standard and global attributes

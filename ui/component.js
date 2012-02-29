@@ -161,6 +161,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    setElementWithParentComponent: {
+        value: function(element, parent) {
+            this._alternateParentComponent = parent;
+            this.element = element;
+        }
+    },
+
     // access to the Application object
 /**
     Description TODO
@@ -214,6 +221,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             return targetElementController;
         }
     },
+
+    _alternateParentComponent: {
+        value: null
+    },
+
 /**
   Description TODO
   @private
@@ -250,7 +262,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
                     anElement = aParentNode;
                 }
-                return aParentNode ? eventManager.eventHandlerForElement(aParentNode) : null;
+                return aParentNode ? eventManager.eventHandlerForElement(aParentNode) : this._alternateParentComponent;
             }
         }
     },
@@ -454,6 +466,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (ix > -1) {
                 childComponents.splice(ix, 1);
                 childComponent._cachedParentComponent = null;
+                childComponent._alternateParentComponent = null;
             }
         }
     },
@@ -474,7 +487,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     ownerComponent: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -596,6 +608,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.attachToParentComponent();
             if (this._element) {
                 this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+            }
+            if (!("identifier" in this)) {
+                this.identifier = Montage.getInfoForObject(this).label;
             }
         }
     },
@@ -902,6 +917,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         // this call will be synchronous if the template is cached.
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
+
+    templateDidDeserializeObject: {
+        value: function(object) {
+            if (Component.isPrototypeOf(object)) {
+                object.ownerComponent = this;
+            }
+        }
+    },
+
     /**
     Callback for the <code>_canDrawGate</code>.<br>
     Propagates to the parent and adds the component to the draw list.
@@ -1212,7 +1236,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
             if (this._needsDraw !== value) {
                 if (drawLogger.isDebug) {
-                    drawLogger.debug("NEEDS DRAW TOGGLED " + value + " FOR " + (this.element != null ? this.element.id : ''));
+                    drawLogger.debug("NEEDS DRAW TOGGLED " + value + " FOR " + this._montage_metadata.objectName);
                 }
                 this._needsDraw = !!value;
                 if (value) {

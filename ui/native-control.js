@@ -200,9 +200,6 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
 
             for(var attributeName in this._elementAttributeValues) {
                 if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
-                    if(attributeName === 'value') {
-                        continue;
-                    }
                     var value = this[attributeName];
                     descriptor = this._getElementAttributeDescriptor(attributeName, this);
                     if(descriptor && descriptor.dataType === 'boolean') {
