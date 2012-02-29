@@ -63,6 +63,7 @@
 .demo{
     background-color: whitesmoke;
     padding: 10px;
+    margin-top: 10px;
 }
 
 .demo input {
@@ -105,6 +106,25 @@ footer {
   margin-top: 17px;
   margin-bottom: 2em;
   padding-bottom: 17px;
+}
+
+.forkme {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
+
+.sourceview {
+  /*max-height: 500px;*/
+  overflow: auto;
+}
+
+.sourceitem {
+  display:none;
+}
+
+.sourcelinks {
+  list-style-image: url('/images/arrow-icon.gif');
 }
 
 /* borrowed from Bootstrap v2 */
