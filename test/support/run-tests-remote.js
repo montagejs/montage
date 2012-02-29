@@ -34,13 +34,14 @@ opts.shift();
 opts.shift();
 if (opts.length > 0) {
     if (opts[0] === "--help") {
-        console.log("Usage: " + process.argv.slice(0, 2).join(" ") + " [--debug] [host [port [test_url]]]");
+        console.log("Usage: " + process.argv.slice(0, 2).join(" ") + " [--debug] [browser [host [port [test_url]]]]");
         return;
     }
     if (opts[0] === "--debug") {
         DEBUG = true;
         opts.shift();
     }
+    BROWSER = opts.shift() || BROWSER;
     WEBDRIVER_HUB_HOST = opts.shift() || WEBDRIVER_HUB_HOST;
     WEBDRIVER_HUB_PORT = opts.shift() || WEBDRIVER_HUB_PORT;
     TEST_URL = opts.shift() || TEST_URL;
