@@ -73,6 +73,14 @@
             "element": {"#": "country1"}
         }
     },
+    
+    "no-default-selection": {
+        "module": "montage/ui/select-input.reel",
+        "name": "SelectInput",
+        "properties": {
+            "element": {"#": "no-default-selection"}
+        }
+    },
 
     "test": {
         "module": "ui/select-input-test/select-input-test",
@@ -81,6 +89,7 @@
             "dept": {"@": "dept"},
             "state": {"@": "state"},
             "country": {"@": "country"},
+            "noDefaultSelection": {"@": "no-default-selection"},
             "statesController": {"@": "statesController"}
         },
         "bindings": {
@@ -132,6 +141,11 @@
 
                 <label for="state">State</label>
                 <select id="state" required="true"></select>
+                
+                <select id="no-default-selection">
+                    <option value="name">Name</option>
+                    <option value="tags">Tags</option>
+                </select>
 
             </form>
 
