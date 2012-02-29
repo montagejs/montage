@@ -74,6 +74,100 @@
         }
     },
 
+        "justify-comparator-left": {
+            "module": "ui/controls/select-input-fail.reel",
+            "name": "JustifyConverter",
+            "properties": {
+                "justify": "left"
+            }
+        },
+        "justify-comparator-right": {
+            "module": "ui/controls/select-input-fail.reel",
+            "name": "JustifyConverter",
+            "properties": {
+                "justify": "right"
+            }
+        },
+        "justify-comparator-center": {
+            "module": "ui/controls/select-input-fail.reel",
+            "name": "JustifyConverter",
+            "properties": {
+                "justify": "center"
+            }
+        },
+        "justify-left": {
+            "module": "montage/ui/toggle-button.reel",
+            "name": "ToggleButton",
+            "properties": {
+                "element": {"#": "justify-left"},
+                "pressedClass": "success"
+            },
+            "bindings": {
+                "pressed": {
+                    "boundObject": {"@": "test"},
+                    "boundObjectPropertyPath": "justify",
+                    "converter": {"@": "justify-comparator-left"}
+                }
+            }
+        },
+        "justify-center": {
+            "module": "montage/ui/toggle-button.reel",
+            "name": "ToggleButton",
+            "properties": {
+                "element": {"#": "justify-center"},
+                "pressedClass": "success"
+            },
+            "bindings": {
+                "pressed": {
+                    "boundObject": {"@": "test"},
+                    "boundObjectPropertyPath": "justify",
+                    "converter": {"@": "justify-comparator-center"}
+                }
+            }
+        },
+        "justify-right": {
+            "module": "montage/ui/toggle-button.reel",
+            "name": "ToggleButton",
+            "properties": {
+                "element": {"#": "justify-right"},
+                "pressedClass": "success"
+            },
+            "bindings": {
+                "pressed": {
+                    "boundObject": {"@": "test"},
+                    "boundObjectPropertyPath": "justify",
+                    "converter": {"@": "justify-comparator-right"}
+                }
+            }
+        },
+        "justify-select": {
+            "module": "montage/ui/select-input.reel",
+            "name": "SelectInput",
+            "properties": {
+                "element": {"#": "justify-select"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "test"},
+                    "boundObjectPropertyPath": "justify"
+                }
+            }
+        },
+        "justify-result": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "justify-result"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "test"},
+                    "boundObjectPropertyPath": "justify",
+                    "oneway": "true"
+                }
+            }
+        },
+
     "test": {
         "module": "ui/select-input-test/select-input-test",
         "name": "SelectInputTest",
@@ -81,6 +175,7 @@
             "dept": {"@": "dept"},
             "state": {"@": "state"},
             "country": {"@": "country"},
+            "justifySelect": {"@": "justify-select"},
             "statesController": {"@": "statesController"}
         },
         "bindings": {
@@ -152,6 +247,31 @@
             </div>
             </form>
         </div>
+
+        <section>
+            <h2>Test binding to SelectInput.value</h2>
+            <div class="demo">
+                <div style="height: 40px;">
+                    <button id="justify-none" class="btn justify">-</button>
+                    <button id="justify-left" class="btn justify">L</button>
+                    <button id="justify-center" class="btn justify">C</button>
+                    <button id="justify-right" class="btn justify">R</button>
+                </div>
+                <div>
+                    <select id="justify-select" class="justify-select">
+                            <option value=""></option>
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                    </select>
+
+                    <p>
+                        Justify selection: <span id="justify-result"></span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
     </div>
 
 </body>
