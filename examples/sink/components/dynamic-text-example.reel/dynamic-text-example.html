@@ -3,6 +3,83 @@
     <head>
         <title>Dynamic Text Example</title>
         <script type="text/montage-serialization">
+        {
+            "dateConverter1": {
+                "module": "montage/core/converter/date-converter",
+                "name": "DateConverter",
+                "properties": {
+                    "pattern": "hh:mm:ss"
+                }
+            },
+            "current-time": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "value": "",
+                    "converter": {"@": "dateConverter1"},
+                    "element": {"#": "current-time"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "currentTime",
+                        "oneway": true
+                    }
+                }
+            },
+
+
+            "owner": {
+                "module": "components/dynamic-text-example.reel",
+                "name": "DynamicTextExample",
+                "properties": {
+                    "element": {"#": "component-root"}
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .current-time {
+            margin: 40px auto;
+            font-size: 64px;
+            display: inline-block;
+        }
+    </style>
+
+    </head>
+
+    <body>
+        <div id="component-root">
+            <div class="row">
+                <div class="span12">
+                    <h3>Dynamic Text</h3>
+                    <p class="">
+                    The DynamicText component lets you display a string of text in a DOM element.
+                    </p>
+                </div>
+            </div>
+
+            <h4>Demo</h4>
+
+                <p>This example displays the current time in a DynamicText component. The current time is calculated , which is provided by the component's controller. A <code>DateConverter</code> is used to format the time value in the hh:mm:ss format.
+                </p>
+            <div class="demo">
+                <span id="current-time" class="current-time"></span>
+                <div class="sourceview" id="source">
+                    <ul class="sourcelinks demo2">
+                    <li>
+                    <a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML</a>
+                    <div class="sourceitem submit" id="html">
+                        <pre class="prettyprint" >
+&lt;span id="current-time" class="current-time"&gt;&lt;/span&gt;
+</pre>
+                    </div>
+                </li>
+                    <li>
+                    <a href="#" onclick="toggle_visibility('.demo2 #serialization', event);">Serialization</a>
+                    <div class="sourceitem submit" id="serialization">
+                        <pre class="prettyprint" >
 {
     "dateConverter1": {
         "module": "montage/core/converter/date-converter",
@@ -27,8 +104,6 @@
             }
         }
     },
-
-
     "owner": {
         "module": "components/dynamic-text-example.reel",
         "name": "DynamicTextExample",
@@ -36,37 +111,62 @@
             "element": {"#": "component-root"}
         }
     }
-}
-    </script>
+}</pre>
+                    </div>
 
-    <style>
-        .current-time {
-            margin: 40px auto;
-            font-size: 64px;
-            display: inline-block;
+                    </li>
+                    <li>
+                    <a href="#" onclick="toggle_visibility('.demo2 #javascript', event);">JavaScript</a>
+                    <div class="sourceitem submit" id="javascript">
+                        <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.DynamicTextExample = Montage.create(Component, {
+
+    _currentTime: {value: null},
+    currentTime: {
+        set: function(value) {this._currentTime = value; this.needsDraw = false;},
+        get: function() {return this._currentTime;}
+    },
+
+    _intervalId: {value: null},
+
+    didBecomeInactiveInSlot: {
+        value: function() {
+            if(this._intervalId) {
+                clearInterval(this._intervalId);
+                this._intervalId = null;
+            }
         }
-    </style>
+    },
 
-    </head>
+    didBecomeActiveInSlot: {
+        value: function() {
+            var self = this;
+            if(this._intervalId) {
+                clearInterval(this._intervalId);
+            }
+            this._intervalId = setInterval(function() {
+                self.currentTime = new Date(Date.now());
+            }, 1000);
+        }
+    },
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
+        }
+    }
 
-    <body>
-        <div id="component-root">
-            <div class="row">
-                <div class="span8">
-                    <h3>Dynamic Text</h3>
-                    <p class="">
-                    The DynamicText component lets you easily display a string of text in any element that has a <code>innerHtml</code> property. This includes any element with an opening and closing angle brackets. The following example binds the current time to a DynamicText component's <code>value</code>.
-                    </p>
-                </div>
+});
+</pre>
+                    </div>
+                </li>
+                </ul>
+            </div>
             </div>
 
-            <h4>Demo</h4>
-
-            <div class="demo">
-                <p>This example combines a DynamicText component, whose value is bound to the <code>currentTime</code> property that's definedthe component's controller JavaScript object (components/dynamic-text-example.reel/dynamic-text-example.js). Lastly, a DateConverter is used to format the time value in the hh:mm:ss format.
-                </p>
-                <span id="current-time" class="current-time"></span>
-            </div>
 
             <section>
                 <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/dynamic-text-example.reel" target="_blank">View source on GitHub</a>

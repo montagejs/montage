@@ -22,8 +22,6 @@ exports.InputTextExample = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
-            // Invoke Google pretty printer on source code samples
-            //prettyPrint();
 
             this.firstName = "Foo";
             this.lastName = "Bar";
@@ -33,6 +31,8 @@ exports.InputTextExample = Montage.create(Component, {
             this.dob = new Date(Date.now());
 
             this.phoneReadOnly = true;
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
         }
     },
 

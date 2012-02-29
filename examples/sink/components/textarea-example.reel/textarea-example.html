@@ -121,7 +121,7 @@
             </div>
 
             <h4>Demo</h4>
-            <div class="demo">
+            <div class="demo textarea1">
 
                 <form class="form-stacked">
                      <label for="fname">First Name</label>
@@ -138,6 +138,125 @@
                      </div>
 
                 </form>
+
+                <ul class="sourcelinks">
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.textarea1 #html', event);">HTML</a>
+                        <div class="sourceitem" id="html">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+&lt;form class="form-stacked"&gt;
+     &lt;label for="fname"&gt;First Name&lt;/label&gt;
+     &lt;input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/&gt;
+     &lt;label for="lname"&gt;Last Name&lt;/label&gt;
+     &lt;input type="text" placeholder="Enter last name" id="lname" value="bar" maxlength="20"/&gt;
+
+     &lt;label for="info"&gt;Tell us a bit about yourself&lt;/label&gt;
+     &lt;textarea required id="info"&gt;Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum. Vestibulum pretium, lectus nec venenatis volutpat, purus lectus ultrices risus, a condimentum risus mi et quam. Pellentesque auctor fringilla neque. Duis eu massa ut lorem iaculis vestibulum. Maecenas facilisis elit sed justo. Quisque volutpat malesuada velit.
+     &lt;/textarea&gt;
+
+     &lt;div style="margin-top: 10px;"&gt;
+          &lt;button class="btn" id="update" type="button"&gt;Update&lt;/button&gt;
+     &lt;/div&gt;
+
+&lt;/form&gt;
+                    </pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.textarea1 #serialization', event);">#serialization</a>
+                        <div class="sourceitem" id="serialization">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+{
+    "owner": {
+        "module": "components/textarea-example.reel",
+        "name": "TextareaExample",
+        "properties": {
+            "element": {"#": "textarea-example"}
+        },
+        "bindings": {
+            "info": {
+                "boundObject": {"@": "info"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+
+    "fname": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "fname"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "firstName",
+                "oneway": false
+            },
+            "title": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "firstName",
+                "oneway": false
+            }
+        }
+    },
+
+    "lname": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "lname"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "lastName",
+                "oneway": false
+            }
+        }
+    },
+    "info": {
+        "module": "montage/ui/TextArea.reel",
+        "name": "TextArea",
+        "properties": {
+            "element": {"#": "info"}
+        }
+    },
+    "update": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "update"},
+            "identifier": "update"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "echo": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "echo"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "json",
+                "oneway": "true"
+            }
+        }
+    }
+}
+                    </pre>
+                        </div><!-- / -->
+                    </li>
+                </ul>
 
                 <pre id="echo"></pre>
 

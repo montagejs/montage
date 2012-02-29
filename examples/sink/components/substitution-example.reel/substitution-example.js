@@ -5,7 +5,7 @@
  </copyright> */
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
-    
+
 // similar to jquery.closest. Find the closest ancestor of el matching the type
 var findClosestOfType = function(el, type, context) {
 	if(el.tagName.toLowerCase() === type) {
@@ -30,14 +30,14 @@ var findClosestOfType = function(el, type, context) {
 };
 
 exports.SubstitutionExample = Montage.create(Component, {
-    
+
     navEl: {
         value: null
     },
-    
+
     // the substitution
     content: {value: null},
-    
+
     prepareForDraw: {
         value: function() {
             if(window.Touch) {
@@ -45,6 +45,9 @@ exports.SubstitutionExample = Montage.create(Component, {
             } else {
                 this.navEl.addEventListener('mouseup', this);
             }
+
+            // source code hilighter
+            prettyPrint();
         }
     },
 
@@ -66,7 +69,7 @@ exports.SubstitutionExample = Montage.create(Component, {
                     items[i].classList.remove('selected');
                 }
                 $li.classList.add('selected');
-            
+
         }
     },
 

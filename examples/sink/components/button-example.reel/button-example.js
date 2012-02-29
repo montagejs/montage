@@ -38,6 +38,7 @@ exports.ButtonExample = Montage.create(Component, {
     handleButton1Action: {
         value: function() {
             this.log("Button - button1 - clicked");
+            console.log(this.log);
         }
     },
 
@@ -50,6 +51,12 @@ exports.ButtonExample = Montage.create(Component, {
     handleAction: {
         value: function() {
             this.log("Fallback action handler invoked as there is no specific handler for this button");
+        }
+    },
+
+    handleSettingsAction: {
+        value: function() {
+            this.log("Setting button clicked");
         }
     }
 });
