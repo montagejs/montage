@@ -81,7 +81,6 @@ var screening_request = function(path, method, body) {
 };
 
 var escapeBadXmlChars = function(string) {
-    console.log("escape", string);
     return string.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 };
 
@@ -128,14 +127,14 @@ screening_request("agents").then(function(data) {
     for (var i = 0, len = asserts.length; i < len; i++) {
         var assert = asserts[i];
         if (assert.success) {
-            output += '  <testcase name="' + escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue) + ')" />\n';
+            output += '  <testcase classname="run.html" name="' + escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue) + ')" />\n';
         } else {
             var short_message = "fail";
             if (assert.message !== null) {
                 short_message = assert.message.split("\n", 1)[0];
             }
             // TODO escape string
-            output += '  <testcase name="'+ escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">\n';
+            output += '  <testcase classname="run.html" name="'+ escapeBadXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">\n';
             output += '    <failure type="'+ escapeBadXmlChars(short_message) +'">'+ escapeBadXmlChars(assert.message) +'</failure>\n';
             output += '  </testcase>\n';
         }
