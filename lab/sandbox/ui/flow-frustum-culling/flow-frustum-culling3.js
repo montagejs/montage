@@ -37,7 +37,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
             this._context.restore();
         }
     },
-    
+
     drawSegmentIntersections: {
         value: function (intersections, p0, p1, p2, p3) {
             var spline = this.flow.splineTranslatePath,
@@ -64,7 +64,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                 planeOrigin = [250, 250, 250],
                 planeNormal1 = [Math.cos(time), Math.sin(time), 0],
                 planeNormal2 = [-Math.cos(time+2), -Math.sin(time+2), 0],
-                r, r2, r3, j, n, m,
+                r, r2, r3, j, n, m, start, end,
                 spline = this.flow.splineTranslatePath,
                 self = this;
 
@@ -77,7 +77,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
             this._context.beginPath();
             this._context.moveTo(planeOrigin[0] - planeNormal2[1] * 1000 + .5, planeOrigin[1] + planeNormal2[0] * 1000 + .5);
             this._context.lineTo(planeOrigin[0] + planeNormal2[1] * 1000 + .5, planeOrigin[1] - planeNormal2[0] * 1000 + .5);
-            this._context.stroke();            
+            this._context.stroke();
             for (j = 0; j < spline.knotsLength - 1; j++) {
                 r = spline.directedPlaneBezierIntersection(
                     planeOrigin,
@@ -97,12 +97,17 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                         spline.vectors[3 + j * 3]
                     );
                     if (r2.length) {
-                        var start, end;
-                        
+                        n = 0;
+                        m = 0;
                         r3 = [];
-                        for (n=0; n<r.length; n++) { // TODO: optimize this to o(n+m)
-                            for (m=0; m<r2.length; m++) {
-                                if ((r[n][0] < r2[m][1]) && (r[n][1] > r2[m][0])) {
+
+                        while ((n < r.length) && (m < r2.length)) {
+                            if (r[n][0] >= r2[m][1]) {
+                                m++;
+                            } else {
+                                if (r[n][1] <= r2[m][0]) {
+                                    n++;
+                                } else {
                                     if (r[n][0] >= r2[m][0]) {
                                         start = r[n][0];
                                     } else {
@@ -114,6 +119,16 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                                         end = r2[m][1];
                                     }
                                     r3.push([start, end]);
+                                    if (r[n][1] < r2[m][1]) {
+                                        n++;
+                                    } else {
+                                        if (r[n][1] > r2[m][1]) {
+                                            m++;
+                                        } else {
+                                            n++;
+                                            m++;
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -123,8 +138,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                             spline.vectors[1 + j * 3],
                             spline.vectors[2 + j * 3],
                             spline.vectors[3 + j * 3]
-                        );                        
-
+                        );
                     }
                 }
             }
