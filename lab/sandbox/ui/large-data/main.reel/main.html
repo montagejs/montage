@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Main Component</title>
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "main.reel",
+                "name": "Main",
+                "properties": {
+                    "element": {"#": "main"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+
+            "floorConverter": {
+                "module": "main.reel",
+                "name": "FloorConverter"
+            },
+
+            "itemsPerPage": {
+                "module": "montage/ui/bluemoon/slider.reel",
+                "name": "Slider",
+                "properties": {
+                    "element": {"#": "itemsPerPage"},
+                    "minValue": 0,
+                    "maxValue": 50
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "itemsPerPageCount",
+                        "converter": {"@": "floorConverter"}
+                    }
+                }
+            },
+
+
+            "itemCount": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "itemCount"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "collectionController.organizedObjects.count()",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "itemsPerPageCount": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "itemsPerPageCount"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "itemsPerPageCount",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "list": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "list"},
+                    "isSelectionEnabled": true
+                },
+                "bindings": {
+                    "contentController": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "collectionController",
+                        "oneway": true
+                    },
+                    "indexMap": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "indexMap",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "item": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "element": {"#": "item"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "list"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.label",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "selectedValueField": {
+                "module": "montage/ui/textfield.reel",
+                "name": "Textfield",
+                "properties": {
+                    "element": {"#": "selectedValueField"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "collectionController.selectedObjects.0.label"
+                    }
+                }
+            },
+
+            "nextPageButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "nextPageButton"},
+                    "identifier": "nextPageButton"
+                }
+            },
+
+            "previousPageButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "previousPageButton"},
+                    "identifier": "previousPageButton"
+                }
+            }
+        }
+    </script>
+
+    <style type="text/css">
+        .item {
+            display: block;
+        }
+
+        .detailView {
+            background-color: hsl(0,0%,80%);
+        }
+
+        .main .active {
+            background-color: hsl(195, 96%, 80%);
+        }
+
+        .main .selected {
+            background-color: hsl(195, 96%, 53%);
+        }
+    </style>
+
+</head>
+<body>
+
+    <div id="main" class="main">
+
+        <p><span id="itemCount"></span> Items Available</p>
+
+        <div>
+            <div id="itemsPerPage"></div>
+            <p><span id="itemsPerPageCount"></span> Items Per Page</p>
+        </div>
+
+        <button id="previousPageButton">Previous</button>
+        <button id="nextPageButton">Next</button>
+
+        <div class="detailView">
+            Selected: <input type="text" id="selectedValueField">
+        </div>
+
+        <div id="list" class="list">
+            <span id="item" class="item"></span>
+        </div>
+
+    </div>
+
+</body>
+</html>
