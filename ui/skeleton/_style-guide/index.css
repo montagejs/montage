@@ -4,9 +4,9 @@
 body {
     margin: 0;
     font: 13px/1.231 sans-serif;
-	background-color: hsl(0,0%,90%);
 	max-width: 500px;
 	margin: 0 auto;
+	background-color: hsl(200,0%,90%);
 }
 
 h1 {
@@ -38,8 +38,8 @@ ul {
 }
 
 li {
-    /display: inline-block;
+    display: inline-block;
     text-align: center;
     padding: 20px;
-    border-top: 1px solid hsla(0,0%,0%,.1);
+    /border-top: 1px solid hsla(0,0%,0%,.1);
 }

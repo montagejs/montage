@@ -2,8 +2,22 @@
 
 button {
     height: 30px;
+    min-width: 30px;
+    line-height: 28px;
+    margin: 0 2px;
     padding: 0 10px;
     border-radius: 3px;
+    vertical-align: middle;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+button[data-icon="camera"] { background-image: url(icons/camera.png); }
+button[data-icon="time"] { background-image: url(icons/time.png); }
+button[data-icon-label="search"] {
+    padding-left: 30px;
+    background-position: 10px center;
+    background-image: url(icons/search.png);
 }
 
 .buttonGroup button {
@@ -24,36 +38,35 @@ input[type="checkbox"] {
     height: 20px;
     border-radius: 3px;
 }
+input[type="checkbox"]:checked {
+    background: hsl(0,0%,95%) url(icons/checkbox.png) no-repeat center center;
+}
 
 input[type="radio"] {
     width: 20px;
     height: 20px;
     border-radius: 10px;
 }
+input[type="radio"]:checked {
+    background: hsl(0,0%,95%) url(icons/radio.png) no-repeat center center;
+}
 
 select {
     height: 30px;
-    padding: 0 10px;
+    padding: 0 20px 0 10px;
     border-radius: 3px;
+    background: hsl(0,0%,95%) url(icons/select.png) no-repeat right center;
 }
 
-input[type="text"] {
+input[type="text"],
+input[type="url"],
+input[type="number"],
+input[type="date"],
+input[type="color"] {
     width: 150px;
     height: 30px;
     padding: 6px;
     background-color: hsl(0,0%,100%);
-}
-
-input[type="search"] {
-    width: 120px;
-    height: 30px;
-    background-color: hsl(0,0%,100%);
-    border-radius: 3px 0 0 3px;
-}
-input[type="search"] + button {
-    margin: 0;
-    border-left: none;
-    border-radius: 0 3px 3px 0;
 }
 
 textarea {
@@ -64,6 +77,24 @@ textarea {
     padding: 5px;
     resize: both;
     background-color: hsl(0,0%,100%);
+}
+
+input[type="search"] {
+    width: 120px;
+    height: 30px;
+    border-radius: 3px 0 0 3px;    
+    padding: 0 4px 0 15px;
+    background: hsl(0,0%,100%) url(icons/search.png) no-repeat 5px center;
+}
+input[type="search"] + button {
+    margin: 0;
+    border-left: none;
+    border-radius: 0 3px 3px 0;
+}
+
+input[type="file"] {
+    background-color: transparent;
+    border: none;
 }
 
 input[type="range"] {
@@ -82,15 +113,4 @@ meter {
     width: 150px;
     height: 20px;
     border-radius: 10px;
-}
-
-menu {
-    padding: 0;
-    background-color: hsl(0,0%,85%);
-}
-menu > button {
-    margin: 0;
-    border-radius: 0;
-    border-top: none;
-    border-bottom: none;
 }
