@@ -3,22 +3,8 @@
 var util = require("util"),
     fs = require("fs"),
     http = require("http"),
-    Q = require("./q.js"),
-    wd_original = require("./wd.js");
-
-// Make webdriver use promises
-var webdriver = wd_original.webdriver;
-for (var propName in wd_original.webdriver.prototype) {
-    var prop = wd_original.webdriver.prototype[propName];
-    if (wd_original.webdriver.prototype.hasOwnProperty(propName) && typeof prop === "function") {
-        webdriver.prototype[propName] = Q.node(prop);
-    }
-}
-var wd = {
-    remote: function(host, port, username, accessKey) {
-        return new webdriver(host, port, username, accessKey);
-    }
-};
+    Q = require("q"),
+    wd = require("./q-wd.js");
 
 var WEBDRIVER_HUB_HOST = "127.0.0.1",
     WEBDRIVER_HUB_PORT = "4444",
