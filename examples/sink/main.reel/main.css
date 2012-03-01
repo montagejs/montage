@@ -62,8 +62,7 @@
 
 .demo{
     background-color: whitesmoke;
-    padding: 10px;
-    margin-top: 10px;
+    margin: 0px;
 }
 
 .demo input {
@@ -119,19 +118,41 @@ footer {
   overflow: auto;
 }
 
-.sourceitem .prettyprint pre {
+/*.sourceitem .prettyprint pre {
   white-space: ;
   word-wrap: ;
   overflow: auto;
 }
-
+*/
 .sourceitem {
   display:none;
 }
 
 .sourcelinks {
+  margin: 0px;
+  padding: 0px;
+}
+
+.sourcelinks li {
   list-style-image: url('../images/arrow-icon.gif');
+  padding: 3px;
   list-style-position:inside;
+}
+
+.sourcelinks li a:hover {
+  background-color: rgb(255,255,255);
+}
+
+.sourcelinks li a:selected {
+  background-color: rgb(255,0,255);
+}
+
+.sourcelinks li a {
+  display: block;
+  padding: 3px;
+  text-decoration:none;
+  text-transform:uppercase;
+  color: gray;
 }
 
 /* borrowed from Bootstrap v2 */
