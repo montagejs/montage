@@ -52,10 +52,10 @@
     <body>
         <div id="component-root">
             <div class="row">
-                <div class="span8">
+                <div class="span12">
                     <h3>Dynamic Text</h3>
                     <p class="">
-                    The DynamicText component lets you easily display a string of text in any element that has a <code>innerHtml</code> property. This includes any element with an opening and closing angle brackets. The following example binds the current time to a DynamicText component's <code>value</code>.
+                    The DynamicText component lets you display a string of text in a DOM element.
                     </p>
                 </div>
             </div>
@@ -63,9 +63,21 @@
             <h4>Demo</h4>
 
             <div class="demo">
-                <p>This example combines a DynamicText component, whose value is bound to the <code>currentTime</code> property that's definedthe component's controller JavaScript object (components/dynamic-text-example.reel/dynamic-text-example.js). Lastly, a DateConverter is used to format the time value in the hh:mm:ss format.
+                <p>This example uses a DynamicText component to display the current time, which is provided by the component's controller. Lastly, a DateConverter is used to format the time value in the hh:mm:ss format.
                 </p>
                 <span id="current-time" class="current-time"></span>
+            </div>
+
+                <div class="sourceview" id="source">
+                    <ul class="demo2">
+                    <li>
+                    <a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML markup</a>
+                    <div class="sourceitem submit" id="html">
+                        <pre class="prettyprint" >
+&lt;span id="current-time" class="current-time"&gt;&lt;/span&gt;
+</pre>
+                    </div>
+                </ul>
             </div>
 
             <section>

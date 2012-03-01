@@ -117,7 +117,7 @@
 
             <h4>Demo</h4>
 
-            <div class="demo">
+            <div class="demo demo1">
 
             <div class="btn-group font-styles" style="display: inline-block">
                 <button class="btn font-styles" id="bold" style="font-weight: bold;">B</button>
@@ -128,7 +128,7 @@
 
                 <div class="sourceview demo1" id="source">
                     <ul>
-                    <li><a href="#" onclick="toggle_visibility('.demo1 #html');">HTML markup</a>
+                    <li><a href="#" onclick="toggle_visibility('.demo1 #html', event);">HTML markup</a>
                     <div class="sourceitem" id="html">
                         <p>This example's markup defines three <code>&lt;button></code> elements.</p>
                         <pre class="prettyprint" >
@@ -141,7 +141,7 @@
 </pre>
                     </div><!-- / -->
                     </li>
-                    <li><a href="#" onclick="toggle_visibility('.demo1 #serialization');">Serialization</a>
+                    <li><a href="#" onclick="toggle_visibility('.demo1 #serialization', event);">Serialization</a>
                     <div id="serialization" class="sourceitem">
                         <p>The serialization associates each of the three <code>&lt;button></code> elements with the ToggleButton </p>
                         <pre class="prettyprint" >
@@ -200,7 +200,7 @@
                     </div><!-- / -->
 
                     </li>
-                    <li><a href="#" onclick="toggle_visibility('.demo1 #component1');">Custom component: StyleElement</a>
+                    <li><a href="#" onclick="toggle_visibility('.demo1 #component1', event);">Custom component: StyleElement</a>
 
                         <pre class="prettyprint sourceitem" id="component1">
 var Montage = require("montage/core/core").Montage,
@@ -295,13 +295,44 @@ exports.StyleElement = Montage.create(Component, {
 
                 </div>
 
-                <h3>Toggle Switch</h3>
-                <p><div id="toggle"></div></p>
+                <h3>ToggleSwitch component</h3>
+                <p>The ToggleSwitch component provides a styled toggle control common to touch interfaces. This component operates on a standard &lt;div> element, rather than a native HTML control.</p>
 
-            </div>
+                <!-- ToggleSwitch element -->
+                <div id="toggle" style="margin-bottom: 5px"></div>
+
+                <div class="demo3">
+                    <ul>
+                        <li>
+                            <a href="#" onclick="toggle_visibility('.demo3 #html', event);">HTML</a>
+                            <pre class="prettyprint sourceitem" id="html">
+&lt;div id="toggle"&gt;&lt;/div&gt;
+</pre>
+                        </li>
+                        <li>
+                            <a href="#" onclick="toggle_visibility('.demo3 #serialization', event);">Serialization</a>
+                            <pre class="prettyprint sourceitem" id="serialization">
+{
+    "toggle": {
+        "module": "montage/ui/toggle-switch.reel",
+        "name": "ToggleSwitch",
+        "properties": {
+            "element": {"#": "toggle"}
+        }
+    }
+}
+
+</pre>
+                        </li>
+                    </ul>
+
+                </div>
+
+
+
+            <!-- </div> -->
 
             <div id="logger">
-                <h2>Logger</h2>
             </div>
             <section>
                 <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/toggle-button-example.reel" target="_blank">View source on GitHub</a>

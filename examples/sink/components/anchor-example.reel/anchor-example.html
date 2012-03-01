@@ -134,6 +134,11 @@
             width: 480px;
             height: 480px;
         }
+        a[icon="external"] {
+           padding-right: 20px;
+           background: transparent url(../sink/images/external.gif) no-repeat center right;
+           color: red;
+        }
     </style>
 
 
@@ -141,7 +146,7 @@
 <body>
     <div id="example-root">
         <div class="row">
-            <div class="span8">
+            <div class="span12">
                 <h3>Anchor</h3>
                 <p>
                     The Anchor component wraps an <a href="http://dev.w3.org/html5/spec/the-a-element.html#the-a-element" target="_blank">&lt;a> element</a> and exposes its standard attributes as component properties.
@@ -154,14 +159,14 @@
                 <div class="row">
                     <div class="span12">
 
-                        <h4>Demo</h4>
+                        <h4>Example - binding to Anchor properties</h4>
+                                    <p>
+                                        The <code>textContent</code> and <code>href</code> properties of the Anchor component below are bound to the values of the two input text fields. Changing the text in either field updates the anchor's text and link. </p>
 
                             <div class="demo">
-                                    <p>
-                                        A very simple link editor, the <code>textContent</code> and <code>href</code> properties of the Anchor comopnent below are bound to the values of the two input text fields.
 
                                     <div>
-                                        <p><a href="http://www.motorola.com" id="link1" target="_blank">Motorola</a></p>
+                                        <p><a href="http://www.motorola.com" id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
 
                                         Link text:
                                         <input id="linkText" autofocus type="text" name="" value="">
@@ -171,17 +176,86 @@
                                      </div>
                                  </p>
 
-                                 <div class=>
+                                 <ul class="sourcelinks" >
+                                    <li>
+                                        <a href="#" onclick="toggle_visibility('.demo #html', event);">HTML</a>
+                                        <div class="sourceitem" id="html">
+                                            <p>The markup simply defines the &lt;a> and &lt;input> elements.</p>
+                                        <pre class="prettyprint">
+&lt;a href="http://www.motorola.com" id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
+Link text:
+&lt;input id="linkText" autofocus type="text" name="" value=""&gt;
+URL:
+&lt;input id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
+</pre>
+                                        </div><!-- / -->
+                                    </li>
+                                    <li>
+                                        <a href="#" onclick="toggle_visibility('.demo #serialization', event);">Serialization</a>
+                                        <div class="sourceitem" id="serialization">
+                                        <p>The serialization declares the Anchor component (<code>link1</code>), and two Textfield components (<code>linkTextInput</code> and <code>urlTextInput</code>). </p>
+                                        <pre class="prettyprint">
+{
+  "link1" : {
+      "name": "Anchor",
+      "module": "montage/ui/anchor.reel",
+      "properties": {
+          "element": {"#": "link1"}
+      },
+      "bindings": {
+          "textContent": {
+              "boundObject": {"@": "linkTextInput"},
+              "boundObjectPropertyPath": "value",
+              "deferred": false
+          },
+          "href": {
+              "boundObject": {"@": "urlTextInput"},
+              "boundObjectPropertyPath": "value"
+          }
+      }
+  },
 
-                                 </div><!-- / -->
+  "linkTextInput": {
+      "prototype": "montage/ui/textfield.reel",
+      "properties": {
+          "element": {"#": "linkText"},
+          "value": "Motorola"
+      }
+  },
+
+  "urlTextInput": {
+      "prototype": "montage/ui/textfield.reel",
+      "properties": {
+          "element": {"#": "linkURL"},
+          "value": "http://www.motorola.com"
+      }
+  }
+}</pre>
+                                        </div><!-- / -->
+                                    </li>
+                                    <li>
+                                        <a href="#" onclick="toggle_visibility('.demo #css', event);">CSS</a>
+                                        <div class="sourceitem" id="css">
+                                        <pre class="prettyprint">
+a[icon="external"] {
+   padding-right: 20px;
+   background: transparent url(../sink/images/external.gif) no-repeat center right;
+   color: red;
+}
+</pre>
+                                        </div>
+                                    </li>
+                                 </ul>
 
                             </div>
 
+
+                        <h4>Generating a list of links</h4>
+
                             <div class="demo">
 
-
                                 <p>
-                                     Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
+                                     This example generates a list of Anchor components using a Repetition component.
                                  </p>
 
                                 <table id="list1" class="bordered-table">
@@ -198,6 +272,118 @@
                                         </tr>
                                     </tbody>
                                 </table>
+                                 <ul class="demo2 sourcelinks" >
+                                    <li>
+                                        <a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML</a>
+                                        <div class="sourceitem" id="html">
+                                            <p>The markup simply defines the &lt;a> and &lt;input> elements.</p>
+                                        <pre class="prettyprint">
+&lt;table id="list1" class="bordered-table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Name&lt;/th&gt;
+            &lt;th&gt;Description&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody id="table-row"&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;a id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+</pre>
+                                    </li>
+                                    <li>
+                                        <a href="#" onclick="toggle_visibility('.demo2 #serialization', event);">Serialization</a>
+                                        <div class="sourceitem" id="serialization">
+                                            <!-- <p>Description TBD</p> -->
+                                        <pre class="">
+{
+    "data": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "data",
+                "oneway": true
+            }
+        }
+    },
+
+    "list1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "data"},
+            "axis": "horizontal"
+        }
+    },
+
+    "link": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
+                "oneway": true
+            },
+            "textContent": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+
+    "desc": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
+                "oneway": true
+            }
+        }
+    },
+
+
+    "owner": {
+        "module": "components/image-example.reel",
+        "name": "AnchorExample",
+        "properties": {
+            "element": {"#": "example-root"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        }
+    }
+}
+</pre>
+                                    </li>
+
+
+                                        </div><!-- / -->
+                                    </li>
                             </div>
                         </div>
                     </div>

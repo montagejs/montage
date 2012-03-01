@@ -219,6 +219,8 @@ exports.ButtonExample = Montage.create(Component, {
             <input type="submit" class="btn submit" id="button2" value="Submit"/>
 
             <p>Submit Button without a specific handler. In this case, the <code>handleAction()</code> method defined in <strong>button-example.html</strong> will be called on when the <code>"action"</code> event is dispatched.</p>
+
+            <!-- Source view markup -->
                 <div class="sourceview" id="source">
                     <ul>
                     <li><a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML markup</a>
@@ -306,10 +308,11 @@ exports.ButtonExample = Montage.create(Component, {
 &lt;/div&gt;</pre>
         </div><!-- / -->
     </li>
+
     <li>
         <a href="#" onclick="toggle_visibility('.demo3 #serialization', event);">Serialization</a>
         <div class="sourceitem" id="serialization">
-<pre class="prettyprint">
+        <pre class="prettyprint">
 {
     "copy": {
         "module": "montage/ui/button.reel",
@@ -353,6 +356,22 @@ exports.ButtonExample = Montage.create(Component, {
 }
         </div><!-- / -->
     </li>
+    <li>
+        <a href="#" onclick="toggle_visibility('.demo3 #css', event);">CSS</a> (partial)
+        <div class="sourceitem" id="css">
+            <pre class="prettyprint">
+.btn-group {
+    position:relative;zoom:1;
+}
+.btn-group:before,.btn-group:after {
+    display:table;*display:inline;content:"";zoom:1;
+}
+.btn-group:after {
+    clear:both;
+}
+</pre>
+        </div><!-- / -->
+    </li>
 </ul>
 </div>
 
@@ -371,7 +390,7 @@ exports.ButtonExample = Montage.create(Component, {
                     <li>
                         <a href="#" onclick="toggle_visibility('.demo4 #html', event);">HTML</a>
                         <div class="sourceitem" id="html">
-                <pre class="prettyprint">
+                        <pre class="prettyprint">
 &lt;button class="btn settings" id="settings"&gt;Settings&lt;/button&gt;
 </pre>
                         </div><!-- / -->
@@ -380,7 +399,7 @@ exports.ButtonExample = Montage.create(Component, {
                     <li>
                         <a href="#" onclick="toggle_visibility('.demo4 #serialization', event);">Serialization</a>
                         <div class="sourceitem" id="serialization">
-                <pre class="prettyprint">
+                        <pre class="prettyprint">
 {
     "settingsButton": {
         "module": "montage/ui/button.reel",
@@ -412,7 +431,7 @@ exports.ButtonExample = Montage.create(Component, {
                     <li>
                         <a href="#" onclick="toggle_visibility('.demo4 #css', event);">CSS</a>
                         <div class="sourceitem" id="css">
-                <pre class="prettyprint">
+                        <pre class="prettyprint">
 .settings:before {
     content: url(images/settings.png);
     vertical-align: middle;
@@ -425,44 +444,7 @@ exports.ButtonExample = Montage.create(Component, {
 
             </div>
 
-
-<!-- Commenting out until API reference has these items documented. then will link to those pages. - Tim
-        <section>
-            <h4>Component Properties</h4>
-            <table>
-              <thead>
-                <tr>
-                  <th>Name</th>
-                  <th>Description</th>
-                </tr>
-              </thead>
-              <tbody>
-                  <tr>
-                    <td>tabs</td>
-                    <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                  </tr>
-                <tr>
-                  <td>content</td>
-                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                </tr>
-                <tr>
-                  <td>selectedTab</td>
-                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                </tr>
-                <tr>
-                  <td>selectedTabValue</td>
-                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                </tr>
-
-              </tbody>
-            </table>
-            <p>
-                <a href="" target="_blank">View full Documentation</a>
-            </p>
-        </section>
- -->
-
-<!--  -->        <section>
+    <section>
             <h4>Handling mouse/touch events on a Button</h4>
             <p>When a event occurs on a component (or any element) which has registered an event listener for the event type, the Montage event manager infers what function handler on the listener object to call. This topic is covered in detail in <a href="http://tetsubo.org/docs/montage/event-handling/" title="Event Handling">Event Handling</a>.
 
@@ -507,5 +489,41 @@ handleButton1Action: {
 
         </section>
     </div>
+
+<!-- Commenting out until API reference has these items documented. then will link to those pages. - Tim
+        <section>
+            <h4>Component Properties</h4>
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Description</th>
+                </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                    <td>tabs</td>
+                    <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                  </tr>
+                <tr>
+                  <td>content</td>
+                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                </tr>
+                <tr>
+                  <td>selectedTab</td>
+                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                </tr>
+                <tr>
+                  <td>selectedTabValue</td>
+                  <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                </tr>
+
+              </tbody>
+            </table>
+            <p>
+                <a href="" target="_blank">View full Documentation</a>
+            </p>
+        </section>
+ -->
 </body>
 </html>
