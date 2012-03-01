@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Autocomplete results</title>
+    <script type="text/montage-serialization">
+{
+
+    "results": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true,
+            "content": [
+                {"value": "images/IMG_1.jpg", "text": "Title One"},
+                {"value": "images/IMG_2.jpg", "text": "Title Two"},
+                {"value": "images/IMG_3.jpg", "text": "Title Three"}
+            ]
+        }
+    },
+
+    "repetition1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "repetition1"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "results"},
+            "orientation": "vertical"
+        }
+    },
+
+    "resultItem": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "result-item"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "repetition1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.text",
+                "oneway": true
+            }
+        }
+    },
+
+    "owner": {
+        "module": "montage/ui/autocomplete/results-list.reel",
+        "name": "ResultsList",
+        "properties": {
+            "element": {"#": "results-list"}            
+        }
+    }
+}
+    </script>
+
+    <style>
+
+
+    </style>
+
+
+</head>
+<body>
+    <div id="results-list">
+            <ul class="repetition" id="repetition1">
+                <li class="result-item" id="result-item"></li>
+            </ul>
+    </div>
+
+</body>
+</html>
