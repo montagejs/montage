@@ -330,6 +330,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     captureMousedown: {
         enumerable: false,
         value: function (event) {
+            if (event.button !== 0) {
+                return;
+            }
+
             if (this._shouldPreventDefault(event)) {
                 event.preventDefault();
             }
@@ -351,8 +355,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     handleMousedown: {
         enumerable: false,
         value: function (event) {
-
-            if (!this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
+            if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
                 this.eventManager.claimPointer(this._observedPointer, this);
                 this._start(event.clientX, event.clientY, event.target);
             }
