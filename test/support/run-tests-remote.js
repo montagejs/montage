@@ -67,6 +67,11 @@ browser.init({browserName: BROWSER}).then(function(sessionId) {
                 console.log(lastUpdate);
             }
 
+            if (typeof lastUpdate !== "number") {
+                done.reject(lastUpdate);
+                return;
+            }
+
             if (lastUpdate === previousUpdate) {
                 // newline
                 console.log();
