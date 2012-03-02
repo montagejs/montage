@@ -121,24 +121,6 @@ Require.makeLoader = (function (makeLoader) {
     };
 })(Require.makeLoader);
 
-MontageBoot.JsonCompiler = function (config, compile) {
-    return function (module) {
-        var json = module.id.match(/\.json$/);
-        if (json) {
-            module.exports = JSON.parse(module.text);
-            return module;
-        } else {
-            return compile(module);
-        }
-    };
-};
-
-Require.makeCompiler = (function (makeCompiler) {
-    return function (config) {
-        return MontageBoot.JsonCompiler(config, makeCompiler(config));
-    };
-})(Require.makeCompiler);
-
 var parseHtmlDependencies = function (text, location) {
     var dependencies = [];
     var document = jsdom(text, null, {

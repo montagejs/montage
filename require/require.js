@@ -521,16 +521,31 @@
     ];
 
     Require.makeCompiler = function(config) {
-        return Require.ShebangCompiler(
+        return Require.JsonCompiler(
             config,
-            Require.DependenciesCompiler(
+            Require.ShebangCompiler(
                 config,
-                Require.LintCompiler(
+                Require.DependenciesCompiler(
                     config,
-                    Require.Compiler(config)
+                    Require.LintCompiler(
+                        config,
+                        Require.Compiler(config)
+                    )
                 )
             )
         );
+    };
+
+    Require.JsonCompiler = function (config, compile) {
+        return function (module) {
+            var json = module.id.match(/\.json$/);
+            if (json) {
+                module.exports = JSON.parse(module.text);
+                return module;
+            } else {
+                return compile(module);
+            }
+        };
     };
 
     // Built-in loader "middleware":
