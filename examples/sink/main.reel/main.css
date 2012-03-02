@@ -62,7 +62,12 @@
 
 .demo{
     background-color: whitesmoke;
-    margin: 0px;
+    margin-bottom: 5px;
+    padding: 10px;
+}
+
+.demo .app {
+  padding-bottom: 10px;
 }
 
 .demo input {
@@ -128,19 +133,28 @@ footer {
   display:none;
 }
 
+.sourceitem p {
+  color: black;
+  margin-left: 10px;
+}
+
 .sourcelinks {
   margin: 0px;
   padding: 0px;
+  background: white;
+  /*border-top: 1px dashed #999;*/
 }
 
 .sourcelinks li {
   list-style-image: url('../images/arrow-icon.gif');
-  padding: 3px;
   list-style-position:inside;
+  background-color: lightGray;
+
 }
 
 .sourcelinks li a:hover {
-  background-color: rgb(255,255,255);
+  background-color: gray;
+  color:black;
 }
 
 .sourcelinks li a:selected {
@@ -149,10 +163,17 @@ footer {
 
 .sourcelinks li a {
   display: block;
-  padding: 3px;
+  padding: 9px;
   text-decoration:none;
   text-transform:uppercase;
-  color: gray;
+  color: black;
+  border-bottom: 1px solid #FFF;
+}
+
+.sourceitem .prettyprint {
+  background: white;
+  font-size: 110%;
+  overflow: auto;
 }
 
 /* borrowed from Bootstrap v2 */

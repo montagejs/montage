@@ -134,11 +134,13 @@
             width: 480px;
             height: 480px;
         }
-        a[icon="external"] {
-           padding-right: 20px;
-           background: transparent url(../sink/images/external.gif) no-repeat center right;
-           color: red;
-        }
+
+a[icon="external"] {
+   padding-right: 20px;
+   background: transparent url(../sink/images/external.gif) no-repeat center right;
+   color: red;
+}
+
     </style>
 
 
@@ -162,20 +164,15 @@
                         <h4>Example - binding to Anchor properties</h4>
                                     <p>
                                         The <code>textContent</code> and <code>href</code> properties of the Anchor component below are bound to the values of the two input text fields. Changing the text in either field updates the anchor's text and link. </p>
-
                             <div class="demo">
-
-                                    <div>
-                                        <p><a href="http://www.motorola.com" id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
-
+                                    <div class="app">
                                         Link text:
                                         <input id="linkText" autofocus type="text" name="" value="">
                                         URL:
                                         <input id="linkURL" type="text" name="" value="" placeholder="http://...">
-
+                                        <p><a href="http://www.motorola.com" id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
                                      </div>
                                  </p>
-
                                  <ul class="sourcelinks" >
                                     <li>
                                         <a href="#" onclick="toggle_visibility('.demo #html', event);">HTML</a>
@@ -197,16 +194,14 @@ URL:
                                         <pre class="prettyprint">
 {
   "link1" : {
-      "name": "Anchor",
-      "module": "montage/ui/anchor.reel",
+      "prototype": "montage/ui/anchor.reel",
       "properties": {
           "element": {"#": "link1"}
       },
       "bindings": {
           "textContent": {
               "boundObject": {"@": "linkTextInput"},
-              "boundObjectPropertyPath": "value",
-              "deferred": false
+              "boundObjectPropertyPath": "value"
           },
           "href": {
               "boundObject": {"@": "urlTextInput"},
@@ -252,12 +247,12 @@ a[icon="external"] {
 
                         <h4>Generating a list of links</h4>
 
-                            <div class="demo">
 
                                 <p>
-                                     This example generates a list of Anchor components using a Repetition component.
+                                     This example generates uses the Anchor and Repetition components to generate a table of links.
                                  </p>
 
+                            <div class="demo">
                                 <table id="list1" class="bordered-table">
                                     <thead>
                                         <tr>

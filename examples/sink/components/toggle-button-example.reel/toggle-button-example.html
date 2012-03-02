@@ -119,15 +119,15 @@
 
             <div class="demo demo1">
 
-            <div class="btn-group font-styles" style="display: inline-block">
+<div class="app">            <div class="btn-group font-styles" style="display: inline-block">
                 <button class="btn font-styles" id="bold" style="font-weight: bold;">B</button>
                 <button class="btn font-styles" id="italic" style="font-family: serif; font-style: italic;">I</button>
                 <button class="btn font-styles" id="underline" style="text-decoration: underline;">U</button>
             </div>
-            <div><input type="text" id="display" value="This is some example text"></div>
+            <div><input type="text" id="display" value="This is some example text"></div></div>
 
                 <div class="sourceview demo1" id="source">
-                    <ul>
+                    <ul class="sourcelinks">
                     <li><a href="#" onclick="toggle_visibility('.demo1 #html', event);">HTML markup</a>
                     <div class="sourceitem" id="html">
                         <p>This example's markup defines three <code>&lt;button></code> elements.</p>
@@ -139,7 +139,7 @@
 &lt;/div&gt;
 &lt;div&gt;&lt;input type="text" id="display" value="This is some example text"&gt;&lt;/div&gt;
 </pre>
-                    </div><!-- / -->
+                    </div>
                     </li>
                     <li><a href="#" onclick="toggle_visibility('.demo1 #serialization', event);">Serialization</a>
                     <div id="serialization" class="sourceitem">
@@ -198,7 +198,6 @@
 </pre>
 
                     </div><!-- / -->
-
                     </li>
                     <li><a href="#" onclick="toggle_visibility('.demo1 #component1', event);">Custom component: StyleElement</a>
 
@@ -236,14 +235,18 @@ exports.StyleElement = Montage.create(Component, {
 });
                         </pre>
                     </li>
+                </div>
+
                     </ul>
                 </div>
 
                 <h4>Different pressed and unpressed values</h4>
-                <button class="btn" style="width: 5em" id="values"></button>
 
-                <div class="demo2">
-                    <ul>
+                <div class="demo demo2 sourceview">
+                <div class="app">
+                    <button class="btn" style="width: 5em" id="values"></button>
+                </div>
+                    <ul class="sourcelinks">
                         <li>
                             <a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML</a>
                             <pre class="prettyprint sourceitem" id="html">
@@ -289,9 +292,9 @@ exports.StyleElement = Montage.create(Component, {
     box-shadow:inset 0 2px 4px rgba(0, 0, 0, 0.25),0 1px 2px rgba(0, 0, 0, 0.05);
 }
                             </pre>
-                            </div>
                         </li>
                     </ul>
+                </div>
 
                 </div>
 

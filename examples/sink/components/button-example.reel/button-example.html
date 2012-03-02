@@ -119,7 +119,7 @@
             <div class="span12">
                 <h3>Button</h3>
                 <p class="">
-                        The Button prototype wraps a &lt;button> or &lt;input type="button"> element, and exposes the <a href="http://dev.w3.org/html5/spec/the-button-element.html#the-button-element" target="_blank">standard attributes</a> of those elements as properties, which you can use with data binding, for example.
+                        The Button component wraps a <code>&lt;button></code> or <code>&lt;input type="button"></code> element, and exposes the <a href="http://dev.w3.org/html5/spec/the-button-element.html#the-button-element" target="_blank">standard attributes</a> of those elements as properties, which you can use with data binding, for example.
                     </p>
             </div>
         </div>
@@ -132,14 +132,15 @@
         </h4>
 
 
+        <!-- <h4>Basic button with event handler</h4> -->
+        <p>Button with an identifier used to link it to an handler method.</p>
         <div class="demo demo1">
-
-            <button class="text btn" id="button1">Click Me</button>
-            <p>Button with an identifier used to link it to an handler method.</p>
-
+            <div class="app">
+                        <button class="text btn" id="button1">Click Me</button>
+            </div>
 
                 <div class="sourceview" id="source">
-                    <ul class="">
+                 <ul class="sourcelinks">
                     <li><a href="#" onclick="toggle_visibility('.demo1 #html', event);">HTML markup</a>
                     <div class="sourceitem" id="html">
 
@@ -214,15 +215,18 @@ exports.ButtonExample = Montage.create(Component, {
             </div>
 
 
-<div class="demo demo2">
 
-            <input type="submit" class="btn submit" id="button2" value="Submit"/>
 
             <p>Submit Button without a specific handler. In this case, the <code>handleAction()</code> method defined in <strong>button-example.html</strong> will be called on when the <code>"action"</code> event is dispatched.</p>
 
+<div class="demo demo2">
+        <div class="app">
+            <input type="submit" class="btn submit" id="button2" value="Submit"/>
+         </div>
+
             <!-- Source view markup -->
                 <div class="sourceview" id="source">
-                    <ul>
+                    <ul class="sourcelinks">
                     <li><a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML markup</a>
                     <div class="sourceitem submit" id="html">
                         <pre class="prettyprint" >
@@ -285,27 +289,31 @@ exports.ButtonExample = Montage.create(Component, {
 </div>
 
 
-            <h4>Button group</h4>
+            <h4>Button groups</h4>
 
             <p>To create a button group, wrap the buttons in an parent element that applies appropriate CSS styles.</p>
 
-            <div class="btn-group">
-                <button class="btn" id="copy">Copy</button>
-                <button class="btn" id="cut">Cut</button>
-                <button class="btn" id="paste">Paste</button>
-            </div>
 
 <div class="demo demo3">
-<ul>
+    <div class="app">
+        <div class="btn-group">
+            <button class="btn" id="copy">Copy</button>
+            <button class="btn" id="cut">Cut</button>
+            <button class="btn" id="paste">Paste</button>
+        </div>
+    </div>
+
+    <ul class="sourcelinks">
     <li>
         <a href="#" onclick="toggle_visibility('.demo3 #html', event);">HTML</a>
         <div class="sourceitem" id="html">
-<pre class="prettyprint">
+        <pre class="prettyprint">
 &lt;div class="btn-group"&gt;
     &lt;button class="btn" id="copy"&gt;Copy&lt;/button&gt;
     &lt;button class="btn" id="cut"&gt;Cut&lt;/button&gt;
     &lt;button class="btn" id="paste"&gt;Paste&lt;/button&gt;
-&lt;/div&gt;</pre>
+&lt;/div&gt;
+</pre>
         </div><!-- / -->
     </li>
 
@@ -376,21 +384,25 @@ exports.ButtonExample = Montage.create(Component, {
 </div>
 
 
-            <h4>Image</h4>
+            <h4>Adding an image icon</h4>
 
             <p>To add an image icon to a Button use CSS, either by
             setting a background image, or with the <code>:before</code> and
             <code>:after</code> pseudo elements with the <code>content</code>
             property:</p>
 
-            <button class="btn settings" id="settings">Settings</button>
 
             <div class="demo demo4">
-                <ul>
+
+            <div class="app">
+                <button class="btn settings" id="settings">Settings</button>
+            </div>
+
+                <ul class="sourcelinks">
                     <li>
                         <a href="#" onclick="toggle_visibility('.demo4 #html', event);">HTML</a>
                         <div class="sourceitem" id="html">
-                        <pre class="prettyprint">
+                        <pre class="prettyprint-dark-dark">
 &lt;button class="btn settings" id="settings"&gt;Settings&lt;/button&gt;
 </pre>
                         </div><!-- / -->
