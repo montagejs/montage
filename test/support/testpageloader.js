@@ -49,8 +49,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     queueTest: {
         value: function(testName, options, callback) {
             console.log("TestPageLoader.queueTest() - " + testName);
-            var testPage = window.testpage,
-                test;
+            var testPage = window.testpage
             if (!testPage) {
                 testPage = TestPageLoader.create().init();
             }
@@ -92,6 +91,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             var testName = test.testName,
                 testCallback = test.callback,
                 timeoutLength = test.timeoutLength,
+                self = this,
                 src;
             this.loaded = false;
             if (test.src) {
@@ -101,6 +101,10 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             }
             if (test.newWindow) {
                 this.testWindow = window.open(src, "test-window");
+                window.addEventListener("unload", function() {
+                    self.unloadTest(testName);
+                }, false);
+
             } else {
                 this.iframe.src = src;
            }
@@ -148,30 +152,53 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                         // override the default drawIfNeeded behaviour
                         var originalDrawIfNeeded = root.drawIfNeeded;
                         root.drawIfNeeded = function() {
+
+
+
+
                             if (pageLoadTimeout) {
                                 clearTimeout(pageLoadTimeout);
                             }
-                            originalDrawIfNeeded.call(root);
-                            theTestPage.drawHappened++;
-                            if(firstDraw) {
-                                theTestPage.loaded = true;
-                                // assign the application delegate to test so that the convenience methods work
-                                if (! theTestPage.window.test && theTestPage.window.document.application) {
-                                    theTestPage.window.test = theTestPage.window.document.application.delegate;
-                                }
-                                if (typeof testCallback === "function") {
-                                    if (test.firstDraw) {
-                                        resumeJasmineTests();
-                                    } else {
-                                        // francois HACK
-                                        // not sure how to deal with this
-                                        // if at first draw the page isn't complete the tests will fail
-                                        // so we wait an arbitrary 1s for subsequent draws to happen...
-                                        setTimeout(resumeJasmineTests, 1000);
+                            var continueDraw = function() {
+                                originalDrawIfNeeded.call(root);
+                                theTestPage.drawHappened++;
+                                if(firstDraw) {
+                                    theTestPage.loaded = true;
+                                    // assign the application delegate to test so that the convenience methods work
+                                    if (! theTestPage.window.test && theTestPage.window.document.application) {
+                                        theTestPage.window.test = theTestPage.window.document.application.delegate;
                                     }
+                                    if (typeof testCallback === "function") {
+                                        if (test.firstDraw) {
+                                            resumeJasmineTests();
+                                        } else {
+                                            // francois HACK
+                                            // not sure how to deal with this
+                                            // if at first draw the page isn't complete the tests will fail
+                                            // so we wait an arbitrary 1s for subsequent draws to happen...
+                                            setTimeout(resumeJasmineTests, 1000);
+                                        }
+                                    }
+                                    firstDraw = false;
                                 }
-                                firstDraw = false;
                             };
+
+                            var pause = queryString("pause");
+                            if (firstDraw && decodeURIComponent(pause) === "true") {
+                                var handleKeyUp = function(event) {
+                                    if (event.which === 82) {
+                                        theTestPage.document.removeEventListener("keyup", handleKeyUp,false);
+                                        document.removeEventListener("keyup", handleKeyUp,false);
+                                        continueDraw()
+                                    }
+                                };
+                                theTestPage.document.addEventListener("keyup", handleKeyUp,false);
+                                document.addEventListener("keyup", handleKeyUp,false);
+                            } else {
+                                continueDraw();
+                            }
+
+
                             theTestPage.willNeedToDraw = false;
                         };
                         var originalAddToDrawList = root._addToDrawList;
