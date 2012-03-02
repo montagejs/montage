@@ -71,12 +71,12 @@ Object.defineProperty(M, "create", {
 
             var newObject = Object.create(typeof aPrototype === "undefined" ? this : aPrototype);
 
-            if (typeof newObject.didCreate === "function") {
-                newObject.didCreate();
-            }
-
             if (newObject._dependenciesForProperty) {
                 newObject._dependencyListeners = {};
+            }
+
+            if (typeof newObject.didCreate === "function") {
+                newObject.didCreate();
             }
 
             return newObject;
