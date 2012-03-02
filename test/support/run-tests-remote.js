@@ -10,7 +10,7 @@ var WEBDRIVER_HUB_HOST = "127.0.0.1",
     WEBDRIVER_HUB_PORT = "4444",
     BROWSER = "chrome";
 
-var TEST_URL = "127.0.0.1:80/montage/test/run-xml.html";
+var TEST_URL = "http://127.0.0.1:80/montage/test/run-xml.html";
 
 var DEBUG = false;
 
@@ -36,7 +36,12 @@ if (opts.length > 0) {
 var browser = wd.remote(WEBDRIVER_HUB_HOST, WEBDRIVER_HUB_PORT);
 
 // get the browser
-browser.init({browserName: BROWSER}).then(function(sessionId) {
+browser.init({
+    browserName: BROWSER,
+    "opera.binary": process.env.OPERA_BINARY,
+    "opera.port": 0,
+    "opera.profile": null
+}).then(function(sessionId) {
     return browser.get(TEST_URL);
 }).then(function() {
     // run the script
