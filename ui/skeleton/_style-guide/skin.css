@@ -1,0 +1,63 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+/* Montage Skin */
+
+/* A Skin is just a custom styling on top of the Montage Skeleton Theme */
+
+
+/* Button / Select ------------------------------- */
+.skin button,
+.skin select.skeleton {
+    color: #fff;
+    font-weight: bold;
+    border: 1px solid hsl(210,50%,50%);
+    box-shadow: inset 0 1px 0px hsla(0,0%,100%,.4), 0 1px 1px hsla(0,0%,0%,.3);
+    background-image: -webkit-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background-image:    -moz-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background-image:     -ms-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background-image:      -o-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background-image:         linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+}
+.skin button.skeleton[data-icon="camera"]::before { background-image: url(icons/camera-skin.png); }
+.skin button.skeleton[data-icon="time"]::before { background-image: url(icons/time-skin.png); }
+.skin button.skeleton[data-icon-label="search"]::before {
+    background-image: url(icons/search-skin.png);
+}
+.skin select.skeleton {
+    background: url(icons/select-skin.png) no-repeat right center, -webkit-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background: url(icons/select-skin.png) no-repeat right center,    -moz-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background: url(icons/select-skin.png) no-repeat right center,     -ms-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background: url(icons/select-skin.png) no-repeat right center,      -o-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background: url(icons/select-skin.png) no-repeat right center,         linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+}
+
+
+/* Checkbox / Radio ------------------------------- */
+.skin input.skeleton[type="checkbox"],
+.skin input.skeleton[type="radio"] {
+    border: 1px solid hsl(210,100%,50%);
+    background: hsl(210,100%,97%);
+    box-shadow: inset 0 1px 2px hsla(0,0%,0%,.3), 0 1px 0px hsla(0,0%,100%,.4);
+}
+.skin input.skeleton[type="checkbox"]:checked {
+    background: hsl(210,100%,97%) url(icons/checkbox.png) no-repeat center center;
+}
+.skin input.skeleton[type="radio"]:checked {
+    background: hsl(210,100%,97%) url(icons/radio.png) no-repeat center center;
+}
+
+
+/* Input Text + Password ------------------------------- */
+.skin input.skeleton[type="text"],
+.skin input.skeleton[type="password"],
+.skin input.skeleton[type="search"],
+.skin textarea.skeleton {
+    border: 1px solid hsl(210,100%,50%);
+    background-color: hsl(210,100%,97%);
+    box-shadow: inset 0 1px 2px hsla(0,0%,0%,.3), 0 1px 0px hsla(0,0%,100%,.4);
+    
+}

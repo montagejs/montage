@@ -1,6 +1,44 @@
-/* Montage Skeleton */
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
 
-button {
+/* Montage Skeleton Theme */
+
+.skeleton {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    border: 1px solid hsl(0,0%,75%);
+    background-color: hsl(0,0%,95%);
+    
+    /* Border Box: IE8+ */
+    -webkit-box-sizing: border-box; /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
+    -moz-box-sizing: border-box; /* -current */
+    box-sizing: border-box;
+}
+
+/* Icons ------------------------------- */
+.skeleton[data-icon],
+.skeleton[data-icon-label] {
+    position: relative; 
+}
+.skeleton[data-icon]::before,
+.skeleton[data-icon-label]::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.skeleton[data-icon-label]::before {
+    background-position: 10px center;
+}
+
+
+/* Button ------------------------------- */
+button.skeleton {
     height: 30px;
     min-width: 30px;
     line-height: 28px;
@@ -12,64 +50,92 @@ button {
     background-position: center center;
 }
 
-button[data-icon="camera"] { background-image: url(icons/camera.png); }
-button[data-icon="time"] { background-image: url(icons/time.png); }
-button[data-icon-label="search"] {
+
+/* Button + Icon ------------------------------- */
+button.skeleton[data-icon="camera"]::before { background-image: url(icons/camera.png); }
+button.skeleton[data-icon="time"]::before { background-image: url(icons/time.png); }
+
+
+/* Button + Icon + Label ------------------------------- */
+button.skeleton[data-icon-label] {
     padding-left: 30px;
-    background-position: 10px center;
+}
+button.skeleton[data-icon-label="search"]::before {
     background-image: url(icons/search.png);
 }
 
-.buttonGroup button {
+
+/* ButtonGroup ------------------------------- */
+.buttonGroup button.skeleton {
     margin: 0;
     border-radius: 0;
     margin-left: -1px;
 }
-.buttonGroup button:first-child {
+.buttonGroup button.skeleton:first-child {
     border-radius: 3px 0 0 3px;
 }
-.buttonGroup button:last-child {
+.buttonGroup button.skeleton:last-child {
     border-radius: 0 3px 3px 0;
 }
 
 
-input[type="checkbox"] {
+/* Checkbox ------------------------------- */
+input.skeleton[type="checkbox"] {
     width: 20px;
     height: 20px;
     border-radius: 3px;
+    vertical-align: middle;
 }
-input[type="checkbox"]:checked {
+input.skeleton[type="checkbox"]:checked {
     background: hsl(0,0%,95%) url(icons/checkbox.png) no-repeat center center;
 }
 
-input[type="radio"] {
+
+/* Label ------------------------------- */
+label.skeleton {
+    line-height: 20px;
+    vertical-align: middle;
+    
+    /* Remove */
+    background: transparent;
+    border: none;
+}
+
+
+/* Radio ------------------------------- */
+input.skeleton[type="radio"] {
     width: 20px;
     height: 20px;
     border-radius: 10px;
 }
-input[type="radio"]:checked {
+input.skeleton[type="radio"]:checked {
     background: hsl(0,0%,95%) url(icons/radio.png) no-repeat center center;
 }
 
-select {
+
+/* Select ------------------------------- */
+select.skeleton {
+    position: relative;
     height: 30px;
     padding: 0 20px 0 10px;
     border-radius: 3px;
     background: hsl(0,0%,95%) url(icons/select.png) no-repeat right center;
 }
 
-input[type="text"],
-input[type="url"],
-input[type="number"],
-input[type="date"],
-input[type="color"] {
+
+/* Input Text + Password ------------------------------- */
+input.skeleton[type="text"],
+input.skeleton[type="password"],
+input.skeleton[type="search"] {
     width: 150px;
     height: 30px;
     padding: 6px;
     background-color: hsl(0,0%,100%);
 }
 
-textarea {
+
+/* Textarea ------------------------------- */
+textarea.skeleton {
     width: 150px;
     min-width: 150px;
     height: 60px;
@@ -79,38 +145,31 @@ textarea {
     background-color: hsl(0,0%,100%);
 }
 
-input[type="search"] {
-    width: 120px;
+
+/* TextInput + Icon ------------------------------- */
+input.skeleton[data-icon] {
+    width: 150px;
     height: 30px;
-    border-radius: 3px 0 0 3px;    
-    padding: 0 4px 0 15px;
-    background: hsl(0,0%,100%) url(icons/search.png) no-repeat 5px center;
+    padding-left: 30px;
+    background-repeat: no-repeat;
+    background-position: 10px center;
 }
-input[type="search"] + button {
+input.skeleton[data-icon="password"] {
+    background-image: url(icons/password.png);
+}
+input.skeleton[data-icon="search"] {
+    background-image: url(icons/search.png);
+}
+
+
+/* TextButton Combo ------------------------------- */
+.tbCombo > input.skeleton {
+    width: 120px;
+    vertical-align: middle;
+    border-radius: 3px 0 0 3px;    
+}
+.tbCombo > button.skeleton {
     margin: 0;
     border-left: none;
     border-radius: 0 3px 3px 0;
-}
-
-input[type="file"] {
-    background-color: transparent;
-    border: none;
-}
-
-input[type="range"] {
-    width: 150px;
-    height: 20px;
-    border-radius: 10px;
-}
-
-progress {
-    width: 150px;
-    height: 20px;
-    border-radius: 10px;
-}
-
-meter {
-    width: 150px;
-    height: 20px;
-    border-radius: 10px;
 }

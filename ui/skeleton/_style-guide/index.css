@@ -1,11 +1,15 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
 
 @import url(http://fonts.googleapis.com/css?family=Homenaje);
 
 body {
     margin: 0;
+    color: #444;
     font: 13px/1.231 sans-serif;
-	max-width: 500px;
-	margin: 0 auto;
 	background-color: hsl(200,0%,90%);
 }
 
@@ -31,15 +35,23 @@ h1 span {
     display: inline-block;
 }
 
-ul {
+
+
+table {
+    margin: 0 auto;
     padding: 0;
     list-style: none;
     border-bottom: 1px solid hsla(0,0%,0%,.1);
 }
 
-li {
-    display: inline-block;
+td {
+    /display: inline-block;
     text-align: center;
     padding: 20px;
-    /border-top: 1px solid hsla(0,0%,0%,.1);
+    border-top: 1px solid hsla(0,0%,0%,.1);
+}
+
+audio,
+video {
+    width: 200px;
 }
