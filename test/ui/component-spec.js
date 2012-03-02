@@ -443,6 +443,16 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     expect(branchLeaf2.ownerComponent).toBe(branch);
                 });
             });
+
+            it("should be able to draw a component after being cleaned up", function() {
+                testPage.test.componentToBeCleaned.cleanupDeletedComponentTree();
+                testPage.test.componentToBeCleaned.text.value = "New Text";
+
+                testPage.waitForDraw();
+                runs(function() {
+                    expect(testPage.test.componentToBeCleaned.text._element.textContent).toBe("New Text");
+                })
+            })
         });
     });
 });
