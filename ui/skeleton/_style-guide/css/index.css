@@ -45,7 +45,6 @@ table {
 }
 
 td {
-    /display: inline-block;
     text-align: center;
     padding: 20px;
     border-top: 1px solid hsla(0,0%,0%,.1);

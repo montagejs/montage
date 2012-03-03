@@ -8,19 +8,34 @@
 
 /* A Skin is just a custom styling on top of the Montage Skeleton Theme */
 
+/* Colors ------------------------------- */
+@color: hsl(210,100%,50%);
+@input-color: lighten(@color, 47%);
+
+
+/* Mixins ------------------------------- */
+.linear-gradient(@from, @to) {
+    background-image: -webkit-linear-gradient(top, @from, @to );
+    background-image:    -moz-linear-gradient(top, @from, @to );
+    background-image:     -ms-linear-gradient(top, @from, @to );
+    background-image:      -o-linear-gradient(top, @from, @to );
+    background-image:         linear-gradient(top, @from, @to );
+}
+
+
+
+
+/* Skin -------------------------------------------------------------- */
+
 
 /* Button / Select ------------------------------- */
 .skin button,
 .skin select.skeleton {
     color: #fff;
     font-weight: bold;
-    border: 1px solid hsl(210,50%,50%);
+    border-color: desaturate(@color, 50%);
     box-shadow: inset 0 1px 0px hsla(0,0%,100%,.4), 0 1px 1px hsla(0,0%,0%,.3);
-    background-image: -webkit-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
-    background-image:    -moz-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
-    background-image:     -ms-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
-    background-image:      -o-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
-    background-image:         linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    .linear-gradient( lighten(@color, 20%), @color );    
 }
 .skin button.skeleton[data-icon="camera"]::before { background-image: url(../img/icons/camera-skin.png); }
 .skin button.skeleton[data-icon="time"]::before { background-image: url(../img/icons/time-skin.png); }
@@ -28,26 +43,26 @@
     background-image: url(../img/icons/search-skin.png);
 }
 .skin select.skeleton {
-    background: url(../img/icons/select-skin.png) no-repeat right center, -webkit-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
-    background: url(../img/icons/select-skin.png) no-repeat right center,    -moz-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
-    background: url(../img/icons/select-skin.png) no-repeat right center,     -ms-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
-    background: url(../img/icons/select-skin.png) no-repeat right center,      -o-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
-    background: url(../img/icons/select-skin.png) no-repeat right center,         linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) );
+    background: url(../img/icons/select-skin.png) no-repeat right center, -webkit-linear-gradient(top, lighten(@color, 20%), @color );
+    background: url(../img/icons/select-skin.png) no-repeat right center,    -moz-linear-gradient(top, lighten(@color, 20%), @color );
+    background: url(../img/icons/select-skin.png) no-repeat right center,     -ms-linear-gradient(top, lighten(@color, 20%), @color );
+    background: url(../img/icons/select-skin.png) no-repeat right center,      -o-linear-gradient(top, lighten(@color, 20%), @color );
+    background: url(../img/icons/select-skin.png) no-repeat right center,         linear-gradient(top, lighten(@color, 20%), @color );
 }
 
 
 /* Checkbox / Radio ------------------------------- */
 .skin input.skeleton[type="checkbox"],
 .skin input.skeleton[type="radio"] {
-    border: 1px solid hsl(210,100%,50%);
-    background: hsl(210,100%,97%);
+    border-color: @color;
+    background: @input-color;
     box-shadow: inset 0 1px 2px hsla(0,0%,0%,.3), 0 1px 0px hsla(0,0%,100%,.4);
 }
 .skin input.skeleton[type="checkbox"]:checked {
-    background: hsl(210,100%,97%) url(../img/icons/checkbox.png) no-repeat center center;
+    background: @input-color url(../img/icons/checkbox.png) no-repeat center center;
 }
 .skin input.skeleton[type="radio"]:checked {
-    background: hsl(210,100%,97%) url(../img/icons/radio.png) no-repeat center center;
+    background: @input-color url(../img/icons/radio.png) no-repeat center center;
 }
 
 
@@ -56,20 +71,18 @@
 .skin input.skeleton[type="password"],
 .skin input.skeleton[type="search"],
 .skin textarea.skeleton {
-    border: 1px solid hsl(210,100%,50%);
-    background-color: hsl(210,100%,97%);
+    border-color: @color;
+    background-color: @input-color;
     box-shadow: inset 0 1px 2px hsla(0,0%,0%,.3), 0 1px 0px hsla(0,0%,100%,.4); 
 }
 
 
 /* Progress ------------------------------- */
 .skin .skeleton[data-type="progress"] {
-    border: 1px solid hsl(210,100%,50%);
+    border-color: @color;
     box-shadow: inset 0 1px 0px hsla(0,0%,100%,.4), 0 1px 1px hsla(0,0%,0%,0);
-    background: hsl(210,100%,95%) -webkit-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) ) no-repeat center center;
-    background: hsl(210,100%,97%)    -moz-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) ) no-repeat center center;
-    background: hsl(210,100%,97%)     -ms-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) ) no-repeat center center;
-    background: hsl(210,100%,97%)      -o-linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) ) no-repeat center center;
-    background: hsl(210,100%,97%)         linear-gradient(top, hsl(210,100%,70%), hsl(210,100%,50%) ) no-repeat center center;
+    background-color: @input-color;
+    .linear-gradient( lighten(@color, 20%), @color );    
+    background-repeat: no-repeat;
     background-position: -75px center;
 }
