@@ -199,7 +199,7 @@
     <body>
         <div id="checkbox-example" class="checkbox-example">
             <div class="row">
-                <div class="span8">
+                <div class="span12">
                     <h3>Checkbox</h3>
                     <p>
                         The Checkbox component wraps an HTML checkbox input type with custom styles and functionality.
@@ -207,22 +207,166 @@
                 </div>
             </div>
 
-            <h4>Demo</h4>
+            <h4>Examples</h4>
 
-            <div class="demo">
+            <div class="demo cb1">
 
                 <form class="form-stacked">
                     <label class="checkbox inline"><input id="checkbox1" type="checkbox" /> Milk </label>
                     <label class="checkbox inline"><input id="checkbox2" type="checkbox" /> Eggs</label>
                 </form>
+                <ul class="sourcelinks">
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.cb1 #html', event);">html</a>
+                        <div class="sourceitem" id="html">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+&lt;form class="form-stacked"&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input id="checkbox1" type="checkbox" /&gt; Milk &lt;/label&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input id="checkbox2" type="checkbox" /&gt; Eggs&lt;/label&gt;
+&lt;/form&gt;
+                    </pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.cb1 #serialization', event);">serialization</a>
+                        <div class="sourceitem" id="serialization">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+{
+    "checkbox1": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "checkbox1"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
+    "checkbox2": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "checkbox2"},
+            "checked": true
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
+    "logger": {
+        "module": "logger.reel",
+        "name": "Logger",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    }
+}
+</pre>
+                        </div><!-- / -->
+                    </li>
+                </ul>
+            </div>
 
                 <h4>Binding the Checkbox to a Button's disabled state</h4>
+            <div class="demo cb2">
                 <form class="form-stacked">
                     <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label><br/>
                     <input type="submit" id="continue-button" value="Continue" class="btn" disabled />
                 </form>
 
+                <ul class="sourcelinks">
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.cb2 #html', event);">html</a>
+                        <div class="sourceitem" id="html">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+&lt;form class="form-stacked"&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input type="checkbox" id="agree-checkbox"/&gt; I agree to something&lt;/label&gt;&lt;br/&gt;
+    &lt;input type="submit" id="continue-button" value="Continue" class="btn" disabled /&gt;
+&lt;/form&gt;
+</pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.cb2 #serialization', event);">serialization</a>
+                        <div class="sourceitem" id="serialization">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+{
+    "agree-checkbox": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "agree-checkbox"}
+        }
+    },
+    "continue-button": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "continue-button"}
+        },
+        "bindings": {
+            "disabled": {
+                "boundObject": {"@": "agree-checkbox"},
+                "boundObjectPropertyPath": "checked",
+                "converter": {"@": "invert-converter"},
+                "oneway": true
+            }
+        }
+    },
+
+    "invert-converter": {
+        "module": "components/converters.reel",
+        "name": "InvertConverter"
+    }
+}
+                    </pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.cb2 #javascript', event);">javascript</a>
+                        <div class="sourceitem" id="javascript">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
+
+    allowPartialConversion: {
+        value: true
+    },
+
+    convert: {
+        enumerable: false,
+        value: function(v) {
+            return !v;
+        }
+    },
+
+    revert: {
+        value: function(v) {
+            return !v;
+        }
+    }
+});
+</pre>
+                        </div><!-- / -->
+                    </li>
+                </ul>
+
+            </div>
+
                 <h4>Using Checkbox to select multiple items within a Repetition </h4>
+            <div class="demo cb3">
                 <table id="list1" class="bordered-table">
                     <thead>
                         <tr>
@@ -244,6 +388,160 @@
                     <h5>Your selections: </h5>
                     <span id="selected-value"  style="width: 400px;"></span>
                 </div>
+
+                <ul class="sourcelinks">
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.cb3 #html', event);">html</a>
+                        <div class="sourceitem" id="html">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+&lt;table id="list1" class="bordered-table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Selection&lt;/th&gt;
+            &lt;th&gt;Name&lt;/th&gt;
+            &lt;th&gt;Description&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody id="table-row"&gt;
+        &lt;tr&gt;
+             &lt;td&gt;&lt;input type="checkbox" id="selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div&gt;
+    &lt;h5&gt;Your selections: &lt;/h5&gt;
+    &lt;span id="selected-value"  style="width: 400px;"&gt;&lt;/span&gt;
+&lt;/div&gt;
+</pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.cb3 #serialization', event);">serialization</a>
+                        <div class="sourceitem" id="serialization">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+{
+    "owner": {
+        "module": "components/checkbox-example.reel",
+        "name": "CheckboxExample",
+        "properties": {
+            "element": {"#": "checkbox-example"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        },
+        "bindings": {
+            "selectedItems": {
+                "boundObject": {"@": "controller"},
+                "boundObjectPropertyPath": "selectedObjects"
+            }
+        }
+    },
+
+    "controller": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "data",
+                "oneway": true
+            }
+        }
+    },
+
+    "list1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "controller"},
+            "axis": "horizontal"
+        }
+    },
+
+    "link": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
+                "oneway": true
+            },
+            "textContent": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+
+    "desc": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
+                "oneway": true
+            }
+        }
+    },
+
+
+    "selection": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "selection"}
+        },
+        "bindings": {
+            "checked": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "selectionAtCurrentIteration"
+            }
+        }
+    },
+
+    "selected-value": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "selected-value"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "jsonSelectedItems"
+            }
+        }
+    }
+
+}
+                    </pre>
+                        </div><!-- / -->
+                    </li>
+                </ul>
 
             </div>
             <section>

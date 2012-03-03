@@ -175,11 +175,11 @@
             </div>
 
             <h4>Demo</h4>
-            <div class="demo">
-            <p>
+            <div class="demo select1">
+<!--             <p>
                  Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
                  </p>
-
+ -->
                  <form class="form-stacked">
                      <label for="fname">First Name</label>
                      <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
@@ -211,6 +211,303 @@
                  </form>
 
                  <pre id="echo"></pre>
+                 <ul class="sourcelinks">
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.select1 #html', event);">html</a>
+                        <div class="sourceitem" id="html">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+&lt;form class="form-stacked"&gt;
+   &lt;label for="fname"&gt;First Name&lt;/label&gt;
+   &lt;input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/&gt;
+   &lt;label for="lname"&gt;Last Name&lt;/label&gt;
+   &lt;input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/&gt;
+
+   &lt;label for="dept"&gt;Department&lt;/label&gt;
+    &lt;select id="dept" required="true" multiple="true" size="3"&gt;
+        &lt;option&gt;Please select a Department&lt;/option&gt;
+    &lt;/select&gt;
+
+   &lt;label for="country"&gt;Country&lt;/label&gt;
+   &lt;select id="country" required&gt;
+       &lt;option value=""&gt;Please select a Country&lt;/option&gt;
+       &lt;option value="USA" selected="true"&gt;United States of America&lt;/option&gt;
+       &lt;option value="INR" &gt;India&lt;/option&gt;
+       &lt;option value="FR"&gt;France&lt;/option&gt;
+       &lt;option value="GER"&gt;Germany&lt;/option&gt;
+   &lt;/select&gt;
+
+   &lt;label for="state"&gt;State&lt;/label&gt;
+   &lt;select id="state" required="true"&gt;
+       &lt;option&gt;Please select a country...&lt;/option&gt;
+   &lt;/select&gt;
+
+   &lt;div style="margin-top: 10px;"&gt;
+       &lt;button class="btn" id="update"&gt;Update&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+</pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.select1 #serialization', event);">serialization</a>
+                        <div class="sourceitem" id="serialization">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+{
+    "owner": {
+        "module": "components/select-input-example.reel",
+        "name": "InputTextExample",
+        "properties": {
+            "element": {"#": "select-input-example"},
+            "statesController": {"@": "statesController"},
+            "dept": {"@": "dept"}
+        },
+        "bindings": {
+            "selectedCountry": {
+                "boundObject": {"@": "country"},
+                "boundObjectPropertyPath": "contentController.selectedObjects.0",
+                "oneway": true
+            },
+            "selectedState": {
+                "boundObject": {"@": "state"},
+                "boundObjectPropertyPath": "contentController.selectedObjects.0",
+                "oneway": true
+            },
+            "selectedDepts": {
+                "boundObject": {"@": "dept"},
+                "boundObjectPropertyPath": "contentController.selectedObjects"
+            }
+        }
+    },
+
+    "fname": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "fname"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "firstName",
+                "oneway": false
+            },
+            "title": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "firstName",
+                "oneway": false
+            }
+        }
+    },
+
+    "lname": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "lname"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "lastName",
+                "oneway": false
+            }
+        }
+    },
+
+    "dept": {
+        "module": "montage/ui/select-input.reel",
+        "name": "SelectInput",
+        "properties": {
+            "element": {"#": "dept"},
+            "textPropertyPath": "name",
+            "valuePropertyPath": "code"
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "departments",
+                "oneway": true
+            }
+        }
+    },
+
+
+    "statesController": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true,
+            "content": []
+        }
+    },
+
+    "state": {
+        "module": "montage/ui/select-input.reel",
+        "name": "SelectInput",
+        "properties": {
+            "element": {"#": "state"},
+            "contentController": {"@": "statesController"},
+            "textPropertyPath": "name",
+            "valuePropertyPath": "code"
+        }
+    },
+
+    "country": {
+        "module": "montage/ui/select-input.reel",
+        "name": "SelectInput",
+        "properties": {
+            "element": {"#": "country"}
+        }
+    },
+
+
+    "update": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "update"},
+            "identifier": "update"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    "echo": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "echo"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "json",
+                "oneway": "true"
+            }
+        }
+    }
+}
+</pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.select1 #javascript', event);">javascript</a>
+                        <div class="sourceitem" id="javascript">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.SelectInputExample = Montage.create(Component, {
+    json: {value: null},
+
+    firstName: {value: null},
+    lastName: {value: null},
+
+    departments: {
+        value: [
+            {name: 'Please select a Department', code: ''},
+            {name: 'Human Resources', code: 'HRD'},
+            {name: 'Software Engineering', code: 'SWE'},
+            {name: 'Hardware Engineering', code: 'HWE'},
+            {name: 'Finance', code: 'FIN'},
+            {name: 'Information Technology', code: 'IT'}
+        ]
+    },
+
+    dept: {value: null},
+
+    states: {
+        value: {
+            'USA': [
+                {name: 'Arizona', code: 'AZ'},
+                {name: 'Colorado', code: 'CO'},
+                {name: 'California', code: 'CA'},
+                {name: 'New York', code: 'NY'},
+                {name: 'Washington', code: 'WA'}
+            ],
+            'INR': [
+                {name: 'Kerala', code: 'KL'},
+                {name: 'Karnataka', code: 'KA'},
+                {name: 'Tamil Nadu', code: 'TN'},
+                {name: 'Andhra Pradesh', code: 'AP'},
+                {name: 'Goa', code: 'GO'}
+            ]
+        }
+    },
+
+    _selectedCountry: {value: null},
+    selectedCountry: {
+        get: function() {return this._selectedCountry;},
+        set: function(value) {
+            if(value && this._selectedCountry !== value) {
+                this._selectedCountry = value;
+                // update states list
+                var code = this._selectedCountry.value;
+                this.statesController.content = this.states[code];
+                // select the first option in the States dropdown
+                this.statesController.selectedIndexes = [0];
+            }
+        }
+    },
+
+    _selectedState: {value: null},
+    selectedState: {
+        get: function() {return this._selectedState;},
+        set: function(value) {
+            if(this._selectedState !== value) {
+                this._selectedState = value;
+            }
+        }
+    },
+
+    _selectedDepts: {value: null},
+    selectedDepts: {
+        get: function() {return this._selectedDepts;},
+        set: function(value) {
+            this._selectedDepts = (value || []);
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+
+            this.firstName = "John";
+            this.lastName = "FooBar";
+
+            this.dept.contentController.selectedIndexes = [2, 4, 5];
+            // The following code does not trigger the selection. The selection is
+            // managed by the contentController
+            //this.selectedDept = this.departments[3];
+
+        }
+    },
+
+    handleUpdateAction: {
+        value: function(event) {
+            event.preventDefault();
+            this.json = JSON.stringify({
+                firstName: this.firstName,
+                lastName: this.lastName,
+                country: this.selectedCountry,
+                state: this.selectedState,
+                departments: this.selectedDepts
+            });
+        }
+    }
+});
+</pre>
+                        </div><!-- / -->
+                    </li>
+                 </ul>
+
             </div>
 
             <section>

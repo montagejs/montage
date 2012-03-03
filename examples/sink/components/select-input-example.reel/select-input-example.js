@@ -88,11 +88,14 @@ exports.SelectInputExample = Montage.create(Component, {
             // managed by the contentController
             //this.selectedDept = this.departments[3];
 
+            // invoke pretty-fier
+            prettyPrint();
         }
     },
 
     handleUpdateAction: {
         value: function(event) {
+            event.preventDefault();
             this.json = JSON.stringify({
                 firstName: this.firstName,
                 lastName: this.lastName,

@@ -16,14 +16,13 @@ exports.TextareaExample = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
-            // Invoke Google pretty printer on source code samples
-            //prettyPrint();
 
             this.firstName = "Foo";
             this.lastName = "Bar";
-
-
             this.phoneReadOnly = true;
+
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
         }
     },
 
