@@ -28,7 +28,7 @@ h1 .logo {
     width: 75px;
     height: 60px;
     margin: 0 20px;
-    background: url(logo.png) no-repeat center center;
+    background: url(../img/logo.png) no-repeat center center;
 }
 
 h1 span {
@@ -38,7 +38,7 @@ h1 span {
 
 
 table {
-    margin: 0 auto;
+    margin: 0 auto 100px auto;
     padding: 0;
     list-style: none;
     border-bottom: 1px solid hsla(0,0%,0%,.1);

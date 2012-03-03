@@ -1,0 +1,279 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+/* Montage Skeleton Theme */
+/* Colors ------------------------------- */
+/* Layout ------------------------------- */
+/* Setup ------------------------------- */
+/* Theme -------------------------------------------------------------- */
+/* Icons ------------------------------- */
+.skeleton[data-icon], .skeleton[data-icon-label] {
+  position: relative;
+}
+.skeleton[data-icon]::before, .skeleton[data-icon-label]::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-repeat: no-repeat;
+  background-position: center center;
+}
+.skeleton[data-icon-label]::before {
+  background-position: 10px center;
+}
+/* Button ------------------------------- */
+button.skeleton {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  /* Border Box: IE8+ */
+
+  -webkit-box-sizing: border-box;
+  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
+
+  -moz-box-sizing: border-box;
+  /* -current */
+
+  box-sizing: border-box;
+  height: 30px;
+  min-width: 30px;
+  margin: 0 2px;
+  padding: 0 10px;
+  vertical-align: middle;
+  border-radius: 3px;
+  border: 1px solid #bfbfbf;
+  background-color: #f2f2f2;
+}
+/* Button + Icon ------------------------------- */
+button.skeleton[data-icon="camera"]::before {
+  background-image: url(../img/icons/camera.png);
+}
+button.skeleton[data-icon="time"]::before {
+  background-image: url(../img/icons/time.png);
+}
+/* Button + Icon + Label ------------------------------- */
+button.skeleton[data-icon-label] {
+  padding-left: 30px;
+}
+button.skeleton[data-icon-label="search"]::before {
+  background-image: url(../img/icons/search.png);
+}
+/* ButtonGroup ------------------------------- */
+.buttonGroup button.skeleton {
+  margin: 0;
+  border-radius: 0;
+  margin-left: -1px;
+}
+.buttonGroup button.skeleton:first-child {
+  border-radius: 3px 0 0 3px;
+}
+.buttonGroup button.skeleton:last-child {
+  border-radius: 0 3px 3px 0;
+}
+/* Checkbox ------------------------------- */
+input.skeleton[type="checkbox"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  /* Border Box: IE8+ */
+
+  -webkit-box-sizing: border-box;
+  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
+
+  -moz-box-sizing: border-box;
+  /* -current */
+
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  border-radius: 3px;
+  vertical-align: middle;
+  border: 1px solid #bfbfbf;
+}
+input.skeleton[type="checkbox"]:checked {
+  background: #f2f2f2 url(../img/icons/checkbox.png) no-repeat center center;
+}
+/* Label ------------------------------- */
+label.skeleton {
+  line-height: 20px;
+  vertical-align: middle;
+}
+/* Radio ------------------------------- */
+input.skeleton[type="radio"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  /* Border Box: IE8+ */
+
+  -webkit-box-sizing: border-box;
+  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
+
+  -moz-box-sizing: border-box;
+  /* -current */
+
+  box-sizing: border-box;
+  width: 20px;
+  height: 20px;
+  border-radius: 10px;
+  border: 1px solid #bfbfbf;
+}
+input.skeleton[type="radio"]:checked {
+  background: #f2f2f2 url(../img/icons/radio.png) no-repeat center center;
+}
+/* Select ------------------------------- */
+select.skeleton {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  /* Border Box: IE8+ */
+
+  -webkit-box-sizing: border-box;
+  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
+
+  -moz-box-sizing: border-box;
+  /* -current */
+
+  box-sizing: border-box;
+  position: relative;
+  height: 30px;
+  padding: 0 20px 0 10px;
+  border-radius: 3px;
+  border: 1px solid #bfbfbf;
+  background: #f2f2f2 url(../img/icons/select.png) no-repeat right center;
+}
+/* Input Text + Password ------------------------------- */
+input.skeleton[type="text"], input.skeleton[type="password"], input.skeleton[type="search"] {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  /* Border Box: IE8+ */
+
+  -webkit-box-sizing: border-box;
+  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
+
+  -moz-box-sizing: border-box;
+  /* -current */
+
+  box-sizing: border-box;
+  width: 150px;
+  height: 30px;
+  padding: 6px;
+  border: 1px solid #bfbfbf;
+  background-color: #ffffff;
+}
+/* Textarea ------------------------------- */
+textarea.skeleton {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  outline: none;
+  /* Border Box: IE8+ */
+
+  -webkit-box-sizing: border-box;
+  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
+
+  -moz-box-sizing: border-box;
+  /* -current */
+
+  box-sizing: border-box;
+  width: 150px;
+  min-width: 150px;
+  height: 60px;
+  min-height: 60px;
+  padding: 5px;
+  resize: both;
+  border: 1px solid #bfbfbf;
+  background-color: #ffffff;
+}
+/* TextInput + Icon ------------------------------- */
+input.skeleton[data-icon] {
+  width: 150px;
+  height: 30px;
+  padding-left: 30px;
+  background-repeat: no-repeat;
+  background-position: 10px center;
+}
+input.skeleton[data-icon="password"] {
+  background-image: url(../img/icons/password.png);
+}
+input.skeleton[data-icon="search"] {
+  background-image: url(../img/icons/search.png);
+}
+/* TextButton Combo ------------------------------- */
+.tbCombo > input.skeleton {
+  width: 120px;
+  vertical-align: middle;
+  border-radius: 3px 0 0 3px;
+}
+.tbCombo > button.skeleton {
+  margin: 0;
+  border-left: none;
+  border-radius: 0 3px 3px 0;
+}
+/* Number ------------------------------- */
+.skeleton[data-type="number"] {
+  position: relative;
+  display: inline-block;
+  width: 70px;
+  margin-right: 30px;
+}
+.skeleton[data-type="number"] > input.skeleton {
+  width: 70px;
+  vertical-align: middle;
+  border-radius: 3px 0 0 3px;
+}
+.skeleton[data-type="number"] > button.skeleton {
+  position: absolute;
+  margin: 0;
+  width: 15px;
+  height: 15px;
+  right: -30px;
+}
+.skeleton[data-type="number"] > button.plus {
+  border-width: 1px 1px 0 0;
+  border-radius: 0 3px 0 0;
+  top: 0px;
+}
+.skeleton[data-type="number"] > button.minus {
+  border-width: 1px 1px 1px 0;
+  border-radius: 0 0 3px 0;
+  bottom: 0px;
+}
+/* Range ------------------------------- */
+.skeleton[data-type="range"] {
+  position: relative;
+  display: inline-block;
+  width: 150px;
+  height: 4px;
+  border-radius: 3px;
+  border: 1px solid #bfbfbf;
+  background-color: #d9d9d9;
+}
+.skeleton[data-type="range"] > button.skeleton {
+  position: absolute;
+  box-sizing: border-box;
+  padding: 0;
+  margin: -8px -10px;
+  min-width: 0;
+  border-radius: 10px;
+  width: 20px;
+  height: 20px;
+  left: 50%;
+}
+/* Progress ------------------------------- */
+.skeleton[data-type="progress"] {
+  display: inline-block;
+  width: 150px;
+  height: 10px;
+  border-radius: 3px;
+  border: 1px solid #bfbfbf;
+  background: #d9d9d9 -webkit-linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
+  background: #d9d9d9 -moz-linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
+  background: #d9d9d9 -ms-linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
+  background: #d9d9d9 -o-linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
+  background: #d9d9d9 linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
+  background-position: -75px center;
+}

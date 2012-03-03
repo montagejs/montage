@@ -1,0 +1,279 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+
+/* Montage Skeleton Theme */
+
+
+/* Colors ------------------------------- */
+@bg-color: hsl(0,0%,95%);
+@textinput-bg-color: hsl(0,0%,100%);
+@border: 1px solid hsl(0,0%,75%);
+
+/* Layout ------------------------------- */
+@height: 30px;
+@border-radius: 3px;
+
+
+/* Setup ------------------------------- */
+
+.removeAppearance() {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+}
+.init() {
+    outline: none;
+    /* Border Box: IE8+ */
+    -webkit-box-sizing: border-box; /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
+    -moz-box-sizing: border-box; /* -current */
+    box-sizing: border-box;
+}
+
+
+
+
+/* Theme -------------------------------------------------------------- */
+
+
+/* Icons ------------------------------- */
+.skeleton[data-icon],
+.skeleton[data-icon-label] {
+    position: relative; 
+}
+.skeleton[data-icon]::before,
+.skeleton[data-icon-label]::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0; bottom: 0; left: 0;
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+.skeleton[data-icon-label]::before {
+    background-position: 10px center;
+}
+
+
+/* Button ------------------------------- */
+button.skeleton {
+    .removeAppearance();
+    .init();
+    height: @height;
+    min-width: @height;
+    margin: 0 2px;
+    padding: 0 round(@height/3);
+    vertical-align: middle;
+    border-radius: @border-radius;
+    border: @border;
+    background-color: @bg-color;
+}
+
+
+/* Button + Icon ------------------------------- */
+button.skeleton[data-icon="camera"]::before { background-image: url(../img/icons/camera.png); }
+button.skeleton[data-icon="time"]::before { background-image: url(../img/icons/time.png); }
+
+
+/* Button + Icon + Label ------------------------------- */
+button.skeleton[data-icon-label] {
+    padding-left: @height;
+}
+button.skeleton[data-icon-label="search"]::before {
+    background-image: url(../img/icons/search.png);
+}
+
+
+/* ButtonGroup ------------------------------- */
+.buttonGroup button.skeleton {
+    margin: 0;
+    border-radius: 0;
+    margin-left: -1px;
+}
+.buttonGroup button.skeleton:first-child {
+    border-radius: @border-radius 0 0 @border-radius;
+}
+.buttonGroup button.skeleton:last-child {
+    border-radius: 0 @border-radius @border-radius 0;
+}
+
+
+/* Checkbox ------------------------------- */
+input.skeleton[type="checkbox"] {
+    .removeAppearance();
+    .init();
+    width: 20px;
+    height: 20px;
+    border-radius: @border-radius;
+    vertical-align: middle;
+    border: @border;
+}
+input.skeleton[type="checkbox"]:checked {
+    background: hsl(0,0%,95%) url(../img/icons/checkbox.png) no-repeat center center;
+}
+
+
+/* Label ------------------------------- */
+label.skeleton {
+    line-height: 20px;
+    vertical-align: middle;
+}
+
+
+/* Radio ------------------------------- */
+input.skeleton[type="radio"] {
+    .removeAppearance();
+    .init();
+    width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    border: @border;
+}
+input.skeleton[type="radio"]:checked {
+    background: hsl(0,0%,95%) url(../img/icons/radio.png) no-repeat center center;
+}
+
+
+/* Select ------------------------------- */
+select.skeleton {
+    .removeAppearance();
+    .init();
+    position: relative;
+    height: @height;
+    padding: 0 20px 0 10px;
+    border-radius: @border-radius;
+    border: @border;
+    background: @bg-color url(../img/icons/select.png) no-repeat right center;
+}
+
+
+/* Input Text + Password ------------------------------- */
+input.skeleton[type="text"],
+input.skeleton[type="password"],
+input.skeleton[type="search"] {
+    .removeAppearance();
+    .init();
+    width: 150px;
+    height: @height;
+    padding: 6px;
+    border: @border;
+    background-color: @textinput-bg-color;
+}
+
+
+/* Textarea ------------------------------- */
+textarea.skeleton {
+    .removeAppearance();
+    .init();
+    width: 150px;
+    min-width: 150px;
+    height: 60px;
+    min-height: 60px;
+    padding: 5px;
+    resize: both;
+    border: @border;
+    background-color: @textinput-bg-color;
+}
+
+
+/* TextInput + Icon ------------------------------- */
+input.skeleton[data-icon] {
+    width: 150px;
+    height: @height;
+    padding-left: @height;
+    background-repeat: no-repeat;
+    background-position: 10px center;
+}
+input.skeleton[data-icon="password"] {
+    background-image: url(../img/icons/password.png);
+}
+input.skeleton[data-icon="search"] {
+    background-image: url(../img/icons/search.png);
+}
+
+
+/* TextButton Combo ------------------------------- */
+.tbCombo > input.skeleton {
+    width: 120px;
+    vertical-align: middle;
+    border-radius: @border-radius 0 0 @border-radius;    
+}
+.tbCombo > button.skeleton {
+    margin: 0;
+    border-left: none;
+    border-radius: 0 @border-radius @border-radius 0;
+}
+
+
+/* Number ------------------------------- */
+.skeleton[data-type="number"] {
+    position: relative;
+    display: inline-block;
+    width: 70px;
+    margin-right: @height;
+}
+
+.skeleton[data-type="number"] > input.skeleton {
+    width: 70px;
+    vertical-align: middle;
+    border-radius: @border-radius 0 0 @border-radius;
+}
+.skeleton[data-type="number"] > button.skeleton {
+    position: absolute;
+    margin: 0;
+    width: round(@height/2);
+    height: round(@height/2);
+    right: -@height;
+}
+.skeleton[data-type="number"] > button.plus {
+    border-width: 1px 1px 0 0;
+    border-radius: 0 @border-radius 0 0;
+    top: 0px;
+}
+.skeleton[data-type="number"] > button.minus {
+    border-width: 1px 1px 1px 0;
+    border-radius: 0 0 @border-radius 0;
+    bottom: 0px;
+}
+
+
+/* Range ------------------------------- */
+.skeleton[data-type="range"] {
+    position: relative;
+    display: inline-block;
+    width: 150px;
+    height: 4px;
+    border-radius: @border-radius;
+    border: @border;
+    background-color: hsl(0,0%,85%);
+}
+
+.skeleton[data-type="range"] > button.skeleton {
+    position: absolute;
+    box-sizing: border-box;
+    padding: 0;
+    margin: -8px -10px;
+    min-width: 0;
+    border-radius: 10px;
+    width: 20px;
+    height: 20px;
+    left: 50%;
+}
+
+
+/* Progress ------------------------------- */
+.skeleton[data-type="progress"] {
+    display: inline-block;
+    width: 150px;
+    height: 10px;
+    border-radius: @border-radius;
+    border: @border;
+    background: hsl(0,0%,85%) -webkit-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background: hsl(0,0%,85%)    -moz-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background: hsl(0,0%,85%)     -ms-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background: hsl(0,0%,85%)      -o-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background: hsl(0,0%,85%)         linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background-position: -75px center;
+}
+

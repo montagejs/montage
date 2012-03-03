@@ -5,9 +5,9 @@
 	<title>Montage Skeleton theme - Style guide</title>
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
-    <link rel="stylesheet" href="index.css">
-    <link rel="stylesheet" href="skeleton.css">
-    <link rel="stylesheet" href="skin.css">
+    <link rel="stylesheet" href="css/index.css">
+    <link rel="stylesheet" href="css/skeleton.css">
+    <link rel="stylesheet" href="css/skin.css">
 </head>
 
 <body>
@@ -190,10 +190,19 @@
                 <input type="number" value="0">
             </td>
             <td>
-                
+                <!-- Authored as: <input type="number"> -->
+                <span data-type="number" class="skeleton">
+                    <input type="text" value="0" class="skeleton">
+                    <button class="skeleton plus">+</button>
+                    <button class="skeleton minus">-</button>
+                </span>
             </td>
-            <td>
-                
+            <td class="skin">
+                <span data-type="number" class="skeleton">
+                    <input type="text" value="0" class="skeleton">
+                    <button class="skeleton plus">+</button>
+                    <button class="skeleton minus">-</button>
+                </span>
             </td>
         </tr>
         
@@ -204,10 +213,15 @@
                 <input type="range">
             </td>
             <td>
-                
+                <!-- Authored as: <input type="range"> -->
+                <span data-type="range" class="skeleton">
+                    <button class="skeleton"></button>
+                </span>
             </td>
-            <td>
-                
+            <td class="skin">
+                <span data-type="range" class="skeleton">
+                    <button class="skeleton"></button>
+                </span>
             </td>
         </tr>
         
@@ -218,38 +232,11 @@
                 <progress value="0.5"></progress>
             </td>
             <td>
-                
+                <!-- Authored as: <progress></progress> -->
+                <span data-type="progress" class="skeleton"></span>
             </td>
-            <td>
-                
-            </td>
-        </tr>
-
-
-        <!-- Audio -->
-        <tr>
-            <td>
-                <audio controls></audio>
-            </td>
-            <td>
-                
-            </td>
-            <td>
-                
-            </td>
-        </tr>
-        
-    
-        <!-- Video -->
-        <tr>
-            <td>
-                <video controls></video>
-            </td>
-            <td>
-                
-            </td>
-            <td>
-                
+            <td class="skin">
+                <span data-type="progress" class="skeleton"></span>
             </td>
         </tr>
         
