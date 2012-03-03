@@ -330,6 +330,18 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         serializable: true
     },
     /**
+     The identifier is the same as the name and is used to make the
+     serialization of a blueprint humane.
+     @type {Property}
+     @default {String} this.name
+     */
+    identifier: {
+        get: function () {
+            // TODO convert UpperCase to lower-case instead of lowercase
+            return this.name.toLowerCase();
+        }
+    },
+    /**
      Description TODO
      @function
      @param {String} name TODO
@@ -863,6 +875,21 @@ var Attribute = Montage.create(Montage, /** @lends module:montage/data/blueprint
     name: {
         get: function() {
             return this._name;
+        }
+    },
+    /**
+     The identifier is the name of the blueprint, dot, the name of the
+     attribute, and is used to make the serialization of attributes more
+     readable.
+     @type {Property}
+     @default {String} this.name
+     */
+    identifier: {
+        get: function () {
+            return [
+                this.blueprint.identifier,
+                this.name
+            ].join(".");
         }
     },
     /**
