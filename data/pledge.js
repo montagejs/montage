@@ -200,7 +200,7 @@ var PledgedSortedSet = exports.PledgedSortedSet = Montage.create(Pledge, /** @le
      Checks if the pledged array is empty.<br/>
      <b>Note:</b> This value is not constant as depending upon the type of backing store, the number of objects returned may vary over time.
      @function
-     @returns {Boolean} <code>true</code> if the array is not empty, <code>false</code> otherwise.
+     @returns {Boolean} <code>true</code> if the array is empty, <code>false</code> otherwise.
      */
     empty: {
         value: function () {
