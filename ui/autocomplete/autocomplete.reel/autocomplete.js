@@ -56,12 +56,87 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         distinct: true
     },
     
+    // width of the popup 
+    overlayWidth: {
+        value: null
+    },
+    
+    // overridden here to get the substring/searchString
+    value: {
+        get: function() {
+            return this._value;
+        },
+        set: function(newValue, fromInput) {
+            Object.getPropertyDescriptor(TextInput, "value").set.call(this, newValue, fromInput);
+            // get the entered text after the separator
+            var value = this._value;
+            if(fromInput) {
+                if(value) {
+                    var index = value.lastIndexOf(this.separator);
+                    this.searchTerm = value.substring(index);
+                } else {
+                    this.searchTerm = null;
+                }
+                
+            }
+        }
+    },
+    
+    _searchTerm: {value: null},
+    searchTerm: {
+        get: function() {
+            return this._searchTerm;
+        },
+        set: function(value) {
+            if(value !== this._searchTerm) {
+                this._searchTerm = value;
+                this.performSearch(); 
+                if(this._searchTerm) {
+                    this.activeItemIndex = null;
+                    this.popup.show(); 
+                } else {
+                    this.popup.hide();
+                }            
+            }            
+        }
+    },
+    
+    // -> resultsController.selectedIndexes
+    _activeIndexes: {value: null},
+    activeItemIndex: {
+        get: function() {
+            if(this._activeIndexes && this._activeIndexes.length > 0) {
+                return this._activeIndexes[0];
+            }
+            return null;
+        },
+        set: function(value) {
+            if(value == null) {
+                this._activeIndexes = [];
+            } else {
+                this._activeIndexes = [value];
+            }
+            
+        }
+    },
+    
+    suggestedValue: {
+        value: null
+    },
+    
     // private    
     
     popup: {
         value: null
     },
-
+    
+    // the delegate should set the suggestions. 
+    // suggestions -> resultsController.objects
+    suggestions: {
+        value: null
+    },
+    
+    // resultsController -> resultsList.contentController
     resultsController: {
         value: null
     },
@@ -73,15 +148,32 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     
     // --------
     
-    _getPopup: {
+    performSearch: {
         value: function() {
-            if(!this.popup) {
-                      
-            }                        
-            return this.popup;
+            if(this.delegate) {
+                // delegate must set the results on the AutoComplete                
+                var fn = this.identifier + 'ShouldGetSuggestions';
+                if(typeof this.delegate[fn] === 'function') {
+                    this.delegate[fn](this, this.searchTerm);
+                } else if(typeof this.delegate.shouldGetSuggestions === 'function') {
+                    this.delegate.shouldGetSuggestions(this, this.searchTerm);
+                } else {
+                    // error - d
+                }
+            }
         }
     },
     
+    selectSuggestedValue: {
+        value: function() {
+            if(this.suggestedValue) {
+                this.value = this.suggestedValue;
+                if(this.popup.displayed) {
+                    this.popup.hide();
+                }
+            }            
+        }
+    },
     
     _addEventListeners: {
         value: function() {
@@ -109,10 +201,16 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     
     _getPopup: {
         value: function() {
-            if(!this.popup) {
-                this.popup = Popup.create();
-                this.popup.content = this.resultsList;
-                this.popup.anchor = this.element;                
+            var popup = this.popup;
+            
+            if(!popup) {
+                popup = Popup.create();
+                popup.content = this.resultsList;
+                popup.anchor = this.element;  
+                // dont let the popup take away the focus
+                // we need the focus on the textfield
+                popup.focusOnShow = false;
+                this.popup = popup;
             }
             return this.popup;
             
@@ -122,16 +220,34 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     prepareForDraw: {
         enumerable: false,
         value: function() {            
-            this._addEventListeners();
-            
+            this._addEventListeners();            
+                        
             // create the Repetition for the suggestions
             this.resultsController = ArrayController.create();
-            this.resultsList = ResultsList.create();
+            Object.defineBinding(this.resultsController, "content", {
+                boundObject: this,
+                boundObjectPropertyPath: "suggestions",
+                oneway: true
+            });
+            Object.defineBinding(this.resultsController, "selectedIndexes", {
+                boundObject: this,
+                boundObjectPropertyPath: "_activeIndexes",
+                oneway: true
+            });
+            Object.defineBinding(this, "suggestedValue", {
+                boundObject: this.resultsController,
+                boundObjectPropertyPath: "selectedObjects.0",
+                oneway: true
+            });
             
+            this.resultsList = ResultsList.create();
+            Object.defineBinding(this.resultsList, "contentController", {
+                boundObject: this,
+                boundObjectPropertyPath: "resultsController",
+                oneway: true
+            });
             
             var popup = this._getPopup();
-            this.resultsController.content = ['One', 'Two', 'Three', 'Four']; // temp
-            //this.resultsList.contentController = this.resultsController;
         }
     },
 
@@ -162,10 +278,33 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             switch(code) {
                 case KEY_DOWN: 
                 if(popup.displayed == false) {
-                    popup.show();
+                    popup.show(); 
+                    this.activeItemIndex = 0;                   
+                } else {
+                    this.activeItemIndex++;
                 }
+                
                 break;
+                
+                case KEY_UP: 
+                if(popup.displayed == true) {
+                    this.activeItemIndex --;
+                    if(this.activeItemIndex < 0) {
+                        this.activeItemIndex = 0;
+                    }                   
+                }
+                
+                break;
+                
+                case KEY_ENTER:
+                if(popup.displayed == true) {
+                    this.selectSuggestedValue();
+                }
+                
+                break;
+                
             }
+            this.element.focus();
         }
     },
     

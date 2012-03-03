@@ -5,7 +5,8 @@
  </copyright> */
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
-
+    
+    
 exports.AutocompleteExample = Montage.create(Component, {
 
     json: {value: null},
@@ -13,6 +14,38 @@ exports.AutocompleteExample = Montage.create(Component, {
     country: {value: null},
     state: {value: null},
     info: {value: null},
+    
+    countryShouldGetSuggestions: {
+        value: function(autocomplete, searchTerm) {
+            
+            var results = [];
+            
+            if(searchTerm === 'a') {
+                results = ['Afghanistan', 'Algeria', 'Armenia'];
+            } else if(searchTerm === 'b') {
+                results = ['Bosnia', 'Belarus'];
+            } else {
+                results = ['USA', 'India'];
+            }
+            
+            autocomplete.suggestions = results;
+            
+        }
+    },
+    
+    stateShouldGetSuggestions: {
+        value: function(autocomplete, searchTerm) {
+            var results = [];
+            if(searchTerm === 'a') {
+                results = ['Arkansas', 'Arizona'];
+            } else if(searchTerm === 'c') {
+                results = ['California'];
+            } else {
+                results = ['New York', 'Utah', 'Oregon', 'Washington', 'Nevada'];
+            }
+            autocomplete.suggestions = results;
+        }
+    },
 
     prepareForDraw: {
         value: function() {

@@ -7,7 +7,9 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
 exports.ResultsList = Montage.create(Component, {
-
     
+    // contentController -> this.repetition.contentController
+    contentController: {value: null}
+
 
 });

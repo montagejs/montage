@@ -30,6 +30,13 @@
             "isSelectionEnabled": true,
             "contentController": {"@": "results"},
             "orientation": "vertical"
+        },
+        "bindings": {
+            "contentController": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "contentController",
+                "oneway": true
+            }
         }
     },
 
@@ -42,7 +49,7 @@
         "bindings": {
             "value": {
                 "boundObject": {"@": "repetition1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.text",
+                "boundObjectPropertyPath": "objectAtCurrentIteration",
                 "oneway": true
             }
         }
@@ -52,21 +59,46 @@
         "module": "montage/ui/autocomplete/results-list.reel",
         "name": "ResultsList",
         "properties": {
-            "element": {"#": "results-list"}            
+            "element": {"#": "results-list"},
+            "results": {"@": "results"}          
         }
     }
 }
     </script>
 
     <style>
-
+        div.results-list ul {
+            list-style: none;
+            margin: 0;
+            width: 200px;
+        }
+        div.results-list ul li {
+            border-bottom: 1px solid #eee;
+            border-top: 1px solid #eee;
+            cursor: default;
+            padding: 5px;
+        }
+        div.results-list ul li.active{
+            background-color: #fff;
+            cursor: pointer;
+        }
+        div.results-list ul .active {
+            background-color: #fff;
+            cursor: default;
+            font-weight: bold;
+        }
+        div.results-list ul .selected {
+            background-color: #fff;
+            cursor: default;
+            font-weight: bold;
+        }
 
     </style>
 
 
 </head>
 <body>
-    <div id="results-list">
+    <div id="results-list" class="results-list">
             <ul class="repetition" id="repetition1">
                 <li class="result-item" id="result-item"></li>
             </ul>
