@@ -66,7 +66,7 @@ var ActionEventListener = exports.ActionEventListener = Montage.create(Montage, 
 /**
     @private
 */
-    serializeSelf: {
+    serializeProperties: {
         value: function(serializer) {
             serializer.setReference("handler", this.handler);
             serializer.set("action", this.action);

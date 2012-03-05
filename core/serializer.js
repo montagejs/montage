@@ -120,7 +120,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     },
 
     /**
-     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
+     This function is to be used in the context of serializeProperties delegate used for custom object serializations.
      It adds an entry to the "properties" serialization unit of the object being serialized.
      @function
      @param {string} name The name of the entry to be added.
@@ -133,7 +133,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }},
 
     /**
-     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
+     This function is to be used in the context of serializeProperties delegate used for custom object serializations.
      It adds an entry to the "properties" serialization unit of the object being serialized. The value for this entry will be stored as a reference only and not the value itself.
      @function
      @param {string} name The name of the entry to be added.
@@ -154,7 +154,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }},
 
     /**
-     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
+     This function is to be used in the context of serializeProperties delegate used for custom object serializations.
      It serializes all properties specified as part of the "properties" serialization unit.
      @function
      @param {array} propertyNames The array with the property names to be serialized.
@@ -174,7 +174,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }},
 
     /**
-     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
+     This function is to be used in the context of serializeProperties delegate used for custom object serializations.
      It adds an object to be serialized into the current serialization.
      @function
      @param {object} object The object to be serialized.
@@ -352,10 +352,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 serializedUnits.object = this._serializeValue(name);
             }
 
-            if (typeof object.serializeSelf === "function") {
+            if (typeof object.serializeProperties === "function") {
                 this._pushContextObject(object);
                 this._pushContextObject({});
-                object.serializeSelf(this, Montage.getSerializablePropertyNames(object));
+                object.serializeProperties(this, Montage.getSerializablePropertyNames(object));
                 serializedUnits.properties = this._serializeObjectLiteral(this._popContextObject(), null, 3);
                 this._popContextObject();
             } else {

@@ -1183,7 +1183,7 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
         value: null
     },
 
-    serializeSelf: {value: function(serializer) {
+    serializeProperties: {value: function(serializer) {
         serializer.setReference("boundObject", this.boundObject);
         serializer.set("boundObjectPropertyPath", this.boundObjectPropertyPath);
         serializer.set("oneway", this.oneway);
