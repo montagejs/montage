@@ -49,11 +49,11 @@ exports.DistinctLiteralProp = Montage.create(Montage, {
 exports.Custom = Montage.create(Montage, {
     manchete: {value: 42},
 
-    serializeSelf: {value: function(serializer) {
+    serializeProperties: {value: function(serializer) {
         serializer.set("manchete", 226);
     }},
 
-    deserializeSelf: {value: function(serializer) {
+    deserializeProperties: {value: function(serializer) {
         this.manchete = serializer.get("manchete");
     }}
 });
@@ -61,18 +61,18 @@ exports.Custom = Montage.create(Montage, {
 exports.CustomRef = Montage.create(Montage, {
     object: {value: exports.Empty.create()},
 
-    serializeSelf: {value: function(serializer) {
+    serializeProperties: {value: function(serializer) {
         serializer.setReference("object", this.object);
     }},
 
-    deserializeSelf: {value: function(serializer) {
+    deserializeProperties: {value: function(serializer) {
         this.object = serializer.get("object");
     }}
 });
 
 exports.Singleton = Montage.create(Montage, {
     instance: {value: {another: "object"}},
-    deserializeSelf: {value: function(serializer) {
+    deserializeProperties: {value: function(serializer) {
         this.manchete = serializer.get("manchete");
         return this.instance;
     }}

@@ -942,7 +942,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     /**
      @private
      */
-    serializeSelf: {value: function(serializer) {
+    serializeProperties: {value: function(serializer) {
         serializer.set("owner", this._ownerSerialization);
         serializer.set("markup", this._document.body.innerHTML);
     }},
@@ -950,7 +950,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     /**
      @private
      */
-    deserializeSelf: {value: function(deserializer) {
+    deserializeProperties: {value: function(deserializer) {
         var markup = deserializer.get("markup"),
             owner = deserializer.get("owner"),
             _extends = deserializer.get("extends");

@@ -146,7 +146,7 @@ var testPage = TestPageLoader.queueTest("template", function() {
         it("should maintain external references", function() {
             var comp = Montage.create(Component),
                 rootComp = Montage.create(Component, {
-                    serializeSelf: {value: function(serializer) {
+                    serializeProperties: {value: function(serializer) {
                         serializer.setReference("object", comp);
                     }}
                 }),

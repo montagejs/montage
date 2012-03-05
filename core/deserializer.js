@@ -198,7 +198,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     },
 
     /**
-     This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.
+     This function is to be used in the context of deserializeProperties delegate used for custom object deserializations.
      It reads an entry from the "properties" serialization unit of the object being deserialized.
      @function
      @param {string} name The name of the entry to be read.
@@ -212,7 +212,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     }},
 
     /**
-    This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.
+    This function is to be used in the context of deserializeProperties delegate used for custom object deserializations.
      It deserializes all the named properties of a serialized object into the object given.
     @function
     @param {Object} object The target of the properties.
@@ -960,9 +960,9 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 */
     _deserializeProperties: {value: function(object, properties) {
         object.isDeserializing = true;
-        if (object.deserializeSelf) {
+        if (object.deserializeProperties) {
             this._pushContextObject(properties);
-            object.deserializeSelf(this);
+            object.deserializeProperties(this);
             this._popContextObject();
         } else {
             this.deserializePropertiesForObject(object, properties);

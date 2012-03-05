@@ -1125,22 +1125,22 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @function
     */
     setupIterationSerialization: {value: function() {
-        Montage.defineProperty(this, "serializeSelf", {value: this.serializeIteration});
+        Montage.defineProperty(this, "serializeProperties", {value: this.serializeIteration});
     }},
 /**
     Description TODO
     @function
     */
     setupIterationDeserialization: {value: function() {
-        //        Montage.defineProperty(this, "deserializeSelf", {value: this.deserializeIteration});
-        this.deserializeSelf = this.deserializeIteration;
+        //        Montage.defineProperty(this, "deserializeProperties", {value: this.deserializeIteration});
+        this.deserializeProperties = this.deserializeIteration;
     }},
 /**
     Description TODO
     @function
     */
     removeIterationSerialization: {value: function() {
-        delete this.serializeSelf;
+        delete this.serializeProperties;
     }},
 /**
     Description TODO
