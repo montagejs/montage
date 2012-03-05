@@ -325,15 +325,15 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                     i;
 
                 this._context = this.view.getContext("2d");
-                for (i = 0; i < 3 * 60 + 1; i++) {
+                for (i = 0; i < 3 * 30 + 1; i++) {
                     vectors[i] = [
                         Math.random() * 500,
                         Math.random() * 500,
                         Math.random() * 500
                     ];
                 }
-                for (i = 0; i < 60 + 1; i++) {
-                    densities[i] = 30;
+                for (i = 0; i < 30 + 1; i++) {
+                    densities[i] = 20;
                 }
                 this.flow.splinePath.vectors = vectors;
                 this.flow.splinePath.densities = densities;

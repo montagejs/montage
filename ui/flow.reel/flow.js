@@ -248,16 +248,15 @@ var Flow = exports.Flow = Montage.create(Component, {
                     }
                 }
             }
-            var densities = spline._densities;
+            var densities = spline._densities, d1, d2, dS, p1, p2, t1, t2;
             for (i = 0; i < r3.length; i++) {
-                var d1 = densities[r3[i][0]],
-                    d2 = densities[r3[i][0] + 1],
-                    dS = r3[i][0] ? spline._densitySummation[r3[i][0]-1] : 0,
-                    p1 = r3[i][1],
-                    p2 = r3[i][2],
-                    t1 = (d2 - d1) * p1 * p1 * .5 + p1 * d1 + dS,
-                    t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
-
+                d1 = densities[r3[i][0]];
+                d2 = densities[r3[i][0] + 1];
+                dS = r3[i][0] ? spline._densitySummation[r3[i][0]-1] : 0;
+                p1 = r3[i][1];
+                p2 = r3[i][2];
+                t1 = (d2 - d1) * p1 * p1 * .5 + p1 * d1 + dS;
+                t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
                 out.push([t1, t2]);
             }
             return out;
