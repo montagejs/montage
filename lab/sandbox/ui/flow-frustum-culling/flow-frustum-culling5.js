@@ -290,22 +290,25 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
             var spline = this.flow.splinePath,
                 self = this,
                 intersections,
-                time = new Date().getTime()/1500;
-                i;
+                time = new Date().getTime() / 1500,
+                i,
+                j;
 
             this.width = this.flow.width = 500;
             this.height = this.flow.height = 500;
             this.centralX = 250;
             this.centralY = 250;
+            this.flow.cameraFov = 80;
             this.flow.cameraPosition = [250, 250, 250];
             this.flow.cameraFocusPoint = [250+ Math.cos(time*1.71)*100, 250 + Math.sin(time*.3)*100, 250+ Math.sin(time*1.71)*100];
-            
-            intersections = this.flow._computeVisibleElements(),
             this._context.clearRect(0, 0, 500, 500);            
             this.drawSpline(spline);
-            
+            intersections = this.flow._computeVisibleRange();
             for (i = 0; i < intersections.length; i++) {
-                this.drawSegment(intersections[i]);
+                for (j = Math.ceil(intersections[i][0]); j < intersections[i][1]; j++) {
+                    var tmp = spline.getPositionAtTime(j);
+                    this._context.fillRect(tmp[0] - 1, tmp[1] - 1, 3, 3);
+                }
             }
             this.drawCamera();
             window.setTimeout(function () {
@@ -318,17 +321,23 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
         value: function () {
             if (this.flow.splinePath) {
                 var vectors = [],
+                    densities = [],
                     i;
 
                 this._context = this.view.getContext("2d");
-                for (i = 0; i < 3 * 200 + 1; i++) {
+                for (i = 0; i < 3 * 60 + 1; i++) {
                     vectors[i] = [
                         Math.random() * 500,
                         Math.random() * 500,
                         Math.random() * 500
                     ];
                 }
+                for (i = 0; i < 60 + 1; i++) {
+                    densities[i] = 30;
+                }
                 this.flow.splinePath.vectors = vectors;
+                this.flow.splinePath.densities = densities;
+                this.flow.splinePath._computeDensitySummation();
                 this.draw();
             } else {
                 var self = this;

@@ -189,7 +189,84 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    _computeVisibleElements: {
+    _computeVisibleRange: { // TODO: make it a loop
+        enumerable: false,
+        value: function () {
+            var spline = this._splinePath,
+                splineLength = spline.knotsLength - 1,
+                i, j;
+
+            var planeOrigin = this.cameraPosition,
+                normals = this._computeFrustumNormals(),
+                planeNormal1 = normals[0],
+                planeNormal2 = normals[1],
+                r, r2, r3 = [], out = [], tmp;
+
+            for (i = 0; i < splineLength; i++) {
+                r = spline.directedPlaneBezierIntersection(planeOrigin, normals[0],
+                    spline.vectors[0 + i * 3],
+                    spline.vectors[1 + i * 3],
+                    spline.vectors[2 + i * 3],
+                    spline.vectors[3 + i * 3]
+                );
+                if (r.length) {
+                    r2 = spline.directedPlaneBezierIntersection(
+                        planeOrigin,
+                        normals[1],
+                        spline.vectors[0 + i * 3],
+                        spline.vectors[1 + i * 3],
+                        spline.vectors[2 + i * 3],
+                        spline.vectors[3 + i * 3]
+                    );
+                    if (r2.length) {
+                        tmp = this._segmentsIntersection(r, r2);
+                        if (tmp.length) {
+                            r = spline.directedPlaneBezierIntersection(
+                                planeOrigin,
+                                normals[2],
+                                spline.vectors[0 + i * 3],
+                                spline.vectors[1 + i * 3],
+                                spline.vectors[2 + i * 3],
+                                spline.vectors[3 + i * 3]
+                            );
+                            tmp = this._segmentsIntersection(r, tmp);
+                            if (tmp.length) {
+                                r = spline.directedPlaneBezierIntersection(
+                                    planeOrigin,
+                                    normals[3],
+                                    spline.vectors[0 + i * 3],
+                                    spline.vectors[1 + i * 3],
+                                    spline.vectors[2 + i * 3],
+                                    spline.vectors[3 + i * 3]
+                                );
+                                tmp = this._segmentsIntersection(r, tmp);
+                                for (j = 0; j < tmp.length; j++) {
+                                    r3.push([i, tmp[j][0], tmp[j][1]]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            var densities = spline._densities, txt = "";
+            for (i = 0; i < r3.length; i++) {
+                var d1 = densities[r3[i][0]],
+                    d2 = densities[r3[i][0] + 1],
+                    dS = r3[i][0] ? spline._densitySummation[r3[i][0]-1] : 0,
+                    p1 = r3[i][1],
+                    p2 = r3[i][2],
+                    t1 = (d2 - d1) * p1 * p1 * .5 + p1 * d1 + dS,
+                    t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
+
+                out.push([t1, t2]);
+                txt+=out+" ";
+            }
+            document.getElementById("output").textContent = txt;
+            return out;
+        }
+    },
+
+/*    _computeVisibleElements: { // TODO: make it a loop
         enumerable: false,
         value: function () {
             var spline = this._splinePath,
@@ -203,9 +280,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 r, r2, r3 = [], tmp;
 
             for (i = 0; i < splineLength; i++) {
-                r = spline.directedPlaneBezierIntersection(
-                    planeOrigin,
-                    normals[0],
+                r = spline.directedPlaneBezierIntersection(planeOrigin, normals[0],
                     spline.vectors[0 + i * 3],
                     spline.vectors[1 + i * 3],
                     spline.vectors[2 + i * 3],
@@ -252,7 +327,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             }
             return r3;
         }
-    },
+    },*/
 
     prepareForDraw: {
         enumerable: false,
