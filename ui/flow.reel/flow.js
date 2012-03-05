@@ -248,7 +248,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     }
                 }
             }
-            var densities = spline._densities, txt = "";
+            var densities = spline._densities;
             for (i = 0; i < r3.length; i++) {
                 var d1 = densities[r3[i][0]],
                     d2 = densities[r3[i][0] + 1],
@@ -259,9 +259,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
 
                 out.push([t1, t2]);
-                txt+=out+" ";
             }
-            document.getElementById("output").textContent = txt;
             return out;
         }
     },
