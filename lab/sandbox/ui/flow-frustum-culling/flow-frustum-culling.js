@@ -54,8 +54,8 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
             for (i = 0; i < intersections.length; i++) {
                if ((intersections[i] >= 0) && (intersections[i] < 1)) {
                     this._context.fillRect(
-                        this.flow.splineTranslatePath.cubic(ax, bx, cx, dx, intersections[i]) - 1,
-                        this.flow.splineTranslatePath.cubic(ay, by, cy, dy, intersections[i]) - 1,
+                        this.flow.splinePath.cubic(ax, bx, cx, dx, intersections[i]) - 1,
+                        this.flow.splinePath.cubic(ay, by, cy, dy, intersections[i]) - 1,
                         3,
                         3
                     );
@@ -70,11 +70,11 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                 planeOrigin = [250, 250, 250],
                 planeNormal = [Math.cos(time), Math.sin(time), 0],
                 r, j,
-                spline = this.flow.splineTranslatePath,
+                spline = this.flow.splinePath,
                 self = this;
 
             this._context.clearRect(0, 0, 500, 500);
-            this.drawSpline(this.flow.splineTranslatePath);
+            this.drawSpline(this.flow.splinePath);
             this._context.beginPath();
             this._context.moveTo(planeOrigin[0] - planeNormal[1] * 1000 + .5, planeOrigin[1] + planeNormal[0] * 1000 + .5);
             this._context.lineTo(planeOrigin[0] + planeNormal[1] * 1000 + .5, planeOrigin[1] - planeNormal[0] * 1000 + .5);
@@ -104,7 +104,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
 
     start: {
         value: function () {
-            if (this.flow.splineTranslatePath) {
+            if (this.flow.splinePath) {
                 var vectors = [],
                     i;
 
@@ -116,7 +116,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                         Math.random() * 500
                     ];
                 }
-                this.flow.splineTranslatePath.vectors = vectors;
+                this.flow.splinePath.vectors = vectors;
                 this.draw();
             } else {
                 var self = this;

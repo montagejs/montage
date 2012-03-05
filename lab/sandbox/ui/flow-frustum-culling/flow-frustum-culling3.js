@@ -40,7 +40,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
 
     drawSegmentIntersections: {
         value: function (intersections, p0, p1, p2, p3) {
-            var spline = this.flow.splineTranslatePath,
+            var spline = this.flow.splinePath,
                 tmp,
                 i;
 
@@ -65,11 +65,11 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                 planeNormal1 = [Math.cos(time), Math.sin(time), 0],
                 planeNormal2 = [-Math.cos(time+2), -Math.sin(time+2), 0],
                 r, r2, r3, j, n, m, start, end,
-                spline = this.flow.splineTranslatePath,
+                spline = this.flow.splinePath,
                 self = this;
 
             this._context.clearRect(0, 0, 500, 500);
-            this.drawSpline(this.flow.splineTranslatePath);
+            this.drawSpline(this.flow.splinePath);
             this._context.beginPath();
             this._context.moveTo(planeOrigin[0] - planeNormal1[1] * 1000 + .5, planeOrigin[1] + planeNormal1[0] * 1000 + .5);
             this._context.lineTo(planeOrigin[0] + planeNormal1[1] * 1000 + .5, planeOrigin[1] - planeNormal1[0] * 1000 + .5);
@@ -150,7 +150,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
 
     start: {
         value: function () {
-            if (this.flow.splineTranslatePath) {
+            if (this.flow.splinePath) {
                 var vectors = [],
                     i;
 
@@ -162,7 +162,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                         Math.random() * 500
                     ];
                 }
-                this.flow.splineTranslatePath.vectors = vectors;
+                this.flow.splinePath.vectors = vectors;
                 this.draw();
             } else {
                 var self = this;

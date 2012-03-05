@@ -73,17 +73,17 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    _splineTranslatePath: {
+    _splinePath: {
         enumerable: false,
         value: null
     },
 
-    splineTranslatePath: {
+    splinePath: {
         get: function () {
-            return this._splineTranslatePath;
+            return this._splinePath;
         },
         set: function (value) {
-            this._splineTranslatePath = value;
+            this._splinePath = value;
             this.needsDraw = true;
         }
     },
@@ -108,13 +108,159 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: null
     },
 
+    elementsBoundingSphereRadius: {
+        value: 10
+    },
+
+    _computeFrustumNormals: {
+        value: function() {
+            var angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
+                x = Math.sin(angle),
+                z = Math.cos(angle),
+                y = x,
+                vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
+                vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
+                vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
+                yAngle = Math.PI/2 - Math.atan2(vZ, vX),
+                tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle),
+                rX, rY, rZ,
+                xAngle = Math.PI/2 - Math.atan2(tmpZ, vY),
+                iVector,
+                out = [],
+                i;
+
+            for (i = 0; i < 4; i++) {
+                iVector = [[z, 0, x], [-z, 0, x], [0, z, y], [0, -z, y]][i];
+                rX = iVector[0];
+                rY = iVector[1] * Math.cos(-xAngle) - iVector[2] * Math.sin(-xAngle);
+                rZ = iVector[1] * Math.sin(-xAngle) + iVector[2] * Math.cos(-xAngle);
+                out.push([
+                    rX * Math.cos(-yAngle) - rZ * Math.sin(-yAngle),
+                    rY,
+                    rX * Math.sin(-yAngle) + rZ * Math.cos(-yAngle)
+                ]);
+            }
+
+            return out;
+        }
+    },
+
+    _segmentsIntersection: { // TODO: re-write variable names
+        enumerable: false,
+        value: function (r, r2) {
+            var n = 0,
+                m = 0,
+                start,
+                end,
+                r3 = [];
+
+            while ((n < r.length) && (m < r2.length)) {
+                if (r[n][0] >= r2[m][1]) {
+                    m++;
+                } else {
+                    if (r[n][1] <= r2[m][0]) {
+                        n++;
+                    } else {
+                        if (r[n][0] >= r2[m][0]) {
+                            start = r[n][0];
+                        } else {
+                            start = r2[m][0];
+                        }
+                        if (r[n][1] <= r2[m][1]) {
+                            end = r[n][1];
+                        } else {
+                            end = r2[m][1];
+                        }
+                        r3.push([start, end]);
+                        if (r[n][1] < r2[m][1]) {
+                            n++;
+                        } else {
+                            if (r[n][1] > r2[m][1]) {
+                                m++;
+                            } else {
+                                n++;
+                                m++;
+                            }
+                        }
+                    }
+                }
+            }
+            return r3;
+        }
+    },
+
+    _computeVisibleElements: {
+        enumerable: false,
+        value: function () {
+            var spline = this._splinePath,
+                splineLength = spline.knotsLength - 1,
+                i, j;
+
+            var planeOrigin = this.cameraPosition,
+                normals = this._computeFrustumNormals(),
+                planeNormal1 = normals[0],
+                planeNormal2 = normals[1],
+                r, r2, r3 = [], tmp;
+
+            for (i = 0; i < splineLength; i++) {
+                r = spline.directedPlaneBezierIntersection(
+                    planeOrigin,
+                    normals[0],
+                    spline.vectors[0 + i * 3],
+                    spline.vectors[1 + i * 3],
+                    spline.vectors[2 + i * 3],
+                    spline.vectors[3 + i * 3]
+                );
+                if (r.length) {
+                    r2 = spline.directedPlaneBezierIntersection(
+                        planeOrigin,
+                        normals[1],
+                        spline.vectors[0 + i * 3],
+                        spline.vectors[1 + i * 3],
+                        spline.vectors[2 + i * 3],
+                        spline.vectors[3 + i * 3]
+                    );
+                    if (r2.length) {
+                        tmp = this._segmentsIntersection(r, r2);
+                        if (tmp.length) {
+                            r = spline.directedPlaneBezierIntersection(
+                                planeOrigin,
+                                normals[2],
+                                spline.vectors[0 + i * 3],
+                                spline.vectors[1 + i * 3],
+                                spline.vectors[2 + i * 3],
+                                spline.vectors[3 + i * 3]
+                            );
+                            tmp = this._segmentsIntersection(r, tmp);
+                            if (tmp.length) {
+                                r = spline.directedPlaneBezierIntersection(
+                                    planeOrigin,
+                                    normals[3],
+                                    spline.vectors[0 + i * 3],
+                                    spline.vectors[1 + i * 3],
+                                    spline.vectors[2 + i * 3],
+                                    spline.vectors[3 + i * 3]
+                                );
+                                tmp = this._segmentsIntersection(r, tmp);
+                                for (j = 0; j < tmp.length; j++) {
+                                    r3.push([i, tmp[j][0], tmp[j][1]]);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return r3;
+        }
+    },
+
     prepareForDraw: {
         enumerable: false,
         value: function () {
             var self = this;
 
-            if (!this._splineTranslatePath) {
-                this.splineTranslatePath = Object.create(FlowBezierSpline);
+            if (!this._splinePath) {
+                this.splinePath = Object.create(FlowBezierSpline);
             }
             this._repetitionComponents = this._repetition._childComponents;
             window.addEventListener("resize", function () {
@@ -166,8 +312,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                     "translate3d(" + (-this.cameraPosition[0]) + "px, " + (-this.cameraPosition[1]) + "px, " + (-this.cameraPosition[2]) + "px)";
                 this._isCameraUpdated = false;
             }
-            if (this._splineTranslatePath) {
-                this._splineTranslatePath._computeDensitySummation();
+            if (this._splinePath) {
+                this._splinePath._computeDensitySummation();
                 for (i = 0; i < length; i++) {
                     iStyle = this._repetitionComponents[i].element.style;
                     iOffset = this._offset.value(i);
@@ -176,7 +322,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     slide.speed = iOffset.speed;
                     iPath = {};
                     iPath.style = {};
-                    pos = this._splineTranslatePath.getPositionAtTime(slide.time / 300);
+                    pos = this._splinePath.getPositionAtTime(slide.time / 300);
                     if (pos) {
                         iPath.translateX = pos[0];
                         iPath.translateY = pos[1];
