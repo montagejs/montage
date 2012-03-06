@@ -29,6 +29,12 @@ exports.AutocompleteExample = Montage.create(Component, {
             }
             
             autocomplete.suggestions = results;
+            // to simulate API call
+            /*
+            setTimeout(function() {
+                autocomplete.suggestions = results;
+            }, 1000);
+            */
             
         }
     },

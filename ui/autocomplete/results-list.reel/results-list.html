@@ -11,15 +11,9 @@
         "module": "montage/ui/controller/array-controller",
         "properties": {
             "selectObjectsOnAddition": true,
-            "automaticallyOrganizeObjects": true,
-            "content": [
-                {"value": "images/IMG_1.jpg", "text": "Title One"},
-                {"value": "images/IMG_2.jpg", "text": "Title Two"},
-                {"value": "images/IMG_3.jpg", "text": "Title Three"}
-            ]
+            "automaticallyOrganizeObjects": true
         }
     },
-
     "repetition1": {
         "module": "montage/ui/repetition.reel",
         "name": "Repetition",
@@ -27,14 +21,19 @@
             "element": {
                 "#": "repetition1"
             },
-            "isSelectionEnabled": true,
             "contentController": {"@": "results"},
+            "isSelectionEnabled": true,
             "orientation": "vertical"
         },
         "bindings": {
             "contentController": {
                 "boundObject": {"@": "owner"},
                 "boundObjectPropertyPath": "contentController",
+                "oneway": true
+            },
+            "activeIndexes": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "activeIndexes",
                 "oneway": true
             }
         }
@@ -54,19 +53,45 @@
             }
         }
     },
+    
+    "loadingCard": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "loading"},
+            "value": "Loading ... please wait"
+        }
+    },
+    
+    "deck": {
+        "module": "montage/ui/substitution.reel",
+        "name": "Substitution",
+        "properties": {
+            "element": {"#": "deck"},
+            "switchComponents": {
+                "loading": {"@": "loadingCard"},
+                "results": {"@": "repetition1"}                
+            }
+        }
+    },
 
     "owner": {
         "module": "montage/ui/autocomplete/results-list.reel",
         "name": "ResultsList",
         "properties": {
             "element": {"#": "results-list"},
-            "results": {"@": "results"}          
+            "deck": {"@": "deck"}
         }
+        
+            
     }
 }
     </script>
 
     <style>
+        div.results-list {
+            min-width: 200px;
+        }
         div.results-list ul {
             list-style: none;
             margin: 0;
@@ -79,18 +104,18 @@
             padding: 5px;
         }
         div.results-list ul li.active{
-            background-color: #fff;
+            background-color: #eee;
+            color: #333;
             cursor: pointer;
-        }
-        div.results-list ul .active {
-            background-color: #fff;
-            cursor: default;
-            font-weight: bold;
         }
         div.results-list ul .selected {
             background-color: #fff;
             cursor: default;
             font-weight: bold;
+        }
+        div.results-list div.loading {
+            padding: 5px 10px;
+            
         }
 
     </style>
@@ -99,9 +124,12 @@
 </head>
 <body>
     <div id="results-list" class="results-list">
-            <ul class="repetition" id="repetition1">
-                <li class="result-item" id="result-item"></li>
-            </ul>
+            <div id="deck">
+                <ul class="repetition" id="repetition1">
+                    <li class="result-item" id="result-item"></li>
+                </ul>
+                <div id="loading" class="loading">Loading...please wait</div>
+            </div>            
     </div>
 
 </body>

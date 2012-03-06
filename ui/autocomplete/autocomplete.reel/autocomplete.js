@@ -61,6 +61,59 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         value: null
     },
     
+    
+    
+    //----  Private
+    
+    // valid values are 'loading', 'complete' and 'timeout'
+    // --> ResultList.loadingStatus
+    loadingStatus: {
+        value: null
+    },
+    
+    // the index of the token in the tokens Array that is being worked on
+    activeTokenIndex: {value: null},
+    
+    /** @private */
+    _findActiveTokenIndex: {
+        value: function(before, after) {
+            if(before == null || after == null) {
+                return 0;
+            }
+
+            //console.log('before arr', before);
+            //console.log('after arr', after);
+            
+            var i=0, len = after.length;
+            for(i=0; i< len; i++) {
+                if(i < before.length) {
+                    if(before[i] === after[i]) {
+                        continue;
+                    } else {
+                        break;
+                    }                    
+                }
+            }
+            return i;
+            
+        }
+    },
+    
+    _tokens: {value: null},
+    tokens: {
+        get: function() {
+            return this._tokens;
+        },
+        set: function(value) {
+            this._tokens = value; 
+            this.value = this._tokens.join(this.separator);                  
+        },
+        modify: function(v) {
+            this._tokens = v;
+        },
+        distinct: true
+    },
+    
     // overridden here to get the substring/searchString
     value: {
         get: function() {
@@ -70,38 +123,38 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             Object.getPropertyDescriptor(TextInput, "value").set.call(this, newValue, fromInput);
             // get the entered text after the separator
             var value = this._value;
-            if(fromInput) {
+            console.log('new value = ', value);
+            if(fromInput) {  
                 if(value) {
-                    var index = value.lastIndexOf(this.separator);
-                    this.searchTerm = value.substring(index);
+                    var arr = value.split(this.separator);
+                    this.activeTokenIndex = this._findActiveTokenIndex(this.tokens, arr); 
+                    console.log('active token = ', this.activeTokenIndex);
+                                       
+                    this._tokens = value.split(this.separator);
+                    
+                    if(this._tokens.length && this._tokens.length > 0) {
+                        var searchTerm = this._tokens[this.activeTokenIndex];
+                        console.log('searchTerm', searchTerm);
+                        if(searchTerm && searchTerm.trim() !== '') {
+                            this.loadingStatus = 'loading';
+                            this.performSearch(searchTerm);
+                            this.showPopup(); 
+                        }
+                        
+                    } else {
+                        this.hidePopup();
+                    }
+                    
                 } else {
-                    this.searchTerm = null;
+                    this.activeTokenIndex = 0;
+                    this._tokens = [];
                 }
                 
             }
         }
     },
     
-    _searchTerm: {value: null},
-    searchTerm: {
-        get: function() {
-            return this._searchTerm;
-        },
-        set: function(value) {
-            if(value !== this._searchTerm) {
-                this._searchTerm = value;
-                this.performSearch(); 
-                if(this._searchTerm) {
-                    this.activeItemIndex = null;
-                    this.popup.show(); 
-                } else {
-                    this.popup.hide();
-                }            
-            }            
-        }
-    },
-    
-    // -> resultsController.selectedIndexes
+    // -> resultsController.activeIndexes
     _activeIndexes: {value: null},
     activeItemIndex: {
         get: function() {
@@ -120,8 +173,28 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         }
     },
     
+
+    _suggestedValue: {value: null},
     suggestedValue: {
-        value: null
+        distinct: true,
+        get: function() {
+            return this._suggestedValue;
+        },
+        set: function(value) {            
+            if(value) {
+                this._suggestedValue = value;
+                var arr = this.tokens; 
+                console.log('got suggested value = ', this.suggestedValue);               
+                arr[this.activeTokenIndex] = this.suggestedValue;
+                console.log('arr after replacing value', arr);
+                
+                this.tokens = arr;
+                
+                if(this.popup.displayed) {
+                    this.hidePopup();
+                }
+            }
+        }
     },
     
     // private    
@@ -130,10 +203,33 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         value: null
     },
     
+    showPopup: {
+        value: function() {
+            this.popup.show();
+            //this.loadingStatus = 'loading';
+            // reset active index
+            this.activeItemIndex = 0;
+        }
+    },
+    
+    hidePopup: {
+        value: function() {
+            this.popup.hide();
+        }
+    },
+    
     // the delegate should set the suggestions. 
     // suggestions -> resultsController.objects
+    _suggestions: {value: null},
     suggestions: {
-        value: null
+        get: function() {
+            return this._suggestions;
+        },
+        set: function(value) {
+            console.log('got suggestions: ', value);            
+            this._suggestions = value;
+            this.loadingStatus = 'complete';
+        }
     },
     
     // resultsController -> resultsList.contentController
@@ -145,18 +241,17 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     resultsList: {
         value: null
     },
-    
-    // --------
-    
+        
     performSearch: {
-        value: function() {
+        value: function(searchTerm) {
             if(this.delegate) {
+                
                 // delegate must set the results on the AutoComplete                
                 var fn = this.identifier + 'ShouldGetSuggestions';
                 if(typeof this.delegate[fn] === 'function') {
-                    this.delegate[fn](this, this.searchTerm);
+                    this.delegate[fn](this, searchTerm);
                 } else if(typeof this.delegate.shouldGetSuggestions === 'function') {
-                    this.delegate.shouldGetSuggestions(this, this.searchTerm);
+                    this.delegate.shouldGetSuggestions(this, searchTerm);
                 } else {
                     // error - d
                 }
@@ -164,16 +259,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         }
     },
     
-    selectSuggestedValue: {
-        value: function() {
-            if(this.suggestedValue) {
-                this.value = this.suggestedValue;
-                if(this.popup.displayed) {
-                    this.popup.hide();
-                }
-            }            
-        }
-    },
     
     _addEventListeners: {
         value: function() {
@@ -229,11 +314,14 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 boundObjectPropertyPath: "suggestions",
                 oneway: true
             });
+            /*
             Object.defineBinding(this.resultsController, "selectedIndexes", {
                 boundObject: this,
-                boundObjectPropertyPath: "_activeIndexes",
+                boundObjectPropertyPath: "selectedIndexes",
                 oneway: true
             });
+            */
+            
             Object.defineBinding(this, "suggestedValue", {
                 boundObject: this.resultsController,
                 boundObjectPropertyPath: "selectedObjects.0",
@@ -244,6 +332,18 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             Object.defineBinding(this.resultsList, "contentController", {
                 boundObject: this,
                 boundObjectPropertyPath: "resultsController",
+                oneway: true
+            });
+            
+            Object.defineBinding(this.resultsList, "activeIndexes", {
+                boundObject: this,
+                boundObjectPropertyPath: "_activeIndexes",
+                oneway: true
+            });
+            
+            Object.defineBinding(this.resultsList, "loadingStatus", {
+                boundObject: this,
+                boundObjectPropertyPath: "loadingStatus",
                 oneway: true
             });
             
@@ -298,7 +398,9 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 
                 case KEY_ENTER:
                 if(popup.displayed == true) {
-                    this.selectSuggestedValue();
+                    this.resultsController.selectedIndexes = [this.activeItemIndex];
+                    //this.selectSuggestedValue();
+                    // select the currently active item in the results list
                 }
                 
                 break;

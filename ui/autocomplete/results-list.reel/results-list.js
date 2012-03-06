@@ -9,7 +9,47 @@ var Montage = require("montage").Montage,
 exports.ResultsList = Montage.create(Component, {
     
     // contentController -> this.repetition.contentController
-    contentController: {value: null}
+    contentController: {value: null},
+    
+    activeIndexes: {value: null},
+    
+    _deck: {value: null},
+    deck: {
+        get: function() {
+            return this._deck;
+        },
+        set: function(v) {
+            console.log('setting deck ', v);
+            this._deck = v;
+            this.needsDraw = true;
+        }
+    },
+    
+    _loadingStatus: {value: null},
+    loadingStatus: {
+        get: function() {
+            return this._loadingStatus;
+        },
+        set: function(status) {
+            console.log('setting new status ', status);
+            this._loadingStatus = status;
+            this.needsDraw = true;          
+            
+        }
+    },
+    
+    
+    draw: {
+        value: function() {
+            console.log('results list draw: ', this.loadingStatus);
+            if('complete' == this.loadingStatus) {                
+                this.deck.switchValue = 'results';                
+            } else {
+                this.deck.switchValue = 'loading';
+            }
+        }
+        
+    }
 
 
 });
