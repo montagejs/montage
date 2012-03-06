@@ -38,6 +38,9 @@ var browser = wd.remote(WEBDRIVER_HUB_HOST, WEBDRIVER_HUB_PORT);
 // get the browser
 browser.init({
     browserName: BROWSER,
+
+    "chrome.switches": ["--disable-popup-blocking"],
+
     "opera.binary": process.env.OPERA_BINARY,
     "opera.port": 0,
     "opera.profile": null
