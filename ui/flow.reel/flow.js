@@ -109,7 +109,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     elementsBoundingSphereRadius: {
-        value: 10
+        value: 15
     },
 
     _computeFrustumNormals: {
@@ -137,7 +137,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 out.push([
                     rX * Math.cos(-yAngle) - rZ * Math.sin(-yAngle),
                     rY,
-                    rX * Math.sin(-yAngle) + rZ * Math.cos(-yAngle)
+                    - rX * Math.sin(-yAngle) - rZ * Math.cos(-yAngle)     // TODO: Review this
                 ]);
             }
 
@@ -189,6 +189,19 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _normalize: {
+        enuemrable: false,
+        value: function (v) {
+            var tmp = 1 / Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
+
+            return [
+                v[0] * tmp,
+                v[1] * tmp,
+                v[2] * tmp
+            ];
+        }
+    },
+
     _computeVisibleRange: { // TODO: make it a loop
         enumerable: false,
         value: function () {
@@ -198,20 +211,31 @@ var Flow = exports.Flow = Montage.create(Component, {
 
             var planeOrigin = this.cameraPosition,
                 normals = this._computeFrustumNormals(),
-                planeNormal1 = normals[0],
-                planeNormal2 = normals[1],
+                mod,
                 r, r2, r3 = [], out = [], tmp;
 
             for (i = 0; i < splineLength; i++) {
-                r = spline.directedPlaneBezierIntersection(planeOrigin, normals[0],
+                mod = this._normalize(normals[0]);
+                r = spline.directedPlaneBezierIntersection(
+                    [
+                        planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
+                        planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
+                        planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
+                    ],
+                    normals[0],
                     spline.vectors[0 + i * 3],
                     spline.vectors[1 + i * 3],
                     spline.vectors[2 + i * 3],
                     spline.vectors[3 + i * 3]
                 );
                 if (r.length) {
+                    mod = this._normalize(normals[1]);
                     r2 = spline.directedPlaneBezierIntersection(
-                        planeOrigin,
+                        [
+                            planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
+                            planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
+                            planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
+                        ],
                         normals[1],
                         spline.vectors[0 + i * 3],
                         spline.vectors[1 + i * 3],
@@ -221,8 +245,13 @@ var Flow = exports.Flow = Montage.create(Component, {
                     if (r2.length) {
                         tmp = this._segmentsIntersection(r, r2);
                         if (tmp.length) {
+                            mod = this._normalize(normals[2]);
                             r = spline.directedPlaneBezierIntersection(
-                                planeOrigin,
+                                [
+                                    planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
+                                    planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
+                                    planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
+                                ],
                                 normals[2],
                                 spline.vectors[0 + i * 3],
                                 spline.vectors[1 + i * 3],
@@ -231,8 +260,13 @@ var Flow = exports.Flow = Montage.create(Component, {
                             );
                             tmp = this._segmentsIntersection(r, tmp);
                             if (tmp.length) {
+                                mod = this._normalize(normals[3]);
                                 r = spline.directedPlaneBezierIntersection(
-                                    planeOrigin,
+                                    [
+                                        planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
+                                        planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
+                                        planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
+                                    ],
                                     normals[3],
                                     spline.vectors[0 + i * 3],
                                     spline.vectors[1 + i * 3],
