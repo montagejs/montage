@@ -47,8 +47,9 @@ Require.read = function (url) {
 
     try {
         request.open(GET, url, true);
-        if (request.overrideMimeType)
+        if (request.overrideMimeType) {
             request.overrideMimeType(APPLICATION_JAVASCRIPT_MIMETYPE);
+        }
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
                 onload();
