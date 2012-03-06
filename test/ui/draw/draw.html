@@ -28,7 +28,8 @@
             "componentWithoutIdentifier": {"@": "componentWithoutIdentifier"},
             "componentWithIdentifier": {"@": "componentWithIdentifier"},
             "componentOwner": {"@": "componentOwner"},
-            "componentLayout": {"@": "componentLayout"}
+            "componentLayout": {"@": "componentLayout"},
+            "componentToBeCleaned": {"@": "componentToBeCleaned"}
         }
     },
     "repetition": {
@@ -153,6 +154,21 @@
             "hasTemplate": false
         }
     },
+    "componentToBeCleaned": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "component-tobeclean"},
+            "hasTemplate": false,
+            "text": {"@": "text1"}
+        }
+    },
+    "text1": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "text1"},
+            "value": "Text"
+        }
+    },
     "owner": {
         "module": "montage/ui/application",
         "name": "Application",
@@ -193,5 +209,9 @@
 <div id="component-layout"></div>
 <div id="component-layout-left">Left</div>
 <div id="component-layout-right">Right</div>
+<div id="component-tobeclean">
+    To Be Clean
+    <span data-montage-id="text1"></span>
+</div>
 </body>
 </html>

@@ -526,9 +526,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
                 Object.deleteBindings(component);
-                component.canDrawGate.setField("componentTreeLoaded", false);
-                component.blockDrawGate.setField("element", false);
-                component.blockDrawGate.setField("drawRequested", false);
                 component.needsDraw = false;
             });
         }
