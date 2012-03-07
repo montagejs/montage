@@ -42,7 +42,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this._content === value) {
                 return;
             }
-
             this._content = value;
 
             //TODO for right now assume that any content change invalidates the selection completely; we'll need to address this of course
@@ -519,9 +518,12 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 return null;
             }
 
-            this._selectedObjects = this.content.filter(function(value, i) {
-                return this._selectedContentIndexes.indexOf(i) >= 0;
-            }, this);
+            if(this.content) {
+                this._selectedObjects = this.content.filter(function(value, i) {
+                    return this._selectedContentIndexes.indexOf(i) >= 0;
+                }, this);
+            }
+            
 
             return this._selectedObjects;
         },
