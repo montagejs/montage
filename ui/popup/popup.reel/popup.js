@@ -23,6 +23,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     // anchor element to which this popup must be anchored to
     anchor: {value: null},
+    // # of pixels below the anchor to show the popup
+    spacingBelowAnchor: {
+        value: 1,
+        distinct: true
+    },
 
     // A Delegate to control positioning (and other features, in future) of the popup in a custom manner
     delegate: {value: null},
@@ -152,6 +157,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
         }
     },
+    
+    focusOnShow: {
+        value: true
+    },
+    
 /**
     Description TODO
     @function
@@ -225,7 +235,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                         var tgtWidth = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
 
                         position = {
-                            top: elPosition[1] + tgtHeight + 20 /* pointer */,
+                            top: elPosition[1] + tgtHeight + this.spacingBelowAnchor /* pointer */,
                             left: elPosition[0] + (tgtWidth / 2) - (elWidth / 2)
                         };
 
@@ -417,7 +427,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
                 this._positionPopup();
                 // focus the content to enable key events such as ENTER/ESC
-                this.content.element.focus();
+                if(this.focusOnShow === true) {
+                    this.content.element.focus();
+                }
 
             } else {
                 if(this.modal === true) {
