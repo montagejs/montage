@@ -34,13 +34,11 @@
                     "bindings": {
                         "value": {
                             "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "country",
-                            "oneway": false
+                            "boundObjectPropertyPath": "country"
                         },
                         "title": {
                             "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "country",
-                            "oneway": false
+                            "boundObjectPropertyPath": "country"
                         }
                     }
                 },
@@ -61,6 +59,25 @@
                         }
                     }
                 },
+                
+                "places": {
+                    "module": "montage/ui/autocomplete/autocomplete.reel",
+                    "name": "Autocomplete",
+                    "properties": {
+                        "element": {"#": "places"},
+                        "identifier": "places",
+                        "minLength": 2,
+                        "delegate": {"@": "owner"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "places",
+                            "oneway": false
+                        }
+                    }
+                },
+                
                 "update": {
                     "module": "montage/ui/button.reel",
                     "name": "Button",
@@ -122,9 +139,12 @@
 
                 <form class="form-stacked">
                      <label for="country">Country</label>
-                     <input type="text" placeholder="Select your Country" id="country" required  value="foo" style="width: 300px;" />
+                     <input type="text" placeholder="Select your Country" id="country" required   style="width: 300px;" />
                      <label for="state">State</label>
-                     <input type="text" placeholder="Select the State" id="state" value="bar" style="width: 300px;" />                     
+                     <input type="text" placeholder="Select the State" id="state"  style="width: 300px;" />   
+                     
+                     <label for="places">Places</label>
+                     <input type="text" placeholder="Select your Places" id="places"  style="width: 300px;" />                  
 
                      <div style="margin-top: 10px;">
                           <button class="btn" id="update" type="button">Update</button>

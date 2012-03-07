@@ -65,6 +65,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     
     //----  Private
     
+    delayTimer: {value: null},
+    
     // valid values are 'loading', 'complete' and 'timeout'
     // --> ResultList.loadingStatus
     loadingStatus: {
@@ -106,7 +108,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         },
         set: function(value) {
             this._tokens = value; 
-            this.value = this._tokens.join(this.separator);                  
+            this.value = this._tokens.join(this.separator);  
+            this.needsDraw = true;                
         },
         modify: function(v) {
             this._tokens = v;
@@ -120,36 +123,62 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             return this._value;
         },
         set: function(newValue, fromInput) {
-            Object.getPropertyDescriptor(TextInput, "value").set.call(this, newValue, fromInput);
+            this._value = newValue;
+            //Object.getPropertyDescriptor(TextInput, "value").set.call(this, newValue, fromInput);
+            
+            console.log('setting value - ', newValue, fromInput, this._value);
+            
             // get the entered text after the separator
             var value = this._value;
-            console.log('new value = ', value);
             if(fromInput) {  
                 if(value) {
-                    var arr = value.split(this.separator);
+                    var arr = value.split(this.separator).map(function(item) {
+                        return item.trim();
+                    });
                     this.activeTokenIndex = this._findActiveTokenIndex(this.tokens, arr); 
                     console.log('active token = ', this.activeTokenIndex);
                                        
-                    this._tokens = value.split(this.separator);
+                    this._tokens = value.split(this.separator).map(function(item) {
+                        return item.trim();
+                    });
                     
                     if(this._tokens.length && this._tokens.length > 0) {
                         var searchTerm = this._tokens[this.activeTokenIndex];
                         console.log('searchTerm', searchTerm);
-                        if(searchTerm && searchTerm.trim() !== '') {
-                            this.loadingStatus = 'loading';
-                            this.performSearch(searchTerm);
-                            this.showPopup(); 
-                        }
-                        
+                        if(searchTerm && searchTerm.trim() !== '' && searchTerm.length > this.minLength) { 
+                            
+                            var self = this;
+                            if(!this.delayTimer) {
+                                this.delayTimer = setTimeout(function() {
+                                    self.delayTimer = null;
+                                    //if(!self.popup.displayed) {
+                                        self.performSearch(searchTerm);
+                                    //}
+                                    
+                                }, this.delay);
+                            }
+                                                       
+                            
+                        } else {
+                            this.showPopup = false;
+                        }                      
                     } else {
-                        this.hidePopup();
+                        this.showPopup = false;
                     }
                     
                 } else {
                     this.activeTokenIndex = 0;
                     this._tokens = [];
+                    this.showPopup = false;
                 }
                 
+            }
+            
+            if(fromInput) {
+                this._valueSyncedWithInputField = true;
+            } else {
+                this._valueSyncedWithInputField = false;
+                this.needsDraw = true;
             }
         }
     },
@@ -189,10 +218,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 console.log('arr after replacing value', arr);
                 
                 this.tokens = arr;
-                
-                if(this.popup.displayed) {
-                    this.hidePopup();
-                }
+                this.showPopup = false;
             }
         }
     },
@@ -203,18 +229,16 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         value: null
     },
     
+    _showPopup: {value: null},
     showPopup: {
-        value: function() {
-            this.popup.show();
-            //this.loadingStatus = 'loading';
-            // reset active index
-            this.activeItemIndex = 0;
-        }
-    },
-    
-    hidePopup: {
-        value: function() {
-            this.popup.hide();
+        get: function() {
+            return this._showPopup;
+        },
+        set: function(value) {
+            if(value !== this._showPopup) {
+                this._showPopup = value;
+                this.needsDraw = true;
+            }            
         }
     },
     
@@ -228,6 +252,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         set: function(value) {
             console.log('got suggestions: ', value);            
             this._suggestions = value;
+            //this.loadingStatus = 'complete';
             this.loadingStatus = 'complete';
         }
     },
@@ -245,7 +270,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     performSearch: {
         value: function(searchTerm) {
             if(this.delegate) {
-                
+                this.loadingStatus = 'loading';
+                this.showPopup = true;
                 // delegate must set the results on the AutoComplete                
                 var fn = this.identifier + 'ShouldGetSuggestions';
                 if(typeof this.delegate[fn] === 'function') {
@@ -305,7 +331,9 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     prepareForDraw: {
         enumerable: false,
         value: function() {            
-            this._addEventListeners();            
+            this._addEventListeners(); 
+            
+            this.delay = this.delay || 500; // default delay           
                         
             // create the Repetition for the suggestions
             this.resultsController = ArrayController.create();
@@ -314,13 +342,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 boundObjectPropertyPath: "suggestions",
                 oneway: true
             });
-            /*
-            Object.defineBinding(this.resultsController, "selectedIndexes", {
-                boundObject: this,
-                boundObjectPropertyPath: "selectedIndexes",
-                oneway: true
-            });
-            */
+
             
             Object.defineBinding(this, "suggestedValue", {
                 boundObject: this.resultsController,
@@ -366,6 +388,17 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
             var fn = Object.getPrototypeOf(Autocomplete).draw;
             fn.call(this);
+            
+            if(this.showPopup) {
+                this.popup.show();
+                // reset active index
+                this.activeItemIndex = 0;
+            } else {
+                if(this.popup.displayed) {
+                    this.popup.hide();
+                }                
+            }
+            
         }
     },
     
@@ -381,17 +414,24 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                     popup.show(); 
                     this.activeItemIndex = 0;                   
                 } else {
-                    this.activeItemIndex++;
+                    var list = this.suggestions || [];
+                    if(list.length > 0 && this.activeItemIndex < list.length-1) {
+                        this.activeItemIndex++;
+                    } else {
+                        this.activeItemIndex = 0;
+                    }
+                    
                 }
                 
                 break;
                 
                 case KEY_UP: 
-                if(popup.displayed == true) {
-                    this.activeItemIndex --;
-                    if(this.activeItemIndex < 0) {
+                if(popup.displayed == true) {                    
+                    if(this.activeItemIndex > 0) {
+                        this.activeItemIndex --;                        
+                    } else {
                         this.activeItemIndex = 0;
-                    }                   
+                    }
                 }
                 
                 break;

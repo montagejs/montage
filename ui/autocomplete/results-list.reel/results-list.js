@@ -33,8 +33,21 @@ exports.ResultsList = Montage.create(Component, {
         set: function(status) {
             console.log('setting new status ', status);
             this._loadingStatus = status;
-            this.needsDraw = true;          
+            //this.needsDraw = true;  
+            if(this.deck) {
+                this.showCardForStatus();
+            }        
             
+        }
+    },
+    
+    showCardForStatus: {
+        value: function() {
+            if('complete' == this.loadingStatus) {                
+                this.deck.switchValue = 'results';                
+            } else {
+                this.deck.switchValue = 'loading';
+            }
         }
     },
     
@@ -42,11 +55,7 @@ exports.ResultsList = Montage.create(Component, {
     draw: {
         value: function() {
             console.log('results list draw: ', this.loadingStatus);
-            if('complete' == this.loadingStatus) {                
-                this.deck.switchValue = 'results';                
-            } else {
-                this.deck.switchValue = 'loading';
-            }
+            
         }
         
     }
