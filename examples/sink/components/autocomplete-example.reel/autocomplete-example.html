@@ -60,19 +60,19 @@
                     }
                 },
                 
-                "places": {
+                "members": {
                     "module": "montage/ui/autocomplete/autocomplete.reel",
                     "name": "Autocomplete",
                     "properties": {
-                        "element": {"#": "places"},
-                        "identifier": "places",
-                        "minLength": 2,
+                        "element": {"#": "members"},
+                        "identifier": "members",
+                        "minLength": 1,
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
                         "value": {
                             "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "places",
+                            "boundObjectPropertyPath": "members",
                             "oneway": false
                         }
                     }
@@ -143,8 +143,8 @@
                      <label for="state">State</label>
                      <input type="text" placeholder="Select the State" id="state"  style="width: 300px;" />   
                      
-                     <label for="places">Places</label>
-                     <input type="text" placeholder="Select your Places" id="places"  style="width: 300px;" />                  
+                     <label for="members">Select Members (type Ari, Mar)</label>
+                     <input type="text" placeholder="Select members" id="members"  style="width: 300px;" />                  
 
                      <div style="margin-top: 10px;">
                           <button class="btn" id="update" type="button">Update</button>

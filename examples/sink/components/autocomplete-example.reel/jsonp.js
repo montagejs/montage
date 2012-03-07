@@ -51,6 +51,7 @@ var JSONP = (function(){
 exports.JSONP = Montage.create(Montage, {
    request: {
        value: function(url, params, callback) {
+           console.log('jsonp request', url, params);
            JSONP.get(url, params, callback);
        }
    } 

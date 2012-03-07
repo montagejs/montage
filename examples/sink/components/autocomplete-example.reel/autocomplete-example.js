@@ -51,7 +51,7 @@ exports.AutocompleteExample = Montage.create(Component, {
 
     country: {value: null},
     state: {value: null},
-    places: {value: null},
+    members: {value: null},
     info: {value: null},
 
     countryShouldGetSuggestions: {
@@ -97,22 +97,24 @@ exports.AutocompleteExample = Montage.create(Component, {
         }
     },
 
-    placesShouldGetSuggestions: {
+    membersShouldGetSuggestions: {
         value: function(autocomplete, searchTerm) {
             var results = [];
-            //var uri = 'http://jqueryui.com/demos/autocomplete/search.php';
-            //var uri = 'http://api.twitter.com/1/geo/search.json';
-            /*
+            // The data set is based on https://www.google.com/fusiontables/DataSource?docid=1QJT7Wi2oj5zBgjxb2yvZWA42iNPUvnvE8ZOwhA
+            // Google fusion tables # 383121. However Google's API returns a CSV. So need to use this app to convert to json
+            var query = "SELECT FirstName,LastName from 383121 where FirstName like '%" + searchTerm + "%'"; //" OR LastName like '%" + searchTerm + "%'";
+            var uri = 'http://ft2json.appspot.com/q?sql=' + encodeURIComponent(query);
+                        
             console.log('searching ...', uri);
             var xhr = request(uri, 'get');
             xhr.onload = function(e) {
                try {
                    var data;
-                   data = JSON.parse(this.response);
+                   data = JSON.parse(this.response).data;
                    var result = [];
                    if(data && data.length > 0) {
                        result = data.map(function(item) {
-                           return item.label;
+                           return item.FirstName + ' ' + item.LastName;
                        });
                    }
                    autocomplete.suggestions = result;
@@ -130,20 +132,21 @@ exports.AutocompleteExample = Montage.create(Component, {
                 console.log('xhr errored out');
                autocomplete.suggestions = [];
             };
-            */
+            
 
-            JSONP.request('https://api.twitter.com/1/geo/search.json', {query: searchTerm, granularity: 'city'}, function(data) {
+            /*
+            JSONP.request(, null, function(data) {
                 var result = [];
                 console.log('received data', data);
-                if(data && data.result && data.result.places && data.result.places.length > 0) {
+                if(data && data.length > 0) {
                     result = data.result.places.map(function(item) {
-                        return item.name;
+                        return item.FirstName;
                     });
                 }
                 console.log('result', result);
                 autocomplete.suggestions = result;
             });
-
+            */
 
         }
     },
@@ -160,7 +163,7 @@ exports.AutocompleteExample = Montage.create(Component, {
             this.json = JSON.stringify({
                 country: this.country,
                 state: this.state,
-                places: this.places,
+                members: this.members,
                 info: this.info
 
             });
