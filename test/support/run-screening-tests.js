@@ -32,6 +32,32 @@ if (opts.length > 0) {
     TEST_URL = opts.shift() || TEST_URL;
 }
 
+var walk = function(dir, done) {
+  var results = [];
+  fs.readdir(dir, function(err, list) {
+    if (err) {
+        return done(err);
+    }
+    var i = 0;
+    (function next() {
+      var file = list[i++];
+      if (!file) return done(null, results);
+      file = dir + '/' + file;
+      fs.stat(file, function(err, stat) {
+        if (stat && stat.isDirectory()) {
+          walk(file, function(err, res) {
+            results = results.concat(res);
+            next();
+          });
+        } else {
+          results.push(file);
+          next();
+        }
+      });
+    })();
+  });
+};
+
 // setup
 var screening_request = function(path, method, body) {
     var joinChar = (path.indexOf("?") === -1) ? "?" : "&";
@@ -89,20 +115,101 @@ function escapeInvalidXmlChars(str) {
         .replace(/\'/g, "&apos;");
 }
 
-// Load all *-screening.js files here
-var scripts  = [];
-scripts.push(fs.readFileSync("../ui/temp-converter-screening.js", "utf8"));
+function generateJunitXml(result) {
+    // get or create xml and save to file
 
+    console.log("generateJunitXml", result.fileName);
+    var filename;
+    var output = "";
 
-screening_request("scripts?name=config.js").then(function(data) {
-    // Delete existing config.js scripts
-    if (data.length >= 1) {
-        var ps = [];
-        for (var i = 0, len = data.length; i < len; i++) {
-            ps.push(screening_request("scripts/"+data[i]._id, "DELETE"));
+    // building xml by concatenating strings, woo!
+    // but seriously, this is a really bad idea, but I don't want to include a
+    // full library just for this.
+    output += '<testsuite>\n';
+
+    var asserts = result.asserts;
+    for (var i = 0, len = asserts.length; i < len; i++) {
+        var assert = asserts[i];
+
+        filename = assert.fileName;
+        var short_message = assert.assertType+'('+assert.expectedValue+', '+assert.actualValue+')';
+        if (assert.message !== null) {
+            short_message = assert.message.split("\n", 1)[0];
         }
-        return Q.all(ps);
+
+        if (assert.success) {
+            output += '  <testcase classname="'+ filename +'" name="' + escapeInvalidXmlChars(short_message) + '" />\n';
+        } else {
+
+            // TODO escape string
+            output += '  <testcase classname="'+ assert.fileName +'" name="' + escapeInvalidXmlChars(short_message) + '">\n';
+            output += '    <failure type="' + escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">'+ escapeInvalidXmlChars(assert.message) +'</failure>\n';
+            output += '  </testcase>\n';
+        }
     }
+
+    output += '</testsuite>\n';
+
+
+    filename = "TEST-" + filename.replace(/[^a-z\\-]/g, "_") + ".xml";
+    console.log("Writing ../" + filename + " ...");
+    fs.writeFileSync("../" + filename, output, "utf8");
+}
+
+function runTest(test, agent) {
+    if (!agent) {
+        throw new Error("No agent available");
+    }
+
+    var done = Q.defer();
+
+    // run the script on screening
+    console.log("Running " + test.name + " on " + TEST_URL + " on " + SCREENING_HOST + ":" + SCREENING_PORT + " on " + agent.id);
+    screening_request(
+        ["agents", encodeURI(agent.id), "execute_serialized_code"].join("/"),
+        "POST", JSON.stringify(test)
+    ).then(function(data) {
+        // poll until it's done
+        var poll = setInterval(function() {
+            screening_request("test_results/" + data.testId).then(function(data) {
+                process.stdout.write(".");
+                if (data.status !== "RUNNING") {
+                    // Write newline
+                    console.log();
+                    clearInterval(poll);
+                    done.resolve(data);
+                }
+            });
+        }, 1000);
+    });
+
+    done.promise.then(generateJunitXml);
+    return done.promise;
+}
+
+// Load all *-screening.js files here
+
+var gotScripts = Q.defer();
+var tests;
+walk("..", gotScripts.node());
+
+gotScripts.promise.then(function(files) {
+    tests = files.filter(function(value) {
+        return value.indexOf("-screening.js") !== -1;
+    }).map(function(name) {
+        return {name: name, code: fs.readFileSync(name, "utf8")};
+    });
+}).then(function() {
+    return screening_request("scripts?name=config.js").then(function(data) {
+        // Delete existing config.js scripts
+        if (data.length >= 1) {
+            var ps = [];
+            for (var i = 0, len = data.length; i < len; i++) {
+                ps.push(screening_request("scripts/" + data[i]._id, "DELETE"));
+            }
+            return Q.all(ps);
+        }
+    });
 }).then(function() {
     // Add the config script to the server
     return screening_request("scripts", "POST",
@@ -116,67 +223,16 @@ screening_request("scripts?name=config.js").then(function(data) {
 }).then(function(data) {
     return data[0];
 }).then(function(agent) {
-    if (!agent) {
-        throw new Error("No agent available");
-    }
-    // run the script on screening
-    console.log("Running " + TEST_URL + " on " + SCREENING_HOST + ":" + SCREENING_PORT + " on " + agent.id);
-    return screening_request(
-        ["agents", encodeURI(agent.id), "execute_serialized_code"].join("/"),
-        "POST",
-        JSON.stringify({code: scripts[0], name: "jasmine-tests.screening.js"})
-    );
-}).then(function(data) {
-    // poll until it's done
-    var done = Q.defer();
-    var poll = setInterval(function() {
-        screening_request("test_results/" + data.testId).then(function(data) {
-            process.stdout.write(".");
-            if (data.status !== "RUNNING") {
-                console.log();
-                clearInterval(poll);
-                done.resolve(data);
-            }
-        });
-    }, 1000);
+    var promises = [];
 
-    return done.promise;
-}).then(function(data) {
-    // get or create xml and save to file
+    tests.forEach(function(test) {
+        promises.push(runTest(test, agent));
+    });
 
-    var output = "";
-
-    // building xml by concatenating strings, woo!
-    // but seriously, this is a really bad idea, but I don't want to include a
-    // full library just for this.
-    output += '<testsuite>\n';
-
-    var asserts = data.asserts;
-    for (var i = 0, len = asserts.length; i < len; i++) {
-        var assert = asserts[i];
-        var short_message = assert.assertType+'('+assert.expectedValue+', '+assert.actualValue+')';
-        if (assert.message !== null) {
-            short_message = assert.message.split("\n", 1)[0];
-        }
-
-        if (assert.success) {
-            output += '  <testcase classname="'+ assert.fileName +'" name="' + escapeInvalidXmlChars(short_message) + '" />\n';
-        } else {
-
-            // TODO escape string
-            output += '  <testcase classname="'+ assert.fileName +'" name="' + escapeInvalidXmlChars(short_message) + '">\n';
-            output += '    <failure type="' + escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">'+ escapeInvalidXmlChars(assert.message) +'</failure>\n';
-            output += '  </testcase>\n';
-        }
-    }
-
-    output += '</testsuite>\n';
-
-    console.log("Writing ../TEST-result.xml ...");
-    fs.writeFileSync("../TEST-result.xml", output, "utf8");
-
+    return Q.all(promises);
+}).then(function() {
     console.log("Testing completed");
-}).fail(function(e) { // finally capture a rejection.
+}) .fail(function(e) { // finally capture a rejection.
     var msg = e.message || e;
     console.error("Error: " + msg);
     return 1;

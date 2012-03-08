@@ -1,8 +1,6 @@
 /*global script,Agent,Key,Mouse,assertEqual */
 var config = script.require('config.js').config();
 
-// ==== Start Recorded Script, Wed Nov 16 2011 17:06:59 GMT-0800 (PST)====
-
 var agent = new Agent();
 agent.gotoUrl(config.montage_url+"/examples/temp-converter/index.html");
 
