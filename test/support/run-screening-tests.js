@@ -144,8 +144,10 @@ var generateJunitXml = function(result) {
         } else {
 
             // TODO escape string
-            output += '  <testcase classname="'+ assert.fileName +'" name="' + escapeInvalidXmlChars(short_message) + '">\n';
-            output += '    <failure type="' + escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">'+ escapeInvalidXmlChars(assert.message) +'</failure>\n';
+            output += '  <testcase classname="'+ filename +'" name="' + escapeInvalidXmlChars(short_message) + '">\n';
+            output += '    <failure type="' +
+                escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">' +
+                escapeInvalidXmlChars(assert.message || "") +'</failure>\n';
             output += '  </testcase>\n';
         }
     }
