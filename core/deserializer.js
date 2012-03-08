@@ -931,6 +931,23 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     }}
 });
 
+/**
+@function
+@param {String} serialization
+@param require
+@returns promise for the serialized object
+*/
+function deserialize(serialization, require) {
+    var deferred = Promise.defer();
+    Deserializer.create().initWithStringAndRequire(serialization, require)
+    .deserializeObject(function (object) {
+        deferred.resolve(object);
+    });
+    return deferred.promise;
+}
+
 if (typeof exports !== "undefined") {
     exports.Deserializer = Deserializer;
+    exports.deserialize = deserialize;
 }
+
