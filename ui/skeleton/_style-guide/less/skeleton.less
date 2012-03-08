@@ -7,7 +7,6 @@
 
 /* Montage Skeleton Theme */
 
-
 /* Colors ------------------------------- */
 @bg-color: hsl(0,0%,95%);
 @textinput-bg-color: hsl(0,0%,100%);
@@ -26,9 +25,8 @@
 }
 .init() {
     outline: none;
-    /* Border Box: IE8+ */
-    -webkit-box-sizing: border-box; /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
-    -moz-box-sizing: border-box; /* -current */
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
 }
 
@@ -80,8 +78,8 @@ button.skeleton[data-icon="time"]::before { background-image: url(../img/icons/t
 button.skeleton[data-icon-label] {
     padding-left: @height;
 }
-button.skeleton[data-icon-label="search"]::before {
-    background-image: url(../img/icons/search.png);
+button.skeleton > i {
+    font-size: 1.2em;
 }
 
 
@@ -110,7 +108,7 @@ input.skeleton[type="checkbox"] {
     border: @border;
 }
 input.skeleton[type="checkbox"]:checked {
-    background: hsl(0,0%,95%) url(../img/icons/checkbox.png) no-repeat center center;
+    background: hsl(0,0%,95%) url(../assets/img/checkbox.png) no-repeat center center;
 }
 
 
@@ -131,7 +129,7 @@ input.skeleton[type="radio"] {
     border: @border;
 }
 input.skeleton[type="radio"]:checked {
-    background: hsl(0,0%,95%) url(../img/icons/radio.png) no-repeat center center;
+    background: hsl(0,0%,95%) url(../assets/img/radio.png) no-repeat center center;
 }
 
 
@@ -144,7 +142,7 @@ select.skeleton {
     padding: 0 20px 0 10px;
     border-radius: @border-radius;
     border: @border;
-    background: @bg-color url(../img/icons/select.png) no-repeat right center;
+    background: @bg-color url(../assets/img/select.png) no-repeat right center;
 }
 
 
@@ -177,29 +175,32 @@ textarea.skeleton {
 }
 
 
-/* TextInput + Icon ------------------------------- */
-input.skeleton[data-icon] {
-    width: 150px;
-    height: @height;
-    padding-left: @height;
-    background-repeat: no-repeat;
-    background-position: 10px center;
-}
-input.skeleton[data-icon="password"] {
-    background-image: url(../img/icons/password.png);
-}
-input.skeleton[data-icon="search"] {
-    background-image: url(../img/icons/search.png);
-}
-
-
-/* TextButton Combo ------------------------------- */
-.tbCombo > input.skeleton {
-    width: 120px;
+/* Input Combos ------------------------------- */
+.skeleton-icon-input > i,
+.skeleton-icon-input-button > i {
+    .init();
+    display: inline-block;
     vertical-align: middle;
-    border-radius: @border-radius 0 0 @border-radius;    
+    width: @height;
+    height: @height;
+    line-height: @height;
+    border-radius: @border-radius 0 0 @border-radius;
+    border: @border;
+    border-right: none;
+    background-color: @textinput-bg-color;
 }
-.tbCombo > button.skeleton {
+
+.skeleton-icon-input > input {
+    width: 150px;
+    vertical-align: middle;
+    border-radius: 0 @border-radius @border-radius 0;
+}
+
+.skeleton-icon-input-button > input.skeleton {
+    width: 120px;
+    vertical-align: middle;   
+}
+.skeleton-icon-input-button > button {
     margin: 0;
     border-left: none;
     border-radius: 0 @border-radius @border-radius 0;

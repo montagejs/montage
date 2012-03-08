@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/skeleton.css">
     <link rel="stylesheet" href="css/skin.css">
+    <link rel="stylesheet" href="assets/icons/font-awesome.css">
 </head>
 
 <body>
@@ -40,19 +41,19 @@
         <!-- Button + Icons -->
         <tr>
             <td>
-                <button data-icon="camera"></button>
-                <button data-icon="time"></button>
-                <button data-icon-label="search">Search</button>
+                <button><i class="icon-camera"/></i></button>
+                <button><i class="icon-tag"></i></button>
+                <button><i class="icon-search"></i> Search</button>
             </td>
             <td>
-                <button class="skeleton" data-icon="camera"></button>
-                <button class="skeleton" data-icon="time"></button>
-                <button class="skeleton" data-icon-label="search">Search</button>
+                <button class="skeleton"><i class="icon-camera"/></i></button>
+                <button class="skeleton"><i class="icon-tag"/></i></button>
+                <button class="skeleton"><i class="icon-search"/></i> Search</button>
             </td>
             <td class="skin">
-                <button class="skeleton" data-icon="camera"></button>
-                <button class="skeleton" data-icon="time"></button>
-                <button class="skeleton" data-icon-label="search">Search</button>
+                <button class="skeleton"><i class="icon-camera"/></i></button>
+                <button class="skeleton"><i class="icon-tag"/></i></button>
+                <button class="skeleton"><i class="icon-search"/></i> Search</button>
             </td>
         </tr>
         
@@ -156,30 +157,40 @@
         </tr>
         
         
-        <!-- Input + Icon -->
+        <!-- Icon+Input Combo -->
         <tr>
             <td>
                 <input type="password" placeholder="Password">
             </td>
             <td>
-                <input type="password" placeholder="Password" class="skeleton" data-icon="password">
+                <!-- Authored as: <input type="password" placeholder="Password" class="skeleton-icon-input"> -->
+                <span class="skeleton-icon-input">
+                    <i class="icon-lock"></i><input type="password" placeholder="Password" class="skeleton">
+                </span>
             </td>
             <td class="skin">
-                <input type="password" placeholder="Password" class="skeleton" data-icon="password">
+                <span class="skeleton-icon-input">
+                    <i class="icon-lock"></i><input type="password" placeholder="Password" class="skeleton">
+                </span>
             </td>
         </tr>
         
         
-        <!-- Text+Button combo -->
+        <!-- Icon+Input+Button Combo -->
         <tr>
             <td>
                 <input type="search"><button>Search</button>
             </td>
-            <td class="tbCombo">
-                <input type="search" class="skeleton" data-icon="search"><button class="skeleton">Search</button>
+            <td>
+                <!-- Authored as: <input type="search" class="skeleton-icon-input-button"> -->
+                <span class="skeleton-icon-input-button">
+                    <i class="icon-search"></i><input type="search" class="skeleton"><button class="skeleton">Search</button>
+                </span>
             </td>
-            <td class="tbCombo skin">
-                <input type="search" class="skeleton" data-icon="search"><button class="skeleton">Search</button>
+            <td class="skin">
+                <span class="skeleton-icon-input-button">
+                    <i class="icon-search"></i><input type="search" class="skeleton"><button class="skeleton">Search</button>
+                </span>
             </td>
         </tr>
         

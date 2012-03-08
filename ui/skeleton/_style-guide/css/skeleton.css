@@ -30,14 +30,8 @@ button.skeleton {
   -webkit-appearance: none;
   -moz-appearance: none;
   outline: none;
-  /* Border Box: IE8+ */
-
   -webkit-box-sizing: border-box;
-  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
-
   -moz-box-sizing: border-box;
-  /* -current */
-
   box-sizing: border-box;
   height: 30px;
   min-width: 30px;
@@ -59,8 +53,8 @@ button.skeleton[data-icon="time"]::before {
 button.skeleton[data-icon-label] {
   padding-left: 30px;
 }
-button.skeleton[data-icon-label="search"]::before {
-  background-image: url(../img/icons/search.png);
+button.skeleton > i {
+  font-size: 1.2em;
 }
 /* ButtonGroup ------------------------------- */
 .buttonGroup button.skeleton {
@@ -79,14 +73,8 @@ input.skeleton[type="checkbox"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   outline: none;
-  /* Border Box: IE8+ */
-
   -webkit-box-sizing: border-box;
-  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
-
   -moz-box-sizing: border-box;
-  /* -current */
-
   box-sizing: border-box;
   width: 20px;
   height: 20px;
@@ -95,7 +83,7 @@ input.skeleton[type="checkbox"] {
   border: 1px solid #bfbfbf;
 }
 input.skeleton[type="checkbox"]:checked {
-  background: #f2f2f2 url(../img/icons/checkbox.png) no-repeat center center;
+  background: #f2f2f2 url(../assets/img/checkbox.png) no-repeat center center;
 }
 /* Label ------------------------------- */
 label.skeleton {
@@ -107,14 +95,8 @@ input.skeleton[type="radio"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   outline: none;
-  /* Border Box: IE8+ */
-
   -webkit-box-sizing: border-box;
-  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
-
   -moz-box-sizing: border-box;
-  /* -current */
-
   box-sizing: border-box;
   width: 20px;
   height: 20px;
@@ -122,42 +104,30 @@ input.skeleton[type="radio"] {
   border: 1px solid #bfbfbf;
 }
 input.skeleton[type="radio"]:checked {
-  background: #f2f2f2 url(../img/icons/radio.png) no-repeat center center;
+  background: #f2f2f2 url(../assets/img/radio.png) no-repeat center center;
 }
 /* Select ------------------------------- */
 select.skeleton {
   -webkit-appearance: none;
   -moz-appearance: none;
   outline: none;
-  /* Border Box: IE8+ */
-
   -webkit-box-sizing: border-box;
-  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
-
   -moz-box-sizing: border-box;
-  /* -current */
-
   box-sizing: border-box;
   position: relative;
   height: 30px;
   padding: 0 20px 0 10px;
   border-radius: 3px;
   border: 1px solid #bfbfbf;
-  background: #f2f2f2 url(../img/icons/select.png) no-repeat right center;
+  background: #f2f2f2 url(../assets/img/select.png) no-repeat right center;
 }
 /* Input Text + Password ------------------------------- */
 input.skeleton[type="text"], input.skeleton[type="password"], input.skeleton[type="search"] {
   -webkit-appearance: none;
   -moz-appearance: none;
   outline: none;
-  /* Border Box: IE8+ */
-
   -webkit-box-sizing: border-box;
-  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
-
   -moz-box-sizing: border-box;
-  /* -current */
-
   box-sizing: border-box;
   width: 150px;
   height: 30px;
@@ -170,14 +140,8 @@ textarea.skeleton {
   -webkit-appearance: none;
   -moz-appearance: none;
   outline: none;
-  /* Border Box: IE8+ */
-
   -webkit-box-sizing: border-box;
-  /* Safari -5.0, Safari Mobile -4.3, Android -3.0 */
-
   -moz-box-sizing: border-box;
-  /* -current */
-
   box-sizing: border-box;
   width: 150px;
   min-width: 150px;
@@ -188,27 +152,32 @@ textarea.skeleton {
   border: 1px solid #bfbfbf;
   background-color: #ffffff;
 }
-/* TextInput + Icon ------------------------------- */
-input.skeleton[data-icon] {
-  width: 150px;
+/* Input Combos ------------------------------- */
+.skeleton-icon-input > i, .skeleton-icon-input-button > i {
+  outline: none;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  vertical-align: middle;
+  width: 30px;
   height: 30px;
-  padding-left: 30px;
-  background-repeat: no-repeat;
-  background-position: 10px center;
+  line-height: 30px;
+  border-radius: 3px 0 0 3px;
+  border: 1px solid #bfbfbf;
+  border-right: none;
+  background-color: #ffffff;
 }
-input.skeleton[data-icon="password"] {
-  background-image: url(../img/icons/password.png);
+.skeleton-icon-input > input {
+  width: 150px;
+  vertical-align: middle;
+  border-radius: 0 3px 3px 0;
 }
-input.skeleton[data-icon="search"] {
-  background-image: url(../img/icons/search.png);
-}
-/* TextButton Combo ------------------------------- */
-.tbCombo > input.skeleton {
+.skeleton-icon-input-button > input.skeleton {
   width: 120px;
   vertical-align: middle;
-  border-radius: 3px 0 0 3px;
 }
-.tbCombo > button.skeleton {
+.skeleton-icon-input-button > button {
   margin: 0;
   border-left: none;
   border-radius: 0 3px 3px 0;

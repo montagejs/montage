@@ -20,21 +20,12 @@
   background-image: -o-linear-gradient(top, #66b2ff, #007fff);
   background-image: linear-gradient(top, #66b2ff, #007fff);
 }
-.skin button.skeleton[data-icon="camera"]::before {
-  background-image: url(../img/icons/camera-skin.png);
-}
-.skin button.skeleton[data-icon="time"]::before {
-  background-image: url(../img/icons/time-skin.png);
-}
-.skin button.skeleton[data-icon-label="search"]::before {
-  background-image: url(../img/icons/search-skin.png);
-}
 .skin select.skeleton {
-  background: url(../img/icons/select-skin.png) no-repeat right center, -webkit-linear-gradient(top, #66b2ff, #007fff);
-  background: url(../img/icons/select-skin.png) no-repeat right center, -moz-linear-gradient(top, #66b2ff, #007fff);
-  background: url(../img/icons/select-skin.png) no-repeat right center, -ms-linear-gradient(top, #66b2ff, #007fff);
-  background: url(../img/icons/select-skin.png) no-repeat right center, -o-linear-gradient(top, #66b2ff, #007fff);
-  background: url(../img/icons/select-skin.png) no-repeat right center, linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, -webkit-linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, -moz-linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, -ms-linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, -o-linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, linear-gradient(top, #66b2ff, #007fff);
 }
 /* Checkbox / Radio ------------------------------- */
 .skin input.skeleton[type="checkbox"], .skin input.skeleton[type="radio"] {
@@ -43,16 +34,18 @@
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 0px rgba(255, 255, 255, 0.4);
 }
 .skin input.skeleton[type="checkbox"]:checked {
-  background: #f0f7ff url(../img/icons/checkbox.png) no-repeat center center;
+  background: #f0f7ff url(../assets/img/checkbox.png) no-repeat center center;
 }
 .skin input.skeleton[type="radio"]:checked {
-  background: #f0f7ff url(../img/icons/radio.png) no-repeat center center;
+  background: #f0f7ff url(../assets/img/radio.png) no-repeat center center;
 }
-/* Input Text + Password ------------------------------- */
+/* Input ------------------------------- */
 .skin input.skeleton[type="text"],
 .skin input.skeleton[type="password"],
 .skin input.skeleton[type="search"],
-.skin textarea.skeleton {
+.skin textarea.skeleton,
+.skin .skeleton-icon-input > i,
+.skin .skeleton-icon-input-button > i {
   border-color: #007fff;
   background-color: #f0f7ff;
   box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 0px rgba(255, 255, 255, 0.4);
