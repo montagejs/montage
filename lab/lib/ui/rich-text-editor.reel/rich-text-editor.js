@@ -423,5 +423,53 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         enumerable: true,
         get: function() { return this._genericCommandGetter("foreColor", "forecolor"); },
         set: function(value) { this._genericCommandSetter("foreColor", "forecolor", value); }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    undoManager: {
+        enumerable: true,
+        get: function() { return this._undoManager },
+        set: function(value) { this._undoManager = value }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    undo: {
+        enumerable: true,
+        value: function(label, element) {
+            var editorElement = this.element.firstChild;
+            if (!element || element === editorElement) {
+                this._doingUndoRedo = true;
+                document.execCommand("undo", false, null);
+                if (this.undoManager) {
+                    this.undoManager.add(label, this.redo, this, label, editorElement);
+                }
+                this._doingUndoRedo = false;
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    redo: {
+        enumerable: true,
+        value: function(label, element) {
+            var editorElement = this.element.firstChild;
+            if (!element || element === editorElement) {
+                this._doingUndoRedo = true;
+                document.execCommand("redo", false, null);
+                if (this.undoManager) {
+                    this.undoManager.add(label, this.undo, this, label, editorElement);
+                }
+                this._doingUndoRedo = false;
+            }
+        }
     }
 });

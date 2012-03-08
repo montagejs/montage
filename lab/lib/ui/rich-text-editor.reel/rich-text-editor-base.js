@@ -25,6 +25,56 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
+    _undoManager: {
+        enumerable: false,
+        value: null
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _isTyping: {
+        enumerable: false,
+        value: false
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _startTyping: {
+        enumerable: false,
+        value: function() {
+            if (this._doingUndoRedo) {
+                this._isTyping = false;
+                return;
+            } else if (!this._isTyping) {
+                this._isTyping = true;
+                if (this.undoManager) {
+                    this.undoManager.add("Typing", this.undo, this, "Typing", this.element.firstChild);
+                }
+            }
+        }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _stopTyping: {
+        enumerable: false,
+        value: function() {
+            if (this._isTyping) {
+                this._isTyping = false;
+            }
+        }
+    },
+
+    /**
+      Description TODO
+      @private
+    */
     _hasSelectionChangeEvent: {
         enumerable: false,
         value: null     // Need to be preset to null, will be set to true or false later on
@@ -405,6 +455,18 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     },
 
     // Component Callbacks
+
+    didCreate: {
+        value: function() {
+            if (this._activeLinkBox) {
+                this._activeLinkBox.initialize(this);
+            }
+            if (this._resizer) {
+                this._resizer.initialize(this);
+            }
+        }
+    },
+
     /**
     Description TODO
     @function
@@ -413,13 +475,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         enumerable: false,
         value: function() {
             var el = this.element;
-
-            if (this._activeLinkBox) {
-                this._activeLinkBox.initialize(this);
-            }
-            if (this._resizer) {
-                this._resizer.initialize(this);
-            }
 
             el.classList.add('montage-editor-frame');
 
@@ -678,8 +733,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             el.addEventListener("blur", this);
             el.addEventListener("input", this);
+            el.addEventListener("keydown", this);
             el.addEventListener("keypress", this);
-            el.addEventListener("paste", this, false);
+            el.addEventListener("cut", this);
+            el.addEventListener("paste", this);
             el.addEventListener(window.Touch ? "touchstart" : "mousedown", this);
             document.addEventListener(window.Touch ? "touchend" : "mouseup", this);
 
@@ -732,8 +789,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             el.removeEventListener("blur", this);
             el.removeEventListener("input", this);
+            el.removeEventListener("keydown", this);
             el.removeEventListener("keypress", this);
-            el.removeEventListener("paste", this, false);
+            el.removeEventListener("cut", this);
+            el.removeEventListener("paste", this);
             el.removeEventListener(window.Touch ? "touchstart" : "mousedown", this);
             document.removeEventListener(window.Touch ? "touchend" : "mouseup", this);
 
@@ -741,6 +800,19 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             if (this._hasSelectionChangeEvent === false) {
                 el.removeEventListener("keydup", this);
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleKeydown: {
+        enumerable: false,
+        value: function(event) {
+            if (["Left", "Right", "Up", "Down", "Home", "End"].indexOf(event.keyIdentifier) != -1) {
+                this._stopTyping();
             }
         }
     },
@@ -771,6 +843,11 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     handleInput: {
         enumerable: false,
         value: function(event) {
+            if (!this._executingCommand && !this._nextInputIsNotTyping) {
+                this._startTyping();
+            }
+            delete this._nextInputIsNotTyping;
+
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
@@ -803,6 +880,9 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     handleMousedown: {
         enumerable: false,
         value: function(event) {
+
+            this._savedSelection = this._selectedRange;
+
             if (this._resizer) {
                 if (this.resizer.startUserAction(event)) {
                     event.preventDefault();
@@ -825,6 +905,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 element = event.target,
                 range,
                 offset;
+
+            if (!this._equalRange(this._savedSelection, this._selectedRange)) {
+                this._stopTyping();
+            }
 
             if (this._resizer) {
                 if (this.resizer.endUserAction(event)) {
@@ -1037,6 +1121,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             if (this._dragSourceElement) {
                 // Let the browser do the job for us, just make sure we cleanup after us
+
+                this._stopTyping();
+                if (this.undoManager) {
+                    this.undoManager.add("Move", this.undo, this, "Move", this.element.firstChild);
+                }
+                this._nextInputIsNotTyping = true;
+
                 this.handleDragend(event);
                 this.handleSelectionchange();
                 return;
@@ -1061,11 +1152,11 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                             }
                             if (response === true) {
                                 if (file.type.match(/^image\//i)) {
-                                    document.execCommand("insertimage", false, data);
+                                    thisRef._execCommand("insertimage", false, data, "Drop");
                                     thisRef._markDirty();
                                 }
                             } else if (typeof response == "string") {
-                                document.execCommand("inserthtml", false, response);
+                                thisRef._execCommand("inserthtml", false, response, "Drop");
                                 thisRef._markDirty();
                             }
                         }
@@ -1080,7 +1171,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                             response = delegateMethod.call(this.delegate, this, file);
                         }
                         if (typeof response == "string") {
-                            document.execCommand("inserthtml", false, response);
+                            thisRef._execCommand("inserthtml", false, response, "Drop");
                             thisRef._markDirty();
                         }
                     }
@@ -1119,7 +1210,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
                     }
                     if (data && data.length) {
-                        document.execCommand("inserthtml", false, data);
+                        this._execCommand("inserthtml", false, data, "Drop");
                         this._markDirty();
                     }
                 }
@@ -1127,6 +1218,23 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             this.handleDragend(event);
         }
     },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleCut: {
+        enumerable: false,
+        value: function(event) {
+            this._stopTyping()
+            if (this.undoManager) {
+                this.undoManager.add("Cut", this.undo, this, "Cut", this.element.firstChild);
+            }
+            this._nextInputIsNotTyping = true;
+        }
+    },
+
+
 
     /**
     Description TODO
@@ -1182,7 +1290,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
                 }
                 if (data && data.length) {
-                    document.execCommand("inserthtml", false, data);
+                    this._execCommand("inserthtml", false, data, "Paste");
                     this._markDirty();
                 }
             } else {
@@ -1205,7 +1313,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                                 }
                                 if (response === true) {
                                     if (file.type.match(/^image\//i)) {
-                                        document.execCommand("insertimage", false, data);
+                                        thisRef._execCommand("insertimage", false, data, "Paste");
                                         thisRef._markDirty();
                                     }
                                 }
@@ -1309,7 +1417,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 value = false;
             }
 
-            document.execCommand(action, false, value);
+            this._execCommand(action, false, value);
 
             // Force an update states right away
             this._updateStates();
@@ -1326,6 +1434,43 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
 
     // Private methods
+
+    /**
+    Description TODO
+    @function
+    */
+    _execCommandLabel : {
+        enumerable: false,
+        value: {
+            bold: "Bold", italic: "Italic", underline: "Underline", strikethrough: "strikeThrough",
+            subscript: "Subscript", superscript: "Superscript",
+            indent: "Indent", outdent: "Outdent", insertorderedlist: "Ordered List", insertunorderedlist: "Unordered List",
+            justifyleft: "Left Align", justifycenter: "Center", justifyright: "Right Align", justifyfull: "Justify",
+            fontname: "Set Font", fontsize: "Set Size",
+            forecolor: "Set Color", backcolor: "Set Color"
+        }
+    },
+
+    _execCommand: {
+        enumerable: false,
+        value: function(command, showUI, value, label) {
+            label = label || this._execCommandLabel[command] || "Typing";
+
+            this._executingCommand = true;
+            if (document.execCommand(command, showUI, value)) {
+                this._executingCommand = false;
+                this._stopTyping();
+                if (this.undoManager) {
+                    this.undoManager.add(label, this.undo, this, label, this.element.firstChild);
+                }
+                return true;
+            } else {
+                this._executingCommand = true;
+                return false
+            }
+        }
+    },
+
     /**
     Description TODO
     @private
@@ -1509,6 +1654,12 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _equalRange: {
         enumerable: false,
         value: function(rangeA, rangeB) {
+            if (rangeA === rangeB) {
+                return true;
+            }
+            if (!rangeA || !rangeB) {
+                return false;
+            }
             return (rangeA.startContainer == rangeB.startContainer &&
                 rangeA.startOffset == rangeB.startOffset &&
                 rangeA.endContainer == rangeB.endContainer &&

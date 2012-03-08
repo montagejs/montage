@@ -184,7 +184,7 @@ exports.Resizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-text
                     offlineElement.id = "montage-editor-resized-image";
 
                     // Inject the resized element into the contentEditable using execCommand in order to be in the browser undo queue
-                    document.execCommand("inserthtml", false, div.innerHTML);
+                    this._editor._execCommand("inserthtml", false, div.innerHTML, "Resizing Image");
                     element = document.getElementById(offlineElement.id);
                     if (element && savedID !== undefined) {
                         element.id = savedID;
