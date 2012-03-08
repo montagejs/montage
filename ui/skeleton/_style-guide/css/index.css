@@ -28,7 +28,7 @@ h1 .logo {
     width: 75px;
     height: 60px;
     margin: 0 20px;
-    background: url(../img/logo.png) no-repeat center center;
+    background: url(../assets/img/logo.png) no-repeat center center;
 }
 
 h1 span {
