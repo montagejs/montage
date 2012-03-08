@@ -238,7 +238,7 @@ gotScripts.promise.then(function(files) {
     return Q.all(promises);
 }).then(function() {
     console.log("Testing completed");
-}) .fail(function(e) { // finally capture a rejection.
+}).fail(function(e) { // finally capture a rejection.
     var msg = e.message || e;
     console.error("Error: " + msg);
     return 1;
