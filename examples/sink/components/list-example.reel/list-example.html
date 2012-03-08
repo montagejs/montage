@@ -16,19 +16,19 @@
                 {"src": "images/IMG_1.jpg", "title": "A train"},
                 {"src": "images/IMG_2.jpg", "title": "Another train"},
                 {"src": "images/IMG_3.jpg", "title": "Trains"},
-                {"src": "images/IMG_3.jpg", "title": "Trains, train, trains"},
-                {"src": "images/IMG_3.jpg", "title": "More trains."},
+                {"src": "images/IMG_2.jpg", "title": "Trains, train, trains"},
+                {"src": "images/IMG_1.jpg", "title": "More trains."},
                 {"src": "images/IMG_3.jpg", "title": "A train"}
             ]
         }
     },
 
-    "list1": {
+    "verticalList": {
         "module": "montage/ui/list.reel",
         "name": "List",
         "properties": {
             "element": {
-                "#": "list"
+                "#": "v-list"
             },
             "isSelectionEnabled": true,
             "contentController": {"@": "places"},
@@ -36,7 +36,45 @@
         }
     },
 
-    "thumb": {
+    "horizontal" : {
+        "name": "List",
+        "module": "montage/ui/list.reel",
+        "properties": {
+            "element": {"#": "h-list"},
+            "objects": [
+                {"src": "images/IMG_1.jpg", "title": "A train"},
+                {"src": "images/IMG_2.jpg", "title": "Another train"},
+                {"src": "images/IMG_3.jpg", "title": "Trains"},
+                {"src": "images/IMG_2.jpg", "title": "Trains, train, trains"},
+                {"src": "images/IMG_1.jpg", "title": "More trains."},
+                {"src": "images/IMG_3.jpg", "title": "A train"},
+                {"src": "images/IMG_1.jpg", "title": "A train"},
+                {"src": "images/IMG_2.jpg", "title": "Another train"},
+                {"src": "images/IMG_3.jpg", "title": "Trains"},
+                {"src": "images/IMG_2.jpg", "title": "Trains, train, trains"},
+                {"src": "images/IMG_1.jpg", "title": "More trains."},
+                {"src": "images/IMG_3.jpg", "title": "A train"}
+            ],
+            "axis": "horizontal",
+            "isSelectionEnabled": true
+        }
+    },
+
+    "hlist-thumb" : {
+        "name": "Image",
+        "module": "montage/ui/image.reel",
+        "properties": {
+            "element": {"#": "thumb-h"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "horizontal"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src"
+            }
+        }
+    },
+
+    "vlist-thumb": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -44,7 +82,7 @@
         },
         "bindings": {
             "src": {
-                "boundObject": {"@": "list1"},
+                "boundObject": {"@": "verticalList"},
                 "boundObjectPropertyPath": "objectAtCurrentIteration.src",
                 "oneway": true
             }
@@ -59,7 +97,7 @@
         },
         "bindings": {
             "value": {
-                "boundObject": {"@": "list1"},
+                "boundObject": {"@": "verticalList"},
                 "boundObjectPropertyPath": "objectAtCurrentIteration.title",
                 "oneway": true
             }
@@ -77,7 +115,7 @@
     </script>
 
     <style>
-        .list .thumb {
+        .v-list .thumb {
             width: 96px;
             height: 96px;
             border: 5px solid #fff;
@@ -91,31 +129,65 @@
             margin-left: 5px;
         }
 
-        .list .montage-list-scroller {
+        .v-list .montage-list-scroller {
             height: 300px;
         }
 
-        .list {
+        .v-list {
             height: 300px;
             width: 100%;
-            background: lightGrey;
+            margin-bottom: 10px;
         }
 
-        .list .title {
-            margin-top: 5px;
-            margin-left: 5px;
+        .v-list .title {
+            position: absolute;
+            margin-top: 15px;
+            margin-left: 15px;
         }
 
 
-        .list .selected {
+        .v-list .selected {
             background: hsl(195,96%,53%);
             -webkit-transform: scale(1.0);
             -webkit-box-shadow: 0 2px 5px hsla(120,2%,39%, 0.3);
-            border:  1px solid hsl(0,0%,56%);
+            font-weight: bold;
         }
 
-        .list .active {
+
+        .v-list .active {
             background: hsl(195,66%,73%);
+        }
+
+        .h-list .active img {
+            border: 5px solid hsl(195,66%,73%);
+        }
+
+        .h-list {
+          margin: 0;
+          padding: 0;
+          white-space: nowrap;
+          overflow-x: auto;
+        }
+
+        .h-list .selected img {
+            -webkit-transform: scale(1.0);
+            border: 5px solid hsl(195,96%,53%);
+        }
+
+        .h-list li {
+          display: inline;
+          margin-left: 5px;
+          margin-right: 5px;
+        }
+
+        .h-list .thumb {
+            border: 5px solid white;
+            width: 100px;
+            height: 100px;
+        }
+
+        .listitem {
+            position: relative;
         }
 
     </style>
@@ -129,157 +201,313 @@
             <div class="span8 description">
                 <h3>List</h3>
                 <p>
-                    The List component repeatedly generates new DOM structure based on a collection of data objects.  Like the Repetition component, the List component duplicates the contents of its associated HTML element, including any child elements. Those child elements may, in turn, be associated with other components. You can bind properties in the List's data source to each duplicated instance. The List also supports horizontal and vertical scrolling, with optional momentum and bounce behavior. In fact, List is composed of a Repetition component nested inside a Scroller component.
+                    The List component is composed of a Repetition component inside of a Scroller component. Like the Repetition component, the List component iterates over a collection of data objects and generates new DOM structure for each item in its collection. You can configure a List to allow scrolling vertically, horizontally, or in both directions.
+
                 </p>
+                <h4>Vertical scrolling list</h4>
                 <p>
-                    In this example, each row in the List contains an image (&lt;img&gt;) and a title (&lt;h3&gt;) that are controlled, respectively, by Image and DynamicText components. An ArrayController manages the List's data.
+                    This example uses an ArrayController to provide the list its data.
                 </p>
             </div>
         </div>
 
         <!-- The "row" and "span8" divs are only for styling purposes. -->
-        <div class="row">
-            <div class="span8">
-                <!-- List element -->
-                <div class="list" id="list">
-                    <div class="item">
-                        <!-- Image and DynamicText components -->
-                        <img id="thumb" class="thumb" />
-                        <h2 id="title" class="title"></h2>
-                    </div>
+
+        <div class="demo vlist">
+            <!-- Vertical scrolling list -->
+            <div class="v-list" data-montage-id="v-list">
+                <div class="listitem">
+                    <!-- Image and DynamicText components -->
+                    <img data-montage-id="thumb" class="thumb" />
+                    <span data-montage-id="title" class="title"></span>
                 </div>
             </div>
-        </div>
-
-        <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/list-example.reel" target="_blank">View source on GitHub</a>
-        </section>
-
-        <section>
-            <h6>HTML Markup</h6>
-            <pre class="prettyprint">
-&lt;div class="list" id="list"&gt;
-    &lt;div class="item"&gt;
-        &lt;img id="thumb" class="thumb" /&gt;
-        &lt;h3 id="title" class="title"&gt;&lt;/h3&gt;
+        <!-- Source -->
+         <ul class="sourcelinks" >
+            <li>
+                <a href="#" onclick="toggle_visibility('.vlist #html', event);">html</a>
+                <div class="sourceitem" id="html">
+                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                <pre class="prettyprint">
+&lt;div class="v-list" data-montage-id="v-list"&gt;
+    &lt;div class="listitem"&gt;
+        &lt;!-- Image and DynamicText components --&gt;
+        &lt;img data-montage-id="thumb" class="thumb" /&gt;
+        &lt;span data-montage-id="title" class="title"&gt;&lt;/span&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 </pre>
-        </section>
+                </div><!-- / -->
+            </li>
+            <li>
+                <a href="#" onclick="toggle_visibility('.vlist #serialization', event);">serialization</a>
+                <div class="sourceitem" id="serialization">
+                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                <pre class="prettyprint">
+{
 
-
-        <section>
-        <h6>Serialization</h6>
-
-        <p>Besides the List component itself, the example's serialization creates and configures the ArrayController, and the Image and DynamicText components. The ArrayController's content is assigned directly in the serialization for the sake of simplicity.
-</p>
-<ul>
-    <li>Define the ArrayController that holds the List data:</li>
-    <pre class="prettyprint">
-"places": {
-    "name": "ArrayController",
-    "module": "montage/ui/controller/array-controller",
-    "properties": {
-        "selectObjectsOnAddition": true,
-        "automaticallyOrganizeObjects": true,
-        "content": [
-            {"src": "imagees/IMG_1.jpg", "title": "A train"},
-            {"src": "images/IMG_2.jpg", "title": "Another train"},
-            {"src": "images/IMG_3.jpg", "title": "Trains"},
-            {"src": "images/IMG_4.jpg", "title": "Trains, train, trains"},
-            {"src": "images/IMG_5.jpg", "title": "More trains."},
-            {"src": "images/IMG_6.jpg", "title": "A train"}
-        ]
-    }
-}
-    </pre>
-
-    <li>Define the List and set its <code>contentController</code> property to the serialized ArrayController. Sets <code>isSelectionEnabled</code> to true to enable selection tracking (more about tracking list selection below).</li>
-    <pre class="prettyprint">
-"list1": {
-    "module": "montage/ui/list.reel",
-    "name": "List",
-    "properties": {
-        "element": {
-            "#": "list"
-        },
-        "isSelectionEnabled": true,
-        "contentController": {"@": "places"},
-        "axis": "vertical"
-    }
-}
-        </pre>
-<li>Define the binding for the thumbnail for each row in the list. The "objectAtCurrentIteration" is used to specify the current Object during the iteration.
-</li>
-        <pre class="prettyprint">
-"thumb": {
-    "module": "montage/ui/image.reel",
-    "name": "Image",
-    "properties": {
-        "element": {"#": "thumb"}
+    "places": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true,
+            "content": [
+                {"src": "images/IMG_1.jpg", "title": "A train"},
+                {"src": "images/IMG_2.jpg", "title": "Another train"},
+                {"src": "images/IMG_3.jpg", "title": "Trains"},
+                {"src": "images/IMG_2.jpg", "title": "Trains, train, trains"},
+                {"src": "images/IMG_1.jpg", "title": "More trains."},
+                {"src": "images/IMG_3.jpg", "title": "A train"}
+            ]
+        }
     },
-    "bindings": {
-        "src": {
-            "boundObject": {"@": "list1"},
-            "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-            "oneway": true
+
+    "verticalList": {
+        "module": "montage/ui/list.reel",
+        "name": "List",
+        "properties": {
+            "element": {
+                "#": "v-list"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "places"},
+            "axis": "vertical"
+        }
+    },
+
+    "vlist-thumb": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "verticalList"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+
+    "title": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "title"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "verticalList"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.title",
+                "oneway": true
+            }
+        }
+    },
+
+    "owner": {
+        "module": "components/list-example.reel",
+        "name": "ListExample",
+        "properties": {
+            "element": {"#": "example-root"}
         }
     }
 }
-        </pre>
-
-</ul>
-
-        </section>
-
-<section>
-        <h6>CSS</h6>
-
-        Some custom CSS is used to format the currently selected list item, and to display scrollbars in the list.
-
-        <p>When a List component's <code><a href="#">isSelectionEnabled</a></code> property is set to true, and the user selects a new item in the list, a <code>selected</code> CSS class is added to the selected element's <code>classList</code> property.  During the selection, an <strong>active</strong> CSS class is added to the element's <code>classList</code>. By default, these styles are undefined so you need to create them yourself.</p>. The following CSS was used in this example to style the active and selected items.
-
-        <pre class="prettyprint">
-
-.list {
+</pre>
+                </div><!-- / -->
+            </li>
+            <li>
+                <a href="#" onclick="toggle_visibility('.vlist #css', event);">css</a>
+                <div class="sourceitem" id="css">
+                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                <pre class="prettyprint">
+.v-list {
     height: 300px;
     width: 100%;
-    background: lightGrey;
 }
 
-.list .selected {
-    border: 2px solid red;
-    background-color: lightBlue;
+.v-list .title {
+    position: absolute;
+    margin-top: 15px;
+    margin-left: 15px;
 }
 
-.list .active {
-    background-color: lightBlue;
+
+.v-list .selected {
+    background: hsl(195,96%,53%);
+    -webkit-transform: scale(1.0);
+    -webkit-box-shadow: 0 2px 5px hsla(120,2%,39%, 0.3);
+    font-weight: bold;
 }
 
-.list .title {
-    margin-top: 5px;
-    margin-left: 5px;
+
+.v-list .active {
+    background: hsl(195,66%,73%);
+}
+</pre>
+                </div><!-- / -->
+            </li>
+        </ul>
+        </div>
+
+                <h4>Horizontal scrolling list</h4>
+                <p>This example provides one way to create a horizontal scrolling list using an unordered list.</p>
+
+        <div class="demo hlist">
+            <!-- horizontal scrolling list -->
+            <ul data-montage-id="h-list" class="h-list">
+              <li>
+                    <span id="title" class="title">
+                    <img class="thumb" data-montage-id="thumb-h"/>
+              </li>
+            </ul>
+         <ul class="sourcelinks" >
+            <li>
+                <a href="#" onclick="toggle_visibility('.hlist #html', event);">html</a>
+                <div class="sourceitem" id="html">
+                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                <pre class="prettyprint">
+&lt;ul data-montage-id="h-list" class="h-list"&gt;
+  &lt;li&gt;
+        &lt;span id="title" class="title"&gt;
+        &lt;img class="thumb" data-montage-id="thumb-h"/&gt;
+  &lt;/li&gt;
+&lt;/ul&gt;
+            </pre>
+                </div><!-- / -->
+            </li>
+            <li>
+                <a href="#" onclick="toggle_visibility('.hlist #serialization', event);">serialization</a>
+                <div class="sourceitem" id="serialization">
+                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                <pre class="prettyprint">
+{
+
+    "verticalList" : {
+        "name": "List",
+        "module": "montage/ui/list.reel",
+        "properties": {
+            "element": {"#": "h-list"},
+            "objects": [
+                {"src": "images/IMG_1.jpg", "title": "A train"},
+                {"src": "images/IMG_2.jpg", "title": "Another train"},
+                {"src": "images/IMG_3.jpg", "title": "Trains"},
+                {"src": "images/IMG_2.jpg", "title": "Trains, train, trains"},
+                {"src": "images/IMG_1.jpg", "title": "More trains."},
+                {"src": "images/IMG_3.jpg", "title": "A train"},
+                {"src": "images/IMG_1.jpg", "title": "A train"},
+                {"src": "images/IMG_2.jpg", "title": "Another train"},
+                {"src": "images/IMG_3.jpg", "title": "Trains"},
+                {"src": "images/IMG_2.jpg", "title": "Trains, train, trains"},
+                {"src": "images/IMG_1.jpg", "title": "More trains."},
+                {"src": "images/IMG_3.jpg", "title": "A train"}
+            ],
+            "axis": "horizontal",
+            "isSelectionEnabled": true
+        }
+    },
+
+    "img" : {
+        "name": "Image",
+        "module": "montage/ui/image.reel",
+        "properties": {
+            "element": {"#": "thumb-h"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "imageListScroll"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src"
+            }
+        }
+    },
+
+    "thumb": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "verticalList"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    },
+
+    "title": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "title"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "verticalList"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.title",
+                "oneway": true
+            }
+        }
+    },
+
+    "owner": {
+        "module": "components/list-example.reel",
+        "name": "ImageExample",
+        "properties": {
+            "element": {"#": "example-root"}
+        }
+    }
+}
+            </pre>
+                </div><!-- / -->
+            </li>
+            <li>
+                <a href="#" onclick="toggle_visibility('.hlist #css', event);">css</a>
+                <div class="sourceitem" id="css">
+                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                <pre class="prettyprint">
+.h-list .active img {
+    border: 5px solid hsl(195,66%,73%);
 }
 
-.list .thumb {
-    width: 96px;
-    height: 96px;
-    border: 5px solid #fff;
-    margin-top: 5px;
-    margin-left: 5px;
-
+.h-list {
+  margin: 0;
+  padding: 0;
+  white-space: nowrap;
+  overflow-x: auto;
 }
 
-.list .montage-list-scroller {
-    height: 300px;
+.h-list .selected img {
+    -webkit-transform: scale(1.0);
+    border: 5px solid hsl(195,96%,53%);
 }
 
-        </pre>
+.h-list li {
+  display: inline;
+  margin-left: 5px;
+  margin-right: 5px;
+}
 
-        <p>The <code class="prettyprint">.list .montage-list-scroller</code> CSS selector is added to make sure the underlying Scroller component displays it scrollbars. Note that the <code>height</code> assigned to the selector matches the height of the list itself (300px).</p>
+.h-list .thumb {
+    border: 5px solid white;
+    width: 100px;
+    height: 100px;
+}
 
-</section>
+.listitem {
+    position: relative;
+}
+</pre>
+                </div><!-- / -->
+            </li>
+        </ul>
+        </div><!-- / -->
 
+<!--         <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/list-example.reel" target="_blank">View source on GitHub</a>
+        </section> -->
 
 
     </div>

@@ -253,36 +253,171 @@
                 </div>
             </div>
 
-            <h4>Demo: Direct Binding</h4>
+            <h4>Example: Direct Binding</h4>
 
             <div class="demo">
 
                 <p class="span8">What is your favorite food?</p>
+                <div class="app">
+                            <div class="span4">
+                                <label class="radio"><input type="radio" name="car" id="veg" /> Vegetables</label>
+                                <div style="padding-left: 1em">
+                                    <label class="radio"><input type="radio" name="veg" id="veg-carrot"> Carrot</label>
+                                    <label class="radio"><input type="radio" name="veg" id="veg-potato"> Potato</label>
+                                    <label class="radio"><input type="radio" name="veg" id="veg-broccoli"> Broccoli</label>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <label class="radio"><input type="radio" name="car" id="fruit" /> Fruit</label>
+                                <div style="padding-left: 1em">
+                                    <label class="radio"><input type="radio" name="fruit" value="apple" id="fruit-apple"> Apple</label>
+                                    <label class="radio"><input type="radio" name="fruit" value="banana" id="fruit-banana"> Banana</label>
+                                    <label class="radio"><input type="radio" name="fruit" value="pear" id="fruit-pear"> Pear</label>
+                                </div>
+                            </div>
 
-
-                <div class="span4">
-                    <label class="radio"><input type="checkbox" name="car" id="veg" /> Vegetables</label>
-                    <div style="padding-left: 1em">
-                        <label class="radio"><input type="radio" name="veg" id="veg-carrot"> Carrot</label>
-                        <label class="radio"><input type="radio" name="veg" id="veg-potato"> Potato</label>
-                        <label class="radio"><input type="radio" name="veg" id="veg-broccoli"> Broccoli</label>
-                    </div>
                 </div>
-                <div class="span4">
-                    <label class="radio"><input type="radio" name="car" id="fruit" /> Fruit</label>
-                    <div style="padding-left: 1em">
-                        <label class="radio"><input type="radio" name="fruit" value="apple" id="fruit-apple"> Apple</label>
-                        <label class="radio"><input type="radio" name="fruit" value="banana" id="fruit-banana"> Banana</label>
-                        <label class="radio"><input type="radio" name="fruit" value="pear" id="fruit-pear"> Pear</label>
-                    </div>
-                </div>
+                <ul class="sourcelinks radiobutton1">
+                <li>
+                    <a href="#" onclick="toggle_visibility('.radiobutton1 #html', event);">html</a>
+                    <div class="sourceitem" id="html">
+                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                    <pre class="prettyprint">
+&lt;p class="span8"&gt;What is your favorite food?&lt;/p&gt;
 
+&lt;div class="span4"&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" name="car" id="veg" /&gt; Vegetables&lt;/label&gt;
+    &lt;div style="padding-left: 1em"&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="veg-carrot"&gt; Carrot&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="veg-potato"&gt; Potato&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="veg-broccoli"&gt; Broccoli&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="span4"&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" name="car" id="fruit" /&gt; Fruit&lt;/label&gt;
+    &lt;div style="padding-left: 1em"&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="apple" id="fruit-apple"&gt; Apple&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="banana" id="fruit-banana"&gt; Banana&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="pear" id="fruit-pear"&gt; Pear&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+                    </div><!-- / -->
+                </li>
+                <li>
+                    <a href="#" onclick="toggle_visibility('.radiobutton1 #serialization', event);">serialization</a>
+                    <div class="sourceitem" id="serialization">
+                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                    <pre class="prettyprint">
+{
+    "veg": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "veg"}
+        }
+    },
+    "fruit": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "fruit"}
+        }
+    },
+
+    "veg-binding": {
+        "value": {
+            "disabled": {
+                "boundObject": {"@": "veg"},
+                "boundObjectPropertyPath": "checked",
+                "oneway": true,
+                "converter": {"@": "invert-converter"}
+            }
+        }
+    },
+    "fruit-binding": {
+        "value": {
+            "disabled": {
+                "boundObject": {"@": "fruit"},
+                "boundObjectPropertyPath": "checked",
+                "oneway": true,
+                "converter": {"@": "invert-converter"}
+            }
+        }
+    },
+
+    "veg-carrot": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "veg-carrot"}
+        },
+        "bindings": {"@": "veg-binding"}
+    },
+    "veg-potato": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "veg-potato"}
+        },
+        "bindings": {"@": "veg-binding"}
+    },
+    "veg-broccoli": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "veg-broccoli"}
+        },
+        "bindings": {"@": "veg-binding"}
+    },
+
+    "fruit-apple": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "fruit-apple"}
+        },
+        "bindings": {"@": "fruit-binding"}
+    },
+    "fruit-banana": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "fruit-banana"}
+        },
+        "bindings": {"@": "fruit-binding"}
+    },
+    "fruit-pear": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "fruit-pear"}
+        },
+        "bindings": {"@": "fruit-binding"}
+    },
+
+
+    "log-listener": {
+        "value": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    }
+}
+</pre>
+                    </div><!-- / -->
+                </li>
+            </ul>
             </div>
 
-            <h4>Demo: Using the Radiobutton within a Repetition</h4>
 
 
-            <div class="demo">
+            <h4>Example: Using the Radiobutton within a Repetition</h4>
+
+
+            <div class="demo radiobutton2">
 
                 <h5>Overall, how satisfied are you with our product?</h5>
 
@@ -297,108 +432,200 @@
 
                 <div>
                     <h5>You selected: </h5>
-                    <div id="selected-answer" ></div>
+                    <span id="selected-answer" ></span>
                 </div>
+                <ul class="sourcelinks">
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.radiobutton2 #html', event);">html</a>
+                        <div class="sourceitem" id="html">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+&lt;h5&gt;Overall, how satisfied are you with our product?&lt;/h5&gt;
+
+&lt;table id="list2" class="bordered-table" style="width: auto;"&gt;
+    &lt;tbody id="list2-rows"&gt;
+        &lt;tr&gt;
+             &lt;td&gt;&lt;input type="radio" id="answer-selection" name="answer-selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span id="answer-text"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div&gt;
+    &lt;h5&gt;You selected: &lt;/h5&gt;
+    &lt;div id="selected-answer" &gt;&lt;/div&gt;
+&lt;/div&gt;
+</pre>
+                        </div><!-- / -->
+                    </li>
+                <li>
+                    <a href="#" onclick="toggle_visibility('.radiobutton2 #serialization', event);">serialization</a>
+                    <div class="sourceitem" id="serialization">
+                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                    <pre class="prettyprint">
+{
+    "answers-controller": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "answers",
+                "oneway": true
+            }
+        }
+    },
+
+    "list2": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "list2-rows"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "answers-controller"}
+        }
+    },
+
+    "answer-selection": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "answer-selection"}
+        },
+        "bindings": {
+            "checked": {
+                "boundObject": {"@": "list2"},
+                "boundObjectPropertyPath": "selectionAtCurrentIteration"
+            }
+        }
+    },
+
+    "answer-text": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "answer-text"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list2"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration",
+                "oneway": true
+            }
+        }
+    },
+
+    "selected-answer": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "selected-answer"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "selectedAnswer"
+            }
+        }
+    },
+
+
+    "owner": {
+        "module": "components/radio-button-example.reel",
+        "name": "CheckboxExample",
+        "properties": {
+            "element": {"#": "radio-button-example"},
+            "answers": [
+                "Very Satisfied", "Satisfied", "Neutral", "Unsatisfied", "Very Unsatisfied", "Dont want to answer"
+            ]
+        },
+        "bindings": {
+            "selectedAnswer": {
+                "boundObject": {"@": "answers-controller"},
+                "boundObjectPropertyPath": "selectedObjects.0"
+            }
+        }
+    }
+}
+</pre>
+                    </div><!-- / -->
+                </li>
+                </ul>
             </div>
 
         <section>
             <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/radio-button-example.reel" target="_blank">View source on GitHub</a>
         </section>
 
+       <h4>Listener example</h4>
 
-            <h6>Serialization</h6>
-            <pre class="prettyprint">
-"veg": {
-    "module": "montage/ui/radio-button.reel",
-    "name": "RadioButton",
-    "properties": {
-        "element": {"#": "veg"}
-    }
-},
+        <div class="demo">
+            <div class="app">
+                <label class="radio inline"><input type="radio" id="listen-on" name="on-off"> On</label>
+                <label class="radio inline"><input type="radio" id="listen-off" name="on-off"> Off</label>
+            </div><!-- / -->
 
-"veg-binding": {
-    "value": {
-        "disabled": {
-            "boundObject": {"@": "veg"},
-            "boundObjectPropertyPath": "checked",
-            "oneway": true,
-            "converter": {"@": "invert-converter"}
-        }
-    }
-},
-
-"veg-carrot": {
-    "module": "montage/ui/radio-button.reel",
-    "name": "RadioButton",
-    "properties": {
-        "element": {"#": "veg-carrot"}
-    },
-    "bindings": {"@": "veg-binding"}
-}
-// Repeated for each vegetable and fruit
-</pre>
-
-                <h6>HTML Markup</h6>
-     <pre class="prettyprint">
-&lt;ul&gt;
-    &lt;li&gt;
-        &lt;label&gt;&lt;input type="radio" name="car" id="veg" /&gt; Vegetables&lt;/label&gt;
-        &lt;ul&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-carrot"&gt; Carrot&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-potato"&gt; Potato&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-broccoli"&gt; Broccoli&lt;/label&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;label&gt;&lt;input type="radio" name="car" id="fruit" /&gt; Fruit&lt;/label&gt;
-        &lt;ul&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="fruit" value="apple" id="fruit-apple"&gt; Apple&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="fruit" value-"banana" id="fruit-banana"&gt; Banana&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="fruit" value="pear" id="fruit-pear"&gt; Pear&lt;/label&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-    &lt;/li&gt;
-&lt;/ul&gt;</pre>
-
-
-            <h4>Listener example</h4>
-
-            <label class="radio inline"><input type="radio" id="listen-on" name="on-off"> On</label>
-            <label class="radio inline"><input type="radio" id="listen-off" name="on-off"> Off</label>
-
-            <h6>HTML</h6>
-            <pre class="prettyprint">
+            <ul class="sourcelinks radiobutton3">
+                <li>
+                    <a href="#" onclick="toggle_visibility('.radiobutton3 #html', event);">html</a>
+                    <div class="sourceitem" id="html">
+                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                    <pre class="prettyprint">
 &lt;label&gt;&lt;input type="radio" id="listen-on" name="on-off"&gt; On&lt;/label&gt;
 &lt;label&gt;&lt;input type="radio" id="listen-off" name="on-off"&gt; Off&lt;/label&gt;</pre>
+</pre>
+                    </div><!-- / -->
+                </li>
+                <li>
+                    <a href="#" onclick="toggle_visibility('.radiobutton3 #serialization', event);">serialization</a>
+                    <div class="sourceitem" id="serialization">
+                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                    <pre class="prettyprint">
+{
+    "log-listener": {
+        "value": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+    "listen-on": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "listen-on"}
+        },
+        "listeners": {"@":"log-listener"}
+    },s
+    "listen-off": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "listen-off"}
+        },
+        "listeners": {"@":"log-listener"}
 
-            <h6>Serialization</h6>
-            <pre class="prettyprint">
-"log-listener": {
-    "value": [
-        {
-            "type": "action",
-            "listener": {"@": "logger"}
+    },
+    "logger": {
+        "module": "logger.reel",
+        "name": "Logger",
+        "properties": {
+            "element": {"#": "logger"}
         }
-    ]
-},
-
-"listen-on": {
-    "module": "montage/ui/radio-button.reel",
-    "name": "RadioButton",
-    "properties": {
-        "element": {"#": "listen-on"}
-    },
-    "listeners": {"@":"log-listener"}
-},
-
-"listen-off": {
-    "module": "montage/ui/radio-button.reel",
-    "name": "RadioButton",
-    "properties": {
-        "element": {"#": "listen-off"}
-    },
-    "listeners": {"@":"log-listener"}
-
-}</pre>
+    }
+}
+</pre>
+                    </div><!-- / -->
+                </li>
+            </ul>
+            </div>
 
             <div id="logger"></div>
 
