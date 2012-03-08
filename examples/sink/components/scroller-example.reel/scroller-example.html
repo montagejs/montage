@@ -52,7 +52,13 @@
         </script>
 
         <style>
-
+            .scrollpanel {
+                height: 400px;
+                width: 500px;
+                margin: auto;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+            }
         </style>
     </head>
     <body>
@@ -61,7 +67,7 @@
                 <div class="span12">
                     <h3>Scroller</h3>
                     <p>
-                        The Scroller component provides vertical and horizontal scrolling of fixed height elements.
+                        The Scroller component provides vertical and horizontal scrolling of fixed height elements. It supports momentum and bounce behaviors that you can control or disable.
                     </p>
 <!--                     <p>
                         <a href="" target="_blank">View Documentation</a>
@@ -69,27 +75,120 @@
  -->                </div>
             </div>
 
-            <h4>Scroller example</h4>
-                <p>Scroll the content below using your mouse or finger. You can also toggle the bounce and momentum behavior.</p>
+            <h4>Example</h4>
+                <p>In the following example</p>
             <div class="demo">
-                <label for="cb1">Toggle momenutum<input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /></label>
-                <label for="cb2">Toggle bouncing<input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /></label>
+                    <label for="cb1">Toggle momenutum<input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /></label>
+                    <label for="cb2">Toggle bouncing<input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /></label>
 
-                <div data-montage-id="scroller" style="height: 400px; width: 500px; margin: auto; -webkit-user-select: none; -moz-user-select: none ">
-                    <p><b>A large paragraph</b> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
-                    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
-                    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
-                    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                    <img src="components/scroller-example.reel/flowers.jpg" alt="The Universe">
-                    <p>Another large paragraph...</p>
-                </div>
+                    <div data-montage-id="scroller" class="scrollpanel" >
+                        <p><b>A large paragraph</b> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                        <img src="components/scroller-example.reel/flowers.jpg" alt="The Universe">
+                        <p>Another large paragraph...</p>
+                    </div>
+
+                <ul class="sourcelinks">
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.demo #html', event);">html</a>
+                        <div class="sourceitem" id="html">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+&lt;label for="cb1"&gt;Toggle momenutum&lt;input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /&gt;&lt;/label&gt;
+&lt;label for="cb2"&gt;Toggle bouncing&lt;input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /&gt;&lt;/label&gt;
+
+&lt;div data-montage-id="scroller" style="height: 400px; width: 500px; margin: auto; -webkit-user-select: none; -moz-user-select: none "&gt;
+    &lt;p&gt;&lt;b&gt;A large paragraph&lt;/b&gt; Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
+    &lt;img src="components/scroller-example.reel/flowers.jpg" alt="The Universe"&gt;
+    &lt;p&gt;Another large paragraph...&lt;/p&gt;
+&lt;/div&gt;
+</pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.demo #serialization', event);">serialization</a>
+                        <div class="sourceitem" id="serialization">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+{
+
+    "owner": {
+        "prototype": "components/scroller-example.reel",
+        "properties": {
+            "element": {"#": "scrollview-example"}
+        }
+    },
+
+    "scroller": {
+        "prototype": "montage/ui/scroller.reel",
+        "properties": {
+            "element": {"#": "scroller"}
+        },
+        "bindings": {
+            "hasMomentum": {
+                "boundObject": {"@": "toggleMomentum"},
+                "boundObjectPropertyPath": "checked"
+            },
+            "hasBouncing": {
+                "boundObject": {"@": "toggleBouncing"},
+                "boundObjectPropertyPath": "checked"
+            }
+        }
+    },
+
+    "toggleMomentum": {
+        "prototype": "montage/ui/checkbox.reel",
+        "properties": {
+            "element": {"#": "toggleMomentum"},
+            "checked": true
+        }
+    },
+    "toggleBouncing": {
+        "prototype": "montage/ui/checkbox.reel",
+        "properties": {
+            "element": {"#": "toggleBouncing"},
+            "checked": true
+        }
+    }
+}</pre>
+                        </div><!-- / -->
+                    </li>
+                    <li>
+                        <a href="#" onclick="toggle_visibility('.demo #css', event);">css</a>
+                        <div class="sourceitem" id="css">
+                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
+                        <pre class="prettyprint">
+.scrollpanel {
+    height: 400px;
+    width: 500px;
+    margin: auto;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+</pre>
+                        </div><!-- / -->
+                    </li>
+                </ul>
+
             </div>
 
         </div>
