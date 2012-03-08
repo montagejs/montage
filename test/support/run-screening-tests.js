@@ -33,62 +33,6 @@ if (opts.length > 0) {
 }
 
 
-
-// Load all *-screening.js files here
-
-var gotScripts = Q.defer();
-var tests;
-walk("..", gotScripts.node());
-
-gotScripts.promise.then(function(files) {
-    tests = files.filter(function(value) {
-        return value.indexOf("-screening.js") !== -1;
-    }).map(function(name) {
-        return {name: name, code: fs.readFileSync(name, "utf8")};
-    });
-}).then(function() {
-    debugger;
-    return screening_request("scripts?name=config.js").then(function(data) {
-        // Delete existing config.js scripts
-        if (data.length >= 1) {
-            var ps = [];
-            for (var i = 0, len = data.length; i < len; i++) {
-                ps.push(screening_request("scripts/" + data[i]._id, "DELETE"));
-            }
-            return Q.all(ps);
-        }
-    });
-}).then(function() {
-    debugger;
-    // Add the config script to the server
-    return screening_request("scripts", "POST",
-        JSON.stringify({
-            "name":"config.js", "code":"exports.config=function(){return { montage_url:'"+ TEST_URL +"'}; };"
-        })
-    );
-}).then(function() {
-    debugger;
-    // find the agent
-    return screening_request("agents");
-}).then(function(data) {
-    return data[0];
-}).then(function(agent) {
-    var promises = [];
-
-    tests.forEach(function(test) {
-        promises.push(runTest(test, agent));
-    });
-
-    return Q.all(promises);
-}).then(function() {
-    console.log("Testing completed");
-}) .fail(function(e) { // finally capture a rejection.
-    var msg = e.message || e;
-    console.error("Error: " + msg);
-    return 1;
-}).end();
-
-
 //// Utility functions
 
 var walk = function(dir, done) {
@@ -166,18 +110,17 @@ var screening_request = function(path, method, body) {
     return deferred.promise;
 };
 
-function escapeInvalidXmlChars(str) {
+var escapeInvalidXmlChars = function(str) {
     return str.replace(/\&/g, "&amp;")
         .replace(/</g, "&lt;")
         .replace(/\>/g, "&gt;")
         .replace(/\"/g, "&quot;")
         .replace(/\'/g, "&apos;");
-}
+};
 
-function generateJunitXml(result) {
+var generateJunitXml = function(result) {
     // get or create xml and save to file
 
-    console.log("generateJunitXml", result.fileName);
     var filename;
     var output = "";
 
@@ -213,9 +156,9 @@ function generateJunitXml(result) {
     filename = "TEST-" + filename.replace(/[^a-z\\-]/g, "_") + ".xml";
     console.log("Writing ../" + filename + " ...");
     fs.writeFileSync("../" + filename, output, "utf8");
-}
+};
 
-function runTest(test, agent) {
+var runTest = function(test, agent) {
     if (!agent) {
         throw new Error("No agent available");
     }
@@ -244,4 +187,59 @@ function runTest(test, agent) {
 
     done.promise.then(generateJunitXml);
     return done.promise;
-}
+};
+
+
+
+// Load all *-screening.js files here
+
+var gotScripts = Q.defer();
+var tests;
+walk("..", gotScripts.node());
+
+gotScripts.promise.then(function(files) {
+    tests = files.filter(function(value) {
+        return value.indexOf("-screening.js") !== -1;
+    }).map(function(name) {
+        return {name: name, code: fs.readFileSync(name, "utf8")};
+    });
+}).then(function() {
+    return screening_request("scripts?name=config.js").then(function(data) {
+        // Delete existing config.js scripts
+        if (data.length >= 1) {
+            var ps = [];
+            for (var i = 0, len = data.length; i < len; i++) {
+                ps.push(screening_request("scripts/" + data[i]._id, "DELETE"));
+            }
+            return Q.all(ps);
+        }
+    });
+}).then(function() {
+    // Add the config script to the server
+    return screening_request("scripts", "POST",
+        JSON.stringify({
+            "name":"config.js", "code":"exports.config=function(){return { montage_url:'"+ TEST_URL +"'}; };"
+        })
+    );
+}).then(function() {
+    // find the agent
+    return screening_request("agents");
+}).then(function(data) {
+    return data[0];
+}).then(function(agent) {
+    var promises = [];
+
+    tests.forEach(function(test) {
+        promises.push(runTest(test, agent));
+    });
+
+    return Q.all(promises);
+}).then(function() {
+    console.log("Testing completed");
+}) .fail(function(e) { // finally capture a rejection.
+    var msg = e.message || e;
+    console.error("Error: " + msg);
+    return 1;
+}).end();
+
+
