@@ -275,12 +275,18 @@ button[aria-pressed="true"], nav button[aria-pressed="true"]:hover {
 }
 
 #show-source {
-    position: absolute;
-    right: 10px;
+/    position: absolute;
+/    right: 10px;
 }
 
 #read-only {
+/    position: absolute;
+/    right: 50%;
+/    margin-right: 10px;
+}
+
+.leftBox {
     position: absolute;
-    right: 50%;
-    margin-right: 10px;
+    top: 0;
+    right: 10px;
 }

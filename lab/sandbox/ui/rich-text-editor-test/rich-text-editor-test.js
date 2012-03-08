@@ -129,8 +129,8 @@ exports.RichTextEditorTest = Montage.create(Component, {
                 this.showSource.checked = savedShowSource;
             }
 
-// For debugging purpose only...
-editor = this.editor;
+            // For debugging purpose only...
+            editor = this.editor;
 
             this.draw();
         }
@@ -178,6 +178,14 @@ editor = this.editor;
             switch (target.identifier) {
                 case "reset":
                     this.loadDefaultContent();
+                    break;
+
+                case "undo":
+                    this.undoManager.undo();
+                    break;
+
+                case "redo":
+                    this.undoManager.redo();
                     break;
 
                 case "showRawSource":

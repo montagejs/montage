@@ -13,23 +13,28 @@
     <script src="../../../../montage.js"></script>
     <script type="text/montage-serialization">
         {
+            "undoManager": {
+                "object": "montage/core/undo-manager[defaultUndoManager]"
+            },
+
             "editor": {
                 "module": "montage/lab/lib/ui/rich-text-editor.reel",
                 "name": "RichTextEditor",
                 "properties": {
-                    "element": {"#": "editor-frame" },
+                    "element": {"#": "editor-frame"},
                     "identifier": "editor",
-                    "delegate": {"@": "tester" }
+                    "delegate": {"@": "delegate"},
+                    "undoManager": {"@": "undoManager"}
                 },
                 "listeners": [
                     {
                         "type": "editorChange",
-                        "listener": {"@": "tester"},
+                        "listener": {"@": "delegate"},
                         "capture": false
                     },
                     {
                         "type": "editorSelect",
-                        "listener": {"@": "tester"},
+                        "listener": {"@": "delegate"},
                         "capture": false
                     }
                 ],
@@ -434,7 +439,65 @@
                 "listeners": [
                     {
                         "type": "action",
-                        "listener": {"@": "tester"},
+                        "listener": {"@": "delegate"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "undoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "undoButton" },
+                    "identifier": "undo",
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "enabled": {
+                        "boundObject": {"@": "delegate"},
+                        "boundObjectPropertyPath": "undoManager.canUndo",
+                        "oneway": true
+                    },
+                    "title": {
+                        "boundObject": {"@": "delegate"},
+                        "boundObjectPropertyPath": "undoManager.undoLabel",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "delegate"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "redoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "redoButton" },
+                    "identifier": "redo",
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "enabled": {
+                        "boundObject": {"@": "delegate"},
+                        "boundObjectPropertyPath": "undoManager.canRedo",
+                        "oneway": true
+                    },
+                    "title": {
+                        "boundObject": {"@": "delegate"},
+                        "boundObjectPropertyPath": "undoManager.redoLabel",
+                        "oneway": true
+                    }
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "delegate"},
                         "capture": false
                     }
                 ]
@@ -464,16 +527,17 @@
                 "listeners": [
                     {
                         "type": "action",
-                        "listener": {"@": "tester"}
+                        "listener": {"@": "delegate"}
                     }
                 ]
             },
 
-            "tester": {
+            "delegate": {
                 "module": "rich-text-editor-test",
                 "name": "RichTextEditorTest",
                 "properties": {
                     "editor": {"@": "editor"},
+                    "undoManager": {"@": "undoManager"},
                     "source": {"#": "source-frame"},
                     "showSource": {"@": "checkbox-source"}
                 },
@@ -490,7 +554,7 @@
                 "module": "montage/ui/application",
                 "name": "Application",
                 "properties": {
-                    "delegate": {"@": "tester"}
+                    "delegate": {"@": "delegate"}
                 }
             }
         }
@@ -500,31 +564,31 @@
     <header>
         <nav>
             <div class="btn-group">
-                <button id="boldToggle" class="btn font-styles" style="font-weight: bold;">B</button>
-                <button id="italicToggle" class="btn font-styles" style="font-family: serif; font-style: italic;">I</button>
-                <button id="underlineToggle" class="btn font-styles" style="text-decoration: underline;">U</button>
-                <button id="strikeToggle" class="btn font-styles" style="text-decoration: line-through; ">ABC</button>
+                <button id="boldToggle" class="btn font-styles" style="font-weight: bold;" title="Bold">B</button>
+                <button id="italicToggle" class="btn font-styles" style="font-family: serif; font-style: italic;" title="Italic">I</button>
+                <button id="underlineToggle" class="btn font-styles" style="text-decoration: underline;" title="Underline">U</button>
+                <button id="strikeToggle" class="btn font-styles" style="text-decoration: line-through; " title="Strike Through">ABC</button>
             </div>
             <div class="btn-group">
-                <button id="subToggle" class="btn font-styles">sub</button>
-                <button id="supToggle" class="btn font-styles">sup</button>
+                <button id="subToggle" class="btn font-styles" title="Subscript">sub</button>
+                <button id="supToggle" class="btn font-styles" title="Superscript">sup</button>
             </div>
             <div class="btn-group">
-                <button id="outdentButton" class="btn font-styles">&lt;</button>
-                <button id="indentButton" class="btn font-styles">&gt;</button>
-                <button id="unorderedlistToggle" class="btn font-styles">•</button>
-                <button id="orderedlistToggle" class="btn font-styles">1.</button>
+                <button id="outdentButton" class="btn font-styles" title="Outdent">&lt;</button>
+                <button id="indentButton" class="btn font-styles" title="indent">&gt;</button>
+                <button id="unorderedlistToggle" class="btn font-styles" title="Unordered List">•</button>
+                <button id="orderedlistToggle" class="btn font-styles" title="Ordered List">1.</button>
             </div>
             <div class="btn-group">
-                <select id="justification" class="font-styles" style="min-width: 70px"></select>
+                <select id="justification" class="font-styles" style="min-width: 70px" title="Justification"></select>
             </div>
             <div class="btn-group">
-                <select id="fontname" class="font-styles" style="min-width: 70px"></select>
-                <select id="fontsize" class="font-styles" style="min-width: 70px"></select>
+                <select id="fontname" class="font-styles" style="min-width: 70px" title="Font Name"></select>
+                <select id="fontsize" class="font-styles" style="min-width: 70px" title="Font Size"></select>
             </div>
             <div class="btn-group">
-                <select id="forecolor" class="font-styles" style="min-width: 70px"></select>
-                <select id="backcolor" class="font-styles" style="min-width: 70px"></select>
+                <select id="forecolor" class="font-styles" style="min-width: 70px" title="Fore Color"></select>
+                <select id="backcolor" class="font-styles" style="min-width: 70px" title="Back Color"></select>
             </div>
         </nav>
     </header>
@@ -533,9 +597,14 @@
         <section class="editor"><div id="editor-frame"></div></section>
     </article>
     <footer>
-        <button id="resetButton" class="btn">Reset</button>
-        <label class="checkbox inline" id="read-only"><input id="checkbox-readonly" type="checkbox" /> Read only </label>
-        <label class="checkbox inline" id="show-source"><input id="checkbox-source" type="checkbox" /> Show raw output </label>
+        <button id="resetButton" class="btn" title="Reset">Reset</button>
+        &nbsp;&nbsp;
+        <button id="undoButton" class="btn" title="Undo" disabled="disabled">Undo</button>
+        <button id="redoButton" class="btn" title="Redo" disabled="disabled">Redo</button>
+        <div class="leftBox">
+            <label class="checkbox inline" id="read-only"><input id="checkbox-readonly" type="checkbox" /> Read only </label>
+            <label class="checkbox inline" id="show-source"><input id="checkbox-source" type="checkbox" /> Show raw output </label>
+        </div>
     </footer>
 </body>
 </html>
