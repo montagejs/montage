@@ -164,7 +164,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     setElementWithParentComponent: {
         value: function(element, parent) {
             this._alternateParentComponent = parent;
-            this.element = element;
+            if (this.element != element) {
+                this.element = element;
+            }
         }
     },
 
