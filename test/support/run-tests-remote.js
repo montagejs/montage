@@ -73,7 +73,7 @@ browser.init({
                 done.resolve();
             } else {
                 previousUpdate = lastUpdate;
-                setTimeout(poll, 5000);
+                setTimeout(poll, 6000);
             }
         });
     };
