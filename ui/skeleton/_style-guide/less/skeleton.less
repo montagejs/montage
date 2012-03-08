@@ -10,7 +10,8 @@
 /* Colors ------------------------------- */
 @bg-color: hsl(0,0%,95%);
 @textinput-bg-color: hsl(0,0%,100%);
-@border: 1px solid hsl(0,0%,75%);
+@border-color: hsl(0,0%,75%);
+@border: 1px solid @border-color;
 
 /* Layout ------------------------------- */
 @height: 30px;
@@ -106,6 +107,7 @@ input.skeleton[type="checkbox"] {
     border-radius: @border-radius;
     vertical-align: middle;
     border: @border;
+    background: @bg-color;
 }
 input.skeleton[type="checkbox"]:checked {
     background: hsl(0,0%,95%) url(../assets/img/checkbox.png) no-repeat center center;
@@ -127,6 +129,7 @@ input.skeleton[type="radio"] {
     height: 20px;
     border-radius: 10px;
     border: @border;
+    background: @bg-color;
 }
 input.skeleton[type="radio"]:checked {
     background: hsl(0,0%,95%) url(../assets/img/radio.png) no-repeat center center;
@@ -183,6 +186,8 @@ textarea.skeleton {
     vertical-align: middle;
     width: @height;
     height: @height;
+    color: @border-color;
+    font-size: 1.2em;
     line-height: @height;
     border-radius: @border-radius 0 0 @border-radius;
     border: @border;

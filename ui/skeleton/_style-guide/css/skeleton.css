@@ -81,6 +81,7 @@ input.skeleton[type="checkbox"] {
   border-radius: 3px;
   vertical-align: middle;
   border: 1px solid #bfbfbf;
+  background: #f2f2f2;
 }
 input.skeleton[type="checkbox"]:checked {
   background: #f2f2f2 url(../assets/img/checkbox.png) no-repeat center center;
@@ -102,6 +103,7 @@ input.skeleton[type="radio"] {
   height: 20px;
   border-radius: 10px;
   border: 1px solid #bfbfbf;
+  background: #f2f2f2;
 }
 input.skeleton[type="radio"]:checked {
   background: #f2f2f2 url(../assets/img/radio.png) no-repeat center center;
@@ -162,6 +164,8 @@ textarea.skeleton {
   vertical-align: middle;
   width: 30px;
   height: 30px;
+  color: #bfbfbf;
+  font-size: 1.2em;
   line-height: 30px;
   border-radius: 3px 0 0 3px;
   border: 1px solid #bfbfbf;
