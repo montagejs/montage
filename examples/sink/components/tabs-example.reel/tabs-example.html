@@ -189,6 +189,20 @@
             "selectedTabValue": "tabs2-one",
             "content": {"@": "tabs2-content"}
         }
+    },
+    "tabs-accordion1": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "tabs-accordion1"}
+        }
+    },
+    "tabs-accordion2": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "tabs-accordion2"}
+        }
     }
 
 }
@@ -246,9 +260,6 @@
                     <p>
                         Presents a list of labels and optional image icons in a vertical or horizontal tab format.</p>
                 </div>
-
-
-
             </div>
 
             <h4>Horizontal tabs</h4>
@@ -266,13 +277,14 @@
                         <img id="tabs1-three" />
                     </div>
                 </div>
-
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.horizontal #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+            </div>
+            
+            <section>
+                <ul id="tabs-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;div id="tabs1" class="tab-view"&gt;
     &lt;div id="tabs1-nav"&gt;
         &lt;img id="tabs1-nav-icon" /&gt;
@@ -284,14 +296,13 @@
         &lt;img id="tabs1-three" /&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.horizontal #serialziation', event);">serialziation</a>
-                        <div class="sourceitem" id="serialziation">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "owner": {
         "module": "components/tabs-example.reel",
@@ -393,37 +404,39 @@
         }
     }
 }
-                    </pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.horizontal #css', event);">css</a>
-                        <div class="sourceitem" id="css">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
 .tab-view .tabs-content {
-    width: 300px;
-    padding: 10px;
-    height: 200px;
-    background-color: whitesmoke;
-    margin: 3px 0;
+   width: 300px;
+   padding: 10px;
+   height: 200px;
+   background-color: whitesmoke;
+   margin: 3px 0;
 }
 
 .tab-view .tabs-content img {
-    width: 290px;
-    height: 180px;
+   width: 290px;
+   height: 180px;
 }
 
 
 .tab-view {
-    margin: 20px;
+   margin: 20px;
 }
-</pre>
-                        </div><!-- / -->
-                    </li>
-                </ul>
 
-            </div>
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+                
+            </section>
+            
 
             <h5>Vertical tabs with icons</h5>
             <div class="demo vertical">
@@ -439,12 +452,14 @@
                         <img id="tabs2-three" />
                     </div>
                 </div>
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.vertical #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+            </div>
+            
+            <section>
+                <ul id="tabs-accordion2" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;div id="tabs2" class="tab-view clearfix"&gt;
 
     &lt;div id="tabs2-nav" class="tabs2-nav"&gt;
@@ -457,14 +472,13 @@
         &lt;img id="tabs2-three" /&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.vertical #serialization', event);">serialization</a>
-                        <div class="sourceitem" id="serialization">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "owner": {
         "module": "components/tabs-example.reel",
@@ -555,34 +569,35 @@
         }
     }
 }
-</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.vertical #css', event);">css</a>
-                        <div class="sourceitem" id="css">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
 /* display tabs2's navigation as a vertical tab */
 
 #tabs2 .tabs2-nav .montage-tabs-list li {
-    display: block;
+   display: block;
 }
 
 #tabs2 .tabs2-nav {
-    float: left;
-    margin-top: 20px;
+   float: left;
+   margin-top: 20px;
 }
 
 #tabs2 .tabs2-content {
-    float: left;
+   float: left;
 }
-</pre>
-                        </div><!-- / -->
-                    </li>
-                </ul>
 
-            </div>
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+                
+            </section>
 
             <section>
                 <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/tabs-example.reel" target="_blank">View source on GitHub</a>

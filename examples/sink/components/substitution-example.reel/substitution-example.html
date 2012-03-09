@@ -47,6 +47,15 @@
                         "value": "About"
                     }
                 },
+                
+                "substitution-accordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "substitution-accordion1"}
+                    }
+                },
+                
                 "content": {
                     "module": "montage/ui/substitution.reel",
                     "name": "Substitution",
@@ -70,11 +79,10 @@ li.selected, li.active {
     color: gray;
 }
 
-div.substitution-content {
+h1.substitution-content {
     height: 200px;
     text-align: center;
     margin-top: 100px;
-    font-size: 18px;
 }
 
         </style>
@@ -103,16 +111,16 @@ div.substitution-content {
                         <li><a href="#services">Services</a></li>
                         <li><a href="#about">About</a></li>
                     </ul>
-
-
-                    <div id="content" class="substitution-content">
-                    </div>
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.sub #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                    <h1 id="content" class="substitution-content"></h1>
+                    
+            </div>
+            
+            <section>
+                <ul id="substitution-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;ul id="nav" class="tabs"&gt;
     &lt;li&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href="#products"&gt;Products&lt;/a&gt;&lt;/li&gt;
@@ -123,14 +131,13 @@ div.substitution-content {
 
 &lt;div id="content" class="substitution-content"&gt;
 &lt;/div&gt;
-</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.sub #serialization', event);">serialization</a>
-                        <div class="sourceitem" id="serialization">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "owner": {
         "module": "components/substitution-example.reel",
@@ -184,126 +191,130 @@ div.substitution-content {
         }
     }
 }
-</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.sub #css', event);">css</a>
-                        <div class="sourceitem" id="css">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
 li.selected, li.active {
-    background-color: white;
-    color: gray;
+   background-color: white;
+   color: gray;
 }
 
 div.substitution-content {
-    height: 200px;
-    text-align: center;
-    margin-top: 100px;
-    font-size: 18px;
+   height: 200px;
+   text-align: center;
+   margin-top: 100px;
+   font-size: 18px;
 }
-</pre>
-                        </div><!-- / -->
-                    </li>
-                   <li>
-                        <a href="#" onclick="toggle_visibility('.sub #javascript', event);">javascript</a>
-                        <div class="sourceitem" id="javascript">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+
+                           </pre>
+                       </div>
+                   </li>
+                   
+                   <li class="accordion-group">
+                          <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                          <div class="accordion-inner montage-hidden">
+                              <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component;
+  Component = require("montage/ui/component").Component;
 
 // similar to jquery.closest. Find the closest ancestor of el matching the type
 var findClosestOfType = function(el, type, context) {
-    if(el.tagName.toLowerCase() === type) {
-        return el;
-    }
-    var found = false;
-    while(el) {
-        el = el.parentNode;
-        if(el.tagName && el.tagName.toLowerCase() === type) {
-            found = true;
-            break;
-        }
-        if(!el || !el.ownerDocument || el === context || el.nodeType === 11) {
-            break;
-        }
-    }
-    if(found) {
-        return el;
-    }
-    return null;
+  if(el.tagName.toLowerCase() === type) {
+      return el;
+  }
+  var found = false;
+  while(el) {
+      el = el.parentNode;
+      if(el.tagName && el.tagName.toLowerCase() === type) {
+          found = true;
+          break;
+      }
+      if(!el || !el.ownerDocument || el === context || el.nodeType === 11) {
+          break;
+      }
+  }
+  if(found) {
+      return el;
+  }
+  return null;
 
 };
 
 exports.SubstitutionExample = Montage.create(Component, {
 
-    navEl: {
-        value: null
-    },
+  navEl: {
+      value: null
+  },
 
-    // the substitution
-    content: {value: null},
+  // the substitution
+  content: {value: null},
 
-    prepareForDraw: {
-        value: function() {
-            if(window.Touch) {
-                this.navEl.addEventListener('touchend', this);
-            } else {
-                this.navEl.addEventListener('mouseup', this);
-            }
+  prepareForDraw: {
+      value: function() {
+          if(window.Touch) {
+              this.navEl.addEventListener('touchend', this);
+          } else {
+              this.navEl.addEventListener('mouseup', this);
+          }
 
-            // source code hilighter
-            prettyPrint();
-        }
-    },
+          // source code hilighter
+          prettyPrint();
+      }
+  },
 
-    handleNavItemClicked: {
-        value: function(href) {
-            console.log("nav item clicked = " + href);
-            var hash = href.substring(href.lastIndexOf('#')+1);
-            if(hash) {
-                this.content.switchValue = hash;
-            }
-        }
-    },
+  handleNavItemClicked: {
+      value: function(href) {
+          console.log("nav item clicked = " + href);
+          var hash = href.substring(href.lastIndexOf('#')+1);
+          if(hash) {
+              this.content.switchValue = hash;
+          }
+      }
+  },
 
-    _highlightSelection: {
-        value: function($li) {
+  _highlightSelection: {
+      value: function($li) {
 
-                var items = this.navEl.querySelectorAll('li')||[], len = items.length;
-                for(i=0; i< len; i++) {
-                    items[i].classList.remove('selected');
-                }
-                $li.classList.add('selected');
+              var items = this.navEl.querySelectorAll('li')||[], len = items.length;
+              for(i=0; i< len; i++) {
+                  items[i].classList.remove('selected');
+              }
+              $li.classList.add('selected');
 
-        }
-    },
+      }
+  },
 
-    handleEvent: {
-        value: function(event) {
+  handleEvent: {
+      value: function(event) {
 
-            var target = event.target;
-            var $li = findClosestOfType(target, 'li', this.element);
+          var target = event.target;
+          var $li = findClosestOfType(target, 'li', this.element);
 
-            if($li) {
-                var a = $li.querySelector('a');
-                if(a) {
-                    this._highlightSelection($li);
-                    this.handleNavItemClicked(a.href);
-                    event.preventDefault();
-                }
-            }
-        }
-    }
+          if($li) {
+              var a = $li.querySelector('a');
+              if(a) {
+                  this._highlightSelection($li);
+                  this.handleNavItemClicked(a.href);
+                  event.preventDefault();
+              }
+          }
+      }
+  }
 });
-</pre>
-                        </div><!-- / -->
-                    </li>
-                </ul>
 
-            </div>
+                              </pre>
+                          </div>
+                      </li>
+                </ul>
+                
+            </section>
+            
+
 
             <section>
                 <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/substitution-example.reel" target="_blank">View source on GitHub</a>

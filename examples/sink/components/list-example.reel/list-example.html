@@ -103,6 +103,21 @@
             }
         }
     },
+    
+    "list-accordion1": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "list-accordion1"}
+        }
+    },
+    "list-accordion2": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "list-accordion2"}
+        }
+    },
 
     "owner": {
         "module": "components/list-example.reel",
@@ -222,13 +237,14 @@
                     <span data-montage-id="title" class="title"></span>
                 </div>
             </div>
-        <!-- Source -->
-         <ul class="sourcelinks" >
-            <li>
-                <a href="#" onclick="toggle_visibility('.vlist #html', event);">html</a>
-                <div class="sourceitem" id="html">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+        </div>
+        
+        <section>
+            <ul id="list-accordion1" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;div class="v-list" data-montage-id="v-list"&gt;
     &lt;div class="listitem"&gt;
         &lt;!-- Image and DynamicText components --&gt;
@@ -236,14 +252,13 @@
         &lt;span data-montage-id="title" class="title"&gt;&lt;/span&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.vlist #serialization', event);">serialization</a>
-                <div class="sourceitem" id="serialization">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
 
     "places": {
@@ -314,45 +329,49 @@
         }
     }
 }
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.vlist #css', event);">css</a>
-                <div class="sourceitem" id="css">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
 .v-list {
-    height: 300px;
-    width: 100%;
+   height: 300px;
+   width: 100%;
 }
 
 .v-list .title {
-    position: absolute;
-    margin-top: 15px;
-    margin-left: 15px;
+   position: absolute;
+   margin-top: 15px;
+   margin-left: 15px;
 }
 
 
 .v-list .selected {
-    background: hsl(195,96%,53%);
-    -webkit-transform: scale(1.0);
-    -webkit-box-shadow: 0 2px 5px hsla(120,2%,39%, 0.3);
-    font-weight: bold;
+   background: hsl(195,96%,53%);
+   -webkit-transform: scale(1.0);
+   -webkit-box-shadow: 0 2px 5px hsla(120,2%,39%, 0.3);
+   font-weight: bold;
 }
 
 
 .v-list .active {
-    background: hsl(195,66%,73%);
+   background: hsl(195,66%,73%);
 }
-</pre>
-                </div><!-- / -->
-            </li>
-        </ul>
-        </div>
 
-                <h4>Horizontal scrolling list</h4>
-                <p>This example provides one way to create a horizontal scrolling list using an unordered list.</p>
+                       </pre>
+                   </div>
+               </li>
+            </ul>
+            
+        </section>
+        
+        
+
+        <h4>Horizontal scrolling list</h4>
+        <p>This example provides one way to create a horizontal scrolling list using an unordered list.</p>
 
         <div class="demo hlist">
             <!-- horizontal scrolling list -->
@@ -362,26 +381,27 @@
                     <img class="thumb" data-montage-id="thumb-h"/>
               </li>
             </ul>
-         <ul class="sourcelinks" >
-            <li>
-                <a href="#" onclick="toggle_visibility('.hlist #html', event);">html</a>
-                <div class="sourceitem" id="html">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+        </div>    
+        
+        <section>
+            <ul id="list-accordion2" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;ul data-montage-id="h-list" class="h-list"&gt;
   &lt;li&gt;
         &lt;span id="title" class="title"&gt;
         &lt;img class="thumb" data-montage-id="thumb-h"/&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
-            </pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.hlist #serialization', event);">serialization</a>
-                <div class="sourceitem" id="serialization">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
 
     "verticalList" : {
@@ -460,54 +480,56 @@
         }
     }
 }
-            </pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.hlist #css', event);">css</a>
-                <div class="sourceitem" id="css">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
 .h-list .active img {
-    border: 5px solid hsl(195,66%,73%);
+   border: 5px solid hsl(195,66%,73%);
 }
 
 .h-list {
-  margin: 0;
-  padding: 0;
-  white-space: nowrap;
-  overflow-x: auto;
+ margin: 0;
+ padding: 0;
+ white-space: nowrap;
+ overflow-x: auto;
 }
 
 .h-list .selected img {
-    -webkit-transform: scale(1.0);
-    border: 5px solid hsl(195,96%,53%);
+   -webkit-transform: scale(1.0);
+   border: 5px solid hsl(195,96%,53%);
 }
 
 .h-list li {
-  display: inline;
-  margin-left: 5px;
-  margin-right: 5px;
+ display: inline;
+ margin-left: 5px;
+ margin-right: 5px;
 }
 
 .h-list .thumb {
-    border: 5px solid white;
-    width: 100px;
-    height: 100px;
+   border: 5px solid white;
+   width: 100px;
+   height: 100px;
 }
 
 .listitem {
-    position: relative;
+   position: relative;
 }
-</pre>
-                </div><!-- / -->
-            </li>
-        </ul>
-        </div><!-- / -->
 
-<!--         <section>
+                       </pre>
+                   </div>
+               </li>
+            </ul>
+        </section>
+
+
+         <section>
             <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/list-example.reel" target="_blank">View source on GitHub</a>
-        </section> -->
+        </section>
 
 
     </div>

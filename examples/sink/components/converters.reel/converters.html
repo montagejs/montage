@@ -368,6 +368,34 @@
             "element": {"#": "fahrenheit"},
             "value": "32"
         }
+    },
+    "converters-accordion1": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "converters-accordion1"}
+        }
+    },
+    "converters-accordion2": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "converters-accordion2"}
+        }
+    },
+    "converters-accordion3": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "converters-accordion3"}
+        }
+    },
+    "converters-accordion0": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "converters-accordion0"}
+        }
     }
 }
     </script>
@@ -427,13 +455,16 @@
 
             <textarea id="textarea1" style="width: 400px; height: 100px;">Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget</textarea>
             <p id="text4"></p>
-            <!-- source links -->
-            <ul class="sourcelinks">
-                <li>
-                    <a href="#" onclick="toggle_visibility('.string #html', event);">html</a>
-                    <div class="sourceitem" id="html">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+            
+        </div>
+        
+        <section>
+            
+            <ul id="converters-accordion0" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;input type="text" id="textfield1" placeholder="Enter some text here" /&gt;
 
 &lt;p&gt; 1) Dynamic text bound to the textfield without any converter&lt;p&gt;
@@ -447,14 +478,13 @@
 
 &lt;textarea id="textarea1" style="width: 400px; height: 100px;"&gt;Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget&lt;/textarea&gt;
 &lt;p id="text4"&gt;&lt;/p&gt;
-</pre>
-                    </div><!-- / -->
-                </li>
-                <li>
-                    <a href="#" onclick="toggle_visibility('.string #serialization', event);">serialization</a>
-                    <div class="sourceitem" id="serialization">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "textfield1": {
         "module": "montage/ui/textfield.reel",
@@ -537,12 +567,15 @@
         }
     }
 }
-</pre>
-                    </div><!-- / -->
-                </li>
-            </ul><!-- / -->
-        </div>
+                    </pre>
 
+                   </div>
+               </li>
+
+            </ul>
+            
+        </section>
+        
 
             <h4>Number to string converters </h4>
         <div class="demo number">
@@ -559,13 +592,18 @@
 
             <p>Number rounded to nearest integer</p>
             <div id="num4" class="text"></div>
-            <!-- source links -->
-            <ul class="sourcelinks">
-                <li>
-                    <a href="#" onclick="toggle_visibility('.number #html', event);">html</a>
-                    <div class="sourceitem" id="html">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+            
+            
+        </div>
+        
+        
+        <section>
+            
+            <ul id="converters-accordion1" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;input id="txt-number" type="number" name="txt-number" step="5"  /&gt;
 
 &lt;p&gt;Default - Number rounded to 2 decimals&lt;/p&gt;
@@ -579,14 +617,13 @@
 
 &lt;p&gt;Number rounded to nearest integer&lt;/p&gt;
 &lt;div id="num4" class="text"&gt;&lt;/div&gt;
-</pre>
-                    </div><!-- / -->
-                </li>
-                <li>
-                    <a href="#" onclick="toggle_visibility('.number #serialization', event);">serialization</a>
-                    <div class="sourceitem" id="serialization">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "dynamictext1": {
         "module": "montage/ui/dynamic-text.reel",
@@ -677,12 +714,16 @@
         }
     }
 }
-</pre>
-                    </div><!-- / -->
-                </li>
-            </ul><!-- / -->
+                    </pre>
 
-        </div>
+                   </div>
+               </li>
+            </ul>
+            
+        </section>
+
+
+
             <h4>Date Converters </h4>
             <p>Date converters convert a string or number value to a formatted date string. The available format patterns are identical to the ones listed <a target="_new" href="http://www.ruby-doc.org/core/classes/Time.html#M000392">here</a>.</p>
         <div class="demo date">
@@ -701,13 +742,15 @@
 
             <div>Pattern: 'c' ISO-8601 format </div>
             <div id="date5" class="text"></div>
-            <!-- source links -->
-            <ul class="sourcelinks">
-                <li>
-                    <a href="#" onclick="toggle_visibility('.date #html', event);">html</a>
-                    <div class="sourceitem" id="html">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+            
+        </div>
+        
+        <section>
+            <ul id="converters-accordion2" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;input id="txt-date" type="text" placeholder="Enter a Date in the mm-dd-yyyy format" /&gt;
 
 &lt;div&gt;Default Date.toString()&lt;/div&gt;
@@ -723,14 +766,13 @@
 
 &lt;div&gt;Pattern: 'c' ISO-8601 format &lt;/div&gt;
 &lt;div id="date5" class="text"&gt;&lt;/div&gt;
-</pre>
-                    </div><!-- / -->
-                </li>
-                <li>
-                    <a href="#" onclick="toggle_visibility('.date #serialization', event);">serialization</a>
-                    <div class="sourceitem" id="serialization">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "dateconverter1": {
         "module": "montage/core/converter/date-converter",
@@ -852,12 +894,13 @@
         }
     }
 }
-</pre>
-                    </div><!-- / -->
-                </li>
-            </ul><!-- / -->
-        </div>
+                    </pre>
 
+                   </div>
+               </li>
+
+            </ul>
+        </section>
 
 
 
@@ -873,26 +916,28 @@
             <p>Temperature in Fahrenheit</p>
                 <input type="number" name="fahrenheit" id="fahrenheit" >
             </section>
-            <!-- Source links -->
-            <ul class="sourcelinks">
-                <li>
-                    <a href="#" onclick="toggle_visibility('.temp #html', event);">html</a>
-                    <div class="sourceitem" id="html">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
-    &lt;p&gt;Temperature in Celsius&lt;/p&gt;
-    &lt;input type="number" name="celsius" id="celsius"/&gt;
+            
+            
+        </div>
+        
+        <section>
+            <ul id="converters-accordion3" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;p&gt;Temperature in Celsius&lt;/p&gt;
+&lt;input type="number" name="celsius" id="celsius"/&gt;
 
-    &lt;p&gt;Temperature in Fahrenheit&lt;/p&gt;
-    &lt;input type="number" name="fahrenheit" id="fahrenheit" &gt;
-    </pre>
-                    </div><!-- / -->
-                </li>
-                <li>
-                    <a href="#" onclick="toggle_visibility('.temp #serialization', event);">serialization</a>
-                    <div class="sourceitem" id="serialization">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+&lt;p&gt;Temperature in Fahrenheit&lt;/p&gt;
+&lt;input type="number" name="fahrenheit" id="fahrenheit" &gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "numberconverter5": {
         "module": "montage/core/converter/number-converter",
@@ -933,42 +978,44 @@
         }
     }
 }
-</pre>
-                    </div><!-- / -->
-                </li>
-                <li>
-                    <a href="#" onclick="toggle_visibility('.temp #javascript', event);">javascript</a>
-                    <div class="sourceitem" id="javascript">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
 /* converters.js - Custom converter to convert from Celsius to Fahrenheit and vice-versa. */
 exports.TempConverter = Montage.create(Converter, {
 
-    allowPartialConversion: {
-        value: true
-    },
+   allowPartialConversion: {
+       value: true
+   },
 
-    // convert fahrenheit to celsius (showing our non-metric heritage here)
-    convert: {
-        value: function(value) {
-            return (parseInt(value, 10) - 32) / 1.8;
-        }
-    },
+   // convert fahrenheit to celsius (showing our non-metric heritage here)
+   convert: {
+       value: function(value) {
+           return (parseInt(value, 10) - 32) / 1.8;
+       }
+   },
 
-    // revert celsius to fahrenheit
-    revert: {
-        value: function(value) {
-            return (1.8 * parseInt(value, 10)) + 32;
-        }
-    }
+   // revert celsius to fahrenheit
+   revert: {
+       value: function(value) {
+           return (1.8 * parseInt(value, 10)) + 32;
+       }
+   }
 
 });
-</pre>
-                    </div><!-- / -->
-                </li>
-            </ul>
-        </div>
 
+                       </pre>
+                   </div>
+               </li>
+            </ul>
+            
+        </section>
+        
 
         <section>
             <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/converters.reel" target="_blank">View source on GitHub</a>
