@@ -77,7 +77,7 @@
 
                     var message = result.message;
 
-                    var originalStack = result.trace.stacktrace || result.trace.stack || [];
+                    var originalStack = result.trace.stacktrace || result.trace.stack || "";
                     originalStack = originalStack.split("\n");
                     // Remove the first error message
                     originalStack.shift();
