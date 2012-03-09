@@ -7,6 +7,7 @@
 @import url(http://fonts.googleapis.com/css?family=Homenaje);
 
 body {
+    min-width: 1300px;
     margin: 0;
     color: #444;
     font: 13px/1.231 sans-serif;
@@ -35,9 +36,21 @@ h1 span {
     display: inline-block;
 }
 
+.tip {
+    cursor: help;
+    color: hsl(200,100%,50%);
+}
+
+th {
+    color: #aaa;
+    font-family: 'Homenaje', sans-serif ;
+    font-size: 1.8em;
+    font-weight: normal;
+}
 
 
 table {
+    width: 100%;
     margin: 0 auto 100px auto;
     padding: 0;
     list-style: none;

@@ -8,23 +8,6 @@
 /* Layout ------------------------------- */
 /* Setup ------------------------------- */
 /* Theme -------------------------------------------------------------- */
-/* Icons ------------------------------- */
-.skeleton[data-icon], .skeleton[data-icon-label] {
-  position: relative;
-}
-.skeleton[data-icon]::before, .skeleton[data-icon-label]::before {
-  content: "";
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  left: 0;
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-.skeleton[data-icon-label]::before {
-  background-position: 10px center;
-}
 /* Button ------------------------------- */
 button.skeleton {
   -webkit-appearance: none;
@@ -42,17 +25,15 @@ button.skeleton {
   border: 1px solid #bfbfbf;
   background-color: #f2f2f2;
 }
+.mobile button.skeleton {
+  height: 40px;
+  min-width: 40px;
+  margin: 0 2px;
+  font-size: 1.1em;
+  padding: 0 13px;
+  border-radius: 20px;
+}
 /* Button + Icon ------------------------------- */
-button.skeleton[data-icon="camera"]::before {
-  background-image: url(../img/icons/camera.png);
-}
-button.skeleton[data-icon="time"]::before {
-  background-image: url(../img/icons/time.png);
-}
-/* Button + Icon + Label ------------------------------- */
-button.skeleton[data-icon-label] {
-  padding-left: 30px;
-}
 button.skeleton > i {
   font-size: 1.2em;
 }
@@ -67,6 +48,12 @@ button.skeleton > i {
 }
 .buttonGroup button.skeleton:last-child {
   border-radius: 0 3px 3px 0;
+}
+.mobile .buttonGroup button.skeleton:first-child {
+  border-radius: 20px 0 0 20px;
+}
+.mobile .buttonGroup button.skeleton:last-child {
+  border-radius: 0 20px 20px 0;
 }
 /* Checkbox ------------------------------- */
 input.skeleton[type="checkbox"] {
@@ -85,6 +72,10 @@ input.skeleton[type="checkbox"] {
 }
 input.skeleton[type="checkbox"]:checked {
   background: #f2f2f2 url(../assets/img/checkbox.png) no-repeat center center;
+}
+.mobile input.skeleton[type="checkbox"] {
+  width: 30px;
+  height: 30px;
 }
 /* Label ------------------------------- */
 label.skeleton {
@@ -108,6 +99,11 @@ input.skeleton[type="radio"] {
 input.skeleton[type="radio"]:checked {
   background: #f2f2f2 url(../assets/img/radio.png) no-repeat center center;
 }
+.mobile input.skeleton[type="radio"] {
+  width: 30px;
+  height: 30px;
+  border-radius: 15px;
+}
 /* Select ------------------------------- */
 select.skeleton {
   -webkit-appearance: none;
@@ -122,6 +118,12 @@ select.skeleton {
   border-radius: 3px;
   border: 1px solid #bfbfbf;
   background: #f2f2f2 url(../assets/img/select.png) no-repeat right center;
+}
+.mobile select.skeleton {
+  height: 40px;
+  font-size: 1.1em;
+  padding: 0 30px 0 15px;
+  border-radius: 20px 10px 10px 20px;
 }
 /* Input Text + Password ------------------------------- */
 input.skeleton[type="text"], input.skeleton[type="password"], input.skeleton[type="search"] {
@@ -186,6 +188,19 @@ textarea.skeleton {
   border-left: none;
   border-radius: 0 3px 3px 0;
 }
+.mobile .skeleton-icon-input-button > i {
+  width: 40px;
+  height: 40px;
+  font-size: 1.6em;
+  line-height: 40px;
+}
+.mobile .skeleton-icon-input-button > input.skeleton {
+  height: 40px;
+}
+.mobile .skeleton-icon-input-button > button {
+  margin: 0;
+  border-radius: 0px 20px 20px 0px;
+}
 /* Number ------------------------------- */
 .skeleton[data-type="number"] {
   position: relative;
@@ -215,6 +230,32 @@ textarea.skeleton {
   border-radius: 0 0 3px 0;
   bottom: 0px;
 }
+.mobile .skeleton[data-type="number"] {
+  width: auto;
+  margin: 0;
+}
+.mobile .skeleton[data-type="number"] > input.skeleton {
+  width: 70px;
+  border-radius: 0;
+  font-size: 1.2em;
+  text-align: center;
+  height: 40px;
+}
+.mobile .skeleton[data-type="number"] > button.skeleton {
+  position: static;
+  width: 40px;
+  height: 40px;
+  top: auto;
+  right: auto;
+}
+.mobile .skeleton[data-type="number"] > button.plus {
+  border-width: 1px 1px 1px 0;
+  border-radius: 0 20px 20px 0;
+}
+.mobile .skeleton[data-type="number"] > button.minus {
+  border-width: 1px 0 1px 1px;
+  border-radius: 20px 0 0 20px;
+}
 /* Range ------------------------------- */
 .skeleton[data-type="range"] {
   position: relative;
@@ -235,6 +276,12 @@ textarea.skeleton {
   width: 20px;
   height: 20px;
   left: 50%;
+}
+.mobile .skeleton[data-type="range"] > button.skeleton {
+  margin: -13px -15px;
+  border-radius: 15px;
+  width: 30px;
+  height: 30px;
 }
 /* Progress ------------------------------- */
 .skeleton[data-type="progress"] {

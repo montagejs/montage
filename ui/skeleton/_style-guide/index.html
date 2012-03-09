@@ -19,8 +19,10 @@
         
         <tr>
             <th>Native</th>
-            <th>Skeleton</th>
-            <th>Skeleton + Skin</th>
+            <th>Desktop</th>
+            <th>Desktop + <span class="tip" title="A Skin mostly just custom CSS on top. Like adding a color or grandient. But it doesn't change functionality.">Skin</span></th>
+            <th>Mobile</th>
+            <th>Mobile + <span class="tip" title="A Skin mostly just custom CSS on top. Like adding a color or grandient. But it doesn't change functionality.">Skin</span></th>
         </tr>
         
         
@@ -33,6 +35,12 @@
                 <button class="skeleton">Button</button>
             </td>
             <td class="skin">
+                <button class="skeleton">Button</button>
+            </td>
+            <td class="mobile">
+                <button class="skeleton">Button</button>
+            </td>
+            <td class="mobile skin">
                 <button class="skeleton">Button</button>
             </td>
         </tr>
@@ -55,6 +63,16 @@
                 <button class="skeleton"><i class="icon-tag"/></i></button>
                 <button class="skeleton"><i class="icon-search"/></i> Search</button>
             </td>
+            <td class="mobile">
+                <button class="skeleton"><i class="icon-camera"/></i></button>
+                <button class="skeleton"><i class="icon-tag"/></i></button>
+                <button class="skeleton"><i class="icon-search"/></i> Search</button>
+            </td>
+            <td class="mobile skin">
+                <button class="skeleton"><i class="icon-camera"/></i></button>
+                <button class="skeleton"><i class="icon-tag"/></i></button>
+                <button class="skeleton"><i class="icon-search"/></i> Search</button>
+            </td>
         </tr>
         
         
@@ -63,11 +81,25 @@
             <td>
                 <button>Cut</button><button>Copy</button><button>Paste</button>
             </td>
-            <td class="buttonGroup">
-                <button class="skeleton">Cut</button><button class="skeleton">Copy</button><button class="skeleton">Paste</button>
+            <td>
+                <span class="buttonGroup">
+                    <button class="skeleton">Cut</button><button class="skeleton">Copy</button><button class="skeleton">Paste</button>
+                </span>
             </td>
-            <td class="buttonGroup skin">
-                <button class="skeleton">Cut</button><button class="skeleton">Copy</button><button class="skeleton">Paste</button>
+            <td class="skin">
+                <span class="buttonGroup">
+                    <button class="skeleton">Cut</button><button class="skeleton">Copy</button><button class="skeleton">Paste</button>
+                </span>
+            </td>
+            <td class="mobile">
+                <span class="buttonGroup">
+                    <button class="skeleton">Cut</button><button class="skeleton">Copy</button><button class="skeleton">Paste</button>
+                </span>
+            </td>
+            <td class="mobile skin">
+                <span class="buttonGroup">
+                    <button class="skeleton">Cut</button><button class="skeleton">Copy</button><button class="skeleton">Paste</button>
+                </span>
             </td>
         </tr>
   
@@ -86,6 +118,14 @@
                 <input type="checkbox" id="checkbox3" checked class="skeleton">
                 <label for="checkbox3" class="skeleton">Agree?</label>
             </td>
+            <td class="mobile">
+                <input type="checkbox" id="checkbox2" checked class="skeleton">
+                <label for="checkbox2" class="skeleton">Agree?</label>
+            </td>
+            <td class="mobile skin">
+                <input type="checkbox" id="checkbox3" checked class="skeleton">
+                <label for="checkbox3" class="skeleton">Agree?</label>
+            </td>
         </tr>
         
         
@@ -99,6 +139,12 @@
             </td>
             <td class="skin">
                 <input type="radio" name="radio3" checked class="skeleton"><input type="radio" name="radio3" class="skeleton"><input type="radio" name="radio3" class="skeleton">
+            </td>
+            <td class="mobile">
+                <input type="radio" name="radio4" checked class="skeleton"><input type="radio" name="radio4" class="skeleton"><input type="radio" name="radio4" class="skeleton">
+            </td>
+            <td class="mobile skin">
+                <input type="radio" name="radio5" checked class="skeleton"><input type="radio" name="radio5" class="skeleton"><input type="radio" name="radio5" class="skeleton">
             </td>
         </tr>
         
@@ -126,6 +172,20 @@
                     <option>Three</option>
                 </select>
             </td>
+            <td class="mobile">
+                <select class="skeleton">
+                    <option>One</option>
+                    <option>Two</option>
+                    <option>Three</option>
+                </select>
+            </td>
+            <td class="mobile skin">
+                <select class="skeleton">
+                    <option>One</option>
+                    <option>Two</option>
+                    <option>Three</option>
+                </select>
+            </td>
         </tr>
         
         
@@ -140,6 +200,12 @@
             <td class="skin">
                 <input type="text" class="skeleton">
             </td>
+            <td class="mobile">
+                <input type="text" class="skeleton">
+            </td>
+            <td class="mobile skin">
+                <input type="text" class="skeleton">
+            </td>
         </tr>
         
         
@@ -152,6 +218,12 @@
                 <textarea class="skeleton"></textarea>
             </td>
             <td class="skin">
+                <textarea class="skeleton"></textarea>
+            </td>
+            <td class="mobile">
+                <textarea class="skeleton"></textarea>
+            </td>
+            <td class="mobile skin">
                 <textarea class="skeleton"></textarea>
             </td>
         </tr>
@@ -173,6 +245,17 @@
                     <i class="icon-lock"></i><input type="password" placeholder="Password" class="skeleton">
                 </span>
             </td>
+            <td class="mobile">
+                <!-- Authored as: <input type="password" placeholder="Password" class="skeleton-icon-input"> -->
+                <span class="skeleton-icon-input">
+                    <i class="icon-lock"></i><input type="password" placeholder="Password" class="skeleton">
+                </span>
+            </td>
+            <td class="mobile skin">
+                <span class="skeleton-icon-input">
+                    <i class="icon-lock"></i><input type="password" placeholder="Password" class="skeleton">
+                </span>
+            </td>
         </tr>
         
         
@@ -188,6 +271,17 @@
                 </span>
             </td>
             <td class="skin">
+                <span class="skeleton-icon-input-button">
+                    <i class="icon-search"></i><input type="search" class="skeleton"><button class="skeleton">Search</button>
+                </span>
+            </td>
+            <td class="mobile">
+                <!-- Authored as: <input type="search" class="skeleton-icon-input-button"> -->
+                <span class="skeleton-icon-input-button">
+                    <i class="icon-search"></i><input type="search" class="skeleton"><button class="skeleton">Search</button>
+                </span>
+            </td>
+            <td class="mobile skin">
                 <span class="skeleton-icon-input-button">
                     <i class="icon-search"></i><input type="search" class="skeleton"><button class="skeleton">Search</button>
                 </span>
@@ -215,6 +309,17 @@
                     <button class="skeleton minus">-</button>
                 </span>
             </td>
+            <td class="mobile">
+                <!-- Authored as: <input type="number"> -->
+                <span data-type="number" class="skeleton">
+                    <button class="skeleton minus">-</button><input type="text" value="0" class="skeleton"><button class="skeleton plus">+</button>
+                </span>
+            </td>
+            <td class="mobile skin">
+                <span data-type="number" class="skeleton">
+                    <button class="skeleton minus">-</button><input type="text" value="0" class="skeleton"><button class="skeleton plus">+</button>
+                </span>
+            </td>
         </tr>
         
         
@@ -234,6 +339,17 @@
                     <button class="skeleton"></button>
                 </span>
             </td>
+            <td class="mobile">
+                <!-- Authored as: <input type="range"> -->
+                <span data-type="range" class="skeleton">
+                    <button class="skeleton"></button>
+                </span>
+            </td>
+            <td class="mobile skin">
+                <span data-type="range" class="skeleton">
+                    <button class="skeleton"></button>
+                </span>
+            </td>
         </tr>
         
         
@@ -247,6 +363,13 @@
                 <span data-type="progress" class="skeleton"></span>
             </td>
             <td class="skin">
+                <span data-type="progress" class="skeleton"></span>
+            </td>
+            <td class="mobile">
+                <!-- Authored as: <progress></progress> -->
+                <span data-type="progress" class="skeleton"></span>
+            </td>
+            <td class="mobile skin">
                 <span data-type="progress" class="skeleton"></span>
             </td>
         </tr>
