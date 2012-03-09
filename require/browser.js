@@ -5,11 +5,13 @@
  </copyright> */
 bootstrap("require/browser", function (require) {
 
-var Require = require("require/require");
-var Promise = require("core/promise").Promise;
-var URL = require("core/mini-url");
-
-var global = typeof global !== "undefined" ? global : window;
+var Require = require("require/require"),
+    Promise = require("core/promise").Promise,
+    URL = require("core/mini-url"),
+    GET = "GET",
+    APPLICATION_JAVASCRIPT_MIMETYPE = "application/javascript",
+    FILE_PROTOCOL = "file:",
+    global = typeof global !== "undefined" ? global : window;
 
 Require.getLocation = function() {
     return URL.resolve(window.location, ".");
@@ -24,7 +26,7 @@ Require.overlays = ["browser", "montage"];
 // http://dl.dropbox.com/u/131998/yui/misc/get/browser-capabilities.html
 Require.read = function (url) {
 
-    if (URL.resolve(window.location, url).indexOf("file:") === 0) {
+    if (URL.resolve(window.location, url).indexOf(FILE_PROTOCOL) === 0) {
         throw new Error("XHR does not function for file: protocol");
     }
 
@@ -44,8 +46,10 @@ Require.read = function (url) {
     }
 
     try {
-        request.open("GET", url, true);
-        request.overrideMimeType("application/javascript");
+        request.open(GET, url, true);
+        if (request.overrideMimeType) {
+            request.overrideMimeType(APPLICATION_JAVASCRIPT_MIMETYPE);
+        }
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
                 onload();
@@ -74,13 +78,21 @@ var globalEval = /*this.execScript ||*/eval;
 // For Firebug evaled code isn't debuggable otherwise
 // http://code.google.com/p/fbug/issues/detail?id=2198
 if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
-    globalEval = new Function("evalString", "return eval(evalString)");
+    globalEval = new Function("_", "return eval(_)");
 }
+
+var __FILE__String = "__FILE__",
+    DoubleUnderscoreString = "__"
+    globalEvalConstantA = "(function ",
+    globalEvalConstantB = "(require, exports, module) {",
+    globalEvalConstantC = "//*/\n})\n//@ sourceURL=";
 
 Require.Compiler = function (config) {
     return function(module) {
         if (module.factory || module.text === void 0)
             return module;
+        if (config.define)
+            throw new Error("Can't use eval.");
 
         // Here we use a couple tricks to make debugging better in various browsers:
         // TODO: determine if these are all necessary / the best options
@@ -91,10 +103,10 @@ Require.Compiler = function (config) {
         //      TODO: investigate why this isn't working in Firebug.
         // 3. set displayName property on the factory function (Safari, Chrome)
 
-        var displayName = "__FILE__"+module.location.replace(/\.\w+$|\W/g, "__");
+        var displayName = __FILE__String+module.location.replace(/\.\w+$|\W/g, DoubleUnderscoreString);
 
         try {
-            module.factory = globalEval("(function "+displayName+"(require, exports, module) {"+module.text+"//*/\n})"+"\n//@ sourceURL="+module.location);
+            module.factory = globalEval(globalEvalConstantA+displayName+globalEvalConstantB+module.text+globalEvalConstantC+module.location);
         } catch (exception) {
             throw new SyntaxError("in " + module.location + ": " + exception.message);
         }
@@ -107,6 +119,88 @@ Require.Compiler = function (config) {
 
         return module;
     }
+};
+
+Require.XhrLoader = function (config) {
+    return function (url, module) {
+        return Require.read(url)
+        .then(function (text) {
+            module.type = "javascript";
+            module.text = text;
+            module.location = url;
+        });
+    };
+};
+
+var definitions = {};
+var getDefinition = function (hash, id) {
+    definitions[hash] = definitions[hash] || {};
+    definitions[hash][id] = definitions[hash][id] || Promise.defer();
+    return definitions[hash][id];
+};
+define = function (hash, id, module) {
+    getDefinition(hash, id).resolve(module);
+};
+
+Require.ScriptLoader = function (config) {
+    var hash = config.packageDescription.hash;
+    return function (location, module) {
+        return Promise.call(function () {
+
+            // short-cut by predefinition
+            if (definitions[hash] && definitions[hash][module.id]) {
+                return definitions[hash][module.id].promise;
+            }
+
+            if (/\.js$/.test(location)) {
+                location = location.replace(/\.js/, ".load.js");
+            } else {
+                location += ".load.js";
+            }
+
+            var script = document.createElement("script");
+            script.onload = function() {
+                script.parentNode.removeChild(script);
+            };
+            script.onerror = function (error) {
+                script.parentNode.removeChild(script);
+            };
+            script.src = location;
+            script.defer = true;
+            document.getElementsByTagName("head")[0].appendChild(script);
+
+            return getDefinition(hash, module.id).promise
+        })
+        .then(function (definition) {
+            delete definitions[hash][module.id];
+            for (var name in definition) {
+                module[name] = definition[name];
+            }
+            module.location = location;
+            module.directory = URL.resolve(location, ".");
+        });
+    };
+};
+
+Require.makeLoader = function (config) {
+    if (config.define) {
+        Loader = Require.ScriptLoader;
+    } else {
+        Loader = Require.XhrLoader;
+    }
+    return Require.MappingsLoader(
+        config,
+        Require.ExtensionsLoader(
+            config,
+            Require.PathsLoader(
+                config,
+                Require.MemoizedLoader(
+                    config,
+                    Loader(config)
+                )
+            )
+        )
+    );
 };
 
 });

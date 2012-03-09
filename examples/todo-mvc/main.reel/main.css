@@ -7,18 +7,17 @@
 
 .main {
     width: 480px;
-    margin: 0 auto 40px;
-    background: white;
-    padding: 20px;
-    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 5px 6px 0;
-    -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 5px 6px 0;
-    -o-box-shadow: rgba(0, 0, 0, 0.2) 0 5px 6px 0;
-    box-shadow: rgba(0, 0, 0, 0.2) 0 5px 6px 0;
+	margin: 0 auto 40px;
+	background: white;
+	padding: 20px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+    -o-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
     -moz-border-radius: 0 0 5px 5px;
     -o-border-radius: 0 0 5px 5px;
     -webkit-border-radius: 0 0 5px 5px;
     border-radius: 0 0 5px 5px;
-
     font: 1em/1.5em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
 }
 
@@ -49,6 +48,7 @@
     border-top: 1px solid #EDEDED;
     padding: 0 20px;
     line-height: 36px;
+    font-size: 14px;
 }
 
 #taskForm label span,
@@ -56,16 +56,15 @@
     display: none;
 }
 
-#taskForm .montage-textfield {
+#taskForm .taskNoteField {
     outline: none;
     width: 100%;
+    -moz-box-sizing: border-box;
     box-sizing: border-box;
-
     border: 1px solid hsl(0,0%,70%);
     padding: 10px 5px;
     font-size: 24px;
     color: hsl(0,0%,30%);
-
     background: #fff;
     -webkit-box-shadow: inset 0px 2px 2px -1px hsl(0,0%,85%);
 }
@@ -74,11 +73,6 @@
     list-style-type: none;
     margin: 10px 0 0 0;
     padding: 0;
-
-}
-
-#markAllCompleteForm {
-    margin-bottom: 10px;
 }
 
 

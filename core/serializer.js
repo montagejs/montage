@@ -270,11 +270,16 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }},
 
     _generateLabelForObject: {value: function(object) {
-        var objectName = Montage.getInfoForObject(object).objectName.toLowerCase(),
-            index = this._objectNamesIndex[objectName] || 1;
+        var objectName = object.identifier ||  Montage.getInfoForObject(object).objectName.toLowerCase(),
+            index = this._objectNamesIndex[objectName];
 
-        this._objectNamesIndex[objectName] = index + 1;
-        return objectName + index;
+        if (index) {
+            this._objectNamesIndex[objectName] = index + 1;
+            return objectName + index;
+        } else {
+            this._objectNamesIndex[objectName] = 2;
+            return objectName;
+        }
     }},
 
     _applySerializationUnits: {value: function(serializedUnits, object) {
@@ -292,13 +297,22 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     /**
     @private
      */
+    _findObjectNameRegExp: {
+        value: /([^\/]+?)(\.reel)?$/
+    },
+    _toCamelCaseRegExp: {
+        value: /(?:^|-)([^-])/g
+    },
+    _replaceToCamelCase: {
+        value: function(_, g1) { return g1.toUpperCase() }
+    },
     _serializeObject: {value: function(object, properties, type) {
         var uuid = object.uuid,
             serializedReference = this._serializedReferences[uuid],
             serializedUnits,
             propertyNames,
             objectInfo,
-            label;
+            label, moduleId, name, defaultName;
 
         if (serializedReference) {
             return serializedReference;
@@ -317,11 +331,26 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             serializedUnits = {};
             objectInfo = Montage.getInfoForObject(object);
 
-            serializedUnits.module = this._serializeValue(this._require.identify(
+            moduleId = this._require.identify(
                 objectInfo.moduleId,
-                objectInfo.require)
+                objectInfo.require
             );
-            serializedUnits.name = this._serializeValue(objectInfo.objectName);
+            name = objectInfo.objectName;
+
+            this._findObjectNameRegExp.test(moduleId);
+            defaultName = RegExp.$1.replace(this._toCamelCaseRegExp, this._replaceToCamelCase);
+
+            if (defaultName === name) {
+                name = moduleId;
+            } else {
+                name = moduleId + "[" + name + "]";
+            }
+
+            if (objectInfo.isInstance) {
+                serializedUnits.prototype = this._serializeValue(name);
+            } else {
+                serializedUnits.object = this._serializeValue(name);
+            }
 
             if (typeof object.serializeSelf === "function") {
                 this._pushContextObject(object);

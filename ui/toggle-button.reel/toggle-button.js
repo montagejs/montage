@@ -32,7 +32,8 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
 
     _unpressedLabel: {
         enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
     /**
         The value the button should take when it is in the unpressed state. If
@@ -56,7 +57,8 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
 
     _pressedLabel: {
         enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
     /**
         The value the button should take when it is in the pressed state. If
@@ -80,7 +82,8 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
 
     _pressedClass: {
         enumerable: false,
-        value: "pressed"
+        value: "pressed",
+        serializable: true
     },
     /**
         The class that should be added to the element when the button is in
@@ -124,9 +127,9 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
       }
     },
 
-    deserializedFromTemplate: {
+    didSetElement: {
         value: function() {
-            Object.getPrototypeOf(ToggleButton).deserializedFromTemplate.call(this);
+            Object.getPrototypeOf(ToggleButton).didSetElement.call(this);
 
             // If we haven't set the (un)pressedLabel of the initial state,
             // then take it from the label

@@ -13,13 +13,16 @@
     <script type="text/montage-serialization">
         {
             "enabledToggle": {
-                "module": "montage/ui/toggle-switch.reel",
-                "name": "ToggleSwitch",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "element": {"#": "toggle"}
+                    "element": {"#": "toggle"},
+                    "pressedClass": "success",
+                    "pressedLabel": "ON",
+                    "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "value": {
+                    "pressed": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "enabled"
                     }
@@ -58,7 +61,19 @@
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "maxValue"
                     }
-                }
+                },
+                "listeners": [
+                    {
+                        "type": "montage_range_interaction_start",
+                        "listener": {"@": "owner"},
+                        "useCapture": false
+                    },
+                    {
+                        "type": "montage_range_interaction_end",
+                        "listener": {"@": "owner"},
+                        "useCapture": false
+                    }
+                ]
             },
             "numberconverter1": {
                 "module": "montage/core/converter/number-converter",
@@ -148,9 +163,9 @@
 <body>
 
     <div id="control" class="ValueBasedEffect">
-        <span id="toggle"></span> <span id="effectName"></span>
+        <button id="toggle" class="btn" style="width: 60px;">ON</button>
         <div class="valueControl">
-            <input type="range" id="valueSlider" class="slider" />
+            <input type="range" id="valueSlider" class="slider" name="multiply"/>
             <div id="valueDisplay" class="value"></div>
         </div>
 

@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module montage/ui/composer/long-press-composer
+    @module montage/ui/composer/long-press-composer
     @requires montage
     @requires montage/ui/composer/composer
 */
@@ -15,7 +15,19 @@ var Montage = require("montage").Montage,
     @class module:montage/ui/composer/translate-composer.TranslateComposer
     @extends module:montage/ui/composer/composer.Composer
 */
-exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui/event/composer/translate-composer.TranslateComposer# */ {
+var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui/event/composer/translate-composer.TranslateComposer# */ {
+
+    /**
+    These elements perform some native action when clicked/touched and so we
+    should not preventDefault when a mousedown/touchstart happens on them.
+    @private
+    */
+    _NATIVE_ELEMENTS: {
+        value: ["A", "IFRAME", "EMBED", "OBJECT", "VIDEO", "AUDIO", "CANVAS",
+            "LABEL", "INPUT", "BUTTON", "SELECT", "TEXTAREA", "KEYGEN",
+            "DETAILS", "COMMAND"
+        ]
+    },
 
     _externalUpdate: {
         enumerable: false,
@@ -191,6 +203,8 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
         }
     },
 
+    invertAxis: {value: null},
+
     _hasMomentum: {
         enumerable: false,
         value: true
@@ -296,16 +310,31 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
         value: null
     },
 
+    /**
+    Returns if we should preventDefault on a touchstart/mousedown event.
+    @param {Event} The event
+    @returns {Boolean} Whether preventDefault should be called
+    @private
+    */
+    _shouldPreventDefault: {
+        value: function(event) {
+            return !!event.target.tagName && TranslateComposer._NATIVE_ELEMENTS.indexOf(event.target.tagName) === -1 && !event.target.isContentEditable;
+        }
+    },
+
+/**
+    Description TODO
+    @function
+    @param {Event} event TODO
+    */
     captureMousedown: {
         enumerable: false,
         value: function (event) {
+            if (event.button !== 0) {
+                return;
+            }
 
-            // TODO this is a bit of a temporary workaround to ensure that we allow input fields
-            //to receive the mousedown that gives them focus and sets the cursor a the mousedown coordinates
-            if (!(event.target.tagName &&
-                ("INPUT" === event.target.tagName || "SELECT" === event.target.tagName || "TEXTAREA" === event.target.tagName)) &&
-                    !event.target.isContentEditable) {
-
+            if (this._shouldPreventDefault(event)) {
                 event.preventDefault();
             }
 
@@ -317,11 +346,16 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
         }
     },
 
+    /**
+    Handle the mousedown that bubbled back up from beneath the element
+    If nobody else claimed this pointer, we should handle it now
+    @function
+    @param {Event} event TODO
+    */
     handleMousedown: {
         enumerable: false,
         value: function (event) {
-
-            if (!this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
+            if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
                 this.eventManager.claimPointer(this._observedPointer, this);
                 this._start(event.clientX, event.clientY, event.target);
             }
@@ -371,10 +405,11 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
     captureTouchstart: {
         enumerable: false,
         value: function (event) {
+            if (this._shouldPreventDefault(event)) {
+                event.preventDefault();
+            }
 
-            event.preventDefault();
-
-            // If already scrolling the scrollview, ignore any new touchstarts
+            // If already scrolling, ignore any new touchstarts
             if (this._observedPointer !== null && this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 return;
             }
@@ -391,7 +426,9 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
             if (!this.eventManager.componentClaimingPointer(this._observedPointer)) {
 
                 if (event.targetTouches.length === 1) {
-                    event.preventDefault();
+                    if (this._shouldPreventDefault(event)) {
+                        event.preventDefault();
+                    }
 
                     this.eventManager.claimPointer(this._observedPointer, this);
                     this._start(event.targetTouches[0].clientX, event.targetTouches[0].clientY, event.targetTouches[0].target);
@@ -458,7 +495,7 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
 
             angle = velocity.angle;
 
-            // The motion is with the grain of the scrollview; we may want to see if we should claim the pointer
+            // The motion is with the grain of the element; we may want to see if we should claim the pointer
             if ("horizontal" === this.axis) {
 
                 isRight = (angle <= lowerRight && angle >= upperRight);
@@ -516,11 +553,13 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
         value: function (x, y) {
 
             this._isSelfUpdate=true;
+            var delta;
             if (this._axis!="vertical") {
+                var delta = this.invertAxis ? (x-this._pointerX) : (this._pointerX-x);
                 if ((this._translateX<0)||(this._translateX>this._maxTranslateX)) {
-                    this.translateX+=((this._pointerX-x)/2)*this._pointerSpeedMultiplier;
+                    this.translateX+=(delta/2)*this._pointerSpeedMultiplier;
                 } else {
-                    this.translateX+=(this._pointerX-x)*this._pointerSpeedMultiplier;
+                    this.translateX+=(delta)*this._pointerSpeedMultiplier;
                 }
             }
             if (this._axis!="horizontal") {
@@ -530,6 +569,7 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
                     this.translateY+=(this._pointerY-y)*this._pointerSpeedMultiplier;
                 }
             }
+
             this._isSelfUpdate=false;
             this._pointerX=x;
             this._pointerY=y;
@@ -573,7 +613,6 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
             var translateStartEvent = document.createEvent("CustomEvent");
 
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
-            translateStartEvent.type = "translateStart";
             this.dispatchEvent(translateStartEvent);
         }
     },
@@ -584,10 +623,10 @@ exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui
             var translateEndEvent = document.createEvent("CustomEvent");
 
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
-            translateEndEvent.type = "translateEnd";
             this.dispatchEvent(translateEndEvent);
         }
     },
+
 
     _end: {
         enumerable: false,

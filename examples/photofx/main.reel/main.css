@@ -61,7 +61,6 @@ input {
     bottom: 0;
     right: 0;
     left: 0;
-    height: 177px;
 
     overflow: visible;
     border-top:  1px solid hsl(0,0%,62%);
@@ -74,8 +73,7 @@ input {
     border-right:  1px solid hsl(0,0%,60%);
 }
 
-.PhotoPanel .PhotoList .montage-list-scrollView {
-    display: table;
+.PhotoPanel .PhotoList .montage-list-scroller {
     margin-top: 10px;
 }
 

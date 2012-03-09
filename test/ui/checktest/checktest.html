@@ -87,6 +87,27 @@
         }
     },
 
+    "scroll": {
+        "module": "montage/ui/scroller.reel",
+        "name": "Scroller",
+        "properties": {
+            "element": {"#": "scroll"}
+        }
+    },
+    "scroll_check": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "scroll_check"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"->": {"arguments": [], "body": "console.log('checkbox szn action');"}}
+            }
+        ]
+    },
+
     "test": {
         "module": "ui/checktest/checktest",
         "name": "CheckTest",
@@ -99,7 +120,9 @@
             "check_bound2": {"@": "check_bound2"},
             "radio1": {"@": "radio1"},
             "radio2": {"@": "radio2"},
-            "radio3": {"@": "radio3"}
+            "radio3": {"@": "radio3"},
+            "scroll": {"@": "scroll"},
+            "scroll_check": {"@": "scroll_check"}
         }
     },
     "application": {
@@ -117,7 +140,7 @@
 
     <h2>Basic</h2>
     <p>
-        <label><input type="checkbox" id="check1" /> should be unchecked</label>
+        <label id="label"><input type="checkbox" id="check1" /> should be unchecked</label>
         <label><input type="checkbox" id="check2" checked /> should be checked</label>
     </p>
 
@@ -131,6 +154,15 @@
         <label><input type="checkbox" id="check_bound1" /> should be checked</label>
         <label><input type="checkbox" id="check_bound2" checked /> should be checked</label>
     </p>
+
+    <h2>Scroll</h2>
+    <form action="" method="get">
+    <div id="scroll" style="background:#CCC; height: 300px">
+        <div style="background:#A00; height:260px; width:10px">.</div>
+        <label id="scroll_label"><input type="checkbox" id="scroll_check"/>scroll check</label>
+        <div style="background:#A00; height:200px; width:10px">.</div>
+    </div>
+    </form>
 
     <h1>Radio button tests</h1>
     <h2>Basic</h2>

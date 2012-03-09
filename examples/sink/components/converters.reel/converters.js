@@ -10,7 +10,7 @@ var Montage = require("montage/core/core").Montage,
 exports.Converters = Montage.create(Component, {
 
     _number: {
-        value: 9990.09
+        value: 9990
     },
 
     inputNumber: {

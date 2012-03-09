@@ -175,7 +175,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     _createPopupSlot: {value: function(zIndex) {
         var slotEl = document.createElement('div');
         document.body.appendChild(slotEl);
-        slotEl.style['z-index'] = zIndex;
+        slotEl.style.zIndex = zIndex;
         slotEl.style.position = 'absolute';
 
         var popupSlot = Slot.create();
@@ -221,7 +221,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 }
                 // use the new zIndex for custom popup
                 if(!isSystemPopup) {
-                    popupSlot.element.style['z-index'] = zIndex;
+                    popupSlot.element.style.zIndex = zIndex;
                 }
 
                 popupSlot.content = content;

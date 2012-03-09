@@ -18,7 +18,18 @@
         "properties": {
             "repetition": {"@": "repetition"},
             "componentC": {"@": "componentC"},
-            "componentC1": {"@": "componentC1"}
+            "componentC1": {"@": "componentC1"},
+            "componentNoelement": {"@": "componentNoelement"},
+            "componentD": {"@": "componentD"},
+            "componentDtarget": {"@": "componentDtarget"},
+            "componentE": {"@": "componentE"},
+            "componentE11": {"@": "componentE11"},
+            "componentStyle": {"@": "componentStyle"},
+            "componentWithoutIdentifier": {"@": "componentWithoutIdentifier"},
+            "componentWithIdentifier": {"@": "componentWithIdentifier"},
+            "componentOwner": {"@": "componentOwner"},
+            "componentLayout": {"@": "componentLayout"},
+            "componentToBeCleaned": {"@": "componentToBeCleaned"}
         }
     },
     "repetition": {
@@ -45,6 +56,119 @@
             "hasTemplate": false
         }
     },
+
+    "componentNoelement": {
+        "module": "ui/draw/component-noelement.reel",
+        "name": "ComponentNoelement",
+        "properties": {
+            "value": "componentNoelement",
+            "parentOfNoElement": {"@": "componentE"}
+        }
+    },
+
+    "componentD": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentD"},
+            "hasTemplate": false
+        }
+    },
+    "componentD1": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentD1"},
+            "hasTemplate": false
+        }
+    },
+    "componentDtarget": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentDtarget"},
+            "hasTemplate": false
+        }
+    },
+    "componentE": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentE"},
+            "hasTemplate": false
+        }
+    },
+    "componentE11": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "element": {"#": "componentE11"},
+            "hasTemplate": false
+        }
+    },
+    "componentStyle": {
+        "module": "ui/draw/component-style.reel",
+        "name": "ComponentStyle",
+        "properties": {
+            "element": {"#": "component-style"}
+        }
+    },
+    "componentWithoutIdentifier": {
+        "module": "montage/ui/component",
+        "name": "Component"
+    },
+    "componentWithIdentifier": {
+        "module": "montage/ui/component",
+        "name": "Component",
+        "properties": {
+            "identifier": "anIdentifier"
+        }
+    },
+    "componentOwner": {
+        "prototype": "ui/draw/component-owner.reel",
+        "properties": {
+            "element": {"#": "component-owner"}
+        }
+    },
+    "componentLayout": {
+        "prototype": "ui/draw/component-layout.reel",
+        "properties": {
+            "element": {"#": "component-layout"},
+            "left": {"#": "component-layout-left"},
+            "right": {"#": "component-layout-right"},
+            "leftComponent": {"@": "componentLayoutLeft"},
+            "rightComponent": {"@": "componentLayoutRight"}
+        }
+    },
+    "componentLayoutLeft": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "component-layout-left"},
+            "hasTemplate": false
+        }
+    },
+    "componentLayoutRight": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "component-layout-right"},
+            "hasTemplate": false
+        }
+    },
+    "componentToBeCleaned": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "component-tobeclean"},
+            "hasTemplate": false,
+            "text": {"@": "text1"}
+        }
+    },
+    "text1": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "text1"},
+            "value": "Text"
+        }
+    },
     "owner": {
         "module": "montage/ui/application",
         "name": "Application",
@@ -68,6 +192,26 @@
     <div id="fakeComponentC1"></div>
 </div>
 <div data-montage-id="componentC1">C1</div>
+<div id="componentD">
+    <h1>
+        <div id="componentD1">D1</div>
+    </h1>
+</div>
+<div id="componentDtarget"></div>
 <div id="repetition"><h3>Original Content</h3><p>here</p></div>
+<div id="componentE">
+    <div id="componentE1">
+        <div id="componentE11"></div>
+    </div>
+</div>
+<div style="margin: 2px" id="component-style"></div>
+<div id="component-owner"></div>
+<div id="component-layout"></div>
+<div id="component-layout-left">Left</div>
+<div id="component-layout-right">Right</div>
+<div id="component-tobeclean">
+    To Be Clean
+    <span data-montage-id="text1"></span>
+</div>
 </body>
 </html>

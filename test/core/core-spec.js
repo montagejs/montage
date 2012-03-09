@@ -713,4 +713,46 @@ function() {
 
     });
 
+    describe("delegate methods", function() {
+        var object;
+
+        beforeEach(function() {
+            object = Montage.create(Montage);
+        });
+
+        it("should call generic delegate method", function() {
+            var delegate = {
+                methodToBeCalled: function() {}
+            };
+
+            spyOn(delegate, "methodToBeCalled");
+            object.delegate = delegate;
+            object.callDelegateMethod("methodToBeCalled");
+            expect(delegate.methodToBeCalled).toHaveBeenCalled();
+        });
+
+        it("should call delegate method with identifier", function() {
+            var delegate = {
+                aMethodToBeCalled: function() {}
+            };
+
+            spyOn(delegate, "aMethodToBeCalled");
+            object.identifier = "a";
+            object.delegate = delegate;
+            object.callDelegateMethod("methodToBeCalled");
+            expect(delegate.aMethodToBeCalled).toHaveBeenCalled();
+        });
+
+        it("should call generic delegate method even if the object has an identifier", function() {
+            var delegate = {
+                methodToBeCalled: function() {}
+            };
+
+            spyOn(delegate, "methodToBeCalled");
+            object.identifier = "a";
+            object.delegate = delegate;
+            object.callDelegateMethod("methodToBeCalled");
+            expect(delegate.methodToBeCalled).toHaveBeenCalled();
+        });
+    });
 });

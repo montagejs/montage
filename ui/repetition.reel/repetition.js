@@ -15,7 +15,8 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     Template = require("ui/template").Template,
     logger = require("core/logger").logger("repetition"),
-    Gate = require("core/gate").Gate;
+    Gate = require("core/gate").Gate,
+    ChangeTypeModification = require("core/event/mutable-event").ChangeTypes.MODIFICATION;
 /**
  @class module:"montage/ui/repetition.reel".Repetition
  @extends module:montage/ui/component.Component
@@ -25,6 +26,26 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
      Description TODO
      */
     hasTemplate: {value: false},
+
+    didCreate: {
+        value: function() {
+            this.addEventListener("change@objects", this._onObjectsChange, false);
+        }
+    },
+
+    _onObjectsChange: {
+        enumerable: false,
+        value: function(event) {
+            if(event._event.propertyChange !== ChangeTypeModification) {
+                this.selectedIndexes = null;
+                this._mappedObjects = null;
+
+                if (this._isComponentExpanded) {
+                    this._refreshItems();
+                }
+            }
+        }
+    },
 
 /**
     @private
@@ -149,20 +170,38 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         serializable: true,
         value: null
     },
+
+    _mappedObjects: {
+        enumerable: false,
+        serializable: true,
+        value: null
+    },
 /**
         Description TODO
         @type {Function}
         @default null
     */
     objects: {
+        dependencies: ["indexMap"],
         enumerable: false,
         get: function() {
-            return this._objects;
+            if (!this.indexMap) {
+                return this._objects;
+            } else {
+                if (this._objects && !this._mappedObjects) {
+                    this._mappedObjects = this.indexMap.map(function(value) {
+                        return this._objects.getProperty(value);
+                    }, this);
+                }
+                return this._mappedObjects;
+            }
         },
         set: function(value) {
             if (logger.isDebug) {
                 logger.debug(this, " set objects:", (value ? value.length : null), value, "same objects?", value === this._objects);
             }
+
+            this._mappedObjects = null;
             this._objects = value;
 
             // Objects have changed, clear the selectedIndexes, if we're managing our own selection
@@ -174,13 +213,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 this._refreshItems();
             }
 
-        },
-        modify: function(modificationType, newValue, oldValue) {
-            this.selectedIndexes = null;
-
-            if (this._isComponentExpanded) {
-                this._refreshItems();
-            }
         }
     },
 /**
@@ -238,7 +270,31 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         serializable: true,
         value: null
     },
-    /* Format: {firstNode, lastNode}*/
+
+    _indexMap: {
+        enumerable: false,
+        value: null
+    },
+
+    indexMap: {
+        get: function() {
+            return this._indexMap;
+        },
+        set: function(value) {
+            if (value === this._indexMap) {
+                return;
+            }
+
+            this._mappedObjects = null;
+            this._indexMap = value;
+
+            if (this._isComponentExpanded) {
+                this._refreshItems();
+            }
+
+            //TODO react to modifications to the indexMap?
+        }
+    },
 
  /**
   Description TODO
@@ -297,8 +353,15 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             var objectCount = this._objects ? this._objects.length : 0,
                 itemCount = this._items.length + this._itemsToAppend.length,
-                neededItemCount = objectCount - itemCount,
+                neededItemCount,
                 i;
+
+
+            if (this._objects && this.indexMap) {
+                objectCount = this.indexMap.length;
+            }
+
+            neededItemCount = objectCount - itemCount;
 
             // TODO: this needs to be here because the repetition might be ready to draw during a call to _addItem (if all modules are already loaded).
             // The problem is that when the gate is open, and the repetition hasn't ask to be drawn, the _canDraw = true will never happen and it will not happen when needsDraw = true afterwards. This kind of sucks because it means the needsDraw=true and the opening of the Gate needs to be in the correct order.
@@ -356,6 +419,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // for clarity sake
         this._itemsToAppend.push(this._currentItem);
         index = items.length + this._itemsToAppend.length - 1;
+
         self._canDraw = false;
         componentsCount = this._iterationChildComponentsCount;
         this._iterationTemplate.instantiateWithComponent(this, function() {
@@ -433,6 +497,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     }},
 
+    // we don't want to reinitialize the ownerComponent again
+    templateDidDeserializeObject: {
+        value: null
+    },
+
     _setupIterationTemplate: {
         value: function() {
             var element = this._element,
@@ -440,6 +509,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 childComponent;
 
             this.setupIterationSerialization();
+            this.setupIterationDeserialization();
             this._iterationChildComponentsCount = childComponents.length;
             this._iterationChildCount = element.childNodes.length;
             this._iterationChildElementCount = element.children.length;
@@ -473,11 +543,17 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     // called on iteration instantiation
     templateDidLoad: {value: function() {
         var range = document.createRange(),
-            item = this._deserializedItem;
+            item = this._deserializedItem,
+            children = item.element.childNodes,
+            i;
 
-        range.selectNodeContents(item.element);
+        item.fragment = document.createDocumentFragment();
+        while (children.length > 0) {
+            // As the nodes are appended to item.fragment they are removed
+            // from item.element, so always use index 0.
+            item.fragment.appendChild(children[0]);
+        }
         delete item.element;
-        item.fragment = range.extractContents();
     }},
 
     contentWillChange: {
@@ -506,7 +582,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     },
 
     deserializedFromTemplate: {value: function deserializedFromTemplate() {
-        this.setupIterationDeserialization();
         if (this._isComponentExpanded) {
             // this is setup just for the flattening of the template iteration, the iteration needs to be serialized once it's completely flatten.
             this.setupIterationSerialization();
@@ -717,7 +792,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             // TODO#3493  francois shift the index by the amount defined by the large array controller?
 
-            return itemIndex;
+            if (this.indexMap) {
+                 return this.indexMap[itemIndex];
+            } else {
+                return itemIndex;
+            }
         }
     },
     // TODO by the time we have batches/subsets of the entire content/repetition visible at a time
@@ -938,7 +1017,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 deactivatableElementCount = Math.min(deactivateCount, iterationElements.length);
 
                 for (i = 0; i < deactivateCount; i++) {
-                    iterationElement = iterationElements.item(this._activeIndexesToClearOnDraw[i]);
+                    iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._activeIndexesToClearOnDraw[i]): this._activeIndexesToClearOnDraw[i]));
                     if (iterationElement) {
                         iterationElement.classList.remove("active");
                     }
@@ -954,7 +1033,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 deselectableElementCount = Math.min(deselectionCount, iterationElements.length);
 
                 for (i = 0; i < deselectableElementCount; i++) {
-                    iterationElement = iterationElements.item(this._selectedIndexesToDeselectOnDraw[i]);
+                    iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._selectedIndexesToDeselectOnDraw[i]): this._selectedIndexesToDeselectOnDraw[i]));
                     if (iterationElement) {
                         iterationElement.classList.remove("selected");
                     }
@@ -1019,7 +1098,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             selectableElementCount = Math.min(selectionCount, iterationElements.length);
 
             for (i = 0; i < selectableElementCount; i++) {
-                iterationElements.item(this.selectedIndexes[i]).classList.add("selected");
+                iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this.selectedIndexes[i]): this.selectedIndexes[i]));
+                if (iterationElement) {
+                    iterationElement.classList.add("selected");
+                }
             }
         }
 
@@ -1032,7 +1114,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             activatableElementCount = Math.min(activatedCount, iterationElements.length);
 
             for (i = 0; i < activatableElementCount; i++) {
-                iterationElements.item(this._activeIndexes[i]).classList.add("active");
+                iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._activeIndexes[i]): this._activeIndexes[i]));
+                if (iterationElement) {
+                    iterationElement.classList.add("active");
+                }
             }
         }
 

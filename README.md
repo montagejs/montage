@@ -57,8 +57,8 @@ If you’re already familiar with using Git, GitHub, and how to configure a loca
     ``git clone git@github.com:Motorola-Mobility/montage.git``
 3.  Configure your local web server to serve the ~/Projects folder over HTTP.
     Please refer to the suggested Apache configuration found at ``etc/apache-montage.conf``.  This
-    will need to be configured and installed wherever your Apache installation will load other configuration files.
-4.  Verify your setup by browsing to [http://localhost:8082/montage/examples/photofx/index.html](http://localhost:8082/montage/examples/photofx/index.html).
+    will need to be configured and installed wherever your Apache installation will load other configuration files (eg /etc/apache2/other).
+4.  Verify your setup by browsing to [http://localhost:8081/montage/examples/photofx/index.html](http://localhost:8081/montage/examples/photofx/index.html).
 
     If you successfully ran the PhotoFX sample, check out the [Hello](http://tetsubo.org/docs/montage/hello-montage-tutorial/), Montage tutorial.
 

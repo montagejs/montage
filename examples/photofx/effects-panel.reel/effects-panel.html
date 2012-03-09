@@ -13,28 +13,32 @@
     <script type="text/montage-serialization">
         {
             "invertToggle": {
-                "module": "montage/ui/toggle-switch.reel",
-                "name": "ToggleSwitch",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
                     "element": {"#": "invertToggle"},
-                    "name": "ON"
+                    "pressedClass": "success",
+                    "pressedLabel": "ON",
+                    "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "value": {
+                    "pressed": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "editor.inverted"
                     }
                 }
             },
             "desaturateToggle": {
-                "module": "montage/ui/toggle-switch.reel",
-                "name": "ToggleSwitch",
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
                 "properties": {
-                    "name": "ON",
-                    "element": {"#": "desaturateToggle"}
+                    "element": {"#": "desaturateToggle"},
+                    "pressedClass": "success",
+                    "pressedLabel": "ON",
+                    "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "value": {
+                    "pressed": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "editor.desaturated"
                     }
@@ -107,8 +111,8 @@
 
     <div id="EffectsPanel" class="EffectsPanel">
         <ul class="effectsList">
-            <li>Invert Colors<span id="invertToggle" class="effect-toggle-switch"></span></li>
-            <li>Desaturate<span id="desaturateToggle" class="effect-toggle-switch"></span></li>
+            <li>Invert Colors<button id="invertToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
+            <li>Desaturate<button id="desaturateToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
             <li>Multiply<div id="multiplyControl" class=""></div></li>
         </ul>
         <div id="colorInfoPanel"></div>

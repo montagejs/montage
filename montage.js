@@ -60,25 +60,33 @@ if (typeof window !== "undefined") {
             var params = platform.getParams();
             var config = platform.getConfig();
 
+            var montageLocation = URL.resolve(Require.getLocation(), params.montageLocation);
+
             // setup the reel loader
             config.makeLoader = function (config) {
-                return exports.ReelLoader(config,
-                    Require.DefaultLoaderConstructor(config));
+                return exports.ReelLoader(
+                    config,
+                    Require.makeLoader(config)
+                );
             };
 
             // setup serialization compiler
             config.makeCompiler = function (config) {
-                return exports.TemplateCompiler(config,
-                    exports.SerializationCompiler(config,
-                        Require.DefaultCompilerConstructor(config)));
+                return exports.SerializationCompiler(
+                    config,
+                    exports.TemplateCompiler(
+                        config,
+                        Require.makeCompiler(config)
+                    )
+                );
             };
 
             var location = URL.resolve(config.location, params["package"] || ".");
 
-            Require.PackageSandbox(params.montageBase, config)
+            Require.loadPackage(montageLocation, config)
             .then(function (montageRequire) {
                 montageRequire.inject("core/promise", Promise);
-                montageRequire.inject("core/shim/timeers", {});
+                montageRequire.inject("core/shim/timers", {});
 
                 // install the linter, which loads on the first error
                 config.lint = function (module) {
@@ -183,11 +191,12 @@ if (typeof window !== "undefined") {
         return function(module) {
             if (!module.location)
                 return;
-            var root = module.location.match(/(.*\/)?(?=[^\/]+\.html$)/);
-            if (root) {
+            var match = module.location.match(/(.*\/)?(?=[^\/]+\.html$)/);
+            if (match) {
                 module.dependencies = module.dependencies || [];
                 module.exports = {
-                    root: root,
+                    directory: match[1],
+                    root: match, // deprecated
                     content: module.text
                 };
                 return module;
@@ -216,7 +225,7 @@ if (typeof window !== "undefined") {
         var relativeElement = document.createElement("a");
         exports.resolve = function (base, relative) {
             base = String(base);
-            if (!/^[\w\-]+:/.test(base)) {
+            if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
                 throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
             }
             var restore = baseElement.href;
@@ -240,6 +249,7 @@ if (typeof window !== "undefined") {
             var i, j,
                 match,
                 script,
+                montage,
                 attr,
                 name;
             if (!this._params) {
@@ -249,8 +259,16 @@ if (typeof window !== "undefined") {
                 var scripts = document.getElementsByTagName("script");
                 for (i = 0; i < scripts.length; i++) {
                     script = scripts[i];
+                    montage = false;
                     if (script.src && (match = script.src.match(/^(.*)montage.js(?:[\?\.]|$)/i))) {
-                        this._params.montageBase = match[1];
+                        this._params.montageLocation = match[1];
+                        montage = true;
+                    }
+                    if (script.hasAttribute("data-montage")) {
+                        this._params.montageLocation = script.getAttribute("data-montage");
+                        montage = true;
+                    }
+                    if (montage) {
                         if (script.dataset) {
                             for (name in script.dataset) {
                                 this._params[name] = script.dataset[name];
@@ -304,17 +322,20 @@ if (typeof window !== "undefined") {
                 "core/next-tick"
             ];
 
-            // load in parallel
-            pending.forEach(function(name) {
-                var url = params.montageBase + name + ".js";
-                var script = document.createElement("script");
-                script.src = url;
-                script.onload = function () {
-                    // remove clutter
-                    script.parentNode.removeChild(script);
-                };
-                document.getElementsByTagName("head")[0].appendChild(script);
-            });
+            // load in parallel, but only if we’re not using a preloaded cache.
+            // otherwise, these scripts will be inlined after already
+            if (typeof BUNDLE === "undefined") {
+                pending.forEach(function(name) {
+                    var url = params.montageLocation + name + ".js";
+                    var script = document.createElement("script");
+                    script.src = url;
+                    script.onload = function () {
+                        // remove clutter
+                        script.parentNode.removeChild(script);
+                    };
+                    document.getElementsByTagName("head")[0].appendChild(script);
+                });
+            }
 
             // register module definitions for deferred,
             // serial execution
@@ -395,7 +416,8 @@ if (typeof window !== "undefined") {
             exports.initMontage();
         }
     } else {
-        exports.getPlatform(); // may cause additional exports to be injected
+        // may cause additional exports to be injected:
+        exports.getPlatform();
     }
 
 });

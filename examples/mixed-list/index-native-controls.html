@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <script src="../../montage.js"></script>
+
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "mixed-list",
+                "name": "MixedList"
+            },
+            "scroller": {
+                "module": "montage/ui/scroller.reel",
+                "name": "Scroller",
+                "properties": {
+                    "element": {"#": "scroller"},
+                    "axis": "vertical"
+                 }
+            },
+            "list": {
+                "module": "montage/ui/repetition.reel",
+                "name": "Repetition",
+                "properties": {
+                    "element": {"#": "testList"}
+                },
+                "bindings": {
+                    "objects": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "objectList",
+                        "oneway": true
+                    }
+                }
+            },
+            "substitutionDelegate": {
+                "module": "mixed-list",
+                "name": "SubstitutionDelegate"
+            },
+            "substitution": {
+                "module": "montage/ui/substitution.reel",
+                "name": "Substitution",
+                "properties": {
+                    "element": {"#": "substitution"},
+                    "delegate": {"@": "substitutionDelegate"},
+                    "switchComponents": {
+                        "boolean": {"@": "toggle"},
+                        "range": {"@": "slider"},
+                        "action": {"@": "button"},
+                        "check": {"@": "checkbox"}
+                    }
+                },
+                "bindings": {
+                    "switchValue": {
+                        "boundObject": {"@": "list"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.type",
+                        "oneway": true
+                    }
+                }
+            },
+            "toggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "pressedLabel": "ON",
+                    "unpressedLabel": "OFF"
+                },
+                "bindings": {
+                    "pressed": {
+                        "boundObject": {"@": "list"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
+                        "oneway": true
+                    }
+                }
+            },
+            "slider": {
+                "module": "montage/ui/range-input.reel",
+                "name": "RangeInput",
+                "properties": {
+
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "list"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
+                        "oneway": true
+                    }
+                }
+            },
+            "checkbox": {
+                "module": "montage/ui/checkbox.reel",
+                "name": "Checkbox",
+                "properties": {
+
+                },
+                "bindings": {
+                    "checked": {
+                        "boundObject": {"@": "list"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
+                        "oneway": true
+                    }
+                }
+            },
+            "addAnObjectButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "button"},
+                    "identifier": "addButton"
+                },
+                "listeners": [
+                    {
+                    "type": "action",
+                    "listener": {"@": "owner"},
+                    "capture": false
+                }
+                ]
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <button id="button">Add</button>
+    <div id="scroller" class="scroller">
+        <ul id="testList">
+            <li id="substitution"></li>
+        </ul>
+    </div>
+</body>
+</html>

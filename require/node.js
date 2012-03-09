@@ -1,3 +1,8 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
 
 var Require = require("./require");
 var URL = require("../core/url");
@@ -35,10 +40,13 @@ Require.Compiler = function (config) {
     var names = ["require", "exports", "module"];
     var scopeNames = Object.keys(config.scope);
     names.push.apply(names, scopeNames);
-    return function(module) {
-        if (module.factory)
+    return function (module) {
+        if (module.factory) {
             return module;
-        if (!module.factory && module.text !== void 0) {
+        } else if (
+            module.text !== void 0 &&
+            module.type === "javascript"
+        ) {
             var factory = globalEval(
                 "(function(" + names.join(",") + "){" +
                 module.text +
@@ -54,27 +62,20 @@ Require.Compiler = function (config) {
             // https://developer.mozilla.org/en/JavaScript/Reference/Functions_and_function_scope
             //module.factory = new Function("require", "exports", "module", module.text + "\n//*/\n//@ sourceURL="+module.path);
         }
-        return module;
     };
 };
 
-Require.DefaultLoaderConstructor = function(config) {
-    return Require.MappingsLoader(
-        config,
-        Require.ExtensionsLoader(
-            config,
-            Require.PathsLoader(
-                config,
-                Require.CachingLoader(
-                    config,
-                    Require.Loader(
-                        config,
-                        Require.NodeLoader(config)
-                    )
-                )
-            )
-        )
-    );
+Require.Loader = function (config, load) {
+    return function (url, module) {
+        return Require.read(url)
+        .then(function (text) {
+            module.type = "javascript";
+            module.text = text;
+            module.location = url;
+        }, function (reason, error, rejection) {
+            return load(url, module);
+        });
+    };
 };
 
 Require.NodeLoader = function (config) {
@@ -86,7 +87,26 @@ Require.NodeLoader = function (config) {
             location: url
         }
     };
-}
+};
+
+Require.makeLoader = function(config) {
+    return Require.MappingsLoader(
+        config,
+        Require.ExtensionsLoader(
+            config,
+            Require.PathsLoader(
+                config,
+                Require.MemoizedLoader(
+                    config,
+                    Require.Loader(
+                        config,
+                        Require.NodeLoader(config)
+                    )
+                )
+            )
+        )
+    );
+};
 
 Require.main = function () {
     var require = Require.Sandbox();

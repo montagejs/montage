@@ -12,24 +12,15 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
 
     var click = function(component, el, fn) {
         el = el || component.element;
-        var buttonSpy = {
-            doSomething: fn || function(event) {
-                return 1+1;
-            }
-        };
-        spyOn(buttonSpy, 'doSomething');
 
-        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-        component.addEventListener("action", actionListener);
+        var listener = testPage.addListener(component, fn);
 
-        // Faking a click doesn't actually do anything, so we
-        // have to set the checkedness, and trigger the change
-        // event manually.
-        el.checked = !el.checked;
-        change(el);
+        testPage.mouseEvent({target: el}, "mousedown");;
+        testPage.mouseEvent({target: el}, "mouseup");;
+        testPage.mouseEvent({target: el}, "click");;
 
-        // Return this so that it can be checked in tha calling function.
-        return buttonSpy.doSomething;
+        // Return this so that it can be checked in the calling function.
+        return listener;
     };
     var change = function(el) {
         var changeEvent = document.createEvent("HTMLEvents");
@@ -92,46 +83,46 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound2);
-                        });
-                        testPage.waitForDraw();
+                     });
                     });
                     it("unchecks both one way", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(false);
                             expect(test.check_bound2.element.checked).toBe(false);
 
                             click(test.check_bound2);
                         });
-                        testPage.waitForDraw();
                     });
                     it("checks both one way", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(true);
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound1);
                         });
-                        testPage.waitForDraw();
                     });
                     it("doesn't bind the other way (unchecked)", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(false);
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound1);
                         });
-                        testPage.waitForDraw();
                     });
                     it("doesn't bind the other way (checked)", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(true);
                             expect(test.check_bound2.element.checked).toBe(true);
 
                             click(test.check_bound2);
                         });
-                        testPage.waitForDraw();
                     });
                     it("unchecks both", function() {
+                        testPage.waitForDraw();
                         runs(function() {
                             expect(test.check_bound1.element.checked).toBe(false);
                             expect(test.check_bound2.element.checked).toBe(false);
@@ -140,9 +131,77 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
                 });
             });
 
+            it("checks when the label is clicked", function() {
+                expect(test.check1.checked).toBe(true);
+
+
+                var listener = testPage.addListener(test.check1);
+                testPage.mouseEvent({target: testPage.getElementById("label")}, "click");;
+                expect(listener).toHaveBeenCalled();
+                expect(test.check1.checked).toBe(false);
+            })
+
             describe("action event", function() {
                 it("should fire when clicked", function() {
                     expect(click(test.check1)).toHaveBeenCalled();
+                });
+            });
+
+            describe("inside a scroll view", function() {
+                it("fires an action event when clicked", function() {
+                    expect(test.scroll_check.checked).toBe(false);
+
+                    expect(click(test.scroll_check)).toHaveBeenCalled();
+                    expect(test.scroll_check.checked).toBe(true);
+                });
+                it("checks when the label is clicked", function() {
+                    expect(test.scroll_check.checked).toBe(true);
+
+
+                    var listener = testPage.addListener(test.scroll_check);
+                    testPage.mouseEvent({target: testPage.getElementById("scroll_label")}, "click");;
+                    expect(listener).toHaveBeenCalled();
+                    expect(test.scroll_check.checked).toBe(false);
+                })
+                it("doesn't fire an action event when scroller is dragged", function() {
+                    var el = test.scroll_check.element;
+                    var scroll_el = test.scroll.element;
+
+                    var listener = testPage.addListener(test.scroll_check);
+
+                    var press_composer = test.scroll_check.composerList[0];
+
+                    // mousedown
+                    testPage.mouseEvent({target: el}, "mousedown");
+
+                    expect(test.scroll_check.checked).toBe(false);
+                    expect(test.scroll_check.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(true);
+
+                    // Mouse move doesn't happen instantly
+                    waits(10);
+                    runs(function() {
+                        // mouse move up
+                        var moveEvent = document.createEvent("MouseEvent");
+                        // Dispatch to scroll view, but use the coordinates from the
+                        // button
+                        moveEvent.initMouseEvent("mousemove", true, true, scroll_el.view, null,
+                                el.offsetLeft, el.offsetTop - 100,
+                                el.offsetLeft, el.offsetTop - 100,
+                                false, false, false, false,
+                                0, null);
+                        scroll_el.dispatchEvent(moveEvent);
+
+                        expect(test.scroll_check.checked).toBe(false);
+                        expect(test.scroll_check.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(false);
+
+                        // mouse up
+                        testPage.mouseEvent({target: el}, "mouseup");;
+                        testPage.mouseEvent({target: el}, "click");;
+
+                        expect(listener).not.toHaveBeenCalled();
+                        expect(test.scroll_check.checked).toBe(false);
+                    });
+
                 });
             });
 

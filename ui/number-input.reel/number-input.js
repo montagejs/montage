@@ -5,8 +5,7 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    TextInput = require("ui/text-input").TextInput,
-    StandardInputAttributes = require("ui/text-input").StandardInputAttributes;
+    TextInput = require("ui/text-input").TextInput;
 /**
  * The Number input
  */
@@ -14,4 +13,8 @@ var NumberInput = exports.NumberInput = Montage.create(TextInput, {
 
 });
 
-NumberInput.addAttributes(StandardInputAttributes);
+NumberInput.addAttributes({
+    max: {dataType: 'number'},
+    min: {dataType: 'number'},
+    step: null // number or 'any'
+});

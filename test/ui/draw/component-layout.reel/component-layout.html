@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Component Layout</title>
+    <script type="text/montage-serialization">{
+        "owner": {
+            "prototype": "ui/draw/component-layout.reel",
+            "properties": {
+                "element": {"#": "component-layout"}
+            }
+        },
+
+        "left": {
+            "prototype": "montage/ui/component",
+            "properties": {
+                "element": {"#": "left"},
+                "hasTemplate": false
+            },
+            "bindings": {
+                "content": {
+                    "boundObject": {"@": "owner"},
+                    "boundObjectPropertyPath": "left"
+                }
+            }
+        },
+
+        "right": {
+            "prototype": "montage/ui/component",
+            "properties": {
+                "element": {"#": "right"},
+                "hasTemplate": false
+            },
+            "bindings": {
+                "content": {
+                    "boundObject": {"@": "owner"},
+                    "boundObjectPropertyPath": "right"
+                }
+            }
+        }
+    }</script>
+
+</head>
+<body>
+<div data-montage-id="component-layout">
+    <div data-montage-id="left" style="float: left"></div>
+    <div data-montage-id="right" style="float: right"></div>
+</div>
+</body>
+</html>

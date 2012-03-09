@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "module": "components/scroller-example.reel",
+                    "name": "ScrollerExample",
+                    "properties": {
+                        "element": {"#": "scroller-example"},
+                        "statesController": {"@": "statesController"},
+                        "dept": {"@": "dept"}
+                    },
+                    "bindings": {
+                        "phone": {
+                            "boundObject": {"@": "phone"},
+                            "boundObjectPropertyPath": "value"
+                        },
+                        "selectedCountry": {
+                            "boundObject": {"@": "country"},
+                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
+                            "oneway": true
+                        },
+                        "selectedState": {
+                            "boundObject": {"@": "state"},
+                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
+                            "oneway": true
+                        },
+                        "selectedDepts": {
+                            "boundObject": {"@": "dept"},
+                            "boundObjectPropertyPath": "contentController.selectedObjects"
+                        }
+                    }
+                },
+
+                "fname": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "fname"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "firstName",
+                            "oneway": false
+                        },
+                        "title": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "firstName",
+                            "oneway": false
+                        }
+                    }
+                },
+
+                "lname": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "lname"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "lastName",
+                            "oneway": false
+                        }
+                    }
+                },
+
+                "email": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "email"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "email",
+                            "oneway": false
+                        }
+                    }
+                },
+
+                "phone": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "phone"}
+                    },
+                    "bindings": {
+
+                        "readonly": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "phoneReadOnly",
+                            "oneway": false
+                        }
+                    }
+                },
+                "edit-phone": {
+                    "module": "montage/ui/button.reel",
+                    "name": "Button",
+                    "properties": {
+                        "element": {"#": "edit-phone"},
+                        "identifier": "editPhone"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
+                },
+
+                "url": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "url"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "url",
+                            "oneway": false
+                        }
+                    }
+                },
+
+                "zip": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "zip"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "zip",
+                            "oneway": false
+                        }
+                    }
+                },
+
+                "dateConverter": {
+                    "module": "montage/core/converter/date-converter",
+                    "name": "DateConverter",
+                    "properties": {
+                        "pattern": "yyyy-MM-dd"
+                    }
+                },
+
+                "dob": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "dob"},
+                        "converter": {"@": "dateConverter"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "dob",
+                            "oneway": false
+                        }
+                    }
+                },
+                "dob-error": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "dob-error"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "dob"},
+                            "boundObjectPropertyPath": "errorMessage",
+                            "oneway": "true"
+                        }
+                    }
+                },
+
+                "dept": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "dept"},
+                        "textPropertyPath": "name",
+                        "valuePropertyPath": "code"
+                    },
+                    "bindings": {
+                        "content": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "departments",
+                            "oneway": true
+                        }
+                    }
+                },
+
+
+                "statesController": {
+                    "name": "ArrayController",
+                    "module": "montage/ui/controller/array-controller",
+                    "properties": {
+                        "selectObjectsOnAddition": true,
+                        "automaticallyOrganizeObjects": true,
+                        "content": []
+                    }
+                },
+
+                "state": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "state"},
+                        "contentController": {"@": "statesController"},
+                        "textPropertyPath": "name",
+                        "valuePropertyPath": "code"
+                    }
+                },
+
+                "country": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "country"}
+                    }
+                },
+
+                "invert-converter": {
+                    "module": "components/converters.reel",
+                    "name": "InvertConverter"
+                },
+
+                "agree-checkbox": {
+                    "module": "montage/ui/checkbox.reel",
+                    "name": "Checkbox",
+                    "properties": {
+                        "element": {"#": "agree-checkbox"}
+                    }
+                },
+
+                "update": {
+                    "module": "montage/ui/button.reel",
+                    "name": "Button",
+                    "properties": {
+                        "element": {"#": "update"},
+                        "identifier": "update"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ],
+                    "bindings": {
+                        "disabled": {
+                            "boundObject": {"@": "agree-checkbox"},
+                            "boundObjectPropertyPath": "checked",
+                            "converter": {"@": "invert-converter"},
+                            "oneway": true
+                        }
+                    }
+                },
+
+                "scroller": {
+                    "module": "montage/ui/scroller.reel",
+                    "name": "Scroller",
+                    "properties": {
+                        "element": {"#": "scroller"}
+                    }
+                },
+
+                "echo": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "echo"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "json",
+                            "oneway": "true"
+                        }
+                    }
+                }
+            }
+        </script>
+
+        <style>
+            .scroller-example .error {
+                color: #E73525;
+                padding: 2px 0;
+            }
+            .scroller-example pre {
+                border: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="scroller-example" class="scroller-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>Scroller</h3>
+                    <p>
+                        The Scroller supports scrolling for fixed height components.
+                    </p>
+                    <p>
+                        <a href="" target="_blank">View Documentation</a>
+                    </p>
+                </div>
+            </div>
+
+            <h4>Demo</h4>
+            <div class="demo">
+                <p>
+                 Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
+                 </p>
+
+                 <div id="scroller" style="height: 300px;">
+                     <form class="form-stacked">
+                         <label for="fname">Text</label>
+                         <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
+                         <label for="lname">Text</label>
+                         <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
+
+                         <label for="pwd1">Password</label>
+                         <input type="password" id="pwd" value="abcdef" />
+
+                         <label for="email1">Email</label>
+                         <input type="email" id="email" value="foo@bar.com" />
+
+                         <label for="url1">URL</label>
+                         <input type="url" id="url" value="http://www.google.com" />
+
+                         <label for="tel1">Phone Number</label>
+                         <input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
+                         <button class="btn" id="edit-phone" type="button">Edit Phone Number</button>
+
+                         <label for="zipcode">US Postal code</label>
+                          <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
+
+                         <label for="date1">Date of Birth</label>
+                         <input type="date" id="dob" value="" name="dob" pattern=""/>
+                         <div id="dob-error" class="error"></div>
+
+                         <label for="dept">Department</label>
+                            <select id="dept" required="true" multiple="true" size="3">
+                                <option>Please select a Department</option>
+                            </select>
+
+                           <label for="country">Country</label>
+                           <select id="country" required>
+                               <option value="">Please select a Country</option>
+                               <option value="USA" selected="true">United States of America</option>
+                               <option value="INR" >India</option>
+                               <option value="FR">France</option>
+                               <option value="GER">Germany</option>
+                           </select>
+
+                           <label for="state">State</label>
+                           <select id="state" required="true">
+                               <option>Please select a country...</option>
+                           </select>
+
+
+
+                         <div style="margin-top: 10px;">
+                             <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label>
+                             <button class="btn" id="update" type="button" disabled>Update</button>
+                         </div>
+                     </form>
+
+                     <pre id="echo"></pre>
+
+                </div>
+
+            </div>
+    </body>
+</html>

@@ -16,11 +16,11 @@
                 "module": "mixed-list",
                 "name": "MixedList"
             },
-            "scrollview": {
-                "module": "montage/ui/scrollview.reel",
-                "name": "Scrollview",
+            "scroller": {
+                "module": "montage/ui/scroller.reel",
+                "name": "Scroller",
                 "properties": {
-                    "element": {"#": "scrollview"},
+                    "element": {"#": "scroller"},
                     "axis": "vertical"
                  }
             },
@@ -59,8 +59,8 @@
                 }
             },
             "toggle": {
-                "module": "montage/ui/toggle-switch.reel",
-                "name": "ToggleSwitch",
+                "module": "montage/ui/bluemoon/toggle.reel",
+                "name": "Toggle",
                 "bindings": {
                     "value": {
                         "boundObject": {"@": "list"},
@@ -84,7 +84,7 @@
                 }
             },
             "checkbox": {
-                "module": "montage/ui/checkbox.reel",
+                "module": "montage/ui/bluemoon/checkbox.reel",
                 "name": "Checkbox",
                 "properties": {
 
@@ -102,8 +102,7 @@
                 "name": "Button",
                 "properties": {
                     "element": {"#": "button"},
-                    "identifier": "addButton",
-                    "value": "Add"
+                    "identifier": "addButton"
                 },
                 "listeners": [
                     {
@@ -118,8 +117,8 @@
 
 </head>
 <body>
-    <div id="button" class="text"></div>
-    <div id="scrollview" class="scrollView">
+    <button id="button">Add</button>
+    <div id="scroller" class="scroller">
         <ul id="testList">
             <li id="substitution"></li>
         </ul>

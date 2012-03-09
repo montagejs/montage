@@ -13,7 +13,7 @@ body {
     margin:  20px;
 }
 
-.scrollView {
+.scroller {
     position: absolute;
     top: 94px;
     left: 0;

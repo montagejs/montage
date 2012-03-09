@@ -148,10 +148,11 @@ var Context = exports.Context = Montage.create(Store, /** @lends module:montage/
                 if (instance.context === null) {
                     instance.context = this;
                     this._inserted.add(instance);
+                    var self = this;
                     return this.initializeObject(instance, this).then(function(instance) {
-                        this._objectMap.set(instance.objectId, instance);
+                        self._objectMap.set(instance.objectId, instance);
                         return Promise.ref(instance);
-                    }.bind(this));
+                    });
                 } else if (instance.context !== this) {
                     throw Exception.initWithMessageTargetAndMethod("This instance is already inserted in another context.", this, "insert");
                 }

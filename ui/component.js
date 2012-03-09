@@ -6,8 +6,6 @@
 /**
 	@module montage/ui/component
     @requires montage/core/core
-    @requires montage/core/event/mutable-event
-    @requires montage/core/bitfield
     @requires montage/ui/reel
     @requires montage/core/gate
     @requires montage/core/logger | component
@@ -15,8 +13,6 @@
     @requires montage/core/event/event-manager
 */
 var Montage = require("montage").Montage,
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
-    BitField = require("core/bitfield").BitField,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
     logger = require("core/logger").logger("component"),
@@ -63,7 +59,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             var actionEvent = document.createEvent("CustomEvent");
             actionEvent.initCustomEvent("action", true, true, null);
-            actionEvent.type = "action";
             return actionEvent;
         }
     },
@@ -166,6 +161,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
+    setElementWithParentComponent: {
+        value: function(element, parent) {
+            this._alternateParentComponent = parent;
+            if (this.element != element) {
+                this.element = element;
+            }
+        }
+    },
+
     // access to the Application object
 /**
     Description TODO
@@ -219,6 +223,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             return targetElementController;
         }
     },
+
+    _alternateParentComponent: {
+        value: null
+    },
+
 /**
   Description TODO
   @private
@@ -239,17 +248,23 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         get: function() {
             var cachedParentComponent = this._cachedParentComponent;
             if (cachedParentComponent == null) {
-                var anElement = this.element,
-                    aParentNode,
-                    eventManager = this.eventManager;
-                if (anElement) {
-                    while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
-                        anElement = aParentNode;
-                    }
-                    return (this._cachedParentComponent = aParentNode ? eventManager.eventHandlerForElement(aParentNode) : null);
-                }
+                return (this._cachedParentComponent = this.findParentComponent());
             } else {
                 return cachedParentComponent;
+            }
+        }
+    },
+
+    findParentComponent: {
+        value: function() {
+            var anElement = this.element,
+                aParentNode,
+                eventManager = this.eventManager;
+            if (anElement) {
+                while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
+                    anElement = aParentNode;
+                }
+                return aParentNode ? eventManager.eventHandlerForElement(aParentNode) : this._alternateParentComponent;
             }
         }
     },
@@ -410,19 +425,30 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     attachToParentComponent: {
         value: function() {
             this._cachedParentComponent = null;
-            
-            var parentComponent = this.parentComponent;
-            
+
+            var parentComponent = this.parentComponent,
+                childComponents,
+                childComponent;
+
             if (parentComponent) {
+                childComponents = parentComponent.childComponents;
+                for (var i = 0; (childComponent = childComponents[i]); i++) {
+                    var newParentComponent = childComponent.findParentComponent();
+                    if (newParentComponent === this) {
+                        parentComponent.removeChildComponent(childComponent);
+                        newParentComponent._addChildComponent(childComponent);
+                    }
+                }
+
                 parentComponent._addChildComponent(this);
             }
         }
     },
-    
+
     detachFromParentComponent: {
         value: function() {
             var parentComponent = this.parentComponent;
-            
+
             if (parentComponent) {
                 parentComponent.removeChildComponent(this);
             }
@@ -442,10 +468,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (ix > -1) {
                 childComponents.splice(ix, 1);
                 childComponent._cachedParentComponent = null;
-            }
-
-            if (element && element.parentNode) {
-                element.parentNode.removeChild(element);
+                childComponent._alternateParentComponent = null;
             }
         }
     },
@@ -466,7 +489,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     ownerComponent: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -496,7 +518,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: null
     },
-    
+
     /**
      * Remove all bindings and starts buffering the needsDraw.
      * @function
@@ -506,23 +528,20 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
                 Object.deleteBindings(component);
-                component.canDrawGate.setField("componentTreeLoaded", false);
-                component.blockDrawGate.setField("element", false);
-                component.blockDrawGate.setField("drawRequested", false);
                 component.needsDraw = false;
             });
         }
     },
-    
+
     originalContent: {
         value: null
     },
-    
+
     _newContent: {
         enumerable: false,
         value: null
     },
-    
+
     content: {
         get: function() {
             if (this._element) {
@@ -534,21 +553,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         set: function(value) {
             var components = [],
                 childNodes;
-                
+
             this._newContent = value;
             this.needsDraw = true;
-            
+
             if (typeof this.contentWillChange === "function") {
                 this.contentWillChange(value);
             }
-            
+
             // cleanup current content
             components = this.childComponents;
             for (var i = 0, component; (component = components[i]); i++) {
                 component.detachFromParentComponent();
                 component.cleanupDeletedComponentTree();
             }
-            
+
             if (value instanceof Element) {
                 findAndDetachComponents(value);
             } else {
@@ -556,11 +575,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     findAndDetachComponents(value[i]);
                 }
             }
-            
+
             // find the component fringe and detach them from the component tree
             function findAndDetachComponents(node) {
                 var component = node.controller;
-                
+
                 if (component) {
                     component.detachFromParentComponent();
                     components.push(component);
@@ -571,14 +590,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
             }
-            
+
             // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
             for (var i = 0, component; (component = components[i]); i++) {
                 this._addChildComponent(component);
             }
         }
     },
-    
+
 /**
     Description TODO
     @function
@@ -588,6 +607,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.attachToParentComponent();
             if (this._element) {
                 this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+            }
+            if (!("identifier" in this)) {
+                this.identifier = Montage.getInfoForObject(this).label;
             }
         }
     },
@@ -894,12 +916,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         // this call will be synchronous if the template is cached.
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
+
+    templateDidDeserializeObject: {
+        value: function(object) {
+            if (Component.isPrototypeOf(object)) {
+                object.ownerComponent = this;
+            }
+        }
+    },
+
     /**
-    Callback for the <code>_canDrawBitField</code>.<br>
+    Callback for the <code>_canDrawGate</code>.<br>
     Propagates to the parent and adds the component to the draw list.
     @function
     @param {Property} gate
-    @see _canDrawBitField
+    @see _canDrawGate
     */
     gateDidBecomeTrue: {
         value: function(gate) {
@@ -998,10 +1029,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (attributeName === "id" || attributeName === "data-montage-id") {
                     continue;
                 } else {
-                    value = (template.getAttribute(attributeName) || "") + " " +
+                    value = (template.getAttribute(attributeName) || "") + (attributeName === "style" ? "; " : " ") +
                         attribute.nodeValue;
                 }
-                
+
                 template.setAttribute(attributeName, value);
             }
 
@@ -1051,6 +1082,27 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: null
     },
+
+    /**
+     * Called to add event listeners on demand
+     * @type function
+     * @private
+     */
+    _prepareForActivationEvents: {
+        value: function() {
+            var i = this.composerList.length, composer;
+            for (i = 0; i < this.composerList.length; i++) {
+                composer = this.composerList[i];
+                if (composer.lazyLoad) {
+                    composer._load();
+                }
+            }
+            if (typeof this.prepareForActivationEvents === "function") {
+                this.prepareForActivationEvents();
+            }
+        }
+    },
+
 /**
   Description TODO
   @private
@@ -1059,13 +1111,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             var contents = this._newContent,
                 element;
-            
+
             this._canDrawTable = {};
             this._canDrawCount = 0;
-            
+
             if (contents) {
                 element = this._element;
-                
+
                 element.innerHTML = "";
 
                 if (contents instanceof Element) {
@@ -1075,7 +1127,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                         element.appendChild(content);
                     }
                 }
-                
+
                 this._newContent = null;
                 if (typeof this.contentDidChange === "function") {
                     this.contentDidChange();
@@ -1183,7 +1235,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
             if (this._needsDraw !== value) {
                 if (drawLogger.isDebug) {
-                    drawLogger.debug("NEEDS DRAW TOGGLED " + value + " FOR " + (this.element != null ? this.element.id : ''));
+                    drawLogger.debug("NEEDS DRAW TOGGLED " + value + " FOR " + this._montage_metadata.objectName);
                 }
                 this._needsDraw = !!value;
                 if (value) {
@@ -1301,7 +1353,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.composerList.push(composer);
 
             if (!this._firstDraw) {  // prepareForDraw has already happened so do the loading here
-                composer._load();
+                if (!composer.lazyLoad) {
+                    composer._load();
+                } else if (this._preparedForActivationEvents) { // even though it's lazyLoad prepareForActivationEvents has already happened
+                    composer._load();
+                }
             }
         }
     },
@@ -1675,7 +1731,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     */
     addToDrawCycle: {
         value: function(component) {
-            var needsDrawListIndex = this._readyToDrawListIndex, length;
+            var needsDrawListIndex = this._readyToDrawListIndex, length, composer;
 
             if (needsDrawListIndex.hasOwnProperty(component.uuid)) {
                 // Requesting a draw of a component that has already been drawn in the current cycle
@@ -1698,10 +1754,13 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     component.prepareForDraw();
                 }
 
-                // Load any composers that have been added
+                // Load any non lazyLoad composers that have been added
                 length = component.composerList.length;
                 for (i = 0; i < length; i++) {
-                    component.composerList[i]._load();
+                    composer = component.composerList[i];
+                    if (!composer.lazyLoad) {
+                        composer._load();
+                    }
                 }
 
                 // Will we expose a different property, firstDraw, for components to check

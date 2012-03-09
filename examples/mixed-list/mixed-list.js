@@ -61,3 +61,23 @@ exports.MixedList = Montage.create(Montage, {
         }
     }
 });
+
+exports.SubstitutionDelegate = Montage.create(Montage, {
+
+    slotElementForComponent: {
+        value: function(contentToAppend, nodeToAppend) {
+            var element = document.createElement("div");
+            if (contentToAppend.switchValue === "boolean") {
+                element = document.createElement("button");
+            } else if (contentToAppend.switchValue === "check") {
+                element = document.createElement("input");
+                element.setAttribute("type", "checkbox");
+            } else if (contentToAppend.switchValue === "range") {
+                element = document.createElement("input");
+                element.setAttribute("type", "range");
+            }
+            return element;
+        }
+    }
+
+});

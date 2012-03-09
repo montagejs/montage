@@ -135,6 +135,23 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     });
                 });
             });
+
+            it("should create a repetition programmatically", function() {
+                var Repetition = testPage.window.require("montage/ui/repetition.reel").Repetition,
+                    repetition = Repetition.create();
+
+                repetition.element = querySelector(".list12");
+                repetition.objects = [1, 2, 3];
+                repetition.needsDraw = true;
+
+                testPage.waitForDraw();
+
+                runs(function() {
+                    // sanity test
+                    var lis = repetition.element.querySelectorAll("li");
+                    expect(lis.length).toBe(3);
+                });
+            });
         });
 
         describe("The component repetition", function() {
@@ -449,7 +466,6 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
                 var anEvent = document.createEvent("CustomEvent");
                 anEvent.initCustomEvent("action", true, true, null);
-                anEvent.type = "action";
 
                 component.dispatchEvent.call(component, anEvent);
                 expect(application.delegate.listener).toHaveBeenCalled();
@@ -571,17 +587,17 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             it("should rebuild the repetition", function() {
                 var list11 = querySelector(".list11").controller,
                     content = querySelectorAll(".list11 > li");
-                
+
                 expect(content.length).toBe(3);
                 for (var i = 0; i < content.length; i++) {
                     expect(content[i].textContent).toBe("X");
                 }
-                
+
                 var newContent = content[0].ownerDocument.createElement("div");
                 newContent.textContent = "Y";
-                
+
                 list11.content = newContent;
-                
+
                 testPage.waitForDraw();
 
                 // it requires 2 draws for the change to take effect, one for changing the contents and another to recreate the repetition
@@ -594,6 +610,37 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                         }
                     });
                 });
+            });
+        });
+
+        describe("manual objects changes", function() {
+            var list13 = querySelector(".list13").controller;
+            var object = {array: [1, 2, 3]};
+
+            it("should add an iteration when an object is pushed", function() {
+                list13.objects.push(4);
+                testPage.waitForDraw();
+                runs(function() {
+                    expect(querySelectorAll(".list13 > li").length).toBe(4);
+                });
+            });
+
+            it("should fire refresh items once if a binding to objects is in place", function() {
+                spyOn(list13, "_refreshItems").andCallThrough();
+                testPage.window.Object.defineBinding(list13, "objects", {
+                    boundObject: object,
+                    boundObjectPropertyPath: "array",
+                    oneway: true
+                });
+
+                expect(list13._refreshItems.callCount).toBe(1);
+            });
+
+            it("should fire refresh items once if a binding to objects is removed", function() {
+                spyOn(list13, "_refreshItems").andCallThrough();
+                testPage.window.Object.deleteBinding(list13, "objects");
+                list13.objects.push(4);
+                expect(list13._refreshItems.callCount).toBe(1);
             });
         });
     });

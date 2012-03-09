@@ -4,52 +4,19 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
-    ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener;
+    TestPageLoader = require("support/testpageloader").TestPageLoader;
 
 var testPage = TestPageLoader.queueTest("buttontest", function() {
     var test = testPage.test;
 
-    var mousedown = function(el) {
-        var downEvent = document.createEvent("MouseEvent");
-        downEvent.initMouseEvent("mousedown", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(downEvent);
-        return downEvent;
-    };
-    var mouseup = function(el) {
-        var upEvent = document.createEvent("MouseEvent");
-        upEvent.initMouseEvent("mouseup", true, true, el.view, null,
-                el.offsetLeft, el.offsetTop,
-                el.offsetLeft, el.offsetTop,
-                false, false, false, false,
-                el, null);
-        el.dispatchEvent(upEvent);
-        return upEvent;
-    };
-    var addListener = function(component, fn) {
-        var buttonSpy = {
-            doSomething: fn || function(event) {
-                return 1+1;
-            }
-        };
-        spyOn(buttonSpy, 'doSomething');
-
-        var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-        component.addEventListener("action", actionListener);
-
-        return buttonSpy.doSomething;
-    };
     var click = function(component, el, fn) {
         el = el || component.element;
 
-        var listener = addListener(component, fn);
+        var listener = testPage.addListener(component, fn);
 
-        mousedown(el);
-        mouseup(el);
+        testPage.mouseEvent({target: el}, "mousedown");
+        testPage.mouseEvent({target: el}, "mouseup");
+        testPage.mouseEvent({target: el}, "click");
 
         // Return this so that it can be checked in tha calling function.
         return listener;
@@ -181,18 +148,19 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 expect(test.converterbutton.element.value).toBe("PASS");
             });
 
-            it("correctly releases the pointer", function() {
-                var l = addListener(test.scroll_input);
+            // TODO should be transplanted to the press-composer-spec
+            // it("correctly releases the pointer", function() {
+            //     var l = testPage.addListener(test.scroll_button);
 
-                mousedown(test.scroll_input.element);
-                expect(test.scroll_input.active).toBe(true);
-                test.scroll_input.surrenderPointer(test.scroll_input._observedPointer, null);
-                expect(test.scroll_input.active).toBe(false);
-                mouseup(test.scroll_input.element);
+            //     testpage.mouseEvent({target: test.scroll_button.element}, "mousedown");;
+            //     expect(test.scroll_button.active).toBe(true);
+            //     test.scroll_button.surrenderPointer(test.scroll_button._observedPointer, null);
+            //     expect(test.scroll_button.active).toBe(false);
+            //     testPage.mouseEvent({target: test.scroll_button.element}, "mouseup");;
 
-                expect(l).not.toHaveBeenCalled();
+            //     expect(l).not.toHaveBeenCalled();
 
-            });
+            // });
 
             if (window.Touch) {
 
@@ -211,24 +179,69 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                         expect(click(test.inputbutton)).toHaveBeenCalled();
                     });
 
-                    it("does not dispatch an action event when a mouseup occurs after not previously receive a mousedown", function() {
-                        var l = addListener(test.inputbutton);
-                        mouseup(test.inputbutton.element);
+                    it("does not dispatch an action event when a mouseup occurs after not previously receiving a mousedown", function() {
+                        // reset interaction
+                        // test.inputbutton._endInteraction();
+                        var l = testPage.addListener(test.inputbutton);
+                        testPage.mouseEvent({target: test.inputbutton.element}, "mouseup");;
                         expect(l).not.toHaveBeenCalled();
                     });
 
                     it("does not dispatch an action event when a mouseup occurs away from the button after a mousedown on a button", function() {
-                        var l = addListener(test.inputbutton);
+                        var l = testPage.addListener(test.inputbutton);
 
-                        mousedown(test.inputbutton.element);
+                        testpage.mouseEvent({target: test.inputbutton.element}, "mousedown");;
                         // Mouse up somewhere else
-                        mouseup(test.divbutton.element);
+                        testPage.mouseEvent({target: test.divbutton.element}, "mouseup");;
 
                         expect(l).not.toHaveBeenCalled();
                     });
                 });
-
             }
+
+            describe("inside a scroll view", function() {
+                it("fires an action event when clicked", function() {
+                    testButton(test.scroll_button, "scroll button");
+                });
+                it("doesn't fire an action event when scroller is dragged", function() {
+                    var el = test.scroll_button.element;
+                    var scroll_el = test.scroll.element;
+
+                    var listener = testPage.addListener(test.scroll_button);
+
+                    var press_composer = test.scroll_button.composerList[0];
+
+                    // mousedown
+                    testPage.mouseEvent({target: el}, "mousedown");
+
+                    expect(test.scroll_button.active).toBe(true);
+                    expect(test.scroll_button.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(true);
+
+                    // Mouse move doesn't happen instantly
+                    waits(10);
+                    runs(function() {
+                        // mouse move up
+                        var moveEvent = document.createEvent("MouseEvent");
+                        // Dispatch to scroll view, but use the coordinates from the
+                        // button
+                        moveEvent.initMouseEvent("mousemove", true, true, scroll_el.view, null,
+                                el.offsetLeft, el.offsetTop - 100,
+                                el.offsetLeft, el.offsetTop - 100,
+                                false, false, false, false,
+                                0, null);
+                        scroll_el.dispatchEvent(moveEvent);
+
+                        expect(test.scroll_button.active).toBe(false);
+                        expect(test.scroll_button.eventManager.isPointerClaimedByComponent(press_composer._observedPointer, press_composer)).toBe(false);
+
+                        // mouse up
+                        testPage.mouseEvent({target: el}, "mouseup");;
+
+                        expect(listener).not.toHaveBeenCalled();
+                    });
+
+                });
+            });
         });
 
         describe("toggle button", function() {
