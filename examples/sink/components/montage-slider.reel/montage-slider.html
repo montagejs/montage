@@ -51,6 +51,14 @@
                 "value": "1"
             }
         },
+        
+        "slider-accordion1": {
+            "module": "accordion.reel",
+            "name": "Accordion",
+            "properties": {
+                "element": {"#": "slider-accordion1"}
+            }
+        },
 
         "owner": {
             "name": "RangeInputExample2",
@@ -94,35 +102,38 @@
 
             <h4>Example - Color changer</h4>
             <div class="demo range1">
-            <div class="span12">
-                    <div id="chip" class="chip">
-                    </div>
-                    <div id="controls" class="controls">
-                        <div class="slider-item">
-                            <div id="red"></div>
-                            <span class="label">Red</span>
+                <div class="span12">
+                        <div id="chip" class="chip">
                         </div>
-                        <div class="slider-item">
-                            <div id="green"></div>
-                            <span class="label">Green</span>
+                        <div id="controls" class="controls">
+                            <div class="slider-item">
+                                <div id="red"></div>
+                                <span class="label">Red</span>
+                            </div>
+                            <div class="slider-item">
+                                <div id="green"></div>
+                                <span class="label">Green</span>
+                            </div>
+                            <div class="slider-item">
+                                <div id="blue"></div>
+                                <span class="label">Blue</span>
+                            </div>
+                            <div class="slider-item">
+                                <div id="alpha"></div>
+                                <span class="label">Alpha</span>
+                            </div>
                         </div>
-                        <div class="slider-item">
-                            <div id="blue"></div>
-                            <span class="label">Blue</span>
-                        </div>
-                        <div class="slider-item">
-                            <div id="alpha"></div>
-                            <span class="label">Alpha</span>
-                        </div>
-                    </div>
 
-        </div><!-- /rangeinput2 -->
-        <ul class="sourcelinks">
-            <li>
-                <a href="#" onclick="toggle_visibility('.range1 #html', event);">html</a>
-                <div class="sourceitem" id="html">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                </div>
+            </div>
+        
+        
+        <section>
+           <ul id="slider-accordion1" class="accordion">
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                    <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;div id="chip" class="chip"&gt;
 &lt;/div&gt;
 &lt;div id="controls" class="controls"&gt;
@@ -143,14 +154,13 @@
         &lt;span class="label"&gt;Alpha&lt;/span&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-            </pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.range1 #serialization', event);">serialization</a>
-                <div class="sourceitem" id="serialization">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+</pre>
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "red": {
         "module": "montage/ui/bluemoon/slider.reel",
@@ -226,14 +236,14 @@
         }
     }
 }
-            </pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.range1 #javascript', event);">javascript</a>
-                <div class="sourceitem" id="javascript">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+ </pre>
+
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage;
 var Component = require("montage/ui/component").Component;
 
@@ -307,11 +317,13 @@ exports.MontageSlider = Montage.create(Component, {
         }
     }
 
-});
-            </pre>
-                </div><!-- / -->
-            </li>
-        </ul><!-- / --sourcelinks>
+});                    
+                        </pre>
+                    </div>
+                </li>
+            </ul>
+        
+        </section>
 
     </body>
 </html>

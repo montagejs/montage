@@ -1,0 +1,29 @@
+.accordion {
+  margin-bottom: 18px;
+  list-style: none;
+  margin-left: 0;
+}
+.accordion-group {
+  margin-bottom: 2px;
+  border: 1px solid #e5e5e5;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+}
+.accordion-heading {
+  border-bottom: 0;
+}
+.accordion-heading .accordion-toggle {
+  display: block;
+  padding: 8px 15px;
+}
+.accordion-inner {
+  padding: 9px 15px;
+  border-top: 1px solid #e5e5e5;
+  background-color: #fff;
+}
+
+.montage-hidden {
+    display: none;
+}
+

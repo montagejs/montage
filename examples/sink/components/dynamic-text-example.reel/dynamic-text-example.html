@@ -27,7 +27,13 @@
                     }
                 }
             },
-
+            "dynamic-text-accordion1": {
+                "module": "accordion.reel",
+                "name": "Accordion",
+                "properties": {
+                    "element": {"#": "dynamic-text-accordion1"}
+                }
+            },
 
             "owner": {
                 "module": "components/dynamic-text-example.reel",
@@ -66,20 +72,22 @@
                 </p>
             <div class="demo">
                 <span id="current-time" class="current-time"></span>
-                <div class="sourceview" id="source">
-                    <ul class="sourcelinks demo2">
-                    <li>
-                    <a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML</a>
-                    <div class="sourceitem submit" id="html">
-                        <pre class="prettyprint" >
+                
+            </div>
+            
+                       <ul id="dynamic-text-accordion1" class="accordion">
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                <div class="accordion-inner montage-hidden" >
+                                    <pre class="prettyprint" >
 &lt;span id="current-time" class="current-time"&gt;&lt;/span&gt;
-</pre>
-                    </div>
-                </li>
-                    <li>
-                    <a href="#" onclick="toggle_visibility('.demo2 #serialization', event);">Serialization</a>
-                    <div class="sourceitem submit" id="serialization">
-                        <pre class="prettyprint" >
+            </pre>
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
 {
     "dateConverter1": {
         "module": "montage/core/converter/date-converter",
@@ -111,14 +119,15 @@
             "element": {"#": "component-root"}
         }
     }
-}</pre>
-                    </div>
+}
+             </pre>
 
-                    </li>
-                    <li>
-                    <a href="#" onclick="toggle_visibility('.demo2 #javascript', event);">JavaScript</a>
-                    <div class="sourceitem submit" id="javascript">
-                        <pre class="prettyprint" >
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
@@ -159,13 +168,12 @@ exports.DynamicTextExample = Montage.create(Component, {
         }
     }
 
-});
-</pre>
-                    </div>
-                </li>
-                </ul>
-            </div>
-            </div>
+});                    
+                                    </pre>
+                                </div>
+                            </li>
+                        </ul>
+                
 
 
             <section>
