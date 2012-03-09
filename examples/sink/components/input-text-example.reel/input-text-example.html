@@ -200,6 +200,14 @@
                         }
                     ]
                 },
+                
+                "input-text-accordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "input-text-accordion1"}
+                    }
+                },
 
                 "echo": {
                     "module": "montage/ui/dynamic-text.reel",
@@ -223,8 +231,12 @@
                 color: #E73525;
                 padding: 2px 0;
             }
-            .input-text-example pre {
+            .input-text-example pre.json {
                 border: 0;
+            }
+            
+            .input-text-example #echo {
+                width: 80%;
             }
         </style>
     </head>
@@ -249,46 +261,50 @@
 
             <div class="demo form">
                 <div class="app">
-                 <form class="form-stacked">
-                     <label for="fname">First name</label>
-                     <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
-                     <label for="lname">Last name</label>
-                     <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
+                     <form class="form-stacked">
+                         <label for="fname">First name</label>
+                         <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
+                         <label for="lname">Last name</label>
+                         <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
 
-                     <label for="pwd1">Password</label>
-                     <input type="password" id="pwd" value="abcdef" />
+                         <label for="pwd1">Password</label>
+                         <input type="password" id="pwd" value="abcdef" />
 
-                     <label for="email1">Email</label>
-                     <input type="email" id="email" value="foo@bar.com" />
+                         <label for="email1">Email</label>
+                         <input type="email" id="email" value="foo@bar.com" />
 
-                     <label for="url1">URL</label>
-                     <input type="url" id="url" value="http://www.google.com" />
+                         <label for="url1">URL</label>
+                         <input type="url" id="url" value="http://www.google.com" />
 
-                     <label for="tel1">Phone Number</label>
-                     <input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
-                     <button class="btn" id="edit-phone" type="button">Edit Phone Number</button>
+                         <label for="tel1">Phone Number</label>
+                         <input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
+                         <button class="btn" id="edit-phone" type="button">Edit Phone Number</button>
 
-                     <label for="zipcode">US Postal code</label>
-                      <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
+                         <label for="zipcode">US Postal code</label>
+                          <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
 
-                     <label for="date1">Date of Birth</label>
-                     <input type="date" id="dob" value="" name="dob" pattern=""/>
-                     <div id="dob-error" class="error"></div>
+                         <label for="date1">Date of Birth</label>
+                         <input type="date" id="dob" value="" name="dob" pattern=""/>
+                         <div id="dob-error" class="error"></div>
 
-                     <div style="margin-top: 10px;">
-                         <button class="btn" id="update" type="button">Update</button>
-                    </div>
-                 </form>
+                         <div style="margin-top: 10px;">
+                             <button class="btn" id="update" type="button">Update</button>
+                        </div>
+                     </form>
 
-                 <pre id="echo"></pre>
+                     <div id="echo" class="prettyPrint"></div>
+                 </div>
             </div>
-         <ul class="sourcelinks" >
-            <li>
-                <a href="#" onclick="toggle_visibility('.form #html', event);">HTML</a>
-                <div class="sourceitem" id="html">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
- &lt;form class="form-stacked"&gt;
+            
+            
+            <section>
+                
+                       <ul id="input-text-accordion1" class="accordion">
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                <div class="accordion-inner montage-hidden" >
+                                    <pre class="prettyprint" >
+&lt;form class="form-stacked"&gt;
      &lt;label for="fname"&gt;First name&lt;/label&gt;
      &lt;input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/&gt;
      &lt;label for="lname"&gt;Last name&lt;/label&gt;
@@ -318,14 +334,13 @@
          &lt;button class="btn" id="update" type="button"&gt;Update&lt;/button&gt;
     &lt;/div&gt;
  &lt;/form&gt;
-</pre>
-                </div><!-- / -->
-            </li>
-
-            <li>
-                <a href="#" onclick="toggle_visibility('.form #serialization', event);">Serialization</a>
-                <div class="sourceitem" id="serialization">
-                <pre class="prettyprint">
+            </pre>
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
 {
     "owner": {
         "module": "components/input-text-example.reel",
@@ -534,14 +549,14 @@
         }
     }
 }
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.form #javascript', event);">javascript</a>
-                <div class="sourceitem" id="javascript">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+             </pre>
+
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
@@ -593,11 +608,14 @@ exports.InputTextExample = Montage.create(Component, {
             this.phoneReadOnly = false;
         }
     }
-});
-</pre>
-                </div><!-- / -->
-            </li>
-        </div>
+});                    
+                                    </pre>
+                                </div>
+                            </li>
+                        </ul>
+                
+                
+            </section>
 
 
             <section>

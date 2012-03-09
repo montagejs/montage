@@ -78,6 +78,13 @@
                         }
                     ]
                 },
+                "textarea-accordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "textarea-accordion1"}
+                    }
+                },
                 "echo": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
@@ -139,12 +146,17 @@
 
                 </form>
 
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.textarea1 #html', event);">HTML</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                <pre id="echo"></pre>
+
+            </div>
+            
+            <section>
+                
+               <ul id="textarea-accordion1" class="accordion">
+                    <li class="accordion-group">
+                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                        <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
      &lt;label for="fname"&gt;First Name&lt;/label&gt;
      &lt;input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/&gt;
@@ -160,14 +172,13 @@
      &lt;/div&gt;
 
 &lt;/form&gt;
-                    </pre>
-                        </div><!-- / -->
+                            </pre>
+                        </div>
                     </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.textarea1 #serialization', event);">#serialization</a>
-                        <div class="sourceitem" id="serialization">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                    <li class="accordion-group">
+                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                        <div class="accordion-inner montage-hidden">
+                            <pre class="prettyprint" >
 {
     "owner": {
         "module": "components/textarea-example.reel",
@@ -253,14 +264,13 @@
         }
     }
 }
-                    </pre>
-                        </div><!-- / -->
+     </pre>
+
+                        </div>
                     </li>
                 </ul>
 
-                <pre id="echo"></pre>
-
-            </div>
+            </section>
 
             <section>
                 <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/textarea-example.reel" target="_blank">View source on GitHub</a>

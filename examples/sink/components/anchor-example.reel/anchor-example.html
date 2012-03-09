@@ -104,6 +104,21 @@
             }
         }
     },
+    
+    "anchor-accordion1": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "anchor-accordion1"}
+        }
+    },
+    "anchor-accordion2": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "anchor-accordion2"}
+        }
+    },
 
 
     "owner": {
@@ -172,75 +187,75 @@ a[icon="external"] {
                                         <input id="linkURL" type="text" name="" value="" placeholder="http://...">
                                         <p><a href="http://www.motorola.com" id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
                                      </div>
-                                 </p>
-                                 <ul class="sourcelinks" >
-                                    <li>
-                                        <a href="#" onclick="toggle_visibility('.demo #html', event);">HTML</a>
-                                        <div class="sourceitem" id="html">
-                                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                                        <pre class="prettyprint">
-&lt;a href="http://www.motorola.com" id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
-Link text:
-&lt;input id="linkText" autofocus type="text" name="" value=""&gt;
-URL:
-&lt;input id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
-</pre>
-                                        </div><!-- / -->
-                                    </li>
-                                    <li>
-                                        <a href="#" onclick="toggle_visibility('.demo #serialization', event);">Serialization</a>
-                                        <div class="sourceitem" id="serialization">
-                                        <!-- <p>The serialization declares the Anchor component (<code>link1</code>), and two Textfield components (<code>linkTextInput</code> and <code>urlTextInput</code>). </p> -->
-                                        <pre class="prettyprint">
+                                 
+                        <ul id="anchor-accordion1" class="accordion">
+                             <li class="accordion-group">
+                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                 <div class="accordion-inner montage-hidden" >
+                                     <pre class="prettyprint" >
+ &lt;a href="http://www.motorola.com" id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
+ Link text:
+ &lt;input id="linkText" autofocus type="text" name="" value=""&gt;
+ URL:
+ &lt;input id="linkURL" type="text" name="" value="" placeholder="http://..."&gt; 
+                                    </pre>
+                                 </div>
+                             </li>
+                             <li class="accordion-group">
+                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                 <div class="accordion-inner montage-hidden">
+                                     <pre class="prettyprint" >
 {
-  "link1" : {
-      "prototype": "montage/ui/anchor.reel",
-      "properties": {
-          "element": {"#": "link1"}
-      },
-      "bindings": {
-          "textContent": {
-              "boundObject": {"@": "linkTextInput"},
-              "boundObjectPropertyPath": "value"
-          },
-          "href": {
-              "boundObject": {"@": "urlTextInput"},
-              "boundObjectPropertyPath": "value"
-          }
-      }
-  },
+"link1" : {
+   "prototype": "montage/ui/anchor.reel",
+   "properties": {
+       "element": {"#": "link1"}
+   },
+   "bindings": {
+       "textContent": {
+           "boundObject": {"@": "linkTextInput"},
+           "boundObjectPropertyPath": "value"
+       },
+       "href": {
+           "boundObject": {"@": "urlTextInput"},
+           "boundObjectPropertyPath": "value"
+       }
+   }
+},
 
-  "linkTextInput": {
-      "prototype": "montage/ui/textfield.reel",
-      "properties": {
-          "element": {"#": "linkText"},
-          "value": "Motorola"
-      }
-  },
+"linkTextInput": {
+   "prototype": "montage/ui/textfield.reel",
+   "properties": {
+       "element": {"#": "linkText"},
+       "value": "Motorola"
+   }
+},
 
-  "urlTextInput": {
-      "prototype": "montage/ui/textfield.reel",
-      "properties": {
-          "element": {"#": "linkURL"},
-          "value": "http://www.motorola.com"
-      }
-  }
-}</pre>
-                                        </div><!-- / -->
-                                    </li>
-                                    <li>
-                                        <a href="#" onclick="toggle_visibility('.demo #css', event);">CSS</a>
-                                        <div class="sourceitem" id="css">
-                                        <pre class="prettyprint">
-a[icon="external"] {
-   padding-right: 20px;
-   background: transparent url(../sink/images/external.gif) no-repeat center right;
-   color: red;
+"urlTextInput": {
+   "prototype": "montage/ui/textfield.reel",
+   "properties": {
+       "element": {"#": "linkURL"},
+       "value": "http://www.motorola.com"
+   }
 }
-</pre>
-                                        </div>
-                                    </li>
-                                 </ul>
+}
+              </pre>
+
+                                 </div>
+                             </li>
+                             <li class="accordion-group">
+                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                                 <div class="accordion-inner montage-hidden">
+                                     <pre class="prettyprint" >
+a[icon="external"] {
+  padding-right: 20px;
+  background: transparent url(../sink/images/external.gif) no-repeat center right;
+  color: red;
+}                   
+                                     </pre>
+                                 </div>
+                             </li>
+                         </ul>
 
                             </div>
 
@@ -267,12 +282,12 @@ a[icon="external"] {
                                         </tr>
                                     </tbody>
                                 </table>
-                                 <ul class="demo2 sourcelinks" >
-                                    <li>
-                                        <a href="#" onclick="toggle_visibility('.demo2 #html', event);">HTML</a>
-                                        <div class="sourceitem" id="html">
-<!--                                             <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                                        <pre class="prettyprint">
+                                
+                       <ul id="anchor-accordion2" class="accordion">
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                <div class="accordion-inner montage-hidden" >
+                                    <pre class="prettyprint" >
 &lt;table id="list1" class="bordered-table"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
@@ -287,13 +302,13 @@ a[icon="external"] {
         &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
-</pre>
-                                    </li>
-                                    <li>
-                                        <a href="#" onclick="toggle_visibility('.demo2 #serialization', event);">Serialization</a>
-                                        <div class="sourceitem" id="serialization">
-                                            <!-- <p>Description TBD</p> -->
-                                        <pre class="prettyprint">
+            </pre>
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
 {
     "data": {
         "name": "ArrayController",
@@ -373,14 +388,12 @@ a[icon="external"] {
         }
     }
 }
-</pre>
-                                    </li>
+             </pre>
 
+                                </div>
+                            </li>                            
+                        </ul>
 
-                                        </div><!-- / -->
-                                    </li>
-                            </div>
-                        </div>
                     </div>
 
                     <section>
