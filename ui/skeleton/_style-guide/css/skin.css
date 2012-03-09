@@ -9,10 +9,7 @@
 /* Mixins ------------------------------- */
 /* Skin -------------------------------------------------------------- */
 /* Button / Select ------------------------------- */
-.skin button,
-.skin select.skeleton,
-.skin .skeleton-toggle-thumb,
-.skin .skeleton-tabs > li {
+.skin button, .skin select.skeleton, .skin .skeleton-toggle-thumb {
   color: #fff;
   font-weight: bold;
   border-color: #407fbf;
@@ -70,16 +67,4 @@
   background-image: linear-gradient(top, #66b2ff, #007fff);
   background-repeat: no-repeat;
   background-position: -75px center;
-}
-/* Tabs ------------------------------- */
-.skin .skeleton-tabs > li {
-  text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
-}
-.skin .skeleton-tabs > li.selected {
-  box-shadow: inset 0 1px 0px rgba(0, 0, 0, 0.4), 0 1px 1px rgba(255, 255, 255, 0.3);
-  background-image: -webkit-linear-gradient(top, #084c91, #0a66c2);
-  background-image: -moz-linear-gradient(top, #084c91, #0a66c2);
-  background-image: -ms-linear-gradient(top, #084c91, #0a66c2);
-  background-image: -o-linear-gradient(top, #084c91, #0a66c2);
-  background-image: linear-gradient(top, #084c91, #0a66c2);
 }

@@ -380,38 +380,3 @@ textarea.skeleton {
     background-position: -75px center;
 }
 
-/* Tabs ------------------------------- */
-.skeleton-tabs {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-.skeleton-tabs > li {
-    display: inline-block;
-    margin-left: -1px;
-    height: @height;
-    line-height: @height;
-    min-width: @height;
-    padding: 0 round(@height/3);
-    border: @border;
-    background-color: @bg-color;
-}
-
-.skeleton-tabs > li:first-child { border-radius: @border-radius 0 0 @border-radius; }
-.skeleton-tabs > li:last-child {  border-radius: 0 @border-radius @border-radius 0; }
-
-.skeleton-tabs > li.selected {
-    background-color: hsl(0,0%,85%);
-}
-
-.mobile .skeleton-tabs > li {
-    height: @heightMobile;
-    line-height: @heightMobile;
-    min-width: @heightMobile;
-    padding: 0 round(@heightMobile/3);
-}
-.mobile .skeleton-tabs > li:first-child { border-radius: @heightMobile/2 0 0 @heightMobile/2; }
-.mobile .skeleton-tabs > li:last-child {  border-radius: 0 @heightMobile/2 @heightMobile/2 0; }
-
-
-
