@@ -542,10 +542,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     // called on iteration instantiation
     templateDidLoad: {value: function() {
-        var range = document.createRange(),
-            item = this._deserializedItem,
-            children = item.element.childNodes,
-            i;
+        var item = this._deserializedItem,
+            children = item.element.childNodes;
 
         item.fragment = document.createDocumentFragment();
         while (children.length > 0) {
