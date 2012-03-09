@@ -5,8 +5,7 @@
  </copyright> */
 
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component
-    TranslateComposer = require("ui/composer/translate-composer").TranslateComposer;
+    Component = require("ui/component").Component;
 
 exports.Scroller = Montage.create(Component, {
 
