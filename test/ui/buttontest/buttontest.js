@@ -6,4 +6,10 @@
 var Montage = require("montage").Montage,
     Button = require("montage/ui/bluemoon/button.reel").Button;
 
-var ButtonTest = exports.ButtonTest = Montage.create(Montage, {});
+var ButtonTest = exports.ButtonTest = Montage.create(Montage, {
+  handleAction: {
+    value: function() {
+      this.output.value += "pressed ";
+    }
+  }
+});

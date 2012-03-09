@@ -165,6 +165,16 @@ var Button = exports.Button = Montage.create(NativeControl, {
             this._dispatchActionEvent();
         }
     },
+    handleKeyup: {
+        value: function(event) {
+            console.log(event.keyCode);
+            // action event on spacebar
+            if (event.keyCode === 32) {
+                this.active = false;
+                this._dispatchActionEvent();
+            }
+        }
+    },
 
     /**
     Called when all interaction is over.
@@ -186,7 +196,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
     didSetElement: {
         value: function() {
-            var o = NativeControl.didSetElement.call(this);
+            NativeControl.didSetElement.call(this);
 
             this._element.classList.add("montage-button");
             this._element.setAttribute("aria-role", "button");
@@ -218,6 +228,8 @@ var Button = exports.Button = Montage.create(NativeControl, {
                     this._label = this._labelNode.data;
                 }
             }
+
+            this._element.addEventListener("keyup", this, false);
 
             this.needsDraw = true;
         }
