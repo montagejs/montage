@@ -67,11 +67,21 @@ var testPage = TestPageLoader.queueTest("template", function() {
                 script.setAttribute("type", Template._SCRIPT_TYPE);
                 script.textContent = Serializer.create().initWithRequire(require).serialize({owner: component});
                 htmlDocument.head.appendChild(script);
+                var latch,
+                    componentDeserializedFromTemplateCount,
+                    childDeserializedFromTemplateCount,
+                    template = Template.create().initWithDocument(htmlDocument);
 
-                var template = Template.create().initWithDocument(htmlDocument);
                 template.instantiateWithComponent(component, function() {
-                    expect(component.deserializedFromTemplateCount).toBe(0);
-                    expect(component.child.deserializedFromTemplateCount).toBe(1);
+                    componentDeserializedFromTemplateCount = component.deserializedFromTemplateCount;
+                    childDeserializedFromTemplateCount = component.child.deserializedFromTemplateCount;
+                    latch = true;
+                });
+
+                waitsFor(function() { return latch; });
+                runs(function() {
+                    expect(componentDeserializedFromTemplateCount).toBe(0);
+                    expect(childDeserializedFromTemplateCount).toBe(1);
                 });
             });
         });
@@ -107,6 +117,9 @@ var testPage = TestPageLoader.queueTest("template", function() {
                 component.element = element;
                 component.needsDraw = true;
                 testPage.waitForDraw();
+                runs(function() {
+                    expect(component.didDraw).toHaveBeenCalled();
+                });
             });
         });
 
@@ -145,6 +158,55 @@ var testPage = TestPageLoader.queueTest("template", function() {
             template.initWithComponent(rootComp);
             template.instantiateWithComponent(newRootComp, function() {
                 expect(newRootComp.object).toBe(comp);
+            });
+        });
+
+        it("should be able to reference the template object", function() {
+            var component = application.delegate.template;
+            
+            expect(component.templateReference).toBe(component._template);
+        });
+
+        it("should change the draw of a component by extending", function() {
+            var element = querySelector(".componentson");
+
+            expect(element.textContent).toBe("Component Son");
+        });
+
+        it("should change the markup of a component by extending a template", function() {
+            var component = application.delegate.daughter,
+                element = component.element;
+
+            expect(element).toBeDefined();
+            expect(element.innerHTML).toBe('\n        <div class="header">Component Daughter <span data-montage-id="label">Label</span></div>\n        \n        <div>Component Mother</div>\n        <div>Mother Content</div>\n    \n    ');
+            expect(window.getComputedStyle(element).getPropertyValue("color")).toBe("rgb(255, 192, 203)");
+            expect(component.motherTemplateLoaded).toBeDefined();
+            expect(querySelector(".componentdaughter .partOfMotherTemplate")).toBeDefined();
+        });
+
+        it("should call deserializedFromTemplate once on non-owner components of extended templates", function() {
+            var component = application.delegate.granddaughter;
+
+            expect(component.label.didDeserializedFromTemplate).toBeTruthy();
+        });
+
+        it("should call templateDidLoad only once on the owner component of extended templates", function() {
+            var component = application.delegate.granddaughter;
+
+            expect(component.templateDidLoadCallCount).toBe(1);
+        });
+
+        it("should", function() {
+            var component = application.delegate.granddaughtersister;
+
+            component.element = querySelector(".componentgranddaughtersister");
+            component.needsDraw = true;
+            testPage.waitForDraw();
+            runs(function() {
+                expect(component.element.innerHTML).toBe('\n        <div class="header">Component Granddaughter</div>\n        \n        <div class="header">Component Daughter <span data-montage-id="label">Label</span></div>\n        \n        <div>Component Mother</div>\n        <div>Mother Content</div>\n    \n    \n    ');
+                expect(component.label).toBeDefined();
+                expect(component.label.didDeserializedFromTemplate).toBeTruthy();
+                expect(component.templateDidLoadCallCount).toBe(1);
             });
         });
 
