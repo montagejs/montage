@@ -37,6 +37,13 @@
                         }
                     }
                 },
+                "number-accordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "number-accordion1"}
+                    }
+                },
                 "fahrenheitTextfield": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -75,27 +82,34 @@
                     <label for="fahrenheit">Temperature in Fahrenheit</label>
                     <input type="number" name="fahrenheit" id="fahrenheit" step="4" required />
                 </form>
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.number1 #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+           </div>     
+                
+                
+                
+                
+                
+           <section>  
+               
+               
+<ul id="number-accordion1" class="accordion">
+   <li class="accordion-group">
+       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+       <div class="accordion-inner montage-hidden" >
+           <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
-    &lt;label for="celsius"&gt;Temperature in Celsius&lt;/label&gt;
-    &lt;input type="number" name="celsius" id="celsius" step="2" required /&gt;
+   &lt;label for="celsius"&gt;Temperature in Celsius&lt;/label&gt;
+   &lt;input type="number" name="celsius" id="celsius" step="2" required /&gt;
 
-    &lt;label for="fahrenheit"&gt;Temperature in Fahrenheit&lt;/label&gt;
-    &lt;input type="number" name="fahrenheit" id="fahrenheit" step="4" required /&gt;
+   &lt;label for="fahrenheit"&gt;Temperature in Fahrenheit&lt;/label&gt;
+   &lt;input type="number" name="fahrenheit" id="fahrenheit" step="4" required /&gt;
 &lt;/form&gt;
 </pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.number1 #serialization', event);">Serialization</a>
-                        <div class="sourceitem" id="serialization">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+       </div>
+   </li>
+   <li class="accordion-group">
+       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+       <div class="accordion-inner montage-hidden">
+<pre class="prettyprint" >
 {
     "owner": {
         "module": "components/number-input-example.reel",
@@ -135,44 +149,45 @@
     }
 }
 </pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.number1 #javascript', event);">JavaScript</a>
-                        <div class="sourceitem" id="javascript">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+
+       </div>
+   </li>
+   <li class="accordion-group">
+       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+       <div class="accordion-inner montage-hidden">
+           <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component,
-    Converter = require("montage/core/converter/converter").Converter;
+   Component = require("montage/ui/component").Component,
+   Converter = require("montage/core/converter/converter").Converter;
 
 /* Custom converter to convert from Celsius to Fahrenheit and vice-versa */
 exports.TempConverter = Montage.create(Converter, {
 
-    allowPartialConversion: {
-        value: true
-    },
+   allowPartialConversion: {
+       value: true
+   },
 
-    // convert fahrenheit to celsius (showing our non-metric heritage here)
-    convert: {
-        value: function(value) {
-            return new Number((parseInt(value, 10) - 32) / 1.8).toFixed(2);
-        }
-    },
+   // convert fahrenheit to celsius (showing our non-metric heritage here)
+   convert: {
+       value: function(value) {
+           return new Number((parseInt(value, 10) - 32) / 1.8).toFixed(2);
+       }
+   },
 
-    // revert celsius to fahrenheit
-    revert: {
-        value: function(value) {
-            return new Number((1.8 * parseInt(value, 10)) + 32).toFixed(2);
-        }
-    }
+   // revert celsius to fahrenheit
+   revert: {
+       value: function(value) {
+           return new Number((1.8 * parseInt(value, 10)) + 32).toFixed(2);
+       }
+   }
 
 });
-</pre>
-                        </div><!-- / -->
-                    </li>
-                </ul>
-            </div>
+           </pre>
+       </div>
+   </li>
+</ul>
+ 
+            </section>
 
         <section>
             <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/number-input-example.reel" target="_blank">View source on GitHub</a>
