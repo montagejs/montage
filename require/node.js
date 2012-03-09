@@ -40,10 +40,13 @@ Require.Compiler = function (config) {
     var names = ["require", "exports", "module"];
     var scopeNames = Object.keys(config.scope);
     names.push.apply(names, scopeNames);
-    return function(module) {
-        if (module.factory)
+    return function (module) {
+        if (module.factory) {
             return module;
-        if (!module.factory && module.text !== void 0) {
+        } else if (
+            module.text !== void 0 &&
+            module.type === "javascript"
+        ) {
             var factory = globalEval(
                 "(function(" + names.join(",") + "){" +
                 module.text +
@@ -59,7 +62,6 @@ Require.Compiler = function (config) {
             // https://developer.mozilla.org/en/JavaScript/Reference/Functions_and_function_scope
             //module.factory = new Function("require", "exports", "module", module.text + "\n//*/\n//@ sourceURL="+module.path);
         }
-        return module;
     };
 };
 

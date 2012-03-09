@@ -75,6 +75,7 @@ if (spec) {
         require.async("ui/list-spec"),
         require.async("ui/number-input-spec"),
         require.async("ui/range-input-spec"),
+        require.async("ui/popup-spec"),
         require.async("ui/repetition-spec"),
         require.async("ui/select-input-spec"),
         require.async("ui/slider-spec"),

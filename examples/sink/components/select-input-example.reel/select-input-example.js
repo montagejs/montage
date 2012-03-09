@@ -4,7 +4,25 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Converter = require("montage/core/converter/converter").Converter;
+    
+    
+exports.JustifyConverter = Montage.create(Converter, {
+    justify: {value: null},
+    
+    convert: {
+        value: function(value) {
+            return (value === this.justify);
+        }
+    },
+
+    revert: {
+        value: function(value) {
+            return (value === true ? this.justify : "");
+        }
+    }
+});
 
 exports.SelectInputExample = Montage.create(Component, {
     json: {value: null},
@@ -76,6 +94,18 @@ exports.SelectInputExample = Montage.create(Component, {
             this._selectedDepts = (value || []);
         }
     },
+    
+    _justify: {value: null},
+    justify: {
+        get: function() {
+            return this._justify;
+        },
+        set: function(value) {
+            this._justify = value;
+        }
+    },
+    
+    
 
     prepareForDraw: {
         value: function() {
@@ -83,10 +113,8 @@ exports.SelectInputExample = Montage.create(Component, {
             this.firstName = "John";
             this.lastName = "FooBar";
 
-            this.dept.contentController.selectedIndexes = [2, 4, 5];
-            // The following code does not trigger the selection. The selection is
-            // managed by the contentController
-            //this.selectedDept = this.departments[3];
+            this.dept.contentController.selectedIndexes = [2, 4, 5];            
+            this.justify = "center";
 
             // invoke pretty-fier
             prettyPrint();

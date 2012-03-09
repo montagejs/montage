@@ -168,6 +168,35 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
         return objectsArray;
     }},
+
+    chainDeserializer: {
+        value: function(deserializer) {
+            var chainedSerializations = this._chainedSerializations,
+                optimizedIds, chainedOptimizedIds;
+
+            if (!chainedSerializations) {
+                this._chainedSerializations = chainedSerializations = [];
+            }
+
+            chainedSerializations.push({
+                string: deserializer._serializationString,
+                compiledFunction: deserializer._compiledDeserializationFunction,
+                compiledFunctionString: deserializer._compiledDeserializationFunctionString
+            });
+
+            // need to copy the optimized ids too, ideally all chained templates are optimized for the same document
+            chainedOptimizedIds = deserializer._optimizedIds;
+            if (chainedOptimizedIds) {
+                if (!optimizedIds) {
+                    this._optimizedIds = optimizedIds = {};
+                }
+                for (var id in chainedOptimizedIds) {
+                    optimizedIds[id] = chainedOptimizedIds[id];
+                }
+            }
+        }
+    },
+
     /**
      This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.
      It reads an entry from the "properties" serialization unit of the object being deserialized.
@@ -391,7 +420,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
             if ("module" in desc) {
                 moduleId = desc.module;
-            } else if (name = /*assignment*/(desc.prototype || desc.object)) {
+            } else if ("prototype" in desc || "object" in desc) {
+                name = desc.prototype || desc.object
                 objectLocation = name.split("[");
                 moduleId = objectLocation[0];
                 desc.module = moduleId;
@@ -440,18 +470,18 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 /**
   @private
 */
-    _compileAndDeserialize: {value: function(element, deserialize) {
+    _compileAndDeserialize: {value: function(element, serialization, exports, deserialize) {
         var self = this,
-            serialization,
             exportsStrings = "",
             unitsStrings = "",
             objectsStrings = "",
             cleanupStrings = "",
             valueString,
-            exports = {},
+            deserialized = {},
             modules = this._modules,
             idsToRemove = [],
             optimizedIds = this._optimizedIds,
+            compiledDeserializationFunctionString,
             requireStrings = [],
             objectNamesCounter = {},
             label;
@@ -465,7 +495,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         for (label in serialization) {
             var objectDesc = serialization[label];
 
-            if (label in exports) {
+            if (label in deserialized) {
                 // already deserialized, in a reference most likely
                 continue;
             }
@@ -475,6 +505,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 exportsStrings += 'var ' + label + ' = exports.' + label + ' = ' + valueString + ';\n';
                 if (deserialize) {
                     exports[label] = objectDesc.value;
+                    deserialized[label] = true;
                 }
                 // kind of lame but it's just to prevent the need to check whether it's a value or an object in the next serialization loop to deserialize the units.
                 delete serialization[label];
@@ -497,25 +528,23 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         }
 
         if (canEval) {
-            this._compiledDeserializationFunctionString = "(function() {\n" + requireStrings.join("\n") + "\nreturn function(element) {\nvar exports = {};\n" + exportsStrings + "\n\n" + objectsStrings + "\n\n" + unitsStrings + "\n\n" + cleanupStrings + "\nreturn exports;\n}}).call(this)";
-            this._serializationString = this._serialization = serialization = null;
+            compiledDeserializationFunctionString = "(function() {\n" + requireStrings.join("\n") + "\nreturn function(element, exports) {\n" + exportsStrings + "\n\n" + objectsStrings + "\n\n" + unitsStrings + "\n\n" + cleanupStrings + "\nreturn exports;\n}}).call(this)";
         }
-
         if (logger.isDebug) {
-            logger.debug(this._compiledDeserializationFunctionString);
+            logger.debug(compiledDeserializationFunctionString);
         }
 
-        return exports;
+        return compiledDeserializationFunctionString;
 
         function deserializeObject(label, desc) {
             var moduleId,
                 name,
-                instance,
                 objectName,
                 fqn,
                 properties = desc.properties,
                 isType,
-                object,
+                object = self._objectLabels[label],
+                hasObject = object != null,
                 counter,
                 propertiesString,
                 objectLocation;
@@ -523,7 +552,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             if ("module" in desc) {
                 moduleId = desc.module;
                 objectName = name = desc.name;
-            } else {
+            } else  if ("prototype" in desc || "object" in desc) {
                 objectLocation = (desc.prototype || desc.object).split("[");
                 // this code is actually only used when canEval == false,
                 // module+name are added when the modules are parsed but it's
@@ -542,8 +571,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             fqn = moduleId + "." + name;
 
             if (deserialize) {
-                if (self._objectLabels[label]) {
-                    exports[label] = object = self._objectLabels[label];
+                if (hasObject) {
+                    exports[label] = object;
                 } else if (isType) {
                     exports[label] = object = modules[moduleId][name];
                 } else {
@@ -558,32 +587,38 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                         value: self.uuid + "-" + label
                     });
                 }
-            } else {
-                // need to know if it has been already compiled
-                exports[label] = true;
             }
-
-            if (fqn in requireStrings) {
-                objectName = requireStrings[fqn];
-            } else {
-                counter = (objectNamesCounter[name] || 0) + 1;
-                objectNamesCounter[name] = counter;
-                if (counter > 1) {
-                    objectName += counter;
-                }
-                requireStrings[fqn] = objectName;
-                requireStrings.push('var ' + objectName + ' = this._modules["' + moduleId + '"]["' + name + '"];');
-            }
+            deserialized[label] = true;
 
             exportsStrings += 'if (this._objectLabels["' + label + '"]) {\n';
-            exportsStrings += '  var ' + label + ' = exports.' + label + ' = this._objectLabels["' + label + '"]\n';
-            exportsStrings += '} else {\n';
-            if (isType) {
-                exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + ';\n';
-            } else {
-                exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + '.create();\n';
-                exportsStrings += '  Montage.getInfoForObject(' + label + ').label = "' + label + '";\n';
-                exportsStrings += '  Object.defineProperty(' + label + ', "_suuid", {enumerable: false, value: "' + self.uuid + '-' + label + '"});\n';
+            exportsStrings += '  var ' + label + ' = exports. ' + label + ' = this._objectLabels["' + label + '"]\n';
+            exportsStrings += '} else if(exports.' + label +') {';
+            exportsStrings += '  var ' + label + ' = exports.' + label + ';\n';
+            if (!hasObject) {
+                // this block of code is only needed for when there's a
+                // prototype/object in the serialization, which is the common
+                // case, but we also support missing object creation
+                // information as long as the user defines an object to be used
+                if (fqn in requireStrings) {
+                    objectName = requireStrings[fqn];
+                } else {
+                    counter = (objectNamesCounter[name] || 0) + 1;
+                    objectNamesCounter[name] = counter;
+                    if (counter > 1) {
+                        objectName += counter;
+                    }
+                    requireStrings[fqn] = objectName;
+                    requireStrings.push('var ' + objectName + ' = this._modules["' + moduleId + '"]["' + name + '"];');
+                }
+
+                exportsStrings += '} else {\n';
+                if (isType) {
+                    exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + ';\n';
+                } else {
+                    exportsStrings += '  var ' + label + ' = exports.' + label + ' = ' + objectName + '.create();\n';
+                    exportsStrings += '  Montage.getInfoForObject(' + label + ').label = "' + label + '";\n';
+                    exportsStrings += '  Object.defineProperty(' + label + ', "_suuid", {enumerable: false, value: "' + self.uuid + '-' + label + '"});\n';
+                }
             }
             exportsStrings += '}\n';
 
@@ -719,6 +754,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
         }
     }},
+
     /**
      * @private
      */
@@ -748,19 +784,37 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
      */
     _deserialize: {
         value: function(sourceDocument, targetDocument) {
-            var exports;
+            var exports = {},
+                chainedSerializations = this._chainedSerializations;
 
             // third and next runs, execute the compiled deserialization function
             if (this._compiledDeserializationFunction) {
-                exports = this._compiledDeserializationFunction(sourceDocument);
+                this._compiledDeserializationFunction(sourceDocument, exports);
                 // second run, create the function and execute it
             } else if (this._compiledDeserializationFunctionString) {
                 this._compiledDeserializationFunction = eval(this._compiledDeserializationFunctionString);
-                exports = this._compiledDeserializationFunction(sourceDocument);
+                this._compiledDeserializationFunction(sourceDocument, exports);
 
                 // first run, deserialize and create the source of the compiled deserialization function
             } else {
-                exports = this._compileAndDeserialize(sourceDocument, true);
+                this._compiledDeserializationFunctionString = this._compileAndDeserialize(sourceDocument, this._serialization, exports, true);
+                this._serialization = null;
+            }
+
+            if (chainedSerializations) {
+                for (var i = 0, serialization; (serialization = chainedSerializations[i]); i++) {
+                    if (serialization.compiledFunction) {
+                        serialization.compiledFunction.call(this, sourceDocument, exports);
+                        // second run, create the function and execute it
+                    } else if (serialization.compiledFunctionString) {
+                        serialization.compiledFunction = eval(serialization.compiledFunctionString);
+                        serialization.compiledFunction.call(this, sourceDocument, exports);
+                        // first run, deserialize and create the source of the compiled deserialization function
+                    } else {
+                        serialization.compiledFunctionString = this._compileAndDeserialize(sourceDocument, serialization.object, exports, true);
+                        serialization.object = null;
+                    }
+                }
             }
 
             if (targetDocument) {
@@ -792,8 +846,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
      */
     deserializeObjectWithElement: {
         value: function(element, callback) {
-            return this.deserializeWithInstancesAndElementForDocument(null, element, null, function(exports) {
-                callback(exports ? exports.root : undefined);
+            return this.deserializeWithInstancesAndElementForDocument(null, element, null, function(exports, element) {
+                callback(exports ? exports.root : undefined, element);
             });
         }
     },
@@ -853,7 +907,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
                 self._invokeDeserializedFromSerialization(exports);
 
-                callback(exports);
+                callback(exports, body);
             });
         }
     },
@@ -877,7 +931,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 var exports = self._deserialize(sourceDocument);
 
                 self._invokeDeserializedFromSerialization(exports);
-                callback(exports);
+                callback(exports, sourceDocument);
             });
         }
     },
