@@ -35,21 +35,6 @@
         ]
     },
 
-    "button3": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
-        "properties": {
-            "element": {"#": "button3"},
-            "identifier": "button3"
-        },
-        "listeners": [
-            {
-                "type": "action",
-                "listener": {"@": "owner"}
-            }
-        ]
-    },
-
     "copy": {
         "module": "montage/ui/button.reel",
         "name": "Button",
@@ -131,6 +116,12 @@
             padding-right: 0.5em;
         }
 
+        .demolink {
+            font-size: 90%;
+            position: relative;
+            left: 0px;
+        }
+
     </style>
 </head>
 <body>
@@ -139,24 +130,22 @@
             <div class="span8">
                 <h3>Button</h3>
                 <p class="">
-                        The Button component converts a &lt;div&gt; or &lt;input&gt; element into a styled, clickable button. It supports three behavior modes (transient, toggle, and mixed) for different uses. You can different assign labels to different button states.
+                        The Button prototype wraps a &lt;button> or &lt;input type="button"> element, and exposes the <a href="http://dev.w3.org/html5/spec/the-button-element.html#the-button-element" target="_blank">standard attributes</a> of those elements as properties, which you can use with data binding, for example.
                     </p>
             </div>
         </div>
 
         <h4>Demo</h4>
-        
+
         <div class="demo">
-            
-            <p>Default Button with an identifier to link it to an action handler</p>
+
+            <p>Button with an identifier used to link it to an handler method.</p>
             <button class="text btn" id="button1">Click Me</button>
-                
-            <p>Submit Button without a specific handler. In this case, handleAction will be called on action.</p>
-            <input type="submit" class="btn submit" id="button2" value="I am a Submit Button"/> 
-            
-            <p>Cancel Button with a specific handler - handleButton3Action</p>
-            <div class="btn cancel" id="button3">I am a Cancel Button</div>  
-            
+
+            <p>Submit Button without a specific handler. In this case, the <code>handleAction()</code> method defined in <strong>button-example.html</strong> will be called on when the <code>"action"</code> event is dispatched.</p>
+
+            <input type="submit" class="btn submit" id="button2" value="I am a Submit Button"/>
+
             <h4>Button group</h4>
 
             <p>Putting buttons in a group is a matter of wrapping the buttons in an
@@ -166,24 +155,42 @@
                 <button class="btn" id="copy">Copy</button>
                 <button class="btn" id="cut">Cut</button>
                 <button class="btn" id="paste">Paste</button>
-            </div> 
+            </div>
 
             <h4>Image</h4>
 
-            <p>It is recommended that images are added to buttons using CSS, either by
+            <p>To add an image to a Button use CSS, either by
             setting a background image, or by using the <code>:before</code> and
             <code>:after</code> pseudo elements with the <code>content</code>
             property, as follows:</p>
 
             <button class="btn settings" id="image">Settings</button>
-            
-        </div>
 
+            <pre class="prettyprint" style="margin-top: 5px;">
+// HTML
+&lt;button class="btn settings" id="image"&gt;Settings&lt;/button&gt;</pre>
+
+<pre class="prettyprint">
+// CSS
+.settings:before {
+    content: url(images/settings.png);
+    vertical-align: middle;
+    display: inline-block;
+    padding-right: 0.5em;
+}
+</pre>
+
+    <pre class="prettyprint">
+
+    </pre>
+
+        </div>
         <section>
-            <a href="m-js/examples/sink/components/button-example.reel" target="_blank">View Demo Source</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/button-example.reel" target="_blank">View source on GitHub</a>
         </section>
 
 
+<!--
         <section>
             <h4>Component Properties</h4>
             <table>
@@ -210,23 +217,51 @@
                   <td>selectedTabValue</td>
                   <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
                 </tr>
-                
+
               </tbody>
             </table>
             <p>
                 <a href="" target="_blank">View full Documentation</a>
             </p>
         </section>
-
+ -->
 
         <section>
-            <h4>Handling Button Click/Touch Events</h4>
-            <p>To setup a handler for a Button, implement a function with the following naming convention:
-            <pre class="prettyprint">"handle" + &lt; button Identifier capitalized &gt; + "Action"</pre>
-            </p>
-            <p>
-                Eg: for button with identifier = "button1":
-            </p>
+            <h4>Handling mouse/touch events on a Button</h4>
+            <p>When a event occurs on a component (or any element) which has registered an event listener for the event type, the Montage event manager infers what function handler on the listener object to call. This topic is covered in detail in <a href="http://tetsubo.org/docs/montage/event-handling/" title="Event Handling">Event Handling</a>.
+
+                <p>For example, </p>
+
+<pre class="prettyprint">
+    
+</pre>
+
+<pre class="prettyprint">
+{
+    "button2": {
+        ...
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    }
+}
+</pre>
+
+This is equivalent to the following JavaScript:
+
+<pre class="prettyprint">
+button2.addEventListener("action", owner);
+</pre>
+
+The specified listener object (<code>owner</code>) object  for a Button, implement a function with the following naming convention:
+    <pre class="prettyprint">"handle" + &lt; button Identifier capitalized &gt; + "Action"</pre>
+    </p>
+    <p>
+        Eg: for button with identifier = "button1":
+    </p>
 
 <pre class="prettyprint linenums">
 handleButton1Action: {
@@ -240,7 +275,7 @@ handleButton1Action: {
 
 
         <section>
-            
+
 
             <div id="logger">
                 <h2>Logger</h2>

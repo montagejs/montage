@@ -10,10 +10,10 @@
         <script type="text/montage-serialization">
             {
                 "owner": {
-                    "module": "components/scroller-example.reel",
-                    "name": "ScrollerExample",
+                    "module": "components/scrollview-example.reel",
+                    "name": "ScrollviewExample",
                     "properties": {
-                        "element": {"#": "scroller-example"},
+                        "element": {"#": "scrollview-example"},
                         "statesController": {"@": "statesController"},
                         "dept": {"@": "dept"}
                     },
@@ -149,6 +149,21 @@
                     }
                 },
 
+                "zip": {
+                    "module": "montage/ui/textfield.reel",
+                    "name": "Textfield",
+                    "properties": {
+                        "element": {"#": "zip"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "zip",
+                            "oneway": false
+                        }
+                    }
+                },
+
                 "dateConverter": {
                     "module": "montage/core/converter/date-converter",
                     "name": "DateConverter",
@@ -186,7 +201,7 @@
                         }
                     }
                 },
-
+                
                 "dept": {
                     "module": "montage/ui/select-input.reel",
                     "name": "SelectInput",
@@ -233,12 +248,12 @@
                         "element": {"#": "country"}
                     }
                 },
-
+                
                 "invert-converter": {
                     "module": "components/converters.reel",
                     "name": "InvertConverter"
                 },
-
+                
                 "agree-checkbox": {
                     "module": "montage/ui/checkbox.reel",
                     "name": "Checkbox",
@@ -269,10 +284,10 @@
                         }
                     }
                 },
-
+                
                 "scroller": {
-                    "module": "montage/ui/scroller.reel",
-                    "name": "Scroller",
+                    "module": "montage/ui/scrollview.reel",
+                    "name": "Scrollview",
                     "properties": {
                         "element": {"#": "scroller"}
                     }
@@ -296,22 +311,22 @@
         </script>
 
         <style>
-            .scroller-example .error {
+            .scrollview-example .error {
                 color: #E73525;
                 padding: 2px 0;
             }
-            .scroller-example pre {
+            .scrollview-example pre {
                 border: 0;
             }
         </style>
     </head>
     <body>
-        <div id="scroller-example" class="scroller-example">
+        <div id="scrollview-example" class="scrollview-example">
             <div class="row">
                 <div class="span8">
-                    <h3>Scroller</h3>
+                    <h3>Scrollview</h3>
                     <p>
-                        The Scroller supports scrolling for fixed height components.
+                        The Scrollview supports scrolling for fixed height components.
                     </p>
                     <p>
                         <a href="" target="_blank">View Documentation</a>
@@ -326,61 +341,63 @@
                  </p>
 
                  <div id="scroller" style="height: 300px;">
-                     <form class="form-stacked">
-                         <label for="fname">Text</label>
-                         <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
-                         <label for="lname">Text</label>
-                         <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
+                     <div>
+                         <form class="form-stacked">
+                             <label for="fname">Text</label>
+                             <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
+                             <label for="lname">Text</label>
+                             <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
 
-                         <label for="pwd1">Password</label>
-                         <input type="password" id="pwd" value="abcdef" />
+                             <label for="pwd1">Password</label>
+                             <input type="password" id="pwd" value="abcdef" />
 
-                         <label for="email1">Email</label>
-                         <input type="email" id="email" value="foo@bar.com" />
+                             <label for="email1">Email</label>
+                             <input type="email" id="email" value="foo@bar.com" />
 
-                         <label for="url1">URL</label>
-                         <input type="url" id="url" value="http://www.google.com" />
+                             <label for="url1">URL</label>
+                             <input type="url" id="url" value="http://www.google.com" />
 
-                         <label for="tel1">Phone Number</label>
-                         <input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
-                         <button class="btn" id="edit-phone" type="button">Edit Phone Number</button>
+                             <label for="tel1">Phone Number</label>
+                             <input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
+                             <button class="btn" id="edit-phone" type="button">Edit Phone Number</button>
 
-                         <label for="zipcode">US Postal code</label>
-                          <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
+                             <label for="zipcode">US Postal code</label>
+                              <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
 
-                         <label for="date1">Date of Birth</label>
-                         <input type="date" id="dob" value="" name="dob" pattern=""/>
-                         <div id="dob-error" class="error"></div>
+                             <label for="date1">Date of Birth</label>
+                             <input type="date" id="dob" value="" name="dob" pattern=""/>
+                             <div id="dob-error" class="error"></div>
+                             
+                             <label for="dept">Department</label>
+                                <select id="dept" required="true" multiple="true" size="3">
+                                    <option>Please select a Department</option>
+                                </select>
 
-                         <label for="dept">Department</label>
-                            <select id="dept" required="true" multiple="true" size="3">
-                                <option>Please select a Department</option>
-                            </select>
+                               <label for="country">Country</label>
+                               <select id="country" required>
+                                   <option value="">Please select a Country</option>
+                                   <option value="USA" selected="true">United States of America</option>
+                                   <option value="INR" >India</option>
+                                   <option value="FR">France</option>
+                                   <option value="GER">Germany</option>
+                               </select>
 
-                           <label for="country">Country</label>
-                           <select id="country" required>
-                               <option value="">Please select a Country</option>
-                               <option value="USA" selected="true">United States of America</option>
-                               <option value="INR" >India</option>
-                               <option value="FR">France</option>
-                               <option value="GER">Germany</option>
-                           </select>
+                               <label for="state">State</label>
+                               <select id="state" required="true">
+                                   <option>Please select a country...</option>
+                               </select>
 
-                           <label for="state">State</label>
-                           <select id="state" required="true">
-                               <option>Please select a country...</option>
-                           </select>
-
-
-
-                         <div style="margin-top: 10px;">
-                             <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label>
-                             <button class="btn" id="update" type="button" disabled>Update</button>
-                         </div>
-                     </form>
-
-                     <pre id="echo"></pre>
-
+                              
+                               
+                             <div style="margin-top: 10px;">
+                                 <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label>
+                                 <button class="btn" id="update" type="button" disabled>Update</button>
+                             </div>
+                         </form>
+                         
+                         <pre id="echo"></pre>
+                         
+                    <div>
                 </div>
 
             </div>

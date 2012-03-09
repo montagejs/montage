@@ -23,6 +23,7 @@ exports.ButtonExample = Montage.create(Component, {
                     szn_pre.innerHTML = '"'+e+'": ' + JSON.stringify(entry, null, "    ");
                 }
             }
+
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
