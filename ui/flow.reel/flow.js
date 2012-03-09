@@ -229,10 +229,10 @@ var Flow = exports.Flow = Montage.create(Component, {
                         planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
                     ],
                     normals[0],
-                    spline.vectors[0 + i * 3],
-                    spline.vectors[1 + i * 3],
-                    spline.vectors[2 + i * 3],
-                    spline.vectors[3 + i * 3]
+                    spline._knots[i],
+                    spline._nextHandlers[i],
+                    spline._previousHandlers[i + 1],
+                    spline._knots[i + 1]
                 );
                 if (r.length) {
                     mod = this._normalize(normals[1]);
@@ -243,10 +243,10 @@ var Flow = exports.Flow = Montage.create(Component, {
                             planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
                         ],
                         normals[1],
-                        spline.vectors[0 + i * 3],
-                        spline.vectors[1 + i * 3],
-                        spline.vectors[2 + i * 3],
-                        spline.vectors[3 + i * 3]
+                        spline._knots[i],
+                        spline._nextHandlers[i],
+                        spline._previousHandlers[i + 1],
+                        spline._knots[i + 1]
                     );
                     if (r2.length) {
                         tmp = this._segmentsIntersection(r, r2);
@@ -259,10 +259,10 @@ var Flow = exports.Flow = Montage.create(Component, {
                                     planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
                                 ],
                                 normals[2],
-                                spline.vectors[0 + i * 3],
-                                spline.vectors[1 + i * 3],
-                                spline.vectors[2 + i * 3],
-                                spline.vectors[3 + i * 3]
+                                spline._knots[i],
+                                spline._nextHandlers[i],
+                                spline._previousHandlers[i + 1],
+                                spline._knots[i + 1]
                             );
                             tmp = this._segmentsIntersection(r, tmp);
                             if (tmp.length) {
@@ -274,10 +274,10 @@ var Flow = exports.Flow = Montage.create(Component, {
                                         planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
                                     ],
                                     normals[3],
-                                    spline.vectors[0 + i * 3],
-                                    spline.vectors[1 + i * 3],
-                                    spline.vectors[2 + i * 3],
-                                    spline.vectors[3 + i * 3]
+                                    spline._knots[i],
+                                    spline._nextHandlers[i],
+                                    spline._previousHandlers[i + 1],
+                                    spline._knots[i + 1]
                                 );
                                 tmp = this._segmentsIntersection(r, tmp);
                                 for (j = 0; j < tmp.length; j++) {
@@ -302,69 +302,6 @@ var Flow = exports.Flow = Montage.create(Component, {
             return out;
         }
     },
-
-/*    _computeVisibleElements: { // TODO: make it a loop
-        enumerable: false,
-        value: function () {
-            var spline = this._splinePath,
-                splineLength = spline.knotsLength - 1,
-                i, j;
-
-            var planeOrigin = this.cameraPosition,
-                normals = this._computeFrustumNormals(),
-                planeNormal1 = normals[0],
-                planeNormal2 = normals[1],
-                r, r2, r3 = [], tmp;
-
-            for (i = 0; i < splineLength; i++) {
-                r = spline.directedPlaneBezierIntersection(planeOrigin, normals[0],
-                    spline.vectors[0 + i * 3],
-                    spline.vectors[1 + i * 3],
-                    spline.vectors[2 + i * 3],
-                    spline.vectors[3 + i * 3]
-                );
-                if (r.length) {
-                    r2 = spline.directedPlaneBezierIntersection(
-                        planeOrigin,
-                        normals[1],
-                        spline.vectors[0 + i * 3],
-                        spline.vectors[1 + i * 3],
-                        spline.vectors[2 + i * 3],
-                        spline.vectors[3 + i * 3]
-                    );
-                    if (r2.length) {
-                        tmp = this._segmentsIntersection(r, r2);
-                        if (tmp.length) {
-                            r = spline.directedPlaneBezierIntersection(
-                                planeOrigin,
-                                normals[2],
-                                spline.vectors[0 + i * 3],
-                                spline.vectors[1 + i * 3],
-                                spline.vectors[2 + i * 3],
-                                spline.vectors[3 + i * 3]
-                            );
-                            tmp = this._segmentsIntersection(r, tmp);
-                            if (tmp.length) {
-                                r = spline.directedPlaneBezierIntersection(
-                                    planeOrigin,
-                                    normals[3],
-                                    spline.vectors[0 + i * 3],
-                                    spline.vectors[1 + i * 3],
-                                    spline.vectors[2 + i * 3],
-                                    spline.vectors[3 + i * 3]
-                                );
-                                tmp = this._segmentsIntersection(r, tmp);
-                                for (j = 0; j < tmp.length; j++) {
-                                    r3.push([i, tmp[j][0], tmp[j][1]]);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            return r3;
-        }
-    },*/
 
     prepareForDraw: {
         enumerable: false,

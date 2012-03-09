@@ -9,6 +9,24 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Flow Spline Editor</title>
     <script src="../../../../montage.js" data-package="."></script>
+    <!--
+            "nearest": {
+                "module": "montage/ui/nearest-neighbor-component-search",
+                "name": "NearestNeighborComponentSearch",
+                "bindings": {
+                    "componentList": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "_repetitionComponents",
+                        "oneway": true
+                    },
+                    "pointerPosition": {
+                        "boundObject": {"@": "scroll"},
+                        "boundObjectPropertyPath": "pointerStartEventPosition",
+                        "oneway": true
+                    }
+                }
+            },
+    -->
     <script type="text/montage-serialization">
         {
             "owner": {
@@ -19,7 +37,8 @@
                 "module": "spline-editor.reel",
                 "name": "SplineEditor",
                 "properties": {
-                    "element": {"#": "spline-editor"}
+                    "element": {"#": "spline-editor"},
+                    "flow": {"@": "flow"}
                 },
                 "bindings": {
                     "cameraPosition": {
@@ -46,27 +65,12 @@
                 "properties": {
                     "element": {"#": "flow"},
                     "objects": [
-                        "We win together",
-                        "A long text here that should occupy several lines in the example. Phasellus vulputate, diam in luctus fringilla, justo odio pharetra purus, eget congue elit felis sed lorem. Praesent aliquam sem vitae neque rutrum eu rhoncus nibh interdum. Vivamus sed ligula quis ipsum aliquam euismod. Sed nec eros nunc, sit amet fringilla lorem. Phasellus ac libero mi, quis sollicitudin arcu. Quisque luctus commodo congue. Maecenas hendrerit neque nisl. Morbi a ultricies felis.",
-                        "We do the right thing",
-                        "We are passionate about what we do",
-                        "We are obsessed with product superiority",
-                        "We make things simple",
-                        "We are customer centric",
-                        "Lorem Ipsum 0",
-                        "Lorem Ipsum 1",
-                        "Lorem Ipsum 2",
-                        "Lorem Ipsum 3",
-                        "Lorem Ipsum 4",
-                        "Lorem Ipsum 5",
-                        "Lorem Ipsum 6",
-                        "Lorem Ipsum 7",
-                        "Lorem Ipsum 8"
+                        0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9
                     ],
                     "scale": 300
                 },
                 "bindings": {
-                    "splineTranslatePath": {
+                    "splinePath": {
                         "boundObject": {"@": "editor"},
                         "boundObjectPropertyPath": "spline"
                     },
@@ -77,11 +81,11 @@
                 }
             },
             "scroll": {
-                "module": "montage/ui/scroll",
-                "name": "Scroll",
+                "module": "montage/ui/composer/translate-composer",
+                "name": "TranslateComposer",
                 "properties": {
                     "component": {"@": "flow"},
-                    "maxScrollX": 100000
+                    "maxTranslateX": 100000
                 },
                 "bindings": {
                     "element": {
@@ -89,25 +93,9 @@
                         "boundObjectPropertyPath": "_element",
                         "oneway": true
                     },
-                    "scrollX": {
+                    "translateX": {
                         "boundObject": {"@": "flow"},
                         "boundObjectPropertyPath": "origin"
-                    }
-                }
-            },
-            "nearest": {
-                "module": "montage/ui/nearest-neighbor-component-search",
-                "name": "NearestNeighborComponentSearch",
-                "bindings": {
-                    "componentList": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "_repetitionComponents",
-                        "oneway": true
-                    },
-                    "pointerPosition": {
-                        "boundObject": {"@": "scroll"},
-                        "boundObjectPropertyPath": "pointerStartEventPosition",
-                        "oneway": true
                     }
                 }
             },
@@ -141,6 +129,7 @@
             height: 200px;
             background: white;
             -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+            -webkit-transform-origin: 100px 100px 0 !important;
             border-radius: 40px;
             display: none;
         }

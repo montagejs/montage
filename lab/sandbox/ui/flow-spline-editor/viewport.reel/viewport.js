@@ -413,7 +413,7 @@ exports.Viewport = Montage.create(Component, {
     },
 
     cameraColor: {
-        value: "rgba(255, 110, 30, .6)"
+        value: "rgba(255, 110, 30, .5)"
     },
 
     transformVector: {
@@ -456,51 +456,45 @@ exports.Viewport = Montage.create(Component, {
                 var tPos = this.transformVector(this.cameraPosition),
                     tFocus = this.transformVector(this.cameraFocusPoint),
                     angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
-                    yAngle = Math.atan2(this.cameraFocusPoint[0] - this.cameraPosition[0], this.cameraFocusPoint[2] - this.cameraPosition[2]),
-                    x = Math.sin(angle) * 100 / this.scale,
-                    y = Math.cos(angle) * 100 / this.scale,
+                    //yAngle = Math.atan2(this.cameraFocusPoint[0] - this.cameraPosition[0], this.cameraFocusPoint[2] - this.cameraPosition[2]),
+                    x = Math.sin(angle) * 60 / this.scale,
+                    y = Math.cos(angle) * 60 / this.scale,
                     z = y,
                     line = [],
                     i,
                     tmp;
 
-                xr = x * Math.cos(yAngle) + z * Math.sin(yAngle);
-                zr = x * -Math.sin(yAngle) + z * Math.cos(yAngle);
-                tmp = this.rotateVector([x, -x, z]);
-                line[0] = [
-                    this.cameraPosition[0] + tmp[0],
-                    this.cameraPosition[1] + tmp[1],
-                    this.cameraPosition[2] + tmp[2],
-                ];
-                tmp = this.rotateVector([-x, -x, z]);
-                line[1] = [
-                    this.cameraPosition[0] + tmp[0],
-                    this.cameraPosition[1] + tmp[1],
-                    this.cameraPosition[2] + tmp[2],
-                ];
-                tmp = this.rotateVector([x, x, z]);
-                line[2] = [
-                    this.cameraPosition[0] + tmp[0],
-                    this.cameraPosition[1] + tmp[1],
-                    this.cameraPosition[2] + tmp[2],
-                ];
+                for (i = 0; i < 4; i++) {
+                    tmp = this.rotateVector([[x, -x, z], [-x, -x, z], [-x, x, z], [x, x, z]][i]);
+                    line[i] = [this.cameraPosition[0] + tmp[0], this.cameraPosition[1] + tmp[1], this.cameraPosition[2] + tmp[2]];
+                    line[i + 4] = [this.cameraPosition[0] + tmp[0] * 100000, this.cameraPosition[1] + tmp[1] * 100000, this.cameraPosition[2] + tmp[2] * 100000];
+                }
+                /*tmp = this.rotateVector([-x, -x, z]);
+                line[1] = [this.cameraPosition[0] + tmp[0], this.cameraPosition[1] + tmp[1], this.cameraPosition[2] + tmp[2]];
                 tmp = this.rotateVector([-x, x, z]);
-                line[3] = [
-                    this.cameraPosition[0] + tmp[0],
-                    this.cameraPosition[1] + tmp[1],
-                    this.cameraPosition[2] + tmp[2],
-                ];
+                line[2] = [this.cameraPosition[0] + tmp[0], this.cameraPosition[1] + tmp[1], this.cameraPosition[2] + tmp[2]];
+                tmp = this.rotateVector([x, x, z]);
+                line[3] = [this.cameraPosition[0] + tmp[0], this.cameraPosition[1] + tmp[1], this.cameraPosition[2] + tmp[2]];*/
                 this._context.save();
                 this._context.fillStyle = this._context.strokeStyle = this.cameraColor;
                 this._context.fillRect((tPos[0] >> 0) - 3, (tPos[1] >> 0) - 3, 7, 7);
                 this._context.fillRect((tFocus[0] >> 0) - 2, (tFocus[1] >> 0) - 2, 5, 5);
                 this._context.beginPath();
-                this._context.moveTo(tPos[0] + .5, tPos[1] + .5);
-                this._context.lineTo(tFocus[0] + .5, tFocus[1] + .5);
-                for (i = 0; i < 4; i++) {
+                this._context.lineWidth = .5;
+                for (i = 0; i < 8; i++) {
                     line[i] = this.transformVector(line[i]);
                     this._context.moveTo(tPos[0] + .5, tPos[1] + .5);
                     this._context.lineTo(line[i][0] + .5, line[i][1] + .5);
+                }
+                this._context.stroke();
+                this._context.beginPath();
+                this._context.lineWidth = 1;
+                this._context.moveTo(tPos[0] + .5, tPos[1] + .5);
+                this._context.lineTo(tFocus[0] + .5, tFocus[1] + .5);
+                for (i = 0; i < 4; i++) {
+                    this._context.moveTo(tPos[0] + .5, tPos[1] + .5);
+                    this._context.lineTo(line[i][0] + .5, line[i][1] + .5);
+                    this._context.lineTo(line[(i + 1) % 4][0] + .5, line[(i + 1) % 4][1] + .5);
                 }
                 this._context.stroke();
                 this._context.restore();
@@ -571,34 +565,40 @@ exports.Viewport = Montage.create(Component, {
         }
     },
 
+    _squaredCloserMinimumDistance: {
+        enumerable: false,
+        value: 100
+    },
+
+    _computeCloserVector: {
+        value: function (vectorsArray, x, y) {
+            var minDist = null,
+                minIndex = null,
+                distance,
+                length = vectorsArray.length,
+                iVector,
+                i;
+
+            for (i = 0; i < length; i++) {
+                iVector = vectorsArray[i];
+                distance = (iVector[0] - x) * (iVector[0] - x) + (iVector[1] - y) * (iVector[1] - y);
+                if ((minDist === null) || (distance < minDist)) {
+                    minIndex = i;
+                    minDist = distance;
+                }
+            }
+            if ((minIndex !== null) && (minDist < this._squaredCloserMinimumDistance)) {
+                return minIndex;
+            } else {
+                return null;
+            }
+        }
+    },
+
     _computeCloserHandler: {
         value: function (spline, x, y) {
-            if (this.spline) {
-                var minDist = null,
-                    minIndex = null,
-                    distance,
-                    length = spline.vectors.length,
-                    iHandler,
-                    i;
-
-                for (i = 1; i < length; i++) {
-                    if (i % 3) {
-                        iHandler = this._transformedSpline.vectors[i];
-                        distance = (iHandler[0] - x) * (iHandler[0] - x) + (iHandler[1] - y) * (iHandler[1] - y);
-                        if ((minDist === null) || (distance < minDist)) {
-                            minIndex = i;
-                            minDist = distance;
-                        }
-                    }
-                }
-                if ((minIndex !== null) && (minDist < 100)) {
-                    this.closerHandler = minIndex;
-                } else {
-                    this.closerHandler = null;
-                }
-            } else {
-                this.closerHandler = null
-            }
+            // TODO: Add previousHandlers
+            this.closerHandler = this._computeCloserVector(this._transformedSpline.nextHandlers, x, y);
         }
     },
 
@@ -726,18 +726,12 @@ exports.Viewport = Montage.create(Component, {
         }
     },
 
-    prepareForActivationEvents: {
-        enumerable: false,
-        value: function () {
-            this._element.addEventListener("mousedown", this, false);
-        }
-    },
-
     prepareForDraw: {
         enumerable: false,
         value: function () {
             this._context = this._element.getContext("2d");
             this._element.addEventListener("mousewheel", this, false);
+            this._element.addEventListener("mousedown", this, false);
             this._element.addEventListener("mouseover", this, false);
         }
     },
@@ -775,7 +769,7 @@ exports.Viewport = Montage.create(Component, {
                 if (this._isHighlightingCloserHandler && (this.closerHandler !== null)) {
                     this._context.save();
                     this._context.fillStyle = this.handlerColor;
-                    this._context.fillRect((this._transformedSpline.vectors[this.closerHandler][0] >> 0) - 4, (this._transformedSpline.vectors[this.closerHandler][1] >> 0) - 4, 9, 9);
+                    this._context.fillRect((this._transformedSpline._nextHandlers[this.closerHandler][0] >> 0) - 4, (this._transformedSpline._nextHandlers[this.closerHandler][1] >> 0) - 4, 9, 9);
                     this._context.restore();
                 }
                 this.drawSpline(this._transformedSpline);

@@ -48,6 +48,12 @@
 .toolbar .weight:after {
     background-position: -140px 0;
 }
+.toolbar .parameters:after {
+    background-position: -180px 0;
+}
+.toolbar .camera:after {
+    background-position: -160px 0;
+}
 .toolbar .zoom-extents:after {
     background-position: -100px 0;
 }

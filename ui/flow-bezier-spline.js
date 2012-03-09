@@ -1,15 +1,39 @@
 var Montage = require("montage").Montage,
     FlowBezierSpline = exports.FlowBezierSpline = Montage.create(Montage, {
 
-    vectors: {
+    knots: {
         get: function () {
-            if (!this._vectors) {
-                this._vectors = [];
+            if (!this._knots) {
+                this._knots = [];
             }
-            return this._vectors;
+            return this._knots;
         },
         set: function (value) {
-            this._vectors = value;
+            this._knots = value;
+        }
+    },
+
+    previousHandlers: {
+        get: function () {
+            if (!this._previousHandlers) {
+                this._previousHandlers = [];
+            }
+            return this._previousHandlers;
+        },
+        set: function (value) {
+            this._previousHandlers = value;
+        }
+    },
+
+    nextHandlers: {
+        get: function () {
+            if (!this._nextHandlers) {
+                this._nextHandlers = [];
+            }
+            return this._nextHandlers;
+        },
+        set: function (value) {
+            this._nextHandlers = value;
         }
     },
 
@@ -30,19 +54,19 @@ var Montage = require("montage").Montage,
     _parameters: {
         value: {
             rotateX: {
-                data: [0, 1, 0],
+                data: [0],
                 units: "rad"
             },
             rotateY: {
-                data: [1, 2, 0],
+                data: [0],
                 units: "rad"
             },
             rotateZ: {
-                data: [3, 0, 0],
+                data: [0],
                 units: "rad"
             },
             opacity: {
-                data: [0, 1, 1, .5],
+                data: [1],
                 units: ""
             }
         }
@@ -63,36 +87,34 @@ var Montage = require("montage").Montage,
 
     knotsLength: {
         get: function () {
-            return Math.floor((this._vectors.length + 2) / 3);
+            return this._knots.length;
         },
         set: function () {}
     },
 
     getKnot: {
         value: function (index) {
-            return this._vectors[index * 3];
+            return this._knots[index];
         }
     },
 
     getPreviousHandler: {
         value: function (index) {
-            return this._vectors[index * 3 - 1];
+            return this._previousHandlers[index];
         }
     },
 
     getNextHandler: {
         value: function (index) {
-            return this._vectors[index * 3 + 1];
+            return this._nextHandlers[index];
         }
     },
 
     removeKnot: {
         value: function (index) {
-            if (index) {
-                this._vectors.splice(index * 3 - 1, 3);
-            } else {
-                this._vectors.splice(0, 3);
-            }
+            this._knots.splice(index, 1);
+            this._nextHandlers.splice(index, 1);
+            this._previousHandlers.splice(index, 1);
             this._densities.splice(index, 1);
         }
     },
@@ -142,10 +164,10 @@ var Montage = require("montage").Montage,
                 }
                 this._previousIndex = i;
                 start = i ? this._densitySummation[i - 1] : 0;
-                p0 = this._vectors[i * 3],
-                p1 = this._vectors[i * 3 + 1],
-                p2 = this._vectors[i * 3 + 2],
-                p3 = this._vectors[i * 3 + 3],
+                p0 = this._knots[i],
+                p1 = this._nextHandlers[i],
+                p2 = this._previousHandlers[i + 1],
+                p3 = this._knots[i + 1],
                 a = this._densities[i],
                 b = this._densities[i + 1],
                 c = a - b;
@@ -177,24 +199,33 @@ var Montage = require("montage").Montage,
         }
     },
 
-    transform: {
-        value: function (matrix) {
-            var spline = Montage.create(FlowBezierSpline),
-                vectors = this.vectors,
-                length = vectors.length,
+    transformVectorArray: {
+        value: function (vectors, matrix) {
+            var length = vectors.length,
+                out = [],
                 iVector,
                 i;
 
-            spline._densities = this._densities;
-            spline._vectors = [];
             for (i = 0; i < length; i++) {
                 iVector = vectors[i];
-                spline._vectors[i] = [
+                out[i] = [
                     iVector[0] * matrix[0] + iVector[1] * matrix[4] + iVector[2] * matrix [8] + matrix[12],
                     iVector[0] * matrix[1] + iVector[1] * matrix[5] + iVector[2] * matrix [9] + matrix[13],
                     iVector[0] * matrix[2] + iVector[1] * matrix[6] + iVector[2] * matrix [10] + matrix[14]
                 ];
             }
+            return out;
+        }
+    },
+
+    transform: {
+        value: function (matrix) {
+            var spline = Montage.create(FlowBezierSpline);
+
+            spline._densities = this._densities;
+            spline._knots = this.transformVectorArray(this.knots, matrix);
+            spline._previousHandlers = this.transformVectorArray(this.previousHandlers, matrix);
+            spline._nextHandlers = this.transformVectorArray(this.nextHandlers, matrix);
             return spline;
         }
     },

@@ -42,10 +42,10 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
         value: function (intersection) {
             var spline = this.flow.splinePath,
                 vectorIndex = intersection[0] * 3,
-                p0 = spline.vectors[vectorIndex],
-                p1 = spline.vectors[vectorIndex + 1],
-                p2 = spline.vectors[vectorIndex + 2],
-                p3 = spline.vectors[vectorIndex + 3],                
+                p0 = spline._knots[vectorIndex],
+                p1 = spline._nextHandlers[vectorIndex],
+                p2 = spline._previousHandlers[vectorIndex + 1],
+                p3 = spline._knots[vectorIndex + 1],
                 tmp;
 
             tmp = spline.deCasteljau(p0, p1, p2, p3, intersection[1])[1];
@@ -325,22 +325,36 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
     start: {
         value: function () {
             if (this.flow.splinePath) {
-                var vectors = [],
+                var knots = [],
+                    next = [],
+                    previous = [],
                     densities = [],
                     i;
 
                 this._context = this.view.getContext("2d");
-                for (i = 0; i < 3 * 30 + 1; i++) {
-                    vectors[i] = [
+                for (i = 0; i < 30; i++) {
+                    knots[i] = [
+                        Math.random() * 500,
+                        250,
+                        Math.random() * 500
+                    ];
+                    next[i] = [
+                        Math.random() * 500,
+                        250,
+                        Math.random() * 500
+                    ];
+                    previous[i] = [
                         Math.random() * 500,
                         250,
                         Math.random() * 500
                     ];
                 }
-                for (i = 0; i < 30 + 1; i++) {
+                for (i = 0; i < 30; i++) {
                     densities[i] = 5;
                 }
-                this.flow.splinePath.vectors = vectors;
+                this.flow.splinePath.knots = knots;
+                this.flow.splinePath.previousHandlers = previous;
+                this.flow.splinePath.nextHandlers = next;
                 this.flow.splinePath.densities = densities;
                 this.flow.splinePath._computeDensitySummation();
                 this.draw();

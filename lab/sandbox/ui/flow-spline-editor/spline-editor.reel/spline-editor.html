@@ -17,7 +17,8 @@
                     "element": {"#": "spline-editor"},
                     "topView": {"@": "topView"},
                     "frontView": {"@": "frontView"},
-                    "toolbar": {"@": "toolbar"}
+                    "toolbar": {"@": "toolbar"},
+                    "parametersEditor": {"#": "parameters-editor"}
                 },
                 "bindings": {
                     "selectedTool": {
@@ -79,10 +80,6 @@
                     "closerHandler": {
                         "boundObject": {"@": "frontView"},
                         "boundObjectPropertyPath": "closerHandler"
-                    },
-                    "_isDragging": {
-                        "boundObject": {"@": "frontView"},
-                        "boundObjectPropertyPath": "_isDragging"
                     }
                 }
             },
@@ -139,6 +136,7 @@
         <div id="top-view" class="top-view view"></div>
         <div id="front-view" class="front-view view"></div>
         <div id="toolbar" class="toolbar"></div>
+        <textarea id="parameters-editor" class="parameters-editor"></textarea>
     </div>
 </body>
 </html>
