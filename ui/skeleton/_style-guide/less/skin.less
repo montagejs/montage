@@ -31,7 +31,8 @@
 /* Button / Select ------------------------------- */
 .skin button,
 .skin select.skeleton,
-.skin .skeleton-toggle-thumb {
+.skin .skeleton-toggle-thumb,
+.skin .skeleton-tabs > li {
     color: #fff;
     font-weight: bold;
     border-color: desaturate(@color, 50%);
@@ -44,6 +45,12 @@
     background: url(../assets/img/select-skin.png) no-repeat right center,     -ms-linear-gradient(top, lighten(@color, 20%), @color );
     background: url(../assets/img/select-skin.png) no-repeat right center,      -o-linear-gradient(top, lighten(@color, 20%), @color );
     background: url(../assets/img/select-skin.png) no-repeat right center,         linear-gradient(top, lighten(@color, 20%), @color );
+}
+
+/* Toggle ------------------------------- */
+.skin .skeleton-toggle {
+    background: hsl(0,0%,80%);
+    box-shadow: inset 0 1px 3px hsla(0,0%,0%,.1), 0 1px 1px hsla(0,0%,100%,.3);
 }
 
 
@@ -84,3 +91,14 @@
     background-repeat: no-repeat;
     background-position: -75px center;
 }
+
+/* Tabs ------------------------------- */
+.skin .skeleton-tabs > li {
+    text-shadow: 0 1px 0 hsla(0,0%,0%,.2);
+}
+.skin .skeleton-tabs > li.selected {
+    box-shadow: inset 0 1px 0px hsla(0,0%,0%,.4), 0 1px 1px hsla(0,0%,100%,.3);
+    .linear-gradient( darken(desaturate(@color, 10%), 20%), darken(desaturate(@color, 10%), 10%) );   
+}
+
+

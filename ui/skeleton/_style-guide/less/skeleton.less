@@ -192,7 +192,7 @@ select.skeleton {
 }
 
 
-/* Input Text + Password ------------------------------- */
+/* Input Text ------------------------------- */
 input.skeleton[type="text"],
 input.skeleton[type="password"],
 input.skeleton[type="search"] {
@@ -202,6 +202,7 @@ input.skeleton[type="search"] {
     height: @height;
     padding: 6px;
     border: @border;
+    border-radius: @border-radius;
     background-color: @textinput-bg-color;
 }
 
@@ -217,6 +218,7 @@ textarea.skeleton {
     padding: 5px;
     resize: both;
     border: @border;
+    border-radius: @border-radius;
     background-color: @textinput-bg-color;
 }
 
@@ -238,7 +240,7 @@ textarea.skeleton {
     background-color: @textinput-bg-color;
 }
 
-.skeleton-icon-input > input {
+.skeleton-icon-input > input.skeleton {
     width: 150px;
     vertical-align: middle;
     border-radius: 0 @border-radius @border-radius 0;
@@ -246,9 +248,10 @@ textarea.skeleton {
 
 .skeleton-icon-input-button > input.skeleton {
     width: 120px;
-    vertical-align: middle;   
+    vertical-align: middle;
+    border-radius: 0;   
 }
-.skeleton-icon-input-button > button {
+.skeleton-icon-input-button > button.skeleton {
     margin: 0;
     border-left: none;
     border-radius: 0 @border-radius @border-radius 0;
@@ -261,7 +264,7 @@ textarea.skeleton {
     line-height: @heightMobile;   
 }
 .mobile .skeleton-icon-input-button > input.skeleton {
-    height: @heightMobile;   
+    height: @heightMobile;
 }
 .mobile .skeleton-icon-input-button > button {
     margin: 0;
@@ -376,4 +379,39 @@ textarea.skeleton {
     background: hsl(0,0%,85%)         linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
     background-position: -75px center;
 }
+
+/* Tabs ------------------------------- */
+.skeleton-tabs {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+.skeleton-tabs > li {
+    display: inline-block;
+    margin-left: -1px;
+    height: @height;
+    line-height: @height;
+    min-width: @height;
+    padding: 0 round(@height/3);
+    border: @border;
+    background-color: @bg-color;
+}
+
+.skeleton-tabs > li:first-child { border-radius: @border-radius 0 0 @border-radius; }
+.skeleton-tabs > li:last-child {  border-radius: 0 @border-radius @border-radius 0; }
+
+.skeleton-tabs > li.selected {
+    background-color: hsl(0,0%,85%);
+}
+
+.mobile .skeleton-tabs > li {
+    height: @heightMobile;
+    line-height: @heightMobile;
+    min-width: @heightMobile;
+    padding: 0 round(@heightMobile/3);
+}
+.mobile .skeleton-tabs > li:first-child { border-radius: @heightMobile/2 0 0 @heightMobile/2; }
+.mobile .skeleton-tabs > li:last-child {  border-radius: 0 @heightMobile/2 @heightMobile/2 0; }
+
+
 
