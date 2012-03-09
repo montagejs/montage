@@ -208,6 +208,28 @@
                         }
                     }
                 },
+                
+                "radiobutton-accordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "radiobutton-accordion1"}
+                    }
+                },
+                "radiobutton-accordion2": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "radiobutton-accordion2"}
+                    }
+                },
+                "radiobutton-accordion3": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "radiobutton-accordion3"}
+                    }
+                },
 
 
                 "owner": {
@@ -277,12 +299,14 @@
                             </div>
 
                 </div>
-                <ul class="sourcelinks radiobutton1">
-                <li>
-                    <a href="#" onclick="toggle_visibility('.radiobutton1 #html', event);">html</a>
-                    <div class="sourceitem" id="html">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+            </div>    
+                
+            <section>   
+                <ul id="radiobutton-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;p class="span8"&gt;What is your favorite food?&lt;/p&gt;
 
 &lt;div class="span4"&gt;
@@ -301,14 +325,13 @@
         &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="pear" id="fruit-pear"&gt; Pear&lt;/label&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-</pre>
-                    </div><!-- / -->
-                </li>
-                <li>
-                    <a href="#" onclick="toggle_visibility('.radiobutton1 #serialization', event);">serialization</a>
-                    <div class="sourceitem" id="serialization">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "veg": {
         "module": "montage/ui/radio-button.reel",
@@ -406,11 +429,12 @@
         ]
     }
 }
-</pre>
-                    </div><!-- / -->
-                </li>
-            </ul>
-            </div>
+                        </pre>
+
+                       </div>
+                   </li>
+                </ul>
+            </section> 
 
 
 
@@ -432,14 +456,17 @@
 
                 <div>
                     <h5>You selected: </h5>
-                    <span id="selected-answer" ></span>
+                    <div id="selected-answer" ></div>
                 </div>
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.radiobutton2 #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                
+            </div>
+            
+            <section>
+                <ul id="radiobutton-accordion2" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;h5&gt;Overall, how satisfied are you with our product?&lt;/h5&gt;
 
 &lt;table id="list2" class="bordered-table" style="width: auto;"&gt;
@@ -455,14 +482,13 @@
     &lt;h5&gt;You selected: &lt;/h5&gt;
     &lt;div id="selected-answer" &gt;&lt;/div&gt;
 &lt;/div&gt;
-</pre>
-                        </div><!-- / -->
-                    </li>
-                <li>
-                    <a href="#" onclick="toggle_visibility('.radiobutton2 #serialization', event);">serialization</a>
-                    <div class="sourceitem" id="serialization">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "answers-controller": {
         "name": "ArrayController",
@@ -553,15 +579,15 @@
         }
     }
 }
-</pre>
-                    </div><!-- / -->
-                </li>
-                </ul>
-            </div>
+                        </pre>
 
-        <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/radio-button-example.reel" target="_blank">View source on GitHub</a>
-        </section>
+                       </div>
+                   </li>
+                </ul>
+                
+            </section>
+
+        
 
        <h4>Listener example</h4>
 
@@ -569,24 +595,25 @@
             <div class="app">
                 <label class="radio inline"><input type="radio" id="listen-on" name="on-off"> On</label>
                 <label class="radio inline"><input type="radio" id="listen-off" name="on-off"> Off</label>
-            </div><!-- / -->
-
-            <ul class="sourcelinks radiobutton3">
-                <li>
-                    <a href="#" onclick="toggle_visibility('.radiobutton3 #html', event);">html</a>
-                    <div class="sourceitem" id="html">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+            </div>
+        </div>
+        
+        <section>
+            <ul id="radiobutton-accordion3" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;label&gt;&lt;input type="radio" id="listen-on" name="on-off"&gt; On&lt;/label&gt;
 &lt;label&gt;&lt;input type="radio" id="listen-off" name="on-off"&gt; Off&lt;/label&gt;</pre>
-</pre>
-                    </div><!-- / -->
-                </li>
-                <li>
-                    <a href="#" onclick="toggle_visibility('.radiobutton3 #serialization', event);">serialization</a>
-                    <div class="sourceitem" id="serialization">
-                        <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                    <pre class="prettyprint">
+
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "log-listener": {
         "value": [
@@ -621,14 +648,20 @@
         }
     }
 }
-</pre>
-                    </div><!-- / -->
-                </li>
+                    </pre>
+
+                   </div>
+               </li>
             </ul>
-            </div>
+        </section>
 
             <div id="logger"></div>
 
         </div>
+        
+        
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/radio-button-example.reel" target="_blank">View source on GitHub</a>
+        </section>
     </body>
 </html>

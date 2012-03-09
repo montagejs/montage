@@ -226,6 +226,30 @@
             }
         }
     },
+    
+    
+    "repetition-accordion1": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "repetition-accordion1"}
+        }
+    },
+    "repetition-accordion2": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "repetition-accordion2"}
+        }
+    },
+    "repetition-accordion3": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "repetition-accordion3"}
+        }
+    },
+    
 
     "owner": {
         "module": "components/image-example.reel",
@@ -306,27 +330,28 @@
                     <img id="thumb" class="thumb" />
                     <h3 id="title" class="title"></h3>
                 </div>
-            </div>
-         <ul class="sourcelinks" >
-            <li>
-                <a href="#" onclick="toggle_visibility('.simple #html', event);">html</a>
-                <div class="sourceitem" id="html">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+            </div>            
+        </div>
+        
+        <section>
+            <ul id="repetition-accordion1" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;div class="repetition" id="repetition"&gt;
     &lt;div class="item"&gt;
         &lt;img id="thumb" class="thumb" /&gt;
         &lt;h3 id="title" class="title"&gt;&lt;/h3&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.simple #serialization', event);">serialization</a>
-                <div class="sourceitem" id="serialization">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "places": {
         "name": "ArrayController",
@@ -393,40 +418,45 @@
         }
     }
 }
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.simple #css', event);">css</a>
-                <div class="sourceitem" id="css">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
 .repetition .thumb {
-    width: 96px;
-    height: 96px;
-    border: 5px solid #fff;
+   width: 96px;
+   height: 96px;
+   border: 5px solid #fff;
 
 }
 
 .repetition {
-    width: 400px;
+   width: 400px;
 }
 .repetition .item {
-    border: 1px solid #fff;
+   border: 1px solid #fff;
 }
 .repetition .selected {
-    border: 1px solid #FE4365;
+   border: 1px solid #FE4365;
 }
 
 .repetition .title {
-    display: inline-block;
-    vertical-align: top;
+   display: inline-block;
+   vertical-align: top;
 }
-</pre>
-                </div><!-- / -->
-            </li>
-         </ul>
-        </div>
+
+                       </pre>
+                   </div>
+               </li>
+            </ul>
+            
+        </section>
+        
+        
+        
 
         <h4>Demo: Repetition supporting multiple Selections using checkbox</h4>
 
@@ -452,12 +482,15 @@
                 <h5>Your selections: </h5>
                 <span id="selected-value"  style="width: 400px;"></span>
             </div>
-         <ul class="sourcelinks" >
-            <li>
-                <a href="#" onclick="toggle_visibility('.selection #html', event);">html</a>
-                <div class="sourceitem" id="html">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+        </div>
+        
+        
+        <section>
+            <ul id="repetition-accordion2" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;table id="list1" class="bordered-table"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
@@ -479,14 +512,13 @@
     &lt;h5&gt;Your selections: &lt;/h5&gt;
     &lt;span id="selected-value"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.selection #serialization', event);">serialization</a>
-                <div class="sourceitem" id="serialization">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "list1": {
         "module": "montage/ui/repetition.reel",
@@ -583,51 +615,56 @@
         }
     }
 }
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.selection #js', event);">javascript</a>
-                <div class="sourceitem" id="js">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component;
+   Component = require("montage/ui/component").Component;
 
 exports.RepetitionExample = Montage.create(Component, {
 
-    jsonSelectedItems: {
-        value: null
-    },
+   jsonSelectedItems: {
+       value: null
+   },
 
-    _selectedItems: {value: null},
+   _selectedItems: {value: null},
 
-    selectedItems: {
-        get: function(){ return this._selectedItems; },
-        set: function(v) {
+   selectedItems: {
+       get: function(){ return this._selectedItems; },
+       set: function(v) {
 
-            this._selectedItems = v;
-            this.jsonSelectedItems = JSON.stringify(this._selectedItems||[]);
-            console.log('selected items = ', v);
-        }
-    },
+           this._selectedItems = v;
+           this.jsonSelectedItems = JSON.stringify(this._selectedItems||[]);
+           console.log('selected items = ', v);
+       }
+   },
 });
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.selection #css', event);">css</a>
-                <div class="sourceitem" id="css">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+
+                       </pre>
+                   </div>
+               </li>
+               
+               <li class="accordion-group">
+                      <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                      <div class="accordion-inner montage-hidden">
+                          <pre class="prettyprint" >
 table tr.selected {
-    background-color: #F5D663;
+  background-color: #F5D663;
 }
-</pre>
-                </div><!-- / -->
-            </li>
-         </ul>
-        </div>
+
+                          </pre>
+                      </div>
+                  </li>
+            </ul>
+            
+            
+        </section>
+        
 
 
         <h4>Demo: Repetition supporting single Selection using a Radiobutton</h4>
@@ -650,12 +687,15 @@ table tr.selected {
                 <h5>You selected: </h5>
                 <span id="selected-answer"  style="width: 400px;"></span>
             </div>
-         <ul class="sourcelinks" >
-            <li>
-                <a href="#" onclick="toggle_visibility('.radiobutton #html', event);">html</a>
-                <div class="sourceitem" id="html">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+        </div>
+        
+        <section>
+            
+            <ul id="repetition-accordion3" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;h5&gt;Overall, how satisfied are you with our product?&lt;/h5&gt;
 
 &lt;table id="list2" class="bordered-table" style="width: auto;"&gt;
@@ -671,14 +711,13 @@ table tr.selected {
     &lt;h5&gt;You selected: &lt;/h5&gt;
     &lt;span id="selected-answer"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
-</pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.radiobutton #serialization', event);">serialization</a>
-                <div class="sourceitem" id="serialization">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "answers-controller": {
         "name": "ArrayController",
@@ -768,27 +807,30 @@ table tr.selected {
         }
     }
 }
-            </pre>
-                </div><!-- / -->
-            </li>
-            <li>
-                <a href="#" onclick="toggle_visibility('.radiobutton #js', event);">javascript</a>
-                <div class="sourceitem" id="js">
-                    <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                <pre class="prettyprint">
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component;
+   Component = require("montage/ui/component").Component;
 
 exports.RepetitionExample = Montage.create(Component, {
 
-    selectedAnswer: {value: null},
+   selectedAnswer: {value: null},
 
 });
-</pre>
-                </div><!-- / -->
-            </li>
-         </ul>
-        </div>
+
+                       </pre>
+                   </div>
+               </li>
+            </ul>
+            
+        </section>
+
 
         <section>
             <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/repetition-example.reel" target="_blank">View source on GitHub</a>

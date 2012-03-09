@@ -126,6 +126,14 @@
             "element": {"#": "logger"}
         }
     },
+    
+    "popup-accordion1": {
+           "module": "accordion.reel",
+           "name": "Accordion",
+           "properties": {
+               "element": {"#": "popup-accordion1"}
+           }
+       },
 
     "owner": {
         "module": "components/popup/popup-example.reel",
@@ -238,14 +246,14 @@
                     <img src="images/09-chat-2.png" class="menu action-show-action-sheet"></a>
                 </div>
             </section>
-
-            <!--  Source viewer-->
-            <ul class="sourcelinks">
-                  <li>
-                      <a href="#" onclick="toggle_visibility('.popups #html', event);">html</a>
-                      <div class="sourceitem" id="html">
-                          <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                      <pre class="prettyprint">
+        </div>
+        
+        <section>
+            <ul id="popup-accordion1" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;h5&gt;System Popups&lt;/h5&gt;
 &lt;section&gt;
     &lt;button class="btn large" id="action-show-alert"&gt;Show Alert&lt;/button&gt;
@@ -274,14 +282,13 @@
         &lt;img src="images/09-chat-2.png" class="menu action-show-action-sheet"&gt;&lt;/a&gt;
     &lt;/div&gt;
 &lt;/section&gt;
-</pre>
-                      </div><!-- / -->
-                  </li>
-                  <li>
-                      <a href="#" onclick="toggle_visibility('.popups #serialization', event);">serialization</a>
-                      <div class="sourceitem" id="serialization">
-                          <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                      <pre class="prettyprint">
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
 {
     "owner": {
         "module": "components/popup/popup-example.reel",
@@ -421,59 +428,61 @@
         }
     }
 }
-</pre>
-                      </div><!-- / -->
-                  </li>
-                  <li>
-                      <a href="#" onclick="toggle_visibility('.popups #css', event);">css</a>
-                      <div class="sourceitem" id="css">
-                          <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                      <pre class="prettyprint">
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
+
 #custom-alert-dialog {
-    width: 400px;
-    height: 500px;
+   width: 400px;
+   height: 500px;
 }
 
 
 .menu {
-    display: inline-block;
-    width:32px;
-    height:32px;
-    border-radius:32px;
-    -moz-border-radius:32px;
-    -webkit-border-radius:32px;
-    border:2px solid #ccc;
-    padding: 16px;
-    background:#fff;
-    text-align:center;
-    color:#fff
+   display: inline-block;
+   width:32px;
+   height:32px;
+   border-radius:32px;
+   -moz-border-radius:32px;
+   -webkit-border-radius:32px;
+   border:2px solid #ccc;
+   padding: 16px;
+   background:#fff;
+   text-align:center;
+   color:#fff
 }
 .menu:hover{
-    display: inline-block;
-    width:32px;
-    height:32px;
-    border-radius:32px;
-    -moz-border-radius:32px;
-    -webkit-border-radius:32px;
-    border:2px solid #ccc;
-    padding: 16px;
-    background:#ccc;
-    text-align:center;
-    color:#fff
+   display: inline-block;
+   width:32px;
+   height:32px;
+   border-radius:32px;
+   -moz-border-radius:32px;
+   -webkit-border-radius:32px;
+   border:2px solid #ccc;
+   padding: 16px;
+   background:#ccc;
+   text-align:center;
+   color:#fff
 }
 .menu .nav {
-    padding-top:37px
+   padding-top:37px
 }
 
 .popup-example-root section {
-    margin: 5px 0;
+   margin: 5px 0;
 }
-</pre>
-                      </div><!-- / -->
-                  </li>
+                           
+                       </pre>
+                   </div>
+               </li>
             </ul>
+        </section>
 
-        </div>
 
         <section>
             <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/popup-example.reel" target="_blank">View source on GitHub</a>

@@ -47,6 +47,13 @@
                     "element": {"#": "toggleBouncing"},
                     "checked": true
                 }
+            },
+            "scroller-accordion1": {
+                "module": "accordion.reel",
+                "name": "Accordion",
+                "properties": {
+                    "element": {"#": "scroller-accordion1"}
+                }
             }
         }
         </script>
@@ -78,11 +85,17 @@
             <h4>Example</h4>
                 <p>In the following example</p>
             <div class="demo">
-                    <label for="cb1">Toggle momenutum<input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /></label>
-                    <label for="cb2">Toggle bouncing<input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /></label>
+                    <div>
+                        <label for="cb1"><input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /> Toggle momenutum </label>
+                    </div>
+                    <div>
+                        <label for="cb2"><input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /> Toggle bouncing </label>
+                    </div>
 
                     <div data-montage-id="scroller" class="scrollpanel" >
-                        <p><b>A large paragraph</b> Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        <p><b>A large paragraph</b> 
+                            
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
                         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
                         quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
                         consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
@@ -92,17 +105,34 @@
                         quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
                         consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
                         cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
-                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                        <img src="components/scroller-example.reel/flowers.jpg" alt="The Universe">
-                        <p>Another large paragraph...</p>
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+                        
+                        <img src="images/IMG_3.jpg" alt="The Universe">
+                        
+                        <p>Another large paragraph...
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
                     </div>
-
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.demo #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+            </div>
+            
+            <section>
+                
+                <ul id="scroller-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;label for="cb1"&gt;Toggle momenutum&lt;input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /&gt;&lt;/label&gt;
 &lt;label for="cb2"&gt;Toggle bouncing&lt;input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /&gt;&lt;/label&gt;
 
@@ -121,14 +151,13 @@
     &lt;img src="components/scroller-example.reel/flowers.jpg" alt="The Universe"&gt;
     &lt;p&gt;Another large paragraph...&lt;/p&gt;
 &lt;/div&gt;
-</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.demo #serialization', event);">serialization</a>
-                        <div class="sourceitem" id="serialization">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
 
     "owner": {
@@ -169,27 +198,31 @@
             "checked": true
         }
     }
-}</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.demo #css', event);">css</a>
-                        <div class="sourceitem" id="css">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
-.scrollpanel {
-    height: 400px;
-    width: 500px;
-    margin: auto;
-    -webkit-user-select: none;
-    -moz-user-select: none;
 }
-</pre>
-                        </div><!-- / -->
-                    </li>
-                </ul>
+                            
+                        </pre>
 
-            </div>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+.scrollpanel {
+   height: 400px;
+   width: 500px;
+   margin: auto;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+}
+
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+                
+            </section>
+
 
         </div>
     </body>

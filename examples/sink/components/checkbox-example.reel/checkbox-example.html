@@ -167,6 +167,27 @@
                         }
                     }
                 },
+                "checkbox-accordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "checkbox-accordion1"}
+                    }
+                },
+                "checkbox-accordion2": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "checkbox-accordion2"}
+                    }
+                },
+                "checkbox-accordion3": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "checkbox-accordion3"}
+                    }
+                },
 
 
                 "owner": {
@@ -215,24 +236,26 @@
                     <label class="checkbox inline"><input id="checkbox1" type="checkbox" /> Milk </label>
                     <label class="checkbox inline"><input id="checkbox2" type="checkbox" /> Eggs</label>
                 </form>
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.cb1 #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                
+            </div>
+            
+            <section>
+                <ul id="checkbox-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
     &lt;label class="checkbox inline"&gt;&lt;input id="checkbox1" type="checkbox" /&gt; Milk &lt;/label&gt;
     &lt;label class="checkbox inline"&gt;&lt;input id="checkbox2" type="checkbox" /&gt; Eggs&lt;/label&gt;
 &lt;/form&gt;
-                    </pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.cb1 #serialization', event);">serialization</a>
-                        <div class="sourceitem" id="serialization">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "checkbox1": {
         "module": "montage/ui/checkbox.reel",
@@ -271,37 +294,42 @@
         }
     }
 }
-</pre>
-                        </div><!-- / -->
-                    </li>
+                        </pre>
+
+                       </div>
+                   </li>
                 </ul>
-            </div>
+                
+            </section>
+            
+            
 
                 <h4>Binding the Checkbox to a Button's disabled state</h4>
+                
+                
             <div class="demo cb2">
                 <form class="form-stacked">
                     <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label><br/>
                     <input type="submit" id="continue-button" value="Continue" class="btn" disabled />
                 </form>
-
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.cb2 #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+            </div>
+            <section>
+                <ul id="checkbox-accordion2" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
     &lt;label class="checkbox inline"&gt;&lt;input type="checkbox" id="agree-checkbox"/&gt; I agree to something&lt;/label&gt;&lt;br/&gt;
     &lt;input type="submit" id="continue-button" value="Continue" class="btn" disabled /&gt;
 &lt;/form&gt;
-</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.cb2 #serialization', event);">serialization</a>
-                        <div class="sourceitem" id="serialization">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "agree-checkbox": {
         "module": "montage/ui/checkbox.reel",
@@ -331,41 +359,44 @@
         "name": "InvertConverter"
     }
 }
-                    </pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.cb2 #javascript', event);">javascript</a>
-                        <div class="sourceitem" id="javascript">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+
 var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
 
-    allowPartialConversion: {
-        value: true
-    },
+   allowPartialConversion: {
+       value: true
+   },
 
-    convert: {
-        enumerable: false,
-        value: function(v) {
-            return !v;
-        }
-    },
+   convert: {
+       enumerable: false,
+       value: function(v) {
+           return !v;
+       }
+   },
 
-    revert: {
-        value: function(v) {
-            return !v;
-        }
-    }
+   revert: {
+       value: function(v) {
+           return !v;
+       }
+   }
 });
-</pre>
-                        </div><!-- / -->
-                    </li>
+                           </pre>
+                       </div>
+                   </li>
                 </ul>
+                
+            </section>
 
-            </div>
 
-                <h4>Using Checkbox to select multiple items within a Repetition </h4>
+
+            <h4>Using Checkbox to select multiple items within a Repetition </h4>
             <div class="demo cb3">
                 <table id="list1" class="bordered-table">
                     <thead>
@@ -388,13 +419,14 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
                     <h5>Your selections: </h5>
                     <span id="selected-value"  style="width: 400px;"></span>
                 </div>
-
-                <ul class="sourcelinks">
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.cb3 #html', event);">html</a>
-                        <div class="sourceitem" id="html">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+            </div>
+            
+            <section>
+                <ul id="checkbox-accordion3" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
 &lt;table id="list1" class="bordered-table"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
@@ -416,14 +448,13 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
     &lt;h5&gt;Your selections: &lt;/h5&gt;
     &lt;span id="selected-value"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
-</pre>
-                        </div><!-- / -->
-                    </li>
-                    <li>
-                        <a href="#" onclick="toggle_visibility('.cb3 #serialization', event);">serialization</a>
-                        <div class="sourceitem" id="serialization">
-                            <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
-                        <pre class="prettyprint">
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
 {
     "owner": {
         "module": "components/checkbox-example.reel",
@@ -538,12 +569,14 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
     }
 
 }
-                    </pre>
-                        </div><!-- / -->
-                    </li>
-                </ul>
+                        </pre>
 
-            </div>
+                       </div>
+                   </li>
+                </ul>
+            </section>
+
+
             <section>
                 <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/checkbox-example.reel" target="_blank">View source on GitHub</a>
             </section>
