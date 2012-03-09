@@ -9,7 +9,7 @@
 /* Mixins ------------------------------- */
 /* Skin -------------------------------------------------------------- */
 /* Button / Select ------------------------------- */
-.skin button, .skin select.skeleton {
+.skin button, .skin select.skeleton, .skin .skeleton-toggle-thumb {
   color: #fff;
   font-weight: bold;
   border-color: #407fbf;

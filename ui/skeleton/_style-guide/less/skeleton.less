@@ -88,6 +88,41 @@ button.skeleton > i {
 }
 
 
+/* Toggle ------------------------------- */
+.skeleton-toggle {
+    .init();
+    position: relative;
+    display: inline-block;
+    width: 40px;
+    height: 20px;
+    border-radius: @border-radius;
+    vertical-align: middle;
+    border: @border;
+    background: hsl(0,0%,85%);
+}
+.skeleton-toggle-thumb {
+    .init();
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    margin: -1px;
+    width: 20px;
+    height: inherit;
+    border-radius: inherit;
+    border: @border;
+    background: @bg-color;
+}
+
+.mobile .skeleton-toggle {
+    width: 60px;
+    height: 30px;
+    border-radius: 15px;
+}
+.mobile .skeleton-toggle-thumb {
+    width: 30px;
+}
+
+
 /* Checkbox ------------------------------- */
 input.skeleton[type="checkbox"] {
     .removeAppearance();
