@@ -8,25 +8,33 @@
 /* Montage Skeleton Theme */
 
 /* Colors ------------------------------- */
-@bg-color: hsl(0,0%,95%);
-@textinput-bg-color: hsl(0,0%,100%);
-@border-color: hsl(0,0%,75%);
-@border: 1px solid @border-color;
+@color-input:      hsl(0,0%,100%);
+@color-active:     hsl(0,0%,95%);
+@color-passive:    hsl(0,0%,85%);
+@color-border:     hsl(0,0%,70%);
 
 /* Layout ------------------------------- */
-@height: 30px;
-@heightMobile: 40px;
-@border-radius: 3px;
+@size-s:           12px;
+@size-m:           14px;
+@size-l:           16px;
 
+@size-x:           1em;
+@size-xx:          1.5em;
+@size-xxx:         2em;
+@size-xxxx:        2.5em;
 
-/* Setup ------------------------------- */
+@width:            10em;
+
+@border-radius:    3px;
+@border-radius-m:  @size-l * @size-xx;
+
+@border: 1px solid @color-border;
 
 .removeAppearance() {
     -webkit-appearance: none;
     -moz-appearance: none;
 }
-.init() {
-    outline: none;
+.border-box() {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
@@ -41,24 +49,21 @@
 /* Button ------------------------------- */
 button.skeleton {
     .removeAppearance();
-    .init();
-    height: @height;
-    min-width: @height;
+    .border-box();
+    font-size: @size-s;
+    height: @size-xxxx;
+    min-width: @size-xxxx;
     margin: 0 2px;
-    padding: 0 round(@height/3);
+    padding: 0 1em;
     vertical-align: middle;
     border-radius: @border-radius;
     border: @border;
-    background-color: @bg-color;
+    background-color: @color-active;
 }
 
 .mobile button.skeleton {
-    height: @heightMobile;
-    min-width: @heightMobile;
-    margin: 0 2px;
-    font-size: 1.1em;
-    padding: 0 round(@heightMobile/3);
-    border-radius: round(@heightMobile/2);
+    font-size: @size-l;    
+    border-radius: @border-radius-m;
 }
 
 /* Button + Icon ------------------------------- */
@@ -81,114 +86,115 @@ button.skeleton > i {
 }
 
 .mobile .buttonGroup button.skeleton:first-child {
-    border-radius: 20px 0 0 20px;
+    border-radius: @border-radius-m 0 0 @border-radius-m;
 }
 .mobile .buttonGroup button.skeleton:last-child {
-    border-radius: 0 20px 20px 0;
+    border-radius: 0 @border-radius-m @border-radius-m 0;
 }
 
 
 /* Toggle ------------------------------- */
 .skeleton-toggle {
-    .init();
+    .border-box();
+    font-size: @size-s;
     position: relative;
     display: inline-block;
-    width: 40px;
-    height: 20px;
+    width: @size-xxx * 2;
+    height: @size-xxx;
     border-radius: @border-radius;
     vertical-align: middle;
     border: @border;
-    background: hsl(0,0%,85%);
+    background: @color-passive;
 }
 .skeleton-toggle-thumb {
-    .init();
+    .border-box();
     position: absolute;
     left: 0;
     display: inline-block;
     margin: -1px;
-    width: 20px;
+    width: @size-xxx;
     height: inherit;
     border-radius: inherit;
     border: @border;
-    background: @bg-color;
+    background: @color-active;
 }
 
 .mobile .skeleton-toggle {
-    width: 60px;
-    height: 30px;
-    border-radius: 15px;
-}
-.mobile .skeleton-toggle-thumb {
-    width: 30px;
+    font-size: @size-l;
+    border-radius: @border-radius-m;
 }
 
 
 /* Checkbox ------------------------------- */
 input.skeleton[type="checkbox"] {
     .removeAppearance();
-    .init();
-    width: 20px;
-    height: 20px;
+    .border-box();
+    font-size: @size-s;
+    width: @size-xx;
+    height: @size-xx;
     border-radius: @border-radius;
     vertical-align: middle;
     border: @border;
-    background: @bg-color;
+    background: @color-active;
 }
 input.skeleton[type="checkbox"]:checked {
     background: hsl(0,0%,95%) url(../assets/img/checkbox.png) no-repeat center center;
 }
 
 .mobile input.skeleton[type="checkbox"] {
-    width: 30px;
-    height: 30px;
+    font-size: @size-l;
 }
 
 
 /* Label ------------------------------- */
 label.skeleton {
-    line-height: 20px;
+    font-size: @size-m;
+    line-height: @size-m;
     vertical-align: middle;
 }
+.mobile label.skeleton {
+    font-size: @size-l;
+    font-size: @size-l;
+    vertical-align: middle;
+}
+
 
 
 /* Radio ------------------------------- */
 input.skeleton[type="radio"] {
     .removeAppearance();
-    .init();
-    width: 20px;
-    height: 20px;
-    border-radius: 10px;
+    .border-box();
+    font-size: @size-s;
+    width: @size-xx;
+    height: @size-xx;
+    border-radius: 1em;
     border: @border;
-    background: @bg-color;
+    background: @color-active;
 }
 input.skeleton[type="radio"]:checked {
-    background: hsl(0,0%,95%) url(../assets/img/radio.png) no-repeat center center;
+    background: @color-active url(../assets/img/radio.png) no-repeat center center;
 }
 
 .mobile input.skeleton[type="radio"] {
-    width: 30px;
-    height: 30px;
-    border-radius: 15px;
+    font-size: @size-l;
 }
 
 
 /* Select ------------------------------- */
 select.skeleton {
     .removeAppearance();
-    .init();
-    position: relative;
-    height: @height;
-    padding: 0 20px 0 10px;
+    .border-box();
+    font-size: @size-s;
+    height: @size-xxxx;
+    padding: 0 @size-xxx 0 @size-x;
     border-radius: @border-radius;
     border: @border;
-    background: @bg-color url(../assets/img/select.png) no-repeat right center;
+    background: @color-active url(../assets/img/select.png) no-repeat right center;
 }
 
 .mobile select.skeleton {
-    height: @heightMobile;
-    font-size: 1.1em;
-    padding: 0 30px 0 15px;
-    border-radius: @heightMobile/2 @heightMobile/4 @heightMobile/4 @heightMobile/2;
+    font-size: @size-l;
+    border-radius: @size-xx @size-x @size-x @size-xx;
 }
 
 
@@ -197,186 +203,199 @@ input.skeleton[type="text"],
 input.skeleton[type="password"],
 input.skeleton[type="search"] {
     .removeAppearance();
-    .init();
-    width: 150px;
-    height: @height;
-    padding: 6px;
+    .border-box();
+    font-size: @size-s;
+    width: @width;
+    height: @size-xxxx;
+    padding: 0.5em;
     border: @border;
     border-radius: @border-radius;
-    background-color: @textinput-bg-color;
+    background-color: @color-input;
+}
+
+.mobile input.skeleton[type="text"],
+.mobile input.skeleton[type="password"],
+.mobile input.skeleton[type="search"] {
+    font-size: @size-m;
 }
 
 
 /* Textarea ------------------------------- */
 textarea.skeleton {
     .removeAppearance();
-    .init();
-    width: 150px;
-    min-width: 150px;
-    height: 60px;
-    min-height: 60px;
-    padding: 5px;
-    resize: both;
+    .border-box();
+    font-size: @size-s;
+    width: @width;
+    min-width: @width;
+    padding: 0.5em;
+    resize: vertical;
     border: @border;
     border-radius: @border-radius;
-    background-color: @textinput-bg-color;
+    background-color: @color-input;
+}
+
+.mobile textarea.skeleton {
+    font-size: @size-m;
 }
 
 
 /* Input Combos ------------------------------- */
+.skeleton-icon-input,
+.skeleton-icon-input-button {
+    font-size: @size-s;
+}
+
 .skeleton-icon-input > i,
 .skeleton-icon-input-button > i {
-    .init();
+    .border-box();
+    font-size: inherit;
+    line-height: @size-xxxx;
     display: inline-block;
+    width: @size-xxxx;
+    height: @size-xxxx;
     vertical-align: middle;
-    width: @height;
-    height: @height;
-    color: @border-color;
-    font-size: 1.2em;
-    line-height: @height;
+    color: @color-border;
     border-radius: @border-radius 0 0 @border-radius;
     border: @border;
     border-right: none;
-    background-color: @textinput-bg-color;
+    background-color: @color-input;
 }
 
-.skeleton-icon-input > input.skeleton {
-    width: 150px;
+.skeleton-icon-input > input.skeleton,
+.skeleton-icon-input-button > input.skeleton {
+    font-size: inherit;
+    width: @width - @size-xxxx;
+    height: @size-xxxx;
     vertical-align: middle;
     border-radius: 0 @border-radius @border-radius 0;
 }
 
 .skeleton-icon-input-button > input.skeleton {
-    width: 120px;
-    vertical-align: middle;
-    border-radius: 0;   
+    border-radius: 0;
 }
 .skeleton-icon-input-button > button.skeleton {
+    font-size: inherit;
     margin: 0;
     border-left: none;
     border-radius: 0 @border-radius @border-radius 0;
 }
 
-.mobile .skeleton-icon-input-button > i {
-    width: @heightMobile;
-    height: @heightMobile;
-    font-size: 1.6em;
-    line-height: @heightMobile;   
+.mobile .skeleton-icon-input,
+.mobile .skeleton-icon-input-button {
+    font-size: @size-m;
 }
-.mobile .skeleton-icon-input-button > input.skeleton {
-    height: @heightMobile;
-}
-.mobile .skeleton-icon-input-button > button {
-    margin: 0;
-    border-radius: 0px @heightMobile/2 @heightMobile/2 0px;
-}
+
 
 
 
 /* Number ------------------------------- */
-.skeleton[data-type="number"] {
+.skeleton-input-number {
+    font-size: @size-s;
     position: relative;
     display: inline-block;
-    width: 70px;
-    margin-right: @height;
+    width: @width/2;
+    margin-right: @size-xxxx;
 }
 
-.skeleton[data-type="number"] > input.skeleton {
-    width: 70px;
+.skeleton-input-number > input.skeleton {
+    font-size: inherit;
+    width: @width/2;
     vertical-align: middle;
     border-radius: @border-radius 0 0 @border-radius;
 }
-.skeleton[data-type="number"] > button.skeleton {
+.skeleton-input-number > button.skeleton {
     position: absolute;
     margin: 0;
-    width: round(@height/2);
-    height: round(@height/2);
-    right: -@height;
+    padding: 0;
+    width: @size-xxxx;
+    height: @size-xxxx/2;
+    right: -@size-xxxx;
 }
-.skeleton[data-type="number"] > button.plus {
+.skeleton-input-number > button.plus {
     border-width: 1px 1px 0 0;
     border-radius: 0 @border-radius 0 0;
     top: 0px;
 }
-.skeleton[data-type="number"] > button.minus {
+.skeleton-input-number > button.minus {
     border-width: 1px 1px 1px 0;
     border-radius: 0 0 @border-radius 0;
     bottom: 0px;
 }
 
-.mobile .skeleton[data-type="number"] {
+.mobile .skeleton-input-number {
+    font-size: @size-l;
     width: auto;
     margin: 0;
 }
-.mobile .skeleton[data-type="number"] > input.skeleton {
-    width: 70px;
+.mobile .skeleton-input-number > input.skeleton {
+    font-size: inherit;
     border-radius: 0;
-    font-size: 1.2em;
     text-align: center;
-    height: @heightMobile;
 }
-.mobile .skeleton[data-type="number"] > button.skeleton {
+.mobile .skeleton-input-number > button.skeleton {
     position: static;
-    width: @heightMobile;
-    height: @heightMobile;
+    height: @size-xxxx;
     top: auto;
     right: auto;
 }
-.mobile .skeleton[data-type="number"] > button.plus {
+.mobile .skeleton-input-number > button.plus {
     border-width: 1px 1px 1px 0;
-    border-radius: 0 20px 20px 0;
+    border-radius: 0 @size-xxxx @size-xxxx 0;
 }
-.mobile .skeleton[data-type="number"] > button.minus {
+.mobile .skeleton-input-number > button.minus {
     border-width: 1px 0 1px 1px;
-    border-radius: 20px 0 0 20px;
+    border-radius: @size-xxxx 0 0 @size-xxxx;
 }
 
 
 
 
 /* Range ------------------------------- */
-.skeleton[data-type="range"] {
+.skeleton-range {
     position: relative;
+    font-size: @size-s;
     display: inline-block;
-    width: 150px;
-    height: 4px;
+    width: @width;
+    height: 0.4em;
     border-radius: @border-radius;
     border: @border;
-    background-color: hsl(0,0%,85%);
+    background-color: @color-passive;
 }
 
-.skeleton[data-type="range"] > button.skeleton {
+.skeleton-range > button.skeleton {
     position: absolute;
-    box-sizing: border-box;
+    //.border-box();
+    font-size: inherit;
     padding: 0;
-    margin: -8px -10px;
+    margin: -(@size-xx/2)+0.1em -@size-xx/2;
     min-width: 0;
-    border-radius: 10px;
-    width: 20px;
-    height: 20px;
+    border-radius: @size-xx;
+    width: @size-xx;
+    height: @size-xx;
     left: 50%;
 }
 
-.mobile .skeleton[data-type="range"] > button.skeleton {
-    margin: -13px -15px;
-    border-radius: 15px;
-    width: 30px;
-    height: 30px;
+.mobile .skeleton-range {
+    font-size: @size-l;
 }
 
 
 /* Progress ------------------------------- */
-.skeleton[data-type="progress"] {
+.skeleton-progress {
+    font-size: @size-s;
     display: inline-block;
-    width: 150px;
+    width: @width;
     height: 10px;
     border-radius: @border-radius;
     border: @border;
-    background: hsl(0,0%,85%) -webkit-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
-    background: hsl(0,0%,85%)    -moz-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
-    background: hsl(0,0%,85%)     -ms-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
-    background: hsl(0,0%,85%)      -o-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
-    background: hsl(0,0%,85%)         linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
-    background-position: -75px center;
+    background: @color-passive -webkit-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background: @color-passive    -moz-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background: @color-passive     -ms-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background: @color-passive      -o-linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background: @color-passive         linear-gradient(45deg, hsl(0,0%,95%), hsl(0,0%,95%) ) no-repeat center center;
+    background-position: -@width/2 center;
 }
 
+.mobile .skeleton-progress {
+    font-size: @size-l;
+}
