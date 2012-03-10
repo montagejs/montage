@@ -229,6 +229,12 @@ textarea.skeleton {
 .mobile .skeleton-icon-input, .mobile .skeleton-icon-input-button {
   font-size: 14px;
 }
+.mobile .skeleton-icon-input-button > i {
+  border-radius: 24px 0 0 24px;
+}
+.mobile .skeleton-icon-input-button > button.skeleton {
+  border-radius: 0 24px 24px 0;
+}
 /* Number ------------------------------- */
 .skeleton-input-number {
   font-size: 12px;
