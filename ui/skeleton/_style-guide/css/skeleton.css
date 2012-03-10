@@ -11,6 +11,7 @@
 button.skeleton {
   -webkit-appearance: none;
   -moz-appearance: none;
+  outline: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -87,6 +88,7 @@ button.skeleton > i {
 input.skeleton[type="checkbox"] {
   -webkit-appearance: none;
   -moz-appearance: none;
+  outline: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -119,6 +121,7 @@ label.skeleton {
 input.skeleton[type="radio"] {
   -webkit-appearance: none;
   -moz-appearance: none;
+  outline: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -139,6 +142,7 @@ input.skeleton[type="radio"]:checked {
 select.skeleton {
   -webkit-appearance: none;
   -moz-appearance: none;
+  outline: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -157,6 +161,7 @@ select.skeleton {
 input.skeleton[type="text"], input.skeleton[type="password"], input.skeleton[type="search"] {
   -webkit-appearance: none;
   -moz-appearance: none;
+  outline: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -175,6 +180,7 @@ input.skeleton[type="text"], input.skeleton[type="password"], input.skeleton[typ
 textarea.skeleton {
   -webkit-appearance: none;
   -moz-appearance: none;
+  outline: none;
   -webkit-box-sizing: border-box;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
