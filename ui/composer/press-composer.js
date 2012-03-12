@@ -165,7 +165,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
             while (target !== this._element && target && target.parentNode) {
                 target = target.parentNode;
             }
-            isTarget = target === this.component.element;
+            isTarget = target === this._element;
 
             if (isSurrendered && event.type === "click") {
                 // Pointer surrendered, so prevent the default action
