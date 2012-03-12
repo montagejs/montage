@@ -142,7 +142,7 @@
         }
     },
 
-    "selected-value": {
+    "selected_value": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -156,7 +156,7 @@
         }
     },
 
-    "answers-controller": {
+    "answers_controller": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
         "properties": {
@@ -180,11 +180,11 @@
                 "#": "list2-rows"
             },
             "isSelectionEnabled": false,
-            "contentController": {"@": "answers-controller"}
+            "contentController": {"@": "answers_controller"}
         }
     },
 
-    "answer-selection": {
+    "answer_selection": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -198,7 +198,7 @@
         }
     },
 
-    "answer-text": {
+    "answer_text": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -213,7 +213,7 @@
         }
     },
 
-    "selected-answer": {
+    "selected_answer": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -226,30 +226,30 @@
             }
         }
     },
-    
-    
-    "repetition-accordion1": {
+
+
+    "repetition_accordion1": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
             "element": {"#": "repetition-accordion1"}
         }
     },
-    "repetition-accordion2": {
+    "repetition_accordion2": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
             "element": {"#": "repetition-accordion2"}
         }
     },
-    "repetition-accordion3": {
+    "repetition_accordion3": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
             "element": {"#": "repetition-accordion3"}
         }
     },
-    
+
 
     "owner": {
         "module": "components/image-example.reel",
@@ -271,7 +271,7 @@
                 "boundObjectPropertyPath": "selectedObjects"
             },
             "selectedAnswer": {
-                "boundObject": {"@": "answers-controller"},
+                "boundObject": {"@": "answers_controller"},
                 "boundObjectPropertyPath": "selectedObjects.0"
             }
         }
@@ -330,9 +330,9 @@
                     <img id="thumb" class="thumb" />
                     <h3 id="title" class="title"></h3>
                 </div>
-            </div>            
+            </div>
         </div>
-        
+
         <section>
             <ul id="repetition-accordion1" class="accordion">
                <li class="accordion-group">
@@ -452,11 +452,11 @@
                    </div>
                </li>
             </ul>
-            
+
         </section>
-        
-        
-        
+
+
+
 
         <h4>Demo: Repetition supporting multiple Selections using checkbox</h4>
 
@@ -483,8 +483,8 @@
                 <span id="selected-value"  style="width: 400px;"></span>
             </div>
         </div>
-        
-        
+
+
         <section>
             <ul id="repetition-accordion2" class="accordion">
                <li class="accordion-group">
@@ -583,7 +583,7 @@
         }
     },
 
-    "selected-value": {
+    "selected_value": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -648,7 +648,7 @@ exports.RepetitionExample = Montage.create(Component, {
                        </pre>
                    </div>
                </li>
-               
+
                <li class="accordion-group">
                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
                       <div class="accordion-inner montage-hidden">
@@ -661,10 +661,10 @@ table tr.selected {
                       </div>
                   </li>
             </ul>
-            
-            
+
+
         </section>
-        
+
 
 
         <h4>Demo: Repetition supporting single Selection using a Radiobutton</h4>
@@ -688,9 +688,9 @@ table tr.selected {
                 <span id="selected-answer"  style="width: 400px;"></span>
             </div>
         </div>
-        
+
         <section>
-            
+
             <ul id="repetition-accordion3" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
@@ -719,7 +719,7 @@ table tr.selected {
                    <div class="accordion-inner montage-hidden">
                     <pre class="prettyprint" >
 {
-    "answers-controller": {
+    "answers_controller": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
         "properties": {
@@ -743,11 +743,11 @@ table tr.selected {
                 "#": "list2-rows"
             },
             "isSelectionEnabled": false,
-            "contentController": {"@": "answers-controller"}
+            "contentController": {"@": "answers_controller"}
         }
     },
 
-    "answer-selection": {
+    "answer_selection": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -761,7 +761,7 @@ table tr.selected {
         }
     },
 
-    "answer-text": {
+    "answer_text": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -776,7 +776,7 @@ table tr.selected {
         }
     },
 
-    "selected-answer": {
+    "selected_answer": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -801,7 +801,7 @@ table tr.selected {
         },
         "bindings": {
             "selectedAnswer": {
-                "boundObject": {"@": "answers-controller"},
+                "boundObject": {"@": "answers_controller"},
                 "boundObjectPropertyPath": "selectedObjects.0"
             }
         }
@@ -828,12 +828,12 @@ exports.RepetitionExample = Montage.create(Component, {
                    </div>
                </li>
             </ul>
-            
+
         </section>
 
 
         <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/repetition-example.reel" target="_blank">View source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/repetition-example.reel" target="_blank">View source on GitHub</a>
         </section>
 
 <!--

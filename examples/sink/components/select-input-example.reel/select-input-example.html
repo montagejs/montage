@@ -32,7 +32,7 @@
                             "boundObject": {"@": "dept"},
                             "boundObjectPropertyPath": "contentController.selectedObjects"
                         }
-                    }                   
+                    }
                 },
                 "fname": {
                     "module": "montage/ui/textfield.reel",
@@ -167,13 +167,13 @@
                     "properties": {
                         "justify": "center"
                     }
-                },                
+                },
                 "justify-left": {
                     "module": "montage/ui/toggle-button.reel",
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justify-left"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
@@ -188,7 +188,7 @@
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justify-center"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
@@ -203,7 +203,7 @@
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justify-right"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
@@ -265,12 +265,12 @@
             .select-input-example pre {
                 border: 0;
             }
-            
+
             .select-input-example .justify {
                 width: 40px;
                 padding: 5px;
             }
-            
+
             .select-input-example div.echo {
                 width: 400px;
             }
@@ -327,13 +327,13 @@
                  </form>
 
                  <div id="echo"></div>
-                 
-                 
+
+
             </div>
-            
-            
+
+
                  <section>
-                     
+
                      <ul id="select-accordion1" class="accordion">
                         <li class="accordion-group">
                             <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
@@ -629,27 +629,27 @@ exports.SelectInputExample = Montage.create(Component, {
                             </div>
                         </li>
                      </ul>
-                     
-                 
+
+
             </section>
 
-            
+
             <section>
-                
+
                 <h4>Demo</h4>
-                
+
                 <div class="demo">
-                    
+
                     <p>
                              This example demonstrates two-way binding to the 'value' property of SelectInput. Changing the toggle buttons change the SelectInput's value and changing the SelectInput's selection changes the ToggleButton selection.
                     </p>
-                             
+
                     <div style="height: 40px;">
                         <button id="justify-none" class="btn justify">-</button>
                         <button id="justify-left" class="btn justify">L</button>
                         <button id="justify-center" class="btn justify">C</button>
                         <button id="justify-right" class="btn justify">R</button>
-                    </div>  
+                    </div>
                     <div>
                         <select id="justify-select" class="justify-select">
                                 <option value=""></option>
@@ -657,14 +657,14 @@ exports.SelectInputExample = Montage.create(Component, {
                                 <option value="center">Center</option>
                                 <option value="right">Right</option>
                         </select>
-                        
+
                         <p>
                             Justify selection: <span id="justify-result"></span>
                         </p>
                     </div>
                 </div>
             </section>
-            
+
             <section>
                 <ul id="select-accordion2" class="accordion">
                    <li class="accordion-group">
@@ -718,13 +718,13 @@ Justify selection: &lt;span id="justify-result"&gt;&lt;/span&gt;<br>
     "properties": {
         "justify": "center"
     }
-},                
+},
 "justify-left": {
     "module": "montage/ui/toggle-button.reel",
     "name": "ToggleButton",
     "properties": {
         "element": {"#": "justify-left"},
-        "pressedClass": "success"                        
+        "pressedClass": "success"
     },
     "bindings": {
         "pressed": {
@@ -739,7 +739,7 @@ Justify selection: &lt;span id="justify-result"&gt;&lt;/span&gt;<br>
     "name": "ToggleButton",
     "properties": {
         "element": {"#": "justify-center"},
-        "pressedClass": "success"                        
+        "pressedClass": "success"
     },
     "bindings": {
         "pressed": {
@@ -754,7 +754,7 @@ Justify selection: &lt;span id="justify-result"&gt;&lt;/span&gt;<br>
     "name": "ToggleButton",
     "properties": {
         "element": {"#": "justify-right"},
-        "pressedClass": "success"                        
+        "pressedClass": "success"
     },
     "bindings": {
         "pressed": {
@@ -822,7 +822,7 @@ exports.JustifyConverter = Montage.create(Converter, {
             </section>
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
             </section>
 
 <!--

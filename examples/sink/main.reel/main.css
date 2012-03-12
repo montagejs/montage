@@ -123,12 +123,10 @@ footer {
   overflow: auto;
 }
 
-/*.sourceitem .prettyprint pre {
-  white-space: ;
-  word-wrap: ;
+.accordion-inner pre.prettyprint {
   overflow: auto;
 }
-*/
+
 .sourceitem {
   display:none;
 }
