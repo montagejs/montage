@@ -67,6 +67,25 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         }
     },
 
+    /**
+    Cancel the current press.
+
+    Can be used in a "longpress" event handler to prevent the "press" event
+    being fired.
+    @returns Boolean true if a press was canceled, false if the composer was
+                     already in a unpressed or canceled state.
+    */
+    cancelPress: {
+        value: function() {
+            if (this._state === PressComposer.PRESSED) {
+                this._dispatchPresscancel();
+                this._endInteraction();
+                return true;
+            }
+            return false;
+        }
+    },
+
     UNPRESSED: {
         value: 0
     },
