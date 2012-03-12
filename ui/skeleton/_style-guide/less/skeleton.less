@@ -41,6 +41,26 @@
     box-sizing: border-box;
 }
 
+.states-button() {
+    cursor: pointer;
+    &:hover {
+        background-color: lighten(@color-active, 10%);
+    }
+    &:active {
+        background-color: darken(@color-active, 5%);
+    }
+    &:focus {
+        border-color: darken(@color-border, 20%);
+    }
+}
+.states-text() {
+    &:hover {
+        border-color: lighten(@color-border, 10%);
+    }
+    &:focus {
+        border-color: darken(@color-border, 20%);
+    }
+}
 
 
 
@@ -60,6 +80,7 @@ button.skeleton {
     border-radius: @border-radius;
     border: @border;
     background-color: @color-active;
+    .states-button();
 }
 
 .mobile button.skeleton {
@@ -118,6 +139,7 @@ button.skeleton > i {
     border-radius: inherit;
     border: @border;
     background: @color-active;
+    .states-button();
 }
 
 .mobile .skeleton-toggle {
@@ -137,6 +159,7 @@ input.skeleton[type="checkbox"] {
     vertical-align: middle;
     border: @border;
     background: @color-active;
+    .states-button();
 }
 input.skeleton[type="checkbox"]:checked {
     background: hsl(0,0%,95%) url(../assets/img/checkbox.png) no-repeat center center;
@@ -171,6 +194,7 @@ input.skeleton[type="radio"] {
     border-radius: 1em;
     border: @border;
     background: @color-active;
+    .states-button();
 }
 input.skeleton[type="radio"]:checked {
     background: @color-active url(../assets/img/radio.png) no-repeat center center;
@@ -191,6 +215,7 @@ select.skeleton {
     border-radius: @border-radius;
     border: @border;
     background: @color-active url(../assets/img/select.png) no-repeat right center;
+    .states-button();
 }
 
 .mobile select.skeleton {
@@ -212,6 +237,7 @@ input.skeleton[type="search"] {
     border: @border;
     border-radius: @border-radius;
     background-color: @color-input;
+    .states-text();
 }
 
 .mobile input.skeleton[type="text"],
@@ -233,6 +259,7 @@ textarea.skeleton {
     border: @border;
     border-radius: @border-radius;
     background-color: @color-input;
+    .states-text();
 }
 
 .mobile textarea.skeleton {
@@ -309,6 +336,7 @@ textarea.skeleton {
     width: @width/2;
     vertical-align: middle;
     border-radius: @border-radius 0 0 @border-radius;
+    .states-text();
 }
 .skeleton-input-number > button.skeleton {
     position: absolute;

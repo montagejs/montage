@@ -24,6 +24,16 @@ button.skeleton {
   border-radius: 3px;
   border: 1px solid #b3b3b3;
   background-color: #f2f2f2;
+  cursor: pointer;
+}
+button.skeleton:hover {
+  background-color: #ffffff;
+}
+button.skeleton:active {
+  background-color: #e5e5e5;
+}
+button.skeleton:focus {
+  border-color: #7f7f7f;
 }
 .mobile button.skeleton {
   font-size: 16px;
@@ -79,6 +89,16 @@ button.skeleton > i {
   border-radius: inherit;
   border: 1px solid #b3b3b3;
   background: #f2f2f2;
+  cursor: pointer;
+}
+.skeleton-toggle-thumb:hover {
+  background-color: #ffffff;
+}
+.skeleton-toggle-thumb:active {
+  background-color: #e5e5e5;
+}
+.skeleton-toggle-thumb:focus {
+  border-color: #7f7f7f;
 }
 .mobile .skeleton-toggle {
   font-size: 16px;
@@ -99,6 +119,16 @@ input.skeleton[type="checkbox"] {
   vertical-align: middle;
   border: 1px solid #b3b3b3;
   background: #f2f2f2;
+  cursor: pointer;
+}
+input.skeleton[type="checkbox"]:hover {
+  background-color: #ffffff;
+}
+input.skeleton[type="checkbox"]:active {
+  background-color: #e5e5e5;
+}
+input.skeleton[type="checkbox"]:focus {
+  border-color: #7f7f7f;
 }
 input.skeleton[type="checkbox"]:checked {
   background: #f2f2f2 url(../assets/img/checkbox.png) no-repeat center center;
@@ -131,6 +161,16 @@ input.skeleton[type="radio"] {
   border-radius: 1em;
   border: 1px solid #b3b3b3;
   background: #f2f2f2;
+  cursor: pointer;
+}
+input.skeleton[type="radio"]:hover {
+  background-color: #ffffff;
+}
+input.skeleton[type="radio"]:active {
+  background-color: #e5e5e5;
+}
+input.skeleton[type="radio"]:focus {
+  border-color: #7f7f7f;
 }
 input.skeleton[type="radio"]:checked {
   background: #f2f2f2 url(../assets/img/radio.png) no-repeat center center;
@@ -152,6 +192,16 @@ select.skeleton {
   border-radius: 3px;
   border: 1px solid #b3b3b3;
   background: #f2f2f2 url(../assets/img/select.png) no-repeat right center;
+  cursor: pointer;
+}
+select.skeleton:hover {
+  background-color: #ffffff;
+}
+select.skeleton:active {
+  background-color: #e5e5e5;
+}
+select.skeleton:focus {
+  border-color: #7f7f7f;
 }
 .mobile select.skeleton {
   font-size: 16px;
@@ -173,6 +223,12 @@ input.skeleton[type="text"], input.skeleton[type="password"], input.skeleton[typ
   border-radius: 3px;
   background-color: #ffffff;
 }
+input.skeleton[type="text"]:hover, input.skeleton[type="password"]:hover, input.skeleton[type="search"]:hover {
+  border-color: #cccccc;
+}
+input.skeleton[type="text"]:focus, input.skeleton[type="password"]:focus, input.skeleton[type="search"]:focus {
+  border-color: #7f7f7f;
+}
 .mobile input.skeleton[type="text"], .mobile input.skeleton[type="password"], .mobile input.skeleton[type="search"] {
   font-size: 14px;
 }
@@ -192,6 +248,12 @@ textarea.skeleton {
   border: 1px solid #b3b3b3;
   border-radius: 3px;
   background-color: #ffffff;
+}
+textarea.skeleton:hover {
+  border-color: #cccccc;
+}
+textarea.skeleton:focus {
+  border-color: #7f7f7f;
 }
 .mobile textarea.skeleton {
   font-size: 14px;
@@ -254,6 +316,12 @@ textarea.skeleton {
   width: 5em;
   vertical-align: middle;
   border-radius: 3px 0 0 3px;
+}
+.skeleton-input-number > input.skeleton:hover {
+  border-color: #cccccc;
+}
+.skeleton-input-number > input.skeleton:focus {
+  border-color: #7f7f7f;
 }
 .skeleton-input-number > button.skeleton {
   position: absolute;
