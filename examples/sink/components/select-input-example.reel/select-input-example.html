@@ -32,7 +32,7 @@
                             "boundObject": {"@": "dept"},
                             "boundObjectPropertyPath": "contentController.selectedObjects"
                         }
-                    }                   
+                    }
                 },
                 "fname": {
                     "module": "montage/ui/textfield.reel",
@@ -146,6 +146,7 @@
                         }
                     }
                 },
+
                 "justify-comparator-left": {
                     "module": "components/select-input-example.reel",
                     "name": "JustifyConverter",
@@ -166,13 +167,13 @@
                     "properties": {
                         "justify": "center"
                     }
-                },                
+                },
                 "justify-left": {
                     "module": "montage/ui/toggle-button.reel",
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justify-left"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
@@ -187,7 +188,7 @@
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justify-center"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
@@ -202,7 +203,7 @@
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justify-right"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
@@ -238,6 +239,20 @@
                             "oneway": "true"
                         }
                     }
+                },
+                "select-accordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "select-accordion1"}
+                    }
+                },
+                "select-accordion2": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "select-accordion2"}
+                    }
                 }
             }
         </script>
@@ -250,10 +265,14 @@
             .select-input-example pre {
                 border: 0;
             }
-            
+
             .select-input-example .justify {
                 width: 40px;
                 padding: 5px;
+            }
+
+            .select-input-example div.echo {
+                width: 400px;
             }
         </style>
     </head>
@@ -272,11 +291,11 @@
             </div>
 
             <h4>Demo</h4>
-            <div class="demo">
+
+            <div class="demo select1">
                 <p>
                  An example using SelectInput component in a Form. Make changes to the form by selecting a different Country for instance and click the 'Update' button to see the result.
                  </p>
-
                  <form class="form-stacked">
                      <label for="fname">First Name</label>
                      <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
@@ -307,23 +326,330 @@
                     </div>
                  </form>
 
-                 <pre id="echo"></pre>
+                 <div id="echo"></div>
+
+
             </div>
 
-            
+
+                 <section>
+
+                     <ul id="select-accordion1" class="accordion">
+                        <li class="accordion-group">
+                            <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                            <div class="accordion-inner montage-hidden" >
+                                 <pre class="prettyprint" >
+ &lt;form class="form-stacked"&gt;
+    &lt;label for="fname"&gt;First Name&lt;/label&gt;
+    &lt;input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/&gt;
+    &lt;label for="lname"&gt;Last Name&lt;/label&gt;
+    &lt;input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/&gt;
+
+    &lt;label for="dept"&gt;Department&lt;/label&gt;
+     &lt;select id="dept" required="true" multiple="true" size="3"&gt;
+         &lt;option&gt;Please select a Department&lt;/option&gt;
+     &lt;/select&gt;
+
+    &lt;label for="country"&gt;Country&lt;/label&gt;
+    &lt;select id="country" required&gt;
+        &lt;option value=""&gt;Please select a Country&lt;/option&gt;
+        &lt;option value="USA" selected="true"&gt;United States of America&lt;/option&gt;
+        &lt;option value="INR" &gt;India&lt;/option&gt;
+        &lt;option value="FR"&gt;France&lt;/option&gt;
+        &lt;option value="GER"&gt;Germany&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;label for="state"&gt;State&lt;/label&gt;
+    &lt;select id="state" required="true"&gt;
+        &lt;option&gt;Please select a country...&lt;/option&gt;
+    &lt;/select&gt;
+
+    &lt;div style="margin-top: 10px;"&gt;
+        &lt;button class="btn" id="update"&gt;Update&lt;/button&gt;
+   &lt;/div&gt;
+ &lt;/form&gt;
+                                 </pre>
+                            </div>
+                        </li>
+                        <li class="accordion-group">
+                            <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                            <div class="accordion-inner montage-hidden">
+                             <pre class="prettyprint" >
+{
+ "owner": {
+     "module": "components/select-input-example.reel",
+     "name": "InputTextExample",
+     "properties": {
+         "element": {"#": "select-input-example"},
+         "statesController": {"@": "statesController"},
+         "dept": {"@": "dept"}
+     },
+     "bindings": {
+         "selectedCountry": {
+             "boundObject": {"@": "country"},
+             "boundObjectPropertyPath": "contentController.selectedObjects.0",
+             "oneway": true
+         },
+         "selectedState": {
+             "boundObject": {"@": "state"},
+             "boundObjectPropertyPath": "contentController.selectedObjects.0",
+             "oneway": true
+         },
+         "selectedDepts": {
+             "boundObject": {"@": "dept"},
+             "boundObjectPropertyPath": "contentController.selectedObjects"
+         }
+     }
+ },
+
+ "fname": {
+     "module": "montage/ui/textfield.reel",
+     "name": "Textfield",
+     "properties": {
+         "element": {"#": "fname"}
+     },
+     "bindings": {
+         "value": {
+             "boundObject": {"@": "owner"},
+             "boundObjectPropertyPath": "firstName",
+             "oneway": false
+         },
+         "title": {
+             "boundObject": {"@": "owner"},
+             "boundObjectPropertyPath": "firstName",
+             "oneway": false
+         }
+     }
+ },
+
+ "lname": {
+     "module": "montage/ui/textfield.reel",
+     "name": "Textfield",
+     "properties": {
+         "element": {"#": "lname"}
+     },
+     "bindings": {
+         "value": {
+             "boundObject": {"@": "owner"},
+             "boundObjectPropertyPath": "lastName",
+             "oneway": false
+         }
+     }
+ },
+
+ "dept": {
+     "module": "montage/ui/select-input.reel",
+     "name": "SelectInput",
+     "properties": {
+         "element": {"#": "dept"},
+         "textPropertyPath": "name",
+         "valuePropertyPath": "code"
+     },
+     "bindings": {
+         "content": {
+             "boundObject": {"@": "owner"},
+             "boundObjectPropertyPath": "departments",
+             "oneway": true
+         }
+     }
+ },
+
+
+ "statesController": {
+     "name": "ArrayController",
+     "module": "montage/ui/controller/array-controller",
+     "properties": {
+         "selectObjectsOnAddition": true,
+         "automaticallyOrganizeObjects": true,
+         "content": []
+     }
+ },
+
+ "state": {
+     "module": "montage/ui/select-input.reel",
+     "name": "SelectInput",
+     "properties": {
+         "element": {"#": "state"},
+         "contentController": {"@": "statesController"},
+         "textPropertyPath": "name",
+         "valuePropertyPath": "code"
+     }
+ },
+
+ "country": {
+     "module": "montage/ui/select-input.reel",
+     "name": "SelectInput",
+     "properties": {
+         "element": {"#": "country"}
+     }
+ },
+
+
+ "update": {
+     "module": "montage/ui/button.reel",
+     "name": "Button",
+     "properties": {
+         "element": {"#": "update"},
+         "identifier": "update"
+     },
+     "listeners": [
+         {
+             "type": "action",
+             "listener": {"@": "owner"}
+         }
+     ]
+ },
+
+ "echo": {
+     "module": "montage/ui/dynamic-text.reel",
+     "name": "DynamicText",
+     "properties": {
+         "element": {"#": "echo"}
+     },
+     "bindings": {
+         "value": {
+             "boundObject": {"@": "owner"},
+             "boundObjectPropertyPath": "json",
+             "oneway": "true"
+         }
+     }
+ }
+}
+                             </pre>
+
+                            </div>
+                        </li>
+                        <li class="accordion-group">
+                            <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                            <div class="accordion-inner montage-hidden">
+                                <pre class="prettyprint" >
+
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.SelectInputExample = Montage.create(Component, {
+    json: {value: null},
+
+    firstName: {value: null},
+    lastName: {value: null},
+
+    departments: {
+        value: [
+            {name: 'Please select a Department', code: ''},
+            {name: 'Human Resources', code: 'HRD'},
+            {name: 'Software Engineering', code: 'SWE'},
+            {name: 'Hardware Engineering', code: 'HWE'},
+            {name: 'Finance', code: 'FIN'},
+            {name: 'Information Technology', code: 'IT'}
+        ]
+    },
+
+    dept: {value: null},
+
+    states: {
+        value: {
+            'USA': [
+                {name: 'Arizona', code: 'AZ'},
+                {name: 'Colorado', code: 'CO'},
+                {name: 'California', code: 'CA'},
+                {name: 'New York', code: 'NY'},
+                {name: 'Washington', code: 'WA'}
+            ],
+            'INR': [
+                {name: 'Kerala', code: 'KL'},
+                {name: 'Karnataka', code: 'KA'},
+                {name: 'Tamil Nadu', code: 'TN'},
+                {name: 'Andhra Pradesh', code: 'AP'},
+                {name: 'Goa', code: 'GO'}
+            ]
+        }
+    },
+
+    _selectedCountry: {value: null},
+    selectedCountry: {
+        get: function() {return this._selectedCountry;},
+        set: function(value) {
+            if(value && this._selectedCountry !== value) {
+                this._selectedCountry = value;
+                // update states list
+                var code = this._selectedCountry.value;
+                this.statesController.content = this.states[code];
+                // select the first option in the States dropdown
+                this.statesController.selectedIndexes = [0];
+            }
+        }
+    },
+
+    _selectedState: {value: null},
+    selectedState: {
+        get: function() {return this._selectedState;},
+        set: function(value) {
+            if(this._selectedState !== value) {
+                this._selectedState = value;
+            }
+        }
+    },
+
+    _selectedDepts: {value: null},
+    selectedDepts: {
+        get: function() {return this._selectedDepts;},
+        set: function(value) {
+            this._selectedDepts = (value || []);
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+
+            this.firstName = "John";
+            this.lastName = "FooBar";
+
+            this.dept.contentController.selectedIndexes = [2, 4, 5];
+            // The following code does not trigger the selection. The selection is
+            // managed by the contentController
+            //this.selectedDept = this.departments[3];
+
+        }
+    },
+
+    handleUpdateAction: {
+        value: function(event) {
+            event.preventDefault();
+            this.json = JSON.stringify({
+                firstName: this.firstName,
+                lastName: this.lastName,
+                country: this.selectedCountry,
+                state: this.selectedState,
+                departments: this.selectedDepts
+            });
+        }
+    }
+});
+                                </pre>
+                            </div>
+                        </li>
+                     </ul>
+
+
+            </section>
+
+
             <section>
+
+                <h4>Demo</h4>
+
                 <div class="demo">
-                    
+
                     <p>
                              This example demonstrates two-way binding to the 'value' property of SelectInput. Changing the toggle buttons change the SelectInput's value and changing the SelectInput's selection changes the ToggleButton selection.
                     </p>
-                             
+
                     <div style="height: 40px;">
                         <button id="justify-none" class="btn justify">-</button>
                         <button id="justify-left" class="btn justify">L</button>
                         <button id="justify-center" class="btn justify">C</button>
                         <button id="justify-right" class="btn justify">R</button>
-                    </div>  
+                    </div>
                     <div>
                         <select id="justify-select" class="justify-select">
                                 <option value=""></option>
@@ -331,7 +657,7 @@
                                 <option value="center">Center</option>
                                 <option value="right">Right</option>
                         </select>
-                        
+
                         <p>
                             Justify selection: <span id="justify-result"></span>
                         </p>
@@ -340,9 +666,166 @@
             </section>
 
             <section>
-                <a href="m-js/examples/sink/components/select-input-example.reel" target="_blank">View Demo Source</a>
+                <ul id="select-accordion2" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;div class="demo"&gt;<br>
+&lt;div style="height: 40px;"&gt;<br>
+&lt;button id="justify-none" class="btn justify"&gt;-&lt;/button&gt;<br>
+&lt;button id="justify-left" class="btn justify"&gt;L&lt;/button&gt;<br>
+&lt;button id="justify-center" class="btn justify"&gt;C&lt;/button&gt;<br>
+&lt;button id="justify-right" class="btn justify"&gt;R&lt;/button&gt;<br>
+&lt;/div&gt;<br>
+&lt;div&gt;<br>
+&lt;select id="justify-select" class="justify-select"&gt;<br>
+&lt;option value=""&gt;&lt;/option&gt;<br>
+&lt;option value="left"&gt;Left&lt;/option&gt;<br>
+&lt;option value="center"&gt;Center&lt;/option&gt;<br>
+&lt;option value="right"&gt;Right&lt;/option&gt;<br>
+&lt;/select&gt;<br>
+<br>
+&lt;p&gt;<br>
+Justify selection: &lt;span id="justify-result"&gt;&lt;/span&gt;<br>
+&lt;/p&gt;<br>
+&lt;/div&gt;<br>
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+"justify-comparator-left": {
+    "module": "components/select-input-example.reel",
+    "name": "JustifyConverter",
+    "properties": {
+        "justify": "left"
+    }
+},
+"justify-comparator-right": {
+    "module": "components/select-input-example.reel",
+    "name": "JustifyConverter",
+    "properties": {
+        "justify": "right"
+    }
+},
+"justify-comparator-center": {
+    "module": "components/select-input-example.reel",
+    "name": "JustifyConverter",
+    "properties": {
+        "justify": "center"
+    }
+},
+"justify-left": {
+    "module": "montage/ui/toggle-button.reel",
+    "name": "ToggleButton",
+    "properties": {
+        "element": {"#": "justify-left"},
+        "pressedClass": "success"
+    },
+    "bindings": {
+        "pressed": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "justify",
+            "converter": {"@": "justify-comparator-left"}
+        }
+    }
+},
+"justify-center": {
+    "module": "montage/ui/toggle-button.reel",
+    "name": "ToggleButton",
+    "properties": {
+        "element": {"#": "justify-center"},
+        "pressedClass": "success"
+    },
+    "bindings": {
+        "pressed": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "justify",
+            "converter": {"@": "justify-comparator-center"}
+        }
+    }
+},
+"justify-right": {
+    "module": "montage/ui/toggle-button.reel",
+    "name": "ToggleButton",
+    "properties": {
+        "element": {"#": "justify-right"},
+        "pressedClass": "success"
+    },
+    "bindings": {
+        "pressed": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "justify",
+            "converter": {"@": "justify-comparator-right"}
+        }
+    }
+},
+"justify-select": {
+    "module": "montage/ui/select-input.reel",
+    "name": "SelectInput",
+    "properties": {
+        "element": {"#": "justify-select"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "justify"
+        }
+    }
+},
+"justify-result": {
+    "module": "montage/ui/dynamic-text.reel",
+    "name": "DynamicText",
+    "properties": {
+        "element": {"#": "justify-result"}
+    },
+    "bindings": {
+        "value": {
+            "boundObject": {"@": "owner"},
+            "boundObjectPropertyPath": "justify",
+            "oneway": "true"
+        }
+    }
+},
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+exports.JustifyConverter = Montage.create(Converter, {
+   justify: {value: null},
+
+   convert: {
+       value: function(value) {
+           return (value === this.justify);
+       }
+   },
+
+   revert: {
+       value: function(value) {
+           return (value === true ? this.justify : "");
+       }
+   }
+});
+
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
             </section>
 
+            <section>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
+            </section>
+
+<!--
             <section>
                 <h4>Component Properties</h4>
                 <table>
@@ -399,7 +882,7 @@
                     <a href="" target="_blank">View full Documentation</a>
                 </p>
             </section>
-
+ -->
 
     </body>
 </html>

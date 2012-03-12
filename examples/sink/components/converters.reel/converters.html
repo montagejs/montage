@@ -368,6 +368,34 @@
             "element": {"#": "fahrenheit"},
             "value": "32"
         }
+    },
+    "converters-accordion1": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "converters-accordion1"}
+        }
+    },
+    "converters-accordion2": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "converters-accordion2"}
+        }
+    },
+    "converters-accordion3": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "converters-accordion3"}
+        }
+    },
+    "converters-accordion0": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "converters-accordion0"}
+        }
     }
 }
     </script>
@@ -396,56 +424,311 @@
 <body>
     <div id="main">
         <div class="row">
-            <div class="span8">
+            <div class="span">
                 <h3>Converters</h3>
                 <p>
-                    Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.
+                    Converters are Montage objects that convert or format a value before it's assigned to its destination. A converter object must define two methods: <code>convert()</code> and <code>revert()</code>. These methods are invoked automatically by Montage.
+
+                    <p>There are two ways to use converters. You can assign a converter to the <code>converter</code> property of a DynamicText or Textfield component. When a new text value is assigned to either of these components, the value is first passed through the converter's <code>convert()</code> method, which does the necessary transformation before returning the modified value.</p>
                 </p>
+                <p>You can also configure a data binding to use a converter. The converter object's <code>convert()</code> method is called by the data binding engine before the new value is assigned to the source object. In two-way bindings, the <code>revert()</code> method is called when a new value is assigned back to the bound object property.</p>
             </div>
         </div>
 
-        
+
         <h4>Demo</h4>
 
-        <div class="demo">
-            <h4>String converters</h4>
-            The following examples demonstrate how to use a string converter on a DynamicText field to format its assigned value before being displayed. The value of the input text field (which is controlled by a Montage Textfield object.) This is done by creating a new converter object, and assinging that object to a DynamicText component's <code>converter</code> property.
-            
+        <h4>String converters</h4>
+        <p>String converters can beThe following examples demonstrate how to use a string converter on a DynamicText field to format its assigned value before being displayed. The value of the input text field (which is controlled by a Montage Textfield object.) This is done by creating a new converter object, and assinging that object to a DynamicText component's <code>converter</code> property.
+        </p>
+        <div class="demo string">
             <input type="text" id="textfield1" placeholder="Enter some text here" />
 
             <p> 1) Dynamic text bound to the textfield without any converter<p>
             <div id="text1" class="text example"></div>
-            
+
             <p>2) Dynamic text with an UpperCase converter</p>
             <div id="text2" class="text"></div>
-            
+
             <p>3) Dynamic text with a LowerCase converter</p>
             <div id="text3" class="text"></div>
-            
+
             <textarea id="textarea1" style="width: 400px; height: 100px;">Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget</textarea>
             <p id="text4"></p>
-            
-            
+
+        </div>
+
+        <section>
+
+            <ul id="converters-accordion0" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;input type="text" id="textfield1" placeholder="Enter some text here" /&gt;
+
+&lt;p&gt; 1) Dynamic text bound to the textfield without any converter&lt;p&gt;
+&lt;div id="text1" class="text example"&gt;&lt;/div&gt;
+
+&lt;p&gt;2) Dynamic text with an UpperCase converter&lt;/p&gt;
+&lt;div id="text2" class="text"&gt;&lt;/div&gt;
+
+&lt;p&gt;3) Dynamic text with a LowerCase converter&lt;/p&gt;
+&lt;div id="text3" class="text"&gt;&lt;/div&gt;
+
+&lt;textarea id="textarea1" style="width: 400px; height: 100px;"&gt;Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget&lt;/textarea&gt;
+&lt;p id="text4"&gt;&lt;/p&gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "textfield1": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "value": "Hello World",
+            "element": {"#": "textfield1"}
+        }
+    },
+    "dynamictext6": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Hello World",
+            "element": {"#": "text1"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textfield1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "uppercaseconverter1": {
+        "module": "montage/core/converter/upper-case-converter",
+        "name": "UpperCaseConverter",
+        "properties": {
+
+        }
+    },
+    "dynamictext7": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Hello World",
+            "converter": {"@": "uppercaseconverter1"},
+            "element": {"#": "text2"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textfield1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "lowercaseconverter1": {
+        "module": "montage/core/converter/lower-case-converter",
+        "name": "LowerCaseConverter",
+        "properties": {
+
+        }
+    },
+    "dynamictext8": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Hello World",
+            "converter": {"@": "lowercaseconverter1"},
+            "element": {"#": "text3"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "textfield1"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    },
+    "textarea1": {
+        "module": "montage/ui/textarea.reel",
+        "name": "TextArea",
+        "properties": {
+            "element": {"#": "textarea1"}
+        }
+    },
+    "uppercaseconverter2": {
+        "module": "montage/core/converter/upper-case-converter",
+        "name": "UpperCaseConverter",
+        "properties": {
+
+        }
+    }
+}
+                    </pre>
+
+                   </div>
+               </li>
+
+            </ul>
+
+        </section>
+
+
             <h4>Number to string converters </h4>
+        <div class="demo number">
             <input id="txt-number" type="number" name="txt-number" step="5"  />
-            
+
             <p>Default - Number rounded to 2 decimals</p>
             <div id="num1" class="text"></div>
-            
+
             <p>Number in human readable form (K,M etc). Set property "shorten" to true.</p>
             <div id="num2" class="text"></div>
-            
+
             <p>Number in human readable form with 4 decimals</p>
             <div id="num3" class="text"></div>
-            
+
             <p>Number rounded to nearest integer</p>
             <div id="num4" class="text"></div>
-            
-            
+
+
+        </div>
+
+
+        <section>
+
+            <ul id="converters-accordion1" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;input id="txt-number" type="number" name="txt-number" step="5"  /&gt;
+
+&lt;p&gt;Default - Number rounded to 2 decimals&lt;/p&gt;
+&lt;div id="num1" class="text"&gt;&lt;/div&gt;
+
+&lt;p&gt;Number in human readable form (K,M etc). Set property "shorten" to true.&lt;/p&gt;
+&lt;div id="num2" class="text"&gt;&lt;/div&gt;
+
+&lt;p&gt;Number in human readable form with 4 decimals&lt;/p&gt;
+&lt;div id="num3" class="text"&gt;&lt;/div&gt;
+
+&lt;p&gt;Number rounded to nearest integer&lt;/p&gt;
+&lt;div id="num4" class="text"&gt;&lt;/div&gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "dynamictext1": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "num1"},
+            "converter": {"@": "numberconverter1"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+    "numberconverter2": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "shorten": true,
+            "decimals": 2
+        }
+    },
+    "dynamictext2": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "numberconverter2"},
+            "element": {"#": "num2"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+    "numberconverter3": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "shorten": true,
+            "decimals": 4
+        }
+    },
+    "dynamictext3": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "numberconverter3"},
+            "element": {"#": "num3"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+    "numberconverter4": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "round": true
+        }
+    },
+    "dynamictext4": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "numberconverter4"},
+            "element": {"#": "num4"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputNumber"
+            }
+        }
+    },
+
+    "numberconverter5": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "decimals": 2,
+            "allowPartialConversion": true
+        }
+    }
+}
+                    </pre>
+
+                   </div>
+               </li>
+            </ul>
+
+        </section>
+
+
+
             <h4>Date Converters </h4>
+            <p>Date converters convert a string or number value to a formatted date string. The available format patterns are identical to the ones listed <a target="_new" href="http://www.ruby-doc.org/core/classes/Time.html#M000392">here</a>.</p>
+        <div class="demo date">
             <input id="txt-date" type="text" placeholder="Enter a Date in the mm-dd-yyyy format" />
-            <p>For date format patterns, see: <a target="_new" href="http://www.ruby-doc.org/core/classes/Time.html#M000392">here</a></p>
-            
+
             <div>Default Date.toString()</div>
             <div id="date1" class="text"></div>
 
@@ -459,102 +742,285 @@
 
             <div>Pattern: 'c' ISO-8601 format </div>
             <div id="date5" class="text"></div>
-            
+
         </div>
 
+        <section>
+            <ul id="converters-accordion2" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;input id="txt-date" type="text" placeholder="Enter a Date in the mm-dd-yyyy format" /&gt;
+
+&lt;div&gt;Default Date.toString()&lt;/div&gt;
+&lt;div id="date1" class="text"&gt;&lt;/div&gt;
+
+&lt;div&gt;Format using dd MM pattern&lt;/div&gt;
+&lt;div id="date2" class="text"&gt;&lt;/div&gt;
+&lt;div&gt;Pattern: d M Y H:i&lt;/div&gt;
+&lt;div id="date3" class="text"&gt;&lt;/div&gt;
+
+&lt;div&gt;Pattern: m/d/Y h:i A (eg: 08/20/2001 01:40 PM)&lt;/div&gt;
+&lt;div id="date4" class="text"&gt;&lt;/div&gt;
+
+&lt;div&gt;Pattern: 'c' ISO-8601 format &lt;/div&gt;
+&lt;div id="date5" class="text"&gt;&lt;/div&gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "dateconverter1": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "MM-dd-yyyy"
+        }
+    },
+    "textfield2": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "converter": {"@": "dateconverter1"},
+            "updateOnInput": false,
+            "element": {"#": "txt-date"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dynamictext10": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "date1"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dateconverter2": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "dd MMM"
+        }
+    },
+    "dynamictext11": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "dateconverter2"},
+            "element": {"#": "date2"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dateconverter3": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "dd MMM yyyy hh:mm tt"
+        }
+    },
+    "dynamictext12": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "dateconverter3"},
+            "element": {"#": "date3"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dateconverter4": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "MM/dd/yyyy HH:mm"
+        }
+    },
+    "dynamictext13": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "dateconverter4"},
+            "element": {"#": "date4"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    },
+    "dateconverter5": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "MM-dd-yyyy"
+        }
+    },
+    "dynamictext14": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "converter": {"@": "dateconverter5"},
+            "element": {"#": "date5"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "inputDate"
+            }
+        }
+    }
+}
+                    </pre>
+
+                   </div>
+               </li>
+
+            </ul>
+        </section>
 
 
 
         <h3>Custom converter: Temperature Converter</h3>
-        
-        <p>The following example demonstrates how to create and use a custom converter, in this case to convert from degrees C to degrees F. The custom object extends the base Converter object which defines two methodsThe base Converter class that is extended by specific converter classes. A Converter has two primary convert() and revert().</p>
 
-        <div class="demo">
+        <p>The following example demonstrates how to create and use a custom converter, in this case to convert from degrees C to degrees F. </p>
+
+        <div class="demo temp">
             <section id="converter">
-                <p>Temperature in Celsius</p>
-                <input type="number" name="celsius" id="celsius"/>
+            <p>Temperature in Celsius</p>
+            <input type="number" name="celsius" id="celsius"/>
 
-                <p>Temperature in Fahrenheit</p>
-                    <input type="number" name="fahrenheit" id="fahrenheit" >
+            <p>Temperature in Fahrenheit</p>
+                <input type="number" name="fahrenheit" id="fahrenheit" >
             </section>
+
+
         </div>
-        
+
         <section>
-           <p>1) Implement the custom converter (see components/converters.reel/converters.js in project code). </p>
-<pre class="prettyprint linenums">
+            <ul id="converters-accordion3" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;p&gt;Temperature in Celsius&lt;/p&gt;
+&lt;input type="number" name="celsius" id="celsius"/&gt;
+
+&lt;p&gt;Temperature in Fahrenheit&lt;/p&gt;
+&lt;input type="number" name="fahrenheit" id="fahrenheit" &gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "numberconverter5": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "decimals": 2,
+            "allowPartialConversion": true
+        }
+    },
+    "temp-converter": {
+        "module": "components/converters.reel",
+        "name": "TempConverter",
+        "properties": {
+
+        }
+    },
+    "celsiusTextfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "celsius"},
+            "converter": {"@": "numberconverter5"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "fahrenheitTextfield"},
+                "boundObjectPropertyPath": "value",
+                "converter": {"@": "temp-converter"}
+            }
+        }
+    },
+    "fahrenheitTextfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "fahrenheit"},
+            "value": "32"
+        }
+    }
+}
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
 /* converters.js - Custom converter to convert from Celsius to Fahrenheit and vice-versa. */
 exports.TempConverter = Montage.create(Converter, {
 
-    allowPartialConversion: {
-        value: true
-    },
+   allowPartialConversion: {
+       value: true
+   },
 
-    // convert fahrenheit to celsius (showing our non-metric heritage here)
-    convert: {
-        value: function(value) {
-            return (parseInt(value, 10) - 32) / 1.8;
-        }
-    },
+   // convert fahrenheit to celsius (showing our non-metric heritage here)
+   convert: {
+       value: function(value) {
+           return (parseInt(value, 10) - 32) / 1.8;
+       }
+   },
 
-    // revert celsius to fahrenheit
-    revert: {
-        value: function(value) {
-            return (1.8 * parseInt(value, 10)) + 32;
-        }
-    }
+   // revert celsius to fahrenheit
+   revert: {
+       value: function(value) {
+           return (1.8 * parseInt(value, 10)) + 32;
+       }
+   }
 
 });
-</pre>
 
-           <p> 2) Define the converter in the serialization. </p>
-
-<pre class="prettyprint linenums">
- "temp-converter": {
-     "module": "components/converters.reel",
-     "name": "TempConverter",
-     "properties": {
-
-     }
- },
-</pre>
-
-<p>2) Define the Temperature Converter as part of the Data binding. The "numberconverter1" is used to limit the number of decimals in the Celsius textfield.</p>
-<h6>Serialization</h6>
-<pre class="prettyprint linenums">
- "celsiusTextfield": {
-     "module": "montage/ui/textfield.reel",
-     "name": "Textfield",
-     "properties": {
-         "element": {"#": "celsius"},
-         "converter": {"@": "numberconverter1"}
-     },
-     "bindings": {
-         "value": {
-             "boundObject": {"@": "fahrenheitTextfield"},
-             "boundObjectPropertyPath": "value",
-             "converter": {"@": "temp-converter"}
-         }
-     }
- },
-
- "fahrenheitTextfield": {
-     "module": "montage/ui/textfield.reel",
-     "name": "Textfield",
-     "properties": {
-         "element": {"#": "fahrenheit"},
-         "value": "32"
-     }
- }
-
-</pre>
+                       </pre>
+                   </div>
+               </li>
+            </ul>
 
         </section>
-        
-        
+
+
         <section>
-            <a href="m-js/examples/sink/components/substitution-example.reel" target="_blank">View Demo Source</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/converters.reel" target="_blank">View source on GitHub</a>
         </section>
-        
+<!--
         <section>
             <h4>Converter API</h4>
             <table>
@@ -573,14 +1039,14 @@ exports.TempConverter = Montage.create(Converter, {
                   <td>revert</td>
                   <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
                 </tr>
-                
+
               </tbody>
             </table>
             <p>
                 <a href="" target="_blank">View full Documentation</a>
             </p>
         </section>
-
+ -->
     </div>
 
 </body>

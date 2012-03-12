@@ -116,11 +116,14 @@ exports.SelectInputExample = Montage.create(Component, {
             this.dept.contentController.selectedIndexes = [2, 4, 5];            
             this.justify = "center";
 
+            // invoke pretty-fier
+            prettyPrint();
         }
     },
 
     handleUpdateAction: {
         value: function(event) {
+            event.preventDefault();
             this.json = JSON.stringify({
                 firstName: this.firstName,
                 lastName: this.lastName,

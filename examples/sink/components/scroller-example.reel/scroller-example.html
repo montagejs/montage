@@ -8,381 +8,222 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <script type="text/montage-serialization">
-            {
-                "owner": {
-                    "module": "components/scroller-example.reel",
-                    "name": "ScrollerExample",
-                    "properties": {
-                        "element": {"#": "scroller-example"},
-                        "statesController": {"@": "statesController"},
-                        "dept": {"@": "dept"}
+        {
+
+            "owner": {
+                "prototype": "components/scroller-example.reel",
+                "properties": {
+                    "element": {"#": "scrollview-example"}
+                }
+            },
+
+            "scroller": {
+                "prototype": "montage/ui/scroller.reel",
+                "properties": {
+                    "element": {"#": "scroller"}
+                },
+                "bindings": {
+                    "hasMomentum": {
+                        "boundObject": {"@": "toggleMomentum"},
+                        "boundObjectPropertyPath": "checked"
                     },
-                    "bindings": {
-                        "phone": {
-                            "boundObject": {"@": "phone"},
-                            "boundObjectPropertyPath": "value"
-                        },
-                        "selectedCountry": {
-                            "boundObject": {"@": "country"},
-                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
-                            "oneway": true
-                        },
-                        "selectedState": {
-                            "boundObject": {"@": "state"},
-                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
-                            "oneway": true
-                        },
-                        "selectedDepts": {
-                            "boundObject": {"@": "dept"},
-                            "boundObjectPropertyPath": "contentController.selectedObjects"
-                        }
-                    }
-                },
-
-                "fname": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "fname"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        },
-                        "title": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        }
-                    }
-                },
-
-                "lname": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "lname"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "lastName",
-                            "oneway": false
-                        }
-                    }
-                },
-
-                "email": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "email"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "email",
-                            "oneway": false
-                        }
-                    }
-                },
-
-                "phone": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "phone"}
-                    },
-                    "bindings": {
-
-                        "readonly": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "phoneReadOnly",
-                            "oneway": false
-                        }
-                    }
-                },
-                "edit-phone": {
-                    "module": "montage/ui/button.reel",
-                    "name": "Button",
-                    "properties": {
-                        "element": {"#": "edit-phone"},
-                        "identifier": "editPhone"
-                    },
-                    "listeners": [
-                        {
-                            "type": "action",
-                            "listener": {"@": "owner"}
-                        }
-                    ]
-                },
-
-                "url": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "url"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "url",
-                            "oneway": false
-                        }
-                    }
-                },
-
-                "zip": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "zip"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "zip",
-                            "oneway": false
-                        }
-                    }
-                },
-
-                "dateConverter": {
-                    "module": "montage/core/converter/date-converter",
-                    "name": "DateConverter",
-                    "properties": {
-                        "pattern": "yyyy-MM-dd"
-                    }
-                },
-
-                "dob": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "dob"},
-                        "converter": {"@": "dateConverter"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "dob",
-                            "oneway": false
-                        }
-                    }
-                },
-                "dob-error": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
-                    "properties": {
-                        "element": {"#": "dob-error"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "dob"},
-                            "boundObjectPropertyPath": "errorMessage",
-                            "oneway": "true"
-                        }
-                    }
-                },
-
-                "dept": {
-                    "module": "montage/ui/select-input.reel",
-                    "name": "SelectInput",
-                    "properties": {
-                        "element": {"#": "dept"},
-                        "textPropertyPath": "name",
-                        "valuePropertyPath": "code"
-                    },
-                    "bindings": {
-                        "content": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "departments",
-                            "oneway": true
-                        }
-                    }
-                },
-
-
-                "statesController": {
-                    "name": "ArrayController",
-                    "module": "montage/ui/controller/array-controller",
-                    "properties": {
-                        "selectObjectsOnAddition": true,
-                        "automaticallyOrganizeObjects": true,
-                        "content": []
-                    }
-                },
-
-                "state": {
-                    "module": "montage/ui/select-input.reel",
-                    "name": "SelectInput",
-                    "properties": {
-                        "element": {"#": "state"},
-                        "contentController": {"@": "statesController"},
-                        "textPropertyPath": "name",
-                        "valuePropertyPath": "code"
-                    }
-                },
-
-                "country": {
-                    "module": "montage/ui/select-input.reel",
-                    "name": "SelectInput",
-                    "properties": {
-                        "element": {"#": "country"}
-                    }
-                },
-
-                "invert-converter": {
-                    "module": "components/converters.reel",
-                    "name": "InvertConverter"
-                },
-
-                "agree-checkbox": {
-                    "module": "montage/ui/checkbox.reel",
-                    "name": "Checkbox",
-                    "properties": {
-                        "element": {"#": "agree-checkbox"}
-                    }
-                },
-
-                "update": {
-                    "module": "montage/ui/button.reel",
-                    "name": "Button",
-                    "properties": {
-                        "element": {"#": "update"},
-                        "identifier": "update"
-                    },
-                    "listeners": [
-                        {
-                            "type": "action",
-                            "listener": {"@": "owner"}
-                        }
-                    ],
-                    "bindings": {
-                        "disabled": {
-                            "boundObject": {"@": "agree-checkbox"},
-                            "boundObjectPropertyPath": "checked",
-                            "converter": {"@": "invert-converter"},
-                            "oneway": true
-                        }
-                    }
-                },
-
-                "scroller": {
-                    "module": "montage/ui/scroller.reel",
-                    "name": "Scroller",
-                    "properties": {
-                        "element": {"#": "scroller"}
-                    }
-                },
-
-                "echo": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
-                    "properties": {
-                        "element": {"#": "echo"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "json",
-                            "oneway": "true"
-                        }
+                    "hasBouncing": {
+                        "boundObject": {"@": "toggleBouncing"},
+                        "boundObjectPropertyPath": "checked"
                     }
                 }
+            },
+
+            "toggleMomentum": {
+                "prototype": "montage/ui/checkbox.reel",
+                "properties": {
+                    "element": {"#": "toggleMomentum"},
+                    "checked": true
+                }
+            },
+            "toggleBouncing": {
+                "prototype": "montage/ui/checkbox.reel",
+                "properties": {
+                    "element": {"#": "toggleBouncing"},
+                    "checked": true
+                }
+            },
+            "scroller-accordion1": {
+                "module": "accordion.reel",
+                "name": "Accordion",
+                "properties": {
+                    "element": {"#": "scroller-accordion1"}
+                }
             }
+        }
         </script>
 
         <style>
-            .scroller-example .error {
-                color: #E73525;
-                padding: 2px 0;
-            }
-            .scroller-example pre {
-                border: 0;
+            .scrollpanel {
+                height: 400px;
+                width: 500px;
+                margin: auto;
+                -webkit-user-select: none;
+                -moz-user-select: none;
             }
         </style>
     </head>
     <body>
-        <div id="scroller-example" class="scroller-example">
+        <div id="scrollview-example" class="scrollview-example">
             <div class="row">
-                <div class="span8">
+                <div class="span12">
                     <h3>Scroller</h3>
                     <p>
-                        The Scroller supports scrolling for fixed height components.
+                        The Scroller component provides vertical and horizontal scrolling of fixed height elements. It supports momentum and bounce behaviors that you can control or disable.
                     </p>
-                    <p>
+<!--                     <p>
                         <a href="" target="_blank">View Documentation</a>
                     </p>
-                </div>
+ -->                </div>
             </div>
 
-            <h4>Demo</h4>
+            <h4>Example</h4>
+                <p>In the following example</p>
             <div class="demo">
-                <p>
-                 Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
-                 </p>
+                    <div>
+                        <label for="cb1"><input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /> Toggle momenutum </label>
+                    </div>
+                    <div>
+                        <label for="cb2"><input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /> Toggle bouncing </label>
+                    </div>
 
-                 <div id="scroller" style="height: 300px;">
-                     <form class="form-stacked">
-                         <label for="fname">Text</label>
-                         <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
-                         <label for="lname">Text</label>
-                         <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
-
-                         <label for="pwd1">Password</label>
-                         <input type="password" id="pwd" value="abcdef" />
-
-                         <label for="email1">Email</label>
-                         <input type="email" id="email" value="foo@bar.com" />
-
-                         <label for="url1">URL</label>
-                         <input type="url" id="url" value="http://www.google.com" />
-
-                         <label for="tel1">Phone Number</label>
-                         <input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
-                         <button class="btn" id="edit-phone" type="button">Edit Phone Number</button>
-
-                         <label for="zipcode">US Postal code</label>
-                          <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
-
-                         <label for="date1">Date of Birth</label>
-                         <input type="date" id="dob" value="" name="dob" pattern=""/>
-                         <div id="dob-error" class="error"></div>
-
-                         <label for="dept">Department</label>
-                            <select id="dept" required="true" multiple="true" size="3">
-                                <option>Please select a Department</option>
-                            </select>
-
-                           <label for="country">Country</label>
-                           <select id="country" required>
-                               <option value="">Please select a Country</option>
-                               <option value="USA" selected="true">United States of America</option>
-                               <option value="INR" >India</option>
-                               <option value="FR">France</option>
-                               <option value="GER">Germany</option>
-                           </select>
-
-                           <label for="state">State</label>
-                           <select id="state" required="true">
-                               <option>Please select a country...</option>
-                           </select>
-
-
-
-                         <div style="margin-top: 10px;">
-                             <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label>
-                             <button class="btn" id="update" type="button" disabled>Update</button>
-                         </div>
-                     </form>
-
-                     <pre id="echo"></pre>
-
-                </div>
-
+                    <div data-montage-id="scroller" class="scrollpanel" >
+                        <p><b>A large paragraph</b> 
+                            
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+                        
+                        <img src="images/IMG_3.jpg" alt="The Universe">
+                        
+                        <p>Another large paragraph...
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+                    </div>
             </div>
+            
+            <section>
+                
+                <ul id="scroller-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;label for="cb1"&gt;Toggle momenutum&lt;input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /&gt;&lt;/label&gt;
+&lt;label for="cb2"&gt;Toggle bouncing&lt;input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /&gt;&lt;/label&gt;
+
+&lt;div data-montage-id="scroller" style="height: 400px; width: 500px; margin: auto; -webkit-user-select: none; -moz-user-select: none "&gt;
+    &lt;p&gt;&lt;b&gt;A large paragraph&lt;/b&gt; Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
+    &lt;img src="components/scroller-example.reel/flowers.jpg" alt="The Universe"&gt;
+    &lt;p&gt;Another large paragraph...&lt;/p&gt;
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+
+    "owner": {
+        "prototype": "components/scroller-example.reel",
+        "properties": {
+            "element": {"#": "scrollview-example"}
+        }
+    },
+
+    "scroller": {
+        "prototype": "montage/ui/scroller.reel",
+        "properties": {
+            "element": {"#": "scroller"}
+        },
+        "bindings": {
+            "hasMomentum": {
+                "boundObject": {"@": "toggleMomentum"},
+                "boundObjectPropertyPath": "checked"
+            },
+            "hasBouncing": {
+                "boundObject": {"@": "toggleBouncing"},
+                "boundObjectPropertyPath": "checked"
+            }
+        }
+    },
+
+    "toggleMomentum": {
+        "prototype": "montage/ui/checkbox.reel",
+        "properties": {
+            "element": {"#": "toggleMomentum"},
+            "checked": true
+        }
+    },
+    "toggleBouncing": {
+        "prototype": "montage/ui/checkbox.reel",
+        "properties": {
+            "element": {"#": "toggleBouncing"},
+            "checked": true
+        }
+    }
+}
+                            
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+.scrollpanel {
+   height: 400px;
+   width: 500px;
+   margin: auto;
+   -webkit-user-select: none;
+   -moz-user-select: none;
+}
+
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+                
+            </section>
+
+
+        </div>
     </body>
 </html>
