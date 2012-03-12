@@ -151,7 +151,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
             });
 
             describe("longpress", function() {
-                it("is fired after longpressTimout", function() {
+                it("is fired after longpressTimeout", function() {
                     var listener = testPage.addListener(test.press_composer, null, "longpress");
 
                     if (window.Touch) {
@@ -160,7 +160,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
                     }
 
-                    waits(test.press_composer.longpressTimout);
+                    waits(test.press_composer.longpressTimeout);
                     runs(function() {
                         expect(listener).toHaveBeenCalled();
 
@@ -172,11 +172,32 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                     });
                 });
 
-                describe("longpressTimout", function() {
+                it("isn't fired if the press is released before the timeout", function() {
+                    var longListener = testPage.addListener(test.press_composer, null, "longpress");
+
+                    if (window.Touch) {
+                        testPage.touchEvent({target: test.example.element}, "touchstart");
+                    } else {
+                        testPage.mouseEvent({target: test.example.element}, "mousedown");
+                    }
+
+                    waits(test.press_composer.longpressTimeout - 100);
+                    runs(function() {
+                        expect(longListener).not.toHaveBeenCalled();
+
+                        if (window.Touch) {
+                            testPage.touchEvent({target: test.example.element}, "touchend");
+                        } else {
+                            testPage.mouseEvent({target: test.example.element}, "mouseup");
+                        }
+                    });
+                });
+
+                describe("longpressTimeout", function() {
                     it("can be changed", function() {
                         var listener = testPage.addListener(test.press_composer, null, "longpress");
-                        var timeout = test.press_composer.longpressTimout + 1500;
-                        test.press_composer.longpressTimout += 1500;
+                        var timeout = test.press_composer.longpressTimeout - 500;
+                        test.press_composer.longpressTimeout = timeout;
 
                         if (window.Touch) {
                             testPage.touchEvent({target: test.example.element}, "touchstart");
