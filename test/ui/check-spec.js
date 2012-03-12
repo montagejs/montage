@@ -14,12 +14,8 @@ var testPage = TestPageLoader.queueTest("checktest", function() {
         el = el || component.element;
 
         var listener = testPage.addListener(component, fn);
-
-        testPage.mouseEvent({target: el}, "mousedown");;
-        testPage.mouseEvent({target: el}, "mouseup");;
-        testPage.mouseEvent({target: el}, "click");;
-
-        // Return this so that it can be checked in the calling function.
+        testPage.clickOrTouch({target: el});
+        // Return this so that it can be checked in tha calling function.
         return listener;
     };
     var change = function(el) {

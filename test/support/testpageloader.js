@@ -376,11 +376,12 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             touch.clientX = eventInfo.clientX;
             touch.clientY = eventInfo.clientY;
             touch.target = eventInfo.target;
+            touch.identifier = 500;
 
             simulatedEvent.initEvent(eventName, true, true, doc.defaultView, 1, null, null, null, null, false, false, false, false, 0, null);
             simulatedEvent.touches = [touch];
             simulatedEvent.changedTouches = [touch];
-            eventInfo.target.dispatchEvent(simulatedEvent);
+                eventInfo.target.dispatchEvent(simulatedEvent);
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
                     this.waitForDraw();
