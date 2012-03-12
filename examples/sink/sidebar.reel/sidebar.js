@@ -49,7 +49,7 @@ exports.Sidebar = Montage.create(Component, {
             if(window.Touch) {
                 this.element.addEventListener('touchend', this);
             } else {
-                this.element.addEventListener('mouseup', this);
+                this.element.addEventListener('click', this);
             }
         }
     },
