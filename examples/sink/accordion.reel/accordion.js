@@ -8,7 +8,7 @@ var Montage = require("montage/core/core").Montage,
 
 
 // similar to jquery.closest. Find the closest ancestor of el matching the type
-var findClosestOfType = function(el, type, context) {
+var findClosestOfType = function(el, type, context, clazz) {
 	if(el.tagName.toLowerCase() === type) {
 		return el;
 	}
@@ -16,15 +16,22 @@ var findClosestOfType = function(el, type, context) {
 	while(el) {
 		el = el.parentNode;
 		if(el.tagName && el.tagName.toLowerCase() === type) {
-			found = true;
-			break;
+		    if(clazz) {
+		        if(el.classList.contains(clazz)) {
+		            found = true;
+		            break;
+		        }
+		    } else {
+		        found = true;
+		        break;
+		    }						
 		}
 		if(!el || !el.ownerDocument || el === context || el.nodeType === 11) {
 			break;
 		}
 	}
-	if(found) {
-		return el;
+	if(found) {	   
+	    return el;		
 	}
 	return null;
 
@@ -58,11 +65,18 @@ exports.Accordion = Montage.create(Component, {
             var $li = findClosestOfType(target, 'li', this.element);
 
             if($li) {
-                var a = $li.querySelector('a');
-                if(a) {
-                    var $content = $li.querySelector('div.accordion-inner');
-                    $content.classList.toggle('montage-hidden');                    
-                }
+                var $heading = findClosestOfType(target, 'div', this.element, "accordion-heading");
+                if($heading) {
+                    // user clicked on the header
+                    var a = $li.querySelector('a');
+                    if(a) {
+                        var $content = $li.querySelector('div.accordion-inner');
+                        $content.classList.toggle('montage-hidden');                    
+                    }
+                    
+                } 
+                
+                
             }
         }
     }
