@@ -142,11 +142,11 @@
         }
     },
 
-    "selected-value": {
+    "selectedValue": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "selected-value"}
+            "element": {"#": "selectedValue"}
         },
         "bindings": {
             "value": {
@@ -156,7 +156,7 @@
         }
     },
 
-    "answers-controller": {
+    "answersController": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
         "properties": {
@@ -180,15 +180,15 @@
                 "#": "list2-rows"
             },
             "isSelectionEnabled": false,
-            "contentController": {"@": "answers-controller"}
+            "contentController": {"@": "answersController"}
         }
     },
 
-    "answer-selection": {
+    "answerSelection": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
-            "element": {"#": "answer-selection"}
+            "element": {"#": "answerSelection"}
         },
         "bindings": {
             "checked": {
@@ -198,11 +198,11 @@
         }
     },
 
-    "answer-text": {
+    "answerText": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "answer-text"}
+            "element": {"#": "answerText"}
         },
         "bindings": {
             "value": {
@@ -213,11 +213,11 @@
         }
     },
 
-    "selected-answer": {
+    "selectedAnswer": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "selected-answer"}
+            "element": {"#": "selectedAnswer"}
         },
         "bindings": {
             "value": {
@@ -271,7 +271,7 @@
                 "boundObjectPropertyPath": "selectedObjects"
             },
             "selectedAnswer": {
-                "boundObject": {"@": "answers-controller"},
+                "boundObject": {"@": "answersController"},
                 "boundObjectPropertyPath": "selectedObjects.0"
             }
         }
@@ -480,7 +480,7 @@
 
             <div>
                 <h5>Your selections: </h5>
-                <span id="selected-value"  style="width: 400px;"></span>
+                <span id="selectedValue"  style="width: 400px;"></span>
             </div>
         </div>
         
@@ -510,7 +510,7 @@
 
 &lt;div&gt;
     &lt;h5&gt;Your selections: &lt;/h5&gt;
-    &lt;span id="selected-value"  style="width: 400px;"&gt;&lt;/span&gt;
+    &lt;span id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
                         </pre>
                    </div>
@@ -583,11 +583,11 @@
         }
     },
 
-    "selected-value": {
+    "selectedValue": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "selected-value"}
+            "element": {"#": "selectedValue"}
         },
         "bindings": {
             "value": {
@@ -677,15 +677,15 @@ table tr.selected {
             <table id="list2" class="bordered-table" style="width: auto;">
                 <tbody id="list2-rows">
                     <tr>
-                         <td><input type="radio" id="answer-selection" name="answer-selection" /></td>
-                        <td><span id="answer-text"></span></td>
+                         <td><input type="radio" id="answerSelection" name="answerSelection" /></td>
+                        <td><span id="answerText"></span></td>
                     </tr>
                 </tbody>
             </table>
 
             <div>
                 <h5>You selected: </h5>
-                <span id="selected-answer"  style="width: 400px;"></span>
+                <span id="selectedAnswer"  style="width: 400px;"></span>
             </div>
         </div>
         
@@ -701,15 +701,15 @@ table tr.selected {
 &lt;table id="list2" class="bordered-table" style="width: auto;"&gt;
     &lt;tbody id="list2-rows"&gt;
         &lt;tr&gt;
-             &lt;td&gt;&lt;input type="radio" id="answer-selection" name="answer-selection" /&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;span id="answer-text"&gt;&lt;/span&gt;&lt;/td&gt;
+             &lt;td&gt;&lt;input type="radio" id="answerSelection" name="answerSelection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span id="answerText"&gt;&lt;/span&gt;&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
 
 &lt;div&gt;
     &lt;h5&gt;You selected: &lt;/h5&gt;
-    &lt;span id="selected-answer"  style="width: 400px;"&gt;&lt;/span&gt;
+    &lt;span id="selectedAnswer"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
                         </pre>
                    </div>
@@ -719,7 +719,7 @@ table tr.selected {
                    <div class="accordion-inner montage-hidden">
                     <pre class="prettyprint" >
 {
-    "answers-controller": {
+    "answersController": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
         "properties": {
@@ -743,15 +743,15 @@ table tr.selected {
                 "#": "list2-rows"
             },
             "isSelectionEnabled": false,
-            "contentController": {"@": "answers-controller"}
+            "contentController": {"@": "answersController"}
         }
     },
 
-    "answer-selection": {
+    "answerSelection": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
-            "element": {"#": "answer-selection"}
+            "element": {"#": "answerSelection"}
         },
         "bindings": {
             "checked": {
@@ -761,11 +761,11 @@ table tr.selected {
         }
     },
 
-    "answer-text": {
+    "answerText": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "answer-text"}
+            "element": {"#": "answerText"}
         },
         "bindings": {
             "value": {
@@ -776,11 +776,11 @@ table tr.selected {
         }
     },
 
-    "selected-answer": {
+    "selectedAnswer": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "selected-answer"}
+            "element": {"#": "selectedAnswer"}
         },
         "bindings": {
             "value": {
@@ -801,7 +801,7 @@ table tr.selected {
         },
         "bindings": {
             "selectedAnswer": {
-                "boundObject": {"@": "answers-controller"},
+                "boundObject": {"@": "answersController"},
                 "boundObjectPropertyPath": "selectedObjects.0"
             }
         }
