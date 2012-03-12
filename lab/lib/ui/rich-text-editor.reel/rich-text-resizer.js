@@ -95,8 +95,8 @@ exports.Resizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-text
                     direction = this._draggedElement.id.substring("editor-resizer-".length),
                     info = this._resizerFrameInfo,
                     ratio = info.ratio,
-                    height = frame.clientHeight,
-                    width = frame.clientWidth,
+                    height = parseFloat(frame.style.height, 10),
+                    width = parseFloat(frame.style.width, 10),
                     top = parseFloat(frame.style.top, 10),
                     left = parseFloat(frame.style.left, 10),
                     minSize = 15;
@@ -156,6 +156,9 @@ exports.Resizer = Montage.create(Montage,/** @lends module:"montage/ui/rich-text
 	            }
 
                 if (this._finalizeDrag) {
+                    width = frame.clientWidth;
+                    height = frame.clientHeight;
+
                     this._draggedElement.parentNode.classList.remove("dragged");
                     delete this._finalizeDrag;
                     delete this._resizerFrameInfo;
