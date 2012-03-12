@@ -8,109 +8,109 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <script type="text/montage-serialization">
-        {
-            "owner": {
-                "module": "components/tabs-example.reel",
-                "name": "TabsExample",
-                "properties": {
-                    "element": {"#": "tabs-example"}
-                }
-            },
-            "tabs1-one": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
-                "properties": {
-                    "value": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum.",
-                    "element": {"#": "tabs1-one"}
-                }
-            },
-            "tabs1-two": {
-                "module": "montage/ui/bluemoon/slider.reel",
-                "name": "Slider",
-                "properties": {
-                    "maxValue": 100,
-                    "element": {"#": "tabs1-two"}
-                }
-            },
-            "tabs1-three": {
-                "module": "montage/ui/image.reel",
-                "name": "Image",
-                "properties": {
-                    "src": "images/IMG_1416.jpg",
-                    "element": {"#": "tabs1-three"}
-                }
+{
+    "owner": {
+        "module": "components/tabs-example.reel",
+        "name": "TabsExample",
+        "properties": {
+            "element": {"#": "tabs-example"}
+        }
+    },
+    "tabs1_one": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum.",
+            "element": {"#": "tabs1-one"}
+        }
+    },
+    "tabs1_two": {
+        "module": "montage/ui/bluemoon/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "maxValue": 100,
+            "element": {"#": "tabs1-two"}
+        }
+    },
+    "tabs1_three": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "src": "images/IMG_1416.jpg",
+            "element": {"#": "tabs1-three"}
+        }
+    },
+
+    "tabs1_content": {
+        "module": "montage/ui/substitution.reel",
+        "name": "Substitution",
+        "properties": {
+            "element": {"#": "tabs1-content"},
+            "switchComponents": {
+                "tabs1-one": {"@": "tabs1_one"},
+                "tabs1-two": {"@": "tabs1_two"},
+                "tabs1-three": {"@": "tabs1_three"}
+            }
+        }
+    },
+
+    "tabs1_nav_text": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "tabs1_nav_text"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "tabs1_nav"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.text",
+                "oneway": true
+            }
+        }
+    },
+
+    "tabs1_nav_icon": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "tabs1-nav-icon"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "tabs1_nav"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
+                "oneway": true
+            }
+        }
+    },
+
+    "tabs1_nav": {
+        "module": "montage/ui/tabs.reel",
+        "name": "Tabs",
+        "properties": {
+            "element": {"#": "tabs1-nav"},
+            "tabs": [
+            {
+                "text": "Photos",
+                "value": "tabs1-three",
+                "icon": "images/photos.png"
             },
 
-            "tabs1-content": {
-                "module": "montage/ui/substitution.reel",
-                "name": "Substitution",
-                "properties": {
-                    "element": {"#": "tabs1-content"},
-                    "switchComponents": {
-                        "tabs1-one": {"@": "tabs1-one"},
-                        "tabs1-two": {"@": "tabs1-two"},
-                        "tabs1-three": {"@": "tabs1-three"}
-                    }
-                }
-            },
-
-            "tabs1-nav-text": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
-                "properties": {
-                    "element": {"#": "tabs1-nav-text"}
+                {
+                    "text": "Music",
+                    "value": "tabs1-two",
+                    "icon": "images/music.png"
                 },
-                "bindings": {
-                    "value": {
-                        "boundObject": {"@": "tabs1-nav"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.text",
-                        "oneway": true
-                    }
-                }
-            },
+                {
+                    "text": "Videos",
+                    "value": "tabs1-one",
+                    "icon": "images/film-roll.png"
+                }                        ],
+            "content": {"@": "tabs1_content"}
+        }
+    },
 
-            "tabs1-nav-icon": {
-                "module": "montage/ui/image.reel",
-                "name": "Image",
-                "properties": {
-                    "element": {"#": "tabs1-nav-icon"}
-                },
-                "bindings": {
-                    "src": {
-                        "boundObject": {"@": "tabs1-nav"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
-                        "oneway": true
-                    }
-                }
-            },
-
-            "tabs1-nav": {
-                "module": "montage/ui/tabs.reel",
-                "name": "Tabs",
-                "properties": {
-                    "element": {"#": "tabs1-nav"},
-                    "tabs": [
-                    {
-                        "text": "Photos",
-                        "value": "tabs1-three",
-                        "icon": "images/photos.png"
-                    },
-
-                        {
-                            "text": "Music",
-                            "value": "tabs1-two",
-                            "icon": "images/music.png"
-                        },
-                        {
-                            "text": "Videos",
-                            "value": "tabs1-one",
-                            "icon": "images/film-roll.png"
-                        }                        ],
-                    "content": {"@": "tabs1-content"}
-                }
-            },
-
-    "tabs2-one": {
+    "tabs2_one": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -118,7 +118,7 @@
             "element": {"#": "tabs2-one"}
         }
     },
-    "tabs2-two": {
+    "tabs2_two": {
         "module": "montage/ui/bluemoon/slider.reel",
         "name": "Slider",
         "properties": {
@@ -126,7 +126,7 @@
             "element": {"#": "tabs2-two"}
         }
     },
-    "tabs2-three": {
+    "tabs2_three": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -135,20 +135,20 @@
         }
     },
 
-    "tabs2-content": {
+    "tabs2_content": {
         "module": "montage/ui/substitution.reel",
         "name": "Substitution",
         "properties": {
             "element": {"#": "tabs2-content"},
             "switchComponents": {
-                "tabs2-one": {"@": "tabs2-one"},
-                "tabs2-two": {"@": "tabs2-two"},
-                "tabs2-three": {"@": "tabs2-three"}
+                "tabs2-one": {"@": "tabs2_one"},
+                "tabs2-two": {"@": "tabs2_two"},
+                "tabs2-three": {"@": "tabs2_three"}
             }
         }
     },
 
-    "tabs2-nav-icon": {
+    "tabs2_nav_icon": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -156,14 +156,14 @@
         },
         "bindings": {
             "src": {
-                "boundObject": {"@": "tabs2-nav"},
+                "boundObject": {"@": "tabs2_nav"},
                 "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
                 "oneway": true
             }
         }
     },
 
-    "tabs2-nav": {
+    "tabs2_nav": {
         "module": "montage/ui/tabs.reel",
         "name": "Tabs",
         "properties": {
@@ -187,17 +187,17 @@
                 }
             ],
             "selectedTabValue": "tabs2-one",
-            "content": {"@": "tabs2-content"}
+            "content": {"@": "tabs2_content"}
         }
     },
-    "tabs-accordion1": {
+    "tabs_accordion1": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
             "element": {"#": "tabs-accordion1"}
         }
     },
-    "tabs-accordion2": {
+    "tabs_accordion2": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
@@ -278,7 +278,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <section>
                 <ul id="tabs-accordion1" class="accordion">
                    <li class="accordion-group">
@@ -311,7 +311,7 @@
             "element": {"#": "tabs-example"}
         }
     },
-    "tabs1-one": {
+    "tabs1_one": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -319,7 +319,7 @@
             "element": {"#": "tabs1-one"}
         }
     },
-    "tabs1-two": {
+    "tabs1_two": {
         "module": "montage/ui/bluemoon/slider.reel",
         "name": "Slider",
         "properties": {
@@ -327,7 +327,7 @@
             "element": {"#": "tabs1-two"}
         }
     },
-    "tabs1-three": {
+    "tabs1_three": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -336,35 +336,35 @@
         }
     },
 
-    "tabs1-content": {
+    "tabs1_content": {
         "module": "montage/ui/substitution.reel",
         "name": "Substitution",
         "properties": {
             "element": {"#": "tabs1-content"},
             "switchComponents": {
-                "tabs1-one": {"@": "tabs1-one"},
-                "tabs1-two": {"@": "tabs1-two"},
-                "tabs1-three": {"@": "tabs1-three"}
+                "tabs1-one": {"@": "tabs1_one"},
+                "tabs1-two": {"@": "tabs1_two"},
+                "tabs1-three": {"@": "tabs1_three"}
             }
         }
     },
 
-    "tabs1-nav-text": {
+    "tabs1_nav_text": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "tabs1-nav-text"}
+            "element": {"#": "tabs1_nav_text"}
         },
         "bindings": {
             "value": {
-                "boundObject": {"@": "tabs1-nav"},
+                "boundObject": {"@": "tabs1_nav"},
                 "boundObjectPropertyPath": "objectAtCurrentIteration.text",
                 "oneway": true
             }
         }
     },
 
-    "tabs1-nav-icon": {
+    "tabs1_nav_icon": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -372,14 +372,14 @@
         },
         "bindings": {
             "src": {
-                "boundObject": {"@": "tabs1-nav"},
+                "boundObject": {"@": "tabs1_nav"},
                 "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
                 "oneway": true
             }
         }
     },
 
-    "tabs1-nav": {
+    "tabs1_nav": {
         "module": "montage/ui/tabs.reel",
         "name": "Tabs",
         "properties": {
@@ -390,17 +390,18 @@
                 "value": "tabs1-three",
                 "icon": "images/photos.png"
             },
-            {
-                "text": "Music",
-                "value": "tabs1-two",
-                "icon": "images/music.png"
-            },
-            {
-                "text": "Videos",
-                "value": "tabs1-one",
-                "icon": "images/film-roll.png"
-            }                        ],
-            "content": {"@": "tabs1-content"}
+
+                {
+                    "text": "Music",
+                    "value": "tabs1-two",
+                    "icon": "images/music.png"
+                },
+                {
+                    "text": "Videos",
+                    "value": "tabs1-one",
+                    "icon": "images/film-roll.png"
+                }                        ],
+            "content": {"@": "tabs1_content"}
         }
     }
 }
@@ -434,9 +435,9 @@
                        </div>
                    </li>
                 </ul>
-                
+
             </section>
-            
+
 
             <h5>Vertical tabs with icons</h5>
             <div class="demo vertical">
@@ -453,7 +454,7 @@
                     </div>
                 </div>
             </div>
-            
+
             <section>
                 <ul id="tabs-accordion2" class="accordion">
                    <li class="accordion-group">
@@ -488,7 +489,7 @@
         }
     },
 
-    "tabs2-one": {
+    "tabs2_one": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -496,7 +497,7 @@
             "element": {"#": "tabs2-one"}
         }
     },
-    "tabs2-two": {
+    "tabs2_two": {
         "module": "montage/ui/bluemoon/slider.reel",
         "name": "Slider",
         "properties": {
@@ -504,7 +505,7 @@
             "element": {"#": "tabs2-two"}
         }
     },
-    "tabs2-three": {
+    "tabs2_three": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -513,20 +514,20 @@
         }
     },
 
-    "tabs2-content": {
+    "tabs2_content": {
         "module": "montage/ui/substitution.reel",
         "name": "Substitution",
         "properties": {
             "element": {"#": "tabs2-content"},
             "switchComponents": {
-                "tabs2-one": {"@": "tabs2-one"},
-                "tabs2-two": {"@": "tabs2-two"},
-                "tabs2-three": {"@": "tabs2-three"}
+                "tabs2-one": {"@": "tabs2_one"},
+                "tabs2-two": {"@": "tabs2_two"},
+                "tabs2-three": {"@": "tabs2_three"}
             }
         }
     },
 
-    "tabs2-nav-icon": {
+    "tabs2_nav_icon": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -534,14 +535,14 @@
         },
         "bindings": {
             "src": {
-                "boundObject": {"@": "tabs2-nav"},
+                "boundObject": {"@": "tabs2_nav"},
                 "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
                 "oneway": true
             }
         }
     },
 
-    "tabs2-nav": {
+    "tabs2_nav": {
         "module": "montage/ui/tabs.reel",
         "name": "Tabs",
         "properties": {
@@ -565,7 +566,7 @@
                 }
             ],
             "selectedTabValue": "tabs2-one",
-            "content": {"@": "tabs2-content"}
+            "content": {"@": "tabs2_content"}
         }
     }
 }
@@ -596,7 +597,7 @@
                        </div>
                    </li>
                 </ul>
-                
+
             </section>
 
             <section>

@@ -72,9 +72,9 @@
                 </p>
             <div class="demo">
                 <span id="current-time" class="current-time"></span>
-                
+
             </div>
-            
+
                        <ul id="dynamic-text-accordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
@@ -135,7 +135,10 @@ exports.DynamicTextExample = Montage.create(Component, {
 
     _currentTime: {value: null},
     currentTime: {
-        set: function(value) {this._currentTime = value; this.needsDraw = false;},
+        set: function(value) {
+            this._currentTime = value;
+            this.needsDraw = false;
+        },
         get: function() {return this._currentTime;}
     },
 
@@ -160,24 +163,18 @@ exports.DynamicTextExample = Montage.create(Component, {
                 self.currentTime = new Date(Date.now());
             }, 1000);
         }
-    },
-    prepareForDraw: {
-        value: function() {
-            // Invoke Google pretty printer on source code samples
-            prettyPrint();
-        }
     }
 
-});                    
+});
                                     </pre>
                                 </div>
                             </li>
                         </ul>
-                
+
 
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/dynamic-text-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/dynamic-text-example.reel" target="_blank">View source on GitHub</a>
             </section>
 <!--
             <section>
