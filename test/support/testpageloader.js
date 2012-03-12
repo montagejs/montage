@@ -316,7 +316,8 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     },
 
     addListener: {
-        value: function(component, fn) {
+        value: function(component, fn, type) {
+            type = type || "action";
             var buttonSpy = {
                 doSomething: fn || function(event) {
                     return 1+1;
@@ -325,7 +326,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             spyOn(buttonSpy, 'doSomething');
 
             var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-            component.addEventListener("action", actionListener);
+            component.addEventListener(type, actionListener);
 
             return buttonSpy.doSomething;
         }
