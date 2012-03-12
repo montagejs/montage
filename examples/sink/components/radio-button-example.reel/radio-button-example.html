@@ -24,79 +24,79 @@
                     }
                 },
 
-                "veg-binding": {
+                "vegBinding": {
                     "value": {
                         "disabled": {
                             "boundObject": {"@": "veg"},
                             "boundObjectPropertyPath": "checked",
                             "oneway": true,
-                            "converter": {"@": "invert-converter"}
+                            "converter": {"@": "invertConverter"}
                         }
                     }
                 },
-                "fruit-binding": {
+                "fruitBinding": {
                     "value": {
                         "disabled": {
                             "boundObject": {"@": "fruit"},
                             "boundObjectPropertyPath": "checked",
                             "oneway": true,
-                            "converter": {"@": "invert-converter"}
+                            "converter": {"@": "invertConverter"}
                         }
                     }
                 },
 
-                "veg-carrot": {
+                "vegCarrot": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "veg-carrot"}
                     },
-                    "bindings": {"@": "veg-binding"}
+                    "bindings": {"@": "vegBinding"}
                 },
-                "veg-potato": {
+                "vegPotato": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "veg-potato"}
                     },
-                    "bindings": {"@": "veg-binding"}
+                    "bindings": {"@": "vegBinding"}
                 },
-                "veg-broccoli": {
+                "vegBroccoli": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "veg-broccoli"}
                     },
-                    "bindings": {"@": "veg-binding"}
+                    "bindings": {"@": "vegBinding"}
                 },
 
-                "fruit-apple": {
+                "fruitApple": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "fruit-apple"}
                     },
-                    "bindings": {"@": "fruit-binding"}
+                    "bindings": {"@": "fruitBinding"}
                 },
-                "fruit-banana": {
+                "fruitBanana": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "fruit-banana"}
                     },
-                    "bindings": {"@": "fruit-binding"}
+                    "bindings": {"@": "fruitBinding"}
                 },
-                "fruit-pear": {
+                "fruitPear": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "fruit-pear"}
                     },
-                    "bindings": {"@": "fruit-binding"}
+                    "bindings": {"@": "fruitBinding"}
                 },
 
 
-                "log-listener": {
+                "logListener": {
                     "value": [
                         {
                             "type": "action",
@@ -104,25 +104,25 @@
                         }
                     ]
                 },
-                "listen-on": {
+                "listenOn": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "listen-on"}
                     },
-                    "listeners": {"@":"log-listener"}
+                    "listeners": {"@":"logListener"}
                 },
-                "listen-off": {
+                "listenOff": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "listen-off"}
                     },
-                    "listeners": {"@":"log-listener"}
+                    "listeners": {"@":"logListener"}
 
                 },
 
-                "invert-converter": {
+                "invertConverter": {
                     "module": "components/converters.reel",
                     "name": "InvertConverter"
                 },
@@ -138,7 +138,7 @@
 
 
 
-                "answers-controller": {
+                "answersController": {
                     "name": "ArrayController",
                     "module": "montage/ui/controller/array-controller",
                     "properties": {
@@ -162,11 +162,11 @@
                             "#": "list2-rows"
                         },
                         "isSelectionEnabled": false,
-                        "contentController": {"@": "answers-controller"}
+                        "contentController": {"@": "answersController"}
                     }
                 },
 
-                "answer-selection": {
+                "answerSelection": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
@@ -180,7 +180,7 @@
                     }
                 },
 
-                "answer-text": {
+                "answerText": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
@@ -195,7 +195,7 @@
                     }
                 },
 
-                "selected-answer": {
+                "selectedAnswer": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
@@ -208,22 +208,22 @@
                         }
                     }
                 },
-                
-                "radiobutton-accordion1": {
+
+                "radiobuttonAccordion1": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
                         "element": {"#": "radiobutton-accordion1"}
                     }
                 },
-                "radiobutton-accordion2": {
+                "radiobuttonAccordion2": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
                         "element": {"#": "radiobutton-accordion2"}
                     }
                 },
-                "radiobutton-accordion3": {
+                "radiobuttonAccordion3": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
@@ -243,7 +243,7 @@
                     },
                     "bindings": {
                         "selectedAnswer": {
-                            "boundObject": {"@": "answers-controller"},
+                            "boundObject": {"@": "answersController"},
                             "boundObjectPropertyPath": "selectedObjects.0"
                         }
                     }
@@ -299,9 +299,9 @@
                             </div>
 
                 </div>
-            </div>    
-                
-            <section>   
+            </div>
+
+            <section>
                 <ul id="radiobutton-accordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
@@ -312,17 +312,17 @@
 &lt;div class="span4"&gt;
     &lt;label class="radio"&gt;&lt;input type="radio" name="car" id="veg" /&gt; Vegetables&lt;/label&gt;
     &lt;div style="padding-left: 1em"&gt;
-        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="veg-carrot"&gt; Carrot&lt;/label&gt;
-        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="veg-potato"&gt; Potato&lt;/label&gt;
-        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="veg-broccoli"&gt; Broccoli&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="vegCarrot"&gt; Carrot&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="vegPotato"&gt; Potato&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="vegBroccoli"&gt; Broccoli&lt;/label&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 &lt;div class="span4"&gt;
     &lt;label class="radio"&gt;&lt;input type="radio" name="car" id="fruit" /&gt; Fruit&lt;/label&gt;
     &lt;div style="padding-left: 1em"&gt;
-        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="apple" id="fruit-apple"&gt; Apple&lt;/label&gt;
-        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="banana" id="fruit-banana"&gt; Banana&lt;/label&gt;
-        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="pear" id="fruit-pear"&gt; Pear&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="apple" id="fruitApple"&gt; Apple&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="banana" id="fruitBanana"&gt; Banana&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="pear" id="fruitPear"&gt; Pear&lt;/label&gt;
     &lt;/div&gt;
 &lt;/div&gt;
                             </pre>
@@ -354,7 +354,7 @@
                 "boundObject": {"@": "veg"},
                 "boundObjectPropertyPath": "checked",
                 "oneway": true,
-                "converter": {"@": "invert-converter"}
+                "converter": {"@": "invertConverter"}
             }
         }
     },
@@ -364,12 +364,12 @@
                 "boundObject": {"@": "fruit"},
                 "boundObjectPropertyPath": "checked",
                 "oneway": true,
-                "converter": {"@": "invert-converter"}
+                "converter": {"@": "invertConverter"}
             }
         }
     },
 
-    "veg-carrot": {
+    "vegCarrot": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -377,7 +377,7 @@
         },
         "bindings": {"@": "veg-binding"}
     },
-    "veg-potato": {
+    "vegPotato": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -385,7 +385,7 @@
         },
         "bindings": {"@": "veg-binding"}
     },
-    "veg-broccoli": {
+    "vegBroccoli": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -394,7 +394,7 @@
         "bindings": {"@": "veg-binding"}
     },
 
-    "fruit-apple": {
+    "fruitApple": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -402,7 +402,7 @@
         },
         "bindings": {"@": "fruit-binding"}
     },
-    "fruit-banana": {
+    "fruitBanana": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -410,7 +410,7 @@
         },
         "bindings": {"@": "fruit-binding"}
     },
-    "fruit-pear": {
+    "fruitPear": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -420,7 +420,7 @@
     },
 
 
-    "log-listener": {
+    "logListener": {
         "value": [
             {
                 "type": "action",
@@ -434,7 +434,7 @@
                        </div>
                    </li>
                 </ul>
-            </section> 
+            </section>
 
 
 
@@ -458,9 +458,9 @@
                     <h5>You selected: </h5>
                     <div id="selected-answer" ></div>
                 </div>
-                
+
             </div>
-            
+
             <section>
                 <ul id="radiobutton-accordion2" class="accordion">
                    <li class="accordion-group">
@@ -490,7 +490,7 @@
                        <div class="accordion-inner montage-hidden">
                         <pre class="prettyprint" >
 {
-    "answers-controller": {
+    "answersController": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
         "properties": {
@@ -514,11 +514,11 @@
                 "#": "list2-rows"
             },
             "isSelectionEnabled": false,
-            "contentController": {"@": "answers-controller"}
+            "contentController": {"@": "answersController"}
         }
     },
 
-    "answer-selection": {
+    "answerSelection": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
@@ -532,7 +532,7 @@
         }
     },
 
-    "answer-text": {
+    "answerText": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -547,7 +547,7 @@
         }
     },
 
-    "selected-answer": {
+    "selectedAnswer": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
@@ -573,7 +573,7 @@
         },
         "bindings": {
             "selectedAnswer": {
-                "boundObject": {"@": "answers-controller"},
+                "boundObject": {"@": "answersController"},
                 "boundObjectPropertyPath": "selectedObjects.0"
             }
         }
@@ -584,10 +584,10 @@
                        </div>
                    </li>
                 </ul>
-                
+
             </section>
 
-        
+
 
        <h4>Listener example</h4>
 
@@ -597,7 +597,7 @@
                 <label class="radio inline"><input type="radio" id="listen-off" name="on-off"> Off</label>
             </div>
         </div>
-        
+
         <section>
             <ul id="radiobutton-accordion3" class="accordion">
                <li class="accordion-group">
@@ -615,7 +615,7 @@
                    <div class="accordion-inner montage-hidden">
                     <pre class="prettyprint" >
 {
-    "log-listener": {
+    "logListener": {
         "value": [
             {
                 "type": "action",
@@ -623,21 +623,21 @@
             }
         ]
     },
-    "listen-on": {
+    "listenOn": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
             "element": {"#": "listen-on"}
         },
-        "listeners": {"@":"log-listener"}
+        "listeners": {"@":"logListener"}
     },s
-    "listen-off": {
+    "listenOff": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
             "element": {"#": "listen-off"}
         },
-        "listeners": {"@":"log-listener"}
+        "listeners": {"@":"logListener"}
 
     },
     "logger": {
@@ -658,8 +658,8 @@
             <div id="logger"></div>
 
         </div>
-        
-        
+
+
         <section>
             <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/radio-button-example.reel" target="_blank">View source on GitHub</a>
         </section>
