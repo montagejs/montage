@@ -94,6 +94,16 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         }
     },
 
+    // Optimisation so that we don't set a timeout if we do not need to
+    addEventListener: {
+        value: function(type, listener, useCapture) {
+            Composer.addEventListener.call(this, type, listener, useCapture);
+            if (type === "longpress") {
+                this._shouldDispatchLongpress = true;
+            }
+        }
+    },
+
     UNPRESSED: {
         value: 0
     },
@@ -114,8 +124,13 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         }
     },
 
+    _shouldDispatchLongpress: {
+        enumerable: false,
+        value: false
+    },
+
     _longpressTimeout: {
-        enumberable: false,
+        enumerable: false,
         value: 1000
     },
     /**
@@ -390,10 +405,12 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
             this._state = PressComposer.PRESSED;
             this.dispatchEvent(this._createPressEvent("pressstart", event));
 
-            var self = this;
-            this._longpressTimer = setTimeout(function () {
-                self._dispatchLongpress();
-            }, this._longpressTimeout);
+            if (this._shouldDispatchLongpress) {
+                var self = this;
+                this._longpressTimer = setTimeout(function () {
+                    self._dispatchLongpress();
+                }, this._longpressTimeout);
+            }
         }
     },
 
@@ -404,8 +421,10 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     _dispatchPress: {
         enumerable: false,
         value: function (event) {
-            clearTimeout(this._longpressTimer);
-            this._longpressTimer = null;
+            if (this._shouldDispatchLongpress) {
+                clearTimeout(this._longpressTimer);
+                this._longpressTimer = null;
+            }
 
             this.dispatchEvent(this._createPressEvent("press", event));
             this._state = PressComposer.UNPRESSED;
@@ -419,8 +438,10 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     _dispatchLongpress: {
         enumerable: false,
         value: function (event) {
-            this.dispatchEvent(this._createPressEvent("longpress", event));
-            this._longpressTimer = null;
+            if (this._shouldDispatchLongpress) {
+                this.dispatchEvent(this._createPressEvent("longpress", event));
+                this._longpressTimer = null;
+            }
         }
     },
 
@@ -431,8 +452,10 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     _dispatchPresscancel: {
         enumerable: false,
         value: function (event) {
-            clearTimeout(this._longpressTimer);
-            this._longpressTimer = null;
+            if (this._shouldDispatchLongpress) {
+                clearTimeout(this._longpressTimer);
+                this._longpressTimer = null;
+            }
 
             this._state = PressComposer.CANCELLED;
             this.dispatchEvent(this._createPressEvent("presscancel", event));

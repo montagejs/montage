@@ -140,8 +140,17 @@ var Button = exports.Button = Montage.create(NativeControl, {
             this.addComposer(this._pressComposer);
             this._pressComposer.addEventListener("pressstart", this, false);
             this._pressComposer.addEventListener("press", this, false);
-            this._pressComposer.addEventListener("longpress", this, false);
             this._pressComposer.addEventListener("presscancel", this, false);
+        }
+    },
+
+    // Optimisation
+    addEventListener: {
+        value: function(type, listener, useCapture) {
+            NativeControl.addEventListener.call(this, type, listener, useCapture);
+            if (type === "hold") {
+                this._pressComposer.addEventListener("longpress", this, false);
+            }
         }
     },
 
