@@ -6,8 +6,9 @@
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
+
 // similar to jquery.closest. Find the closest ancestor of el matching the type
-var findClosestOfType = function(el, type, context) {
+var findClosestOfType = function(el, type, context, clazz) {
 	if(el.tagName.toLowerCase() === type) {
 		return el;
 	}
@@ -15,45 +16,40 @@ var findClosestOfType = function(el, type, context) {
 	while(el) {
 		el = el.parentNode;
 		if(el.tagName && el.tagName.toLowerCase() === type) {
-			found = true;
-			break;
+		    if(clazz) {
+		        if(el.classList.contains(clazz)) {
+		            found = true;
+		            break;
+		        }
+		    } else {
+		        found = true;
+		        break;
+		    }						
 		}
 		if(!el || !el.ownerDocument || el === context || el.nodeType === 11) {
 			break;
 		}
 	}
-	if(found) {
-		return el;
+	if(found) {	   
+	    return el;		
 	}
 	return null;
 
 };
 
-exports.Sidebar = Montage.create(Component, {
+exports.Accordion = Montage.create(Component, {
 
-    // the main component
-    sandbox: {
-        value: null
-    },
-
-    sidebarList: {
-        value: null
-    },
-
-    montageComponents: {
-        value: null
-    },
-
+    
     prepareForDraw: {
         value: function() {
             if(window.Touch) {
                 this.element.addEventListener('touchend', this);
             } else {
-                this.element.addEventListener('click', this);
+                this.element.addEventListener('mouseup', this);
             }
         }
     },
-
+    
     handleNavItemClicked: {
         value: function(href) {
             console.log("nav item clicked = " + href);
@@ -62,32 +58,25 @@ exports.Sidebar = Montage.create(Component, {
         }
     },
 
-    _highlightSelection: {
-        value: function($li) {
-            var $ul = findClosestOfType($li, 'div', this.element);
-            if($ul) {
-                var items = $ul.querySelectorAll('li')||[], len = items.length;
-                for(i=0; i< len; i++) {
-                    items[i].classList.remove('selected');
-                }
-                $li.classList.add('selected');
-            }
-        }
-    },
-
     handleEvent: {
         value: function(event) {
-
+            event.preventDefault();
             var target = event.target;
             var $li = findClosestOfType(target, 'li', this.element);
 
             if($li) {
-                var a = $li.querySelector('a');
-                if(a) {
-                    this._highlightSelection($li);
-                    this.handleNavItemClicked(a.href);
-                    event.preventDefault();
-                }
+                var $heading = findClosestOfType(target, 'div', this.element, "accordion-heading");
+                if($heading) {
+                    // user clicked on the header
+                    var a = $li.querySelector('a');
+                    if(a) {
+                        var $content = $li.querySelector('div.accordion-inner');
+                        $content.classList.toggle('montage-hidden');                    
+                    }
+                    
+                } 
+                
+                
             }
         }
     }

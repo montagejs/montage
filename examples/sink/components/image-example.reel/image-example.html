@@ -41,6 +41,11 @@
                 "boundObject": {"@": "images"},
                 "boundObjectPropertyPath": "selectedObjects.0.href",
                 "oneway": true
+            },
+            "textContent": {
+                "boundObject": {"@": "images"},
+                "boundObjectPropertyPath": "selectedObjects.0.href",
+                "oneway": true
             }
         }
     },
@@ -90,6 +95,13 @@
         }
     },
 
+    "imageAccordion": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "image-accordion1"}
+        }
+    },
 
     "owner": {
         "module": "components/image-example.reel",
@@ -116,8 +128,8 @@
             border: 5px solid #FE4365;
         }
         .img-main {
-            width: 480px;
-            height: 480px;
+            max-height: 350px;
+            min-height: 350px;
         }
     </style>
 
@@ -152,8 +164,160 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+            </div>
+            <section>
+                <ul id="image-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;img id="img-main" class="img-main"/&gt;
+&lt;div&gt;&lt;a target="_blank" id="more-link"&gt;Click to learn more&lt;/a&gt;&lt;/div&gt;
+
+&lt;p&gt;Select an image from the list:&lt;/p&gt;
+&lt;div class="row"&gt;
+&lt;div class="span12"&gt;
+    &lt;div id="thumbs-list" class="thumbs-list"&gt;
+        &lt;img id="thumb" class="thumb" /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+                            </pre>
         </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "main-image": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "img-main"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "images"},
+                "boundObjectPropertyPath": "selectedObjects.0.src",
+                "oneway": true
+            },
+            "title": {
+                "boundObject": {"@": "images"},
+                "boundObjectPropertyPath": "selectedObjects.0.description",
+                "oneway": true
+            },
+            "alt": {
+                "boundObject": {"@": "images"},
+                "boundObjectPropertyPath": "selectedObjects.0.description",
+                "oneway": true
+            }
+        }
+    },
+
+    "more-link": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "more-link"}
+        },
+        "bindings": {
+            "href": {
+                "boundObject": {"@": "images"},
+                "boundObjectPropertyPath": "selectedObjects.0.href",
+                "oneway": true
+            }
+        }
+    },
+
+
+    "images": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "images",
+                "oneway": true
+            }
+        }
+    },
+
+    "list1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "thumbs-list"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "images"},
+            "axis": "horizontal"
+        }
+    },
+
+    "thumb": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {
+                "boundObject": {"@": "list1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
+                "oneway": true
+            }
+        }
+    }
+
+    "owner": {
+        "module": "components/image-example.reel",
+        "name": "ImageExample",
+        "properties": {
+            "element": {"#": "example-root"},
+            "images": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        }
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+.thumb {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #fff;
+}
+.thumbs-list .selected {
+    border: 5px solid #FE4365;
+}
+.img-main {
+    max-height: 350px;
+    min-height: 350px;
+}
+                        </pre>
+                    </div>
+                </ul>
+
+            </section>
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/image-example.reel" title="View source on GitHub">View source on GitHub</a>
+        </section>
     </div>
 
 </body>

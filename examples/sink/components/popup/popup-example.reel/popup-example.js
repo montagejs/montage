@@ -35,7 +35,7 @@ exports.PopupExample = Montage.create(Component, {
             var popup = this._bookmarkMenuPopup;
             if(!popup) {
                 popup = Popup.create();
-                popup.modal = true;
+                //popup.modal = true;
                 popup.content = this.bookmarkMenu;
                 popup.anchor = this.btnBookmark;
                 this._bookmarkMenuPopup = popup;
@@ -154,11 +154,11 @@ exports.PopupExample = Montage.create(Component, {
             app = this.application,
             msg = 'Unable to reach the server. Retrying in ';
 
-            Notifier.show(msg + ' 5s');
+            Notifier.show(msg + ' 2 seconds');
 
-            var count = 5;
+            var count = 2;
             var intId = setInterval(function() {
-                Notifier.show(msg + count + 's');
+                //Notifier.show(msg + count + 's');
                 count--;
                 if(count == 0) {
                     Notifier.show('Successfully connected to server.');

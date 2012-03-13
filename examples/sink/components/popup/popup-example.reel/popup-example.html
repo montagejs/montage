@@ -127,6 +127,14 @@
         }
     },
 
+    "popup-accordion1": {
+           "module": "accordion.reel",
+           "name": "Accordion",
+           "properties": {
+               "element": {"#": "popup-accordion1"}
+           }
+       },
+
     "owner": {
         "module": "components/popup/popup-example.reel",
         "name": "PopupExample",
@@ -208,7 +216,7 @@
 
         <h4>Demo</h4>
 
-        <div class="demo">
+        <div class="demo popups">
             
             <h5>System Popups</h5>
             <section>
@@ -238,19 +246,247 @@
                     <img src="images/09-chat-2.png" class="menu action-show-action-sheet"></a>
                 </div>
             </section>
+        </div>
+
+        <section>
+            <ul id="popup-accordion1" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;h5&gt;System Popups&lt;/h5&gt;
+&lt;section&gt;
+    &lt;button class="btn large" id="action-show-alert"&gt;Show Alert&lt;/button&gt;
+    &lt;button class="btn large" id="action-show-confirm"&gt;Confirm before Delete&lt;/button&gt;
+&lt;/section&gt;
+&lt;section&gt;
+    &lt;button class="btn large" id="action-show-loading"&gt;Show Loading&lt;/button&gt;
+    &lt;button class="btn large" id="action-show-growl"&gt;Show Notification&lt;/button&gt;
+&lt;/section&gt;
+
+&lt;h5&gt;Custom Popups&lt;/h5&gt;
+&lt;section&gt;
+    &lt;p&gt;Show a Custom popup anchored to the button.&lt;/p&gt;
+    &lt;button class="btn large" id="action-show-bookmark-menu"&gt;Show Menu (non-modal)&lt;/button&gt;
+
+&lt;/section&gt;
+&lt;section&gt;
+    &lt;p&gt;Show a Modal popup anchored to the button&lt;/p&gt;
+    &lt;button class="btn large" id="action-show-critical-error"&gt;Show Critical Error&lt;/button&gt;
+
+&lt;/section&gt;
+
+&lt;section&gt;
+    &lt;div class="toolbar" style="text-align: center;"&gt;
+        &lt;img src="images/19-gear.png" class="menu action-show-settings-menu"&gt;&lt;/a&gt;
+        &lt;img src="images/09-chat-2.png" class="menu action-show-action-sheet"&gt;&lt;/a&gt;
+    &lt;/div&gt;
+&lt;/section&gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "owner": {
+        "module": "components/popup/popup-example.reel",
+        "name": "PopupExample",
+        "properties": {
+            "element": {"#": "popup-example-root"},
+            "criticalError": {"@": "criticalerrordialog1"},
+            "btnCriticalError": {"#": "action-show-critical-error"},
+            "customMessage": {"@": "customalert1"},
+            "btnShowMessage": {"#": "action-show-message"},
+            "bookmarkMenu": {"@": "menubookmark1"},
+            "bookmarkMenu2": {"@": "menubookmark2"},
+            "actionSheet": {"@": "actionsheet1"},
+            "btnBookmark": {"#": "action-show-bookmark-menu"},
+            "logger": {"@": "logger"}
+        }
+    },
+
+    "button2": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "action-show-bookmark-menu"},
+            "identifier": "showBookmarkMenu"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button3": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "action-show-critical-error"},
+            "identifier": "showCriticalError"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button4": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "action-show-alert"},
+            "identifier": "showAlert"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button5": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "action-show-confirm"},
+            "identifier": "showConfirm"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button7": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "action-show-loading"},
+            "identifier": "showLoading"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button8": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "action-show-growl"},
+            "identifier": "showNotifier"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
             
+    "criticalerrordialog1": {
+        "module": "components/popup/critical-error-dialog.reel",
+        "name": "CriticalErrorDialog",
+        "properties": {
+            "details": "Your device has encountered a fatal error and could recover. Restart the device."
+        }
+    },
+    "menubookmark1": {
+        "module": "components/popup/menu-bookmark.reel",
+        "name": "MenuBookmark",
+        "properties": {
+            "label": "The New York Times"
+        }
+    },
+    "menubookmark2": {
+        "module": "components/popup/menu-bookmark.reel",
+        "name": "MenuBookmark",
+        "properties": {
+            "label": "The LA Times"
+        }
+    },
+    "actionsheet1": {
+        "module": "components/popup/action-sheet.reel",
+        "name": "ActionSheet",
+        "properties": {
+        }
+    },
+
+    "logger": {
+        "module": "logger.reel",
+        "name": "Logger",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    }
+}
+                    </pre>
 
         </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
         
-        <section>
-            <a href="m-js/examples/sink/components/substitution-example.reel" target="_blank">View Demo Source</a>
+#custom-alert-dialog {
+   width: 400px;
+   height: 500px;
+}
+
+
+.menu {
+   display: inline-block;
+   width:32px;
+   height:32px;
+   border-radius:32px;
+   -moz-border-radius:32px;
+   -webkit-border-radius:32px;
+   border:2px solid #ccc;
+   padding: 16px;
+   background:#fff;
+   text-align:center;
+   color:#fff
+}
+.menu:hover{
+   display: inline-block;
+   width:32px;
+   height:32px;
+   border-radius:32px;
+   -moz-border-radius:32px;
+   -webkit-border-radius:32px;
+   border:2px solid #ccc;
+   padding: 16px;
+   background:#ccc;
+   text-align:center;
+   color:#fff
+}
+.menu .nav {
+   padding-top:37px
+}
+        
+.popup-example-root section {
+   margin: 5px 0;
+}
+        
+                       </pre>
+                   </div>
+               </li>
+            </ul>
         </section>
 
-
         
-        
-
-        
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/popup-example.reel" target="_blank">View source on GitHub</a>
+        </section>
 
         <section>
         <h6>Popup API</h6>

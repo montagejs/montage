@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Native slider component</title>
+    <link rel="stylesheet" href="styles.css">
+    <script type="text/montage-serialization">
+    {
+        "red": {
+            "module": "montage/ui/bluemoon/slider.reel",
+            "name": "Slider",
+            "properties": {
+                "element": {"#": "red"},
+                "minValue": "0",
+                "maxValue": "255",
+                "step": "1",
+                "value": "255"
+            }
+        },
+
+        "green": {
+            "module": "montage/ui/bluemoon/slider.reel",
+            "name": "Slider",
+            "properties": {
+                "element": {"#": "green"},
+                "minValue": "0",
+                "maxValue": "255",
+                "step": "1",
+                "value": "0"
+            }
+        },
+
+        "blue": {
+            "module": "montage/ui/bluemoon/slider.reel",
+            "name": "Slider",
+            "properties": {
+                "element": {"#": "blue"},
+                "minValue": "0",
+                "maxValue": "255",
+                "step": "1",
+                "value": "0"
+            }
+        },
+        "alpha": {
+            "module": "montage/ui/bluemoon/slider.reel",
+            "name": "Slider",
+            "properties": {
+                "element": {"#": "alpha"},
+                "minValue": "0",
+                "maxValue": "1",
+                "step": "0.1",
+                "value": "1"
+            }
+        },
+        
+        "slider-accordion1": {
+            "module": "accordion.reel",
+            "name": "Accordion",
+            "properties": {
+                "element": {"#": "slider-accordion1"}
+            }
+        },
+
+        "owner": {
+            "name": "RangeInputExample2",
+            "module": "components/range-input-example2.reel",
+            "properties": {
+                "element": {"#": "range-input-example"},
+                "colorchip": {"#": "chip"}
+            },
+            "bindings": {
+                "red": {
+                    "boundObject": {"@": "red"},
+                    "boundObjectPropertyPath": "value"
+                },
+                "green": {
+                    "boundObject": {"@": "green"},
+                    "boundObjectPropertyPath": "value"
+                },
+                "blue": {
+                    "boundObject": {"@": "blue"},
+                    "boundObjectPropertyPath": "value"
+                },
+                "opacity": {
+                    "boundObject": {"@": "alpha"},
+                    "boundObjectPropertyPath": "value"
+                }
+            }
+        }
+    }
+    </script>
+</head>
+    <body>
+        <div id="range-input-example" class="range-input-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>Range Input</h3>
+                    <p>
+                        The Range Input component wraps an HTML input "range" type.
+                    </p>
+                </div>
+            </div>
+
+            <h4>Example - Color changer</h4>
+            <div class="demo range1">
+                <div class="span12">
+                        <div id="chip" class="chip">
+                        </div>
+                        <div id="controls" class="controls">
+                            <div class="slider-item">
+                                <div id="red"></div>
+                                <span class="label">Red</span>
+                            </div>
+                            <div class="slider-item">
+                                <div id="green"></div>
+                                <span class="label">Green</span>
+                            </div>
+                            <div class="slider-item">
+                                <div id="blue"></div>
+                                <span class="label">Blue</span>
+                            </div>
+                            <div class="slider-item">
+                                <div id="alpha"></div>
+                                <span class="label">Alpha</span>
+                            </div>
+                        </div>
+
+                </div>
+            </div>
+        
+        
+        <section>
+           <ul id="slider-accordion1" class="accordion">
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                    <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;div id="chip" class="chip"&gt;
+&lt;/div&gt;
+&lt;div id="controls" class="controls"&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;div id="red"&gt;&lt;/div&gt;
+        &lt;span class="label"&gt;Red&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;div id="green"&gt;&lt;/div&gt;
+        &lt;span class="label"&gt;Green&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;div id="blue"&gt;&lt;/div&gt;
+        &lt;span class="label"&gt;Blue&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;div id="alpha"&gt;&lt;/div&gt;
+        &lt;span class="label"&gt;Alpha&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "red": {
+        "module": "montage/ui/bluemoon/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "element": {"#": "red"},
+            "minValue": "0",
+            "maxValue": "255",
+            "step": "1",
+            "value": "255"
+        }
+    },
+
+    "green": {
+        "module": "montage/ui/bluemoon/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "element": {"#": "green"},
+            "minValue": "0",
+            "maxValue": "255",
+            "step": "1",
+            "value": "0"
+        }
+    },
+
+    "blue": {
+        "module": "montage/ui/bluemoon/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "element": {"#": "blue"},
+            "minValue": "0",
+            "maxValue": "255",
+            "step": "1",
+            "value": "0"
+        }
+    },
+    "alpha": {
+        "module": "montage/ui/bluemoon/slider.reel",
+        "name": "Slider",
+        "properties": {
+            "element": {"#": "alpha"},
+            "minValue": "0",
+            "maxValue": "1",
+            "step": "0.1",
+            "value": "1"
+        }
+    },
+
+    "owner": {
+        "name": "RangeInputExample2",
+        "module": "components/range-input-example2.reel",
+        "properties": {
+            "element": {"#": "range-input-example"},
+            "colorchip": {"#": "chip"}
+        },
+        "bindings": {
+            "red": {
+                "boundObject": {"@": "red"},
+                "boundObjectPropertyPath": "value"
+            },
+            "green": {
+                "boundObject": {"@": "green"},
+                "boundObjectPropertyPath": "value"
+            },
+            "blue": {
+                "boundObject": {"@": "blue"},
+                "boundObjectPropertyPath": "value"
+            },
+            "opacity": {
+                "boundObject": {"@": "alpha"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
+    }
+}
+ </pre>
+
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage;
+var Component = require("montage/ui/component").Component;
+
+exports.MontageSlider = Montage.create(Component, {
+
+    _red: {
+        value: 125
+    },
+
+    _green: {
+        value: 125
+    },
+
+    _blue: {
+        value: 125
+    },
+
+    _opacity: {
+        value: 1.0
+    },
+
+    colorchip: {
+        value: null
+    },
+
+    red: {
+        get: function() {
+            return this._red;
+        },
+        set: function(value) {
+            this._red = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    blue: {
+        get: function() {
+            return this._blue;
+        },
+        set: function(value) {
+            this._blue = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    green: {
+        get: function() {
+            return this._green;
+        },
+        set: function(value) {
+            this._green = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    opacity: {
+        get: function() {
+            return this._opacity;
+        },
+        set: function(value) {
+            this._opacity = value;
+            this.needsDraw = true;
+        }
+    },
+
+    draw: {
+        value: function() {
+            this.colorchip.style.background = "rgb(" + this.red + "," + this.green + ", " + this.blue + ")";
+            this.colorchip.style.opacity = this.opacity;
+            console.log(this.colorchip.style.background);
+        }
+    }
+
+});                    
+                        </pre>
+                    </div>
+                </li>
+            </ul>
+        
+        </section>
+
+    </body>
+</html>
