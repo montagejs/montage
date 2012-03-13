@@ -7,6 +7,14 @@
         }
     },
     
+    "toggle": {
+        "module": "montage/ui/skeleton/toggle.reel",
+        "name": "Toggle",
+        "properties": {
+            "element": {"#": "toggle"}
+        }
+    },
+    
     "range-input": {
         "module": "montage/ui/skeleton/range-input.reel",
         "name": "RangeInput",
