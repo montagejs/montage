@@ -18,7 +18,43 @@
                         "content": {"@": "content"}
                     }
                 },
-                
+                "controller": {
+                    "name": "ArrayController",
+                    "module": "montage/ui/controller/array-controller",
+                    "properties": {
+                        "content":  ["home", "products", "services", "about"],
+                        "selectedIndexes": [0]
+
+                    }
+                },
+
+                "repetition1": {
+                    "module": "montage/ui/repetition.reel",
+                    "name": "Repetition",
+                    "properties": {
+                        "element": {
+                            "#": "nav"
+                        },
+                        "isSelectionEnabled": true,
+                        "contentController": {"@": "controller"}
+                    }
+                },
+                "navItem": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "nav-item"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "repetition1"},
+                            "boundObjectPropertyPath": "objectAtCurrentIteration",
+                            "oneway": true
+                        }
+                    }
+                },
+
+
                 "home": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
@@ -47,6 +83,15 @@
                         "value": "About"
                     }
                 },
+
+                "substitution-accordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "substitution-accordion1"}
+                    }
+                },
+
                 "content": {
                     "module": "montage/ui/substitution.reel",
                     "name": "Substitution",
@@ -57,26 +102,49 @@
                             "products": {"@": "products"},
                             "services": {"@": "services"},
                             "about": {"@": "about"}
+                        },
+                        "switchValue": "home"
+                    },
+                    "bindings": {
+                        "switchValue": {
+                            "boundObject": {"@": "controller"},
+                            "boundObjectPropertyPath": "selectedObjects.0"
                         }
-                    }                    
+                    }
                 }
             }
         </script>
 
         <style>
 
-            li.selected, li.active {
-                background-color: white;
-                color: gray;
-            }
-            
-            div.substitution-content {
-                height: 200px;
-                text-align: center;
-                margin-top: 100px;
-                font-size: 18px;
-            }
-            
+       .tabsnav {
+           list-style: none;
+           padding: 0;
+           margin: 0;
+           border-bottom: 1px solid #ddd;
+           padding-bottom: 2px;
+       }
+       .tabsnav li {
+           padding: 5px 10px;
+           display: inline;
+           margin: 0px;
+       }
+       .tabsnav a {
+           text-decoration: none;
+        }
+
+       .tabsnav li.selected {
+           background-color: #fff;
+           border: 1px solid #ddd;
+           border-bottom: none;
+       }
+
+h1.substitution-content {
+    height: 200px;
+    text-align: center;
+    margin-top: 100px;
+}
+
         </style>
     </head>
     <body>
@@ -85,35 +153,194 @@
                 <div class="span10">
                     <h3>Substitution</h3>
                     <p>
-                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
+                        The Substitution component provides a "slot" in which you display one of a set of predetermined components that you specify. The Substitution component's <code>switchComponents</code> property maps a list of labels to components references. When you want to display one of the components, you assign the desired string to the Substitution component's <code>switchValue</code> property. In this example, the components being displayed are simple DynamicText components.
                     </p>
                 </div>
-                
-                
-                                           
+
+
+
             </div>
-            
-            <h4>Demo</h4>
-            
-            <div class="demo">
-                
-                    <ul id="nav" class="tabs">
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#products">Products</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#about">About</a></li>
+
+            <h4>Example</h4>
+            <p>This example shows how to use Substitution to create a simple tabbed menu.</p>
+            <div class="demo sub">
+
+                    <ul id="nav" class="tabsnav">
+                        <li><a href="#" id="nav-item"></a></li>
                     </ul>
-                    
-                    
-                    <div id="content" class="substitution-content">
-                    </div>
+                    <h1 id="content" class="substitution-content"></h1>
 
             </div>
 
             <section>
-                <a href="m-js/examples/sink/components/substitution-example.reel" target="_blank">View Demo Source</a>
+                <ul id="substitution-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;ul id="nav" class="tabs"&gt;
+    &lt;li&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#products"&gt;Products&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#services"&gt;Services&lt;/a&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;a href="#about"&gt;About&lt;/a&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;div id="content" class="substitution-content"&gt;
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "owner": {
+        "module": "components/substitution-example.reel",
+        "name": "SubstitutionExample",
+        "properties": {
+            "element": {"#": "substitution-example"},
+            "navEl": {"#": "nav"},
+            "content": {"@": "content"}
+        }
+    },
+    "controller": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "content":  ["home", "products", "services", "about"]
+        }
+    },
+
+    "repetition1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "nav"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "controller"}
+        }
+    },
+    "navItem": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "nav-item"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "repetition1"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration",
+                "oneway": true
+            }
+        }
+    },
+
+
+    "home": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Home"
+        }
+    },
+    "products": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Products"
+        }
+    },
+    "services": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "Services"
+        }
+    },
+    "about": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "About"
+        }
+    },
+
+    "substitution-accordion1": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "substitution-accordion1"}
+        }
+    },
+
+    "content": {
+        "module": "montage/ui/substitution.reel",
+        "name": "Substitution",
+        "properties": {
+            "element": {"#": "content"},
+            "switchComponents": {
+                "home": {"@": "home"},
+                "products": {"@": "products"},
+                "services": {"@": "services"},
+                "about": {"@": "about"}
+            },
+            "switchValue": "home"
+        },
+        "bindings": {
+            "switchValue": {
+                "boundObject": {"@": "controller"},
+                "boundObjectPropertyPath": "selectedObjects.0"
+            }
+        }
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+.tabsnav {
+   list-style: none;
+   padding: 0;
+   margin: 0;
+   border-bottom: 1px solid #ddd;
+   padding-bottom: 2px;
+}
+.tabsnav li {
+   padding: 5px 10px;
+   display: inline;
+   margin: 0px;
+}
+.tabsnav a {
+   text-decoration: none;
+}
+
+.tabsnav li.selected {
+   background-color: #fff;
+   border: 1px solid #ddd;
+   border-bottom: none;
+}
+
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+
             </section>
-            
+
+
+
+            <section>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/substitution-example.reel" target="_blank">View source on GitHub</a>
+            </section>
+<!--
             <section>
                 <h4>Component Properties</h4>
                 <table>
@@ -140,13 +367,13 @@
                       <td>selectedTabValue</td>
                       <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
                     </tr>
-                    
+
                   </tbody>
                 </table>
                 <p>
                     <a href="" target="_blank">View full Documentation</a>
                 </p>
-            </section>
+            </section> -->
         </div>
     </body>
 </html>
