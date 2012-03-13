@@ -65,7 +65,7 @@
                 "properties": {
                     "element": {"#": "flow"},
                     "objects": [
-                        0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9,0,1,2,3,4,5,6,7,8,9
+                        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39
                     ],
                     "scale": 300
                 },
@@ -104,6 +104,13 @@
                 "name": "DynamicText",
                 "properties": {
                     "element": {"#": "slide"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    }
                 }
             }
         }
@@ -127,11 +134,17 @@
             margin-top: -100px;
             width: 200px;
             height: 200px;
-            background: white;
-            -webkit-box-shadow: 0 0 20px rgba(0, 0, 0, .5);
+            line-height: 200px;
+            text-align: center;
+            background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#888));
+            font-family: sans-serif;
+            font-size: 90px;
+            color: #fff;
+            text-shadow: 0 2px 7px #777;
+            -webkit-box-shadow: inset 2px 6px 8px -4px #fff, inset -2px -5px 6px -4px #333, 0 0 10px rgba(0, 0, 0, .3);
             -webkit-transform-origin: 100px 100px 0 !important;
             border-radius: 40px;
-            display: none;
+            gdisplay: none;
         }
     </style>
 </head>

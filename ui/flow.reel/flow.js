@@ -316,6 +316,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 self._isCameraUpdated = true;
                 self.needsDraw = true;
             }, false);
+            this._repetition.indexMap=[0,1,1,1,2,3,39];
         }
     },
 
@@ -324,6 +325,11 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function () {
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
+            if ((new Date().getTime()>>1)%2) {
+                this._repetition.indexMap = [1,2];
+            } else {
+                this._repetition.indexMap = [3,2,1];
+            }
         }
     },
 
@@ -331,7 +337,7 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         value: function () {
             var i,
-                length = this.numberOfNodes,
+                length,
                 slide = {},
                 transform,
                 origin,
@@ -340,6 +346,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                 iOffset,
                 iStyle,
                 pos;
+
+            length = this._repetition.indexMap.length;
 
             if (this.isAnimating) {
                 this._animationInterval();
@@ -365,8 +373,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._splinePath._computeDensitySummation();
                 for (i = 0; i < length; i++) {
                     iStyle = this._repetitionComponents[i].element.style;
-                    iOffset = this._offset.value(i);
-                    slide.index = i;
+                    iOffset = this._offset.value(this._repetition.indexMap[i]);
+                    slide.index = this._repetition.indexMap[i];
                     slide.time = iOffset.time;
                     slide.speed = iOffset.speed;
                     iPath = {};
@@ -511,7 +519,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     _repetitionDraw: {
         enumerable: false,
         value: function () {
-            this.numberOfNodes=this._repetition._childComponents.length;
         }
     },
 
@@ -829,22 +836,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this.selectedSlideIndex = null;
                 this.origin = this._origin * value / oldScale;
             }
-            this.needsDraw = true;
-        }
-    },
-
-    _numberOfNodes: {
-        enumerable: false,
-        value: 0
-    },
-
-    numberOfNodes: {
-        get: function () {
-            return this._numberOfNodes;
-        },
-        set: function (value) {
-            this._numberOfNodes = value;
-            this.length = (value-1) * this._scale;
             this.needsDraw = true;
         }
     },
