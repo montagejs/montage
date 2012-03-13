@@ -26,5 +26,19 @@
             "element": {"#": "fahrenheit"},
             "value": "32"
         }
+    },
+    
+    "barometer": {
+        "module": "montage/ui/range-input.reel",
+        "name": "RangeInput",
+        "properties": {
+            "element": {"#": "barometer"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "fahrenheitTextfield"},
+                "boundObjectPropertyPath": "value"
+            }
+        }
     }
 }

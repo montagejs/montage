@@ -22,7 +22,7 @@ var TextArea = exports.TextArea = Montage.create(TextInput, {
 });
 
 TextArea.addAttributes({
-        autofocus: null,
+        autofocus: {dataType: 'boolean'},
         cols: null,
         dirname: null,
         disabled: {dataType: 'boolean'},
