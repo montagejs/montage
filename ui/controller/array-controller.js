@@ -519,9 +519,11 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 return null;
             }
 
-            this._selectedObjects = this.content.filter(function(value, i) {
-                return this._selectedContentIndexes.indexOf(i) >= 0;
-            }, this);
+            if(this.content) {
+                this._selectedObjects = this.content.filter(function(value, i) {
+                    return this._selectedContentIndexes.indexOf(i) >= 0;
+                }, this);
+            }
 
             return this._selectedObjects;
         },

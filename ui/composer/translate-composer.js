@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module montage/ui/composer/long-press-composer
+    @module montage/ui/composer/long-press-composer
     @requires montage
     @requires montage/ui/composer/composer
 */
@@ -203,6 +203,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    invertAxis: {value: null},
+
     _hasMomentum: {
         enumerable: false,
         value: true
@@ -328,6 +330,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     captureMousedown: {
         enumerable: false,
         value: function (event) {
+            if (event.button !== 0) {
+                return;
+            }
+
             if (this._shouldPreventDefault(event)) {
                 event.preventDefault();
             }
@@ -349,8 +355,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     handleMousedown: {
         enumerable: false,
         value: function (event) {
-
-            if (!this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
+            if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
                 this.eventManager.claimPointer(this._observedPointer, this);
                 this._start(event.clientX, event.clientY, event.target);
             }
@@ -548,11 +553,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: function (x, y) {
 
             this._isSelfUpdate=true;
+            var delta;
             if (this._axis!="vertical") {
+                var delta = this.invertAxis ? (x-this._pointerX) : (this._pointerX-x);
                 if ((this._translateX<0)||(this._translateX>this._maxTranslateX)) {
-                    this.translateX+=((this._pointerX-x)/2)*this._pointerSpeedMultiplier;
+                    this.translateX+=(delta/2)*this._pointerSpeedMultiplier;
                 } else {
-                    this.translateX+=(this._pointerX-x)*this._pointerSpeedMultiplier;
+                    this.translateX+=(delta)*this._pointerSpeedMultiplier;
                 }
             }
             if (this._axis!="horizontal") {
@@ -562,6 +569,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                     this.translateY+=(this._pointerY-y)*this._pointerSpeedMultiplier;
                 }
             }
+
             this._isSelfUpdate=false;
             this._pointerX=x;
             this._pointerY=y;
@@ -618,6 +626,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             this.dispatchEvent(translateEndEvent);
         }
     },
+
 
     _end: {
         enumerable: false,

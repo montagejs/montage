@@ -1,0 +1,39 @@
+<html>
+<head>
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "module": "reel/template/componentdaughter.reel",
+            "name": "ComponentDaughter",
+            "properties": {
+                "element": {"#": "componentdaughter"},
+                "label": {"@": "label"}
+            }
+        },
+
+        "label": {
+            "prototype": "reel/template/my-dynamic-text.reel",
+            "properties": {
+                "element": {"#": "label"},
+                "value": "Label"
+            }
+        },
+
+        "template": {
+            "properties": {
+                "extends": {
+                    "templateModuleId": "reel/template/componentmother.reel/componentmother.html",
+                    "element": {"#": "motherTemplate"}
+                }
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="componentdaughter" class="componentdaughter">
+        <div class="header">Component Daughter <span data-montage-id="label"></span></div>
+        <div data-montage-id="motherTemplate"></div>
+    </div>
+</body>
+</html>

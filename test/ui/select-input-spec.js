@@ -115,7 +115,90 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
 
                     });
                 });
+                
+                describe("Test that if no option is marked as selected, we set the first one as selected (gh-122)", function() {
+                    var selectInput = test.noDefaultSelection;
+                    expect(selectInput.contentController.selectedIndexes.length).toBe(1);
+                });
 
+
+                describe("#208: Ability to bind to SelectInput.value", function() {
+                    it("Value should be set to the bound value initially", function() {
+                        var justifySelect = test.justifySelect;
+                        test.justify = 'center';
+
+                        testPage.waitForDraw();
+
+                        runs(function(){
+                            expect(justifySelect.value).toBe("center");
+                        });
+
+                    });
+
+
+                    it("Verify Select.value changes when bound value changes", function() {
+                        var justifySelect = test.justifySelect;
+                        test.justify = 'right';
+                        expect(justifySelect.value).toBe("right");
+
+                    });
+
+
+                    it("Verify bound value (justify) to change when Selection changes", function() {
+                        var justifySelect = test.justifySelect;
+
+                        changeSelection(justifySelect.element, 1);
+                        expect(justifySelect.value).toBe("left");
+
+                        changeSelection(justifySelect.element, 2);
+                        expect(justifySelect.value).toBe("center");
+                        expect(test.justify).toBe("center");
+
+                    });
+
+
+                });
+
+                describe("#208: Ability to bind to SelectInput.values", function() {
+                    it("Value should be set to the bound value initially", function() {
+                        var dept = test.dept;
+                        dept.values = ['SWE', 'IT'];
+
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(dept.values.length).toBe(2);
+                            expect(dept.contentController.selectedIndexes[1]).toBe(5);
+                        });
+
+                    });
+
+
+                    it("Verify Select.values changes when bound value changes", function() {
+                        var dept = test.dept;
+                        dept.contentController.selectedIndexes = [2, 4, 5];
+                        testPage.waitForDraw();
+
+                        runs(function(){
+                            expect(dept.values[2]).toBe('IT');
+                        });
+
+
+                    });
+
+
+                    it("Verify bound value (justify) to change when Selection changes", function() {
+                        var dept = test.dept;
+
+                        changeSelection(dept.element, 1);
+                        expect(dept.values[0]).toBe("HRD");
+
+                        changeSelection(dept.element, 2);
+                        expect(dept.values[0]).toBe("SWE");
+
+                    });
+
+
+                });
 
                 // test set/get of standard and global attributes
                 describe("when setting standard attributes", function() {
