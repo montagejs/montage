@@ -14,7 +14,14 @@ exports.SubstitutionExample = Montage.create(Component, {
     },
 
     // the substitution
-    content: {value: null}
+    content: {value: null},
+    
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
+        }
+    }
     
     
     
