@@ -1,4 +1,11 @@
 {
+    "button": {
+        "module": "montage/ui/skeleton/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "button"}
+        }
+    },
     
     "range-input": {
         "module": "montage/ui/skeleton/range-input.reel",

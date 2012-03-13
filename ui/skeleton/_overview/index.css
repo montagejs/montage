@@ -64,7 +64,9 @@ td {
 }
 
 
-.slider {
-    box-shadow: 0 0px 3px 15px #444;
+/* For testing */
+.montage-rangeInput {
+    /width: 100px !important;
+    /box-shadow: 0 0 0 10px pink;
 }
 
