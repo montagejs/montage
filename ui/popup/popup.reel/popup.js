@@ -27,6 +27,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     // A Delegate to control positioning (and other features, in future) of the popup in a custom manner
     delegate: {value: null},
 
+    /**
+        Internal property.
+        @private
+    */
     contentEl: {
         value: null
     },
@@ -34,66 +38,24 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         Description TODO
         @type {Property}
         @default {Container} null
+        @private
     */
     containerEl: {
         value: null
     },
 
-/**
-  Description TODO
-  @private
-*/
-    _pointer: {
-        value: true
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} true
-    */
-    pointer: {
-        get: function() {
-            return this._pointer;
-        },
-        set: function(value) {
-            if (this._pointer !== value) {
-                this._pointer = value;
-                this.needsDraw = true;
-            }
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _boxed: {
-        value: true
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default {Boolean} true
-    */
-    boxed: {
-        get: function() {
-            return this._boxed;
-        },
-        set: function(value) {
-            if (this._boxed !== value) {
-                this._boxed = value;
-                this.needsDraw = true;
-            }
-        }
-    },
+
 /**
   Description TODO
   @private
 */
     _slot: {value: null},
 /**
+
         Description TODO
         @type {Function}
         @default null
+    @private
     */
     slot: {
         get: function() {
@@ -112,7 +74,8 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 */
     _content: {value: null},
 /**
-        Description TODO
+        The Montage component that will be shown in this popup.
+
         @type {Function}
         @default null
     */
@@ -137,7 +100,8 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 */
     _modal: { value: false },
 /**
-        Description TODO
+        If true, the Popup will be rendered as a Modal.
+
         @type {Function}
         @default {Boolean} false
     */
@@ -156,8 +120,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         }
     },
 
-    // An Object wtih values {top, left}. Set it only if the popup should display at a
-    // given location instead of anchoring it to a anchor element or at the center of the screen.
+    /**
+        An Object wtih values {top, left}. Set it only if the popup should display at a
+        given location always.
+    */
     _position: {value: null},
     position: {
         get: function() {
@@ -169,8 +135,12 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         }
     },
 
+    /**
+    * Number of milliseconds after which the Popup must be dismissed. Default is 0.
+    */
     autoDismiss: { value: 0 },
 
+    /** @private */
     _displayed: { value: false },
     displayed: {
         get: function() {
@@ -204,9 +174,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
 
     /**
+     Internal method.
      @private
      */
-    _getPosition: {
+    _getElementPosition: {
         value: function(obj) {
             var curleft = 0, curtop = 0, curHt = 0, curWd = 0;
             if (obj.offsetParent) {
@@ -222,16 +193,21 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         }
     },
 
-    _calculatePosition: {
+    _positionPopup: {
         value: function() {
-            var pos, delegate = this.delegate, anchor = this.anchor, type = this.type;
+            var position, delegate = this.delegate, anchor = this.anchor, type = this.type;
 
-            if(delegate && (typeof delegate.positionPopup === 'function')) {
+            // if a delegate is provided, use that to get the position
+            if(delegate && (typeof delegate.willPositionPopup === 'function')) {
                 var anchorPosition;
                 if(anchor) {
-                    anchorPosition = this._getPosition(anchor);
+                    anchorPosition = this._getElementPosition(anchor);
                 }
-                pos = delegate.positionPopup(this, anchor, anchorPosition);
+                position = delegate.willPositionPopup(this, anchor, anchorPosition);
+            } else if(this.position !== null) {
+                // If a position has been specified but no delegate has been provided
+                // we assume that the position is static and hence use that
+                position = this.position;
             } else {
                 // @todo - advanced positioning support
                 var $el = this.contentEl || this.content.element;
@@ -243,61 +219,49 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 var viewportWidth = window.innerWidth;
 
                 if (anchor) {
+                    // if an anchor is provided, we position the popup relative to the anchor
+                    //
                     if (anchor.nodeName) {
                         // if anchor is an element
-                        var elPosition = this._getPosition(anchor);
+                        var elPosition = this._getElementPosition(anchor);
                         var tgtHeight = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
                         var tgtWidth = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
 
-                        pos = {
+                        position = {
                             top: elPosition[1] + tgtHeight + 20 /* pointer */,
                             left: elPosition[0] + (tgtWidth / 2) - (elWidth / 2)
                         };
 
-                        if (pos.left < 0) {
-                            pos.left = elPosition[0];
+                        if (position.left < 0) {
+                            position.left = elPosition[0];
                             this._showHidePointer(false);
                             // dont show the pointer - @todo - support pointer arrow at different parts of the popup
                         }
                     } else {
                         // anchor is absolute position {top, left}
-                        pos = anchor;
+                        position = anchor;
                     }
                 } else {
-                    // position it at top or center
-                    // for now, just show it at center
-                    pos = {
+                    // No positioning hints provided. POsition it at the center of the viewport by default
+                    position = {
                         top: (viewportHeight / 2 - (elHeight / 2)),
                         left: (viewportWidth / 2 - (elWidth / 2))
                     };
                 }
             }
-            return pos;
-        }
-    },
-
-    _positionPopup: {
-        value: function() {
-            //console.log('--> position popup');
-            var pos = this.position;
+            //this.position = position;
             var popupSlot = this._popupSlot;
 
-            if(pos) {
-                if (pos.top) {
-                    popupSlot.element.style.top = pos.top + 'px';
-                }
-                if (pos.left) {
-                    popupSlot.element.style.left = pos.left + 'px';
-                }
-                if (pos.right) {
-                    popupSlot.element.style.right = pos.right + 'px';
-                }
-                if (pos.bottom) {
-                    popupSlot.element.style.bottom = pos.bottom + 'px';
-                }
+            if(position) {
+                popupSlot.element.style.top = (position.top ? position.top + 'px' : '');
+                popupSlot.element.style.left = (position.left ? position.left + 'px' : '');
+                popupSlot.element.style.right = (position.right ? position.right + 'px' : '');
+                popupSlot.element.style.bottom = (position.bottom ? position.bottom + 'px' : '');
             }
+
         }
     },
+
 
     _createModalMask: {
         value: function() {
@@ -340,6 +304,13 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         }
     },
 
+    /**
+    * Show the Popup. The Popup is displayed at a position determined by the following conditions:
+    * 1) If a delegate is provided and the willPositionPopup function is implemented, the position is always determined by the delegate
+    * 2) If Popup.position has been set, the Popup is always displayed at this location
+    * 3) If an anchor has been set, the popup is displayed below the anchor
+    * 4) If no positional hints are provided, the Popup is displayed at the center of the screen
+    */
     show: {
         value: function() {
             var type = this.type,
@@ -352,6 +323,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         }
     },
 
+    /**
+    * Hide the popup
+    */
     hide: {
         value: function() {
             this._removeEventListeners();
@@ -397,9 +371,6 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     draw: {
         value: function() {
             if (this.displayed) {
-                // custom, alert, confirm, notify
-                // only one popup of each type can be displayed at the same time
-                // kishore - does the above restriction make sense ? should we restrict it ?
 
                 if(this.modal === true) {
                     this.element.classList.add('montage-modal');
@@ -416,7 +387,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this.content.element.style.display = 'block';
                 this.content.element.classList.remove('montage-invisible');
                 // TODO do we want the panel to be focusable?
-                // this.content.element.setAttribute("tabindex", "0"); // Make the alert focusable
+                this.content.element.setAttribute("tabindex", "0"); // Make the popup content focusable
 
                 if (this.autoDismiss) {
                     var self = this;
@@ -442,14 +413,14 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     didDraw: {
         value: function() {
             if (this._displayed) {
-                this.content.element.focus();
 
                 if(this.modal === true) {
                     this._showModalMask();
                 }
 
-                this.position = this.position || this._calculatePosition();
                 this._positionPopup();
+                // focus the content to enable key events such as ENTER/ESC
+                this.content.element.focus();
 
             } else {
                 if(this.modal === true) {
@@ -514,9 +485,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // an optimization to call positionPopup fewer times
                 window.clearTimeout(this._timeoutId);
                 this._timeoutId = setTimeout(function() {
-                    //self._positionPopup();
-                    self.position = self._calculatePosition();
-                    self._positionPopup();
+                    self.needsDraw = true;
                 }, 100);
             }
          }

@@ -16,6 +16,9 @@
 .accordion-heading .accordion-toggle {
   display: block;
   padding: 8px 15px;
+  color: #08c;
+  font-size: 14px;
+  font-weight: bold;
 }
 .accordion-inner {
   padding: 9px 15px;

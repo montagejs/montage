@@ -34,7 +34,6 @@
                         }
                     }
                 },
-
                 "fname": {
                     "module": "montage/ui/textfield.reel",
                     "name": "Textfield",
@@ -147,11 +146,111 @@
                         }
                     }
                 },
+                "justify-comparator-left": {
+                    "module": "components/select-input-example.reel",
+                    "name": "JustifyConverter",
+                    "properties": {
+                        "justify": "left"
+                    }
+                },
+                "justify-comparator-right": {
+                    "module": "components/select-input-example.reel",
+                    "name": "JustifyConverter",
+                    "properties": {
+                        "justify": "right"
+                    }
+                },
+                "justify-comparator-center": {
+                    "module": "components/select-input-example.reel",
+                    "name": "JustifyConverter",
+                    "properties": {
+                        "justify": "center"
+                    }
+                },
+                "justify-left": {
+                    "module": "montage/ui/toggle-button.reel",
+                    "name": "ToggleButton",
+                    "properties": {
+                        "element": {"#": "justify-left"},
+                        "pressedClass": "success"
+                    },
+                    "bindings": {
+                        "pressed": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify",
+                            "converter": {"@": "justify-comparator-left"}
+                        }
+                    }
+                },
+                "justify-center": {
+                    "module": "montage/ui/toggle-button.reel",
+                    "name": "ToggleButton",
+                    "properties": {
+                        "element": {"#": "justify-center"},
+                        "pressedClass": "success"
+                    },
+                    "bindings": {
+                        "pressed": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify",
+                            "converter": {"@": "justify-comparator-center"}
+                        }
+                    }
+                },
+                "justify-right": {
+                    "module": "montage/ui/toggle-button.reel",
+                    "name": "ToggleButton",
+                    "properties": {
+                        "element": {"#": "justify-right"},
+                        "pressedClass": "success"
+                    },
+                    "bindings": {
+                        "pressed": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify",
+                            "converter": {"@": "justify-comparator-right"}
+                        }
+                    }
+                },
+                "justify-select": {
+                    "module": "montage/ui/select-input.reel",
+                    "name": "SelectInput",
+                    "properties": {
+                        "element": {"#": "justify-select"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify"
+                        }
+                    }
+                },
+                "justify-result": {
+                    "module": "montage/ui/dynamic-text.reel",
+                    "name": "DynamicText",
+                    "properties": {
+                        "element": {"#": "justify-result"}
+                    },
+                    "bindings": {
+                        "value": {
+                            "boundObject": {"@": "owner"},
+                            "boundObjectPropertyPath": "justify",
+                            "oneway": "true"
+                        }
+                    }
+                },
                 "select-accordion1": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
                         "element": {"#": "select-accordion1"}
+                    }
+                },
+                "select-accordion2": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "select-accordion2"}
                     }
                 }
             }
@@ -162,8 +261,14 @@
                 color: #E73525;
                 padding: 2px 0;
             }
+
             .select-input-example pre {
                 border: 0;
+            }
+
+            .select-input-example .justify {
+                width: 40px;
+                padding: 5px;
             }
         </style>
     </head>
@@ -182,11 +287,11 @@
             </div>
 
             <h4>Demo</h4>
+
             <div class="demo select1">
-<!--             <p>
-                 Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium. Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium
+                <p>
+                 An example using SelectInput component in a Form. Make changes to the form by selecting a different Country for instance and click the 'Update' button to see the result.
                  </p>
- -->
                  <form class="form-stacked">
                      <label for="fname">First Name</label>
                      <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
@@ -217,14 +322,14 @@
                     </div>
                  </form>
 
-                 <pre id="echo"></pre>
-                 
-                 
+                 <div id="echo"></div>
+
+
             </div>
-            
-            
+
+
                  <section>
-                     
+
                      <ul id="select-accordion1" class="accordion">
                         <li class="accordion-group">
                             <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
@@ -520,8 +625,37 @@ exports.SelectInputExample = Montage.create(Component, {
                             </div>
                         </li>
                      </ul>
-                     
-                 
+
+
+            </section>
+
+
+            <section>
+                <div class="demo">
+
+                    <p>
+                             This example demonstrates two-way binding to the 'value' property of SelectInput. Changing the toggle buttons change the SelectInput's value and changing the SelectInput's selection changes the ToggleButton selection.
+                    </p>
+
+                    <div style="height: 40px;">
+                        <button id="justify-none" class="btn justify">-</button>
+                        <button id="justify-left" class="btn justify">L</button>
+                        <button id="justify-center" class="btn justify">C</button>
+                        <button id="justify-right" class="btn justify">R</button>
+                    </div>
+                    <div>
+                        <select id="justify-select" class="justify-select">
+                                <option value=""></option>
+                                <option value="left">Left</option>
+                                <option value="center">Center</option>
+                                <option value="right">Right</option>
+                        </select>
+
+                        <p>
+                            Justify selection: <span id="justify-result"></span>
+                        </p>
+                    </div>
+                </div>
             </section>
 
             <section>

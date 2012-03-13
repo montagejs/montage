@@ -47,7 +47,9 @@ Require.read = function (url) {
 
     try {
         request.open(GET, url, true);
-        request.overrideMimeType(APPLICATION_JAVASCRIPT_MIMETYPE);
+        if (request.overrideMimeType) {
+            request.overrideMimeType(APPLICATION_JAVASCRIPT_MIMETYPE);
+        }
         request.onreadystatechange = function () {
             if (request.readyState === 4) {
                 onload();
@@ -76,7 +78,7 @@ var globalEval = /*this.execScript ||*/eval;
 // For Firebug evaled code isn't debuggable otherwise
 // http://code.google.com/p/fbug/issues/detail?id=2198
 if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
-    globalEval = new Function("evalString", "return eval(evalString)");
+    globalEval = new Function("_", "return eval(_)");
 }
 
 var __FILE__String = "__FILE__",
@@ -131,36 +133,44 @@ Require.XhrLoader = function (config) {
 };
 
 var definitions = {};
+var getDefinition = function (hash, id) {
+    definitions[hash] = definitions[hash] || {};
+    definitions[hash][id] = definitions[hash][id] || Promise.defer();
+    return definitions[hash][id];
+};
 define = function (hash, id, module) {
-    definitions[hash][id].resolve(module);
+    getDefinition(hash, id).resolve(module);
 };
 
 Require.ScriptLoader = function (config) {
     var hash = config.packageDescription.hash;
-    definitions[hash] = {};
     return function (location, module) {
+        return Promise.call(function () {
 
-        if (/\.js$/.test(location)) {
-            location = location.replace(/\.js/, ".load.js");
-        } else {
-            location += ".load.js";
-        }
+            // short-cut by predefinition
+            if (definitions[hash] && definitions[hash][module.id]) {
+                return definitions[hash][module.id].promise;
+            }
 
-        var script = document.createElement("script");
-        script.onload = function() {
-            script.parentNode.removeChild(script);
-        };
-        script.onerror = function (error) {
-            script.parentNode.removeChild(script);
-        };
-        script.src = location;
-        script.defer = true;
-        document.getElementsByTagName("head")[0].appendChild(script);
+            if (/\.js$/.test(location)) {
+                location = location.replace(/\.js/, ".load.js");
+            } else {
+                location += ".load.js";
+            }
 
-        var deferred = Promise.defer();
-        definitions[hash][module.id] = deferred;
+            var script = document.createElement("script");
+            script.onload = function() {
+                script.parentNode.removeChild(script);
+            };
+            script.onerror = function (error) {
+                script.parentNode.removeChild(script);
+            };
+            script.src = location;
+            script.defer = true;
+            document.getElementsByTagName("head")[0].appendChild(script);
 
-        return deferred.promise
+            return getDefinition(hash, module.id).promise
+        })
         .then(function (definition) {
             delete definitions[hash][module.id];
             for (var name in definition) {
