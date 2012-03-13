@@ -1,0 +1,11 @@
+{
+    
+    "range-input": {
+        "module": "montage/ui/skeleton/range-input.reel",
+        "name": "RangeInput",
+        "properties": {
+            "element": {"#": "range-input"}
+        }
+    }
+    
+}

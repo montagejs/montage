@@ -1,27 +1,42 @@
- div.slider {
-   display: inline-block;
-   border-radius: 4px;
-   position: relative;
-   height: 5px;
-   background-color: #556270; 
-   border: 1px solid #aaa;
-   cursor: default;
-}
-.slider-handle {
-    top: -0.6em;
-    position: absolute;
-    z-index: 2;
-    cursor: pointer;
-    
-    width: 1.2em;
-    height: 1.2em;
-    background-color: #ddd;
-    color: #fff;
-    padding: 2px;
-    border: 1px solid #333;
-    border-radius: 10px;
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+.montage-rangeInput {
+    position: relative;
+    font-size: 12px;
+    display: inline-block;
+    width: 10em;
+    height: 0.4em;
+    border-radius: 3px;
+    border: 1px solid #b3b3b3;
+    background-color: #d9d9d9;
 }
 
-.slider-handle:hover {
-    background-color: #999;
+.montage-rangeInput-thumb {
+    position: absolute;
+    font-size: inherit;
+    box-sizing: border-box;
+    margin: -0.65em;
+    border-radius: 1.5em;
+    width: 1.5em;
+    height: 1.5em;
+    left: 0;
+    top: 0;
+    border: 1px solid #b3b3b3;
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+/* States */
+.montage-rangeInput-thumb:hover {
+    background-color: #ffffff;
+}
+.montage-rangeInput-thumb:active {
+    background-color: #e5e5e5;
+}
+.montage-rangeInput-thumb:focus {
+    border-color: #7f7f7f;
 }
