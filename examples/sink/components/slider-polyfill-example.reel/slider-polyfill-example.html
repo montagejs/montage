@@ -124,6 +124,15 @@
                             }
                         }
                     },
+                    
+                    "accordion1": {
+                        "module": "accordion.reel",
+                        "name": "Accordion",
+                        "properties": {
+                            "element": {"#": "slider-polyfill-accordion1"}
+                        }
+                    },
+                    
 
                 "reset": {
                     "module": "montage/ui/button.reel",
@@ -179,89 +188,304 @@
 
             <h4>Demo</h4>
             <div class="demo">
-            <div class="row">
+                <div class="row">
 
-                <div class="span8">
-                    <h5>Make your own color</h5>
+                    <div class="span8">
+                        <h5>Make your own color</h5>
 
-                    <div id="result" style="height: 100px;"></div>
-                    <h1 class="result-hex" id="result-hex"></h1>
-                </div>
-                <div class="span8">
+                        <div id="result" style="height: 100px;"></div>
+                        <h1 class="result-hex" id="result-hex"></h1>
+                    </div>
+                    <div class="span8">
 
-                    <section class="control">
-                        <section>
-                            Red:
-                            <input id="color-red" type="range" min="0" max="15"  value="0"/>
-                            <span id="red-value" class="range-value"></span>
+                        <section class="control">
+                            <section>
+                                Red:
+                                <input id="color-red" type="range" min="0" max="15"  value="0"/>
+                                <span id="red-value" class="range-value"></span>
+                            </section>
+                            <section>
+                                Green:
+                                <input id="color-green" type="range" min="0" max="15" value="0" />
+                                <span id="green-value" class="range-value"/>
+                            </section>
+                            <section>
+                                Blue:
+                                <input id="color-blue" type="range" min="0" max="15" value="0" />
+                                <span id="blue-value" class="range-value" />
+                            </section>
+
                         </section>
-                        <section>
-                            Green:
-                            <input id="color-green" type="range" min="0" max="15" value="0" />
-                            <span id="green-value" class="range-value"/>
-                        </section>
-                        <section>
-                            Blue:
-                            <input id="color-blue" type="range" min="0" max="15" value="0" />
-                            <span id="blue-value" class="range-value" />
-                        </section>
 
-                    </section>
+                        <button id="reset" class="btn cancel small">Reset</button>
 
-                    <button id="reset" class="btn cancel small">Reset</button>
-
+                    </div>
                 </div>
             </div>
-            </div>
-
+            
+            
             <section>
-                <a href="m-js/examples/sink/components/slider-polyfill-example.reel" target="_blank">View Demo Source</a>
+                
+                <ul id="slider-polyfill-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;div class="span8"&gt;<br>
+&lt;h5&gt;Make your own color&lt;/h5&gt;<br>
+<br>
+&lt;div id="result" style="height: 100px;"&gt;&lt;/div&gt;<br>
+&lt;h1 class="result-hex" id="result-hex"&gt;&lt;/h1&gt;<br>
+&lt;/div&gt;<br>
+&lt;div class="span8"&gt;<br>
+<br>
+&lt;section class="control"&gt;<br>
+&lt;section&gt;<br>
+Red:<br>
+&lt;input id="color-red" type="range" min="0" max="15" value="0"/&gt;<br>
+&lt;span id="red-value" class="range-value"&gt;&lt;/span&gt;<br>
+&lt;/section&gt;<br>
+&lt;section&gt;<br>
+Green:<br>
+&lt;input id="color-green" type="range" min="0" max="15" value="0" /&gt;<br>
+&lt;span id="green-value" class="range-value"/&gt;<br>
+&lt;/section&gt;<br>
+&lt;section&gt;<br>
+Blue:<br>
+&lt;input id="color-blue" type="range" min="0" max="15" value="0" /&gt;<br>
+&lt;span id="blue-value" class="range-value" /&gt;<br>
+&lt;/section&gt;<br>
+<br>
+&lt;/section&gt;<br>
+<br>
+&lt;button id="reset" class="btn cancel small"&gt;Reset&lt;/button&gt;<br>
+<br>
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "owner": {
+        "module": "components/slider-polyfill-example.reel",
+        "name": "RangeInputExample",
+        "properties": {
+            "element": {"#": "slider-polyfill-example"},
+            "result": {"#": "result"}
+        }
+    },
+    "roundTo2Decimals": {
+        "module": "montage/core/converter/number-converter",
+        "name": "NumberConverter",
+        "properties": {
+            "decimals": 2
+        }
+
+    },
+    "red": {
+        "module": "montage/ui/skeleton/range-input.reel",
+        "name": "RangeInput",
+        "properties": {
+            "element": {"#": "color-red"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "red"
+            }
+        }
+
+    },
+    "red-value": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "red-value"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "red",
+                "converter": {"@": "roundTo2Decimals"},
+                "oneway": true
+            }
+        }
+    },
+    "green": {
+            "module": "montage/ui/skeleton/range-input.reel",
+            "name": "RangeInput",
+            "properties": {
+                "element": {"#": "color-green"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "owner"},
+                    "boundObjectPropertyPath": "green"
+                }
+            }
+        },
+        "green-value": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "green-value"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "owner"},
+                    "boundObjectPropertyPath": "green",
+                    "converter": {"@": "roundTo2Decimals"},
+                    "oneway": true
+                }
+            }
+        },
+        "blue": {
+            "module": "montage/ui/skeleton/range-input.reel",
+            "name": "RangeInput",
+            "properties": {
+                "element": {"#": "color-blue"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "owner"},
+                    "boundObjectPropertyPath": "blue"
+                }
+            }
+        },
+        "blue-value": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "blue-value"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "owner"},
+                    "boundObjectPropertyPath": "blue",
+                    "converter": {"@": "roundTo2Decimals"},
+                    "oneway": true
+                }
+            }
+        },
+        "result-hex-value": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "result-hex"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "owner"},
+                    "boundObjectPropertyPath": "resultHex",
+                    "oneway": true
+                }
+            }
+        },
+
+    "reset": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "reset"},
+            "identifier": "reset"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    }
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+
+exports.SliderPolyfillExample = Montage.create(Component, {
+
+   result: {value: null},
+   resultHex: {value: null},
+
+   _red: {value: null},
+   red: {
+       set: function(v) {
+           this._red = v;
+           this._calculateHexValue();
+           this.needsDraw = true;
+       },
+       get: function() {return this._red;}
+   },
+   _green: {value: null},
+   green: {
+       set: function(v) {
+           this._green = v;
+           this._calculateHexValue();
+           this.needsDraw = true;},
+       get: function() {return this._green;}
+   },
+   _blue: {value: null},
+   blue: {
+       set: function(v) {
+           this._blue = v;
+           this._calculateHexValue();
+           this.needsDraw = true;
+       },
+       get: function() {return this._blue;}
+   },
+
+
+   _calculateHexValue: {
+       value: function() {
+           var red = this._getHexValue(this.red);
+           var green = this._getHexValue(this.green);
+           var blue = this._getHexValue(this.blue);
+           var rgb = red + '' + green + '' + blue;
+
+           this.resultHex = '#' + rgb;
+       }
+   },
+
+   _getHexValue: {
+       value: function(number) {
+           return Math.round(number).toString(16);
+       }
+   },
+
+   draw: {
+       value: function() {
+
+           this.result.style.backgroundColor = this.resultHex;
+
+       }
+   },
+
+   handleResetAction: {
+       value: function() {
+           this.red = 0;
+           this.green = 0;
+           this.blue = 0;
+       }
+   }
+});
+
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+                
             </section>
 
             <section>
-                <h4>Component Properties</h4>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                      <tr>
-                        <td>value</td>
-                        <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                      </tr>
-                    <tr>
-                      <td>min</td>
-                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                    </tr>
-                    <tr>
-                      <td>max</td>
-                      <td>...</td>
-                    </tr>
-                    <tr>
-                      <td>step</td>
-                      <td>...</td>
-                    </tr>
-                    <tr>
-                      <td>required</td>
-                      <td>...</td>
-                    </tr>
-                    <tr>
-                      <td>readonly</td>
-                      <td>...</td>
-                    </tr>
-                    <tr>
-                      <td>name</td>
-                      <td>...</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p>
-                    <a href="" target="_blank">View full Documentation</a>
-                </p>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/slider-polyfill-example.reel" target="_blank">View Source on GitHub</a>
             </section>
+
 
         </div>
     </body>

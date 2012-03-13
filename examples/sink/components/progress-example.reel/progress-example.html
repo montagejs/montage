@@ -94,7 +94,7 @@
             <h4>Demo</h4>
 
             <div class="demo">
-                
+
                 <h5>Progress bar bound to ProgressExample.uploadProgress property</h5>
                 <progress id="progress1" max="100" value="60"></progress>
 
@@ -103,6 +103,10 @@
                 <progress id="progress2" max="100" style="width: 300px;" value="10"></progress>
 
                 <input id="text1" type="number" min="0" max="100" value="25"  style="width: 50px;" />
+            </div>
+
+
+
             <section>
                 <ul id="progress-accordion1" class="accordion">
                    <li class="accordion-group">
@@ -179,7 +183,7 @@
                         <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
-            
+
 exports.ProgressExample = Montage.create(Component, {
 
     _uploadProgress: {value: null},
@@ -225,9 +229,8 @@ exports.ProgressExample = Montage.create(Component, {
                     </li>
                 </ul>
             </section>
-            </div>
-            
-            <section>
+
+        <section>
             <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/progress-example.reel" target="_blank">View source on GitHub</a>
             </section>
 

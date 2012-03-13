@@ -5,17 +5,22 @@
  </copyright> */
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
-    
+
 
 exports.SubstitutionExample = Montage.create(Component, {
-    
+
     navEl: {
         value: null
     },
-    
+
     // the substitution
-    content: {value: null}
+    content: {value: null},
 
-
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
+        }
+    }
 
 });

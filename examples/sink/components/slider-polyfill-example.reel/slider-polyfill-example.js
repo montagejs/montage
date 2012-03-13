@@ -55,6 +55,13 @@ exports.SliderPolyfillExample = Montage.create(Component, {
             return Math.round(number).toString(16);
         }
     },
+    
+    prepareForDraw: {
+        value: function() {
+            // Invoke Google pretty printer on source code samples
+            prettyPrint();
+        }
+    },
 
     draw: {
         value: function() {
