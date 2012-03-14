@@ -203,7 +203,19 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    invertAxis: {value: null},
+    _invertAxis: {
+        value: false,
+        enumerable: false
+    },
+
+    invertAxis: {
+        get: function() {
+            return this._invertAxis;
+        },
+        set: function(value) {
+            this._invertAxis=value?true:false;
+        }
+    },
 
     _hasMomentum: {
         enumerable: false,
@@ -551,25 +563,24 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     _move: {
         enumerable: false,
         value: function (x, y) {
-
+            var pointerDelta;
             this._isSelfUpdate=true;
-            var delta;
             if (this._axis!="vertical") {
-                var delta = this.invertAxis ? (x-this._pointerX) : (this._pointerX-x);
+                pointerDelta = this._invertAxis ? (x-this._pointerX) : (this._pointerX-x);
                 if ((this._translateX<0)||(this._translateX>this._maxTranslateX)) {
-                    this.translateX+=(delta/2)*this._pointerSpeedMultiplier;
+                    this.translateX+=((pointerDelta)/2)*this._pointerSpeedMultiplier;
                 } else {
-                    this.translateX+=(delta)*this._pointerSpeedMultiplier;
+                    this.translateX+=(pointerDelta)*this._pointerSpeedMultiplier;
                 }
             }
             if (this._axis!="horizontal") {
+                pointerDelta = this._invertAxis ? (y-this._pointerY) : (this._pointerY-y);
                 if ((this._translateY<0)||(this._translateY>this._maxTranslateY)) {
-                    this.translateY+=((this._pointerY-y)/2)*this._pointerSpeedMultiplier;
+                    this.translateY+=((pointerDelta)/2)*this._pointerSpeedMultiplier;
                 } else {
-                    this.translateY+=(this._pointerY-y)*this._pointerSpeedMultiplier;
+                    this.translateY+=(pointerDelta)*this._pointerSpeedMultiplier;
                 }
             }
-
             this._isSelfUpdate=false;
             this._pointerX=x;
             this._pointerY=y;
