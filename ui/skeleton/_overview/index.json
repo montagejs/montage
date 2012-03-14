@@ -15,6 +15,14 @@
         }
     },
     
+    "checkbox": {
+        "module": "montage/ui/skeleton/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "checkbox"}
+        }
+    },
+    
     "range-input": {
         "module": "montage/ui/skeleton/range-input.reel",
         "name": "RangeInput",
