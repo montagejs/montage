@@ -23,6 +23,28 @@
         }
     },
     
+    "radio1": {
+        "module": "montage/ui/skeleton/radio.reel",
+        "name": "Radio",
+        "properties": {
+            "element": {"#": "radio1"}
+        }
+    },
+    "radio2": {
+        "module": "montage/ui/skeleton/radio.reel",
+        "name": "Radio",
+        "properties": {
+            "element": {"#": "radio2"}
+        }
+    },
+    "radio3": {
+        "module": "montage/ui/skeleton/radio.reel",
+        "name": "Radio",
+        "properties": {
+            "element": {"#": "radio3"}
+        }
+    },
+    
     "range-input": {
         "module": "montage/ui/skeleton/range-input.reel",
         "name": "RangeInput",
