@@ -21,7 +21,10 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     _selectedIndexes: {
         set: function(value) {
             this.__selectedIndexes = value;
-            this.needsDraw = this._synching || !this._fromInput;
+            if(this.needsDraw === false) {
+                this.needsDraw = this._synching || !this._fromInput;
+            }
+
         },
         get: function() {
             return this.__selectedIndexes;
@@ -218,7 +221,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                     }
                     this._fromInput = true;
                     this.contentController.selectedIndexes = selectedIndexes;
-                    
+
                 }
             }
 
