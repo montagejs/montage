@@ -45,6 +45,14 @@
         }
     },
     
+    "select": {
+        "module": "montage/ui/skeleton/select.reel",
+        "name": "Select",
+        "properties": {
+            "element": {"#": "select"}
+        }
+    },
+    
     "range-input": {
         "module": "montage/ui/skeleton/range-input.reel",
         "name": "RangeInput",
