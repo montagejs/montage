@@ -164,10 +164,15 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    prepareForActivationEvents: {
+    didCreate: {
         value: function() {
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);
+        }
+    },
+
+    prepareForActivationEvents: {
+        value: function() {
             this._pressComposer.addEventListener("pressstart", this, false);
             this._pressComposer.addEventListener("press", this, false);
             this._pressComposer.addEventListener("presscancel", this, false);
