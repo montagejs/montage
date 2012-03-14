@@ -13,6 +13,24 @@ var Montage = require("montage").Montage,
  */
 var Button = exports.Button = Montage.create(NativeControl, {
 
+    /**
+    @event
+    @name action
+    @param {Event} event
+
+    Dispatched when the button is activated through a mouse click, finger tap,
+    or when focused and the spacebar is pressed.
+    */
+
+    /**
+    @event
+    @name hold
+    @param {Event} event
+
+    Dispatched when the button is pressed for a period of time, set by
+    {@link holdTimeout}.
+    */
+
 /**
   Description TODO
   @private
@@ -105,6 +123,23 @@ var Button = exports.Button = Montage.create(NativeControl, {
     },
 
     /**
+    How long a press has to last for a hold event to be dispatched
+    */
+    holdTimeout: {
+        get: function() {
+            return this._pressComposer.longpressTimeout;
+        },
+        set: function(value) {
+            this._pressComposer.longpressTimeout = value;
+        }
+    },
+
+    _pressComposer: {
+        enumberable: false,
+        value: null
+    },
+
+    /**
     True when the button is being interacted with, either through mouse click or
     touch event.
     @private
@@ -129,13 +164,28 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
+    didCreate: {
+        value: function() {
+            this._pressComposer = PressComposer.create();
+            this.addComposer(this._pressComposer);
+        }
+    },
+
     prepareForActivationEvents: {
         value: function() {
-            var pressComposer = PressComposer.create();
-            this.addComposer(pressComposer);
-            pressComposer.addEventListener("pressstart", this, false);
-            pressComposer.addEventListener("press", this, false);
-            pressComposer.addEventListener("presscancel", this, false);
+            this._pressComposer.addEventListener("pressstart", this, false);
+            this._pressComposer.addEventListener("press", this, false);
+            this._pressComposer.addEventListener("presscancel", this, false);
+        }
+    },
+
+    // Optimisation
+    addEventListener: {
+        value: function(type, listener, useCapture) {
+            NativeControl.addEventListener.call(this, type, listener, useCapture);
+            if (type === "hold") {
+                this._pressComposer.addEventListener("longpress", this, false);
+            }
         }
     },
 
@@ -165,6 +215,17 @@ var Button = exports.Button = Montage.create(NativeControl, {
             this._dispatchActionEvent();
         }
     },
+    handleLongpress: {
+        value: function(event) {
+            // When we fire the "hold" event we don't want to fire the
+            // "action" event as well.
+            this._pressComposer.cancelPress();
+
+            var holdEvent = document.createEvent("CustomEvent");
+            holdEvent.initCustomEvent("hold", true, true, null);
+            this.dispatchEvent(holdEvent);
+        }
+    },
 
     /**
     Called when all interaction is over.
@@ -186,7 +247,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
     didSetElement: {
         value: function() {
-            var o = NativeControl.didSetElement.call(this);
+            NativeControl.didSetElement.call(this);
 
             this._element.classList.add("montage-button");
             this._element.setAttribute("aria-role", "button");
