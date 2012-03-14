@@ -8,15 +8,16 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component;    
 
 /**
- * The input type="text" field
+ * The input type="number"
  */
-var TextInput = exports.TextInput = Montage.create(Component, {
-
-    draw: {
-        value: function() {
-            //This is just a temporary fix to prevent the type to be doubled.
-            this._element.type = "text";
-        }
-    }
-
+var InputNumber = exports.InputNumber = Montage.create(Component, {
+   
+   draw: {
+       value: function() {
+           // Just for now
+           this._element.querySelector(".montage-inputNumber-plus").innerText = "+";
+           this._element.querySelector(".montage-inputNumber-minus").innerText = "-";
+       }
+   }
+       
 });

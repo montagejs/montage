@@ -69,6 +69,14 @@
         }
     },
     
+    "input-number": {
+        "module": "montage/ui/skeleton/input-number.reel",
+        "name": "InputNumber",
+        "properties": {
+            "element": {"#": "input-number"}
+        }
+    },
+    
     "range-input": {
         "module": "montage/ui/skeleton/range-input.reel",
         "name": "RangeInput",
