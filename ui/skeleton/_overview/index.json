@@ -53,6 +53,14 @@
         }
     },
     
+    "text-input": {
+        "module": "montage/ui/skeleton/text-input.reel",
+        "name": "TextInput",
+        "properties": {
+            "element": {"#": "text-input"}
+        }
+    },
+    
     "range-input": {
         "module": "montage/ui/skeleton/range-input.reel",
         "name": "RangeInput",
