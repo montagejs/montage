@@ -13,6 +13,24 @@ var Montage = require("montage").Montage,
  */
 var Button = exports.Button = Montage.create(NativeControl, {
 
+    /**
+    @event
+    @name action
+    @param {Event} event
+
+    Dispatched when the button is activated through a mouse click, finger tap,
+    or when focused and the spacebar is pressed.
+    */
+
+    /**
+    @event
+    @name hold
+    @param {Event} event
+
+    Dispatched when the button is pressed for a period of time, set by
+    {@link holdTimeout}.
+    */
+
 /**
   Description TODO
   @private
@@ -104,7 +122,19 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    _presscomposer: {
+    /**
+    How long a press has to last for a hold event to be dispatched
+    */
+    holdTimeout: {
+        get: function() {
+            return this._pressComposer.longpressTimeout;
+        },
+        set: function(value) {
+            this._pressComposer.longpressTimeout = value;
+        }
+    },
+
+    _pressComposer: {
         enumberable: false,
         value: null
     },
