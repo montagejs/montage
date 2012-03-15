@@ -77,11 +77,11 @@
         }
     },
     
-    "range-input": {
-        "module": "montage/ui/skeleton/range-input.reel",
-        "name": "RangeInput",
+    "input-range": {
+        "module": "montage/ui/skeleton/input-range.reel",
+        "name": "InputRange",
         "properties": {
-            "element": {"#": "range-input"}
+            "element": {"#": "input-range"}
         }
     },
     
