@@ -148,6 +148,7 @@ Logger = exports.Logger = Montage.create(Montage,/** @lends module:montage/core/
             for (i = 0; (args = buffer[i]); i++) {
                 console.debug.apply(console, args);
             }
+            this.buffer.length = 0;
         }
     },
 /**
