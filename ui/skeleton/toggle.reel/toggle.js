@@ -12,5 +12,13 @@ var Montage = require("montage").Montage,
  */
 var Toggle = exports.Toggle = Montage.create(Component, {
     
+    prepareForDraw: {
+        value: function() {
+            // Just temporary to test, should probably work on whole element.
+            this._element.addEventListener("click", function(event) {
+                this.classList.toggle("isChecked");
+            }, true);
+        }
+    }
     
 });
