@@ -16,32 +16,32 @@
     },
     
     "checkbox": {
-        "module": "montage/ui/skeleton/checkbox.reel",
-        "name": "Checkbox",
+        "module": "montage/ui/skeleton/input-checkbox.reel",
+        "name": "InputCheckbox",
         "properties": {
-            "element": {"#": "checkbox"}
+            "element": {"#": "input-checkbox"}
         }
     },
     
     "radio1": {
-        "module": "montage/ui/skeleton/radio.reel",
-        "name": "Radio",
+        "module": "montage/ui/skeleton/input-radio.reel",
+        "name": "InputRadio",
         "properties": {
-            "element": {"#": "radio1"}
+            "element": {"#": "input-radio1"}
         }
     },
     "radio2": {
-        "module": "montage/ui/skeleton/radio.reel",
-        "name": "Radio",
+        "module": "montage/ui/skeleton/input-radio.reel",
+        "name": "InputRadio",
         "properties": {
-            "element": {"#": "radio2"}
+            "element": {"#": "input-radio2"}
         }
     },
     "radio3": {
-        "module": "montage/ui/skeleton/radio.reel",
-        "name": "Radio",
+        "module": "montage/ui/skeleton/input-radio.reel",
+        "name": "InputRadio",
         "properties": {
-            "element": {"#": "radio3"}
+            "element": {"#": "input-radio3"}
         }
     },
     
@@ -53,11 +53,11 @@
         }
     },
     
-    "text-input": {
-        "module": "montage/ui/skeleton/text-input.reel",
-        "name": "TextInput",
+    "input-text": {
+        "module": "montage/ui/skeleton/input-text.reel",
+        "name": "InputText",
         "properties": {
-            "element": {"#": "text-input"}
+            "element": {"#": "input-text"}
         }
     },
     

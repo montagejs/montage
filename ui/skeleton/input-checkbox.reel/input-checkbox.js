@@ -8,9 +8,9 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component;    
 
 /**
- * Checkbox
+ * Input Checkbox
  */
-var Checkbox = exports.Checkbox = Montage.create(Component, {
+var InputCheckbox = exports.InputCheckbox = Montage.create(Component, {
     
     draw: {
         value: function() {

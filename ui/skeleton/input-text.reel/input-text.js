@@ -8,9 +8,9 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component;    
 
 /**
- * The input type="text" field
+ * Input Text
  */
-var TextInput = exports.TextInput = Montage.create(Component, {
+var InputText = exports.InputText = Montage.create(Component, {
 
     draw: {
         value: function() {

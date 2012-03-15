@@ -8,9 +8,9 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component;    
 
 /**
- * Radio
+ * Input Radio
  */
-var Radio = exports.Radio = Montage.create(Component, {
+var InputRadio = exports.InputRadio = Montage.create(Component, {
     
     draw: {
         value: function() {

@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
  
-.montage-textInput {
+.montage-inputText {
   outline: none;
   box-sizing: border-box;
   font-size: 12px;
@@ -16,10 +16,10 @@
   background-color: #ffffff;
 }
 
-.montage-textInput:hover {
+.montage-inputText:hover {
   border-color: #cccccc;
 }
 
-.montage-textInput:focus {
+.montage-inputText:focus {
   border-color: #7f7f7f;
 }

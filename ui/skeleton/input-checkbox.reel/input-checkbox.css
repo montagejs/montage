@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
  
-.montage-radio {
+.montage-inputCheckbox {
     -webkit-appearance: none;
     -moz-appearance: none;
     outline: none;
@@ -12,24 +12,25 @@
     font-size: 12px;
     width: 1.5em;
     height: 1.5em;
-    border-radius: 1em;
+    border-radius: 3px;
+    vertical-align: middle;
     border: 1px solid #b3b3b3;
     background: #f2f2f2;
     cursor: pointer;
 }
 
-.montage-radio:hover {
+.montage-inputCheckbox:hover {
     background-color: #ffffff;
 }
 
-.montage-radio:active {
+.montage-inputCheckbox:active {
     background-color: #e5e5e5;
 }
 
-.montage-radio:focus {
+.montage-inputCheckbox:focus {
     border-color: #7f7f7f;
 }
 
-.montage-radio:checked {
-    background: #f2f2f2 url(radio.png) no-repeat center center;
+.montage-inputCheckbox:checked {
+    background: #f2f2f2 url(checkbox.png) no-repeat center center;
 }
