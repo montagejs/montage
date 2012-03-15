@@ -118,59 +118,7 @@ footer {
   left: 0px;
 }
 
-.sourceview {
-  /*max-height: 500px;*/
-  overflow: auto;
-}
-
 .accordion-inner pre.prettyprint {
-  overflow: auto;
-}
-
-.sourceitem {
-  display:none;
-}
-
-.sourceitem p {
-  color: black;
-  margin-left: 10px;
-}
-
-.sourcelinks {
-  margin: 0px;
-  padding: 0px;
-  background: white;
-  /*border-top: 1px dashed #999;*/
-}
-
-.sourcelinks li {
-  list-style-image: url('../images/arrow-icon.gif');
-  list-style-position:inside;
-  background-color: lightGray;
-
-}
-
-.sourcelinks li a:hover {
-  background-color: gray;
-  color:black;
-}
-
-.sourcelinks li a:selected {
-  background-color: rgb(255,0,255);
-}
-
-.sourcelinks li a {
-  display: block;
-  padding: 9px;
-  text-decoration:none;
-  text-transform:uppercase;
-  color: black;
-  border-bottom: 1px solid #FFF;
-}
-
-.sourceitem .prettyprint {
-  background: white;
-  font-size: 110%;
   overflow: auto;
 }
 
