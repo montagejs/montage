@@ -12,6 +12,26 @@ var Montage = require("montage").Montage,
 
 var testPage = TestPageLoader.queueTest("popup-test", function() {
     var test = testPage.test;
+    
+    var getElementPosition = function(obj) {
+            var curleft = 0, curtop = 0, curHt = 0, curWd = 0;
+            if (obj.offsetParent) {
+                do {
+                    curleft += obj.offsetLeft;
+                    curtop += obj.offsetTop;
+                    curHt += obj.offsetHeight;
+                    curWd += obj.offsetWidth;
+                } while ((obj = obj.offsetParent));
+            }
+            return {
+                top: curtop,
+                left: curleft,
+                height: curHt,
+                width: curWd
+            };
+            //return [curleft,curtop, curHt, curWd];
+    };
+    
     describe("ui/popup-spec1", function() {
         it("should load", function() {
             expect(testPage.loaded).toBeTruthy();
@@ -49,6 +69,45 @@ var testPage = TestPageLoader.queueTest("popup-test", function() {
                 });                
                 
             });
+            
+            
+            it("is positioned relative to anchor by default", function() {
+                var popup = test.popup;
+                var anchor = popup.anchorEl, anchorHt, anchorWd, anchorPosition;
+                
+                var anchorPosition = getElementPosition(anchor);
+                anchorHt = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
+                anchorWd = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
+                
+                popup.addEventListener('show', function() {
+                    console.log('show -');
+                    var popupPosition = getElementPosition(popup.element);
+                    expect(popupPosition.top).toBe(anchorPosition.top + anchorHt);
+                });
+                
+                popup.show();
+                
+                
+            });
+            
+            
+            it("is positioned at specified position", function() {
+                var popup = test.popup;
+                popup.position = {top: 1, left: 10};
+                
+                popup.addEventListener('show', function() {
+                    var popupPosition = getElementPosition(popup.element);
+                    console.log('show -', popupPosition);
+                    expect(popupPosition.top).toBe(1);
+                    expect(popupPosition.left).toBe(6);
+                });
+                
+                popup.show();
+                
+                
+            });
+            
         });
+        
     });
 });
