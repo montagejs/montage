@@ -83,6 +83,14 @@
         "properties": {
             "element": {"#": "range-input"}
         }
+    },
+    
+    "progress": {
+        "module": "montage/ui/skeleton/progress.reel",
+        "name": "Progress",
+        "properties": {
+            "element": {"#": "progress"}
+        }
     }
     
 }

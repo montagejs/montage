@@ -60,6 +60,8 @@
   border-color: #007fff;
   box-shadow: inset 0 1px 0px rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0);
   background-color: #f0f7ff;
+}
+.skin .skeleton-progress .skeleton-progress-bar {
   background-image: -webkit-linear-gradient(top, #66b2ff, #007fff);
   background-image: -moz-linear-gradient(top, #66b2ff, #007fff);
   background-image: -ms-linear-gradient(top, #66b2ff, #007fff);

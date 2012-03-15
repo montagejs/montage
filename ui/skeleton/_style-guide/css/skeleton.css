@@ -392,18 +392,23 @@ textarea.skeleton:focus {
 }
 /* Progress ------------------------------- */
 .skeleton-progress {
+  position: relative;
   font-size: 12px;
   display: inline-block;
   width: 10em;
   height: 10px;
   border-radius: 3px;
   border: 1px solid #b3b3b3;
-  background: #d9d9d9 -webkit-linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
-  background: #d9d9d9 -moz-linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
-  background: #d9d9d9 -ms-linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
-  background: #d9d9d9 -o-linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
-  background: #d9d9d9 linear-gradient(45deg, #f2f2f2, #f2f2f2) no-repeat center center;
-  background-position: -5em center;
+  background-color: #d9d9d9;
+}
+.skeleton-progress .skeleton-progress-bar {
+  position: absolute;
+  height: inherit;
+  border-radius: 2px;
+  top: 0;
+  left: 0;
+  background-color: #f2f2f2;
+  width: 50%;
 }
 .mobile .skeleton-progress {
   font-size: 16px;
