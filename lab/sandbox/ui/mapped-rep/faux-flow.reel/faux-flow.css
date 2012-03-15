@@ -1,0 +1,32 @@
+.FauxFlow {
+    position: relative;
+
+    width: 15em;
+    height: 5em;
+
+    padding: 1em;
+    border: 1px solid hsl(0,0%,30%);
+    margin: 5em 10em;
+
+    background-color: hsl(0,0%,40%);
+    -webkit-user-select: none;
+}
+
+.FauxFlow .content {
+    position: absolute;
+
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+
+    width: 5em;
+    height: 5em;
+
+    opacity: 0.8;
+    -webkit-box-shadow: 0 1px 3px hsla(0,0%,30%, 0.7);
+}
+
+.FauxFlow .contained {
+    background-color: hsl(136,32%,72%);
+}

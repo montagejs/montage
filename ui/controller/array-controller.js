@@ -523,7 +523,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     return this._selectedContentIndexes.indexOf(i) >= 0;
                 }, this);
             }
-            
 
             return this._selectedObjects;
         },

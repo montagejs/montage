@@ -148,7 +148,7 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
                 this.content = document.createElement("div");
                 childList = Array.prototype.slice.call(this._element.childNodes, 0);
                 for (i = 0; (childElement = childList[i]); i++) {
-                    childElement.parentElement.removeChild(childElement);
+                    childElement.parentNode.removeChild(childElement);
                     this.content.appendChild(childElement);
                 }
             }

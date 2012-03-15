@@ -32,16 +32,18 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     // A Delegate to control positioning (and other features, in future) of the popup in a custom manner
     delegate: {value: null},
 
-    /** @private */
+    /**
+        Internal property.
+        @private
+    */
     contentEl: {
         value: null
     },
 /**
-    @private
-    
         Description TODO
         @type {Property}
         @default {Container} null
+        @private
     */
     containerEl: {
         value: null
@@ -54,11 +56,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 */
     _slot: {value: null},
 /**
-    @private
-    
+
         Description TODO
         @type {Function}
         @default null
+    @private
     */
     slot: {
         get: function() {
@@ -78,7 +80,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     _content: {value: null},
 /**
         The Montage component that will be shown in this popup.
-        
+
         @type {Function}
         @default null
     */
@@ -103,8 +105,8 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 */
     _modal: { value: false },
 /**
-        If true, the Popup will be rendered as a Modal. 
-        
+        If true, the Popup will be rendered as a Modal.
+
         @type {Function}
         @default {Boolean} false
     */
@@ -125,7 +127,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     /**
         An Object wtih values {top, left}. Set it only if the popup should display at a
-        given location always. 
+        given location always.
     */
     _position: {value: null},
     position: {
@@ -182,6 +184,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
 
     /**
+     Internal method.
      @private
      */
     _getElementPosition: {
@@ -215,7 +218,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // If a position has been specified but no delegate has been provided
                 // we assume that the position is static and hence use that
                 position = this.position;
-            } else {                                              
+            } else {
                 // @todo - advanced positioning support
                 var $el = this.contentEl || this.content.element;
                 var elHeight = parseFloat($el.style.height || 0) || $el.offsetHeight || 0;
@@ -256,7 +259,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     };
                 }
             }
-            //this.position = position;            
+            //this.position = position;
             var popupSlot = this._popupSlot;
 
             if(position) {
@@ -265,7 +268,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 popupSlot.element.style.right = (position.right ? position.right + 'px' : '');
                 popupSlot.element.style.bottom = (position.bottom ? position.bottom + 'px' : '');
             }
-            
+
         }
     },
 

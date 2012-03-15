@@ -1264,19 +1264,19 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(changeListener.handleEvent).toHaveBeenCalled();
             });
 
-            it("TODO must not report a change for observers of 'count()' if a change on thre observed array does not change the length", function() {
-                var changeListener = {
-                    handleEvent: function(event) {}
-                };
+            // it("must not report a change for observers of 'count()' if a change on the observed array does not change the length", function() {
+            //     var changeListener = {
+            //         handleEvent: function(event) {}
+            //     };
 
-                spyOn(changeListener, "handleEvent").andCallThrough();
+            //     spyOn(changeListener, "handleEvent").andCallThrough();
 
-                myArray.addEventListener("change@count()", changeListener, true);
+            //     myArray.addEventListener("change@count()", changeListener, true);
 
-                myArray.sort();
+            //     myArray.sort();
 
-                expect(changeListener.handleEvent).not.toHaveBeenCalled();
-            });
+            //     expect(changeListener.handleEvent).not.toHaveBeenCalled();
+            // });
 
         });
 
@@ -1323,28 +1323,28 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
             expect(change0).toBe(1);
         });
 
-        it("TODO should stop observing non-existent array elements when inside another array", function() {
-            var array = [
-                [0],
-                [1]
-            ];
-            var change0 = 0;
-            var change1 = 0;
+        // it("should stop observing non-existent array elements when inside another array", function() {
+        //     var array = [
+        //         [0],
+        //         [1]
+        //     ];
+        //     var change0 = 0;
+        //     var change1 = 0;
 
-            array.addEventListener("change@0.0", function() {
-                change0++;
-            });
+        //     array.addEventListener("change@0.0", function() {
+        //         change0++;
+        //     });
 
-            array.addEventListener("change@1.0", function() {
-                change1++;
-            });
+        //     array.addEventListener("change@1.0", function() {
+        //         change1++;
+        //     });
 
-            array.shift();
-            array[0].pop();
+        //     array.shift();
+        //     array[0].pop();
 
-            expect(change0).toBe(2); // called on array.shift() and array[0].pop()
-            expect(change1).toBe(1); // called on array.shift()
-        });
+        //     expect(change0).toBe(2); // called on array.shift() and array[0].pop()
+        //     expect(change1).toBe(1); // called on array.shift()
+        // });
 
         it("should call a change event listener on an array sort", function() {
             var array = [2, 1],

@@ -235,10 +235,10 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             return this._showPopup;
         },
         set: function(value) {
-            if(value !== this._showPopup) {
+            //if(value !== this._showPopup) {
                 this._showPopup = value;
                 this.needsDraw = true;
-            }            
+            //}            
         }
     },
     
@@ -254,6 +254,9 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             this._suggestions = value;
             //this.loadingStatus = 'complete';
             this.loadingStatus = 'complete';
+            
+            this.showPopup = true;
+            
         }
     },
     
@@ -388,6 +391,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
             var fn = Object.getPrototypeOf(Autocomplete).draw;
             fn.call(this);
+            
+            console.log('DRAW called ', this.showPopup);
             
             if(this.showPopup) {
                 this.popup.show();

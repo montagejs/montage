@@ -5,8 +5,7 @@
  </copyright> */
 
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component
-    TranslateComposer = require("ui/composer/translate-composer").TranslateComposer;
+    Component = require("ui/component").Component;
 
 exports.Scroller = Montage.create(Component, {
 
@@ -157,11 +156,15 @@ exports.Scroller = Montage.create(Component, {
 
     templateDidLoad: {
         value: function () {
-            var orphanedFragment,
-                currentContentRange = this.element.ownerDocument.createRange();
+            var orphanedFragment = document.createDocumentFragment(),
+                children = this.element.childNodes;
 
-            currentContentRange.selectNodeContents(this.element);
-            orphanedFragment = currentContentRange.extractContents();
+
+            while (children.length > 0) {
+                // As the nodes are appended to item.fragment they are removed
+                // from item.element, so always use index 0.
+                orphanedFragment.appendChild(children[0]);
+            }
             this._content.appendChild(orphanedFragment);
         }
     },

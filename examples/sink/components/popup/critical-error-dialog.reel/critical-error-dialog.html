@@ -33,6 +33,20 @@
             }
         ]
     },
+    "restartLater": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "RestartLater",
+            "element": {"#": "action-restart-later"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
     "owner": {
         "module": "components/popup/critical-error-dialog.reel",
         "name": "CriticalErrorDialog",
@@ -58,7 +72,8 @@
 
             <div class="montage-popup-footer">
                 <div class="dialog-actions">
-                    <button class="btn primary action-restart" id="action-restart">Restart</button>
+                    <button class="btn primary action-restart" id="action-restart">Restart Now</button>
+                    <button class="btn secondary action-restart-later" id="action-restart-later">Restart Later</button>
                 </div>
                 <div class="clearfix"></div>
             </div>

@@ -145,7 +145,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this.isDeserializing) {
                 // if this component has a template and has been already instantiated then assume the value is the template.
                 if (this._isTemplateInstantiated) {
-                    this._templateElement = value;
+                    // this is important for component extension, we don't want to override template element
+                    if (!this._templateElement) {
+                        this._templateElement = value;
+                    }
                 } else {
                     this._element = value;
                     if (!this.blockDrawGate.value && this._element) {
@@ -164,7 +167,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     setElementWithParentComponent: {
         value: function(element, parent) {
             this._alternateParentComponent = parent;
-            this.element = element;
+            if (this.element != element) {
+                this.element = element;
+            }
         }
     },
 
@@ -526,9 +531,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
                 Object.deleteBindings(component);
-                component.canDrawGate.setField("componentTreeLoaded", false);
-                component.blockDrawGate.setField("element", false);
-                component.blockDrawGate.setField("drawRequested", false);
                 component.needsDraw = false;
             });
         }
