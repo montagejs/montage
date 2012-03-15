@@ -538,13 +538,20 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: function (event) {
             var self = this;
 
+            var oldTranslateY = this._translateY;
             this.translateY = this._translateY - (event.wheelDeltaY * 20) / 120;
             this._dispatchTranslateStart();
             window.clearTimeout(this._translateEndTimeout);
             this._translateEndTimeout = window.setTimeout(function () {
                 self._dispatchTranslateEnd();
             }, 400);
-            event.preventDefault();
+
+            // If we're not at one of the extremes (i.e. the scroll actully
+            // changed the translate) then we want to preventDefault to stop
+            // the page scrolling.
+            if (oldTranslateY !== this._translateY) {
+                event.preventDefault();
+            }
         }
     },
 
