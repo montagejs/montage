@@ -136,7 +136,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         },
         set: function(value) {
             if (value == null) {
-                console.log("Warning: Tried to set element of ", this, " as " + value + ".");
+                console.warn("Warning: Tried to set element of ", this, " to null.");
                 return;
             }
 
