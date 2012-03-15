@@ -40,6 +40,23 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
                 testButton(test.buttonbutton, "button button");
             });
 
+            it("fires a 'hold' event when the button is pressed for a long time", function() {
+                var el = test.inputbutton.element;
+                var holdListener = testPage.addListener(test.inputbutton, null, "hold");
+                var actionListener = testPage.addListener(test.inputbutton, null, "action");
+
+                testPage.mouseEvent({target: el}, "mousedown");
+
+                waits(1010);
+                runs(function() {
+                    testPage.mouseEvent({target: el}, "mouseup");
+                    testPage.mouseEvent({target: el}, "click");
+
+                    expect(holdListener).toHaveBeenCalled();
+                    expect(actionListener).not.toHaveBeenCalled();
+                });
+            });
+
             describe("disabled property", function(){
                 it("is taken from the element's disabled attribute", function() {
                     expect(test.disabledbutton.disabled).toBe(true);

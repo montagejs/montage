@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-    @module montage/ui/composer/long-press-composer
+    @module montage/ui/composer/translate-composer
     @requires montage
     @requires montage/ui/composer/composer
 */
