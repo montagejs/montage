@@ -20,9 +20,30 @@ var Montage = require("montage").Montage,
 var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"module/ui/popup/popup.reel".Popup */
 
     hasTemplate: {value: true},
+    
+    // the HTML Element to which the popup must be anchored to
+    // @private
+    anchorEl: {value: null},
 
-    // anchor element to which this popup must be anchored to
-    anchor: {value: null},
+    /**
+    * The HTMLElement or Montage Component that the popup must be anchored to
+    */
+    anchor: {
+        get: function() {
+            return this._anchor;
+        },
+        set: function(value) {
+            if(value) {
+                this._anchor = value;
+                if(value.nodeName) {
+                    // HTMLElement
+                    this.anchorEl = value;
+                } else {
+                    this.anchorEl = value.element;
+                }
+            }
+        }
+    },
 
     // A Delegate to control positioning (and other features, in future) of the popup in a custom manner
     delegate: {value: null},
@@ -138,7 +159,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     /**
     * Number of milliseconds after which the Popup must be dismissed. Default is 0.
     */
-    autoDismiss: { value: 0 },
+    autoHide: { value: 0 },
 
     /** @private */
     _displayed: { value: false },
@@ -188,23 +209,22 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     curWd += obj.offsetWidth;
                 } while ((obj = obj.offsetParent));
             }
-            return [curleft,curtop, curHt, curWd];
+            return {
+                top: curtop,
+                left: curleft,
+                height: curHt,
+                width: curWd
+            };
+            //return [curleft,curtop, curHt, curWd];
 
         }
     },
 
     _positionPopup: {
         value: function() {
-            var position, delegate = this.delegate, anchor = this.anchor, type = this.type;
-
-            // if a delegate is provided, use that to get the position
-            if(delegate && (typeof delegate.willPositionPopup === 'function')) {
-                var anchorPosition;
-                if(anchor) {
-                    anchorPosition = this._getElementPosition(anchor);
-                }
-                position = delegate.willPositionPopup(this, anchor, anchorPosition);
-            } else if(this.position !== null) {
+            var position, delegate = this.delegate, anchor = this.anchorEl, type = this.type;
+            
+            if(this.position !== null) {
                 // If a position has been specified but no delegate has been provided
                 // we assume that the position is static and hence use that
                 position = this.position;
@@ -219,36 +239,41 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 var viewportWidth = window.innerWidth;
 
                 if (anchor) {
-                    // if an anchor is provided, we position the popup relative to the anchor
-                    //
-                    if (anchor.nodeName) {
-                        // if anchor is an element
-                        var elPosition = this._getElementPosition(anchor);
-                        var tgtHeight = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
-                        var tgtWidth = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
+                    // if an anchor is provided, we position the popup relative to the anchor                    
+                    var elPosition = this._getElementPosition(anchor);
+                    var tgtHeight = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
+                    var tgtWidth = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
 
-                        position = {
-                            top: elPosition[1] + tgtHeight + 20 /* pointer */,
-                            left: elPosition[0] + (tgtWidth / 2) - (elWidth / 2)
-                        };
+                    position = {
+                        top: elPosition.top + tgtHeight,
+                        left: elPosition.left + (tgtWidth / 2) - (elWidth / 2)
+                    };
 
-                        if (position.left < 0) {
-                            position.left = elPosition[0];
-                            this._showHidePointer(false);
-                            // dont show the pointer - @todo - support pointer arrow at different parts of the popup
-                        }
-                    } else {
-                        // anchor is absolute position {top, left}
-                        position = anchor;
+                    if (position.left < 0) {
+                        position.left = elPosition.left;
+                        this._showHidePointer(false);
+                        // dont show the pointer - @todo - support pointer arrow at different parts of the popup
                     }
+                    
                 } else {
                     // No positioning hints provided. POsition it at the center of the viewport by default
                     position = {
                         top: (viewportHeight / 2 - (elHeight / 2)),
                         left: (viewportWidth / 2 - (elWidth / 2))
                     };
-                }
+                }                              
             }
+            
+            
+            // if a delegate is provided, use that to get the position
+            if(delegate && (typeof delegate.willPositionPopup === 'function')) {
+                var anchorPosition;
+                if(anchor) {
+                    anchorPosition = this._getElementPosition(anchor);
+                }
+                position = delegate.willPositionPopup(this, position);
+            }
+            
             //this.position = position;
             var popupSlot = this._popupSlot;
 
@@ -376,6 +401,14 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     this.element.classList.add('montage-modal');
                 } else {
                     this.element.classList.remove('montage-modal');
+                    
+                    if (this.autoHide) {
+                        var self = this;
+                        setTimeout(function() {
+                            self.hide();
+                        }, this.autoHide);
+                    }
+                    
                 }
 
                 // @todo - positioning should happen inside the draw. Looks like this is only possible
@@ -388,13 +421,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this.content.element.classList.remove('montage-invisible');
                 // TODO do we want the panel to be focusable?
                 this.content.element.setAttribute("tabindex", "0"); // Make the popup content focusable
-
-                if (this.autoDismiss) {
-                    var self = this;
-                    setTimeout(function() {
-                        self.hide();
-                    }, this.autoDismiss);
-                }
+                
             } else {
                 if (!this.element.classList.contains('montage-invisible')) {
                     this.element.classList.add('montage-invisible');
