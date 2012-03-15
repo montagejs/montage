@@ -7,7 +7,6 @@
 @import url(http://fonts.googleapis.com/css?family=Homenaje);
 
 body {
-    min-width: 1300px;
     margin: 0;
     color: #444;
     font: 13px/1.231 sans-serif;
@@ -29,7 +28,7 @@ h1 .logo {
     width: 75px;
     height: 60px;
     margin: 0 20px;
-    background: url(../assets/img/logo.png) no-repeat center center;
+    background: url(img/logo.png) no-repeat center center;
 }
 
 h1 span {
@@ -39,11 +38,6 @@ h1 span {
 .tip {
     cursor: help;
     color: hsl(200,100%,50%);
-}
-
-.tip-skin {
-    cursor: help;
-    color: hsl(200,100%,0%);
 }
 
 th {
@@ -63,12 +57,16 @@ table {
 }
 
 td {
+    width: 50%;
     text-align: center;
     padding: 20px;
     border-top: 1px solid hsla(0,0%,0%,.1);
 }
 
-audio,
-video {
-    width: 200px;
+
+/* For testing */
+.montage-rangeInput {
+    /width: 100px !important;
+    /box-shadow: 0 0 0 10px pink;
 }
+

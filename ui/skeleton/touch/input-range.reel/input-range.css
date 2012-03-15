@@ -1,0 +1,48 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+.montage-inputRange {
+    position: relative;
+    font-size: 12px;
+    display: inline-block;
+    width: 10em;
+    height: 0.4em;
+    border-radius: 3px;
+    border: 1px solid #b3b3b3;
+    background-color: #d9d9d9;
+}
+
+.montage-inputRange-thumb {
+    position: absolute;
+    font-size: inherit;
+    box-sizing: border-box;
+    margin: -0.65em;
+    border-radius: 1.5em;
+    width: 1.5em;
+    height: 1.5em;
+    left: 0;
+    top: 0;
+    border: 1px solid #b3b3b3;
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+/* States */
+.montage-inputRange-thumb:hover {
+    background-color: #ffffff;
+}
+.montage-inputRange-thumb:active {
+    background-color: #e5e5e5;
+}
+.montage-inputRange-thumb:focus {
+    border-color: #7f7f7f;
+}
+
+
+/* Style for Touch */
+.montage-inputRange {
+  font-size: 16px;
+}
