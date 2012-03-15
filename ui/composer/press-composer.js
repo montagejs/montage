@@ -20,11 +20,11 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
 
     /**
     @event
-    @name pressstart
+    @name pressStart
     @param {Event} event
 
     Dispatched when a press begins. It is ended by either a {@link press} or
-    {@link presscancel} event.
+    {@link pressCancel} event.
     */
 
     /**
@@ -37,15 +37,15 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
 
     /**
     @event
-    @name longpress
+    @name longPress
     @param {Event} event
 
-    Dispatched when a press lasts for longer than (@link longpressTimeout}
+    Dispatched when a press lasts for longer than (@link longPressTimeout}
     */
 
     /**
     @event
-    @name presscancel
+    @name pressCancel
     @param {Event} event
 
     Dispatched when a press is canceled. This could be because the pointer
@@ -78,7 +78,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     /**
     Cancel the current press.
 
-    Can be used in a "longpress" event handler to prevent the "press" event
+    Can be used in a "longPress" event handler to prevent the "press" event
     being fired.
     @returns Boolean true if a press was canceled, false if the composer was
                      already in a unpressed or canceled state.
@@ -86,7 +86,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     cancelPress: {
         value: function() {
             if (this._state === PressComposer.PRESSED) {
-                this._dispatchPresscancel();
+                this._dispatchPressCancel();
                 this._endInteraction();
                 return true;
             }
@@ -98,8 +98,8 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     addEventListener: {
         value: function(type, listener, useCapture) {
             Composer.addEventListener.call(this, type, listener, useCapture);
-            if (type === "longpress") {
-                this._shouldDispatchLongpress = true;
+            if (type === "longPress") {
+                this._shouldDispatchLongPress = true;
             }
         }
     },
@@ -124,30 +124,30 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         }
     },
 
-    _shouldDispatchLongpress: {
+    _shouldDispatchLongPress: {
         enumerable: false,
         value: false
     },
 
-    _longpressTimeout: {
+    _longPressTimeout: {
         enumerable: false,
         value: 1000
     },
     /**
-    How long a press has to last for a longpress event to be dispatched
+    How long a press has to last for a longPress event to be dispatched
     */
-    longpressTimeout: {
+    longPressTimeout: {
         get: function() {
-            return this._longpressTimeout;
+            return this._longPressTimeout;
         },
         set: function(value) {
-            if (this._longpressTimeout !== value) {
-                this._longpressTimeout = value;
+            if (this._longPressTimeout !== value) {
+                this._longPressTimeout = value;
             }
         }
     },
 
-    _longpressTimer: {
+    _longPressTimer: {
         enumberable: false,
         value: null
     },
@@ -205,7 +205,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
 
             this.component.eventManager.claimPointer(this._observedPointer, this);
 
-            this._dispatchPressstart(event);
+            this._dispatchPressStart(event);
         }
     },
 
@@ -235,7 +235,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
             if (isSurrendered && event.type === "click") {
                 // Pointer surrendered, so prevent the default action
                 event.preventDefault();
-                // No need to dispatch an event as presscancel was dispatched
+                // No need to dispatch an event as pressCancel was dispatched
                 // in surrenderPointer, just end the interaction.
                 this._endInteraction(event);
                 return;
@@ -248,7 +248,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
             }
 
             if (!isSurrendered && !isTarget && event.type === "mouseup") {
-                this._dispatchPresscancel(event);
+                this._dispatchPressCancel(event);
                 this._endInteraction(event);
                 return;
             }
@@ -312,7 +312,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                 return false;
             }
 
-            this._dispatchPresscancel();
+            this._dispatchPressCancel();
             return true;
         }
     },
@@ -345,7 +345,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         value: function(event) {
             if (this._observedPointer === null || this._changedTouchisObserved(event.changedTouches) !== false) {
                 if (this.component.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
-                    this._dispatchPresscancel(event);
+                    this._dispatchPressCancel(event);
                 }
                 this._endInteraction(event);
             }
@@ -396,20 +396,20 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     },
 
     /**
-    Dispatch the pressstart event
+    Dispatch the pressStart event
     @private
     */
-    _dispatchPressstart: {
+    _dispatchPressStart: {
         enumerable: false,
         value: function (event) {
             this._state = PressComposer.PRESSED;
-            this.dispatchEvent(this._createPressEvent("pressstart", event));
+            this.dispatchEvent(this._createPressEvent("pressStart", event));
 
-            if (this._shouldDispatchLongpress) {
+            if (this._shouldDispatchLongPress) {
                 var self = this;
-                this._longpressTimer = setTimeout(function () {
-                    self._dispatchLongpress();
-                }, this._longpressTimeout);
+                this._longPressTimer = setTimeout(function () {
+                    self._dispatchLongPress();
+                }, this._longPressTimeout);
             }
         }
     },
@@ -421,9 +421,9 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     _dispatchPress: {
         enumerable: false,
         value: function (event) {
-            if (this._shouldDispatchLongpress) {
-                clearTimeout(this._longpressTimer);
-                this._longpressTimer = null;
+            if (this._shouldDispatchLongPress) {
+                clearTimeout(this._longPressTimer);
+                this._longPressTimer = null;
             }
 
             this.dispatchEvent(this._createPressEvent("press", event));
@@ -435,30 +435,30 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     Dispatch the long press event
     @private
     */
-    _dispatchLongpress: {
+    _dispatchLongPress: {
         enumerable: false,
         value: function (event) {
-            if (this._shouldDispatchLongpress) {
-                this.dispatchEvent(this._createPressEvent("longpress", event));
-                this._longpressTimer = null;
+            if (this._shouldDispatchLongPress) {
+                this.dispatchEvent(this._createPressEvent("longPress", event));
+                this._longPressTimer = null;
             }
         }
     },
 
     /**
-    Dispatch the presscancel event
+    Dispatch the pressCancel event
     @private
     */
-    _dispatchPresscancel: {
+    _dispatchPressCancel: {
         enumerable: false,
         value: function (event) {
-            if (this._shouldDispatchLongpress) {
-                clearTimeout(this._longpressTimer);
-                this._longpressTimer = null;
+            if (this._shouldDispatchLongPress) {
+                clearTimeout(this._longPressTimer);
+                this._longPressTimer = null;
             }
 
             this._state = PressComposer.CANCELLED;
-            this.dispatchEvent(this._createPressEvent("presscancel", event));
+            this.dispatchEvent(this._createPressEvent("pressCancel", event));
         }
     }
 
