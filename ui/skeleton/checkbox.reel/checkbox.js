@@ -12,5 +12,11 @@ var Montage = require("montage").Montage,
  */
 var Checkbox = exports.Checkbox = Montage.create(Component, {
     
+    draw: {
+        value: function() {
+            //This is just a temporary fix to prevent the type to be doubled.
+            this._element.type = "checkbox";
+        }
+    }
     
 });
