@@ -1,15 +1,30 @@
 <!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
 <html>
 <head>
     <title></title>
     <link rel="stylesheet" type="text/css" href="rich-text-editor.css">
     <script type="text/montage-serialization">
         {
+            "overlay": {
+                "module": "montage/ui/slot.reel",
+                "name": "Slot",
+                "properties": {
+                    "element": {"#": "editor-slot"},
+                    "delegate": {"@": "owner"}
+                }
+            },
+
             "owner": {
                 "module": "montage/lab/lib/ui/rich-text-editor.reel",
                 "name": "RichTextEditor",
                 "properties": {
-
+                    "element": {"#": "rich-text-editor-container"},
+                    "_overlaySlot": {"@": "overlay"}
                 }
             }
         }
@@ -17,5 +32,10 @@
 
 </head>
 <body>
+    <div id="rich-text-editor-container">
+        <div class="montage-editor" contenteditable="false"></div>
+        <div id="editor-slot" class="montage-editor-overlay"></div>
+    </div>
 </body>
 </html>
+

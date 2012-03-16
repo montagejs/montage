@@ -65,11 +65,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
             if (this._readOnly !== value) {
                 this._readOnly = value;
                 if (value) {
-                    // Reset the resizer and Active link popup
-                    if (this._resizer) {
-                        this._needsHideResizer = true;
-                    }
-                    this._needsActiveLinkOn = null;
+                    // Remove any overlay
+                    this.hideOverlay();
                 }
                 this.needsDraw = true;
             }
@@ -84,26 +81,35 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         enumerable: true,
         serializable: true,
         get: function() {
-            var contentNode = this.element.firstChild,
-                content;
+            var contentNode = this._editableContentElement,
+                content = "",
+                overlayElement = null,
+                overlayParent,
+                overlayNextSibling;
 
             if (this._dirtyValue) {
                 if (contentNode) {
-                    if (this._resizer) {
-                        contentNode = this._resizer.cleanup(contentNode);
+                    // Temporary orphran the overlay slot while retrieving the content
+                    overlayElement = contentNode.querySelector(".montage-editor-overlay");
+                    if (overlayElement) {
+                        overlayParent = overlayElement.parentNode;
+                        overlayNextSibling = overlayElement.nextSibling;
+                        overlayParent.removeChild(overlayElement);
                     }
-                    if (this._activeLinkBox) {
-                        contentNode = this._activeLinkBox.cleanup(contentNode);
-                    }
+                    content = contentNode.innerHTML;
                 }
 
-                content = contentNode ? contentNode.innerHTML : "";
                 if (content == "<br>") {
                     // when the contentEditable div is emptied, Chrome add a <br>, let's filter it out
                     content = "";
                 }
                 if (this._sanitizer) {
                     content = this._sanitizer.didGetValue(content, this._uniqueId);
+                }
+
+                // restore the overlay
+                if (overlayElement) {
+                    overlayParent.insertBefore(overlayElement, overlayNextSibling);
                 }
 
                 this._value = content;
@@ -113,19 +119,19 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         },
         set: function(value) {
             if (this._value !== value || this._dirtyValue) {
-                if (this._resizer) {
-                    this._needsHideResizer = true;
-                }
+                // Remove any overlay
+                this.hideOverlay();
+
                 if (this._sanitizer) {
                     value = this._sanitizer.willSetValue(value, this._uniqueId);
                 }
                 this._value = value;
                 this._dirtyValue = false;
                 this._dirtyTextValue = true;
-                this._needsSelectionReset = true;
-                this._needsResetContent = true;
+                this._needsAssingValue = true;
                 this.needsDraw = true;
             }
+            this._needsOriginalContent = false;
         }
     },
 
@@ -136,36 +142,47 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     textValue: {
         enumerable: true,
         get: function() {
-            var contentNode = this.element.firstChild;
+            var contentNode = this._editableContentElement,
+                overlayElement = null,
+                overlayParent,
+                overlayNextSibling;
 
             if (this._dirtyTextValue) {
                 if (contentNode) {
-                    if (this._resizer) {
-                        contentNode = this._resizer.cleanup(contentNode);
+                    // Temporary orphran the overlay slot in order to retrieve the content
+                    overlayElement = contentNode.querySelector(".montage-editor-overlay");
+                    if (overlayElement) {
+                        overlayParent = overlayElement.parentNode;
+                        overlayNextSibling = overlayElement.nextSibling;
+                        overlayParent.removeChild(overlayElement);
                     }
-                    if (this._activeLinkBox) {
-                        contentNode = this._activeLinkBox.cleanup(contentNode);
+
+                    this._textValue = this._innerText(contentNode);
+
+                     // restore the overlay
+                    if (overlayElement) {
+                        overlayParent.insertBefore(overlayElement, overlayNextSibling);
                     }
+                } else {
+                    this._textValue = "";
                 }
 
-                this._textValue = contentNode ? this._innerText(contentNode) : "";
                 this._dirtyTextValue = false;
             }
             return this._textValue;
         },
         set: function (value) {
             if (this._textValue !== value || this._dirtyTextValue) {
-                if (this._resizer) {
-                    this._needsHideResizer = true;
-                }
+                // Remove any overlay
+                this.hideOverlay();
 
                 this._textValue = value;
                 this._dirtyTextValue = false;
                 this._dirtyValue = true;
-                this._needsSelectionReset = true;
-                this._needsResetContent = true;
+                this._needsAssingValue = true;
                 this.needsDraw = true;
             }
+            this._needsOriginalContent = false;
         }
     },
 
@@ -192,45 +209,42 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         }
     },
 
-    /**
-      Description TODO
-     @type {Function}
-    */
-    activeLinkBox: {
+    overlays: {
         enumerable: false,
         get: function() {
-            return  this._activeLinkBox;
+            return  this._overlays;
         },
         set: function(value) {
-             // force hide the current activeLinkBox
-            if (this._activeLinkBox) {
-                this._activeLinkBox.hide();
-            }
-            this._activeLinkBox = value;
-            if (this._activeLinkBox) {
-                this._activeLinkBox.initialize(this);
+            if (value instanceof Array) {
+                this.hideOverlay();
+                this._overlays = value;
             }
         }
     },
 
-    /**
-      Description TODO
-     @type {Function}
-    */
-    resizer: {
-        enumerable: false,
-        get: function() {
-            return  this._resizer;
-        },
-        set: function(value) {
-            // force hide the current resizer
-            if (this._resizer){
-                this._resizer.hide();
-                delete this._needsHideResizer;
+    showOverlay: {
+        value: function(overlay) {
+            var slot = this._overlaySlot,
+                slotElem = slot ? slot.element : null;
+
+            if (slotElem) {
+                this._editableContentElement.appendChild(slotElem.parentNode ? slotElem.parentNode.removeChild(slotElem) : slotElem);
+                slot.attachToParentComponent();
+                slot.content = overlay;
             }
-            this._resizer = value;
-            if (this._resizer) {
-                this._resizer.initialize(this);
+        }
+    },
+
+    hideOverlay: {
+        value: function() {
+            var slot = this._overlaySlot,
+                slotElem = slot ? slot.element : null;
+
+            if (slotElem) {
+                if (slotElem.parentNode) {
+                    slotElem.parentNode.removeChild(slotElem)
+                }
+                slot.content = null;
             }
         }
     },
@@ -426,6 +440,15 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
+      Description TODO
+     @type {Function}
+    */
+    selectAll: {
+        enumerable: true,
+        value: function() { this.doAction("selectall"); }
+    },
+
+    /**
     Description TODO
     @function
     */
@@ -442,7 +465,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     undo: {
         enumerable: true,
         value: function(label, element) {
-            var editorElement = this.element.firstChild;
+            var editorElement = this._editableContentElement;
             if (!element || element === editorElement) {
                 this._doingUndoRedo = true;
                 document.execCommand("undo", false, null);
@@ -461,7 +484,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     redo: {
         enumerable: true,
         value: function(label, element) {
-            var editorElement = this.element.firstChild;
+            var editorElement = this._editableContentElement;
             if (!element || element === editorElement) {
                 this._doingUndoRedo = true;
                 document.execCommand("redo", false, null);

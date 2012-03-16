@@ -1,106 +1,30 @@
-.montage-editor {
-    /* need to be relative in order for the resizer to be positioned correctly */
-    position: absolute;
-    top: 0;
-    left: 0;
-    bottom: 0;
-    right: 0;
-    padding: 4px;
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
 
-    font-size: 1.0em;
-    outline:  none;
-    overflow: auto;
-    z-index: 1;
-}
-
-.montage-editor-frame {
+.montage-editor-container {
     position: relative;
     overflow: auto;
     height: 100%;
     width: 100%;
 }
 
-.montage-resizer-element::selection {
-    background: rgba(0,0,0,0);
-}
+.montage-editor {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
 
+    outline:  none;
+    overflow: auto;
+}
 
 /*
- Resizer
+ Overlay
 */
-.montage-resizer {
-    display: inline-block;
-}
-
-.montage-resizer-frame {
-    position: absolute;
-    border: 1px solid black;
-    z-index: 30;
-}
-
-.montage-resizer-handle {
-    position: absolute;
-    border: 1px solid black;
-    background-color: white;
-    width: 6px;
-    height: 6px;
-    z-index: 31;
-}
-
-.montage-resizer.dragged .montage-resizer-handle{
-    display: none;
-}
-
-.montage-resizer-handle:hover {
-    background-color: black;
-}
-
-.montage-resizer-n {
-    cursor: n-resize;
-}
-.montage-resizer-ne {
-    cursor: ne-resize;
-}
-.montage-resizer-e {
-    cursor: e-resize;
-}
-.montage-resizer-se {
-    cursor: se-resize;
-}
-.montage-resizer-s {
-    cursor: s-resize;
-}
-.montage-resizer-sw {
-    cursor: sw-resize;
-}
-.montage-resizer-w {
-    cursor: w-resize;
-}
-.montage-resizer-nw {
-    cursor: nw-resize;
-}
-
-
-/*
- Link Popup
-*/
-.montage-link-popup {
-    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.2);
-    -webkit-border-radius: 2px;
-    border-radius: 2px;
-    position: absolute;
-    border: 1px solid;
-    background-color: white;
-    color: #666;
-    padding: 12px 20px;
+.montage-editor-overlay {
     z-index: 50;
-    cursor: default;
-    border-color: #BBB #BBB #A8A8A8;
-    font: 13px/normal "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
-}
-
-.montage-link-popup a {
-    cursor: pointer;
-    text-decoration: none;
-    color: #15C;
 }
