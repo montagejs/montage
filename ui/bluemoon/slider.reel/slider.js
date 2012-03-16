@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module "montage/ui/bluemoon/slider.reel"
+    @module "montage/ui/bluemoon/slider.reel"
     @requires montage/core/core
     @requires montage/ui/component
 */
@@ -199,6 +199,9 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             if (value !== this._minValue) {
+                if(String.isString(value)) {
+                    value = parseFloat(value);
+                }
                 this._minValue = value;
                 this._valueRange = null;
                 this.needsDraw = true;
@@ -226,6 +229,9 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             if (value !== this._maxValue) {
+                if(String.isString(value)) {
+                    value = parseFloat(value);
+                }
                 this._maxValue = value;
                 this._valueRange = null;
                 this.needsDraw = true;
@@ -288,6 +294,9 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             if (!isNaN(value)) {
+                if(String.isString(value)) {
+                    value = parseFloat(value);
+                }
                 if (value !== this._value) {
                     this._value = parseFloat(value);
                     this.needsDraw = true;
@@ -450,7 +459,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
     */
     handleMousemove: {
         value: function (event) {
-            this.value = this._value + ((event.clientX - this._cursorPosition) * (this.valueRange)) / this._width;
+            this.value = this.value + ((event.clientX - this._cursorPosition) * (this.valueRange)) / this._width;
+
             this._cursorPosition = event.clientX;
             event.preventDefault();
             event.stopPropagation();

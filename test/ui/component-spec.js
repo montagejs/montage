@@ -19,6 +19,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 expect(testPage.loaded).toBeTruthy();
             });
 
+            it("should use the label as identifier if no identifier is given", function() {
+                expect(testPage.test.componentWithoutIdentifier.identifier).toBe("componentWithoutIdentifier");
+                expect(testPage.test.componentWithIdentifier.identifier).toBe("anIdentifier");
+            });
+
+
             describe("originalContent", function() {
                 it("should contain the original content of the component markup", function() {
                     var originalContent = testPage.test.repetition.originalContent;
@@ -27,24 +33,24 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     expect(originalContent[1].outerHTML).toBe("<p>here</p>");
                 });
             });
-            
+
             describe("content", function() {
                 it("should contain the current content of the component markup", function() {
                     var content = testPage.test.repetition.content;
                     expect(content.length).toBe(6);
                 });
-                
+
                 it("should change the content of the component for markup", function() {
                     var componentC = testPage.test.componentC,
                         content = componentC.content,
                         newContent = componentC._element.ownerDocument.createElement("div");
-                    
+
                     expect(content.length).toBe(3);
                     newContent.setAttribute("class", "markup");
                     testPage.test.componentC.content = newContent;
                     // should only draw at draw cycle.
                     expect(componentC.content).toEqual(content);
-                    
+
                     testPage.waitForDraw();
 
                     runs(function() {
@@ -52,13 +58,13 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                         expect(componentC.content[0].outerHTML).toBe('<div class="markup"></div>');
                     });
                 });
-                
+
                 it("should change the content of the component for another component", function() {
                     var componentC = testPage.test.componentC,
                         componentC1 = testPage.test.componentC1,
                         content = componentC.content,
                         newContent = componentC1._element;
-                    
+
                     testPage.test.componentC.content = newContent;
                     // should only draw at draw cycle.
                     expect(componentC.content).toEqual(content);
@@ -80,7 +86,12 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     runs(function() {
                         expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div>D1</div>\n    </h1>\n");
                     });
-                })
+                });
+
+                it("should preverve the owner component of transplanted components", function() {
+                   var componentLayout = testPage.test.componentLayout; expect(componentLayout.leftComponent.ownerComponent).not.toBe(componentLayout);
+                   expect(componentLayout.rightComponent.ownerComponent).not.toBe(componentLayout);
+                });
             });
 
             describe("calling willDraw prior to drawing", function() {
@@ -269,14 +280,14 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                         });
                     });
                 });
-                
-                it("TODO: should draw a component that was assigned an element not part of the DOM tree when it's added to the DOM tree", function() {
+
+                it("should draw a component that was assigned an element not part of the DOM tree when it's added to the DOM tree", function() {
                     var component = testPage.test.componentNoelement,
                         element = component.element;
-                    
+
                     testPage.window.document.body.appendChild(element);
                     component.needsDraw = true;
-                    
+
                     testPage.waitForDraw();
                     runs(function() {
                         expect(element.textContent).toBe(component.value);
@@ -412,6 +423,35 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     expect(componentE1.childComponents.length).toBe(1);
                     expect(componentE1.childComponents[0]).toBe(testPage.test.componentE11);
                 });
+            });
+
+            describe("the owner component property", function() {
+                var Component = testPage.window.require("montage/ui/component").Component;
+                var componentOwner = testPage.test.componentOwner;
+
+                var leaf1 = componentOwner.leaf1;
+                var leaf2 = componentOwner.leaf2;
+                var branch = componentOwner.branch;
+                var branchLeaf1 = branch.leaf1;
+                var branchLeaf2 = branch.leaf2;
+
+                it("should be the component that loaded the template", function() {
+                    expect(leaf1.ownerComponent).toBe(componentOwner);
+                    expect(leaf2.ownerComponent).toBe(componentOwner);
+                    expect(branch.ownerComponent).toBe(componentOwner);
+                    expect(branchLeaf1.ownerComponent).toBe(branch);
+                    expect(branchLeaf2.ownerComponent).toBe(branch);
+                });
+            });
+
+            it("should be able to draw a component after being cleaned up", function() {
+                testPage.test.componentToBeCleaned.cleanupDeletedComponentTree();
+                testPage.test.componentToBeCleaned.text.value = "New Text";
+
+                testPage.waitForDraw();
+                runs(function() {
+                    expect(testPage.test.componentToBeCleaned.text._element.textContent).toBe("New Text");
+                })
             })
         });
     });

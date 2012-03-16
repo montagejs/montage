@@ -173,6 +173,27 @@
         ]
     },
 
+    "buttonwithinput": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "buttonwithinput"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "test"}
+            }
+        ]
+    },
+
+    "output": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "output"},
+            "value": ""
+        }
+    },
 
     "test": {
         "module": "ui/buttontest/buttontest",
@@ -197,7 +218,8 @@
             "toggleinput2": {"@": "toggleinput2"},
             "toggleinput3": {"@": "toggleinput3"},
             "scroll": {"@": "scroll"},
-            "scroll_button": {"@": "scroll_button"}
+            "scroll_button": {"@": "scroll_button"},
+            "output": {"@": "output"}
         }
     },
     "application": {
@@ -215,7 +237,7 @@
     <h1>Button test</h1>
 
     <h2>Output</h2>
-    <span id="output">output</span>
+    <span id="output" data-montage-id="output">output</span>
 
     <h2>Basic</h2>
     <div id="divbutton">div button</div>
@@ -262,5 +284,7 @@
     <input type="button" id="toggleinput3" value="on">
 
     <input type="button" value="regular button" onclick="alert('hello');" />
+
+    <button id="buttonwithinput"><input type="text" id="stupidinput"/></button>
 </body>
 </html>

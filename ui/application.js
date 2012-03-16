@@ -221,7 +221,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 }
                 // use the new zIndex for custom popup
                 if(!isSystemPopup) {
-                    popupSlot.element.style['z-index'] = zIndex;
+                    popupSlot.element.style.zIndex = zIndex;
                 }
 
                 popupSlot.content = content;

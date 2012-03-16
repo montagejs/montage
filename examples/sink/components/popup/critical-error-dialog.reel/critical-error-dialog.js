@@ -35,6 +35,13 @@ var CriticalErrorDialog = exports.CriticalErrorDialog = Montage.create(Component
             this.dispatchEvent(anEvent);
         }
     },
+    handleRestartLaterAction: {
+        value: function(value) {
+            if(this.popup) {
+                this.popup.hide();
+            }
+        }
+    },
     prepareForDraw: {
         value: function() {
             // Invoke Google pretty printer on source code samples

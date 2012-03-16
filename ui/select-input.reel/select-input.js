@@ -14,16 +14,17 @@ var Montage = require("montage").Montage,
 var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
     _fromInput: {value: null},
+    _synching: {value: null},
+    //_internalSet: {value: null},
 
     __selectedIndexes: {value: null, enumerable: false},
     _selectedIndexes: {
         set: function(value) {
             this.__selectedIndexes = value;
-            if(!this._fromInput) {
-                this.needsDraw = true;
-            } else {
-                this._fromInput = false;
+            if(this.needsDraw === false) {
+                this.needsDraw = this._synching || !this._fromInput;
             }
+
         },
         get: function() {
             return this.__selectedIndexes;
@@ -102,6 +103,85 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         }
     },
 
+    _getSelectedValuesFromIndexes: {
+        value: function() {
+            var selectedObjects = this.contentController ? this.contentController.selectedObjects : null;
+            var arr = [];
+            if(selectedObjects && selectedObjects.length > 0) {
+                var i=0, len = selectedObjects.length, valuePath;
+                for(; i<len; i++) {
+                    valuePath = this.valuePropertyPath || 'value';
+                    if(selectedObjects[i][valuePath]) {
+                        arr.push(selectedObjects[i][valuePath]);
+                    }
+                }
+            }
+            return arr;
+
+        }
+    },
+
+    _synchValues: {
+        value: function() {
+            if(!this._synching) {
+                this._synching = true;
+                this.values = this._getSelectedValuesFromIndexes();
+                this.value = ((this.values && this.values.length > 0) ? this.values[0] : null);
+                this._synching = false;
+            }
+        }
+    },
+
+
+    _values: {value: null},
+    values: {
+        get: function() {
+            return this._values;
+        },
+        set: function(valuesArray) {
+            var content = this.contentController ? this.contentController.content : null;
+            if(valuesArray && content) {
+                this._values = valuesArray;
+
+                if(!this._synching) {
+                    var selectedIndexes = [];
+                    var i=0, len = this._values.length, index;
+                    for(; i<len; i++) {
+                        index = this._indexOf(this._values[i]);
+                        if(index >= 0) {
+                            selectedIndexes.push(index);
+                        }
+                    }
+                    this._synching = true;
+                    this.contentController.selectedIndexes = selectedIndexes;
+                    this._synching = false;
+                }
+            }
+        }
+        //dependencies: ["_selectedIndexes"]
+    },
+
+    _value: {value: null},
+    value: {
+        get: function() {
+            return this._value;
+        },
+        set: function(value) {
+            this._value = value;
+
+            if(!this._synching) {
+                if(value == null) {
+                    this.values = [];
+                } else {
+                    this.values = [value];
+                }
+            }
+
+
+        }
+        //dependencies: ["_selectedIndexes"]
+    },
+
     // -------------------
     // Montage Callbacks
     // --------------------
@@ -135,11 +215,13 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                     }
 
                     this.contentController = contentController;
-
-                    if(selectedIndexes.length > 0) {
-                        this._fromInput = true;
-                        this.contentController.selectedIndexes = selectedIndexes;
+                    if(selectedIndexes.length === 0 && len > 0) {
+                        // nothing was marked as selected by default. Select the first one (gh-122)
+                        selectedIndexes = [0];
                     }
+                    this._fromInput = true;
+                    this.contentController.selectedIndexes = selectedIndexes;
+
                 }
             }
 
@@ -223,8 +305,10 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     draw: {
         enumerable: false,
         value: function() {
-
             var elem = this.element;
+
+            this._fromInput = false;
+            this._synching = false;
 
             this._removeAll(elem);
             this._refreshOptions();
@@ -234,6 +318,14 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
         }
     },
+
+    didDraw: {
+        value: function() {
+            this._synchValues();
+        }
+    },
+
+
 
     // find the index of the object with the specified value in the _content array
     _indexOf: {
@@ -294,8 +386,11 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
             if(arr.length > 0) {
                 this._fromInput = true;
+                this._synching = false;
                 this.contentController.selectedIndexes = arr;
+                this._synchValues();
             }
+
         }
     }
 
@@ -305,7 +400,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 //http://www.w3.org/TR/html5/the-button-element.html#the-select-element
 
 SelectInput.addAttributes({
-        autofocus: null,
+        autofocus: {dataType: 'boolean'},
         disabled: {dataType: 'boolean'},
         form: null,
         multiple: {dataType: 'boolean'},

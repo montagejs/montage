@@ -24,79 +24,79 @@
                     }
                 },
 
-                "veg-binding": {
+                "vegBinding": {
                     "value": {
                         "disabled": {
                             "boundObject": {"@": "veg"},
                             "boundObjectPropertyPath": "checked",
                             "oneway": true,
-                            "converter": {"@": "invert-converter"}
+                            "converter": {"@": "invertConverter"}
                         }
                     }
                 },
-                "fruit-binding": {
+                "fruitBinding": {
                     "value": {
                         "disabled": {
                             "boundObject": {"@": "fruit"},
                             "boundObjectPropertyPath": "checked",
                             "oneway": true,
-                            "converter": {"@": "invert-converter"}
+                            "converter": {"@": "invertConverter"}
                         }
                     }
                 },
 
-                "veg-carrot": {
+                "vegCarrot": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "veg-carrot"}
                     },
-                    "bindings": {"@": "veg-binding"}
+                    "bindings": {"@": "vegBinding"}
                 },
-                "veg-potato": {
+                "vegPotato": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "veg-potato"}
                     },
-                    "bindings": {"@": "veg-binding"}
+                    "bindings": {"@": "vegBinding"}
                 },
-                "veg-broccoli": {
+                "vegBroccoli": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "veg-broccoli"}
                     },
-                    "bindings": {"@": "veg-binding"}
+                    "bindings": {"@": "vegBinding"}
                 },
 
-                "fruit-apple": {
+                "fruitApple": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "fruit-apple"}
                     },
-                    "bindings": {"@": "fruit-binding"}
+                    "bindings": {"@": "fruitBinding"}
                 },
-                "fruit-banana": {
+                "fruitBanana": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "fruit-banana"}
                     },
-                    "bindings": {"@": "fruit-binding"}
+                    "bindings": {"@": "fruitBinding"}
                 },
-                "fruit-pear": {
+                "fruitPear": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "fruit-pear"}
                     },
-                    "bindings": {"@": "fruit-binding"}
+                    "bindings": {"@": "fruitBinding"}
                 },
 
 
-                "log-listener": {
+                "logListener": {
                     "value": [
                         {
                             "type": "action",
@@ -104,25 +104,25 @@
                         }
                     ]
                 },
-                "listen-on": {
+                "listenOn": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "listen-on"}
                     },
-                    "listeners": {"@":"log-listener"}
+                    "listeners": {"@":"logListener"}
                 },
-                "listen-off": {
+                "listenOff": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
                         "element": {"#": "listen-off"}
                     },
-                    "listeners": {"@":"log-listener"}
+                    "listeners": {"@":"logListener"}
 
                 },
 
-                "invert-converter": {
+                "invertConverter": {
                     "module": "components/converters.reel",
                     "name": "InvertConverter"
                 },
@@ -138,7 +138,7 @@
 
 
 
-                "answers-controller": {
+                "answersController": {
                     "name": "ArrayController",
                     "module": "montage/ui/controller/array-controller",
                     "properties": {
@@ -162,11 +162,11 @@
                             "#": "list2-rows"
                         },
                         "isSelectionEnabled": false,
-                        "contentController": {"@": "answers-controller"}
+                        "contentController": {"@": "answersController"}
                     }
                 },
 
-                "answer-selection": {
+                "answerSelection": {
                     "module": "montage/ui/radio-button.reel",
                     "name": "RadioButton",
                     "properties": {
@@ -180,7 +180,7 @@
                     }
                 },
 
-                "answer-text": {
+                "answerText": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
@@ -195,7 +195,7 @@
                     }
                 },
 
-                "selected-answer": {
+                "selectedAnswer": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
@@ -206,6 +206,28 @@
                             "boundObject": {"@": "owner"},
                             "boundObjectPropertyPath": "selectedAnswer"
                         }
+                    }
+                },
+
+                "radiobuttonAccordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "radiobutton-accordion1"}
+                    }
+                },
+                "radiobuttonAccordion2": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "radiobutton-accordion2"}
+                    }
+                },
+                "radiobuttonAccordion3": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "radiobutton-accordion3"}
                     }
                 },
 
@@ -221,7 +243,7 @@
                     },
                     "bindings": {
                         "selectedAnswer": {
-                            "boundObject": {"@": "answers-controller"},
+                            "boundObject": {"@": "answersController"},
                             "boundObjectPropertyPath": "selectedObjects.0"
                         }
                     }
@@ -245,7 +267,7 @@
     <body>
         <div id="radio-button-example" class="radio-button-example">
             <div class="row">
-                <div class="span8">
+                <div class="span12">
                     <h3>RadioButton</h3>
                     <p>
                         The RadioButton component wraps an HTML radio utton input type with custom styles and functionality.
@@ -258,31 +280,168 @@
             <div class="demo">
 
                 <p class="span8">What is your favorite food?</p>
+                <div class="app">
+                            <div class="span4">
+                                <label class="radio"><input type="radio" name="car" id="veg" /> Vegetables</label>
+                                <div style="padding-left: 1em">
+                                    <label class="radio"><input type="radio" name="veg" id="veg-carrot"> Carrot</label>
+                                    <label class="radio"><input type="radio" name="veg" id="veg-potato"> Potato</label>
+                                    <label class="radio"><input type="radio" name="veg" id="veg-broccoli"> Broccoli</label>
+                                </div>
+                            </div>
+                            <div class="span4">
+                                <label class="radio"><input type="radio" name="car" id="fruit" /> Fruit</label>
+                                <div style="padding-left: 1em">
+                                    <label class="radio"><input type="radio" name="fruit" value="apple" id="fruit-apple"> Apple</label>
+                                    <label class="radio"><input type="radio" name="fruit" value="banana" id="fruit-banana"> Banana</label>
+                                    <label class="radio"><input type="radio" name="fruit" value="pear" id="fruit-pear"> Pear</label>
+                                </div>
+                            </div>
 
-
-                <div class="span4">
-                    <label class="radio"><input type="radio" name="car" id="veg" /> Vegetables</label>
-                    <div style="padding-left: 1em">
-                        <label class="radio"><input type="radio" name="veg" id="veg-carrot"> Carrot</label>
-                        <label class="radio"><input type="radio" name="veg" id="veg-potato"> Potato</label>
-                        <label class="radio"><input type="radio" name="veg" id="veg-broccoli"> Broccoli</label>
-                    </div>
                 </div>
-                <div class="span4">
-                    <label class="radio"><input type="radio" name="car" id="fruit" /> Fruit</label>
-                    <div style="padding-left: 1em">
-                        <label class="radio"><input type="radio" name="fruit" value="apple" id="fruit-apple"> Apple</label>
-                        <label class="radio"><input type="radio" name="fruit" value="banana" id="fruit-banana"> Banana</label>
-                        <label class="radio"><input type="radio" name="fruit" value="pear" id="fruit-pear"> Pear</label>
-                    </div>
-                </div>
-
             </div>
 
-            <h4>Demo: Using the Radiobutton within a Repetition</h4>
+            <section>
+                <ul id="radiobutton-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;p class="span8"&gt;What is your favorite food?&lt;/p&gt;
+
+&lt;div class="span4"&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" name="car" id="veg" /&gt; Vegetables&lt;/label&gt;
+    &lt;div style="padding-left: 1em"&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="vegCarrot"&gt; Carrot&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="vegPotato"&gt; Potato&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="veg" id="vegBroccoli"&gt; Broccoli&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;div class="span4"&gt;
+    &lt;label class="radio"&gt;&lt;input type="radio" name="car" id="fruit" /&gt; Fruit&lt;/label&gt;
+    &lt;div style="padding-left: 1em"&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="apple" id="fruitApple"&gt; Apple&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="banana" id="fruitBanana"&gt; Banana&lt;/label&gt;
+        &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="pear" id="fruitPear"&gt; Pear&lt;/label&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "veg": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "veg"}
+        }
+    },
+    "fruit": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "fruit"}
+        }
+    },
+
+    "veg-binding": {
+        "value": {
+            "disabled": {
+                "boundObject": {"@": "veg"},
+                "boundObjectPropertyPath": "checked",
+                "oneway": true,
+                "converter": {"@": "invertConverter"}
+            }
+        }
+    },
+    "fruit-binding": {
+        "value": {
+            "disabled": {
+                "boundObject": {"@": "fruit"},
+                "boundObjectPropertyPath": "checked",
+                "oneway": true,
+                "converter": {"@": "invertConverter"}
+            }
+        }
+    },
+
+    "vegCarrot": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "veg-carrot"}
+        },
+        "bindings": {"@": "veg-binding"}
+    },
+    "vegPotato": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "veg-potato"}
+        },
+        "bindings": {"@": "veg-binding"}
+    },
+    "vegBroccoli": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "veg-broccoli"}
+        },
+        "bindings": {"@": "veg-binding"}
+    },
+
+    "fruitApple": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "fruit-apple"}
+        },
+        "bindings": {"@": "fruit-binding"}
+    },
+    "fruitBanana": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "fruit-banana"}
+        },
+        "bindings": {"@": "fruit-binding"}
+    },
+    "fruitPear": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "fruit-pear"}
+        },
+        "bindings": {"@": "fruit-binding"}
+    },
 
 
-            <div class="demo">
+    "logListener": {
+        "value": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                </ul>
+            </section>
+
+
+
+            <h4>Demo: Using Radiobutton in a Repetition</h4>
+
+
+            <div class="demo radiobutton2">
 
                 <h5>Overall, how satisfied are you with our product?</h5>
 
@@ -299,109 +458,210 @@
                     <h5>You selected: </h5>
                     <div id="selected-answer" ></div>
                 </div>
+
             </div>
 
             <section>
-                <a href="m-js/examples/sink/components/repetition-example.reel" target="_blank">View Demo Source</a>
+                <ul id="radiobutton-accordion2" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;h5&gt;Overall, how satisfied are you with our product?&lt;/h5&gt;
+
+&lt;table id="list2" class="bordered-table" style="width: auto;"&gt;
+    &lt;tbody id="list2-rows"&gt;
+        &lt;tr&gt;
+             &lt;td&gt;&lt;input type="radio" id="answer-selection" name="answer-selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span id="answer-text"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div&gt;
+    &lt;h5&gt;You selected: &lt;/h5&gt;
+    &lt;div id="selected-answer" &gt;&lt;/div&gt;
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "answersController": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "answers",
+                "oneway": true
+            }
+        }
+    },
+
+    "list2": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "list2-rows"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "answersController"}
+        }
+    },
+
+    "answerSelection": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "answer-selection"}
+        },
+        "bindings": {
+            "checked": {
+                "boundObject": {"@": "list2"},
+                "boundObjectPropertyPath": "selectionAtCurrentIteration"
+            }
+        }
+    },
+
+    "answerText": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "answer-text"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "list2"},
+                "boundObjectPropertyPath": "objectAtCurrentIteration",
+                "oneway": true
+            }
+        }
+    },
+
+    "selectedAnswer": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "selected-answer"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "selectedAnswer"
+            }
+        }
+    },
+
+
+    "owner": {
+        "module": "components/radio-button-example.reel",
+        "name": "CheckboxExample",
+        "properties": {
+            "element": {"#": "radio-button-example"},
+            "answers": [
+                "Very Satisfied", "Satisfied", "Neutral", "Unsatisfied", "Very Unsatisfied", "Dont want to answer"
+            ]
+        },
+        "bindings": {
+            "selectedAnswer": {
+                "boundObject": {"@": "answersController"},
+                "boundObjectPropertyPath": "selectedObjects.0"
+            }
+        }
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                </ul>
+
             </section>
 
 
-            <h6>Serialization</h6>
-            <pre class="prettyprint">
-"veg": {
-    "module": "montage/ui/radio-button.reel",
-    "name": "RadioButton",
-    "properties": {
-        "element": {"#": "veg"}
-    }
-},
 
-"veg-binding": {
-    "value": {
-        "disabled": {
-            "boundObject": {"@": "veg"},
-            "boundObjectPropertyPath": "checked",
-            "oneway": true,
-            "converter": {"@": "invert-converter"}
-        }
-    }
-},
+       <h4>Demo: Listening to RadioButton clicks</h4>
 
-"veg-carrot": {
-    "module": "montage/ui/radio-button.reel",
-    "name": "RadioButton",
-    "properties": {
-        "element": {"#": "veg-carrot"}
-    },
-    "bindings": {"@": "veg-binding"}
-}
-// Repeated for each vegetable and fruit
-</pre>
+        <div class="demo">
+            <div class="app">
+                <label class="radio inline"><input type="radio" id="listen-on" name="on-off"> On</label>
+                <label class="radio inline"><input type="radio" id="listen-off" name="on-off"> Off</label>
+            </div>
+        </div>
 
-                <h6>HTML Markup</h6>
-     <pre class="prettyprint">
-&lt;ul&gt;
-    &lt;li&gt;
-        &lt;label&gt;&lt;input type="radio" name="car" id="veg" /&gt; Vegetables&lt;/label&gt;
-        &lt;ul&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-carrot"&gt; Carrot&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-potato"&gt; Potato&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="veg" id="veg-broccoli"&gt; Broccoli&lt;/label&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-    &lt;/li&gt;
-    &lt;li&gt;
-        &lt;label&gt;&lt;input type="radio" name="car" id="fruit" /&gt; Fruit&lt;/label&gt;
-        &lt;ul&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="fruit" value="apple" id="fruit-apple"&gt; Apple&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="fruit" value-"banana" id="fruit-banana"&gt; Banana&lt;/label&gt;&lt;/li&gt;
-            &lt;li&gt;&lt;label&gt;&lt;input type="radio" name="fruit" value="pear" id="fruit-pear"&gt; Pear&lt;/label&gt;&lt;/li&gt;
-        &lt;/ul&gt;
-    &lt;/li&gt;
-&lt;/ul&gt;</pre>
-
-
-            <h4>Listener example</h4>
-
-            <label class="radio inline"><input type="radio" id="listen-on" name="on-off"> On</label>
-            <label class="radio inline"><input type="radio" id="listen-off" name="on-off"> Off</label>
-
-            <h6>HTML</h6>
-            <pre class="prettyprint">
+        <section>
+            <ul id="radiobutton-accordion3" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
 &lt;label&gt;&lt;input type="radio" id="listen-on" name="on-off"&gt; On&lt;/label&gt;
 &lt;label&gt;&lt;input type="radio" id="listen-off" name="on-off"&gt; Off&lt;/label&gt;</pre>
 
-            <h6>Serialization</h6>
-            <pre class="prettyprint">
-"log-listener": {
-    "value": [
-        {
-            "type": "action",
-            "listener": {"@": "logger"}
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "logListener": {
+        "value": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+    "listenOn": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "listen-on"}
+        },
+        "listeners": {"@":"logListener"}
+    },s
+    "listenOff": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "listen-off"}
+        },
+        "listeners": {"@":"logListener"}
+
+    },
+    "logger": {
+        "module": "logger.reel",
+        "name": "Logger",
+        "properties": {
+            "element": {"#": "logger"}
         }
-    ]
-},
+    }
+}
+                    </pre>
 
-"listen-on": {
-    "module": "montage/ui/radio-button.reel",
-    "name": "RadioButton",
-    "properties": {
-        "element": {"#": "listen-on"}
-    },
-    "listeners": {"@":"log-listener"}
-},
-
-"listen-off": {
-    "module": "montage/ui/radio-button.reel",
-    "name": "RadioButton",
-    "properties": {
-        "element": {"#": "listen-off"}
-    },
-    "listeners": {"@":"log-listener"}
-
-}</pre>
+                   </div>
+               </li>
+            </ul>
+        </section>
 
             <div id="logger"></div>
 
         </div>
+
+
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/radio-button-example.reel" target="_blank">View source on GitHub</a>
+        </section>
     </body>
 </html>

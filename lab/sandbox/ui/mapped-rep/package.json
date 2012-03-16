@@ -1,0 +1,7 @@
+{
+    "name": "mapped-rep",
+    "version": "0.0.0",
+    "mappings": {
+        "montage": "../../../../"
+    }
+}
