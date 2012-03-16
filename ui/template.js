@@ -369,16 +369,11 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
      Instantiates the Template with no elements references.
      @function
      */
-    instantiate: {value: function() {
-        var self = this;
-        var deserializer = Deserializer.create();
-
-        function invokeTemplateDidLoad(owner) {
-            self._invokeTemplateDidLoadWithOwner(deserializer, owner);
-            callback(component);
+    instantiate: {
+        value: function(callback) {
+            return this.instantiateWithOwnerAndDocument(null, null, callback);
         }
-        deserializer.deserializeRootObjectWithElement(this._document, invokeTemplateDidLoad);
-    }},
+    },
 
     /**
      @private
