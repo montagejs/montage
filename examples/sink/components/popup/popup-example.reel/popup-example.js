@@ -6,7 +6,7 @@ Confirm = require("montage/ui/popup/confirm.reel").Confirm,
 Notifier = require("montage/ui/popup/notifier.reel").Notifier;
 
 exports.PopupExample = Montage.create(Component, {
-    
+
     logger: {value: null},
 
     log: {
@@ -14,7 +14,7 @@ exports.PopupExample = Montage.create(Component, {
             this.logger.log(msg);
         }
     },
-    
+
 
     // Bookmark
     handleAddbookmark: {
@@ -48,7 +48,7 @@ exports.PopupExample = Montage.create(Component, {
             evt.stopPropagation();
         }
     },
-    
+
     menuPosition: {value: 'default'},
     // delegate for the Bookmark menu popup
     willPositionPopup: {
@@ -61,55 +61,77 @@ exports.PopupExample = Montage.create(Component, {
             var content = popup.content.element;
             contentHt = parseFloat(content.style.height || 0) || content.offsetHeight || 0;
             contentWd = parseFloat(content.style.height || 0) || content.offsetHeight || 0;
-            
+
             var result;
             switch(this.menuPosition) {
-                case 'left': 
+                case 'left':
                 result = {
                     top: defaultPosition.top,
                     left: defaultPosition.left - (anchorWd/2 + contentWd/2)
                 };
                 break;
-                
-                case 'right': 
+
+                case 'right':
                 result = {
                     top: defaultPosition.top,
                     left: defaultPosition.left + (anchorWd/2 + contentWd/2)
                 };
                 break;
-                
-                case 'top': 
+
+                case 'top':
                 result = {
                     top: defaultPosition.top - (anchorHt + contentHt + 10),
                     left: defaultPosition.left
                 };
                 break;
-                
+
                 case 'bottom':
                 result = defaultPosition;
                 break;
-                
+
                 case 'topright':
                 result = {
                   top: 1,
-                  right: 10
+                  right: 2
                 };
                 break;
-                
+
+                case 'topcenter':
+                result = {
+                  top: 1,
+                  left: '40%'
+                };
+                break;
+
+                case 'bottomcenter':
+                result = {
+                  bottom: 1,
+                  left: '40%'
+                };
+                break;
+
                 case 'bottomleft':
                 result = {
                   bottom: 1,
                   left: 10
                 };
                 break;
-                
+
+                case 'center':
+                result = {
+                    top: '40%',
+                    left: '40%'
+                };
+                break;
+
+
                 default:
                 result = defaultPosition;
-                
-                             
+
+
             }
             return result;
-            
+
         }
     },
 

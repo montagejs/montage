@@ -12,7 +12,7 @@ var Montage = require("montage").Montage,
 
 var testPage = TestPageLoader.queueTest("popup-test", function() {
     var test = testPage.test;
-    
+
     var getElementPosition = function(obj) {
             var curleft = 0, curtop = 0, curHt = 0, curWd = 0;
             if (obj.offsetParent) {
@@ -31,83 +31,119 @@ var testPage = TestPageLoader.queueTest("popup-test", function() {
             };
             //return [curleft,curtop, curHt, curWd];
     };
-    
+
     describe("ui/popup-spec1", function() {
         it("should load", function() {
             expect(testPage.loaded).toBeTruthy();
         });
 
         describe("once loaded", function() {
-            
+
             describe("Popup", function() {
-                
+
                 it("show/hide works", function() {
-                    
+
                     var popup = test.popup;
                     expect(popup.displayed).toBe(false);
                     popup.show();
-                          
+
                     testPage.waitForDraw();
                     runs(function() {
                         //console.log('after initial show', popup.element);
-                        expect(popup.element.classList.contains("montage-invisible")).toBe(false);                          
+                        expect(popup.element.classList.contains("montage-invisible")).toBe(false);
                         popup.hide();
                         testPage.waitForDraw();
                         runs(function() {
                             //console.log('after first hide');
-                            expect(popup.element.classList.contains("montage-invisible")).toBe(true);                              
+                            expect(popup.element.classList.contains("montage-invisible")).toBe(true);
                             popup.show();
                             testPage.waitForDraw();
                             runs(function() {
-                                //console.log('after show 1', popup.element); 
-                                // if this fails, it means that the popup.draw is not called after it was hidden once                           
+                                //console.log('after show 1', popup.element);
+                                // if this fails, it means that the popup.draw is not called after it was hidden once
                                 expect(popup.element.classList.contains("montage-invisible")).toBe(false);
-                            });                                                               
+                            });
                         });
                     });
 
-                });                
-                
+                });
+
+                /*
+                it("non-modal popup is hidden when clicked outside the popup", function() {
+
+                    var popup = test.popup;
+
+
+                    expect(popup.displayed).toBe(false);
+                    popup.show();
+
+                    testPage.waitForDraw();
+                    runs(function() {
+                        expect(popup.displayed).toBe(true);
+                        var eventInfo = Montage.create(EventInfo).initWithElementAndPosition(null, 1, 1);
+                        console.log('about to click outside the popup');
+
+                        testPage.mouseEvent(eventInfo, 'click', function(evt) {
+                            popup.needsDraw = true;
+                            testPage.waitForDraw();
+                            runs(function() {
+                                console.log('after drawing');
+                                expect(popup.displayed).toBe(false);
+                            });
+
+                        });
+
+
+                    });
+
+                });
+                */
+
             });
-            
-            
+
+
             it("is positioned relative to anchor by default", function() {
                 var popup = test.popup;
                 var anchor = popup.anchorEl, anchorHt, anchorWd, anchorPosition;
-                
+
                 var anchorPosition = getElementPosition(anchor);
                 anchorHt = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
                 anchorWd = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
-                
+
                 popup.addEventListener('show', function() {
                     console.log('show -');
                     var popupPosition = getElementPosition(popup.element);
                     expect(popupPosition.top).toBe(anchorPosition.top + anchorHt);
+
+                    popup.hide();
                 });
-                
+
                 popup.show();
-                
-                
+
+
             });
-            
-            
+
+
+
             it("is positioned at specified position", function() {
                 var popup = test.popup;
                 popup.position = {top: 1, left: 10};
-                
+
                 popup.addEventListener('show', function() {
                     var popupPosition = getElementPosition(popup.element);
                     console.log('show -', popupPosition);
                     expect(popupPosition.top).toBe(1);
                     expect(popupPosition.left).toBe(6);
+
+                    popup.hide();
                 });
-                
+
                 popup.show();
-                
-                
+
+
             });
-            
+
         });
-        
+
     });
 });
