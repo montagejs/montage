@@ -3,24 +3,74 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+
+/**
+	@module "montage/ui/anchor.reel"
+    @requires montage/core/core
+    @requires montage/ui/native-control
+*/
+
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl;
 
 /**
- * The <a> native control with binding support for the standard attributes
- */
+  The Anchor component wraps a native <code>&lt;a&gt;</code> element and exposes its standard attributes as bindable properties.
+  @class module:"montage/ui/anchor.reel".Anchor
+  @extends module:montage/native-control.NativeControl
+*/
 var Anchor = exports.Anchor = Montage.create(NativeControl, {
 
 });
 
-http://www.w3.org/TR/html5/text-level-semantics.html#the-a-element
-Anchor.addAttributes({
-        textContent: null,
-        href: null,
-        hreflang: null,
-        media: null,
-        rel: null,
-        target: null,
-        type: null
+Anchor.addAttributes({ /** @lends module:"montage/ui/anchor.reel".Anchor# */
+
+/**
+    The link text.
+    @type string
+    @default null
+*/
+    textContent: null,
+
+/**
+    The link URL.
+    @type string
+    @default null
+*/
+    href: null,
+
+/**
+    The language of the linked resource.
+    @type string
+    @default null
+*/
+    hreflang: null,
+
+/**
+     The media type for which the target document was designed.
+    @type string
+     @default null
+*/
+    media: null,
+
+/**
+    Controls what kinds of links the elements create.
+    @type string
+    @default null
+*/
+    rel: null,
+
+/**
+     The target window the link will open in.
+     @type string
+     @default null
+*/
+    target: null,
+
+/**
+     The MIME type of the linked resource.
+     @type string
+     @default null
+*/
+    type: null
 });
