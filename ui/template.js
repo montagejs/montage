@@ -37,7 +37,16 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 /**
     @private
 */
-    _document: {value: null},
+    _document: {
+        enumerable: false,
+        value: null
+    },
+
+    document: {
+        get: function() {
+            return this._document;
+        }
+    },
 /**
     @private
 */
