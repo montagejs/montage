@@ -490,7 +490,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Function} callback The callback method.
     */
     expandComponent: {value: function expandComponent(callback) {
-        this._setupIterationTemplate();
+        if (!this._refreshingItems) {
+            this._setupIterationTemplate();
+        }
         this._isComponentExpanded = true;
         if (callback) {
             callback();
