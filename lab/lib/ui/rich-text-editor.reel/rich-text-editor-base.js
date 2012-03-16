@@ -11,8 +11,8 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    ActiveLinkBox = require("./rich-text-activelink-box.js").ActiveLinkBox,
-    Resizer = require("./rich-text-resizer").Resizer,
+    RichTextLinkPopup = require("../rich-text-linkpopup.reel").RichTextLinkPopup,
+    RichTextResizer = require("../rich-text-resizer.reel").RichTextResizer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
@@ -20,6 +20,33 @@ var Montage = require("montage").Montage,
     @extends module:montage/ui/component.Component
 */
 exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage/ui/rich-text-editor.reel".RichTextEditor# */ {
+
+    /**
+      Description TODO
+      @private
+    */
+    _overlays: {
+        enumerable: false,
+        value: undefined
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _overlaySlot: {
+        enumerable: false,
+        value: null
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _editableContentElement: {
+        enumerable: false,
+        value: null
+    },
 
     /**
       Description TODO
@@ -52,7 +79,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             } else if (!this._isTyping) {
                 this._isTyping = true;
                 if (this.undoManager) {
-                    this.undoManager.add("Typing", this.undo, this, "Typing", this.element.firstChild);
+                    this.undoManager.add("Typing", this.undo, this, "Typing", this._editableContentElement);
                 }
             }
         }
@@ -93,7 +120,34 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
-    _needsSelectionReset: {
+    _contentInitialized: {
+        enumerable: false,
+        value: false
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _needsAssignOriginalContent: {
+        enumerable: false,
+        value: true
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _needsAssingValue: {
+        enumerable: false,
+        value: false
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _setCaretAtEndOfContent: {
         enumerable: false,
         value: false
     },
@@ -105,15 +159,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _selectionChangeTimer: {
         enumerable: false,
         value: null
-    },
-
-    /**
-      Description TODO
-      @private
-    */
-    _needsActiveLinkOn: {
-        enumerable: false,
-        value: false
     },
 
     /**
@@ -191,24 +236,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
-    _activeLinkBox: {
-        enumerable: false,
-        value: ActiveLinkBox.create()
-    },
-
-    /**
-      Description TODO
-      @private
-    */
-    _resizer: {
-        enumerable: false,
-        value: Resizer.create()
-    },
-
-    /**
-      Description TODO
-      @private
-    */
     _allowDrop: {
         enumerable: false,
         value: true
@@ -219,7 +246,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function(property, command) {
             var state;
 
-            if (this.element.firstChild == document.activeElement) {
+            if (this._editableContentElement == document.activeElement) {
                 state = document.queryCommandValue(command);
                 // Convert string to boolean
                 if (state == "true") {
@@ -283,7 +310,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _baselineShiftGetState: {
         enumerable: false,
         value: function() {
-            if (this.element.firstChild == document.activeElement) {
+            if (this._editableContentElement == document.activeElement) {
                 if (this._getState("baselineShift", "subscript")) {
                    return "subscript"
                 } else if (this._getState("baselineShift", "superscript")) {
@@ -310,7 +337,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _listStyleGetState: {
         enumerable: false,
         value: function() {
-            if (this.element.firstChild == document.activeElement) {
+            if (this._editableContentElement == document.activeElement) {
                 if (this._getState("listStyle", "insertorderedlist")) {
                    return "ordered"
                 } else if (this._getState("listStyle", "insertunorderedlist")) {
@@ -336,7 +363,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _justifyGetState: {
         enumerable: false,
         value: function() {
-            if (this.element.firstChild == document.activeElement) {
+            if (this._editableContentElement == document.activeElement) {
                 if (this._getState("justify", "justifyleft")) {
                    return "left"
                 } else if (this._getState("justify", "justifycenter")) {
@@ -428,7 +455,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 method,
                 i;
 
-            if (this.element.firstChild == document.activeElement) {
+            if (this._editableContentElement == document.activeElement) {
                 for (i = 0; i < nbrCommands; i ++) {
                     command = commands[i];
 
@@ -456,17 +483,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
     // Component Callbacks
 
-    didCreate: {
-        value: function() {
-            if (this._activeLinkBox) {
-                this._activeLinkBox.initialize(this);
-            }
-            if (this._resizer) {
-                this._resizer.initialize(this);
-            }
-        }
-    },
-
     /**
     Description TODO
     @function
@@ -476,7 +492,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function() {
             var el = this.element;
 
-            el.classList.add('montage-editor-frame');
+            el.classList.add('montage-editor-container');
 
             el.addEventListener("focus", this);
             el.addEventListener("dragstart", this, false);
@@ -484,7 +500,19 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             el.addEventListener("dragover", this, false);
             el.addEventListener("drop", this, false);
 
-            this._needsResetContent = true;
+            // Initialize the overlays
+            if (this._overlays === undefined) {
+                // Install the default overlays
+                this._overlays = [RichTextResizer.create(), RichTextLinkPopup.create()];
+            }
+            if (this._overlays) {
+                for (var i in this._overlays) {
+                    var overlay = this._overlays[i];
+                    if (typeof overlay.initWithEditor == "function") {
+                        overlay.initWithEditor(this);
+                    }
+                }
+            }
         }
     },
 
@@ -495,52 +523,102 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     draw: {
         enumerable: false,
         value: function() {
-            var thisRef = this,
-                editorElement = this.element,
+            var editorElement = this.element,
                 editorInnerElement,
-                element,
-                range,
-                offset,
-                prevValue;
+                contents,
+                content,
+                contentChanged,
+                prevValue,
+                i;
 
-            if (this._needsResetContent === true) {
-                // Reset the editor content in order to reset the browser undo stack
-                editorElement.innerHTML = '<div class="montage-editor editor-' + this._uniqueId + '" contentEditable="'
-                    + (this._readOnly ? 'false' : 'true')+'"></div>';
-                editorInnerElement = editorElement.firstChild;
+            if (this._needsAssingValue || this._needsAssignOriginalContent) {
+                editorInnerElement = this._editableContentElement = editorElement.querySelector(".montage-editor");
 
-                // Set the contentEditable value
-                if (this._value && !this._dirtyValue) {
-                    editorInnerElement.innerHTML = this._value;
-                    // Since this property affects the textValue, we need to fire a change event for it as well
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
-                        prevValue = this._textValue;
-                        if (this.textValue !== prevValue) {
-                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(text.value));
+                if (this._contentInitialized) {
+                    // if the content has been already initialized, we need replace it by a clone of itself
+                    // in order to reset the browser undo stack
+                    editorElement.replaceChild(editorInnerElement.cloneNode(true), editorInnerElement);
+                    editorInnerElement = this._editableContentElement = editorElement.querySelector(".montage-editor");
+
+                    //JFD TODO: Need to clear entries in the Montage undoManager queue
+                }
+
+                editorInnerElement.setAttribute("contenteditable", (this._readOnly ? "false" : "true"));
+                editorInnerElement.classList.add("editor-" + this._uniqueId);
+                editorInnerElement.innerHTML = "";
+
+                if (this._needsAssingValue) {
+                    // Set the contentEditable value
+                    if (this._value && !this._dirtyValue) {
+                        editorInnerElement.innerHTML = this._value;
+                        // Since this property affects the textValue, we need to fire a change event for it as well
+                        if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
+                            prevValue = this._textValue;
+                            if (this.textValue !== prevValue) {
+                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(text.value));
+                            }
+                        }
+                    } else if (this._textValue && !this._dirtyTextValue) {
+                        if (editorInnerElement.innerText) {
+                            editorInnerElement.innerText = this._textValue;
+                        } else {
+                            editorInnerElement.textContent = this._textValue;
+                        }
+                        // Since this property affects the value, we need to fire a change event for it as well
+                        if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
+                            prevValue = this._value;
+                            if (this.value !== prevValue) {
+                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(this.value));
+                            }
                         }
                     }
-                } else if (this._textValue && !this._dirtyTextValue) {
-                    if (editorInnerElement.innerText) {
-                        editorInnerElement.innerText = this._textValue;
+                } else if (this._needsAssignOriginalContent) {
+                    contents = this.originalContent;
+                    contentChanged = false;
+                    if (contents instanceof Element) {
+                        editorInnerElement.appendChild(contents);
+                        contentChanged = true;
                     } else {
-                        editorInnerElement.textContent = this._textValue;
-                    }
-                    // Since this property affects the value, we need to fire a change event for it as well
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
-                        prevValue = this._value;
-                        if (this.value !== prevValue) {
-                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(this.value));
+                        for (i = 0; (content = contents[i]); i++) {
+                            editorInnerElement.appendChild(content);
+                            contentChanged = true;
                         }
                     }
-                } else {
-                    editorInnerElement.innerHTML = "";
+                    if (contentChanged) {
+                        if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
+                            prevValue = this._value;
+                            if (this.value !== prevValue) {
+                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(this.value));
+                            }
+                        }
+                        if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
+                            prevValue = this._textValue;
+                            if (this.textValue !== prevValue) {
+                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(text.value));
+                            }
+                        }
+
+                        // Clear the cached value in order to force an editorChange event
+                        this._dirtyValue = true;
+                        this._dirtyTextValue = true;
+                    }
                 }
 
                 this._adjustPadding();
                 this._markDirty();
-                delete this._needsResetContent;
+
+                this._needsAssingValue = false;
+                this._needsAssignOriginalContent = false;
+                this._contentInitialized = true;
+
+                this._setCaretAtEndOfContent = true;
+                if (this.hasFocus) {
+                    // Call focus to move caret to end of document
+                    this.focus();
+                }
+
             } else {
-                editorInnerElement = editorElement.firstChild;
+                editorInnerElement = this._editableContentElement;
             }
 
             if (this._readOnly) {
@@ -549,46 +627,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             } else {
                 editorInnerElement.setAttribute("contentEditable", "true");
                 editorElement.classList.remove("readonly")
-            }
-
-            if (this._resizer) {
-                // Need to hide the resizer?
-                if (this._needsHideResizer) {
-                    this._resizer.hide();
-                    delete this._needsHideResizer;
-                }
-
-                // Need to show the resizer?
-                if (this._needsShowResizerOn) {
-                    element = this._needsShowResizerOn;
-                    this._resizer.show(element);
-
-                    // Select the element and its resizer
-                    this._selectingResizer = true;
-                    offset = this._nodeOffset(element);
-                    range = document.createRange();
-                    range.setStart(element.parentNode, offset);
-                    range.setEnd(element.parentNode, offset + 1);
-                    this._selectedRange = range;
-
-                    // Note: Chrome (and maybe other browsers) will fire 2 selectionchange event asynchronously, to work around it let's use a timer
-                    setTimeout(function() {delete thisRef._selectingResizer;}, 0);
-
-                    delete this._needsShowResizerOn;
-                }
-
-                // Let's give a change to the resizer to do any custom drawing if needed
-                this._resizer.draw();
-            }
-
-            if (this._activeLinkBox) {
-                if (this._needsActiveLinkOn !== false && this._needsActiveLinkOn != this._activeLinkBox.element)
-                {
-                    this._activeLinkBox.show(this._needsActiveLinkOn);
-                    this._needsActiveLinkOn = false;
-                } else {
-                    this._needsActiveLinkOn = false;
-                }
             }
         }
     },
@@ -600,8 +638,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     didDraw: {
         value: function() {
             if (this._needsFocus) {
-                this.element.firstChild.focus();
-                if(document.activeElement == this.element.firstChild) {
+                this._editableContentElement.focus();
+                if(document.activeElement == this._editableContentElement) {
                     this._needsFocus = false;
                 } else {
                     // Make sure the element is visible before trying again to set the focus
@@ -620,10 +658,26 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     Description TODO
     @function
     */
+    slotDidSwitchContent: {
+        enumerable: false,
+        value: function(substitution, nodeShown, componentShown, nodeHidden, componentHidden) {
+            if(componentHidden && typeof componentHidden.didBecomeInactive === 'function') {
+                componentHidden.didBecomeInactive();
+            }
+            if(componentShown && typeof componentShown.didBecomeActive === 'function') {
+                componentShown.didBecomeActive();
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
     _adjustPadding: {
         enumerable: false,
         value: function() {
-            var el = this.element.firstChild,
+            var el = this._editableContentElement,
                 minLeft = 0,
                 minTop = 0;
 
@@ -686,7 +740,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function() {
             var thisRef = this,
                 el = this.element,
-                content = el.firstChild,
+                content = this._editableContentElement,
                 isActive,
                 savedRange,
                 timer;
@@ -699,7 +753,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , false).withPlusValue(true));
             }
 
-            if (this._needsSelectionReset) {
+            if (this._setCaretAtEndOfContent) {
                 var node = this._lastInnerNode(),
                     range,
                     length,
@@ -728,7 +782,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
                 setTimeout(function(){clearInterval(timer)}, 1000);
 
-                this._needsSelectionReset = false;
+                this._setCaretAtEndOfContent = false;
             }
 
             el.addEventListener("blur", this);
@@ -773,7 +827,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         enumerable: false,
         value: function() {
             var el = this.element,
-                content = el.firstChild,
+                content = this._editableContentElement,
                 isActive;
 
             this._hasFocus = false;
@@ -828,10 +882,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this.handleSelectionchange();
             }
 
-            if (this._activeLinkBox && this._activeLinkBox.element) {
-                this._activeLinkBox.hide();
-            }
-
             this._markDirty();
         }
     },
@@ -850,10 +900,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
-            }
-
-            if (this._activeLinkBox && this._activeLinkBox.element) {
-                this._activeLinkBox.hide();
             }
 
             this.handleDragend(event);
@@ -883,12 +929,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             this._savedSelection = this._selectedRange;
 
-            if (this._resizer) {
-                if (this.resizer.startUserAction(event)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    return;
+            for (var i in this._overlays) {
+                // Does an overlay want to take over?
+                var overlay = this._overlays[i];
+                if (typeof overlay.mouseDownOrTouchStart == "function") {
+                    if (overlay.mouseDownOrTouchStart(event)) {
+                        break;
+                    }
                 }
             }
         }
@@ -910,31 +957,20 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this._stopTyping();
             }
 
-            if (this._resizer) {
-                if (this.resizer.endUserAction(event)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-
-                    return;
+            for (var i in this._overlays) {
+                // Does an overlay want to take over
+                var overlay = this._overlays[i];
+                if (typeof overlay.mouseUpOrTouchEnd == "function") {
+                    if (overlay.mouseUpOrTouchEnd(event)) {
+                        break;
+                    }
                 }
             }
 
-            if (element.tagName === "IMG") {
-                if (this._currentResizerElement !== element) {
-                    this._needsShowResizerOn = element;
-                    this.needsDraw = true;
-                }
-            } else {
-                if (this._resizer && this._resizer.element) {
-                    this._needsHideResizer = true;
-                    this.needsDraw = true;
-                }
-
-                if (this._hasSelectionChangeEvent === false) {
-                    this.handleSelectionchange();
-                }
-                this.handleDragend(event);
+            if (this._hasSelectionChangeEvent === false) {
+                this.handleSelectionchange();
             }
+            this.handleDragend(event);
         }
     },
 
@@ -972,41 +1008,24 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 element,
                 hideLinkPopup = true;
 
-            if (this._ignoreSelectionchange) {
-                return;
-            }
-
             if (this._hasSelectionChangeEvent == null) {
                 this._hasSelectionChangeEvent = true;
             }
 
-            if (this._resizer) {
-                if (this._selectingResizer !== true && this._resizer.element) {
-                    this._needsHideResizer = true;
-                    this.needsDraw = true;
-                }
+            if (this._ignoreSelectionchange || this._equalRange(this._selectedRange, this._savedSelectedRange))
+            {
+                // no change, ignore
+                return;
             }
+            this._savedSelectedRange = this._selectedRange;
 
-            if (this._activeLinkBox) {
-                //Check if we are inside an anchor
-                range = this._selectedRange;
-                if (range && range.collapsed) {
-                    element = range.commonAncestorContainer;
-                    while (element && element != this._element) {
-                        if (element.nodeName == "A") {
-                            hideLinkPopup = false;
-                            if (element != this._activeLink) {
-                                this._needsActiveLinkOn = element;
-                                this.needsDraw = true;
-                            }
-                            break;
-                        }
-                        element = element.parentElement;
+            for (var i in this._overlays) {
+                // Does an overlay wants to take over
+                var overlay = this._overlays[i];
+                if (typeof overlay.editorSelectionDidChanged == "function") {
+                    if (overlay.editorSelectionDidChanged(this._savedSelectedRange)) {
+                        break;
                     }
-                }
-                if (hideLinkPopup) {
-                    this._needsActiveLinkOn = null;
-                    this.needsDraw = true;
                 }
             }
 
@@ -1057,6 +1076,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             var thisRef = this,
                 range;
 
+            this.hideOverlay();
+
             // If we are moving an element from within the ourselves, let the browser deal with it...
             if (this._dragSourceElement) {
                 return;
@@ -1067,12 +1088,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             event.preventDefault();
             event.stopPropagation();
-
-            // Remove the link popup
-            if (this._activeLinkBox && this._needsActiveLinkOn === false && this._activeLinkBox.element) {
-                this._needsActiveLinkOn = null;
-                this.needsDraw = true;
-            }
 
             // Update the caret
             if (event.x !== this._dragOverX || event.y !== this._dragOverY) {
@@ -1124,7 +1139,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
                 this._stopTyping();
                 if (this.undoManager) {
-                    this.undoManager.add("Move", this.undo, this, "Move", this.element.firstChild);
+                    this.undoManager.add("Move", this.undo, this, "Move", this._editableContentElement);
                 }
                 this._nextInputIsNotTyping = true;
 
@@ -1228,7 +1243,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function(event) {
             this._stopTyping()
             if (this.undoManager) {
-                this.undoManager.add("Cut", this.undo, this, "Cut", this.element.firstChild);
+                this.undoManager.add("Cut", this.undo, this, "Cut", this._editableContentElement);
             }
             this._nextInputIsNotTyping = true;
         }
@@ -1341,41 +1356,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         }
     },
 
-    /**
-    Description TODO
-    @function
-    @param {String} pointer TODO
-    @param {Component} demandingComponent TODO
-    @returns {Boolean} false
-    */
-    surrenderPointer: {
-        value: function(pointer, demandingComponent) {
-            return false;
-        }
-    },
-
-    /**
-    Description TODO
-    @private
-    */
-    _observePointer: {
-        value: function(pointer) {
-            this.eventManager.claimPointer(pointer, this);
-            this._observedPointer = pointer;
-        }
-    },
-
-    /**
-    Description TODO
-    @private
-    */
-    _releaseInterest: {
-        value: function() {
-            this.eventManager.forfeitPointer(this._observedPointer, this);
-            this._observedPointer = null;
-        }
-    },
-
     // Actions
     /**
     Description TODO
@@ -1402,7 +1382,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         enumerable: true,
         value: function(action, value) {
             var savedActiveElement = document.activeElement,
-                editorElement = this.element.firstChild;
+                editorElement = this._editableContentElement;
 
             if (!editorElement) {
                 return;
@@ -1461,7 +1441,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this._executingCommand = false;
                 this._stopTyping();
                 if (this.undoManager) {
-                    this.undoManager.add(label, this.undo, this, label, this.element.firstChild);
+                    this.undoManager.add(label, this.undo, this, label, this._editableContentElement);
                 }
                 return true;
             } else {
@@ -1517,7 +1497,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     thisRef._dispatchEditorEvent("editorChange");
                 };
 
-            if (!this._needsResetContent) {
+            if (!this._needsAssingValue) {
                 // Clear the cached value
                 this._dirtyValue = true;
                 this._dirtyTextValue = true;
@@ -1584,7 +1564,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _lastInnerNode: {
         enumerable: false,
         value: function() {
-            var nodes = this.element.firstChild.childNodes,
+            var nodes = this._editableContentElement.childNodes,
                 nbrNodes = nodes.length,
                 node = null;
 

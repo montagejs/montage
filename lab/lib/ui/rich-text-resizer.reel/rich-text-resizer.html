@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="rich-text-resizer.css">
+    <script type="text/montage-serialization">
+        {
+            "image": {
+                "module": "montage/ui/image.reel",
+                "name": "Image",
+                "properties": {
+                    "element": {"#": "image"}
+                },
+                "bindings": {
+                    "src": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "target.src",
+                        "oneway": true
+                    },
+                    "title": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "target.title",
+                        "oneway": true
+                    },
+                    "alt": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "target.alt",
+                        "oneway": true
+                    }
+                }
+            },
+
+            "owner": {
+                "module": "montage/lab/lib/ui/rich-text-resizer.reel",
+                "name": "RichTextResizer",
+                "properties": {
+                    "element": {"#": "resizer-container"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div id="resizer-container" class="montage-resizer-container">
+        <img id="image" class="montage-resizer-image">
+        <div class="montage-resizer-handle" id="montage-resizer-handle-nw"></div>
+        <div class="montage-resizer-handle" id="montage-resizer-handle-n"></div>
+        <div class="montage-resizer-handle" id="montage-resizer-handle-ne"></div>
+        <div class="montage-resizer-handle" id="montage-resizer-handle-e"></div>
+        <div class="montage-resizer-handle" id="montage-resizer-handle-se"></div>
+        <div class="montage-resizer-handle" id="montage-resizer-handle-s"></div>
+        <div class="montage-resizer-handle" id="montage-resizer-handle-sw"></div>
+        <div class="montage-resizer-handle" id="montage-resizer-handle-w"></div>
+    </div>
+</body>
+</html>
