@@ -143,6 +143,17 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         }
     },
 
+    initWithHtmlString: {
+        value: function(htmlString) {
+            var doc = this.createHtmlDocumentFromString(htmlString);
+
+            this._isLoaded = true;
+            this.initWithDocument(doc);
+
+            return this;
+        }
+    },
+
     /**
     Initializes the Template object with a specific module id that represents an HTML page.
     @function
