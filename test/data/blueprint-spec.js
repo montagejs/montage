@@ -221,7 +221,6 @@ describe("Blueprint", function() {
         });
         it("can deserialize", function() {
             var serializedBinder = Serializer.create().initWithRequire(require).serializeObject(companyBinder);
-            console.log("Serialized binder: ", serializedBinder);
             Deserializer.create().initWithStringAndRequire(serializedBinder, require).deserializeObject(function(deserializedBinder) {
                 var metadata = Montage.getInfoForObject(deserializedBinder);
                 expect(serializedBinder).not.toBeNull();

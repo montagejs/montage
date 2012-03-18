@@ -139,48 +139,6 @@ describe("core/promise-spec", function () {
 
     });
 
-    describe("timed out promise", function () {
-
-        var deferred = Promise.defer();
-        var timed = deferred.promise.timeout(1000);
-        var halftime;
-        var fulltime;
-        var fulfillment;
-        var rejection;
-
-        timed.then(function (value) {
-            fulfillment = value;
-        }, function (error) {
-            rejection = error;
-        });
-
-        setTimeout(function () {
-            halftime = true;
-        }, 500);
-
-        setTimeout(function () {
-            fulltime = true;
-        }, 1100);
-
-        waitsFor(function () {
-            return halftime;
-        });
-
-        it("isn't timed out yet", function () {
-            expect(timed.isResolved()).toBe(false);
-        });
-
-        waitsFor(function () {
-            return fulltime;
-        });
-
-        it("is timed out", function () {
-            expect(timed.isRejected()).toBe(true);
-            expect(rejection).toBe("Timed out");
-        });
-
-    });
-
     describe("thenable", function () {
 
         describe("fulfiller", function () {
