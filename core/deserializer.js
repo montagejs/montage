@@ -554,12 +554,11 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 name,
                 objectName,
                 fqn,
-                properties = desc.properties,
                 isType,
                 object = self._objectLabels[label],
                 hasObject = object != null,
                 counter,
-                propertiesString,
+                descString,
                 objectLocation;
 
             if ("module" in desc) {
@@ -604,8 +603,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             deserialized[label] = true;
 
             exportsStrings += 'if (this._objectLabels["' + label + '"]) {\n';
-            exportsStrings += '  var ' + label + ' = exports. ' + label + ' = this._objectLabels["' + label + '"]\n';
-            exportsStrings += '} else if(exports.' + label +') {';
+            exportsStrings += '  var ' + label + ' = exports.' + label + ' = this._objectLabels["' + label + '"];\n';
+            exportsStrings += '} else if(exports.' + label +') {\n';
             exportsStrings += '  var ' + label + ' = exports.' + label + ';\n';
             if (!hasObject) {
                 // this block of code is only needed for when there's a
@@ -635,24 +634,17 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
             exportsStrings += '}\n';
 
-            propertiesString = deserializeValue(properties);
+            descString = deserializeValue(desc);
+            objectsStrings += 'var ' + label + 'Serialization = ' + descString + ';\n';
             objectsStrings += label + '.isDeserializing = true;\n';
             cleanupStrings += 'delete ' + label + '.isDeserializing;\n';
-            objectsStrings += 'this._deserializeProperties(' + label + ', ' + propertiesString + ');\n';
+            objectsStrings += 'this._deserializeProperties(' + label + ', ' + label + 'Serialization.properties);\n';
             if (deserialize) {
                 object.isDeserializing = true;
-                self._deserializeProperties(object, properties);
+                self._deserializeProperties(object, desc.properties);
             }
 
-            delete desc.module;
-            delete desc.name;
-            delete desc.object;
-            delete desc.properties;
-
-            propertiesString = deserializeValue(desc);
-            if (propertiesString !== "{}") {
-                unitsStrings += 'this._deserializeUnits(' + label + ', ' + propertiesString + ');\n';
-            }
+            unitsStrings += 'this._deserializeUnits(' + label + ', ' + label + 'Serialization);\n';
         }
 
         function deserializeValue(value, parent, key) {
@@ -990,10 +982,9 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     _deserializeUnits: {value: function(object, serializedUnits) {
         var units = this._indexedDeserializationUnits;
 
-        for (var unit in serializedUnits) {
-            var unitFunction = units[unit];
-            if (unitFunction) {
-                unitFunction(object, serializedUnits[unit]);
+        for (var unit in units) {
+            if (unit in serializedUnits) {
+                units[unit](object, serializedUnits[unit]);
             }
         }
     }}
