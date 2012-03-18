@@ -4,6 +4,10 @@ require("montage");
 var logger = require("montage/core/logger").logger("require-spec");
 
 describe("require-spec", function () {
+    var loadErrorsExpected = {
+        "determinism": true,
+        "missing": true
+    };
     [
         "cyclic",
         "determinism",
@@ -18,7 +22,8 @@ describe("require-spec", function () {
         "top-level",
         "transitive",
         "named-packages",
-        "named-mappings"
+        "named-mappings",
+        "comment"
     ].forEach(function (test) {
         it(test, function () {
 
@@ -41,8 +46,12 @@ describe("require-spec", function () {
                     return pkg.deepLoad("program")
                     .then(function () {
                         pkg("program");
-                    }, function () {
-                        pkg("program");
+                    }, function (reason, error, rejection) {
+                        if (loadErrorsExpected.hasOwnProperty(test)) {
+                            pkg("program");
+                        } else {
+                            return rejection;
+                        }
                     });
 
                 })

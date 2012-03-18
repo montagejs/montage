@@ -1,0 +1,3 @@
+/*
+var FOO = require("foo");
+*/
