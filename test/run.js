@@ -24,6 +24,7 @@ if (spec) {
         "getset-spec",
         "logger-spec",
         "propertychange-spec",
+        "require-spec",
         "state-chart-spec",
         "string-spec",
 
