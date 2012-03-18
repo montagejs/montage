@@ -277,6 +277,7 @@
         config = config || {};
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
+        config.registry = {};
 
         config.getPackage = function (dependency) {
             dependency = Dependency(dependency);
@@ -341,10 +342,10 @@
         config.name = description.name;
         config.location = location || Require.getLocation();
         config.packageDescription = description;
-        config.define = description.define;
         // explicitly mask definitions and modules, which must
         // not apply to child packages
         var modules = config.modules = config.modules || {};
+        var registry = config.registry;
 
         // overlay
         var overlay = description.overlay || {};
@@ -397,10 +398,19 @@
             var versionPredicateString = dependencies[name];
             // TODO (version presently ignored for debug mode)
             if (!mappings[name]) {
-                mappings[name] = {"location": URL.resolve(
-                    packageRoot,
-                    name + "/"
-                )};
+                if (registry[name]) {
+                    mappings[name] = {
+                        location: registry[name]
+                    };
+                } else {
+                    mappings[name] = {
+                        location: URL.resolve(
+                            packageRoot,
+                            name + "/"
+                        )
+                    };
+                }
+                registry[name] = mappings[name].location;
             }
         });
         Object.keys(mappings).forEach(function (name) {
@@ -409,6 +419,8 @@
                 mapping.location += "/";
             if (!Require.isAbsolute(mapping.location))
                 mapping.location = URL.resolve(location, mapping.location);
+            if (mapping.name !== void 0)
+                registry[mapping.name] = mapping.location;
         });
 
         config.mappings = mappings;

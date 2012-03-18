@@ -5,18 +5,20 @@ var logger = require("montage/core/logger").logger("require-spec");
 
 describe("require-spec", function () {
     [
-        "method",
-        "absolute",
         "cyclic",
         "determinism",
         "exactExports",
         "hasOwnProperty",
         "method",
+        "method",
         "missing",
         "monkeys",
         "nested",
         "relative",
-        "transitive"
+        "top-level",
+        "transitive",
+        "named-packages",
+        "named-mappings"
     ].forEach(function (test) {
         it(test, function () {
 

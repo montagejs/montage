@@ -1,0 +1,12 @@
+{
+    "mappings": {
+        "foo": {
+            "location": "foo",
+            "name": "foo"
+        },
+        "bar": {
+            "location": "bar",
+            "name": "bar"
+        }
+    }
+}
