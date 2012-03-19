@@ -16,6 +16,8 @@ describe("require-spec", function () {
         "relative",
         "top-level",
         "transitive",
+        "module-exports",
+        "return",
         "named-packages",
         "named-mappings",
         "load-package",
