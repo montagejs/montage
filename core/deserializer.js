@@ -198,7 +198,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     },
 
     /**
-     This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.
+     This function is to be used in the context of deserializeProperties delegate used for custom object deserializations.
      It reads an entry from the "properties" serialization unit of the object being deserialized.
      @function
      @param {string} name The name of the entry to be read.
@@ -211,8 +211,87 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         return stack[ix][name];
     }},
 
+    deserializeProperties: {
+        value: function() {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                object = stack[ix-1],
+                desc = stack[ix];
+
+            this._deserializeProperties(object, desc.properties);
+        }
+    },
+
+    getProperty: {
+        value: function(name) {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix];
+
+            return desc.properties[name];
+        }
+    },
+
+    deserializeUnits: {
+        value: function() {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix];
+
+            desc._units = this._indexedDeserializationUnits;
+        }
+    },
+
+    deserializeUnit: {
+        value: function(name) {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix],
+                units;
+
+            if (desc._units) {
+                units = desc._units;
+            } else {
+                desc._units = units = {};
+            }
+
+            units[name] = this._indexedDeserializationUnits[name];
+        }
+    },
+
+    getType: {
+        value: function() {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix];
+
+            return "object" in desc ? "object" : ("prototype" in desc ? "prototype" : null);
+        }
+    },
+
+    getTypeValue: {
+        value: function() {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix];
+
+            return desc.object || desc.prototype;
+        }
+    },
+
+    _customDeserialization: {
+        enumerable: false,
+        value: function(object, desc) {
+            this._pushContextObject(object);
+            this._pushContextObject(desc);
+            object.deserializeSelf(this);
+            this._popContextObject();
+            this._popContextObject();
+        }
+    },
+
     /**
-    This function is to be used in the context of deserializeSelf delegate used for custom object deserializations.
+    This function is to be used in the context of deserializeProperties delegate used for custom object deserializations.
      It deserializes all the named properties of a serialized object into the object given.
     @function
     @param {Object} object The target of the properties.
@@ -541,12 +620,11 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 name,
                 objectName,
                 fqn,
-                properties = desc.properties,
                 isType,
                 object = self._objectLabels[label],
                 hasObject = object != null,
                 counter,
-                propertiesString,
+                descString,
                 objectLocation;
 
             if ("module" in desc) {
@@ -591,8 +669,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             deserialized[label] = true;
 
             exportsStrings += 'if (this._objectLabels["' + label + '"]) {\n';
-            exportsStrings += '  var ' + label + ' = exports. ' + label + ' = this._objectLabels["' + label + '"]\n';
-            exportsStrings += '} else if(exports.' + label +') {';
+            exportsStrings += '  var ' + label + ' = exports.' + label + ' = this._objectLabels["' + label + '"];\n';
+            exportsStrings += '} else if(exports.' + label +') {\n';
             exportsStrings += '  var ' + label + ' = exports.' + label + ';\n';
             if (!hasObject) {
                 // this block of code is only needed for when there's a
@@ -622,21 +700,26 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
             exportsStrings += '}\n';
 
-            propertiesString = deserializeValue(properties);
-            objectsStrings += 'this._deserializeProperties(' + label + ', ' + propertiesString + ');\n';
+            descString = deserializeValue(desc);
+
+            objectsStrings += 'var ' + label + 'Serialization = ' + descString + ';\n';
+            objectsStrings += 'if (typeof ' + label + '.deserializeSelf === "function") {\n';
+            objectsStrings += '  ' + label + 'Serialization._units = {};\n';
+            objectsStrings += '  this._customDeserialization(' + label + ', ' + descString + ');\n';
+            objectsStrings += '} else {\n';
+            objectsStrings += '  this._deserializeProperties(' + label + ', ' + label + 'Serialization.properties);\n';
+            objectsStrings += '}\n';
+
             if (deserialize) {
-                self._deserializeProperties(object, properties);
+                if (typeof object.deserializeSelf === "function") {
+                    desc._units = {};
+                    self._customDeserialization(object, desc);
+                } else {
+                    self._deserializeProperties(object, desc.properties);
+                }
             }
 
-            delete desc.module;
-            delete desc.name;
-            delete desc.object;
-            delete desc.properties;
-
-            propertiesString = deserializeValue(desc);
-            if (propertiesString !== "{}") {
-                unitsStrings += 'this._deserializeUnits(' + label + ', ' + propertiesString + ');\n';
-            }
+            unitsStrings += 'this._deserializeUnits(' + label + ', ' + label + 'Serialization);\n';
         }
 
         function deserializeValue(value, parent, key) {
@@ -960,9 +1043,9 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 */
     _deserializeProperties: {value: function(object, properties) {
         object.isDeserializing = true;
-        if (object.deserializeSelf) {
+        if (object.deserializeProperties) {
             this._pushContextObject(properties);
-            object.deserializeSelf(this);
+            object.deserializeProperties(this);
             this._popContextObject();
         } else {
             this.deserializePropertiesForObject(object, properties);
@@ -974,12 +1057,11 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
   @private
 */
     _deserializeUnits: {value: function(object, serializedUnits) {
-        var units = this._indexedDeserializationUnits;
+        var units = serializedUnits._units || this._indexedDeserializationUnits;
 
-        for (var unit in serializedUnits) {
-            var unitFunction = units[unit];
-            if (unitFunction) {
-                unitFunction(object, serializedUnits[unit]);
+        for (var unit in units) {
+            if (unit in serializedUnits) {
+                units[unit](object, serializedUnits[unit]);
             }
         }
     }}
