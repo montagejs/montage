@@ -47,7 +47,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                 it ("limits translateX", function() {
                     testPage.dragElementOffsetTo(test.example.element, 500, 0, null, null, function() {
                         // wait for the bounce to finish
-                        waits(test.translate_composer.bouncingDuration);
+                        waits(test.translate_composer._bouncingDuration);
                         runs(function() {
                             expect(test.translate_composer.translateX).not.toBeGreaterThan(350);
                         });
@@ -58,7 +58,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                 it ("limits translateY", function() {
                     testPage.dragElementOffsetTo(test.example.element, 0, 500, null, null, function() {
                         // wait for the bounce to finish
-                        waits(test.translate_composer.bouncingDuration);
+                        waits(test.translate_composer._bouncingDuration);
                         runs(function() {
                             expect(test.translate_composer.translateY).not.toBeGreaterThan(350);
                         });
@@ -107,7 +107,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                 it("returns negative translate values when invertAxis is false", function() {
                     test.translate_composer.translateX = 0;
                     test.translate_composer.translateY = 0;
-                    test.translate_composer.invertAxis = false;
+                    test.translate_composer.invertAxis = true;
 
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                             expect(test.translate_composer.translateX).toBeLessThan(-49);
@@ -119,12 +119,29 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                 it ("multiplies the translation values by 3 when set to 3", function() {
                     test.translate_composer.translateX = 0;
                     test.translate_composer.translateY = 0;
-                    test.translate_composer.invertAxis = true;
+                    test.translate_composer.invertAxis = false;
                     test.translate_composer.pointerSpeedMultiplier = 3;
 
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         expect(test.translate_composer.translateX).toBeGreaterThan(149);
                         expect(test.translate_composer.translateY).toBeGreaterThan(149);
+                    });
+                });
+            });
+            describe("translate event", function() {
+                it ("should not dispatch a translate event by default", function() {
+                    spyOn(test, 'handleTranslate').andCallThrough();
+
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                        expect(test.handleTranslate).not.toHaveBeenCalled();
+                    });
+                });
+                it ("should dispatch a translate event if an object is listening for it", function() {
+                    spyOn(test, 'handleTranslate').andCallThrough();
+                    test.translate_composer.addEventListener("translate", test.handleTranslate, false);
+
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                        expect(test.handleTranslate).toHaveBeenCalled();
                     });
                 });
             });
