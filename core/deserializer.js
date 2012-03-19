@@ -211,6 +211,85 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         return stack[ix][name];
     }},
 
+    deserializeProperties: {
+        value: function() {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                object = stack[ix-1],
+                desc = stack[ix];
+
+            this._deserializeProperties(object, desc.properties);
+        }
+    },
+
+    getProperty: {
+        value: function(name) {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix];
+
+            return desc.properties[name];
+        }
+    },
+
+    deserializeUnits: {
+        value: function() {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix];
+
+            desc._units = this._indexedDeserializationUnits;
+        }
+    },
+
+    deserializeUnit: {
+        value: function(name) {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix],
+                units;
+
+            if (desc._units) {
+                units = desc._units;
+            } else {
+                desc._units = units = {};
+            }
+
+            units[name] = this._indexedDeserializationUnits[name];
+        }
+    },
+
+    getType: {
+        value: function() {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix];
+
+            return "object" in desc ? "object" : ("prototype" in desc ? "prototype" : null);
+        }
+    },
+
+    getTypeValue: {
+        value: function() {
+            var stack = this._objectStack,
+                ix = stack.length - 1,
+                desc = stack[ix];
+
+            return desc.object || desc.prototype;
+        }
+    },
+
+    _customDeserialization: {
+        enumerable: false,
+        value: function(object, desc) {
+            this._pushContextObject(object);
+            this._pushContextObject(desc);
+            object.deserializeSelf(this);
+            this._popContextObject();
+            this._popContextObject();
+        }
+    },
+
     /**
     This function is to be used in the context of deserializeProperties delegate used for custom object deserializations.
      It deserializes all the named properties of a serialized object into the object given.
@@ -622,10 +701,22 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             exportsStrings += '}\n';
 
             descString = deserializeValue(desc);
+
             objectsStrings += 'var ' + label + 'Serialization = ' + descString + ';\n';
-            objectsStrings += 'this._deserializeProperties(' + label + ', ' + label + 'Serialization.properties);\n';
+            objectsStrings += 'if (typeof ' + label + '.deserializeSelf === "function") {\n';
+            objectsStrings += '  ' + label + 'Serialization._units = {};\n';
+            objectsStrings += '  this._customDeserialization(' + label + ', ' + descString + ');\n';
+            objectsStrings += '} else {\n';
+            objectsStrings += '  this._deserializeProperties(' + label + ', ' + label + 'Serialization.properties);\n';
+            objectsStrings += '}\n';
+
             if (deserialize) {
-                self._deserializeProperties(object, desc.properties);
+                if (typeof object.deserializeSelf === "function") {
+                    desc._units = {};
+                    self._customDeserialization(object, desc);
+                } else {
+                    self._deserializeProperties(object, desc.properties);
+                }
             }
 
             unitsStrings += 'this._deserializeUnits(' + label + ', ' + label + 'Serialization);\n';
@@ -966,7 +1057,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
   @private
 */
     _deserializeUnits: {value: function(object, serializedUnits) {
-        var units = this._indexedDeserializationUnits;
+        var units = serializedUnits._units || this._indexedDeserializationUnits;
 
         for (var unit in units) {
             if (unit in serializedUnits) {

@@ -7,6 +7,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     logger = require("montage/core/logger").logger("deserializer-spec"),
     Deserializer = require("montage/core/deserializer").Deserializer,
+    defaultEventManager = require("montage/core/event/event-manager").defaultEventManager,
     objects = require("serialization/testobjects-v2").objects;
 
 logger.isError = true;
@@ -773,5 +774,205 @@ describe("serialization/deserializer-spec", function() {
                 });
             }
         });
-    })
+    });
+
+    describe("Custom deserialization", function() {
+        var customDeserialization = objects.CustomDeserialization,
+            serialization = {
+                root: {
+                    prototype: "serialization/testobjects-v2[CustomDeserialization]",
+                    properties: {
+                        prop1: 15
+                    },
+                    bindings: {
+                        prop2: {
+                            boundObject: {"@": "oneprop"},
+                            boundObjectPropertyPath: "prop",
+                            oneway: true
+                        }
+                    },
+                    listeners: [{
+                        type: "action",
+                        listener: {"@": "oneprop"}
+                    }]
+                },
+
+                oneprop: {
+                    prototype: "serialization/testobjects-v2[OneProp]",
+                    properties: {
+                        prop: 42
+                    }
+                }
+            };
+
+        it("should only create the object", function() {
+            var latch, object;
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+
+            };
+
+            deserializer.initWithObject(serialization)
+                        .deserializeObject(function(obj) {
+                latch = true;
+                object = obj;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(object.prop1).toBeNull();
+                if (defaultEventManager.registeredEventListeners.action) {
+                    expect(object.uuid in defaultEventManager.registeredEventListeners.action).toBeFalsy();
+                }
+                expect(object._bindingDescriptors).toBeFalsy();
+            })
+        });
+
+        it("should report prototype type", function() {
+            var latch, type, typeValue;
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+                type = deserializer.getType();
+                typeValue = deserializer.getTypeValue();
+            }
+            deserializer.initWithObject(serialization)
+                        .deserializeObject(function(obj) {
+                latch = true;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(type).toBe("prototype");
+                expect(typeValue).toBe("serialization/testobjects-v2[CustomDeserialization]");
+            });
+        });
+
+        it("should report object type", function() {
+            var latch, type, typeValue;
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+                type = deserializer.getType();
+                typeValue = deserializer.getTypeValue();
+            }
+            deserializer.initWithObject({
+                root: {
+                    "object": "serialization/testobjects-v2[CustomDeserialization]"
+                }
+            }).deserializeObject(function(obj) {
+                latch = true;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(type).toBe("object");
+                expect(typeValue).toBe("serialization/testobjects-v2[CustomDeserialization]");
+            });
+        });
+
+        it("should access properties", function() {
+            var latch, prop1;
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+                prop1 = deserializer.getProperty("prop1");
+            }
+            deserializer.initWithObject(serialization)
+                        .deserializeObject(function(obj) {
+                latch = true;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(prop1).toBe(15);
+            });
+        });
+
+        it("should only deserialize properties", function() {
+            var latch, object;
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+                deserializer.deserializeProperties();
+            }
+            deserializer.initWithObject(serialization)
+                        .deserializeObject(function(obj) {
+                latch = true;
+                object = obj;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(object.prop1).toBe(15);
+                if (defaultEventManager.registeredEventListeners.action) {
+                    expect(object.uuid in defaultEventManager.registeredEventListeners.action).toBeFalsy();
+                }
+                expect(object._bindingDescriptors).toBeFalsy();
+            });
+        });
+
+        it("should deserialize properties and listeners", function() {
+            var latch, object;
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+                deserializer.deserializeProperties();
+                deserializer.deserializeUnit("listeners");
+            }
+            deserializer.initWithObject(serialization)
+                        .deserializeObject(function(obj) {
+                latch = true;
+                object = obj;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(object.prop1).toBe(15);
+                expect(defaultEventManager.registeredEventListeners.action).toBeDefined();
+                expect(object.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
+                expect(object._bindingDescriptors).toBeFalsy();
+            });
+        });
+
+        it("should deserialize properties and bindings", function() {
+            var latch, object;
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+                deserializer.deserializeProperties();
+                deserializer.deserializeUnit("bindings");
+            }
+            deserializer.initWithObject(serialization)
+                        .deserializeObject(function(obj) {
+                latch = true;
+                object = obj;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(object.prop1).toBe(15);
+                if (defaultEventManager.registeredEventListeners.action) {
+                    expect(object.uuid in defaultEventManager.registeredEventListeners.action).toBeFalsy();
+                }
+                expect(object._bindingDescriptors).toBeTruthy();
+            });
+        });
+
+        it("should deserialize properties and all units", function() {
+            var latch, object;
+
+            customDeserialization.deserializeSelf = function(deserializer) {
+                deserializer.deserializeProperties();
+                deserializer.deserializeUnits();
+            }
+            deserializer.initWithObject(serialization)
+                        .deserializeObject(function(obj) {
+                latch = true;
+                object = obj;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(object.prop1).toBe(15);
+                expect(defaultEventManager.registeredEventListeners.action).toBeDefined();
+                expect(object.uuid in defaultEventManager.registeredEventListeners.action).toBeTruthy();
+                expect(object._bindingDescriptors).toBeTruthy();
+            });
+        });
+    });
 });

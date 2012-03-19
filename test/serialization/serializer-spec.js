@@ -193,12 +193,12 @@ describe("serialization/serializer-spec", function() {
         });
 
         it("should serialize an instance object with a custom serialization", function() {
-            var object = objects.Custom.create();
+            var object = objects.CustomProperties.create();
 
             object.prop = object;
 
             serialization = serializer.serializeObject(object);
-            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"manchete":226}}}');
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[CustomProperties]","properties":{"manchete":226}}}');
         });
 
         it("should serialize a reference to an instance object with a custom serialization", function() {
@@ -319,26 +319,238 @@ describe("serialization/serializer-spec", function() {
             expect(externalObjects["empty"]).toBe(object.object);
         });
     });
+
+    describe("Custom serialization", function() {
+        var object;
+
+        beforeEach(function() {
+            object = objects.Custom.create();
+        });
+
+        it("should serialize the object manually using default type", function() {
+            object.serializeSelf = function(serializer) {
+                serializer.setProperties();
+            };
+
+            var serialization = serializer.serializeObject(object);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42}}}');
+        });
+
+        describe("by only serializing properties", function() {
+            it("should serialize the object manually without listeners", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                };
+                object.addEventListener("action", Montage.create(), false);
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42}}}');
+            });
+
+            it("should serialize the object manually without bindings", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                };
+                Object.defineBinding(object, "number", {
+                    boundObject: objects.OneProp.create(),
+                    boundObjectPropertyPath: "prop",
+                    oneway: true
+                });
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{}}}');
+            });
+
+            it("should serialize the object manually without listeners or bindings", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                };
+                Object.defineBinding(object, "number", {
+                    boundObject: objects.OneProp.create(),
+                    boundObjectPropertyPath: "prop",
+                    oneway: true
+                });
+                object.addEventListener("action", Montage.create(), false);
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{}}}');
+            });
+        });
+
+        describe("by serializing properties and listeners", function() {
+            it("should serialize the object manually with listeners", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setUnit("listeners");
+                };
+                object.addEventListener("action", Montage.create(), false);
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"montage":{"prototype":"montage/core/core[Montage]","properties":{"type":"action","listener":{"@":"montage2"},"capture":false}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42},"listeners":[{"@":"montage"}]}}');
+            });
+
+            it("should serialize the object manually without bindings", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setUnit("listeners");
+                };
+                Object.defineBinding(object, "number", {
+                    boundObject: objects.OneProp.create(),
+                    boundObjectPropertyPath: "prop",
+                    oneway: true
+                });
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{}}}');
+            });
+
+            it("should serialize the object manually with listeners and no bindings", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setUnit("listeners");
+                };
+                Object.defineBinding(object, "number", {
+                    boundObject: objects.OneProp.create(),
+                    boundObjectPropertyPath: "prop",
+                    oneway: true
+                });
+                object.addEventListener("action", Montage.create(), false);
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"montage":{"prototype":"montage/core/core[Montage]","properties":{"type":"action","listener":{"@":"montage2"},"capture":false}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"listeners":[{"@":"montage"}]}}');
+            });
+        });
+
+        describe("by serializing properties and bindings", function() {
+            it("should serialize the object manually without listeners", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setUnit("bindings");
+                };
+                object.addEventListener("action", Montage.create(), false);
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42}}}');
+            });
+
+            it("should serialize the object manually with bindings", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setUnit("bindings");
+                };
+                Object.defineBinding(object, "number", {
+                    boundObject: objects.OneProp.create(),
+                    boundObjectPropertyPath: "prop",
+                    oneway: true
+                });
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"bindingdescriptor":{"prototype":"montage/core/event/binding[BindingDescriptor]","properties":{"boundObject":{"@":"oneprop"},"boundObjectPropertyPath":"prop","oneway":true}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"bindings":{"number":{"@":"bindingdescriptor"}}}}');
+            });
+
+            it("should serialize the object manually with bindings and no listeners", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setUnit("bindings");
+                };
+                Object.defineBinding(object, "number", {
+                    boundObject: objects.OneProp.create(),
+                    boundObjectPropertyPath: "prop",
+                    oneway: true
+                });
+                object.addEventListener("action", Montage.create(), false);
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"bindingdescriptor":{"prototype":"montage/core/event/binding[BindingDescriptor]","properties":{"boundObject":{"@":"oneprop"},"boundObjectPropertyPath":"prop","oneway":true}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"bindings":{"number":{"@":"bindingdescriptor"}}}}');
+            });
+        });
+
+        describe("by serializing properties and bindings", function() {
+            it("should serialize the object manually with listeners", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setAllUnits();
+                };
+                object.addEventListener("action", Montage.create(), false);
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"montage":{"prototype":"montage/core/core[Montage]","properties":{"type":"action","listener":{"@":"montage2"},"capture":false}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42},"listeners":[{"@":"montage"}]}}');
+            });
+
+            it("should serialize the object manually with bindings", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setAllUnits();
+                };
+                Object.defineBinding(object, "number", {
+                    boundObject: objects.OneProp.create(),
+                    boundObjectPropertyPath: "prop",
+                    oneway: true
+                });
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"bindingdescriptor":{"prototype":"montage/core/event/binding[BindingDescriptor]","properties":{"boundObject":{"@":"oneprop"},"boundObjectPropertyPath":"prop","oneway":true}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"bindings":{"number":{"@":"bindingdescriptor"}}}}');
+            });
+
+            it("should serialize the object manually with bindings and listeners", function() {
+                object.serializeSelf = function(serializer) {
+                    serializer.setProperties();
+                    serializer.setAllUnits();
+                };
+                Object.defineBinding(object, "number", {
+                    boundObject: objects.OneProp.create(),
+                    boundObjectPropertyPath: "prop",
+                    oneway: true
+                });
+                object.addEventListener("action", Montage.create(), false);
+
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"montage":{"prototype":"montage/core/core[Montage]","properties":{"type":"action","listener":{"@":"montage2"},"capture":false}},"bindingdescriptor":{"prototype":"montage/core/event/binding[BindingDescriptor]","properties":{"boundObject":{"@":"oneprop"},"boundObjectPropertyPath":"prop","oneway":true}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"listeners":[{"@":"montage"}],"bindings":{"number":{"@":"bindingdescriptor"}}}}');
+            });
+        });
+
+        describe("by serializing to a different type", function() {
+            it("should serialize as OneProp", function() {
+                var object = {
+                    serializeSelf: function(serializer) {
+                        serializer.setType("prototype", "serialization/testobjects-v2[OneProp]");
+                    }
+                };
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":serialization/testobjects-v2[OneProp],"properties":{}}}');
+            });
+
+            it("should serialize the returned object instead", function() {
+                var oneProp = objects.OneProp.create();
+                var twoProp = objects.TwoProps.create();
+                oneProp.prop = object;
+                object.serializeSelf = function(serializer) {
+                    return twoProp;
+                };
+                var serialization = serializer.serializeObject(oneProp);
+                expect(stripPP(serialization)).toBe('{"twoprops":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"twoprops"}}}}');
+            });
+
+            it("should serialize a literal object instead", function() {
+                var oneProp = objects.OneProp.create();
+                oneProp.prop = object;
+                object.serializeSelf = function(serializer) {
+                    return {
+                        foo: "bar"
+                    };
+                };
+                var serialization = serializer.serializeObject(oneProp);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"foo":"bar"}}}}');
+            });
+
+            it("should serialize the returned object instead at the root", function() {
+                var twoProp = objects.TwoProps.create();
+                object.serializeSelf = function(serializer) {
+                    return twoProp;
+                };
+                var serialization = serializer.serializeObject(object);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{}}}');
+            });
+        });
+    });
 });
-
-/*
-var sys = require(("sys"));
-var jsdom = require(("jsdom"));
-
-function createBrowserEnv(html) {
-    html = html || "<html><head></head><body></body></html>";
-
-    Node = jsdom.dom.level3.core.Node;
-    Element = jsdom.dom.level3.core.Element;
-    Event = jsdom.dom.level3.events.Event;
-    window = jsdom.jsdom(html).createWindow();
-    document = window.document;
-}
-
-function setup() {
-    createBrowserEnv();
-    // loads CJS into global
-    require((__dirname + "/../../Framework/deps/require/c-node.js"));
-    require = CJS.Sandbox({paths: [__dirname + "/..", "../Mib", __dirname + "/../../framework/lib", __dirname, "../moose"]});
-}
-*/
