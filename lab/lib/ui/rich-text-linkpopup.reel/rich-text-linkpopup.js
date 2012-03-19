@@ -66,6 +66,48 @@ exports.RichTextLinkPopup = Montage.create(Component,/** @lends module:"montage/
       Description TODO
      @type {Function}
     */
+    editorMouseUp: {
+        value: function(event) {
+            var element;
+
+            if (this._editor.activeOverlay != this) {
+                // Check if the caret is inside an image within an anchor element
+                if (event.target.nodeName == "IMG") {
+                    element = event.target;
+                    while (element && element != this._element) {
+                        if (element.nodeName == "A") {
+                            if (element != this.target) {
+                                this.target = element;
+                                this._needsReset = true;
+                                if (this._isActive) {
+                                    this.needsDraw = true;
+                                } else {
+                                    this._editor.showOverlay(this);
+                                }
+                            }
+                            return true;
+                        }
+                        element = element.parentElement;
+                    }
+                }
+            }
+        }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    editorTouchEnd: {
+        value: function(event) {
+            this.editorMouseUp(event);
+        }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
     editorSelectionDidChanged: {
         value: function(range) {
             var element;
@@ -90,7 +132,7 @@ exports.RichTextLinkPopup = Montage.create(Component,/** @lends module:"montage/
                 }
             }
 
-            if (this._isActive) {
+            if (this._editor.activeOverlay == this) {
                 this._editor.hideOverlay();
             }
 
@@ -144,7 +186,7 @@ exports.RichTextLinkPopup = Montage.create(Component,/** @lends module:"montage/
         value: function() {
             var element = this.element,
                 target = this.target,
-                editorElement = this._editor._editableContentElement;
+                editorElement = this._editor.innerElement;
 
             if (this._needsReset) {
                 var offsetLeft,
@@ -207,6 +249,11 @@ exports.RichTextLinkPopup = Montage.create(Component,/** @lends module:"montage/
 
                 // Position and size the popup
                 element.setAttribute("style", style);
+
+                // Setup the anchor
+                this.link.href = target.href;
+                this.link.textContent = target.href;
+
                 this._needsReset = false;
             }
         }

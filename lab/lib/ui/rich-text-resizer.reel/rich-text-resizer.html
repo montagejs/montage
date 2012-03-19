@@ -15,23 +15,6 @@
                 "name": "Image",
                 "properties": {
                     "element": {"#": "image"}
-                },
-                "bindings": {
-                    "src": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "target.src",
-                        "oneway": true
-                    },
-                    "title": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "target.title",
-                        "oneway": true
-                    },
-                    "alt": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "target.alt",
-                        "oneway": true
-                    }
                 }
             },
 
@@ -39,7 +22,8 @@
                 "module": "montage/lab/lib/ui/rich-text-resizer.reel",
                 "name": "RichTextResizer",
                 "properties": {
-                    "element": {"#": "resizer-container"}
+                    "element": {"#": "resizer-container"},
+                    "image": {"@": "image"}
                 }
             }
         }

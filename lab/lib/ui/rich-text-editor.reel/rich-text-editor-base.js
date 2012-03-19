@@ -43,7 +43,16 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
-    _editableContentElement: {
+    _activeOverlay: {
+        enumerable: false,
+        value: null
+    },
+
+    /**
+      Description TODO
+      @private
+    */
+    _innerElement: {
         enumerable: false,
         value: null
     },
@@ -79,7 +88,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             } else if (!this._isTyping) {
                 this._isTyping = true;
                 if (this.undoManager) {
-                    this.undoManager.add("Typing", this.undo, this, "Typing", this._editableContentElement);
+                    this.undoManager.add("Typing", this.undo, this, "Typing", this._innerElement);
                 }
             }
         }
@@ -246,7 +255,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function(property, command) {
             var state;
 
-            if (this._editableContentElement == document.activeElement) {
+            if (this._innerElement == document.activeElement) {
                 state = document.queryCommandValue(command);
                 // Convert string to boolean
                 if (state == "true") {
@@ -310,7 +319,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _baselineShiftGetState: {
         enumerable: false,
         value: function() {
-            if (this._editableContentElement == document.activeElement) {
+            if (this._innerElement == document.activeElement) {
                 if (this._getState("baselineShift", "subscript")) {
                    return "subscript"
                 } else if (this._getState("baselineShift", "superscript")) {
@@ -337,7 +346,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _listStyleGetState: {
         enumerable: false,
         value: function() {
-            if (this._editableContentElement == document.activeElement) {
+            if (this._innerElement == document.activeElement) {
                 if (this._getState("listStyle", "insertorderedlist")) {
                    return "ordered"
                 } else if (this._getState("listStyle", "insertunorderedlist")) {
@@ -363,7 +372,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _justifyGetState: {
         enumerable: false,
         value: function() {
-            if (this._editableContentElement == document.activeElement) {
+            if (this._innerElement == document.activeElement) {
                 if (this._getState("justify", "justifyleft")) {
                    return "left"
                 } else if (this._getState("justify", "justifycenter")) {
@@ -455,7 +464,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 method,
                 i;
 
-            if (this._editableContentElement == document.activeElement) {
+            if (this._innerElement == document.activeElement) {
                 for (i = 0; i < nbrCommands; i ++) {
                     command = commands[i];
 
@@ -505,14 +514,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 // Install the default overlays
                 this._overlays = [RichTextResizer.create(), RichTextLinkPopup.create()];
             }
-            if (this._overlays) {
-                for (var i in this._overlays) {
-                    var overlay = this._overlays[i];
-                    if (typeof overlay.initWithEditor == "function") {
-                        overlay.initWithEditor(this);
-                    }
-                }
-            }
+
+            this._callOverlays("initWithEditor", this, true);
         }
     },
 
@@ -532,13 +535,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 i;
 
             if (this._needsAssingValue || this._needsAssignOriginalContent) {
-                editorInnerElement = this._editableContentElement = editorElement.querySelector(".montage-editor");
+                editorInnerElement = this._innerElement = editorElement.querySelector(".montage-editor");
 
                 if (this._contentInitialized) {
                     // if the content has been already initialized, we need replace it by a clone of itself
                     // in order to reset the browser undo stack
                     editorElement.replaceChild(editorInnerElement.cloneNode(true), editorInnerElement);
-                    editorInnerElement = this._editableContentElement = editorElement.querySelector(".montage-editor");
+                    editorInnerElement = this._innerElement = editorElement.querySelector(".montage-editor");
 
                     //JFD TODO: Need to clear entries in the Montage undoManager queue
                 }
@@ -605,7 +608,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 }
 
                 this._adjustPadding();
-                this._markDirty();
+                this.markDirty();
 
                 this._needsAssingValue = false;
                 this._needsAssignOriginalContent = false;
@@ -618,7 +621,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 }
 
             } else {
-                editorInnerElement = this._editableContentElement;
+                editorInnerElement = this._innerElement;
             }
 
             if (this._readOnly) {
@@ -638,8 +641,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     didDraw: {
         value: function() {
             if (this._needsFocus) {
-                this._editableContentElement.focus();
-                if(document.activeElement == this._editableContentElement) {
+                this._innerElement.focus();
+                if(document.activeElement == this._innerElement) {
                     this._needsFocus = false;
                 } else {
                     // Make sure the element is visible before trying again to set the focus
@@ -677,7 +680,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _adjustPadding: {
         enumerable: false,
         value: function() {
-            var el = this._editableContentElement,
+            var el = this._innerElement,
                 minLeft = 0,
                 minTop = 0;
 
@@ -740,7 +743,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function() {
             var thisRef = this,
                 el = this.element,
-                content = this._editableContentElement,
+                content = this._innerElement,
                 isActive,
                 savedRange,
                 timer;
@@ -827,7 +830,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         enumerable: false,
         value: function() {
             var el = this.element,
-                content = this._editableContentElement,
+                content = this._innerElement,
                 isActive;
 
             this._hasFocus = false;
@@ -882,7 +885,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this.handleSelectionchange();
             }
 
-            this._markDirty();
+            this.markDirty();
         }
     },
 
@@ -903,7 +906,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             }
 
             this.handleDragend(event);
-            this._markDirty();
+            this.markDirty();
         }
     },
 
@@ -926,18 +929,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     handleMousedown: {
         enumerable: false,
         value: function(event) {
-
             this._savedSelection = this._selectedRange;
-
-            for (var i in this._overlays) {
-                // Does an overlay want to take over?
-                var overlay = this._overlays[i];
-                if (typeof overlay.mouseDownOrTouchStart == "function") {
-                    if (overlay.mouseDownOrTouchStart(event)) {
-                        break;
-                    }
-                }
-            }
+            this._callOverlays(event.type == "mousedown" ? "editorMouseDown" : "editorTouchStart", event);
         }
     },
 
@@ -948,29 +941,16 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     handleMouseup: {
         enumerable: false,
         value: function(event) {
-            var thisRef = this,
-                element = event.target,
-                range,
-                offset;
-
             if (!this._equalRange(this._savedSelection, this._selectedRange)) {
                 this._stopTyping();
-            }
-
-            for (var i in this._overlays) {
-                // Does an overlay want to take over
-                var overlay = this._overlays[i];
-                if (typeof overlay.mouseUpOrTouchEnd == "function") {
-                    if (overlay.mouseUpOrTouchEnd(event)) {
-                        break;
-                    }
-                }
             }
 
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
             }
             this.handleDragend(event);
+
+            this._callOverlays(event.type == "mouseup" ? "editorMouseUp" : "editorTouchEnd", event);
         }
     },
 
@@ -1003,31 +983,17 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     handleSelectionchange: {
         enumerable: false,
         value: function() {
-            var thisRef = this,
-                range,
-                element,
-                hideLinkPopup = true;
+            var thisRef = this;
 
             if (this._hasSelectionChangeEvent == null) {
                 this._hasSelectionChangeEvent = true;
             }
 
-            if (this._ignoreSelectionchange || this._equalRange(this._selectedRange, this._savedSelectedRange))
-            {
+            if (this._ignoreSelectionchange || this._equalRange(this._selectedRange, this._savedSelectedRange)) {
                 // no change, ignore
                 return;
             }
             this._savedSelectedRange = this._selectedRange;
-
-            for (var i in this._overlays) {
-                // Does an overlay wants to take over
-                var overlay = this._overlays[i];
-                if (typeof overlay.editorSelectionDidChanged == "function") {
-                    if (overlay.editorSelectionDidChanged(this._savedSelectedRange)) {
-                        break;
-                    }
-                }
-            }
 
             if (this._selectionChangeTimer) {
                 clearTimeout(this._selectionChangeTimer);
@@ -1036,6 +1002,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 thisRef._updateStates();
                 thisRef._dispatchEditorEvent("editorSelect");
             }, 100);
+
+            this._callOverlays("editorSelectionDidChanged", this._savedSelectedRange);
         }
     },
 
@@ -1139,7 +1107,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
                 this._stopTyping();
                 if (this.undoManager) {
-                    this.undoManager.add("Move", this.undo, this, "Move", this._editableContentElement);
+                    this.undoManager.add("Move", this.undo, this, "Move", this._innerElement);
                 }
                 this._nextInputIsNotTyping = true;
 
@@ -1167,12 +1135,12 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                             }
                             if (response === true) {
                                 if (file.type.match(/^image\//i)) {
-                                    thisRef._execCommand("insertimage", false, data, "Drop");
-                                    thisRef._markDirty();
+                                    thisRef.execCommand("insertimage", false, data, "Drop");
+                                    thisRef.markDirty();
                                 }
                             } else if (typeof response == "string") {
-                                thisRef._execCommand("inserthtml", false, response, "Drop");
-                                thisRef._markDirty();
+                                thisRef.execCommand("inserthtml", false, response, "Drop");
+                                thisRef.markDirty();
                             }
                         }
                         reader.onprogress = function(e) {
@@ -1186,8 +1154,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                             response = delegateMethod.call(this.delegate, this, file);
                         }
                         if (typeof response == "string") {
-                            thisRef._execCommand("inserthtml", false, response, "Drop");
-                            thisRef._markDirty();
+                            thisRef.execCommand("inserthtml", false, response, "Drop");
+                            thisRef.markDirty();
                         }
                     }
                 }
@@ -1225,8 +1193,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
                     }
                     if (data && data.length) {
-                        this._execCommand("inserthtml", false, data, "Drop");
-                        this._markDirty();
+                        this.execCommand("inserthtml", false, data, "Drop");
+                        this.markDirty();
                     }
                 }
             }
@@ -1243,7 +1211,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function(event) {
             this._stopTyping()
             if (this.undoManager) {
-                this.undoManager.add("Cut", this.undo, this, "Cut", this._editableContentElement);
+                this.undoManager.add("Cut", this.undo, this, "Cut", this._innerElement);
             }
             this._nextInputIsNotTyping = true;
         }
@@ -1305,8 +1273,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
                 }
                 if (data && data.length) {
-                    this._execCommand("inserthtml", false, data, "Paste");
-                    this._markDirty();
+                    this.execCommand("inserthtml", false, data, "Paste");
+                    this.markDirty();
                 }
             } else {
                 // Maybe we have trying to paste an image as Blob...
@@ -1328,8 +1296,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                                 }
                                 if (response === true) {
                                     if (file.type.match(/^image\//i)) {
-                                        thisRef._execCommand("insertimage", false, data, "Paste");
-                                        thisRef._markDirty();
+                                        thisRef.execCommand("insertimage", false, data, "Paste");
+                                        thisRef.markDirty();
                                     }
                                 }
                             }
@@ -1382,7 +1350,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         enumerable: true,
         value: function(action, value) {
             var savedActiveElement = document.activeElement,
-                editorElement = this._editableContentElement;
+                editorElement = this._innerElement;
 
             if (!editorElement) {
                 return;
@@ -1397,13 +1365,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 value = false;
             }
 
-            this._execCommand(action, false, value);
+            this.execCommand(action, false, value);
 
             // Force an update states right away
             this._updateStates();
 
             this.handleSelectionchange();
-            this._markDirty();
+            this.markDirty();
 
             // Reset the focus
             if (editorElement != savedActiveElement) {
@@ -1431,26 +1399,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         }
     },
 
-    _execCommand: {
-        enumerable: false,
-        value: function(command, showUI, value, label) {
-            label = label || this._execCommandLabel[command] || "Typing";
-
-            this._executingCommand = true;
-            if (document.execCommand(command, showUI, value)) {
-                this._executingCommand = false;
-                this._stopTyping();
-                if (this.undoManager) {
-                    this.undoManager.add(label, this.undo, this, label, this._editableContentElement);
-                }
-                return true;
-            } else {
-                this._executingCommand = true;
-                return false
-            }
-        }
-    },
-
     /**
     Description TODO
     @private
@@ -1463,53 +1411,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             editorEvent.initCustomEvent(type, true, false, value === undefined ? null : value);
             editorEvent.type = type;
             this.dispatchEvent(editorEvent);
-        }
-    },
-
-    /**
-    Description TODO
-    @private
-    @function
-    */
-    _markDirty: {
-        enumerable: false,
-        value: function() {
-            var thisRef = this,
-                prevValue;
-                updateValues = function() {
-                    clearTimeout(thisRef._forceUpdateValuesTimeout);
-                    delete thisRef._forceUpdateValuesTimeout;
-                    clearTimeout(thisRef._updateValuesTimeout);
-                    delete thisRef._updateValuesTimeout;
-
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
-                        prevValue = thisRef._value;
-                        if (thisRef.value !== prevValue) {
-                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(thisRef.value));
-                        }
-                    }
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
-                        prevValue = thisRef._textValue;
-                        if (thisRef.textValue !== prevValue) {
-                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(thisRef.textValue));
-                        }
-                    }
-                    thisRef._dispatchEditorEvent("editorChange");
-                };
-
-            if (!this._needsAssingValue) {
-                // Clear the cached value
-                this._dirtyValue = true;
-                this._dirtyTextValue = true;
-            }
-
-            if (!this._forceUpdateValuesTimeout) {
-                this._forceUpdateValuesTimeout = setTimeout(updateValues, 1000);
-            }
-            if (this._updateValuesTimeout) {
-                clearTimeout(this._updateValuesTimeout);
-            }
-            this._updateValuesTimeout = setTimeout(updateValues, 100);
         }
     },
 
@@ -1535,6 +1436,41 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         }
     },
 
+    _callOverlays: {
+        value: function(method, param, forceCallAll) {
+            var i,
+                activeOverlay = this._activeOverlay,
+                overlay;
+
+            // Call the active overlay first
+            if (activeOverlay) {
+                if (typeof activeOverlay[method] == "function") {
+                    if (activeOverlay[method](param)) {
+                        if (!forceCallAll) {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            // Then the other overlays
+            for (i in this._overlays) {
+                overlay = this._overlays[i];
+                if (overlay !== activeOverlay) {
+                    if (typeof overlay[method] == "function") {
+                        if (overlay[method](param)) {
+                            if (!forceCallAll) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+    },
+
     /**
     Description TODO
     @private
@@ -1552,7 +1488,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     return parseInt(i, 10); // i is a string, we need an integer
                 }
             }
-            return 0;
+            return -1;
         }
     },
 
@@ -1564,7 +1500,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _lastInnerNode: {
         enumerable: false,
         value: function() {
-            var nodes = this._editableContentElement.childNodes,
+            var nodes = this._innerElement.childNodes,
                 nbrNodes = nodes.length,
                 node = null;
 

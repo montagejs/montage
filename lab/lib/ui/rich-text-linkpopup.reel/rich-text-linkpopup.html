@@ -15,18 +15,6 @@
                 "name": "Anchor",
                 "properties": {
                     "element": {"#": "link"}
-                },
-                "bindings": {
-                    "href": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "target.href",
-                        "oneway": true
-                    },
-                    "textContent": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "target.text",
-                        "oneway": true
-                    }
                 }
             },
 
@@ -34,7 +22,8 @@
                 "module": "montage/lab/lib/ui/rich-text-linkpopup.reel",
                 "name": "RichTextLinkPopup",
                 "properties": {
-                    "element": {"#": "linkpopup-container"}
+                    "element": {"#": "linkpopup-container"},
+                    "link": {"@": "link"}
                 }
             }
         }

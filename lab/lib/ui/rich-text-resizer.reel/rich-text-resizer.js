@@ -79,7 +79,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
       Description TODO
      @type {Function}
     */
-    mouseDownOrTouchStart: {
+    editorMouseDown: {
         value: function(event) {
             var target = event.target;
 
@@ -95,7 +95,17 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
       Description TODO
      @type {Function}
     */
-    mouseUpOrTouchEnd: {
+    editorTouchStart: {
+        value: function(event) {
+            this.editorMouseDown(event);
+        }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    editorMouseUp: {
         value: function(event) {
             var target = event.target,
                 previousTarget = this.target;
@@ -104,9 +114,10 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
             if (this._observedPointer) {
                 return true;
             } else {
-                if (target === this.element) {
+                if (target === this.element && this._editor.activeOverlay == this) {
                     this._editor.hideOverlay();
                     // We need to stop the event propagation to prevent the selection to be reset
+                    event.target = this.target;     // Retarget the event
                     event.preventDefault();
                     event.stopPropagation();
                 } else if (target.tagName === "IMG") {
@@ -129,7 +140,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                     event.preventDefault();
                     event.stopPropagation();
                     return true;
-                } else if (this._isActive) {
+                } else if (this._editor.activeOverlay == this) {
                     this._editor.hideOverlay();
                 }
             }
@@ -142,11 +153,21 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
       Description TODO
      @type {Function}
     */
+    editorTouchEnd: {
+        value: function(event) {
+            this.editorMouseUp(event);
+        }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
     editorSelectionDidChanged: {
         value: function(range) {
             if (this._ignoreNextSelectionchanged) {
                 this._ignoreNextSelectionchanged = false;
-            } else if (this._isActive) {
+            } else if (this._editor.activeOverlay == this) {
                 this._editor.hideOverlay();
             }
 
@@ -163,7 +184,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
         value: function() {
             var element = this.element,
                 target = this.target,
-                editorElement = this._editor._editableContentElement,
+                editorElement = this._editor.innerElement,
                 style;
 
             if (this._needsReset) {
@@ -188,8 +209,13 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 style.top = offsetTop + "px";;
                 style.left = offsetLeft + "px";
 
-                this._editor._editableContentElement.classList.remove("montage-editor-resizing");
+                this._editor.innerElement.classList.remove("montage-editor-resizing");
                 target.classList.add("montage-resizer-element");
+
+                // Setup the image
+                this.image.src = target.src;
+                this.image.title = target.title;
+                this.image.alt = target.alt;
 
                 // Select the resizedElement
                 this._selectElement(target);
@@ -211,7 +237,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                     left = parseFloat(element.style.left, 10),
                     minSize = 15;
 
-                this._editor._editableContentElement.classList.add("montage-editor-resizing");
+                this._editor.innerElement.classList.add("montage-editor-resizing");
 
                 if (direction == "n") {
                     height += framePosition.y - cursor.y;
@@ -270,7 +296,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 width = element.clientWidth;
                 height = element.clientHeight;
 
-                this._editor._editableContentElement.classList.remove("montage-editor-resizing");
+                this._editor.innerElement.classList.remove("montage-editor-resizing");
                 target.classList.remove("montage-resizer-element");
                 if (target.classList.length == 0) {
                     target.removeAttribute("class");
@@ -296,7 +322,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 offlineElement.id = "montage-editor-resized-image";
 
                 // Inject the resized element into the contentEditable using execCommand in order to be in the browser undo queue
-                this._editor._execCommand("inserthtml", false, div.innerHTML, "Resizing Image");
+                this._editor.execCommand("inserthtml", false, div.innerHTML, "Resizing Image");
                 target = document.getElementById(offlineElement.id);
                 if (target) {
                     if (savedID !== undefined && savedID !== "") {
@@ -359,7 +385,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 if (target.classList.length == 0) {
                     target.removeAttribute("class");
                 }
-                this._editor._markDirty();
+                this._editor.markDirty();
             }
 
             //Reset the resizer internal
@@ -536,12 +562,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 range;
 
             this._ignoreNextSelectionchanged = true;
-
-            offset = this._editor._nodeOffset(element);
-            range = document.createRange();
-            range.setStart(element.parentNode, offset);
-            range.setEnd(element.parentNode, offset + 1);
-            this._editor._selectedRange = range;
+            this._editor.selectElement(element);
         }
     }
 });

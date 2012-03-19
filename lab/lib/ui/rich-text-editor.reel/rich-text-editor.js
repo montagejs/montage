@@ -31,6 +31,18 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
 
     /**
       Description TODO
+     @type {Function}
+    */
+    innerElement: {
+        enumerable: true,
+        get: function() {
+            return this._innerElement;
+        }
+    },
+
+
+    /**
+      Description TODO
       @type {Function}
     */
     focus: {
@@ -81,7 +93,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         enumerable: true,
         serializable: true,
         get: function() {
-            var contentNode = this._editableContentElement,
+            var contentNode = this._innerElement,
                 content = "",
                 overlayElement = null,
                 overlayParent,
@@ -142,7 +154,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     textValue: {
         enumerable: true,
         get: function() {
-            var contentNode = this._editableContentElement,
+            var contentNode = this._innerElement,
                 overlayElement = null,
                 overlayParent,
                 overlayNextSibling;
@@ -209,6 +221,10 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         }
     },
 
+    /**
+      Description TODO
+     @type {Function}
+    */
     overlays: {
         enumerable: false,
         get: function() {
@@ -218,25 +234,35 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
             if (value instanceof Array) {
                 this.hideOverlay();
                 this._overlays = value;
+                this._callOverlays("initWithEditor", this, true);
             }
         }
     },
 
+    /**
+      Description TODO
+     @type {Function}
+    */
     showOverlay: {
         value: function(overlay) {
             var slot = this._overlaySlot,
                 slotElem = slot ? slot.element : null;
 
             if (slotElem) {
-                this._editableContentElement.appendChild(slotElem.parentNode ? slotElem.parentNode.removeChild(slotElem) : slotElem);
+                this._activeOverlay = overlay;
+                this._innerElement.appendChild(slotElem.parentNode ? slotElem.parentNode.removeChild(slotElem) : slotElem);
                 slot.attachToParentComponent();
                 slot.content = overlay;
             }
         }
     },
 
+    /**
+      Description TODO
+     @type {Function}
+    */
     hideOverlay: {
-        value: function() {
+        value: function(a) {
             var slot = this._overlaySlot,
                 slotElem = slot ? slot.element : null;
 
@@ -244,8 +270,19 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 if (slotElem.parentNode) {
                     slotElem.parentNode.removeChild(slotElem)
                 }
+                this._activeOverlay = null;
                 slot.content = null;
             }
+        }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    activeOverlay: {
+        get: function() {
+            return this._activeOverlay;
         }
     },
 
@@ -449,6 +486,26 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
+      Description TODO
+     @type {Function}
+    */
+    selectElement: {
+        enumerable: true,
+        value: function(element) {
+            var offset,
+                range;
+
+            offset = this._nodeOffset(element);
+            if (offset !== -1) {
+                range = document.createRange();
+                range.setStart(element.parentNode, offset);
+                range.setEnd(element.parentNode, offset + 1);
+                this._selectedRange = range;
+            }
+        }
+    },
+
+    /**
     Description TODO
     @function
     */
@@ -465,7 +522,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     undo: {
         enumerable: true,
         value: function(label, element) {
-            var editorElement = this._editableContentElement;
+            var editorElement = this._innerElement;
             if (!element || element === editorElement) {
                 this._doingUndoRedo = true;
                 document.execCommand("undo", false, null);
@@ -484,7 +541,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     redo: {
         enumerable: true,
         value: function(label, element) {
-            var editorElement = this._editableContentElement;
+            var editorElement = this._innerElement;
             if (!element || element === editorElement) {
                 this._doingUndoRedo = true;
                 document.execCommand("redo", false, null);
@@ -494,5 +551,77 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 this._doingUndoRedo = false;
             }
         }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    execCommand: {
+        enumerable: false,
+        value: function(command, showUI, value, label) {
+            label = label || this._execCommandLabel[command] || "Typing";
+
+            this._executingCommand = true;
+            if (document.execCommand(command, showUI, value)) {
+                this._executingCommand = false;
+                this._stopTyping();
+                if (this.undoManager) {
+                    this.undoManager.add(label, this.undo, this, label, this._innerElement);
+                }
+                return true;
+            } else {
+                this._executingCommand = true;
+                return false
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @private
+    @function
+    */
+    markDirty: {
+        enumerable: false,
+        value: function() {
+            var thisRef = this,
+                prevValue;
+                updateValues = function() {
+                    clearTimeout(thisRef._forceUpdateValuesTimeout);
+                    delete thisRef._forceUpdateValuesTimeout;
+                    clearTimeout(thisRef._updateValuesTimeout);
+                    delete thisRef._updateValuesTimeout;
+
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
+                        prevValue = thisRef._value;
+                        if (thisRef.value !== prevValue) {
+                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(thisRef.value));
+                        }
+                    }
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
+                        prevValue = thisRef._textValue;
+                        if (thisRef.textValue !== prevValue) {
+                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(thisRef.textValue));
+                        }
+                    }
+                    thisRef._dispatchEditorEvent("editorChange");
+                };
+
+            if (!this._needsAssingValue) {
+                // Clear the cached value
+                this._dirtyValue = true;
+                this._dirtyTextValue = true;
+            }
+
+            if (!this._forceUpdateValuesTimeout) {
+                this._forceUpdateValuesTimeout = setTimeout(updateValues, 1000);
+            }
+            if (this._updateValuesTimeout) {
+                clearTimeout(this._updateValuesTimeout);
+            }
+            this._updateValuesTimeout = setTimeout(updateValues, 100);
+        }
     }
+
 });
