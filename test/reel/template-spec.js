@@ -147,7 +147,7 @@ var testPage = TestPageLoader.queueTest("template", function() {
             var comp = Montage.create(Component),
                 rootComp = Montage.create(Component, {
                     serializeProperties: {value: function(serializer) {
-                        serializer.setReference("object", comp);
+                        serializer.set("object", comp, "reference");
                     }}
                 }),
                 template = Template.create(),

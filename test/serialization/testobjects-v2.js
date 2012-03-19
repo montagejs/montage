@@ -46,7 +46,7 @@ exports.DistinctLiteralProp = Montage.create(Montage, {
     prop: {value: {}, serializable: true, distinct: true}
 });
 
-exports.Custom = Montage.create(Montage, {
+exports.CustomProperties = Montage.create(Montage, {
     manchete: {value: 42},
 
     serializeProperties: {value: function(serializer) {
@@ -62,7 +62,7 @@ exports.CustomRef = Montage.create(Montage, {
     object: {value: exports.Empty.create()},
 
     serializeProperties: {value: function(serializer) {
-        serializer.setReference("object", this.object);
+        serializer.set("object", this.object, "reference");
     }},
 
     deserializeProperties: {value: function(serializer) {
@@ -91,6 +91,17 @@ exports.Comp = Montage.create(Montage, {
     }},
 });
 
+exports.Custom = Montage.create(Montage, {
+    number: {
+        serializable: true,
+        value: 42
+    }
+});
+
+exports.CustomDeserialization = Montage.create(exports.TwoProps, {
+
+});
+
 exports.objects = {
     Empty: exports.Empty,
     Simple: exports.Simple,
@@ -99,8 +110,10 @@ exports.objects = {
     SerializableAttribute: exports.SerializableAttribute,
     DistinctArrayProp: exports.DistinctArrayProp,
     DistinctLiteralProp: exports.DistinctLiteralProp,
-    Custom: exports.Custom,
+    CustomProperties: exports.CustomProperties,
     CustomRef: exports.CustomRef,
     Singleton: exports.Singleton,
-    Comp: exports.Comp
+    Comp: exports.Comp,
+    Custom: exports.Custom,
+    CustomDeserialization: exports.CustomDeserialization
 };

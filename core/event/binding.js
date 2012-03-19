@@ -1184,7 +1184,7 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
     },
 
     serializeProperties: {value: function(serializer) {
-        serializer.setReference("boundObject", this.boundObject);
+        serializer.set("boundObject", this.boundObject, "reference");
         serializer.set("boundObjectPropertyPath", this.boundObjectPropertyPath);
         serializer.set("oneway", this.oneway);
         serializer.set("deferred", this.deferred);
