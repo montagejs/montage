@@ -24,7 +24,6 @@ if (spec) {
         "getset-spec",
         "logger-spec",
         "propertychange-spec",
-        "require-spec",
         "state-chart-spec",
         "string-spec",
 
@@ -56,6 +55,8 @@ if (spec) {
         "geometry/point-spec",
 
         "reel/template-spec",
+
+        "require/spec",
 
         "serialization/deserializer-spec",
         "serialization/serializer-spec",

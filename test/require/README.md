@@ -55,3 +55,19 @@ ancestor.
 Verifies that named mappings can be shared if they have a common
 ancestor.
 
+## load-package
+
+Verifies that packages can be loaded asynchronously based on their
+location relative to the requesting package.
+
+As a byproduct, verifies that require.loadPackage and require.async
+return functioning promises.
+
+As a byproduct, also verifies that module exports reassignment works
+properly.
+
+## load-package-name
+
+Verifies that packages can be loaded asynchronously based on their
+name, in the context of the requesting package.
+

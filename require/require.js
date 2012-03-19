@@ -248,7 +248,15 @@
 
             require.load = load;
             require.deepLoad = deepLoad;
-            require.loadPackage = config.loadPackage;
+
+            require.loadPackage = function (dependency) {
+                return config.loadPackage(
+                    dependency,
+                    config.location,
+                    config.packagesDirectory
+                );
+            };
+
             require.identify = identify;
             require.inject = inject;
             require.progress = Require.progress;
@@ -277,21 +285,19 @@
         config = config || {};
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
-        config.registry = {};
+        var registry = config.registry = {};
 
         config.getPackage = function (dependency) {
-            dependency = Dependency(dependency);
-            // TODO handle other kinds of dependency
+            dependency = Dependency(dependency, registry);
             var location = dependency.location;
             if (!loadedPackages[location])
                 throw new Error("Dependency is not loaded: " + JSON.stringify(location));
             return loadedPackages[location];
         };
 
-        config.loadPackage = function (dependency) {
-            dependency = Dependency(dependency);
-            // TODO handle other kinds of dependency
-            var location = URL.resolve(dependency.location, ".");
+        config.loadPackage = function (dependency, viaLocation, packagesDirectory) {
+            dependency = Dependency(dependency, registry, viaLocation, packagesDirectory);
+            var location = dependency.location;
             if (!loadingPackages[location]) {
                 var jsonPath = URL.resolve(location, 'package.json');
                 loadingPackages[location] = Require.read(jsonPath)
@@ -325,9 +331,47 @@
         return pkg;
     };
 
-    function Dependency(dependency) {
+    function Dependency(dependency, registry, location, packagesDirectory, name) {
         if (typeof dependency === "string") {
-            dependency = {"location": dependency};
+            if (dependency.indexOf("@") >= 0) {
+                var parts = dependency.split("@");
+                dependency = {
+                    name: parts[0] || name,
+                    version: parts[1]
+                };
+            } else {
+                dependency = {
+                    location: dependency
+                };
+            }
+        }
+        // if the named dependency has already been found at another
+        // location, refer to the same eventual instance
+        if (dependency.name !== void 0 && registry[name]) {
+            dependency.location = registry[name];
+        }
+        // default location
+        if (dependency.location === void 0) {
+            if (packagesDirectory === void 0 || dependency.name === void 0) {
+                throw new Error("name, version, or location required for dependency: " + JSON.stringify(dependency) + " from " + location);
+            }
+            dependency.location = URL.resolve(packagesDirectory, dependency.name + "/");
+        }
+        // make sure the dependency location has a trailing slash so that
+        // relative urls will resolve properly
+        if (!/\/$/.test(dependency.location)) {
+            dependency.location += "/";
+        }
+        // resolve the location relative to the current package
+        if (!Require.isAbsolute(dependency.location)) {
+            if (location === void 0) {
+                throw new Error("Dependency locations must be fully qualified: " + JSON.stringify(dependency));
+            }
+            dependency.location = URL.resolve(location, dependency.location);
+        }
+        // register the package name so the location can be reused
+        if (dependency.name !== void 0) {
+            registry[dependency.name] = dependency.location;
         }
         return dependency;
     }
@@ -365,8 +409,9 @@
         var lib = description.directories.lib;
         // lib
         config.lib = URL.resolve(location, "./" + lib);
-        var packageRoot = description.directories.packages || "node_modules";
-        packageRoot = URL.resolve(location, packageRoot + "/");
+        var packagesDirectory = description.directories.packages || "node_modules";
+        packagesDirectory = URL.resolve(location, packagesDirectory + "/");
+        config.packagesDirectory = packagesDirectory;
 
         // The default "main" module of a package has the same name as the
         // package.
@@ -395,32 +440,29 @@
         // dependencies
         var dependencies = description.dependencies || {};
         Object.keys(dependencies).forEach(function (name) {
-            var versionPredicateString = dependencies[name];
-            // TODO (version presently ignored for debug mode)
             if (!mappings[name]) {
-                if (registry[name]) {
-                    mappings[name] = {
-                        location: registry[name]
-                    };
-                } else {
-                    mappings[name] = {
-                        location: URL.resolve(
-                            packageRoot,
-                            name + "/"
-                        )
-                    };
-                }
-                registry[name] = mappings[name].location;
+                // dependencies are equivalent to name and version mappings,
+                // though the version predicate string is presently ignored
+                // (TODO)
+                mappings[name] = {
+                    name: name,
+                    version: dependencies[name]
+                };
+            } else if (typeof console === "object") {
+                console.warn(
+                    "Dependency for " + JSON.stringify(name) + " " +
+                    "overriden by mapping in " + JSON.stringify(location)
+                );
             }
         });
         Object.keys(mappings).forEach(function (name) {
-            var mapping = mappings[name] = Dependency(mappings[name]);
-            if (!/\/$/.test(mapping.location))
-                mapping.location += "/";
-            if (!Require.isAbsolute(mapping.location))
-                mapping.location = URL.resolve(location, mapping.location);
-            if (mapping.name !== void 0)
-                registry[mapping.name] = mapping.location;
+            var mapping = mappings[name] = Dependency(
+                mappings[name],
+                registry,
+                location,
+                packagesDirectory,
+                name
+            );
         });
 
         config.mappings = mappings;
