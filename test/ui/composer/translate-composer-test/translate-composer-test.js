@@ -34,5 +34,10 @@ var TranslateComposerTest = exports.TranslateComposerTest = Montage.create(Monta
         set: function(value) {
             this.example.element.style.top = value + "px";
         }
+    },
+
+    handleTranslate: {
+        value: function(event) {
+        }
     }
 });
