@@ -20,6 +20,7 @@ describe("require-spec", function () {
         "return",
         "named-packages",
         "named-mappings",
+        "named-parent-package",
         "load-package",
         "load-package-name"
     ].forEach(function (test) {
@@ -32,9 +33,11 @@ describe("require-spec", function () {
 
                 logger.debug(test + ":", "START");
 
-                promise = require.loadPackage(module.directory + test + "/")
+                promise = require.loadPackage(
+                    module.directory + test + "/",
+                    {}
+                )
                 .then(function (pkg) {
-
                     pkg.inject("test", {
                         print: function (message, level) {
                             logger.debug(test + ":", message);

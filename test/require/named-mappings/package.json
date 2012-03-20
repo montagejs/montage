@@ -2,5 +2,8 @@
     "mappings": {
         "bar": "bar@0.0.0",
         "foo": "@"
+    },
+    "directories": {
+        "packages": "."
     }
 }

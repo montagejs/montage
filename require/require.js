@@ -261,8 +261,12 @@
             require.load = load;
             require.deepLoad = deepLoad;
 
-            require.loadPackage = function (dependency) {
-                return config.loadPackage(dependency, config);
+            require.loadPackage = function (dependency, givenConfig) {
+                if (givenConfig) { // explicit configuration, fresh environment
+                    return Require.loadPackage(dependency, givenConfig);
+                } else { // inherited environment
+                    return config.loadPackage(dependency, config);
+                }
             };
 
             require.identify = identify;
@@ -422,6 +426,11 @@
         // explicitly mask definitions and modules, which must
         // not apply to child packages
         var modules = config.modules = config.modules || {};
+
+        var registry = config.registry;
+        if (config.name !== void 0 && !registry[config.name]) {
+            registry[config.name] = config.location;
+        }
 
         // overlay
         var overlay = description.overlay || {};
