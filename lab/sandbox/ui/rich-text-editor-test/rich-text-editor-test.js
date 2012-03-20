@@ -267,6 +267,20 @@ exports.RichTextEditorTest = Montage.create(Component, {
         }
     },
 
+    editorCanDrag: {
+        enumerable: false,
+        value: function(editor, source) {
+            return true;
+        }
+    },
+
+    editorCanDrop: {
+        enumerable: false,
+        value: function(editor, source, event) {
+            return true;
+        }
+    },
+
     editorFileDrop: {
         enumerable: false,
         value: function(editor, file, data) {
