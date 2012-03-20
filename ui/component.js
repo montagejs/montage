@@ -971,14 +971,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: false
     },
-/**
-  Description TODO
-  @private
-*/
-    _isDrawing: {
-        enumerable: false,
-        value: false
-    },
 
     /**
         If needsDraw property returns true this call adds the current component instance to the rootComponents draw list.<br>
@@ -1291,10 +1283,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: function(childComponent) {
             this.__addToDrawList(childComponent);
-            // if we are not added to the parent yet we add ourselves so that we build the tree
-            if (!this._isDrawing) {
-                this._addToParentsDrawList();
-            }
+            this._addToParentsDrawList();
         }
     },
 
