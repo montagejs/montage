@@ -35,7 +35,8 @@
 
     var globalEval = eval; // reassigning causes eval to not use lexical scope.
 
-    // Non-CommonJS speced extensions should be marked with an "// EXTENSION" comment.
+    // Non-CommonJS speced extensions should be marked with an "// EXTENSION"
+    // comment.
 
     Require.makeRequire = function (config) {
         var require;
@@ -52,7 +53,8 @@
         config.makeCompiler = config.makeCompiler || Require.makeCompiler;
         config.compile = config.compile || config.makeCompiler(config);
 
-        // Modules: { exports, id, location, directory, factory, dependencies, dependees, text, type }
+        // Modules: { exports, id, location, directory, factory, dependencies,
+        // dependees, text, type }
         var modules = config.modules = config.modules || {};
 
         // produces an entry in the module state table, which gets built
@@ -103,7 +105,9 @@
             .then(function () {
                 // compile and analyze dependencies
                 config.compile(module);
-                var dependencies = module.dependencies = module.dependencies || [];
+                var dependencies =
+                    module.dependencies =
+                        module.dependencies || [];
                 if (module.redirect !== void 0) {
                     dependencies.push(module.redirect);
                 }
@@ -136,7 +140,8 @@
             })
         }
 
-        // Initializes a module by executing the factory function with a new module "exports" object.
+        // Initializes a module by executing the factory function with a new
+        // module "exports" object.
         function getExports(topId, viaId) {
             var module = getModule(topId);
 
@@ -157,7 +162,10 @@
 
             // do not initialize modules that do not define a factory function
             if (module.factory === void 0) {
-                throw new Error("Can't require module " + JSON.stringify(topId) + " via " + JSON.stringify(viaId));
+                throw new Error(
+                    "Can't require module " + JSON.stringify(topId) +
+                    " via " + JSON.stringify(viaId)
+                );
             }
 
             module.directory = URL.resolve(module.location, "."); // EXTENSION
@@ -211,11 +219,14 @@
             if (internal) {
                 return null;
             } else {
-                throw new Error("Can't identify " + id2 + " from " + require2.location);
+                throw new Error(
+                    "Can't identify " + id2 + " from " + require2.location
+                );
             }
         }
 
-        // Creates a unique require function for each module that encapsulates that module's id for resolving relative module IDs against.
+        // Creates a unique require function for each module that encapsulates
+        // that module's id for resolving relative module IDs against.
         function makeRequire(viaId) {
 
             // Main synchronously executing "require()" function
@@ -224,7 +235,8 @@
                 return getExports(topId, viaId);
             };
 
-            // Asynchronous "require.async()" which ensures async executation (even with synchronous loaders)
+            // Asynchronous "require.async()" which ensures async executation
+            // (even with synchronous loaders)
             require.async = function(id, callback) {
                 var topId = resolve(id, viaId);
                 return deepLoad(topId, viaId)
@@ -250,11 +262,7 @@
             require.deepLoad = deepLoad;
 
             require.loadPackage = function (dependency) {
-                return config.loadPackage(
-                    dependency,
-                    config.location,
-                    config.packagesDirectory
-                );
+                return config.loadPackage(dependency, config);
             };
 
             require.identify = identify;
@@ -285,18 +293,20 @@
         config = config || {};
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
-        var registry = config.registry = {};
+        var registry = config.registry = config.registry || Object.create(null);
 
         config.getPackage = function (dependency) {
-            dependency = Dependency(dependency, registry);
+            dependency = normalizeDependency(dependency, config);
             var location = dependency.location;
             if (!loadedPackages[location])
-                throw new Error("Dependency is not loaded: " + JSON.stringify(location));
+                throw new Error(
+                    "Dependency is not loaded: " + JSON.stringify(location)
+                );
             return loadedPackages[location];
         };
 
-        config.loadPackage = function (dependency, viaLocation, packagesDirectory) {
-            dependency = Dependency(dependency, registry, viaLocation, packagesDirectory);
+        config.loadPackage = function (dependency, viaConfig) {
+            dependency = normalizeDependency(dependency, viaConfig);
             var location = dependency.location;
             if (!loadingPackages[location]) {
                 var jsonPath = URL.resolve(location, 'package.json');
@@ -305,7 +315,10 @@
                     try {
                         var packageDescription = JSON.parse(json);
                     } catch (exception) {
-                        throw new SyntaxError("in " + JSON.stringify(jsonPath) + ": " + exception.message);
+                        throw new SyntaxError(
+                            "in " + JSON.stringify(jsonPath) + ": " +
+                            exception.message
+                        );
                     }
                     var subconfig = configurePackage(
                         location,
@@ -331,7 +344,8 @@
         return pkg;
     };
 
-    function Dependency(dependency, registry, location, packagesDirectory, name) {
+    function normalizeDependency(dependency, config, name) {
+        config = config || {};
         if (typeof dependency === "string") {
             if (dependency.indexOf("@") >= 0) {
                 var parts = dependency.split("@");
@@ -347,15 +361,28 @@
         }
         // if the named dependency has already been found at another
         // location, refer to the same eventual instance
-        if (dependency.name !== void 0 && registry[name]) {
-            dependency.location = registry[name];
+        if (
+            dependency.name !== void 0 &&
+            config.registry !== void 0 &&
+            config.registry[dependency.name]
+        ) {
+            dependency.location = config.registry[dependency.name];
         }
         // default location
         if (dependency.location === void 0) {
-            if (packagesDirectory === void 0 || dependency.name === void 0) {
-                throw new Error("name, version, or location required for dependency: " + JSON.stringify(dependency) + " from " + location);
+            if (
+                config.packagesDirectory === void 0 ||
+                dependency.name === void 0
+            ) {
+                throw new Error(
+                    "name, version, or location required for dependency: " +
+                    JSON.stringify(dependency) + " from " + location
+                );
             }
-            dependency.location = URL.resolve(packagesDirectory, dependency.name + "/");
+            dependency.location = URL.resolve(
+                config.packagesDirectory,
+                dependency.name + "/"
+            );
         }
         // make sure the dependency location has a trailing slash so that
         // relative urls will resolve properly
@@ -364,14 +391,20 @@
         }
         // resolve the location relative to the current package
         if (!Require.isAbsolute(dependency.location)) {
-            if (location === void 0) {
-                throw new Error("Dependency locations must be fully qualified: " + JSON.stringify(dependency));
+            if (config.location === void 0) {
+                throw new Error(
+                    "Dependency locations must be fully qualified: " +
+                    JSON.stringify(dependency)
+                );
             }
-            dependency.location = URL.resolve(location, dependency.location);
+            dependency.location = URL.resolve(
+                config.location,
+                dependency.location
+            );
         }
         // register the package name so the location can be reused
         if (dependency.name !== void 0) {
-            registry[dependency.name] = dependency.location;
+            config.registry[dependency.name] = dependency.location;
         }
         return dependency;
     }
@@ -389,7 +422,6 @@
         // explicitly mask definitions and modules, which must
         // not apply to child packages
         var modules = config.modules = config.modules || {};
-        var registry = config.registry;
 
         // overlay
         var overlay = description.overlay || {};
@@ -405,7 +437,10 @@
 
         // directories
         description.directories = description.directories || {};
-        description.directories.lib = description.directories.lib === void 0 ? "." : description.directories.lib;
+        description.directories.lib =
+            description.directories.lib === void 0
+            ? "."
+            : description.directories.lib;
         var lib = description.directories.lib;
         // lib
         config.lib = URL.resolve(location, "./" + lib);
@@ -456,11 +491,9 @@
             }
         });
         Object.keys(mappings).forEach(function (name) {
-            var mapping = mappings[name] = Dependency(
+            var mapping = mappings[name] = normalizeDependency(
                 mappings[name],
-                registry,
-                location,
-                packagesDirectory,
+                config,
                 name
             );
         });
@@ -541,7 +574,8 @@
         };
     };
 
-    // Support she-bang for shell scripts by commenting it out (it is never valid JavaScript syntax anyway)
+    // Support she-bang for shell scripts by commenting it out (it is never
+    // valid JavaScript syntax anyway)
     Require.ShebangCompiler = function(config, compile) {
         return function (module) {
             if (module.text) {
@@ -632,7 +666,7 @@
                 ) {
                     var mapping = mappings[prefix];
                     var rest = id.slice(prefix.length + 1);
-                    return config.loadPackage(mapping)
+                    return config.loadPackage(mapping, config)
                     .then(function (mappingRequire) {
                         module.mappingRedirect = rest;
                         module.mappingRequire = mappingRequire;
@@ -674,7 +708,8 @@
         }
     };
 
-    // Attempts to load using multiple base paths (or one absolute path) with a single loader.
+    // Attempts to load using multiple base paths (or one absolute path) with a
+    // single loader.
     Require.PathsLoader = function(config, load) {
         var loadFromPaths = config.paths.reduceRight(function (next, path) {
             return function (id, module) {
@@ -689,7 +724,11 @@
                 });
             };
         }, function (id, module) {
-            throw new Error("Can't find " + JSON.stringify(id) + " from paths " + JSON.stringify(config.paths) + " in package at " + JSON.stringify(config.location));
+            throw new Error(
+                "Can't find " + JSON.stringify(id) + " from paths " +
+                JSON.stringify(config.paths) + " in package at " +
+                JSON.stringify(config.location)
+            );
         });
         return function(id, module) {
             if (Require.isAbsolute(id)) {
