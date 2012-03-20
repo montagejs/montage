@@ -24,6 +24,7 @@ describe("require-spec", function () {
         "load-package-name"
     ].forEach(function (test) {
         it(test, function () {
+            var promise;
 
             runs(function () {
                 var spec = this;
