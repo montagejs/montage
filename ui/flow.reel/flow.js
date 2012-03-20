@@ -115,20 +115,20 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     elementsBoundingSphereRadius: {
-        value: 15
+        value: 142
     },
 
     _computeFrustumNormals: {
         value: function() {
             var angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
-                x = Math.sin(angle),
+                y = Math.sin(angle),
                 z = Math.cos(angle),
-                y = x,
+                x = (y * this._width) / this._height,
                 vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
                 vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
                 vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
                 yAngle = Math.PI/2 - Math.atan2(vZ, vX),
-                tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle),
+                tmpZ = vX * Math.sin(yAngle) + vZ * Math.cos(yAngle),
                 rX, rY, rZ,
                 xAngle = Math.PI/2 - Math.atan2(tmpZ, vY),
                 iVector,
@@ -143,7 +143,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 out.push([
                     rX * Math.cos(-yAngle) - rZ * Math.sin(-yAngle),
                     rY,
-                    - rX * Math.sin(-yAngle) - rZ * Math.cos(-yAngle)     // TODO: Review this
+                    rX * Math.sin(-yAngle) + rZ * Math.cos(-yAngle)
                 ]);
             }
 
@@ -226,7 +226,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     [
                         planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
                         planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
-                        planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
+                        planeOrigin[2] - mod[2] * this.elementsBoundingSphereRadius
                     ],
                     normals[0],
                     spline._knots[i],
@@ -240,7 +240,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                         [
                             planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
                             planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
-                            planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
+                            planeOrigin[2] - mod[2] * this.elementsBoundingSphereRadius
                         ],
                         normals[1],
                         spline._knots[i],
@@ -256,7 +256,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                                 [
                                     planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
                                     planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
-                                    planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
+                                    planeOrigin[2] - mod[2] * this.elementsBoundingSphereRadius
                                 ],
                                 normals[2],
                                 spline._knots[i],
@@ -271,7 +271,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                                     [
                                         planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
                                         planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
-                                        planeOrigin[2] + mod[2] * this.elementsBoundingSphereRadius // TODO: Review
+                                        planeOrigin[2] - mod[2] * this.elementsBoundingSphereRadius
                                     ],
                                     normals[3],
                                     spline._knots[i],
@@ -316,20 +316,61 @@ var Flow = exports.Flow = Montage.create(Component, {
                 self._isCameraUpdated = true;
                 self.needsDraw = true;
             }, false);
-            this._repetition.indexMap=[0,1,1,1,2,3,39];
+        }
+    },
+
+    _updateIndexMap: {
+        enumerable: false,
+        value: function (currentIndexMap, newIndexes) {
+            var indexMap = currentIndexMap.slice(0, newIndexes.length),
+                newIndexesHash = {},
+                emptySpaces = [],
+                j,
+                i;
+
+            for (i = 0; i < newIndexes.length; i++) {
+                newIndexesHash[newIndexes[i]] = i;
+            }
+            for (i = 0; i < indexMap.length; i++) {
+                if (newIndexesHash.hasOwnProperty(indexMap[i])) {
+                    newIndexes[newIndexesHash[indexMap[i]]] = null;
+                } else {
+                    emptySpaces.push(i);
+                }
+            }
+            for (i = j = 0; j < emptySpaces.length; i++) {
+                if (newIndexes[i] !== null) {
+                    indexMap[emptySpaces[j]] = newIndexes[i];
+                    j++;
+                }
+            }
+            for (j = indexMap.length; i < newIndexes.length; i++) {
+                if (newIndexes[i] !== null) {
+                    indexMap[j] = newIndexes[i];
+                    j++;
+                }
+            }
+            return indexMap;
         }
     },
 
     willDraw: {
         enumerable: false,
         value: function () {
+            var newIndexMap = [],
+                i,
+                j,
+                intersections = this._computeVisibleRange();
+
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
-            if ((new Date().getTime()>>1)%2) {
-                this._repetition.indexMap = [1,2];
-            } else {
-                this._repetition.indexMap = [3,2,1];
+
+            for (i = 0; i < intersections.length; i++) {
+                for (j = Math.ceil(intersections[i][0] + this._origin/this._scale); j < intersections[i][1] + this._origin/this._scale; j++) {
+                    newIndexMap.push(j);
+                }
             }
+            this._repetition.indexMap = this._updateIndexMap(this._repetition.indexMap, newIndexMap);
         }
     },
 
@@ -536,6 +577,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             currentContentRange.selectNodeContents(this.element);
             orphanedFragment = currentContentRange.extractContents();
             this._repetition.element.appendChild(orphanedFragment);
+            this._repetition.indexMap = [];
             this._repetition.childComponents = this._orphanedChildren;
             this._repetition.needsDraw = true;
             if (this._objectsForRepetition !== null) {

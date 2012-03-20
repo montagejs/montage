@@ -87,6 +87,9 @@ var Montage = require("montage").Montage,
 
     knotsLength: {
         get: function () {
+            if (!this._knots) {
+                return 0;
+            }
             return this._knots.length;
         },
         set: function () {}
@@ -328,19 +331,11 @@ var Montage = require("montage").Montage,
         enumerable: false,
         value: function (planeNormal) {
             var angleZ = Math.PI/2 - Math.atan2(planeNormal[1], planeNormal[0]),
-//                p0 = planeNormal[0] * Math.cos(angleZ) - planeNormal[1] * Math.sin(angleZ),
                 p1 = planeNormal[0] * Math.sin(angleZ) + planeNormal[1] * Math.cos(angleZ),
                 p2 = planeNormal[2],
-                angleX = Math.PI/2 - Math.atan2(p1, p2);
-                /*
-                x = x1 * Math.cos(angleZ) - y1 * Math.sin(angleZ),
-                y = x1 * Math.sin(angleZ) + y1 * Math.cos(angleZ),
-                z = z1,
-                x2 = x,
-                y2 = (x1 * Math.sin(angleZ) + y1 * Math.cos(angleZ)) * Math.cos(angleX) - z1 * Math.sin(angleX);
-                */
+                angleX = Math.PI/2 - Math.atan2(p2, p1);
 
-            return [Math.cos(angleX) * Math.sin(angleZ), Math.cos(angleZ) * Math.cos(angleX), -Math.sin(angleX)];
+            return [Math.sin(angleX) * Math.sin(angleZ), Math.cos(angleZ) * Math.sin(angleX), Math.cos(angleX)];
         }
     },
 

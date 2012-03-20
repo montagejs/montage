@@ -22,14 +22,14 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
             this._context.beginPath();
             for (i = 0; i < length; i++) {
                 if (spline.getNextHandler(i) && spline.getPreviousHandler(i + 1)) {
-                    this._context.moveTo(spline.getKnot(i)[0] + .5, spline.getKnot(i)[2] + .5);
+                    this._context.moveTo(spline.getKnot(i)[0] + .5, spline.getKnot(i)[1] + .5);
                     this._context.bezierCurveTo(
                         spline.getNextHandler(i)[0] + .5,
-                        spline.getNextHandler(i)[2] + .5,
+                        spline.getNextHandler(i)[1] + .5,
                         spline.getPreviousHandler(i + 1)[0] + .5,
-                        spline.getPreviousHandler(i + 1)[2] + .5,
+                        spline.getPreviousHandler(i + 1)[1] + .5,
                         spline.getKnot(i + 1)[0] + .5,
-                        spline.getKnot(i + 1)[2] + .5
+                        spline.getKnot(i + 1)[1] + .5
                     );
                 }
             }
@@ -218,20 +218,21 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
             var vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
                 vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
                 vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
-                yAngle = Math.atan2(vX, vZ),
+                yAngle = Math.PI/2 - Math.atan2(vZ, vX),
                 tmpZ,
                 rX, rY, rZ,
                 xAngle;
 
-            tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
-            xAngle = Math.atan2(vY, tmpZ);
+//            tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
+            tmpZ = vX * Math.sin(yAngle) + vZ * Math.cos(yAngle);
+            xAngle = Math.PI/2 - Math.atan2(tmpZ, vY);
             rX = vector[0];
             rY = vector[1] * Math.cos(-xAngle) - vector[2] * Math.sin(-xAngle);
             rZ = vector[1] * Math.sin(-xAngle) + vector[2] * Math.cos(-xAngle);
             return [
-                rX * Math.cos(yAngle) + rZ * Math.sin(yAngle),
+                rX * Math.cos(-yAngle) - rZ * Math.sin(-yAngle),
                 rY,
-                rX * -Math.sin(yAngle) + rZ * Math.cos(yAngle)
+                rX * Math.sin(-yAngle) + rZ * Math.cos(-yAngle)
             ];
         }
     },
@@ -261,24 +262,24 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                 }
                 this._context.save();
                 this._context.fillStyle = this._context.strokeStyle = this.cameraColor;
-                this._context.fillRect((tPos[0] >> 0) - 3, (tPos[2] >> 0) - 3, 7, 7);
-                this._context.fillRect((tFocus[0] >> 0) - 2, (tFocus[2] >> 0) - 2, 5, 5);
+                this._context.fillRect((tPos[0] >> 0) - 3, (tPos[1] >> 0) - 3, 7, 7);
+                this._context.fillRect((tFocus[0] >> 0) - 2, (tFocus[1] >> 0) - 2, 5, 5);
                 this._context.beginPath();
                 this._context.lineWidth = .5;
                 for (i = 0; i < 8; i++) {
                     line[i] = this.transformVector(line[i]);
-                    this._context.moveTo(tPos[0] + .5, tPos[2] + .5);
-                    this._context.lineTo(line[i][0] + .5, line[i][2] + .5);
+                    this._context.moveTo(tPos[0] + .5, tPos[1] + .5);
+                    this._context.lineTo(line[i][0] + .5, line[i][1] + .5);
                 }
                 this._context.stroke();
                 this._context.beginPath();
                 this._context.lineWidth = 1;
-                this._context.moveTo(tPos[0] + .5, tPos[2] + .5);
-                this._context.lineTo(tFocus[0] + .5, tFocus[2] + .5);
+                this._context.moveTo(tPos[0] + .5, tPos[1] + .5);
+                this._context.lineTo(tFocus[0] + .5, tFocus[1] + .5);
                 for (i = 0; i < 4; i++) {
-                    this._context.moveTo(tPos[0] + .5, tPos[2] + .5);
-                    this._context.lineTo(line[i][0] + .5, line[i][2] + .5);
-                    this._context.lineTo(line[(i + 1) % 4][0] + .5, line[(i + 1) % 4][2] + .5);
+                    this._context.moveTo(tPos[0] + .5, tPos[1] + .5);
+                    this._context.lineTo(line[i][0] + .5, line[i][1] + .5);
+                    this._context.lineTo(line[(i + 1) % 4][0] + .5, line[(i + 1) % 4][1] + .5);
                 }
                 this._context.stroke();
                 this._context.restore();
@@ -302,8 +303,8 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
             this.centralX = 250;
             this.centralY = 250;
             this.flow.cameraFov = 80;
-            this.flow.cameraPosition = [x, 250, y];
-            this.flow.cameraFocusPoint = [x + Math.cos(time) * 100, 250, y + Math.sin(time*1.71)*100];
+            this.flow.cameraPosition = [x, y, 250];
+            this.flow.cameraFocusPoint = [x + Math.cos(time) * 100, y + Math.sin(time*1.71)*100, 250];
             this._context.clearRect(0, 0, 500, 500);            
             this.drawSpline(spline);
             intersections = this.flow._computeVisibleRange();
@@ -311,7 +312,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                 for (j = Math.ceil(intersections[i][0]); j < intersections[i][1]; j++) {
                     var tmp = spline.getPositionAtTime(j);
                     this._context.beginPath();
-                    this._context.arc(tmp[0] + .5, tmp[2] + .5, this.flow.elementsBoundingSphereRadius, 0, Math.PI*2, true); 
+                    this._context.arc(tmp[0] + .5, tmp[1] + .5, this.flow.elementsBoundingSphereRadius, 0, Math.PI*2, true); 
                     this._context.stroke();
                 }
             }
@@ -335,18 +336,18 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
                 for (i = 0; i < 30; i++) {
                     knots[i] = [
                         Math.random() * 500,
-                        250,
-                        Math.random() * 500
+                        Math.random() * 500,
+                        250
                     ];
                     next[i] = [
                         Math.random() * 500,
-                        250,
-                        Math.random() * 500
+                        Math.random() * 500,
+                        250
                     ];
                     previous[i] = [
                         Math.random() * 500,
-                        250,
-                        Math.random() * 500
+                        Math.random() * 500,
+                        250
                     ];
                 }
                 for (i = 0; i < 30; i++) {
