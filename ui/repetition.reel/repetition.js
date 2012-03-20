@@ -1127,7 +1127,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @function
     */
     setupIterationSerialization: {value: function() {
-        Montage.defineProperty(this, "serializeProperties", {value: this.serializeIteration});
+        Montage.defineProperty(this, "serializeSelf", {value: this.serializeIteration});
     }},
 /**
     Description TODO
@@ -1142,7 +1142,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @function
     */
     removeIterationSerialization: {value: function() {
-        delete this.serializeProperties;
+        delete this.serializeSelf;
     }},
 /**
     Description TODO
@@ -1214,13 +1214,13 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Property} serializer TODO
     */
     serializeIteration: {value: function(serializer) {
-        serializer.set("element", this.element);
+        serializer.setProperty("element", this.element);
         var childComponents = this.childComponents;
         for (var i = 0, l = childComponents.length; i < l; i++) {
             serializer.addObject(childComponents[i]);
         }
         // iterations are already expanded
-        serializer.set("_isComponentExpanded", true);
+        serializer.setProperty("_isComponentExpanded", true);
     }},
 /**
     Description TODO
