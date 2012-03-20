@@ -467,6 +467,11 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         }
     },
 
+    _labelRegexp: {
+        enumerable: false,
+        value: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/
+    },
+
 /**
   @private
 */
@@ -484,7 +489,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             compiledDeserializationFunctionString,
             requireStrings = [],
             objectNamesCounter = {},
-            label;
+            label,
+            labelRegexp = this._labelRegexp;
 
         if (canEval) {
             serialization = this._serialization;
@@ -493,6 +499,10 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         }
 
         for (label in serialization) {
+            if (!labelRegexp.test(label)) {
+                logger.error("Invalid label format '" + label + "' " + (this._origin ? " in " + this._origin : ""));
+                throw "Invalid label format: " + label;
+            }
             var objectDesc = serialization[label];
 
             if (label in deserialized) {
