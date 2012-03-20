@@ -17,8 +17,8 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
         });
 
         describe("PressComposer", function(){
-            it("should fire pressstart on mousedown/touchstart", function() {
-                var listener = testPage.addListener(test.press_composer, null, "pressstart");
+            it("should fire pressStart on mousedown/touchstart", function() {
+                var listener = testPage.addListener(test.press_composer, null, "pressStart");
 
                 if (window.Touch) {
                     testPage.touchEvent({target: test.example.element}, "touchstart");
@@ -32,7 +32,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
 
             it("should fire press on mouseup/touchend", function() {
                 var pressListener = testPage.addListener(test.press_composer, null, "press");
-                var cancelListener = testPage.addListener(test.press_composer, null, "presscancel");
+                var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                 if (window.Touch) {
                     testPage.touchEvent({target: test.example.element}, "touchend");
@@ -48,9 +48,9 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
             // touchend's target is always the same as touch start, so this
             // test doesn't apply
             if (!window.Touch) {
-                it("should fire presscancel when the mouse is released elsewhere", function() {
+                it("should fire pressCancel when the mouse is released elsewhere", function() {
                     var pressListener = testPage.addListener(test.press_composer, null, "press");
-                    var cancelListener = testPage.addListener(test.press_composer, null, "presscancel");
+                    var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                     testPage.mouseEvent({target: test.example.element}, "mousedown");
                     testPage.mouseEvent({target: testPage.document}, "mouseup");
@@ -61,9 +61,9 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                 });
             }
 
-            it("should fire presscancel when surrenderPointer is called", function() {
+            it("should fire pressCancel when surrenderPointer is called", function() {
                 var pressListener = testPage.addListener(test.press_composer, null, "press");
-                var cancelListener = testPage.addListener(test.press_composer, null, "presscancel");
+                var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                 if (window.Touch) {
                     testPage.touchEvent({target: test.example.element}, "touchstart");
@@ -90,7 +90,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
             describe("delegate", function() {
                 it("surrenderPointer should be called", function() {
                     var pressListener = testPage.addListener(test.press_composer, null, "press");
-                    var cancelListener = testPage.addListener(test.press_composer, null, "presscancel");
+                    var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                     test.press_composer.delegate = {
                         surrenderPointer: function(pointer, component) {
@@ -125,7 +125,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
             describe("cancelPress", function() {
                 it("cancels the active press and returns true", function() {
                     var pressListener = testPage.addListener(test.press_composer, null, "press");
-                    var cancelListener = testPage.addListener(test.press_composer, null, "presscancel");
+                    var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                     if (window.Touch) {
                         testPage.touchEvent({target: test.example.element}, "touchstart");
@@ -141,7 +141,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                 });
 
                 it("returns false if there is no active press", function() {
-                    var cancelListener = testPage.addListener(test.press_composer, null, "presscancel");
+                    var cancelListener = testPage.addListener(test.press_composer, null, "pressCancel");
 
                     expect(test.press_composer.cancelPress()).toBe(false);
 
@@ -150,9 +150,9 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                 });
             });
 
-            describe("longpress", function() {
-                it("is fired after longpressTimeout", function() {
-                    var listener = testPage.addListener(test.press_composer, null, "longpress");
+            describe("longPress", function() {
+                it("is fired after longPressTimeout", function() {
+                    var listener = testPage.addListener(test.press_composer, null, "longPress");
 
                     if (window.Touch) {
                         testPage.touchEvent({target: test.example.element}, "touchstart");
@@ -160,7 +160,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
                     }
 
-                    waits(test.press_composer.longpressTimeout);
+                    waits(test.press_composer.longPressTimeout);
                     runs(function() {
                         expect(listener).toHaveBeenCalled();
 
@@ -173,7 +173,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                 });
 
                 it("isn't fired if the press is released before the timeout", function() {
-                    var longListener = testPage.addListener(test.press_composer, null, "longpress");
+                    var longListener = testPage.addListener(test.press_composer, null, "longPress");
 
                     if (window.Touch) {
                         testPage.touchEvent({target: test.example.element}, "touchstart");
@@ -181,7 +181,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
                     }
 
-                    waits(test.press_composer.longpressTimeout - 100);
+                    waits(test.press_composer.longPressTimeout - 100);
                     runs(function() {
                         expect(longListener).not.toHaveBeenCalled();
 
@@ -193,11 +193,11 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                     });
                 });
 
-                describe("longpressTimeout", function() {
+                describe("longPressTimeout", function() {
                     it("can be changed", function() {
-                        var listener = testPage.addListener(test.press_composer, null, "longpress");
-                        var timeout = test.press_composer.longpressTimeout - 500;
-                        test.press_composer.longpressTimeout = timeout;
+                        var listener = testPage.addListener(test.press_composer, null, "longPress");
+                        var timeout = test.press_composer.longPressTimeout - 500;
+                        test.press_composer.longPressTimeout = timeout;
 
                         if (window.Touch) {
                             testPage.touchEvent({target: test.example.element}, "touchstart");
