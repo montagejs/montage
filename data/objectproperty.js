@@ -7,11 +7,12 @@
  @module montage/data/objectproperty
  @requires montage/data/pledge
  @requires montage/core/core
+ @requires montage/core/exception
  @requires montage/core/event/mutable-event
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
-var MutableEvent = require("core/event/mutable-event").MutableEvent;
+var Exception = require("core/exception").Exception;
 var Pledge = require("data/pledge").Pledge;
 var PledgedSortedSet = require("data/pledge").PledgedSortedSet;
 var logger = require("core/logger").logger("objectproperty");
@@ -319,9 +320,6 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
             var storageKey = "_" + attribute.name;
             var previousValue = this[storageKey];
             if ((typeof previousValue === 'undefined') || (previousValue !== value)) {
-                // Dispatch a change event. This will be listened by the context.
-                var modifyEvent = MutableEvent.changeEventForKeyAndValue(attribute.name, previousValue);
-                this.dispatchEvent(modifyEvent.withPlusValue(value));
                 //
                 if ((typeof this.context !== 'undefined') && (this.context !== null)) {
                     this.context.willModifyPropertyForInstance(attribute, this);
@@ -329,9 +327,10 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
             }
         }
     },
+
     /**
-     Returns the transaction manager.<br>
-     The transaction manager is a unique object in charge of opening and closing transactions.
+     Returns the object property manager.<br>
+     The object property manager is a unique object in charge of adding properties to objects based on the blueprint.
      @function
      @returns object
      */
