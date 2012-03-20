@@ -13,7 +13,8 @@ var Montage = require("montage").Montage,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
     RichTextLinkPopup = require("../rich-text-linkpopup.reel").RichTextLinkPopup,
     RichTextResizer = require("../rich-text-resizer.reel").RichTextResizer,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    defaultUndoManager = require("core/undo-manager").defaultUndoManager;
 
 /**
     @class module:"montage/ui/rich-text-editor.reel".RichTextEditorBase
@@ -63,7 +64,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     */
     _undoManager: {
         enumerable: false,
-        value: null
+        value: undefined
     },
 
     /**
@@ -88,7 +89,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             } else if (!this._isTyping) {
                 this._isTyping = true;
                 if (this.undoManager) {
-                    this.undoManager.add("Typing", this.undo, this, "Typing", this._innerElement);
+                    this.undoManager.add("Typing", this._undo, this, "Typing", this._innerElement);
                 }
             }
         }
@@ -238,7 +239,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     */
     _sanitizer: {
         enumerable: false,
-        value: Sanitizer.create()
+        value: undefined
     },
 
     /**
@@ -505,16 +506,26 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             el.addEventListener("focus", this);
             el.addEventListener("dragstart", this, false);
-            el.addEventListener("dragend", this, false);
+            el.addEventListener("dragenter", this, false);
             el.addEventListener("dragover", this, false);
             el.addEventListener("drop", this, false);
+            el.addEventListener("dragend", this, false);
+
+             // Setup the sanitizer if not specified
+            if (this._sanitizer === undefined) {
+                this._sanitizer = Sanitizer.create();
+            }
+
+            // Setup the undoManager if not specified
+            if (this._undoManager === undefined) {
+                this._undoManager = defaultUndoManager;
+            }
 
             // Initialize the overlays
             if (this._overlays === undefined) {
                 // Install the default overlays
                 this._overlays = [RichTextResizer.create(), RichTextLinkPopup.create()];
             }
-
             this._callOverlays("initWithEditor", this, true);
         }
     },
@@ -1003,7 +1014,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 thisRef._dispatchEditorEvent("editorSelect");
             }, 100);
 
-            this._callOverlays("editorSelectionDidChanged", this._savedSelectedRange);
+            this._callOverlays("editorSelectionDidChange", this._savedSelectedRange);
         }
     },
 
@@ -1014,8 +1025,40 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     handleDragstart: {
         enumerable: false,
         value: function(event) {
+            var delegateMethod = this._delegateMethod("canDrag");
+
+            if (delegateMethod) {
+               if (!delegateMethod.call(this.delegate, this, event.srcElement)) {
+                   event.preventDefault();
+                   event.stopPropagation();
+
+                   return;
+               }
+            }
+
             // let's remember which element we are dragging
             this._dragSourceElement = event.srcElement;
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    handleDragenter: {
+        enumerable: false,
+        value: function(event) {
+
+            this.hideOverlay();
+
+            var delegateMethod = this._delegateMethod("canDrop");
+            if (delegateMethod) {
+                this._allowDrop = delegateMethod.call(this.delegate, this, this._dragSourceElement, event);
+            } else {
+                this._allowDrop = true;
+            }
+
+            event.dataTransfer.dropEffect = this._allowDrop ? "copy" : "none";
         }
     },
 
@@ -1044,21 +1087,18 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             var thisRef = this,
                 range;
 
-            this.hideOverlay();
-
             // If we are moving an element from within the ourselves, let the browser deal with it...
-            if (this._dragSourceElement) {
+            if (this._dragSourceElement && this._allowDrop) {
                 return;
             }
 
-            // JFD TODO: check if drop type is acceptable...
             event.dataTransfer.dropEffect = this._allowDrop ? "copy" : "none";
 
             event.preventDefault();
             event.stopPropagation();
 
             // Update the caret
-            if (event.x !== this._dragOverX || event.y !== this._dragOverY) {
+            if (this._allowDrop && (event.x !== this._dragOverX || event.y !== this._dragOverY)) {
                 this._dragOverX = event.x;
                 this._dragOverY = event.y;
 
@@ -1107,7 +1147,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
                 this._stopTyping();
                 if (this.undoManager) {
-                    this.undoManager.add("Move", this.undo, this, "Move", this._innerElement);
+                    this.undoManager.add("Move", this._undo, this, "Move", this._innerElement);
                 }
                 this._nextInputIsNotTyping = true;
 
@@ -1211,7 +1251,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function(event) {
             this._stopTyping()
             if (this.undoManager) {
-                this.undoManager.add("Cut", this.undo, this, "Cut", this._innerElement);
+                this.undoManager.add("Cut", this._undo, this, "Cut", this._innerElement);
             }
             this._nextInputIsNotTyping = true;
         }
@@ -1380,6 +1420,40 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         }
     },
 
+
+    _undo: {
+        enumerable: false,
+        value: function(label, element) {
+            var editorElement = this._innerElement;
+            if (!element || element === editorElement) {
+                this._doingUndoRedo = true;
+                document.execCommand("undo", false, null);
+                if (this.undoManager) {
+                    this.undoManager.add(label, this._redo, this, label, editorElement);
+                }
+                this._doingUndoRedo = false;
+            }
+        }
+    },
+
+    /**
+    Description TODO
+    @function
+    */
+    _redo: {
+        enumerable: false,
+        value: function(label, element) {
+            var editorElement = this._innerElement;
+            if (!element || element === editorElement) {
+                this._doingUndoRedo = true;
+                document.execCommand("redo", false, null);
+                if (this.undoManager) {
+                    this.undoManager.add(label, this._undo, this, label, editorElement);
+                }
+                this._doingUndoRedo = false;
+            }
+        }
+    },
 
     // Private methods
 

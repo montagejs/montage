@@ -9,6 +9,7 @@
 */
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
+    Sanitizer = require("./rich-text-sanitizer").Sanitizer,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
@@ -115,6 +116,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                     // when the contentEditable div is emptied, Chrome add a <br>, let's filter it out
                     content = "";
                 }
+                if (this._sanitizer === undefined) {
+                    this._sanitizer = Sanitizer.create();
+                }
                 if (this._sanitizer) {
                     content = this._sanitizer.didGetValue(content, this._uniqueId);
                 }
@@ -134,6 +138,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 // Remove any overlay
                 this.hideOverlay();
 
+                if (this._sanitizer === undefined) {
+                    this._sanitizer = Sanitizer.create();
+                }
                 if (this._sanitizer) {
                     value = this._sanitizer.willSetValue(value, this._uniqueId);
                 }
@@ -231,11 +238,23 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
             return  this._overlays;
         },
         set: function(value) {
+            this.hideOverlay();
             if (value instanceof Array) {
-                this.hideOverlay();
                 this._overlays = value;
                 this._callOverlays("initWithEditor", this, true);
+            } else {
+                this._overlays = null;
             }
+        }
+    },
+
+    /**
+      Description TODO
+     @type {Function}
+    */
+    activeOverlay: {
+        get: function() {
+            return this._activeOverlay;
         }
     },
 
@@ -276,30 +295,6 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         }
     },
 
-    /**
-      Description TODO
-     @type {Function}
-    */
-    activeOverlay: {
-        get: function() {
-            return this._activeOverlay;
-        }
-    },
-
-    /**
-      Description TODO
-     @type {Function}
-    */
-    allowDrop: {
-        enumerable: true,
-        serializable: true,
-        get: function() {
-            return this._allowDrop;
-        },
-        set: function(value) {
-            this._allowDrop = value;
-        }
-    },
 
     // Edit Actions & Properties
 
@@ -463,7 +458,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     backColor: {
         enumerable: true,
         get: function() { return this._genericCommandGetter("backColor", "backcolor"); },
-        set: function(value) { this._genericCommandSetter("backColor", "backcolor", value); }
+        set: function(value) { this._genericCommandSetter("backColor", "backcolor", value === null ? "inherit" : value); }
     },
 
     /**
@@ -473,7 +468,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     foreColor: {
         enumerable: true,
         get: function() { return this._genericCommandGetter("foreColor", "forecolor"); },
-        set: function(value) { this._genericCommandSetter("foreColor", "forecolor", value); }
+        set: function(value) {  this._genericCommandSetter("foreColor", "forecolor", value === null ? "inherit" : value); }
     },
 
     /**
@@ -521,15 +516,11 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     */
     undo: {
         enumerable: true,
-        value: function(label, element) {
-            var editorElement = this._innerElement;
-            if (!element || element === editorElement) {
-                this._doingUndoRedo = true;
-                document.execCommand("undo", false, null);
-                if (this.undoManager) {
-                    this.undoManager.add(label, this.redo, this, label, editorElement);
-                }
-                this._doingUndoRedo = false;
+        value: function() {
+            if (this.undoManager) {
+                this.undoManager.undo();
+            } else {
+                this._undo();
             }
         }
     },
@@ -540,15 +531,11 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     */
     redo: {
         enumerable: true,
-        value: function(label, element) {
-            var editorElement = this._innerElement;
-            if (!element || element === editorElement) {
-                this._doingUndoRedo = true;
-                document.execCommand("redo", false, null);
-                if (this.undoManager) {
-                    this.undoManager.add(label, this.undo, this, label, editorElement);
-                }
-                this._doingUndoRedo = false;
+        value: function() {
+            if (this.undoManager) {
+                this.undoManager.redo();
+            } else {
+                this._redo();
             }
         }
     },
@@ -567,7 +554,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 this._executingCommand = false;
                 this._stopTyping();
                 if (this.undoManager) {
-                    this.undoManager.add(label, this.undo, this, label, this._innerElement);
+                    this.undoManager.add(label, this._undo, this, label, this._innerElement);
                 }
                 return true;
             } else {

@@ -108,7 +108,7 @@ exports.RichTextLinkPopup = Montage.create(Component,/** @lends module:"montage/
       Description TODO
      @type {Function}
     */
-    editorSelectionDidChanged: {
+    editorSelectionDidChange: {
         value: function(range) {
             var element;
 

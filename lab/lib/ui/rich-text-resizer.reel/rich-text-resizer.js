@@ -163,7 +163,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
       Description TODO
      @type {Function}
     */
-    editorSelectionDidChanged: {
+    editorSelectionDidChange: {
         value: function(range) {
             if (this._ignoreNextSelectionchanged) {
                 this._ignoreNextSelectionchanged = false;
