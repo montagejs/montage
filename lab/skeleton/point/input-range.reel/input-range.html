@@ -6,8 +6,8 @@
  </copyright> -->
 <html>
     <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" href="range-input.css" />
+	    <meta charset="utf-8">
+        <link rel="stylesheet" href="input-range.css" />
 
         <script type="text/montage-serialization">
 {
@@ -39,8 +39,8 @@
         }
     },
     "owner": {
-        "module": "montage/ui/skeleton/range-input.reel",
-        "name": "RangeInput",
+        "module": "montage/ui/skeleton/point/input-range.reel",
+        "name": "InputRange",
         "properties": {
             "element": {"#": "slider"},
             "sliderEl": {"#": "slider"},
@@ -54,9 +54,8 @@
 
     </head>
     <body>
-        <div id="slider" class="slider">
-            <span draggable="true" href="#" id="slider-handle" class="slider-handle"></span>
-        </div>
-
+        <span id="slider" class="montage-inputRange">
+            <span id="slider-handle" draggable="true" href="#" class="montage-inputRange-thumb"></span>
+        </span>
     </body>
 </html>
