@@ -518,10 +518,13 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             for (label in serialization) {
                 self._deserializeUnits(exports[label], serialization[label]);
             }
+            for (label in serialization) {
+                delete exports[label].isDeserializing;
+            }
         }
 
         if (idsToRemove.length > 0) {
-            cleanupStrings = 'element.getElementById("' + idsToRemove.join('").removeAttribute("id");\nelement.getElementById("') + '").removeAttribute("id");';
+            cleanupStrings += 'element.getElementById("' + idsToRemove.join('").removeAttribute("id");\nelement.getElementById("') + '").removeAttribute("id");';
             for (var i = 0, id; (id = idsToRemove[i]); i++) {
                 element.getElementById(idsToRemove[i]).removeAttribute("id");
             }
@@ -623,8 +626,11 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             exportsStrings += '}\n';
 
             propertiesString = deserializeValue(properties);
+            objectsStrings += label + '.isDeserializing = true;\n';
+            cleanupStrings += 'delete ' + label + '.isDeserializing;\n';
             objectsStrings += 'this._deserializeProperties(' + label + ', ' + propertiesString + ');\n';
             if (deserialize) {
+                object.isDeserializing = true;
                 self._deserializeProperties(object, properties);
             }
 
@@ -959,7 +965,6 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
   @private
 */
     _deserializeProperties: {value: function(object, properties) {
-        object.isDeserializing = true;
         if (object.deserializeSelf) {
             this._pushContextObject(properties);
             object.deserializeSelf(this);
@@ -967,7 +972,6 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         } else {
             this.deserializePropertiesForObject(object, properties);
         }
-        delete object.isDeserializing;
     }},
 
 /**
