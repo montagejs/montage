@@ -8,8 +8,13 @@
 
 /* A Skin is just a custom styling on top of the Montage Skeleton Theme */
 
+//@random1: ~`0.1*Math.floor(Math.random()*10)`;
+//@randomdeg: ~`(Math.floor(Math.random()*3)+1)*90 + 'deg'`;
+//@random360: ~`Math.floor(Math.random()*360)`;
+
 /* Colors ------------------------------- */
-@color: hsl(210,100%,50%);
+
+@color: spin( hsl(0,100%,50%), `window.color` ); // window.color set by the slider
 @input-color: lighten(@color, 47%);
 
 

@@ -7,11 +7,29 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
     <link rel="stylesheet" href="css/index.css">
     <link rel="stylesheet" href="css/skeleton.css">
-    <link rel="stylesheet" href="css/skin.css">
     <link rel="stylesheet" href="assets/icons/font-awesome.css">
+    
+    <script>
+        var color = 200; // base hue
+        document.addEventListener('DOMContentLoaded', function() {
+           var skinHue = document.getElementById("skin-hue");
+           skinHue.addEventListener("mouseup", function(event) {
+               color = skinHue.value;
+               less.refresh(true);
+           }, false);
+        });
+    </script>
+    <link rel="stylesheet/less" type="text/css" href="less/skin.less">   
+    <script src="less/less-1.3.0.min.js" type="text/javascript"></script>
+    
+        
 </head>
 
 <body>
+    
+    <div id="skinner">
+        <input type="range" name="" min="0" max="360" value="200" id="skin-hue">
+    </div>
     
     <h1><span class="txt">Skeleton</span><span class="logo"></span><span class="txt">Theme</span></h1>
     
