@@ -188,7 +188,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
                     this["_"+attributeName] = this._elementAttributeDescriptors[attributeName].value;
                 }
             }
-
+            this.needsDraw = true;
         }
     },
 
