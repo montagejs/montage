@@ -1798,11 +1798,15 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 j = needsDrawList.length;
             }
 
+            for (i = 0; i < j; i++) {
+                component = needsDrawList[i];
+                component.needsDraw = false;
+            }
+
             this.requestedAnimationFrame = null; // Allow a needsDraw called during a draw to schedule the next draw
             // TODO: add the posibility to display = "none" the body during development (IKXARIA-3631).
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
-                component.needsDraw = false;
                 component._draw();
                 component.draw(this._frameTime);
             }
