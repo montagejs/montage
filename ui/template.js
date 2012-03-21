@@ -580,7 +580,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         for (var i = 0, cssTag; (cssTag = cssTags[i]); i++) {
             if ((url = cssTag.getAttribute("href"))) {
-                if (! /^http:\/\/|^\//.test(url)) { // TODO: look into base links...
+                if (! /^https?:\/\/|^\//.test(url)) { // TODO: look into base links...
                     url = rootUrl + url;
                 }
 
@@ -689,7 +689,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             src = script.getAttribute("src");
             scriptNode = doc.importNode(script, true);
             if (src) {
-                if (! /^http:\/\/|^\//.test(src)) { // TODO: look into base links...
+                if (! /^https?:\/\/|^\//.test(src)) { // TODO: look into base links...
                     scriptNode.src = src = rootUrl + src;
                 }
                 if (src in externalScriptsLoaded) continue;
@@ -830,7 +830,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                 url = link.getAttribute("href"),
                 rootUrl = this._rootUrl ? this._rootUrl[0] : "";
 
-            if (! /^http:\/\/|^\//.test(url)) {
+            if (! /^https?:\/\/|^\//.test(url)) {
                 url = rootUrl + url;
             }
 
