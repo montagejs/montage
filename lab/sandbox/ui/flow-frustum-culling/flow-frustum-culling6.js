@@ -215,9 +215,9 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
 
     rotateVector: {
         value: function(vector) {
-            var vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
-                vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
-                vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
+            var vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
+                vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
+                vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
                 yAngle = Math.PI/2 - Math.atan2(vZ, vX),
                 tmpZ,
                 rX, rY, rZ,
@@ -240,13 +240,13 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
     drawCamera: {
         value: function () {
             this.cameraPosition = this.flow.cameraPosition;
-            this.cameraFocusPoint = this.flow.cameraFocusPoint;
+            this.cameraTargetPoint = this.flow.cameraTargetPoint;
             this.cameraFov = this.flow.cameraFov;
             this.cameraRoll = this.flow.cameraRoll;            
 
             if (this.cameraPosition) {
                 var tPos = this.transformVector(this.cameraPosition),
-                    tFocus = this.transformVector(this.cameraFocusPoint),
+                    tFocus = this.transformVector(this.cameraTargetPoint),
                     angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
                     x = Math.sin(angle) * 60 / this.scale,
                     y = Math.cos(angle) * 60 / this.scale,
@@ -304,7 +304,7 @@ exports.FlowFrustumCulling = Montage.create(Montage, {
             this.centralY = 250;
             this.flow.cameraFov = 80;
             this.flow.cameraPosition = [x, y, 250];
-            this.flow.cameraFocusPoint = [x + Math.cos(time) * 100, y + Math.sin(time*1.71)*100, 250];
+            this.flow.cameraTargetPoint = [x + Math.cos(time) * 100, y + Math.sin(time*1.71)*100, 250];
             this._context.clearRect(0, 0, 500, 500);            
             this.drawSpline(spline);
             intersections = this.flow._computeVisibleRange();

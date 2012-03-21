@@ -8,7 +8,7 @@ exports.Viewport = Montage.create(Component, {
         value: null
     },
 
-    _cameraFocusPoint: {
+    _cameraTargetPoint: {
         enumerable: false,
         value: null
     },
@@ -33,12 +33,12 @@ exports.Viewport = Montage.create(Component, {
         }
     },
 
-    cameraFocusPoint: {
+    cameraTargetPoint: {
         get: function () {
-            return this._cameraFocusPoint;
+            return this._cameraTargetPoint;
         },
         set: function (value) {
-            this._cameraFocusPoint = value;
+            this._cameraTargetPoint = value;
             this.needsDraw = true;
         }
     },
@@ -429,9 +429,9 @@ exports.Viewport = Montage.create(Component, {
 
     rotateVector: {
         value: function(vector) {
-            var vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
-                vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
-                vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
+            var vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
+                vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
+                vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
                 yAngle = Math.atan2(vX, vZ),
                 tmpZ,
                 rX, rY, rZ,
@@ -454,9 +454,9 @@ exports.Viewport = Montage.create(Component, {
         value: function () {
             if (this.cameraPosition) {
                 var tPos = this.transformVector(this.cameraPosition),
-                    tFocus = this.transformVector(this.cameraFocusPoint),
+                    tFocus = this.transformVector(this.cameraTargetPoint),
                     angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
-                    //yAngle = Math.atan2(this.cameraFocusPoint[0] - this.cameraPosition[0], this.cameraFocusPoint[2] - this.cameraPosition[2]),
+                    //yAngle = Math.atan2(this.cameraTargetPoint[0] - this.cameraPosition[0], this.cameraTargetPoint[2] - this.cameraPosition[2]),
                     x = Math.sin(angle) * 60 / this.scale,
                     y = Math.cos(angle) * 60 / this.scale,
                     z = y,

@@ -10,17 +10,12 @@ var Montage = require("montage").Montage,
 
 var Flow = exports.Flow = Montage.create(Component, {
 
-    _externalUpdate: {
-        enumerable: false,
-        value: true
-    },
-
     _cameraPosition: {
         enumerable: false,
         value: [0, 0, 800]
     },
 
-    _cameraFocusPoint: {
+    _cameraTargetPoint: {
         enumerable: false,
         value: [0, 0, 0]
     },
@@ -29,6 +24,8 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         value: 50
     },
+
+    // TODO: Implement camera roll
 
     _cameraRoll: {
         enumerable: false,
@@ -46,12 +43,12 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    cameraFocusPoint: {
+    cameraTargetPoint: {
         get: function () {
-            return this._cameraFocusPoint;
+            return this._cameraTargetPoint;
         },
         set: function (value) {
-            this._cameraFocusPoint = value;
+            this._cameraTargetPoint = value;
             this._isCameraUpdated = true;
             this.needsDraw = true;
         }
@@ -114,8 +111,21 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: null
     },
 
-    elementsBoundingSphereRadius: {
+    _elementsBoundingSphereRadius: {
+        enumerable: false,
         value: 142
+    },
+
+    elementsBoundingSphereRadius: {
+        get: function () {
+            return this._elementsBoundingSphereRadius;
+        },
+        set: function (value) {
+            if (this._elementsBoundingSphereRadius !== value) {
+                this._elementsBoundingSphereRadius = value;
+                this.needsDraw = true;
+            }
+        }
     },
 
     _computeFrustumNormals: {
@@ -124,64 +134,66 @@ var Flow = exports.Flow = Montage.create(Component, {
                 y = Math.sin(angle),
                 z = Math.cos(angle),
                 x = (y * this._width) / this._height,
-                vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
-                vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
-                vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
-                yAngle = Math.PI/2 - Math.atan2(vZ, vX),
+                vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
+                vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
+                vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
+                yAngle = Math.PI / 2 - Math.atan2(vZ, vX),
                 tmpZ = vX * Math.sin(yAngle) + vZ * Math.cos(yAngle),
                 rX, rY, rZ,
-                xAngle = Math.PI/2 - Math.atan2(tmpZ, vY),
+                rX2, rY2, rZ2,
+                xAngle = Math.PI / 2 - Math.atan2(tmpZ, vY),
+                invLength,
+                vectors = [[z, 0, x], [-z, 0, x], [0, z, y], [0, -z, y]],
                 iVector,
                 out = [],
                 i;
 
             for (i = 0; i < 4; i++) {
-                iVector = [[z, 0, x], [-z, 0, x], [0, z, y], [0, -z, y]][i];
+                iVector = vectors[i];
                 rX = iVector[0];
                 rY = iVector[1] * Math.cos(-xAngle) - iVector[2] * Math.sin(-xAngle);
                 rZ = iVector[1] * Math.sin(-xAngle) + iVector[2] * Math.cos(-xAngle);
-                out.push([
-                    rX * Math.cos(-yAngle) - rZ * Math.sin(-yAngle),
-                    rY,
-                    rX * Math.sin(-yAngle) + rZ * Math.cos(-yAngle)
-                ]);
+                rX2 = rX * Math.cos(-yAngle) - rZ * Math.sin(-yAngle);
+                rY2 = rY;
+                rZ2 = rX * Math.sin(-yAngle) + rZ * Math.cos(-yAngle);
+                invLength = 1 / Math.sqrt(rX2 * rX2 + rY2 * rY2 + rZ2 * rZ2);
+                out.push([rX2 * invLength, rY2 * invLength, rZ2 * invLength]);
             }
-
             return out;
         }
     },
 
-    _segmentsIntersection: { // TODO: re-write variable names
+    _segmentsIntersection: {
         enumerable: false,
-        value: function (r, r2) {
+        value: function (segment1, segment2) {
             var n = 0,
                 m = 0,
                 start,
                 end,
-                r3 = [];
+                result = [];
 
-            while ((n < r.length) && (m < r2.length)) {
-                if (r[n][0] >= r2[m][1]) {
+            while ((n < segment1.length) && (m < segment2.length)) {
+                if (segment1[n][0] >= segment2[m][1]) {
                     m++;
                 } else {
-                    if (r[n][1] <= r2[m][0]) {
+                    if (segment1[n][1] <= segment2[m][0]) {
                         n++;
                     } else {
-                        if (r[n][0] >= r2[m][0]) {
-                            start = r[n][0];
+                        if (segment1[n][0] >= segment2[m][0]) {
+                            start = segment1[n][0];
                         } else {
-                            start = r2[m][0];
+                            start = segment2[m][0];
                         }
-                        if (r[n][1] <= r2[m][1]) {
-                            end = r[n][1];
+                        if (segment1[n][1] <= segment2[m][1]) {
+                            end = segment1[n][1];
                         } else {
-                            end = r2[m][1];
+                            end = segment2[m][1];
                         }
-                        r3.push([start, end]);
-                        if (r[n][1] < r2[m][1]) {
+                        result.push([start, end]);
+                        if (segment1[n][1] < segment2[m][1]) {
                             n++;
                         } else {
-                            if (r[n][1] > r2[m][1]) {
+                            if (segment1[n][1] > segment2[m][1]) {
                                 m++;
                             } else {
                                 n++;
@@ -191,42 +203,28 @@ var Flow = exports.Flow = Montage.create(Component, {
                     }
                 }
             }
-            return r3;
+            return result;
         }
     },
 
-    _normalize: {
-        enuemrable: false,
-        value: function (v) {
-            var tmp = 1 / Math.sqrt(v[0] * v[0] + v[1] * v[1] + v[2] * v[2]);
-
-            return [
-                v[0] * tmp,
-                v[1] * tmp,
-                v[2] * tmp
-            ];
-        }
-    },
-
-    _computeVisibleRange: { // TODO: make it a loop
+    _computeVisibleRange: { // TODO: make it a loop, optimize
         enumerable: false,
         value: function () {
             var spline = this._splinePath,
                 splineLength = spline.knotsLength - 1,
-                i, j;
-
-            var planeOrigin = this.cameraPosition,
+                planeOrigin = this._cameraPosition,
                 normals = this._computeFrustumNormals(),
                 mod,
-                r, r2, r3 = [], out = [], tmp;
+                r, r2, r3 = [], out = [], tmp,
+                i, j;
 
             for (i = 0; i < splineLength; i++) {
-                mod = this._normalize(normals[0]);
+                mod = normals[0];
                 r = spline.directedPlaneBezierIntersection(
                     [
-                        planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
-                        planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
-                        planeOrigin[2] - mod[2] * this.elementsBoundingSphereRadius
+                        planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
+                        planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
+                        planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
                     ],
                     normals[0],
                     spline._knots[i],
@@ -235,12 +233,12 @@ var Flow = exports.Flow = Montage.create(Component, {
                     spline._knots[i + 1]
                 );
                 if (r.length) {
-                    mod = this._normalize(normals[1]);
+                    mod = normals[1];
                     r2 = spline.directedPlaneBezierIntersection(
                         [
-                            planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
-                            planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
-                            planeOrigin[2] - mod[2] * this.elementsBoundingSphereRadius
+                            planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
+                            planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
+                            planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
                         ],
                         normals[1],
                         spline._knots[i],
@@ -251,12 +249,12 @@ var Flow = exports.Flow = Montage.create(Component, {
                     if (r2.length) {
                         tmp = this._segmentsIntersection(r, r2);
                         if (tmp.length) {
-                            mod = this._normalize(normals[2]);
+                            mod = normals[2];
                             r = spline.directedPlaneBezierIntersection(
                                 [
-                                    planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
-                                    planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
-                                    planeOrigin[2] - mod[2] * this.elementsBoundingSphereRadius
+                                    planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
+                                    planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
+                                    planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
                                 ],
                                 normals[2],
                                 spline._knots[i],
@@ -266,12 +264,12 @@ var Flow = exports.Flow = Montage.create(Component, {
                             );
                             tmp = this._segmentsIntersection(r, tmp);
                             if (tmp.length) {
-                                mod = this._normalize(normals[3]);
+                                mod = normals[3];
                                 r = spline.directedPlaneBezierIntersection(
                                     [
-                                        planeOrigin[0] - mod[0] * this.elementsBoundingSphereRadius,
-                                        planeOrigin[1] - mod[1] * this.elementsBoundingSphereRadius,
-                                        planeOrigin[2] - mod[2] * this.elementsBoundingSphereRadius
+                                        planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
+                                        planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
+                                        planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
                                     ],
                                     normals[3],
                                     spline._knots[i],
@@ -378,27 +376,24 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         value: function () {
             var i,
-                length,
+                length = this._repetitionComponents.length,
                 slide = {},
                 transform,
                 origin,
-                iPath = {},
                 j,
                 iOffset,
                 iStyle,
                 pos;
-
-            length = this._repetition.indexMap.length;
 
             if (this.isAnimating) {
                 this._animationInterval();
             }
             if (this._isCameraUpdated) {
                 var perspective = Math.tan(((90 - this.cameraFov * .5) * Math.PI * 2) / 360) * this._height * .5,
-                    vX = this.cameraFocusPoint[0] - this.cameraPosition[0],
-                    vY = this.cameraFocusPoint[1] - this.cameraPosition[1],
-                    vZ = this.cameraFocusPoint[2] - this.cameraPosition[2],
-                    yAngle = Math.atan2(-vX, -vZ),
+                    vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
+                    vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
+                    vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
+                    yAngle = Math.atan2(-vX, -vZ),  // TODO: Review this
                     tmpZ,
                     xAngle;
 
@@ -411,39 +406,29 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._isCameraUpdated = false;
             }
             if (this._splinePath) {
-                this._splinePath._computeDensitySummation();
+                this._splinePath._computeDensitySummation(); // TODO: This should not be done per frame
                 for (i = 0; i < length; i++) {
                     iStyle = this._repetitionComponents[i].element.style;
                     iOffset = this._offset.value(this._repetition.indexMap[i]);
                     slide.index = this._repetition.indexMap[i];
                     slide.time = iOffset.time;
                     slide.speed = iOffset.speed;
-                    iPath = {};
-                    iPath.style = {};
                     pos = this._splinePath.getPositionAtTime(slide.time / 300);
                     if (pos) {
-                        iPath.translateX = pos[0];
-                        iPath.translateY = pos[1];
-                        iPath.translateZ = pos[2];
                         if (iStyle.display !== "block") {
                             iStyle.display = "block";
                         }
-                        iPath.rotateX = pos[3].rotateX;
-                        iPath.rotateY = pos[3].rotateY;
-                        iPath.rotateZ = pos[3].rotateZ;
-                        iPath.style.opacity = pos[3].opacity;
-
-                        transform = "translate3d(" + iPath.translateX + "px," + iPath.translateY + "px," + iPath.translateZ + "px) ";
-                        //transform += (typeof iPath.scale !== "undefined") ? "scale("+iPath.scale+") " : "";
-                        transform += (typeof iPath.rotateZ !== "undefined") ? "rotateZ(" + iPath.rotateZ + ") " : "";
-                        transform += (typeof iPath.rotateY !== "undefined") ? "rotateY(" + iPath.rotateY + ") " : "";
-                        transform += (typeof iPath.rotateX !== "undefined") ? "rotateX(" + iPath.rotateX + ") " : "";
+                        transform = "translate3d(" + pos[0] + "px," + pos[1] + "px," + pos[2] + "px) ";
+                        transform += (typeof pos[3].rotateZ !== "undefined") ? "rotateZ(" + pos[3].rotateZ + ") " : "";
+                        transform += (typeof pos[3].rotateY !== "undefined") ? "rotateY(" + pos[3].rotateY + ") " : "";
+                        transform += (typeof pos[3].rotateX !== "undefined") ? "rotateX(" + pos[3].rotateX + ") " : "";
                         iStyle.webkitTransform = transform;
-                        if (typeof iPath.style !== "undefined") {
-                            for (j in iPath.style) {
-                                if ((iPath.style.hasOwnProperty(j)) && (iStyle[j] !== iPath.style[j])) {
-                                    iStyle[j] = iPath.style[j];
-                                }
+                        delete pos[3].rotateX;
+                        delete pos[3].rotateY;
+                        delete pos[3].rotateZ;
+                        for (j in pos[3]) {
+                            if ((pos[3].hasOwnProperty(j)) && (iStyle[j] !== pos[3][j])) {
+                                iStyle[j] = pos[3][j];
                             }
                         }
                     } else {
@@ -551,8 +536,6 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function() {
             this._orphanedChildren = this.childComponents;
             this.childComponents = null;
-
-            //// offset
             this.offset = true;
         }
     },
@@ -612,7 +595,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             return this._hasElasticScrolling;
         },
         set: function (value) {
-            this._hasElasticScrolling=(value===true)?true:false;
+            this._hasElasticScrolling = (value === true) ? true : false;
         }
     },
 
@@ -645,8 +628,9 @@ var Flow = exports.Flow = Montage.create(Component, {
         set: function (value) {
             this._selectedSlideIndex=value;
             if (typeof this.animatingHash[this._selectedSlideIndex] !== "undefined") {
-                var tmp=this.slide[this._selectedSlideIndex].x;
-                this.origin+=(this._selectedSlideIndex*this._scale)-tmp;
+                var tmp = this.slide[this._selectedSlideIndex].x;
+
+                this.origin += (this._selectedSlideIndex * this._scale) - tmp;
             }
         }
     },
@@ -660,7 +644,7 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         get: function () {
             if (!this._animating) {
-                this._animating=[];
+                this._animating = [];
             }
             return this._animating;
         },
@@ -677,7 +661,7 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         get: function () {
             if (!this._animatingHash) {
-                this._animatingHash={};
+                this._animatingHash = {};
             }
             return this._animatingHash;
         },
@@ -694,7 +678,7 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         get: function () {
             if (!this._slide) {
-                this._slide={};
+                this._slide = {};
             }
             return this._slide;
         },
@@ -706,16 +690,16 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         value: function (index, pos) {
             if (typeof this.animatingHash[index] === "undefined") {
-                var length=this.animating.length;
+                var length = this.animating.length;
 
-                this.animating[length]=index;
-                this.animatingHash[index]=length;
-                this.slide[index]={
+                this.animating[length] = index;
+                this.animatingHash[index] = length;
+                this.slide[index] = {
                     speed: 0,
                     x: pos
                 };
             } else {
-                this.slide[index].x=pos;
+                this.slide[index].x = pos;
             }
         }
     },
@@ -724,8 +708,8 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         value: function (index) {
             if (typeof this.animatingHash[index] !== "undefined") {
-                this.animating[this.animatingHash[index]]=this.animating[this.animating.length-1];
-                this.animatingHash[this.animating[this.animating.length-1]]=this.animatingHash[index];
+                this.animating[this.animatingHash[index]] = this.animating[this.animating.length - 1];
+                this.animatingHash[this.animating[this.animating.length - 1]] = this.animatingHash[index];
                 this.animating.pop();
                 delete this.animatingHash[index];
                 delete this.slide[index];
@@ -754,85 +738,84 @@ var Flow = exports.Flow = Montage.create(Component, {
             if ((this._hasElasticScrolling)&&(this._selectedSlideIndex !== null)) {
                 var i,
                     n,
-                    min=this._selectedSlideIndex-this._range,
-                    max=this._selectedSlideIndex+this._range+1,
+                    min = this._selectedSlideIndex - this._range,
+                    max = this._selectedSlideIndex + this._range + 1,
                     tmp,
                     j,
                     x,
-                    self=this;
+                    self = this;
 
-                tmp=value-this._origin;
-                if (min<0) {
-                    min=0;
+                tmp = value - this._origin;
+                if (min < 0) {
+                    min = 0;
                 }
 
                 if (!this.isAnimating) {
-                    this.lastDrawTime=Date.now();
+                    this.lastDrawTime = Date.now();
                 }
-                for (i=min; i<max; i++) {
-                    if (i!=this._selectedSlideIndex) {
+                for (i = min; i < max; i++) {
+                    if (i != this._selectedSlideIndex) {
                         if (typeof this.animatingHash[i] === "undefined") {
-                            x=i*this._scale;
+                            x = i * this._scale;
                         } else {
-                            x=this.slide[i].x;
+                            x = this.slide[i].x;
                         }
-                        x+=tmp;
-                        if (i<this._selectedSlideIndex) {
-                            if (x<i*this._scale) {
+                        x += tmp;
+                        if (i < this._selectedSlideIndex) {
+                            if (x < i * this._scale) {
                                 this.startAnimating(i, x);
                             }
                         } else {
-                            if (x>i*this._scale) {
+                            if (x > i * this._scale) {
                                 this.startAnimating(i, x);
                             }
                         }
                     }
                 }
                 this.stopAnimating(this._selectedSlideIndex);
-
                 if (!this.isAnimating) {
-                    this._animationInterval=function () {
-                        var animatingLength=self.animating.length,
-                            n, j, i, _iterations=8,
-                            time=Date.now(),
-                            interval1=self.lastDrawTime?(time-self.lastDrawTime)*0.015*this._elasticScrollingSpeed:0,
-                            interval=interval1/_iterations,
-                            mW=self._scale, x,
-                            epsilon=.5;
+                    this._animationInterval = function () {
+                        var animatingLength = self.animating.length,
+                            n, j, i, _iterations = 8,
+                            time = Date.now(),
+                            interval1 = self.lastDrawTime ? (time - self.lastDrawTime) * 0.015 * this._elasticScrollingSpeed : 0,
+                            interval = interval1 / _iterations,
+                            mW = self._scale, x,
+                            epsilon = .5;
 
-                        for (n=0; n<_iterations; n++) {
-                            for (j=0; j<animatingLength; j++) {
-                                i=self.animating[j];
-                                if (i<self._selectedSlideIndex) {
-                                    if (typeof self.animatingHash[i+1] === "undefined") {
-                                        x=((i+1)*self._scale);
+                        for (n = 0; n < _iterations; n++) {
+                            for (j = 0; j < animatingLength; j++) {
+                                i = self.animating[j];
+                                if (i < self._selectedSlideIndex) {
+                                    if (typeof self.animatingHash[i + 1] === "undefined") {
+                                        x = ((i + 1) * self._scale);
                                     } else {
-                                        x=self.slide[i+1].x;
+                                        x = self.slide[i + 1].x;
                                     }
-                                    self.slide[i].speed=x-self.slide[i].x-mW;
+                                    self.slide[i].speed = x - self.slide[i].x - mW;
                                 } else {
-                                    if (typeof self.animatingHash[i-1] === "undefined") {
-                                        x=((i-1)*self._scale);
+                                    if (typeof self.animatingHash[i - 1] === "undefined") {
+                                        x = ((i - 1) * self._scale);
                                     } else {
-                                        x=self.slide[i-1].x;
+                                        x = self.slide[i - 1].x;
                                     }
-                                    self.slide[i].speed=x-self.slide[i].x+mW;
+                                    self.slide[i].speed = x - self.slide[i].x + mW;
                                 }
-                                self.slide[i].x+=(self.slide[i].speed)*interval;
+                                self.slide[i].x += (self.slide[i].speed) * interval;
                             }
                         }
-                        j=0;
-                        while (j<animatingLength) {
-                            i=self.animating[j];
-                            if (i<self._selectedSlideIndex) {
-                                if (self.slide[i].x>i*self._scale-epsilon) {
+                        j = 0;
+                        while (j < animatingLength) {
+                            i = self.animating[j];
+                            if (i < self._selectedSlideIndex) {
+                                if (self.slide[i].x > i * self._scale - epsilon) {
                                     self.stopAnimating(i);
                                     animatingLength--;
                                 } else {
                                     j++;
                                 }
                             } else {
-                                if (self.slide[i].x<i*self._scale+epsilon) {
+                                if (self.slide[i].x < i * self._scale + epsilon) {
                                     self.stopAnimating(i);
                                     animatingLength--;
                                 } else {
@@ -840,13 +823,13 @@ var Flow = exports.Flow = Montage.create(Component, {
                                 }
                             }
                         }
-                        self.lastDrawTime=time;
+                        self.lastDrawTime = time;
                         if (!animatingLength) {
-                            self.isAnimating=false;
+                            self.isAnimating = false;
                         } else {
-                            self.needsDraw=true;
+                            self.needsDraw = true;
                             if (!self.isAnimating) {
-                                self.isAnimating=true;
+                                self.isAnimating = true;
                             }
                         }
                     }
@@ -873,7 +856,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             var oldScale = this._scale;
 
             this._scale = value;
-            this.length = value * (this._numberOfNodes-1);
+            this.length = value * (this._numberOfNodes - 1);
             if (!this.isAnimating) {
                 this.selectedSlideIndex = null;
                 this.origin = this._origin * value / oldScale;
@@ -892,7 +875,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             return this._length;
         },
         set: function (value) {
-            if (value<0) {
+            if (value < 0) {
                 this._length = 0;
             } else {
                 this._length = value;
@@ -920,12 +903,12 @@ var Flow = exports.Flow = Montage.create(Component, {
                 value: function (nodeNumber) {
                     if (typeof self.animatingHash[nodeNumber] === "undefined") {
                         return {
-                            time: (nodeNumber*self._scale)-self._origin,
+                            time: (nodeNumber * self._scale) - self._origin,
                             speed: 0
                         }
                     } else {
                         return {
-                            time: self.slide[nodeNumber].x-self.origin,
+                            time: self.slide[nodeNumber].x - self.origin,
                             speed: self.slide[nodeNumber].speed
                         }
                     }

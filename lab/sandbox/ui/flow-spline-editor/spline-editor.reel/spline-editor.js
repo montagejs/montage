@@ -9,7 +9,7 @@ exports.SplineEditor = Montage.create(Component, {
         value: null
     },
 
-    _cameraFocusPoint: {
+    _cameraTargetPoint: {
         enumerable: false,
         value: null
     },
@@ -34,12 +34,12 @@ exports.SplineEditor = Montage.create(Component, {
         }
     },
 
-    cameraFocusPoint: {
+    cameraTargetPoint: {
         get: function () {
-            return this._cameraFocusPoint;
+            return this._cameraTargetPoint;
         },
         set: function (value) {
-            this._cameraFocusPoint = value;
+            this._cameraTargetPoint = value;
             this._hasSplineUpdated = true;
         }
     },
