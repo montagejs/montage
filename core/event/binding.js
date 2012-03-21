@@ -1183,12 +1183,15 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
         value: null
     },
 
-    serializeProperties: {value: function(serializer) {
-        serializer.set("boundObject", this.boundObject, "reference");
-        serializer.set("boundObjectPropertyPath", this.boundObjectPropertyPath);
-        serializer.set("oneway", this.oneway);
-        serializer.set("deferred", this.deferred);
-        serializer.set("converter", this.converter);
+    serializeSelf: {value: function(serializer) {
+        var serialization = {};
+
+        serializer.addObjectReference(this.boundObject);
+        serialization[this.oneway ? "<-" : "<<->"] = "@" + serializer.getObjectLabel(this.boundObject) + "[" + this.boundObjectPropertyPath + "]";
+        serialization.deferred = this.deferred;
+        serialization.converter = this.converter;
+
+        return serialization;
     }}
 });
 
@@ -1200,10 +1203,31 @@ Serializer.defineSerializationUnit("bindings", function(object) {
     }
 });
 
-Deserializer.defineDeserializationUnit("bindings", function(object, bindings) {
-    var sourcePath;
-    for (sourcePath in bindings) {
-        Object.defineBinding(object, sourcePath, bindings[sourcePath]);
+Deserializer.defineDeserializationUnit("bindings", function(object, bindings, deserializer) {
+    for (var sourcePath in bindings) {
+        var binding = bindings[sourcePath];
+
+        if (!("boundObject" in binding)) {
+            var targetPath = binding["<-"] || binding["->"] || binding["<->>"] || binding["<<->"];
+
+            if ("->" in binding || "<->>" in binding) {
+                binding.boundObject = object;
+                binding.boundObjectPropertyPath = sourcePath;
+
+                targetPath = targetPath.split("[");
+                object = deserializer.getObjectByLabel(targetPath[0].slice(1));
+                sourcePath = targetPath[1].slice(0, -1);
+            } else {
+                targetPath = targetPath.split("[");
+                binding.boundObject = deserializer.getObjectByLabel(targetPath[0].slice(1));
+                binding.boundObjectPropertyPath = targetPath[1].slice(0, -1);;
+            }
+
+            if ("<-" in binding || "->" in binding) {
+                binding.oneway = true;
+            }
+        }
+        Object.defineBinding(object, sourcePath, binding);
     }
 });
 
