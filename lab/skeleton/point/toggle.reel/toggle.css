@@ -1,0 +1,55 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+.montage-toggle {
+    box-sizing: border-box;
+    font-size: 12px;
+    position: relative;
+    display: inline-block;
+    width: 4em;
+    height: 2em;
+    border-radius: 3px;
+    vertical-align: middle;
+    border: 1px solid #b3b3b3;
+    background: #d9d9d9;
+    cursor: pointer;
+    -webkit-transition: background-color .2s cubic-bezier(.5,.15,.2,1);
+}
+
+.montage-toggle-thumb {
+    box-sizing: border-box;
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    margin: -1px;
+    width: 2em;
+    height: inherit;
+    border-radius: inherit;
+    border: 1px solid #b3b3b3;
+    background: #f2f2f2;
+    -webkit-transition: -webkit-transform .2s cubic-bezier(.5,.15,.2,1);
+}
+
+/* States */
+.montage-toggle:hover > .montage-toggle-thumb {
+    background-color: #ffffff;
+}
+
+.montage-toggle:active > .montage-toggle-thumb {
+    background-color: #e5e5e5;
+}
+
+.montage-toggle:focus {
+    border-color: #7f7f7f;
+}
+
+.montage-toggle.isChecked {
+    background: hsl(0,0%,70%);
+}
+
+.montage-toggle.isChecked > .montage-toggle-thumb {
+    -webkit-transform: translate3d(100%,0,0);
+}

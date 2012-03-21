@@ -1,0 +1,70 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+/* Montage Skin */
+/* A Skin is just a custom styling on top of the Montage Skeleton Theme */
+/* Colors ------------------------------- */
+/* Mixins ------------------------------- */
+/* Skin -------------------------------------------------------------- */
+/* Button / Select ------------------------------- */
+.skin button, .skin select.skeleton, .skin .skeleton-toggle-thumb {
+  color: #fff;
+  font-weight: bold;
+  border-color: #407fbf;
+  box-shadow: inset 0 1px 0px rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0.3);
+  background-image: -webkit-linear-gradient(top, #66b2ff, #007fff);
+  background-image: -moz-linear-gradient(top, #66b2ff, #007fff);
+  background-image: -ms-linear-gradient(top, #66b2ff, #007fff);
+  background-image: -o-linear-gradient(top, #66b2ff, #007fff);
+  background-image: linear-gradient(top, #66b2ff, #007fff);
+}
+.skin select.skeleton {
+  background: url(../assets/img/select-skin.png) no-repeat right center, -webkit-linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, -moz-linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, -ms-linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, -o-linear-gradient(top, #66b2ff, #007fff);
+  background: url(../assets/img/select-skin.png) no-repeat right center, linear-gradient(top, #66b2ff, #007fff);
+}
+/* Toggle ------------------------------- */
+.skin .skeleton-toggle {
+  background: #cccccc;
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 1px rgba(255, 255, 255, 0.3);
+}
+/* Checkbox / Radio ------------------------------- */
+.skin input.skeleton[type="checkbox"], .skin input.skeleton[type="radio"] {
+  border-color: #007fff;
+  background: #f0f7ff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 0px rgba(255, 255, 255, 0.4);
+}
+.skin input.skeleton[type="checkbox"]:checked {
+  background: #f0f7ff url(../assets/img/checkbox.png) no-repeat center center;
+}
+.skin input.skeleton[type="radio"]:checked {
+  background: #f0f7ff url(../assets/img/radio.png) no-repeat center center;
+}
+/* Input ------------------------------- */
+.skin input.skeleton[type="text"],
+.skin input.skeleton[type="password"],
+.skin input.skeleton[type="search"],
+.skin textarea.skeleton,
+.skin .skeleton-icon-input > i,
+.skin .skeleton-icon-input-button > i {
+  border-color: #007fff;
+  background-color: #f0f7ff;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 0px rgba(255, 255, 255, 0.4);
+}
+/* Progress ------------------------------- */
+.skin .skeleton-progress {
+  border-color: #007fff;
+  box-shadow: inset 0 1px 0px rgba(255, 255, 255, 0.4), 0 1px 1px rgba(0, 0, 0, 0);
+  background-color: #f0f7ff;
+}
+.skin .skeleton-progress .skeleton-progress-bar {
+  background-image: -webkit-linear-gradient(top, #66b2ff, #007fff);
+  background-image: -moz-linear-gradient(top, #66b2ff, #007fff);
+  background-image: -ms-linear-gradient(top, #66b2ff, #007fff);
+  background-image: -o-linear-gradient(top, #66b2ff, #007fff);
+  background-image: linear-gradient(top, #66b2ff, #007fff);
+}
