@@ -375,6 +375,32 @@ describe("serialization/deserializer-spec", function() {
                 expect(exports.graphB).toBeDefined();
             });
         });
+
+        it("should have isDeserializing set to true during units deserialization", function() {
+            var object, isDeserializing;
+
+            Deserializer.defineDeserializationUnit("spec", function(object) {
+                isDeserializing = object.isDeserializing;
+            });
+
+            deserializer.initWithObject({
+                root: {
+                    prototype: "serialization/testobjects-v2[OneProp]",
+                    properties: {
+                        prop: 42
+                    },
+                    spec: {}
+                }
+            }).deserializeObject(function(obj) {
+                latch = true;
+                object = obj;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(isDeserializing).toBeTruthy();
+            });
+        });
     });
 
     describe("User Objects Deserialization With Short Object Location", function() {

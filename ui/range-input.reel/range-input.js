@@ -18,13 +18,13 @@ var RangeInput = exports.RangeInput = Montage.create(TextInput, {
             var pressComposer = PressComposer.create();
             pressComposer.delegate = this;
             this.addComposer(pressComposer);
-            pressComposer.addEventListener("pressstart", this, false);
+            pressComposer.addEventListener("pressStart", this, false);
             pressComposer.addEventListener("press", this, false);
-            pressComposer.addEventListener("presscancel", this, false);
+            pressComposer.addEventListener("pressCancel", this, false);
         }
     },
 
-    handlePressstart: {
+    handlePressStart: {
         value: function(e) {
             var interactionStartEvent = document.createEvent("CustomEvent");
             interactionStartEvent.initCustomEvent("montage_range_interaction_start", true, true, null);

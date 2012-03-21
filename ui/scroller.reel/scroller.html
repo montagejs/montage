@@ -22,7 +22,8 @@
                 "module": "montage/ui/composer/translate-composer",
                 "name": "TranslateComposer",
                 "properties": {
-                    "component": {"@": "owner"}
+                    "component": {"@": "owner"},
+                    "invertAxis": true
                 },
                 "bindings": {
                     "translateX": {
@@ -54,14 +55,6 @@
                     "hasMomentum": {
                         "boundObject": {"@": "owner"},
                         "boundObjectPropertyPath": "hasMomentum"
-                    },
-                    "bouncingDuration": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "bouncingDuration"
-                    },
-                    "momentumDuration": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "momentumDuration"
                     }
                 },
                 "listeners": [

@@ -29,7 +29,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         value: function() {
             var pressComposer = this._pressComposer = PressComposer.create();
             this.addComposer(pressComposer);
-            pressComposer.addEventListener("pressstart", this, false);
+            pressComposer.addEventListener("pressStart", this, false);
             pressComposer.addEventListener("press", this, false);
         }
     },
@@ -82,7 +82,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
     // Handlers
 
-    handlePressstart: {
+    handlePressStart: {
         value: function(event) {
             this._shouldFakeCheck = event.defaultPrevented;
         }
