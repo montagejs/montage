@@ -28,7 +28,7 @@ if (typeof window !== "undefined") {
  */
 var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Serializer# */ {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
-    _serializedObjects: {value: {}}, // uuid -> string
+    _serializedObjects: {value: {}}, // label -> string
     _serializedReferences: {value: {}}, // uuid -> string
     _externalObjects: {value: null}, // label -> object
     _externalElements: {value: null},
@@ -290,7 +290,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
 
         for (var label in externalObjects) {
             var object = externalObjects[label];
-            if (this._serializedObjects[object.uuid]) {
+            if (this._serializedObjects[label]) {
                 delete externalObjects[label];
             }
         }
@@ -301,7 +301,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     /**
      Returns a list of the external elements that were referenced in the last serialization.
      @function
-     @returns {array} The arrat of external elements.
+     @returns {array} The array of external elements.
      */
     getExternalElements: {value: function() {
         return this._externalElements;
@@ -444,7 +444,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         serializedReference = '{"@":"' + label + '"}';
 
         if (type === "reference") {
-            if (!this._serializedObjects[object.uuid]) {
+            if (!this._serializedObjects[label]) {
                 this._externalObjects[label] = object;
             }
         } else {
