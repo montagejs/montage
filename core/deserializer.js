@@ -497,7 +497,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         var serialization = this._serialization,
             moduleIds = this._requiredModuleIds = [],
             modules = this._modules,
-            desc, moduleId;
+            desc, moduleId, name, objectLocation;
 
         for (var label in serialization) {
             desc = serialization[label];
