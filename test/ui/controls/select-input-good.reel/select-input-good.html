@@ -20,7 +20,7 @@
                             "boundObject": {"@": "justifySelect"},
                             "boundObjectPropertyPath": "value"
                         }
-                    }                 
+                    }
                 },
                 "justifyComparatorLeft": {
                     "module": "ui/controls/select-input-good.reel",
@@ -29,7 +29,7 @@
                         "justify": "left"
                     }
                 },
-                "justifyComparatorRigth": {
+                "justifyComparatorRight": {
                     "module": "ui/controls/select-input-good.reel",
                     "name": "JustifyConverter",
                     "properties": {
@@ -42,13 +42,13 @@
                     "properties": {
                         "justify": "center"
                     }
-                },                
+                },
                 "justifyLeft": {
                     "module": "montage/ui/toggle-button.reel",
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justifyLeft"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
@@ -63,7 +63,7 @@
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justifyCenter"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
@@ -78,13 +78,13 @@
                     "name": "ToggleButton",
                     "properties": {
                         "element": {"#": "justifyRight"},
-                        "pressedClass": "success"                        
+                        "pressedClass": "success"
                     },
                     "bindings": {
                         "pressed": {
                             "boundObject": {"@": "owner"},
                             "boundObjectPropertyPath": "justify",
-                            "converter": {"@": "justifyComparatorRigth"}
+                            "converter": {"@": "justifyComparatorRight"}
                         }
                     }
                 },
@@ -93,7 +93,7 @@
                     "name": "SelectInput",
                     "properties": {
                         "element": {"#": "justifySelect"}
-                    }                    
+                    }
                 },
                 "justifyResult": {
                     "module": "montage/ui/dynamic-text.reel",
@@ -120,7 +120,7 @@
             .select-input-example pre {
                 border: 0;
             }
-            
+
             .select-input-example .justify {
                 width: 40px;
                 padding: 5px;
@@ -132,7 +132,7 @@
 
             <h4>Demo</h4>
 
-            
+
             <section>
                 <div class="demo">
                     <div style="height: 40px;">
@@ -140,7 +140,7 @@
                         <button id="justifyLeft" class="btn justify">L</button>
                         <button id="justifyCenter" class="btn justify">C</button>
                         <button id="justifyRight" class="btn justify">R</button>
-                    </div>  
+                    </div>
                     <div>
                         <select id="justifySelect" class="justifySelect">
                                 <option value=""></option>
@@ -148,7 +148,7 @@
                                 <option value="center">Center</option>
                                 <option value="right">Right</option>
                         </select>
-                        
+
                         <p>
                             Justify selection: <span id="justifyResult"></span>
                         </p>
