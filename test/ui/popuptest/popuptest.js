@@ -12,7 +12,7 @@ var Montage = require("montage").Montage,
 */
 var TestPopupPositionDelegate = Montage.create(Montage, {
     willPositionPopup: {
-       value: function(popup, anchor, anchorPosition) {
+       value: function(popup, anchorPosition) {
            if(anchor && anchorPosition) {
                if(window.innerHeight > 500 ){
                    return {

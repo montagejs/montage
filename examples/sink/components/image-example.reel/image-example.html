@@ -3,50 +3,30 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Image Example</title>
-    <script type="text/montage-serialization">
-{
-    "main-image": {
+    <script type="text/montage-serialization">{
+
+    "mainImage": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
             "element": {"#": "img-main"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.src",
-                "oneway": true
-            },
-            "title": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.description",
-                "oneway": true
-            },
-            "alt": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.description",
-                "oneway": true
-            }
+            "src": {"<-": "@images[selectedObjects.0.src]"},
+            "title": {"<-": "@images[selectedObjects.0.description]"},
+            "alt": {"<-": "@images[selectedObjects.0.description]"}
         }
     },
 
-    "more-link": {
+    "moreLink": {
         "module": "montage/ui/anchor.reel",
         "name": "Anchor",
         "properties": {
-            "element": {"#": "more-link"}
+            "element": {"#": "moreLink"}
         },
         "bindings": {
-            "href": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.href",
-                "oneway": true
-            },
-            "textContent": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.href",
-                "oneway": true
-            }
+            "href": {"<-": "@images[selectedObjects.0.href]"},
+            "textContent": {"<-": "@images[selectedObjects.0.href]"}
         }
     },
 
@@ -59,11 +39,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "images",
-                "oneway": true
-            }
+            "content": {"<-": "@owner[images]"}
         }
     },
 
@@ -87,11 +63,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "src": {"<-": "@list1[objectAtCurrentIteration.src]"}
         }
     },
 
@@ -115,8 +87,8 @@
             ]
         }
     }
-}
-    </script>
+
+    }</script>
 
     <style>
         .thumb {
@@ -153,7 +125,7 @@
 
                     <div class="demo">
                         <img id="img-main" class="img-main"/>
-                        <div><a target="_blank" id="more-link">Click to learn more</a></div>
+                        <div><a target="_blank" id="moreLink">Click to learn more</a></div>
 
                         <p>Select an image from the list:</p>
                         <div class="row">
@@ -174,7 +146,7 @@
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;img id="img-main" class="img-main"/&gt;
-&lt;div&gt;&lt;a target="_blank" id="more-link"&gt;Click to learn more&lt;/a&gt;&lt;/div&gt;
+&lt;div&gt;&lt;a target="_blank" id="moreLink"&gt;Click to learn more&lt;/a&gt;&lt;/div&gt;
 
 &lt;p&gt;Select an image from the list:&lt;/p&gt;
 &lt;div class="row"&gt;
@@ -192,7 +164,7 @@
                        <div class="accordion-inner montage-hidden">
                         <pre class="prettyprint" >
 {
-    "main-image": {
+    "mainImage": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -217,11 +189,11 @@
         }
     },
 
-    "more-link": {
+    "moreLink": {
         "module": "montage/ui/anchor.reel",
         "name": "Anchor",
         "properties": {
-            "element": {"#": "more-link"}
+            "element": {"#": "moreLink"}
         },
         "bindings": {
             "href": {

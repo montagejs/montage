@@ -9,8 +9,8 @@
 	    <meta charset="utf-8">
         <link rel="stylesheet" href="input-range.css" />
 
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "translateComposer1": {
         "module": "montage/ui/composer/translate-composer",
         "name": "TranslateComposer",
@@ -22,20 +22,9 @@
             "invertAxis": true
         },
         "bindings": {
-            "maxTranslateX": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "sliderWidth",
-                "oneway": true
-            },
-            "translateX": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "sliderLeft",
-                "oneway": true
-            },
-            "translateX": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "positionX"
-            }
+            "maxTranslateX": {"<-": "@owner[sliderWidth]"},
+            "translateX": {"<-": "@owner[sliderLeft]"},
+            "translateX": {"<<->": "@owner[positionX]"}
         }
     },
     "owner": {
@@ -49,8 +38,8 @@
         }
 
     }
-}
-    </script>
+
+    }</script>
 
     </head>
     <body>

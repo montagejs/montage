@@ -6,7 +6,7 @@ agent.gotoUrl(config.montage_url+"/test/ui/buttontest/buttontest.html");
 
 var output = agent.element("#output");
 // Using an input to avoid screening bug where keys can't be sent to a button
-var button = agent.element("#stupidinput");
+var button = agent.element("#loggingbutton");
 
-button.sendKeys(" ");
+button.sendKeys(Key.SPACE);
 assertEqual("pressed", output.getText());

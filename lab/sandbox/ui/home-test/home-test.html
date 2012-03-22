@@ -18,8 +18,8 @@
                     }
                 }
     -->
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "widget1": {
                 "module": "widgets/twitter.reel",
                 "name": "Twitter",
@@ -35,31 +35,16 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "maxTranslateX": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "length",
-                        "oneway": true
-                    },
-                    "translateX": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "origin"
-                    }
+                    "maxTranslateX": {"<-": "@flow1[length]"},
+                    "translateX": {"<<->": "@flow1[origin]"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "_repetitionComponents",
-                        "oneway": true
-                    },
-                    "pointerPosition": {
-                        "boundObject": {"@": "translateComposer1"},
-                        "boundObjectPropertyPath": "pointerStartEventPosition",
-                        "oneway": true
-                    }
+                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
+                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
                 }
             },
             "flow1": {
@@ -87,23 +72,16 @@
                     "scale": 145
                 },
                 "bindings": {
-                    "path": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "flowPath"
-                    },
-                    "selectedSlideIndex": {
-                        "boundObject": {"@": "nearest"},
-                        "boundObjectPropertyPath": "nearestNeighborComponent",
-                        "oneway": true
-                    }
+                    "path": {"<<->": "@owner[flowPath]"},
+                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"}
                 }
             },
             "owner": {
                 "module": "home-test",
                 "name": "HomeTest"
             }
-        }
-    </script>
+        
+    }</script>
     <style>
         body {
             background: #888;

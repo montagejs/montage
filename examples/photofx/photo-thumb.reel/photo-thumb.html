@@ -10,8 +10,8 @@
     <title>PhotoThumb</title>
     <link rel="stylesheet" type="text/css" href="photo-thumb.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "image": {
                 "module": "montage/ui/image.reel",
                 "name": "Image",
@@ -19,11 +19,7 @@
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "src": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photo.src",
-                        "oneway": true
-                    }
+                    "src": {"<-": "@owner[photo.src]"}
                 }
             },
             "owner": {
@@ -33,8 +29,8 @@
                     "element": {"#": "photoThumb"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

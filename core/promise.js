@@ -127,6 +127,7 @@ var PrimordialPromise = Creatable.create({
 
             // automatically subcreate each of the contained promise types
             var creation = Object.create(this);
+            creation.AbstractPromise = this.AbstractPromise.create(promiseDescriptor);
             creation.DeferredPromise = this.DeferredPromise.create(promiseDescriptor);
             creation.FulfilledPromise = this.FulfilledPromise.create(promiseDescriptor);
             creation.RejectedPromise = this.RejectedPromise.create(promiseDescriptor);
@@ -156,7 +157,14 @@ var PrimordialPromise = Creatable.create({
         }
     },
 
+    // deprecated
     ref: {
+        get: function () {
+            return this.resolve;
+        }
+    },
+
+    resolve: {
         value: function (object) {
             // if it is already a promise, wrap it to guarantee
             // the full public API of this promise variety.
@@ -380,6 +388,10 @@ var PrimordialPromise = Creatable.create({
             }
 
         })
+    },
+
+    AbstractPromise: {
+        value: AbstractPromise
     }
 
 });
@@ -558,18 +570,21 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
     delay: {
         value: function (timeout) {
-            var deferred = this.Promise.defer();
-            this.then(function (value) {
-                clearTimeout(handle);
-                deferred.resolve(value);
-            }, function (reason, error, rejection) {
-                clearTimeout(handle);
-                deferred.resolve(rejection);
+            var self = this;
+            var promise;
+            if (arguments.length === 0) {
+                timeout = this;
+            } else {
+                promise = this;
+            }
+            return Promise.ref(timeout)
+            .then(function (timeout) {
+                var deferred = self.Promise.defer();
+                setTimeout(function () {
+                    deferred.resolve(promise);
+                }, timeout);
+                return deferred.promise;
             });
-            var handle = setTimeout(function () {
-                deferred.reject("Timed out");
-            }, timeout);
-            return deferred.promise;
         }
     },
 
@@ -584,7 +599,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 deferred.resolve(rejection);
             }).end();
             var handle = setTimeout(function () {
-                deferred.reject("Timed out");
+                deferred.reject("Timed out", new Error("Timed out"));
             }, timeout);
             return deferred.promise;
         }

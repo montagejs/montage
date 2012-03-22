@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>Dynamic Text Example</title>
-        <script type="text/montage-serialization">
-        {
+        <script type="text/montage-serialization">{
+
             "dateConverter1": {
                 "module": "montage/core/converter/date-converter",
                 "name": "DateConverter",
@@ -11,27 +11,23 @@
                     "pattern": "hh:mm:ss"
                 }
             },
-            "current-time": {
+            "currentTime": {
                 "module": "montage/ui/dynamic-text.reel",
                 "name": "DynamicText",
                 "properties": {
                     "value": "",
                     "converter": {"@": "dateConverter1"},
-                    "element": {"#": "current-time"}
+                    "element": {"#": "currentTime"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "currentTime",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner[currentTime]"}
                 }
             },
-            "dynamic-text-accordion1": {
+            "dynamicTextAccordion1": {
                 "module": "accordion.reel",
                 "name": "Accordion",
                 "properties": {
-                    "element": {"#": "dynamic-text-accordion1"}
+                    "element": {"#": "dynamicTextAccordion1"}
                 }
             },
 
@@ -42,8 +38,8 @@
                     "element": {"#": "component-root"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
     <style>
         .current-time {
@@ -71,16 +67,16 @@
                 <p>This example displays the current time in a DynamicText component. The current time is calculated , which is provided by the component's controller. A <code>DateConverter</code> is used to format the time value in the hh:mm:ss format.
                 </p>
             <div class="demo">
-                <span id="current-time" class="current-time"></span>
+                <span id="currentTime" class="current-time"></span>
 
             </div>
 
-                       <ul id="dynamic-text-accordion1" class="accordion">
+                       <ul id="dynamicTextAccordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
                                     <pre class="prettyprint" >
-&lt;span id="current-time" class="current-time"&gt;&lt;/span&gt;
+&lt;span id="currentTime" class="currentTime"&gt;&lt;/span&gt;
             </pre>
                                 </div>
                             </li>
@@ -96,13 +92,13 @@
             "pattern": "hh:mm:ss"
         }
     },
-    "current-time": {
+    "currentTime": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
             "value": "",
             "converter": {"@": "dateConverter1"},
-            "element": {"#": "current-time"}
+            "element": {"#": "currentTime"}
         },
         "bindings": {
             "value": {
