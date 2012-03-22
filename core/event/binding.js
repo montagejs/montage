@@ -1205,7 +1205,8 @@ Serializer.defineSerializationUnit("bindings", function(object) {
 
 Deserializer.defineDeserializationUnit("bindings", function(object, bindings, deserializer) {
     for (var sourcePath in bindings) {
-        var binding = bindings[sourcePath];
+        var binding = bindings[sourcePath],
+            bracketIndex;
 
         if (!("boundObject" in binding)) {
             var targetPath = binding["<-"] || binding["->"] || binding["<->>"] || binding["<<->"];
@@ -1214,13 +1215,13 @@ Deserializer.defineDeserializationUnit("bindings", function(object, bindings, de
                 binding.boundObject = object;
                 binding.boundObjectPropertyPath = sourcePath;
 
-                targetPath = targetPath.split("[");
-                object = deserializer.getObjectByLabel(targetPath[0].slice(1));
-                sourcePath = targetPath[1].slice(0, -1);
+                bracketIndex = targetPath.indexOf("[");
+                object = deserializer.getObjectByLabel(targetPath.slice(1, bracketIndex));
+                sourcePath = targetPath.slice(bracketIndex+1, -1);
             } else {
-                targetPath = targetPath.split("[");
-                binding.boundObject = deserializer.getObjectByLabel(targetPath[0].slice(1));
-                binding.boundObjectPropertyPath = targetPath[1].slice(0, -1);;
+                bracketIndex = targetPath.indexOf("[");
+                binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, bracketIndex));
+                binding.boundObjectPropertyPath = targetPath.slice(bracketIndex+1, -1);
             }
 
             if ("<-" in binding || "->" in binding) {
