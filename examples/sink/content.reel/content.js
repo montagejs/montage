@@ -12,6 +12,19 @@ exports.Content = Montage.create(Component, {
         value: null
     },
 
+    contentDeck: {value: null},
+
+    _hash: {value: null},
+    hash: {
+        get: function() {
+            return this._hash;
+        },
+        set: function(value) {
+            this._hash = value;
+            this.needsDraw = true;
+        }
+    },
+
     slotDidSwitchContent: {
         value: function(substitution, nodeShown, componentShown, nodeHidden, componentHidden) {
             console.log('substitution did switch content');
@@ -22,7 +35,17 @@ exports.Content = Montage.create(Component, {
                 componentShown.didBecomeActiveInSlot();
             }
         }
+    },
+
+    draw: {
+        value: function() {
+            var hash = this.hash;
+            if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
+                this.contentDeck.switchValue = hash.substring(hash.indexOf('#')+1);;
+            }
+        }
     }
+
 
 
 });

@@ -7,8 +7,8 @@
 <html>
 <head>
     <title>Video Viewer</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "dynamictext1": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
@@ -16,11 +16,7 @@
             "element": {"#": "description"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "video.description",
-                "oneway": true
-            }
+            "value": {"<-": "@owner[video.description]"}
         }
     },
     "dynamictext2": {
@@ -30,11 +26,7 @@
             "element": {"#": "duration"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "video.duration",
-                "oneway": true
-            }
+            "value": {"<-": "@owner[video.duration]"}
         }
     },
     "owner": {
@@ -44,8 +36,8 @@
             "element": {"#": "VideoViewer"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body id="VideoViewer">

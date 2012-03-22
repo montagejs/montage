@@ -617,9 +617,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-    serializeSelf: {
-        value: function(serializer, propertyNames) {
-            serializer.setProperties(propertyNames);
+    serializeProperties: {
+        value: function(serializer) {
+            serializer.setAll();
             var childComponents = this.childComponents;
             for (var i = 0, l = childComponents.length; i < l; i++) {
                 serializer.addObject(childComponents[i]);
