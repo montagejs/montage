@@ -1,0 +1,19 @@
+.spline-editor {
+	position: absolute;
+	top: 0;
+	left: 0;
+	bottom: 0;
+	width: 500px;
+}
+.spline-editor .top-view {
+	border-bottom: 1px solid #000;
+}
+.spline-editor .parameters-editor {
+    position: absolute;
+    background: white;
+    width: 490px;
+    top: 0;
+    bottom: 38px;
+    display: none;
+    font-size: 19px;
+}
