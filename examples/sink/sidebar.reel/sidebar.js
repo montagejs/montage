@@ -56,7 +56,6 @@ exports.Sidebar = Montage.create(Component, {
 
     handleNavItemClicked: {
         value: function(href) {
-            console.log("nav item clicked = " + href);
             var hash = href.substring(href.lastIndexOf('#')+1);
             this.sandbox.selectedItem = hash;
         }
@@ -86,7 +85,7 @@ exports.Sidebar = Montage.create(Component, {
                 if(a) {
                     this._highlightSelection($li);
                     this.handleNavItemClicked(a.href);
-                    event.preventDefault();
+                    //event.preventDefault();
                 }
             }
         }
