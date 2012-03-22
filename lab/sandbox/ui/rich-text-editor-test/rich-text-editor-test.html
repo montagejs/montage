@@ -503,7 +503,7 @@
                 ]
             },
 
-            "checkbox-readonly": {
+            "checkboxReadonly": {
                 "module": "montage/ui/checkbox.reel",
                 "name": "Checkbox",
                 "properties": {
@@ -517,7 +517,7 @@
                 }
             },
 
-            "checkbox-source": {
+            "checkboxSource": {
                 "module": "montage/ui/checkbox.reel",
                 "name": "Checkbox",
                 "properties": {
@@ -539,11 +539,11 @@
                     "editor": {"@": "editor"},
                     "undoManager": {"@": "undoManager"},
                     "source": {"#": "source-frame"},
-                    "showSource": {"@": "checkbox-source"}
+                    "showSource": {"@": "checkboxSource"}
                 },
                 "bindings": {
                     "readOnly": {
-                        "boundObject": {"@": "checkbox-readonly"},
+                        "boundObject": {"@": "checkboxReadonly"},
                         "boundObjectPropertyPath": "checked",
                         "oneway": true
                     }
