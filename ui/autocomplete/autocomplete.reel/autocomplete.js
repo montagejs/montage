@@ -21,13 +21,6 @@ var KEY_UP = 38,
  */
 var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     
-    /**
-        The base URL for the auto suggest query. The entered text is passed in as <url>?q=<entered text>
-    */
-    url: {
-        value: null
-    },
-    
     delegate: {
         value: null
     },
@@ -43,62 +36,17 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     },
     
     delay: {
-        value: null
-    },
-    
+        distinct: true,
+        value: 1000
+    },    
     
     /**
     * Number of characters the user must type before the suggest query is fired
     * Default = 2
     */
     minLength: {
-        value: 2,
+        value: 2,        
         distinct: true
-    },
-    
-    // width of the popup 
-    overlayWidth: {
-        value: null
-    },
-    
-    
-    
-    //----  Private
-    
-    delayTimer: {value: null},
-    
-    // valid values are 'loading', 'complete' and 'timeout'
-    // --> ResultList.loadingStatus
-    loadingStatus: {
-        value: null
-    },
-    
-    // the index of the token in the tokens Array that is being worked on
-    activeTokenIndex: {value: null},
-    
-    /** @private */
-    _findActiveTokenIndex: {
-        value: function(before, after) {
-            if(before == null || after == null) {
-                return 0;
-            }
-
-            //console.log('before arr', before);
-            //console.log('after arr', after);
-            
-            var i=0, len = after.length;
-            for(i=0; i< len; i++) {
-                if(i < before.length) {
-                    if(before[i] === after[i]) {
-                        continue;
-                    } else {
-                        break;
-                    }                    
-                }
-            }
-            return i;
-            
-        }
     },
     
     _tokens: {value: null},
@@ -183,9 +131,62 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         }
     },
     
+    
+    
+    //----  Private
+    
+    // width of the popup 
+    overlayWidth: {
+        value: null,
+        enumerable: false
+    },
+    
+    delayTimer: {
+        value: null,
+        enumerable: false
+    },
+    
+    // valid values are 'loading', 'complete' and 'timeout'
+    // --> ResultList.loadingStatus
+    loadingStatus: {
+        enumerable: false,
+        value: null
+    },
+    
+    // the index of the token in the tokens Array that is being worked on
+    activeTokenIndex: {value: null},
+    
+    /** @private */
+    _findActiveTokenIndex: {
+        enumerable: false,
+        value: function(before, after) {
+            if(before == null || after == null) {
+                return 0;
+            }
+
+            //console.log('before arr', before);
+            //console.log('after arr', after);
+            
+            var i=0, len = after.length;
+            for(i=0; i< len; i++) {
+                if(i < before.length) {
+                    if(before[i] === after[i]) {
+                        continue;
+                    } else {
+                        break;
+                    }                    
+                }
+            }
+            return i;
+            
+        }
+    },
+    
+
     // -> resultsController.activeIndexes
-    _activeIndexes: {value: null},
+    _activeIndexes: {value: null, enumerable: false},
     activeItemIndex: {
+        enumerable: false,
         get: function() {
             if(this._activeIndexes && this._activeIndexes.length > 0) {
                 return this._activeIndexes[0];
@@ -202,10 +203,10 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         }
     },
     
-
     _suggestedValue: {value: null},
     suggestedValue: {
         distinct: true,
+        enumerable: false,
         get: function() {
             return this._suggestedValue;
         },
@@ -226,11 +227,13 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     // private    
     
     popup: {
+        enumerable: false,
         value: null
     },
     
     _showPopup: {value: null},
     showPopup: {
+        enumerable: false,
         get: function() {
             return this._showPopup;
         },
@@ -246,6 +249,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     // suggestions -> resultsController.objects
     _suggestions: {value: null},
     suggestions: {
+        enumerable: false,
         get: function() {
             return this._suggestions;
         },
@@ -254,23 +258,24 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             this._suggestions = value;
             //this.loadingStatus = 'complete';
             this.loadingStatus = 'complete';
-            
-            this.showPopup = true;
-            
+            this.showPopup = (value && value.length > 0);                        
         }
     },
     
     // resultsController -> resultsList.contentController
     resultsController: {
+        enumerable: false,
         value: null
     },
     
     // repetition
     resultsList: {
+        enumerable: false,
         value: null
     },
         
     performSearch: {
+        enumerable: false,
         value: function(searchTerm) {
             if(this.delegate) {
                 this.loadingStatus = 'loading';
@@ -290,6 +295,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     
     
     _addEventListeners: {
+        enumerable: false,
         value: function() {
             if (window.Touch) {
                 //this.element.ownerDocument.addEventListener('touchstart', this, false);
@@ -302,6 +308,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     },
 
     _removeEventListeners: {
+        enumerable: false,
         value: function() {
             if (window.Touch) {
                 //this.element.ownerDocument.removeEventListener('touchstart', this, false);
@@ -314,7 +321,9 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     },
     
     _getPopup: {
+        enumerable: false,
         value: function() {
+            
             var popup = this.popup;
             
             if(!popup) {
@@ -332,10 +341,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     },
     
     prepareForDraw: {
-        enumerable: false,
         value: function() {            
             this._addEventListeners(); 
-            
             this.delay = this.delay || 500; // default delay           
                         
             // create the Repetition for the suggestions
