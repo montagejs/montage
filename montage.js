@@ -225,17 +225,23 @@ if (typeof window !== "undefined") {
         baseElement.href = "";
         document.querySelector("head").appendChild(baseElement);
         var relativeElement = document.createElement("a");
+        var memo = {};
         exports.resolve = function (base, relative) {
+            var key, resolved, restore;
             base = String(base);
-            if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
-                throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
+            key = base + "\0" + relative;
+            if (!memo[key]) {
+                if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
+                    throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
+                }
+                restore = baseElement.href;
+                baseElement.href = base;
+                relativeElement.href = relative;
+                resolved = relativeElement.href;
+                baseElement.href = restore;
+                memo[key] = resolved;
             }
-            var restore = baseElement.href;
-            baseElement.href = base;
-            relativeElement.href = relative;
-            var resolved = relativeElement.href;
-            baseElement.href = restore;
-            return resolved;
+            return resolved || memo[key];
         };
     };
 
