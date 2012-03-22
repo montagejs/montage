@@ -262,7 +262,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
             NativeControl.didSetElement.call(this);
 
             this._element.classList.add("montage-button");
-            this._element.setAttribute("aria-role", "button");
+            this._element.setAttribute("role", "button");
 
             this._isInputElement = (this._element.tagName === "INPUT");
             // Only take the value from the element if it hasn't been set
