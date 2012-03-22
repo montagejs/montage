@@ -135,6 +135,20 @@
            }
        },
 
+       "menuPosition": {
+           "module": "montage/ui/select-input.reel",
+           "name": "SelectInput",
+           "properties": {
+               "element": {"#": "menu-position"}
+           },
+           "bindings": {
+               "value": {
+                   "boundObject": {"@": "owner"},
+                   "boundObjectPropertyPath": "menuPosition"
+               }
+           }
+       },
+
     "owner": {
         "module": "components/popup/popup-example.reel",
         "name": "PopupExample",
@@ -231,7 +245,21 @@
             <h5>Custom Popups</h5>
             <section>
                 <p>Show a Custom popup anchored to the button.</p>
-                <button class="btn large" id="action-show-bookmark-menu">Show Menu (non-modal)</button>
+                <button class="btn large" id="action-show-bookmark-menu">Show Menu</button>
+                Select Menu position:
+                <select id="menu-position" class="menu-position">
+                        <option value="">Default</option>
+                        <option value="left">Left of Anchor</option>
+                        <option value="right">Right of Anchor</option>
+                        <option value="top">Top of Anchor</option>
+                        <option value="bottom">Bottom of Anchor</option>
+                        <option value="topright">Absolute: Top Right</option>
+                        <option value="bottomleft">Absolute: Bottom Left</option>
+                        <option value="topcenter">Absolute: Top Center</option>
+                        <option value="bottomcenter">Absolute: Bottom Center</option>
+                        <option value="center">Absolute: Center of Page</option>
+
+                </select>
 
             </section>
             <section>
