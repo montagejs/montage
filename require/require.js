@@ -11,7 +11,8 @@
         bootstrap("require/require", function (require, exports) {
             var Promise = require("core/promise").Promise;
             var URL = require("core/mini-url");
-            definition(exports, Promise, URL);
+            var Reflect = require("require/esprima");
+            definition(exports, Promise, URL, Reflect);
             require("require/browser");
         });
 
@@ -19,7 +20,8 @@
     } else if (typeof process !== "undefined") {
         var Promise = (require)("../core/promise").Promise;
         var URL = (require)("../core/url");
-        definition(exports, Promise, URL);
+        var Reflect = (require)("./esprima");
+        definition(exports, Promise, URL, Reflect);
         require("./node");
         if (require.main == module)
             exports.main();
@@ -28,7 +30,7 @@
         throw new Error("Can't support require on this platform");
     }
 
-})(function (Require, Promise, URL) {
+})(function (Require, Promise, URL, Reflect) {
 
     if (!this)
         throw new Error("Require does not work in strict mode.");
@@ -277,6 +279,7 @@
         config = config || {};
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
+        config.registry = {};
 
         config.getPackage = function (dependency) {
             dependency = Dependency(dependency);
@@ -341,10 +344,10 @@
         config.name = description.name;
         config.location = location || Require.getLocation();
         config.packageDescription = description;
-        config.define = description.define;
         // explicitly mask definitions and modules, which must
         // not apply to child packages
         var modules = config.modules = config.modules || {};
+        var registry = config.registry;
 
         // overlay
         var overlay = description.overlay || {};
@@ -397,10 +400,19 @@
             var versionPredicateString = dependencies[name];
             // TODO (version presently ignored for debug mode)
             if (!mappings[name]) {
-                mappings[name] = {"location": URL.resolve(
-                    packageRoot,
-                    name + "/"
-                )};
+                if (registry[name]) {
+                    mappings[name] = {
+                        location: registry[name]
+                    };
+                } else {
+                    mappings[name] = {
+                        location: URL.resolve(
+                            packageRoot,
+                            name + "/"
+                        )
+                    };
+                }
+                registry[name] = mappings[name].location;
             }
         });
         Object.keys(mappings).forEach(function (name) {
@@ -409,6 +421,8 @@
                 mapping.location += "/";
             if (!Require.isAbsolute(mapping.location))
                 mapping.location = URL.resolve(location, mapping.location);
+            if (mapping.name !== void 0)
+                registry[mapping.name] = mapping.location;
         });
 
         config.mappings = mappings;
@@ -461,12 +475,36 @@
 
     // Extracts dependencies by parsing code and looking for "require" (currently using a simple regexp)
     Require.parseDependencies = function(factory) {
-        var o = {};
-        String(factory).replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function(_, id) {
-            o[id] = true;
-        });
-        return Object.keys(o);
+        var syntax = Reflect.parse(String(factory));
+        var dependencies = [];
+        visit(syntax, function (node) {
+            if (
+                node.type === "CallExpression" &&
+                node.callee.type === "Identifier" &&
+                node.callee.name === "require" &&
+                node.arguments.length === 1 &&
+                node.arguments[0].type === "Literal"
+            ) {
+                dependencies.push(node.arguments[0].value);
+            }
+        })
+        return dependencies;
     };
+
+    function visit(object, visitor) {
+        var key, child;
+        if (visitor.call(null, object) === false) {
+            return;
+        }
+        for (key in object) {
+            if (object.hasOwnProperty(key)) {
+                child = object[key];
+                if (typeof child === 'object' && child !== null) {
+                    visit(child, visitor);
+                }
+            }
+        }
+    }
 
     // Built-in compiler/preprocessor "middleware":
 

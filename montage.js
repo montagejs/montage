@@ -320,6 +320,7 @@ if (typeof window !== "undefined") {
             var pending = [
                 "require/require",
                 "require/browser",
+                "require/esprima",
                 "core/promise",
                 "core/next-tick"
             ];

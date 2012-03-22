@@ -13,77 +13,77 @@ if (spec) {
         window.testpage.callNext();
     });
 } else {
-    Promise.all([
-
+    var modules = [
         // Please keep in alphabetical order
-        require.async("array-spec"),
-        require.async("bitfield-spec"),
-        require.async("claimed-pointer-spec"),
-        require.async("converter-spec"),
-        require.async("enum-spec"),
-        require.async("gate-spec"),
-        require.async("getset-spec"),
-        require.async("logger-spec"),
-        require.async("propertychange-spec"),
-        require.async("state-chart-spec"),
-        require.async("string-spec"),
+        "array-spec",
+        "bitfield-spec",
+        "claimed-pointer-spec",
+        "converter-spec",
+        "enum-spec",
+        "gate-spec",
+        "getset-spec",
+        "logger-spec",
+        "propertychange-spec",
+        "require-spec",
+        "state-chart-spec",
+        "string-spec",
 
-        require.async("binding/binding-converter-spec"),
-        require.async("binding/dependent-properties-spec"),
-        require.async("binding/definebinding-spec"),
-        require.async("binding/self-binding-spec"),
+        "binding/binding-converter-spec",
+        "binding/dependent-properties-spec",
+        "binding/definebinding-spec",
+        "binding/self-binding-spec",
 
-        require.async("controllers/array-controller-spec"),
-        require.async("controllers/paged-array-controller-spec"),
+        "controllers/array-controller-spec",
+        "controllers/paged-array-controller-spec",
 
-        require.async("core/core-require-spec"),
-        require.async("core/core-spec"),
-        require.async("core/promise-spec"),
+        "core/core-require-spec",
+        "core/core-spec",
+        "core/promise-spec",
 
-        require.async("data/blueprint-spec"),
-        require.async("data/context-spec"),
-        require.async("data/store-spec"),
-        require.async("data/selector/property-spec"),
-        require.async("data/selector/query-spec"),
-        require.async("data/selector/selector-spec"),
-        require.async("data/selector/string-selector-spec"),
-        require.async("data/transactionmanager-spec"),
+        "data/blueprint-spec",
+        "data/context-spec",
+        "data/store-spec",
+        "data/selector/property-spec",
+        "data/selector/query-spec",
+        "data/selector/selector-spec",
+        "data/selector/string-selector-spec",
+        "data/transactionmanager-spec",
 
+        "events/eventmanager-spec",
+        "events/object-hierarchy-spec",
 
-        require.async("events/eventmanager-spec"),
-        require.async("events/object-hierarchy-spec"),
+        "geometry/cubicbezier-spec",
+        "geometry/point-spec",
 
-        require.async("geometry/cubicbezier-spec"),
-        require.async("geometry/point-spec"),
+        "reel/template-spec",
 
-        require.async("reel/template-spec"),
+        "serialization/deserializer-spec",
+        "serialization/serializer-spec",
 
-        require.async("serialization/deserializer-spec"),
-        require.async("serialization/serializer-spec"),
-
-        require.async("ui/application-spec"),
-        require.async("ui/anchor-spec"),
-        require.async("ui/button-spec"),
-        require.async("ui/check-spec"),
-        require.async("ui/condition-spec"),
-        require.async("ui/component-spec"),
-        require.async("ui/composer-spec"),
-        require.async("ui/composer/translate-composer-spec"),
-        require.async("ui/dom-spec"),
-        require.async("ui/firstdraw-spec"),
-        require.async("ui/scroller-spec"),
-        require.async("ui/list-spec"),
-        require.async("ui/number-input-spec"),
-        require.async("ui/range-input-spec"),
-        require.async("ui/popup-spec"),
-        require.async("ui/repetition-spec"),
-        require.async("ui/select-input-spec"),
-        require.async("ui/slider-spec"),
-        require.async("ui/slot-spec"),
-        require.async("ui/textfield-spec")
-
-
-    ]).then(function() {
+        "ui/application-spec",
+        "ui/anchor-spec",
+        "ui/button-spec",
+        "ui/check-spec",
+        "ui/condition-spec",
+        "ui/component-spec",
+        "ui/composer-spec",
+        "ui/composer/translate-composer-spec",
+        "ui/dom-spec",
+        "ui/firstdraw-spec",
+        "ui/scroller-spec",
+        "ui/list-spec",
+        "ui/number-input-spec",
+        "ui/range-input-spec",
+        "ui/popup-spec",
+        "ui/repetition-spec",
+        "ui/select-input-spec",
+        "ui/slider-spec",
+        "ui/slot-spec",
+        "ui/textfield-spec"
+    ];
+    Promise.all(modules.map(require.deepLoad))
+    .then(function () {
+        modules.forEach(require);
         jasmine.getEnv().execute();
         window.testpage.callNext();
     });
