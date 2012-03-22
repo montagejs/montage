@@ -488,7 +488,20 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     }}
 });
 
+/**
+Creates a serialization for an object from the perspective of the
+given package.
+@function
+@param {Object} object
+@param require
+@returns serialization
+*/
+function serialize(object, require) {
+    return Serializer.create().initWithRequire(require).serializeObject(object);
+}
 
 if (typeof exports !== "undefined") {
     exports.Serializer = Serializer;
+    exports.serialize = serialize;
 }
+
