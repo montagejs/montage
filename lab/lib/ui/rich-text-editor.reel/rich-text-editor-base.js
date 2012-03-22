@@ -1053,7 +1053,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             var delegateMethod = this._delegateMethod("canDrop");
             if (delegateMethod) {
-                this._allowDrop = delegateMethod.call(this.delegate, this, this._dragSourceElement, event);
+                this._allowDrop = delegateMethod.call(this.delegate, this, event, this._dragSourceElement);
             } else {
                 this._allowDrop = true;
             }
@@ -1162,7 +1162,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             if (fileLength) {
                 for (i = 0; i < fileLength; i ++) {
                     file = files[i];
-                    delegateMethod = this._delegateMethod("fileDrop");
+                    delegateMethod = this._delegateMethod("shouldDropFile");
                     response = true;
 
                     if (window.FileReader) {
@@ -1219,11 +1219,11 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     }
                 }
                 if (data) {
-                    var delegateMethod = this._delegateMethod("drop"),
+                    var delegateMethod = this._delegateMethod("shouldDrop"),
                         response;
 
                     if (delegateMethod) {
-                        response = delegateMethod.call(this.delegate, this, data, "text/html");
+                        response = delegateMethod.call(this.delegate, this, event, data, "text/html");
                         if (response === true) {
                             data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
                         } else {
@@ -1301,9 +1301,9 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             }
 
             if (data) {
-                delegateMethod = this._delegateMethod("paste");
+                delegateMethod = this._delegateMethod("shouldPaste");
                 if (delegateMethod) {
-                    response = delegateMethod.call(this.delegate, this, data, "text/html");
+                    response = delegateMethod.call(this.delegate, this, event, data, "text/html");
                     if (response === true) {
                         data = data.replace(/\<meta [^>]+>/gi, ""); // Remove the meta tag.
                     } else {
@@ -1330,7 +1330,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                             reader.onload = function() {
                                 data = reader.result;
 
-                                thisRef._delegateMethod("filePaste");
+                                thisRef._delegateMethod("shouldPasteFile");
                                 if (delegateMethod) {
                                     response = delegateMethod.call(thisRef.delegate, thisRef, file, data);
                                 }

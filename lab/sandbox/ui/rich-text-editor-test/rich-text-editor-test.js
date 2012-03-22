@@ -269,19 +269,19 @@ exports.RichTextEditorTest = Montage.create(Component, {
 
     editorCanDrag: {
         enumerable: false,
-        value: function(editor, source) {
+        value: function(editor, event) {
             return true;
         }
     },
 
     editorCanDrop: {
         enumerable: false,
-        value: function(editor, source, event) {
+        value: function(editor, event, source) {
             return true;
         }
     },
 
-    editorFileDrop: {
+    editorShouldDropFile: {
         enumerable: false,
         value: function(editor, file, data) {
             /*
@@ -303,9 +303,9 @@ exports.RichTextEditorTest = Montage.create(Component, {
         }
     },
 
-    editorDrop: {
+    editorShouldDrop: {
         enumerable: false,
-        value: function(editor, data, contentType) {
+        value: function(editor, event, data, contentType) {
             /*
                 the delegate provide a change for the consumer to handle the drop itself, refuse the drop, accept the
                 drop or change the drop data
@@ -320,9 +320,9 @@ exports.RichTextEditorTest = Montage.create(Component, {
         }
     },
 
-    editorPaste: {
+    editorShouldPaste: {
         enumerable: false,
-        value: function(editor, data, contentType) {
+        value: function(editor, event, data, contentType) {
             /*
                 the delegate provide a change for the consumer to handle the paste itself, refuse the paste, accept the
                 paste or change the paste data.
@@ -337,7 +337,7 @@ exports.RichTextEditorTest = Montage.create(Component, {
         }
     },
 
-    editorFilePaste: {
+    editorShouldPasteFile: {
         enumerable: false,
         value: function(editor, file, data) {
             /*
