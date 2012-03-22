@@ -7,6 +7,10 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer;
 
+var stripPP = function stripPrettyPrintting(str) {
+    return str.replace(/\n\s*/g, "");
+};
+
 var Alpha = Montage.create(Montage, {
 
     _foo: {
@@ -1419,6 +1423,179 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
             runs(function() {
                 expect(deserializer._indexedDeserializationUnits.bindings).toHaveBeenCalled();
             })
+        });
+
+        it("should serialize a binding to a shorthand format", function() {
+            var Alpha = Montage.create(Montage, {foo: {value: null}}),
+                Omega = Montage.create(Montage, {bar: {value: null}}),
+                sourceObject = Alpha.create(),
+                boundObject = Omega.create(),
+                serializer = Serializer.create().initWithRequire(require);
+
+            Object.defineBinding(sourceObject, "foo", {
+                boundObject: boundObject,
+                boundObjectPropertyPath: "bar",
+                oneway: true
+            });
+
+            var serialization = serializer.serializeObject(sourceObject);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"bindings":{"foo":{"<-":"@montage[bar]"}}}}')
+        });
+
+        it("should deserialize a oneway binding", function() {
+            var latch, objects,
+                deserializer = Deserializer.create();
+
+            deserializer._require = require;
+            deserializer.initWithObject({
+                root: {
+                    prototype: "montage",
+                    properties: {
+                        value: null
+                    },
+                    bindings: {
+                        value: {"<-": "@source[value]"}
+                    }
+                },
+
+                source: {
+                    prototype: "montage",
+                    properties: {
+                        value: null
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    source = objects.source;
+
+                source.value = 15;
+                expect(root.value).toBe(15);
+                root.value = 16;
+                expect(source.value).toBe(15);
+            });
+        });
+
+        it("should deserialize a twoway binding", function() {
+            var latch, objects,
+                deserializer = Deserializer.create();
+
+            deserializer._require = require;
+            deserializer.initWithObject({
+                root: {
+                    prototype: "montage",
+                    properties: {
+                        value: null
+                    },
+                    bindings: {
+                        value: {"<<->": "@source[value]"}
+                    }
+                },
+
+                source: {
+                    prototype: "montage",
+                    properties: {
+                        value: null
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    source = objects.source;
+
+                source.value = 15;
+                expect(root.value).toBe(15);
+                root.value = 16;
+                expect(source.value).toBe(16);
+            });
+        });
+
+        it("should deserialize a reverse oneway binding", function() {
+            var latch, objects,
+                deserializer = Deserializer.create();
+
+            deserializer._require = require;
+            deserializer.initWithObject({
+                root: {
+                    prototype: "montage",
+                    properties: {
+                        value: null
+                    },
+                    bindings: {
+                        value: {"->": "@source[value]"}
+                    }
+                },
+
+                source: {
+                    prototype: "montage",
+                    properties: {
+                        value: null
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    source = objects.source;
+
+                source.value = 15;
+                expect(root.value).toBeNull();
+                root.value = 16;
+                expect(source.value).toBe(16);
+            });
+        });
+
+        it("should deserialize a reverse twoway binding", function() {
+            var latch, objects,
+                deserializer = Deserializer.create();
+
+            deserializer._require = require;
+            deserializer.initWithObject({
+                root: {
+                    prototype: "montage",
+                    properties: {
+                        value: null
+                    },
+                    bindings: {
+                        value: {"<->>": "@source[value]"}
+                    }
+                },
+
+                source: {
+                    prototype: "montage",
+                    properties: {
+                        value: null
+                    }
+                }
+            }).deserialize(function(objs) {
+                latch = true;
+                objects = objs;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                var root = objects.root,
+                    source = objects.source;
+
+                source.value = 15;
+                expect(root.value).toBe(15);
+                root.value = 16;
+                expect(source.value).toBe(16);
+            });
         });
     });
 });

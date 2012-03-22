@@ -8,8 +8,8 @@
 <head>
     <title></title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "slider1": {
         "module": "montage/ui/bluemoon/slider.reel",
         "name": "Slider",
@@ -24,10 +24,7 @@
             "element": {"#": "sliderValue"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "slider1"},
-                "boundObjectPropertyPath": "value"
-            }
+            "value": {"<<->": "@slider1[value]"}
         }
     },
     "slider2": {
@@ -44,10 +41,7 @@
             "element": {"#": "sliderValue2"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "slider2"},
-                "boundObjectPropertyPath": "value"
-            }
+            "value": {"<<->": "@slider2[value]"}
         }
     },
     "test": {
@@ -67,8 +61,8 @@
             "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 
     <style type="text/css">

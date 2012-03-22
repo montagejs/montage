@@ -3,8 +3,8 @@
 <head>
     <title>Template</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "externalserialization": {
                 "module": "reel/template/externalserialization.reel",
                 "name": "ExternalSerialization",
@@ -53,10 +53,7 @@
                     "element": {"#": "textfield0"}
                 },
                 "bindings": {
-                    "text": {
-                        "boundObject": {"@": "reeltest1"},
-                        "boundObjectPropertyPath": "text"
-                    }
+                    "text": {"<<->": "@reeltest1[text]"}
                 },
                 "listeners": [
                     {
@@ -149,8 +146,8 @@
                     "delegate": {"@": "reeltest1"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
     <style>
         h2 {

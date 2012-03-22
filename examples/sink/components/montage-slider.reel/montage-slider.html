@@ -3,8 +3,8 @@
 <head>
     <title>Native slider component</title>
     <link rel="stylesheet" href="styles.css">
-    <script type="text/montage-serialization">
-    {
+    <script type="text/montage-serialization">{
+
         "red": {
             "module": "montage/ui/bluemoon/slider.reel",
             "name": "Slider",
@@ -52,11 +52,11 @@
             }
         },
         
-        "slider-accordion1": {
+        "sliderAccordion1": {
             "module": "accordion.reel",
             "name": "Accordion",
             "properties": {
-                "element": {"#": "slider-accordion1"}
+                "element": {"#": "sliderAccordion1"}
             }
         },
 
@@ -68,26 +68,14 @@
                 "colorchip": {"#": "chip"}
             },
             "bindings": {
-                "red": {
-                    "boundObject": {"@": "red"},
-                    "boundObjectPropertyPath": "value"
-                },
-                "green": {
-                    "boundObject": {"@": "green"},
-                    "boundObjectPropertyPath": "value"
-                },
-                "blue": {
-                    "boundObject": {"@": "blue"},
-                    "boundObjectPropertyPath": "value"
-                },
-                "opacity": {
-                    "boundObject": {"@": "alpha"},
-                    "boundObjectPropertyPath": "value"
-                }
+                "red": {"<<->": "@red[value]"},
+                "green": {"<<->": "@green[value]"},
+                "blue": {"<<->": "@blue[value]"},
+                "opacity": {"<<->": "@alpha[value]"}
             }
         }
-    }
-    </script>
+    
+    }</script>
 </head>
     <body>
         <div id="range-input-example" class="range-input-example">
@@ -129,7 +117,7 @@
         
         
         <section>
-           <ul id="slider-accordion1" class="accordion">
+           <ul id="sliderAccordion1" class="accordion">
                 <li class="accordion-group">
                     <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                     <div class="accordion-inner montage-hidden" >
