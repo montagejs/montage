@@ -8,7 +8,7 @@ var Montage = require("montage").Montage,
     Popup = require("montage/ui/popup/popup.reel").Popup,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
-    UndoManager = require("montage/core/undo-manager"),
+    defaultUndoManager = require("montage/core/undo-manager").defaultUndoManager,
     LOCAL_STORAGE_KEY = "montage_photofx_state",
     CORS_TEST_IMAGE = "https://lh5.googleusercontent.com/-M9uCIhQjy3c/TwTSfmO6MlI/AAAAAAAAFcw/BIMvbz3a7Z4/s1/blank.jpg";
 
@@ -20,7 +20,7 @@ exports.Main = Montage.create(Component, {
 
     didCreate: {
         value: function() {
-            this.undoManager = UndoManager.defaultUndoManager;
+            this.undoManager = defaultUndoManager;
 
             this._testCrossOriginCanvas();
             this._loadPhotos();
