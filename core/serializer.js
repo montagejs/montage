@@ -350,8 +350,13 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         return label;
     }},
 
+    _labelRegexp: {
+        enumerable: false,
+        value: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/
+    },
+
     _generateLabelForObject: {value: function(object) {
-        var objectName = object.identifier ||  Montage.getInfoForObject(object).objectName.toLowerCase(),
+        var objectName = (this._labelRegexp.test(object.identifier) ? object.identifier : null) ||  Montage.getInfoForObject(object).objectName.toLowerCase(),
             index = this._objectNamesIndex[objectName];
 
         if (index) {
