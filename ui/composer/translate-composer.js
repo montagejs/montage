@@ -3,6 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+ /*global require,exports */
 /**
     @module montage/ui/composer/translate-composer
     @requires montage
@@ -54,10 +55,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     pointerSpeedMultiplier: {
-        get: function () {
+        get: function() {
             return this._pointerSpeedMultiplier;
         },
-        set: function (value) {
+        set: function(value) {
             this._pointerSpeedMultiplier = value;
         }
     },
@@ -82,25 +83,25 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     translateX: {
-        get: function () {
+        get: function() {
             return this._translateX;
         },
-        set: function (value) {
-            if (this._axis==="vertical") {
-                this._translateX=0;
+        set: function(value) {
+            if (this._axis === "vertical") {
+                this._translateX = 0;
             } else {
-                var tmp=isNaN(value)?0:value>>0;
+                var tmp = isNaN(value) ? 0 : value >> 0;
 
-                if (tmp<0) {
-                    tmp=0;
+                if (tmp < 0) {
+                    tmp = 0;
                 }
-                if (tmp>this._maxTranslateX) {
-                    tmp=this._maxTranslateX;
-                }
-                if (!this._isSelfUpdate) {
-                    this.isAnimating = false;
-                }
-                this._translateX=tmp;
+                if (tmp > this._maxTranslateX) {
+                    tmp = this._maxTranslateX;
+                    }
+                    if (!this._isSelfUpdate) {
+                        this.isAnimating = false;
+                    }
+                this._translateX = tmp;
             }
         }
     },
@@ -111,25 +112,25 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     translateY: {
-        get: function () {
+        get: function() {
             return this._translateY;
         },
-        set: function (value) {
-            if (this._axis==="horizontal") {
-                this._translateY=0;
+        set: function(value) {
+            if (this._axis === "horizontal") {
+                this._translateY = 0;
             } else {
-                var tmp=isNaN(value)?0:value>>0;
+                var tmp = isNaN(value) ? 0 : value >> 0;
 
-                if (tmp<0) {
-                    tmp=0;
+                if (tmp < 0) {
+                    tmp = 0;
                 }
-                if (tmp>this._maxTranslateY) {
-                    tmp=this._maxTranslateY;
-                }
-                if (!this._isSelfUpdate) {
-                    this.isAnimating = false;
-                }
-                this._translateY=tmp;
+                if (tmp > this._maxTranslateY) {
+                    tmp = this._maxTranslateY;
+                    }
+                    if (!this._isSelfUpdate) {
+                        this.isAnimating = false;
+                    }
+                this._translateY = tmp;
             }
         }
     },
@@ -140,20 +141,20 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     maxTranslateX: {
-        get: function () {
+        get: function() {
             return this._maxTranslateX;
         },
-        set: function (value) {
-            var tmp=isNaN(value)?0:value>>0;
+        set: function(value) {
+            var tmp = isNaN(value) ? 0 : value >> 0;
 
-            if (tmp<0) {
-                tmp=0;
+            if (tmp < 0) {
+                tmp = 0;
             }
-            if (this._maxTranslateX!=tmp) {
-                if (this._translateX>this._maxTranslateX) {
-                    this.translateX=this._maxTranslateX;
+            if (this._maxTranslateX != tmp) {
+                if (this._translateX > this._maxTranslateX) {
+                    this.translateX = this._maxTranslateX;
                 }
-                this._maxTranslateX=tmp;
+                this._maxTranslateX = tmp;
             }
         }
     },
@@ -164,20 +165,20 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     maxTranslateY: {
-        get: function () {
+        get: function() {
             return this._maxTranslateY;
         },
-        set: function (value) {
-            var tmp=isNaN(value)?0:value>>0;
+        set: function(value) {
+            var tmp = isNaN(value) ? 0 : value >> 0;
 
-            if (tmp<0) {
-                tmp=0;
+            if (tmp < 0) {
+                tmp = 0;
             }
-            if (this._maxTranslateY!=tmp) {
-                if (this._translateY>this._maxTranslateY) {
-                    this.translateY=this._maxTranslateY;
+            if (this._maxTranslateY != tmp) {
+                if (this._translateY > this._maxTranslateY) {
+                    this.translateY = this._maxTranslateY;
                 }
-                this._maxTranslateY=tmp;
+                this._maxTranslateY = tmp;
             }
         }
     },
@@ -188,18 +189,18 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     axis: {
-        get: function () {
+        get: function() {
             return this._axis;
         },
-        set: function (value) {
+        set: function(value) {
             switch (value) {
-                case "vertical":
-                case "horizontal":
-                    this._axis=value;
-                    break;
-                default:
-                    this._axis="both";
-                    break;
+            case "vertical":
+            case "horizontal":
+                this._axis = value;
+                break;
+            default:
+                this._axis = "both";
+                break;
             }
         }
     },
@@ -214,7 +215,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             return this._invertAxis;
         },
         set: function(value) {
-            this._invertAxis=value?true:false;
+            this._invertAxis = value ? true : false;
         }
     },
 
@@ -224,11 +225,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     hasMomentum: {
-        get: function () {
+        get: function() {
             return this._hasMomentum;
         },
-        set: function (value) {
-            this._hasMomentum=value?true:false;
+        set: function(value) {
+            this._hasMomentum = value ? true : false;
         }
     },
 
@@ -238,12 +239,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _momentumDuration: {
-        get: function () {
+        get: function() {
             return this.__momentumDuration;
         },
-        set: function (value) {
-            this.__momentumDuration=isNaN(value)?1:value>>0;
-            if (this.__momentumDuration<1) this.__momentumDuration=1;
+        set: function(value) {
+            this.__momentumDuration = isNaN(value) ? 1 : value >> 0;
+            if (this.__momentumDuration < 1) {
+                this.__momentumDuration = 1;
+            }
         },
         enumerable: false
     },
@@ -270,14 +273,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     _start: {
         enumerable: false,
-        value: function (x, y, target) {
+        value: function(x, y, target) {
             this.pointerStartEventPosition = {
                 pageX: x,
                 pageY: y,
                 target: target
             };
-            this._pointerX=x;
-            this._pointerY=y;
+            this._pointerX = x;
+            this._pointerY = y;
             if (window.Touch) {
                 document.addEventListener("touchend", this, true);
                 document.addEventListener("touchmove", this, true);
@@ -307,14 +310,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-/**
+    /**
     Description TODO
     @function
     @param {Event} event TODO
     */
     captureMousedown: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
             if (event.button !== 0) {
                 return;
             }
@@ -339,7 +342,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     */
     handleMousedown: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
             if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
                 this.eventManager.claimPointer(this._observedPointer, this);
                 this._start(event.clientX, event.clientY, event.target);
@@ -350,7 +353,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     captureMousemove: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
                 event.preventDefault();
@@ -364,7 +367,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     captureMouseup: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
             this._end(event);
         }
     },
@@ -389,7 +392,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     captureTouchstart: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
             if (this._shouldPreventDefault(event)) {
                 event.preventDefault();
             }
@@ -424,7 +427,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     captureTouchmove: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
 
             var i = 0, len = event.changedTouches.length;
             while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
@@ -445,7 +448,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     captureTouchend: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
             var i = 0, len = event.changedTouches.length;
             while (i < len && !this.eventManager.isPointerClaimedByComponent(event.changedTouches[i].identifier, this)) {
                 i++;
@@ -520,14 +523,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     handleMousewheel: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
             var self = this;
 
             var oldTranslateY = this._translateY;
             this.translateY = this._translateY - (event.wheelDeltaY * 20) / 120;
             this._dispatchTranslateStart();
             window.clearTimeout(this._translateEndTimeout);
-            this._translateEndTimeout = window.setTimeout(function () {
+            this._translateEndTimeout = window.setTimeout(function() {
                 self._dispatchTranslateEnd();
             }, 400);
 
@@ -542,20 +545,20 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     _move: {
         enumerable: false,
-        value: function (x, y) {
+        value: function(x, y) {
             var pointerDelta;
-            this._isSelfUpdate=true;
-            if (this._axis!="vertical") {
-                pointerDelta = this._invertAxis ? (this._pointerX-x) : (x-this._pointerX);
+            this._isSelfUpdate = true;
+            if (this._axis != "vertical") {
+                pointerDelta = this._invertAxis ? (this._pointerX - x) : (x - this._pointerX);
                 this.translateX += pointerDelta * this._pointerSpeedMultiplier;
             }
-            if (this._axis!="horizontal") {
-                pointerDelta = this._invertAxis ? (this._pointerY-y) : (y-this._pointerY);
+            if (this._axis != "horizontal") {
+                pointerDelta = this._invertAxis ? (this._pointerY - y) : (y - this._pointerY);
                 this.translateY += pointerDelta * this._pointerSpeedMultiplier;
             }
-            this._isSelfUpdate=false;
-            this._pointerX=x;
-            this._pointerY=y;
+            this._isSelfUpdate = false;
+            this._pointerX = x;
+            this._pointerY = y;
             if (this._isFirstMove) {
                 this._dispatchTranslateStart();
                 this._isFirstMove = false;
@@ -573,29 +576,28 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     _bezierTValue: {
         enumerable: false,
-        value: function (x, p1x, p1y, p2x, p2y) {
-            var a=1-3*p2x+3*p1x,
-                b=3*p2x-6*p1x,
-                c=3*p1x,
-                t=.5,
-                der,
-                i, k, tmp;
+        value: function(x, p1x, p1y, p2x, p2y) {
+            var a = 1 - 3 * p2x + 3 * p1x,
+                b = 3 * p2x - 6 * p1x,
+                c = 3 * p1x,
+                t = 0.5,
+                der, i, k, tmp;
 
-            for (i=0; i<10; i++) {
-                tmp=t*t;
-                der=3*a*tmp+2*b*t+c;
-                k=1-t;
-                t-=((3*(k*k*t*p1x+k*tmp*p2x)+tmp*t-x)/der); // der==0
+            for (i = 0; i < 10; i++) {
+                tmp = t * t;
+                der = 3 * a * tmp + 2 * b * t + c;
+                k = 1 - t;
+                t -= ((3 * (k * k * t * p1x + k * tmp * p2x) + tmp * t - x) / der); // der==0
             }
-            tmp=t*t;
-            k=1-t;
-            return 3*(k*k*t*p1y+k*tmp*p2y)+tmp*t;
+            tmp = t * t;
+            k = 1 - t;
+            return 3 * (k * k * t * p1y + k * tmp * p2y) + tmp * t;
         }
     },
 
     _dispatchTranslateStart: {
         enumerable: false,
-        value: function () {
+        value: function() {
             var translateStartEvent = document.createEvent("CustomEvent");
 
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
@@ -605,7 +607,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     _dispatchTranslateEnd: {
         enumerable: false,
-        value: function () {
+        value: function() {
             var translateEndEvent = document.createEvent("CustomEvent");
 
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
@@ -627,7 +629,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     _end: {
         enumerable: false,
-        value: function (event) {
+        value: function(event) {
 
             var animateMomentum=false,
                 momentumX,
@@ -641,48 +643,49 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 self=this,
                 startTime=Date.now();
 
-            startY=this._translateY;
-            posY=startY;
-            endY=startY;
-            if ((this._hasMomentum)&&(event.velocity.speed>40)) {
-                if (this._axis!="vertical") {
-                    momentumX=event.velocity.x*this._pointerSpeedMultiplier;
+            startY = this._translateY;
+            posY = startY;
+            endY = startY;
+            if ((this._hasMomentum) && (event.velocity.speed > 40)) {
+                if (this._axis != "vertical") {
+                    momentumX = event.velocity.x * this._pointerSpeedMultiplier;
                 } else {
-                    momentumX=0;
+                    momentumX = 0;
                 }
-                if (this._axis!="horizontal") {
-                    momentumY=event.velocity.y*this._pointerSpeedMultiplier;
+                if (this._axis != "horizontal") {
+                    momentumY = event.velocity.y * this._pointerSpeedMultiplier;
                 } else {
-                    momentumY=0;
+                    momentumY = 0;
                 }
-                endX=startX-(momentumX*this.__momentumDuration/2000);
-                endY=startY-(momentumY*this.__momentumDuration/2000);
-                animateMomentum=true;
+                endX = startX - (momentumX * this.__momentumDuration / 2000);
+                endY = startY - (momentumY * this.__momentumDuration / 2000);
+                animateMomentum = true;
             }
 
-            this._animationInterval=function () {
-                var time=Date.now(), t, tmpX, tmpY;
+            this._animationInterval = function() {
+                var time = Date.now(),
+                    t, tmpX, tmpY;
 
                 if (animateMomentum) {
-                    t=time-startTime;
-                    if (t<self.__momentumDuration) {
-                        posX=startX-((momentumX+momentumX*(self.__momentumDuration-t)/self.__momentumDuration)*t/1000)/2;
-                        posY=startY-((momentumY+momentumY*(self.__momentumDuration-t)/self.__momentumDuration)*t/1000)/2;
+                    t = time - startTime;
+                    if (t < self.__momentumDuration) {
+                        posX = startX - ((momentumX + momentumX * (self.__momentumDuration - t) / self.__momentumDuration) * t / 1000) / 2;
+                        posY = startY - ((momentumY + momentumY * (self.__momentumDuration - t) / self.__momentumDuration) * t / 1000) / 2;
                     } else {
-                        animateMomentum=false;
+                        animateMomentum = false;
                     }
                 }
 
-                tmpX=posX;
-                tmpY=posY;
+                tmpX = posX;
+                tmpY = posY;
 
-                self._isSelfUpdate=true;
-                self.translateX=tmpX;
-                self.translateY=tmpY;
-                self._isSelfUpdate=false;
+                self._isSelfUpdate = true;
+                self.translateX = tmpX;
+                self.translateY = tmpY;
+                self._isSelfUpdate = false;
                 self.isAnimating = animateMomentum;
                 if (self.isAnimating) {
-                    self.needsFrame=true;
+                    self.needsFrame = true;
                 } else {
                     this._dispatchTranslateEnd();
                 }
