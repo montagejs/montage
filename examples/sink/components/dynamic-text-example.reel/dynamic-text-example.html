@@ -2,8 +2,8 @@
 <html>
     <head>
         <title>Dynamic Text Example</title>
-        <script type="text/montage-serialization">
-        {
+        <script type="text/montage-serialization">{
+
             "dateConverter1": {
                 "module": "montage/core/converter/date-converter",
                 "name": "DateConverter",
@@ -20,11 +20,7 @@
                     "element": {"#": "current-time"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "currentTime",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner[currentTime]"}
                 }
             },
             "dynamic-text-accordion1": {
@@ -42,8 +38,8 @@
                     "element": {"#": "component-root"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
     <style>
         .current-time {

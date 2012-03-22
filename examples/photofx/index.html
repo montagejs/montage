@@ -11,8 +11,8 @@
     <link rel="stylesheet" href="bootstrap.min.css">
     <script src="../../montage.js" data-package="."></script>
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "montage/ui/loader.reel",
                 "name": "Loader"
@@ -25,21 +25,13 @@
                     "element": {"#": "loadingPanel"}
                 },
                 "bindings": {
-                    "initializedModuleCount": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "initializedModules.count()",
-                        "oneway": true
-                    },
-                    "requiredModuleCount": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "requiredModules.count()",
-                        "oneway": true
-                    }
+                    "initializedModuleCount": {"<-": "@owner[initializedModules.count()]"},
+                    "requiredModuleCount": {"<-": "@owner[requiredModules.count()]"}
                 }
             }
 
-        }
-    </script>
+        
+    }</script>
 
     <style type="text/css">
 

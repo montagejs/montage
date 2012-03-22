@@ -7,8 +7,8 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "owner": {
                     "module": "components/input-text-example.reel",
                     "name": "InputTextExample",
@@ -16,10 +16,7 @@
                         "element": {"#": "input-text-example"}
                     },
                     "bindings": {
-                        "phone": {
-                            "boundObject": {"@": "phone"},
-                            "boundObjectPropertyPath": "value"
-                        }
+                        "phone": {"<<->": "@phone[value]"}
                     }
                 },
 
@@ -30,16 +27,8 @@
                         "element": {"#": "fname"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        },
-                        "title": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner[firstName]"},
+                        "title": {"<<->": "@owner[firstName]"}
                     }
                 },
 
@@ -50,11 +39,7 @@
                         "element": {"#": "lname"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "lastName",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner[lastName]"}
                     }
                 },
 
@@ -65,11 +50,7 @@
                         "element": {"#": "email"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "email",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner[email]"}
                     }
                 },
 
@@ -81,11 +62,7 @@
                     },
                     "bindings": {
 
-                        "readonly": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "phoneReadOnly",
-                            "oneway": false
-                        }
+                        "readonly": {"<<->": "@owner[phoneReadOnly]"}
                     }
                 },
                 "edit-phone": {
@@ -110,11 +87,7 @@
                         "element": {"#": "url"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "url",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner[url]"}
                     }
                 },
 
@@ -125,11 +98,7 @@
                         "element": {"#": "zip"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "zip",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner[zip]"}
                     }
                 },
 
@@ -140,11 +109,7 @@
                         "element": {"#": "zip"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "zip",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner[zip]"}
                     }
                 },
 
@@ -164,11 +129,7 @@
                         "converter": {"@": "dateConverter"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "dob",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner[dob]"}
                     }
                 },
                 "dob-error": {
@@ -223,8 +184,8 @@
                         }
                     }
                 }
-            }
-        </script>
+            
+    }</script>
 
         <style>
             .input-text-example .error {

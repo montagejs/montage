@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>FauxFlow</title>
     <link rel="stylesheet" href="faux-flow.css">
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "faux-flow.reel",
                 "name": "FauxFlow",
@@ -27,31 +27,15 @@
                     "element": {"#": "repetition"}
                 },
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "originalContent",
-                        "oneway": true
-                    },
-                    "objects": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "objects",
-                        "oneway": true
-                    },
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "contentController",
-                        "oneway": true
-                    },
-                    "isSelectionEnabled": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "isSelectionEnabled",
-                        "oneway": true
-                    }
+                    "content": {"<-": "@owner[originalContent]"},
+                    "objects": {"<-": "@owner[objects]"},
+                    "contentController": {"<-": "@owner[contentController]"},
+                    "isSelectionEnabled": {"<-": "@owner[isSelectionEnabled]"}
                 }
             }
 
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

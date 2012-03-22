@@ -8,8 +8,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>CheckTest</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "check1": {
         "module": "montage/ui/checkbox.reel",
         "name": "Checkbox",
@@ -50,11 +50,7 @@
             "checked": true
         },
         "bindings": {
-            "checked": {
-                "boundObject": {"@": "check_bound2"},
-                "boundObjectPropertyPath": "checked",
-                "oneway": true
-            }
+            "checked": {"<-": "@check_bound2[checked]"}
         }
     },
     "check_bound2": {
@@ -132,8 +128,8 @@
             "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
 </head>
 <body>
     <h1>Checkbox tests</h1>

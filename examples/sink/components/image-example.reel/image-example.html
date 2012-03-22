@@ -3,8 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Image Example</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "main-image": {
         "module": "montage/ui/image.reel",
         "name": "Image",
@@ -12,21 +12,9 @@
             "element": {"#": "img-main"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.src",
-                "oneway": true
-            },
-            "title": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.description",
-                "oneway": true
-            },
-            "alt": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.description",
-                "oneway": true
-            }
+            "src": {"<-": "@images[selectedObjects.0.src]"},
+            "title": {"<-": "@images[selectedObjects.0.description]"},
+            "alt": {"<-": "@images[selectedObjects.0.description]"}
         }
     },
 
@@ -37,16 +25,8 @@
             "element": {"#": "more-link"}
         },
         "bindings": {
-            "href": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.href",
-                "oneway": true
-            },
-            "textContent": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.href",
-                "oneway": true
-            }
+            "href": {"<-": "@images[selectedObjects.0.href]"},
+            "textContent": {"<-": "@images[selectedObjects.0.href]"}
         }
     },
 
@@ -59,11 +39,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "images",
-                "oneway": true
-            }
+            "content": {"<-": "@owner[images]"}
         }
     },
 
@@ -87,11 +63,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "src": {"<-": "@list1[objectAtCurrentIteration.src]"}
         }
     },
 
@@ -115,8 +87,8 @@
             ]
         }
     }
-}
-    </script>
+
+    }</script>
 
     <style>
         .thumb {

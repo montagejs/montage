@@ -11,8 +11,8 @@
 
     <link rel="stylesheet" href="sidebar.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
 
             "owner": {
                 "module": "sidebar.reel",
@@ -21,17 +21,13 @@
                     "element": {"#": "sidebar"}
                 },
                 "bindings": {
-                    "sandbox.selectedItem": {
-                        "boundObject": {"@": "navController"},
-                        "boundObjectPropertyPath": "selectedObjects.0",
-                        "oneway": true
-                    }
+                    "sandbox.selectedItem": {"<-": "@navController[selectedObjects.0]"}
                 }
 
 
             }
-        }
-    </script>
+        
+    }</script>
 </head>
 <body>
 

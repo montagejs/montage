@@ -7,8 +7,8 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "checkbox1": {
                     "module": "montage/ui/checkbox.reel",
                     "name": "Checkbox",
@@ -52,12 +52,7 @@
                         "element": {"#": "continue-button"}
                     },
                     "bindings": {
-                        "disabled": {
-                            "boundObject": {"@": "agree-checkbox"},
-                            "boundObjectPropertyPath": "checked",
-                            "converter": {"@": "invert-converter"},
-                            "oneway": true
-                        }
+                        "disabled": {"<-": "@agree-checkbox[checked]", "converter": {"@": "invert-converter"}}
                     }
                 },
 
@@ -83,11 +78,7 @@
                         "automaticallyOrganizeObjects": true
                     },
                     "bindings": {
-                        "content": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "data",
-                            "oneway": true
-                        }
+                        "content": {"<-": "@owner[data]"}
                     }
                 },
 
@@ -111,16 +102,8 @@
                         "element": {"#": "link"}
                     },
                     "bindings": {
-                        "href": {
-                            "boundObject": {"@": "list1"},
-                            "boundObjectPropertyPath": "objectAtCurrentIteration.href",
-                            "oneway": true
-                        },
-                        "textContent": {
-                            "boundObject": {"@": "list1"},
-                            "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                            "oneway": true
-                        }
+                        "href": {"<-": "@list1[objectAtCurrentIteration.href]"},
+                        "textContent": {"<-": "@list1[objectAtCurrentIteration.src]"}
                     }
                 },
 
@@ -131,11 +114,7 @@
                         "element": {"#": "desc"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "list1"},
-                            "boundObjectPropertyPath": "objectAtCurrentIteration.description",
-                            "oneway": true
-                        }
+                        "value": {"<-": "@list1[objectAtCurrentIteration.description]"}
                     }
                 },
 
@@ -147,10 +126,7 @@
                         "element": {"#": "selection"}
                     },
                     "bindings": {
-                        "checked": {
-                            "boundObject": {"@": "list1"},
-                            "boundObjectPropertyPath": "selectionAtCurrentIteration"
-                        }
+                        "checked": {"<<->": "@list1[selectionAtCurrentIteration]"}
                     }
                 },
 
@@ -161,10 +137,7 @@
                         "element": {"#": "selected-value"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "jsonSelectedItems"
-                        }
+                        "value": {"<<->": "@owner[jsonSelectedItems]"}
                     }
                 },
                 "checkbox-accordion1": {
@@ -202,14 +175,11 @@
                         ]
                     },
                     "bindings": {
-                        "selectedItems": {
-                            "boundObject": {"@": "controller"},
-                            "boundObjectPropertyPath": "selectedObjects"
-                        }
+                        "selectedItems": {"<<->": "@controller[selectedObjects]"}
                     }
                 }
-            }
-        </script>
+            
+    }</script>
 
         <style>
            table tr.selected {

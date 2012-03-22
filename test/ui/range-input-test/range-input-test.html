@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>RangeInput test</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "range_input1": {
         "module": "montage/ui/range-input.reel",
         "name": "RangeInput",
@@ -34,11 +34,7 @@
             "value": "hello"
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "range_input1"},
-                "boundObjectPropertyPath": "value",
-                "oneway": true
-            }
+            "value": {"<-": "@range_input1[value]"}
         }
     },
 
@@ -74,8 +70,8 @@
             "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body>

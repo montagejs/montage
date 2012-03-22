@@ -3,8 +3,8 @@
 <head>
     <title>Repetition Spec</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "application": {
                 "module": "montage/ui/application",
                 "name": "Application",
@@ -62,11 +62,7 @@
                     "element": {"#": "list1"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list1Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list1Objects]"}
                 }
             },
             "textfield1": {
@@ -76,11 +72,7 @@
                     "element": {"#": "textfield1"}
                 },
                 "bindings": {
-                    "text": {
-                        "boundObject": {"@": "repetition2"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.text",
-                        "oneway": true
-                    }
+                    "text": {"<-": "@repetition2[objectAtCurrentIteration.text]"}
                 }
             },
             "repetition2": {
@@ -90,11 +82,7 @@
                     "element": {"#": "list2"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list2Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list2Objects]"}
                 }
             },
             "textfield2": {
@@ -104,11 +92,7 @@
                     "element": {"#": "textfield2"}
                 },
                 "bindings": {
-                    "text": {
-                        "boundObject": {"@": "repetition3"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.text",
-                        "oneway": true
-                    }
+                    "text": {"<-": "@repetition3[objectAtCurrentIteration.text]"}
                 }
             },
             "repetition3": {
@@ -118,11 +102,7 @@
                     "element": {"#": "list3a"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetition4"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetition4[objectAtCurrentIteration]"}
                 }
             },
             "repetition4": {
@@ -132,11 +112,7 @@
                     "element": {"#": "list3"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list3Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list3Objects]"}
                 }
             },
             "componenty1": {
@@ -153,11 +129,7 @@
                     "element": {"#": "list4a"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetition5"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetition5[objectAtCurrentIteration]"}
                 }
             },
             "repetition5": {
@@ -167,11 +139,7 @@
                     "element": {"#": "list4"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list4Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list4Objects]"}
                 }
             },
             "textfield3": {
@@ -197,11 +165,7 @@
                     "element": {"#": "list5a"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetition7"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetition7[objectAtCurrentIteration]"}
                 }
             },
             "repetition7": {
@@ -211,11 +175,7 @@
                     "element": {"#": "list5"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list5Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list5Objects]"}
                 }
             },
             "componentrep1": {
@@ -239,11 +199,7 @@
                     "element": {"#": "list6comp1"}
                 },
                 "bindings": {
-                    "listObjects": {
-                        "boundObject": {"@": "repetition9"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.elements1",
-                        "oneway": true
-                    }
+                    "listObjects": {"<-": "@repetition9[objectAtCurrentIteration.elements1]"}
                 }
             },
             "componentrep4": {
@@ -253,11 +209,7 @@
                     "element": {"#": "list6comp2"}
                 },
                 "bindings": {
-                    "listObjects": {
-                        "boundObject": {"@": "repetition9"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.elements2",
-                        "oneway": true
-                    }
+                    "listObjects": {"<-": "@repetition9[objectAtCurrentIteration.elements2]"}
                 }
             },
             "repetition9": {
@@ -267,11 +219,7 @@
                     "element": {"#": "list6"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list6Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list6Objects]"}
                 }
             },
             "textfield4": {
@@ -281,11 +229,7 @@
                     "element": {"#": "textfield5"}
                 },
                 "bindings": {
-                    "text": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "text",
-                        "oneway": true
-                    }
+                    "text": {"<-": "@repetitiontest1[text]"}
                 }
             },
             "componentx2": {
@@ -303,11 +247,7 @@
                     "element": {"#": "list7"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list7Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list7Objects]"}
                 }
             },
             "actioneventlistener1": {
@@ -340,11 +280,7 @@
                     "element": {"#": "list8"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list8Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list8Objects]"}
                 }
             },
             "textfield6": {
@@ -361,11 +297,7 @@
                     "element": {"#": "list9"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list9Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list9Objects]"}
                 }
             },
             "componentz1": {
@@ -398,11 +330,7 @@
                     "element": {"#": "list10"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "list10Objects",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@repetitiontest1[list10Objects]"}
                 }
             },
             "repetitionController": {
@@ -420,11 +348,7 @@
                     "automaticallyOrganizeObjects": true
                 },
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "repetitiontest1"},
-                        "boundObjectPropertyPath": "simpleArrayControllerContent",
-                        "oneway": true
-                    }
+                    "content": {"<-": "@repetitiontest1[simpleArrayControllerContent]"}
                 }
              },
             "repetitionControllerText": {
@@ -450,8 +374,8 @@
                     "objects": [1, 2, 3]
                 }
             }
-         }
-    </script>
+         
+    }</script>
 </head>
 <body>
     <h2>Static Repetition</h2>

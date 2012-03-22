@@ -3,8 +3,8 @@
     <head>
         <title>Button Group Sandbox</title>
         <script src="../../../montage.js" ></script>
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "bold": {
         "module": "montage/ui/toggle-button.reel",
         "name": "ToggleButton",
@@ -43,21 +43,9 @@
             "element": {"#": "display"}
         },
         "bindings": {
-            "bold": {
-                "boundObject": {"@": "bold"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            },
-            "italic": {
-                "boundObject": {"@": "italic"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            },
-            "underline": {
-                "boundObject": {"@": "underline"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            }
+            "bold": {"<-": "@bold[pressed]"},
+            "italic": {"<-": "@italic[pressed]"},
+            "underline": {"<-": "@underline[pressed]"}
         }
     },
 
@@ -117,8 +105,8 @@
             "display": {"@": "display"}
         }
     }
-}
-    </script>
+
+    }</script>
     <style type="text/css">
         .font-styles button {
             height: 2.5em;

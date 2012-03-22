@@ -11,8 +11,8 @@
 
     <link rel="stylesheet" href="content.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "tbi": {
                 "module": "montage/ui/dynamic-text.reel",
                 "name": "DynamicText",
@@ -205,11 +205,7 @@
                     "delegate": {"@": "owner"}
                 },
                 "bindings": {
-                    "switchValue": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "sandbox.selectedItem",
-                        "oneway": true
-                    }
+                    "switchValue": {"<-": "@owner[sandbox.selectedItem]"}
                 }
             },
 
@@ -220,8 +216,8 @@
                     "element": {"#": "content"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 </head>
 <body>
 

@@ -7,8 +7,8 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "owner": {
                     "module": "components/substitution-example.reel",
                     "name": "SubstitutionExample",
@@ -46,11 +46,7 @@
                         "element": {"#": "nav-item"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "repetition1"},
-                            "boundObjectPropertyPath": "objectAtCurrentIteration",
-                            "oneway": true
-                        }
+                        "value": {"<-": "@repetition1[objectAtCurrentIteration]"}
                     }
                 },
 
@@ -106,14 +102,11 @@
                         "switchValue": "home"
                     },
                     "bindings": {
-                        "switchValue": {
-                            "boundObject": {"@": "controller"},
-                            "boundObjectPropertyPath": "selectedObjects.0"
-                        }
+                        "switchValue": {"<<->": "@controller[selectedObjects.0]"}
                     }
                 }
-            }
-        </script>
+            
+    }</script>
 
         <style>
 

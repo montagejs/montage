@@ -7,8 +7,8 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-        {
+        <script type="text/montage-serialization">{
+
 
             "owner": {
                 "prototype": "components/scroller-example.reel",
@@ -23,14 +23,8 @@
                     "element": {"#": "scroller"}
                 },
                 "bindings": {
-                    "hasMomentum": {
-                        "boundObject": {"@": "toggleMomentum"},
-                        "boundObjectPropertyPath": "checked"
-                    },
-                    "hasBouncing": {
-                        "boundObject": {"@": "toggleBouncing"},
-                        "boundObjectPropertyPath": "checked"
-                    }
+                    "hasMomentum": {"<<->": "@toggleMomentum[checked]"},
+                    "hasBouncing": {"<<->": "@toggleBouncing[checked]"}
                 }
             },
 
@@ -55,8 +49,8 @@
                     "element": {"#": "scroller-accordion1"}
                 }
             }
-        }
-        </script>
+        
+    }</script>
 
         <style>
             .scrollpanel {

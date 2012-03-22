@@ -10,8 +10,8 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 
     <script src="../../montage.js"></script>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "appdelegate1": {
                 "module": "app-delegate",
                 "name": "AppDelegate",
@@ -40,11 +40,7 @@
                     "element": {"#": "uuid"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "repetition1"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@repetition1[objectAtCurrentIteration]"}
                 }
             },
             "repetition1": {
@@ -54,15 +50,11 @@
                     "element": {"#": "testList"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "appdelegate1"},
-                        "boundObjectPropertyPath": "uuids",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@appdelegate1[uuids]"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 
 </head>

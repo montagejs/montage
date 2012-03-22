@@ -8,8 +8,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Translate Composer Test</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "translate_composer": {
         "prototype": "montage/ui/composer/translate-composer",
         "properties": {
@@ -19,19 +19,9 @@
             "pointerSpeedMultiplier": -1
         },
         "bindings": {
-            "axis": {
-                "boundObject": {"@": "axisSelect"},
-                "boundObjectPropertyPath": "value",
-                "oneway": true
-            },
-            "hasMomentum": {
-                "boundObject": {"@": "checkbox-momentum"},
-                "boundObjectPropertyPath": "checked"
-            },
-            "hasBouncing": {
-                "boundObject": {"@": "checkbox-bouncing"},
-                "boundObjectPropertyPath": "checked"
-            }
+            "axis": {"<-": "@axisSelect[value]"},
+            "hasMomentum": {"<<->": "@checkbox-momentum[checked]"},
+            "hasBouncing": {"<<->": "@checkbox-bouncing[checked]"}
         }
     },
 
@@ -51,16 +41,8 @@
             "example": {"@": "example"}
         },
         "bindings": {
-            "x": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateX",
-                "oneway": true
-            },
-            "y": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateY",
-                "oneway": true
-            }
+            "x": {"<-": "@translate_composer[translateX]"},
+            "y": {"<-": "@translate_composer[translateY]"}
         }
     },
 
@@ -93,10 +75,7 @@
             "element": {"#": "x_value"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateX"
-            }
+            "value": {"<<->": "@translate_composer[translateX]"}
         }
     },
 
@@ -106,10 +85,7 @@
             "element": {"#": "y_value"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateY"
-            }
+            "value": {"<<->": "@translate_composer[translateY]"}
         }
     },
     "translate-accordion1": {
@@ -119,8 +95,8 @@
             "element": {"#": "translate-accordion1"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 <style type="text/css">
     .wrap {
