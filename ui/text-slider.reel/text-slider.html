@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title>TextSlider</title>
+    <link rel="stylesheet" href="text-slider.css" />
+
+    <script type="text/montage-serialization">
+    {
+        "input": {
+            "prototype": "ui/textfield.reel",
+            "properties": {
+                "element": {"#": "input"}
+            },
+            "bindings": {
+                "value": {"<<->": "@owner[value]"},
+                "converter": {"<-": "@owner[converter]"}
+            }
+        },
+        "value": {
+            "prototype": "ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "value"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner[value]"}
+            }
+        },
+        "units": {
+            "prototype": "ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "units"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner[units]"}
+            }
+        },
+
+        "translateComposer": {
+            "prototype": "ui/composer/translate-composer",
+            "properties": {
+                "component": {"@": "owner"},
+                "hasMomentum": false,
+                "hasBouncing": false
+            },
+            "bindings": {
+                "maxTranslateX": {"<-": "@owner[_range]"},
+                "maxTranslateY": {"<-": "@owner[_range]"}
+            },
+            "listeners": [
+                {
+                    "type": "translate",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "pressComposer": {
+            "prototype": "ui/composer/press-composer",
+            "properties": {
+                "component": {"@": "owner"},
+                "delegate": {"@": "owner"}
+            }
+        },
+
+        "numberConverter": {
+            "prototype": "core/converter/number-converter"
+        },
+
+        "owner": {
+            "prototype": "ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "text-slider"},
+                "converter": {"@": "numberConverter"},
+
+                "_input": {"@": "input"},
+                "_unitsLabel": {"@": "units"},
+                "_valueLabel": {"@": "value"},
+                "_pressComposer": {"@": "pressComposer"},
+                "_translateComposer": {"@": "translateComposer"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="text-slider" class="montage-text-slider">
+        <input type="text" data-montage-id="input" style="display: none" class="montage-text-slider-input"/>
+        <span data-montage-id="value" class="montage-text-slider-value"></span>
+        <span data-montage-id="units" class="montage-text-slider-label"></span>
+    </div>
+</body>
+</html>
