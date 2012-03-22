@@ -53,7 +53,7 @@ exports.PopupExample = Montage.create(Component, {
     // delegate for the Bookmark menu popup
     willPositionPopup: {
         value: function(popup, defaultPosition) {
-            var anchor = popup.anchor, anchorHt = 0, anchorWd = 0, contentHt = 0, contentWd = 0;
+            var anchor = popup.anchorElement, anchorHt = 0, anchorWd = 0, contentHt = 0, contentWd = 0;
             if(anchor) {
                 anchorHt = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
                 anchorWd = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
@@ -112,8 +112,8 @@ exports.PopupExample = Montage.create(Component, {
 
                 case 'bottomleft':
                 result = {
-                  bottom: 1,
-                  left: 10
+                  bottom: '1px',
+                  left: '10px'
                 };
                 break;
 

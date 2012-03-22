@@ -22,9 +22,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     hasTemplate: {value: true},
 
     // the HTML Element to which the popup must be anchored to
-    // @private
-    anchorEl: {value: null},
+    anchorElement: {value: null},
 
+    _anchor: {value: null},
     /**
     * The HTMLElement or Montage Component that the popup must be anchored to
     */
@@ -37,9 +37,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this._anchor = value;
                 if(value.nodeName) {
                     // HTMLElement
-                    this.anchorEl = value;
+                    this.anchorElement = value;
                 } else {
-                    this.anchorEl = value.element;
+                    this.anchorElement = value.element;
                 }
             }
         }
@@ -226,21 +226,20 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 if(typeof value === 'number') {
                     value = value + 'px';
                 }
-            } else {
-                value = '';
+                return value;
             }
-            return value;
+            return '';
         }
     },
 
     _positionPopup: {
         value: function() {
-            var position, delegate = this.delegate, anchor = this.anchorEl, type = this.type;
+            var defaultPosition, position, delegate = this.delegate, anchor = this.anchorElement, type = this.type;
 
             if(this.position !== null) {
                 // If a position has been specified but no delegate has been provided
                 // we assume that the position is static and hence use that
-                position = this.position;
+                defaultPosition = this.position;
             } else {
                 // @todo - advanced positioning support
                 var $el = this.contentEl || this.content.element;
@@ -257,20 +256,20 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     var tgtHeight = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
                     var tgtWidth = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
 
-                    position = {
+                    defaultPosition = {
                         top: elPosition.top + tgtHeight,
                         left: elPosition.left + (tgtWidth / 2) - (elWidth / 2)
                     };
 
-                    if (position.left < 0) {
-                        position.left = elPosition.left;
+                    if (defaultPosition.left < 0) {
+                        defaultPosition.left = elPosition.left;
                         this._showHidePointer(false);
                         // dont show the pointer - @todo - support pointer arrow at different parts of the popup
                     }
 
                 } else {
                     // No positioning hints provided. POsition it at the center of the viewport by default
-                    position = {
+                    defaultPosition = {
                         top: (viewportHeight / 2 - (elHeight / 2)),
                         left: (viewportWidth / 2 - (elWidth / 2))
                     };
@@ -280,21 +279,19 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
             // if a delegate is provided, use that to get the position
             if(delegate && (typeof delegate.willPositionPopup === 'function')) {
-                var anchorPosition;
-                if(anchor) {
-                    anchorPosition = this._getElementPosition(anchor);
-                }
-                position = delegate.willPositionPopup(this, position);
+                position = delegate.willPositionPopup(this, defaultPosition);
+            } else {
+                position = defaultPosition;
             }
 
             //this.position = position;
             var popupSlot = this._popupSlot;
 
             if(position) {
-                popupSlot.element.style.top = this._getCSSValue(position.top); //(position.top ? position.top + 'px' : '');
-                popupSlot.element.style.left = this._getCSSValue(position.left); //(position.left ? position.left + 'px' : '');
-                popupSlot.element.style.right = this._getCSSValue(position.right); //(position.right ? position.right + 'px' : '');
-                popupSlot.element.style.bottom = this._getCSSValue(position.bottom); //(position.bottom ? position.bottom + 'px' : '');
+                popupSlot.element.style.top = this._getCSSValue(position.top);
+                popupSlot.element.style.left = this._getCSSValue(position.left);
+                popupSlot.element.style.right = this._getCSSValue(position.right);
+                popupSlot.element.style.bottom = this._getCSSValue(position.bottom);
             }
 
         }
