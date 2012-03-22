@@ -3,14 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-var Montage = require("montage").Montage;var Uuid = require("montage/core/uuid").Uuid;
+var Montage = require("montage").Montage;
 exports.Task = Montage.create(Montage, {
-
-    identifier: {
-        serializable: true,
-        value: null
-    },
-
     note: {
         serializable: true,
         enumerable: false,
@@ -20,7 +14,6 @@ exports.Task = Montage.create(Montage, {
     initWithNote: {
         enumerable: false,
         value: function(note) {
-            this.identifier = Uuid.generate();
             this.note = note;
             return this;
         }
@@ -49,6 +42,11 @@ exports.Task = Montage.create(Montage, {
                 this.completedDate = null;
             }
         }
-    }
+    },
 
+    serializeSelf: {
+        value: function(serializer) {
+            serializer.setProperties(["note", "completedDate"]);
+        }
+    }
 });
