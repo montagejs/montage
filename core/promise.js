@@ -253,7 +253,8 @@ var PrimordialPromise = Creatable.create({
             self._reason = reason;
             self._error = error;
             self.Promise = this;
-            errors.push(error && error.stack || self);
+            rejections.push(self);
+            errors.push(error ? (error.stack ? error.stack : error) : reason);
             return self;
         }
     },
@@ -266,8 +267,9 @@ var PrimordialPromise = Creatable.create({
                     then: function (r, o, rejected) {
                         // remove this error from the list of unhandled errors on the console
                         if (rejected) {
-                            var at = errors.indexOf(this._error && this._error.stack || this);
+                            var at = rejections.indexOf(this);
                             if (at !== -1) {
+                                rejections.splice(at, 1);
                                 errors.splice(at, 1);
                             }
                         }
@@ -411,7 +413,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 try {
                     deferred.resolve(fulfilled ? fulfilled(value) : value);
                 } catch (error) {
-                    console.error(error.stack);
+                    console.error(error.stack || error, fulfilled);
                     deferred.reject(error.message, error);
                 }
             }
@@ -657,6 +659,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
 });
 
+var rejections = [];
 var errors = [];
 // Live console objects are not handled on tablets
 if (typeof window !== "undefined" && !window.Touch) {

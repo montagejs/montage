@@ -66,6 +66,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: null
     },
 
+    _shouldDispatchTranslate: {
+        value: false,
+        enumerable: false
+    },
+
     _isSelfUpdate: {
         enumerable: false,
         value: false
@@ -203,7 +208,19 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    invertAxis: {value: null},
+    _invertAxis: {
+        value: false,
+        enumerable: false
+    },
+
+    invertAxis: {
+        get: function() {
+            return this._invertAxis;
+        },
+        set: function(value) {
+            this._invertAxis=value?true:false;
+        }
+    },
 
     _hasMomentum: {
         enumerable: false,
@@ -233,33 +250,34 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    _momentumDuration: {
+    __momentumDuration: {
         enumerable: false,
         value: 650
     },
 
-    momentumDuration: {
+    _momentumDuration: {
         get: function () {
-            return this._momentumDuration;
+            return this.__momentumDuration;
         },
         set: function (value) {
-            this._momentumDuration=isNaN(value)?1:value>>0;
-            if (this._momentumDuration<1) this._momentumDuration=1;
-        }
+            this.__momentumDuration=isNaN(value)?1:value>>0;
+            if (this.__momentumDuration<1) this.__momentumDuration=1;
+        },
+        enumerable: false
     },
 
-    _bouncingDuration: {
+    __bouncingDuration: {
         enumerable: false,
         value: 750
     },
 
-    bouncingDuration: {
+    _bouncingDuration: {
         get: function () {
-            return this._bouncingDuration;
+            return this.__bouncingDuration;
         },
         set: function (value) {
-            this._bouncingDuration=isNaN(value)?1:value>>0;
-            if (this._bouncingDuration<1) this._bouncingDuration=1;
+            this.__bouncingDuration=isNaN(value)?1:value>>0;
+            if (this.__bouncingDuration<1) this.__bouncingDuration=1;
         }
     },
 
@@ -558,31 +576,33 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     _move: {
         enumerable: false,
         value: function (x, y) {
-
+            var pointerDelta;
             this._isSelfUpdate=true;
-            var delta;
             if (this._axis!="vertical") {
-                var delta = this.invertAxis ? (x-this._pointerX) : (this._pointerX-x);
+                pointerDelta = this._invertAxis ? (this._pointerX-x) : (x-this._pointerX);
                 if ((this._translateX<0)||(this._translateX>this._maxTranslateX)) {
-                    this.translateX+=(delta/2)*this._pointerSpeedMultiplier;
+                    this.translateX+=((pointerDelta)/2)*this._pointerSpeedMultiplier;
                 } else {
-                    this.translateX+=(delta)*this._pointerSpeedMultiplier;
+                    this.translateX+=(pointerDelta)*this._pointerSpeedMultiplier;
                 }
             }
             if (this._axis!="horizontal") {
+                pointerDelta = this._invertAxis ? (this._pointerY-y) : (y-this._pointerY);
                 if ((this._translateY<0)||(this._translateY>this._maxTranslateY)) {
-                    this.translateY+=((this._pointerY-y)/2)*this._pointerSpeedMultiplier;
+                    this.translateY+=((pointerDelta)/2)*this._pointerSpeedMultiplier;
                 } else {
-                    this.translateY+=(this._pointerY-y)*this._pointerSpeedMultiplier;
+                    this.translateY+=(pointerDelta)*this._pointerSpeedMultiplier;
                 }
             }
-
             this._isSelfUpdate=false;
             this._pointerX=x;
             this._pointerY=y;
             if (this._isFirstMove) {
                 this._dispatchTranslateStart();
                 this._isFirstMove = false;
+            }
+            if (this._shouldDispatchTranslate) {
+                this._dispatchTranslate();
             }
         }
     },
@@ -634,6 +654,17 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    _dispatchTranslate: {
+        enumerable: false,
+        value: function() {
+            var translateEvent = document.createEvent("CustomEvent");
+            translateEvent.initCustomEvent("translate", true, true, null);
+            translateEvent.translateX = this._translateX;
+            translateEvent.translateY = this._translateY;
+            this.dispatchEvent(translateEvent);
+        }
+    },
+
 
     _end: {
         enumerable: false,
@@ -669,8 +700,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 } else {
                     momentumY=0;
                 }
-                endX=startX-(momentumX*this._momentumDuration/2000);
-                endY=startY-(momentumY*this._momentumDuration/2000);
+                endX=startX-(momentumX*this.__momentumDuration/2000);
+                endY=startY-(momentumY*this.__momentumDuration/2000);
                 animateMomentum=true;
             }
 
@@ -679,9 +710,9 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
                 if (animateMomentum) {
                     t=time-startTime;
-                    if (t<self._momentumDuration) {
-                        posX=startX-((momentumX+momentumX*(self._momentumDuration-t)/self._momentumDuration)*t/1000)/2;
-                        posY=startY-((momentumY+momentumY*(self._momentumDuration-t)/self._momentumDuration)*t/1000)/2;
+                    if (t<self.__momentumDuration) {
+                        posX=startX-((momentumX+momentumX*(self.__momentumDuration-t)/self.__momentumDuration)*t/1000)/2;
+                        posY=startY-((momentumY+momentumY*(self.__momentumDuration-t)/self.__momentumDuration)*t/1000)/2;
                     } else {
                         animateMomentum=false;
                     }
@@ -698,11 +729,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                                 startTimeBounceX=time;
                             }
                             t=time-startTimeBounceX;
-                            if ((t<self._bouncingDuration)||(animateMomentum)) {
-                                if (t>self._bouncingDuration) {
-                                    t=self._bouncingDuration;
+                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
+                                if (t>self.__bouncingDuration) {
+                                    t=self.__bouncingDuration;
                                 }
-                                tmpX=tmpX*(1-self._bezierTValue(t/self._bouncingDuration, .17, .93, .19, 1));
+                                tmpX=tmpX*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
                             } else {
                                 tmpX=0;
                                 animateBouncingX=false;
@@ -719,11 +750,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                                 startTimeBounceY=time;
                             }
                             t=time-startTimeBounceY;
-                            if ((t<self._bouncingDuration)||(animateMomentum)) {
-                                if (t>self._bouncingDuration) {
-                                    t=self._bouncingDuration;
+                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
+                                if (t>self.__bouncingDuration) {
+                                    t=self.__bouncingDuration;
                                 }
-                                tmpY=tmpY*(1-self._bezierTValue(t/self._bouncingDuration, .17, .93, .19, 1));
+                                tmpY=tmpY*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
                             } else {
                                 tmpY=0;
                                 animateBouncingY=false;
@@ -740,11 +771,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                                 startTimeBounceX=time;
                             }
                             t=time-startTimeBounceX;
-                            if ((t<self._bouncingDuration)||(animateMomentum)) {
-                                if (t>self._bouncingDuration) {
-                                    t=self._bouncingDuration;
+                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
+                                if (t>self.__bouncingDuration) {
+                                    t=self.__bouncingDuration;
                                 }
-                                tmpX=self._maxTranslateX+(tmpX-self._maxTranslateX)*(1-self._bezierTValue(t/self._bouncingDuration, .17, .93, .19, 1));
+                                tmpX=self._maxTranslateX+(tmpX-self._maxTranslateX)*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
                             } else {
                                 tmpX=self._maxTranslateX;
                                 animateBouncingX=false;
@@ -761,11 +792,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                                 startTimeBounceY=time;
                             }
                             t=time-startTimeBounceY;
-                            if ((t<self._bouncingDuration)||(animateMomentum)) {
-                                if (t>self._bouncingDuration) {
-                                    t=self._bouncingDuration;
+                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
+                                if (t>self.__bouncingDuration) {
+                                    t=self.__bouncingDuration;
                                 }
-                                tmpY=self._maxTranslateY+(tmpY-self._maxTranslateY)*(1-self._bezierTValue(t/self._bouncingDuration, .17, .93, .19, 1));
+                                tmpY=self._maxTranslateY+(tmpY-self._maxTranslateY)*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
                             } else {
                                 tmpY=self._maxTranslateY;
                                 animateBouncingY=false;
@@ -815,6 +846,15 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             }
 
             this.eventManager.isStoringPointerEvents = true;
+        }
+    },
+
+    addEventListener: {
+        value: function(type, listener, useCapture) {
+            Composer.addEventListener.call(this, type, listener, useCapture);
+            if (type === "translate") {
+                this._shouldDispatchTranslate = true;
+            }
         }
     }
 

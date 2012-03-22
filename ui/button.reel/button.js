@@ -127,10 +127,10 @@ var Button = exports.Button = Montage.create(NativeControl, {
     */
     holdTimeout: {
         get: function() {
-            return this._pressComposer.longpressTimeout;
+            return this._pressComposer.longPressTimeout;
         },
         set: function(value) {
-            this._pressComposer.longpressTimeout = value;
+            this._pressComposer.longPressTimeout = value;
         }
     },
 
@@ -173,9 +173,9 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
     prepareForActivationEvents: {
         value: function() {
-            this._pressComposer.addEventListener("pressstart", this, false);
+            this._pressComposer.addEventListener("pressStart", this, false);
             this._pressComposer.addEventListener("press", this, false);
-            this._pressComposer.addEventListener("presscancel", this, false);
+            this._pressComposer.addEventListener("pressCancel", this, false);
         }
     },
 
@@ -184,7 +184,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
         value: function(type, listener, useCapture) {
             NativeControl.addEventListener.call(this, type, listener, useCapture);
             if (type === "hold") {
-                this._pressComposer.addEventListener("longpress", this, false);
+                this._pressComposer.addEventListener("longPress", this, false);
             }
         }
     },
@@ -194,7 +194,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     /**
     Called when the user starts interacting with the component.
     */
-    handlePressstart: {
+    handlePressStart: {
         value: function(event) {
             this.active = true;
 
@@ -227,7 +227,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
-    handleLongpress: {
+    handleLongPress: {
         value: function(event) {
             // When we fire the "hold" event we don't want to fire the
             // "action" event as well.
@@ -242,7 +242,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     /**
     Called when all interaction is over.
     */
-    handlePresscancel: {
+    handlePressCancel: {
         value: function(event) {
             this.active = false;
         }
@@ -262,7 +262,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
             NativeControl.didSetElement.call(this);
 
             this._element.classList.add("montage-button");
-            this._element.setAttribute("aria-role", "button");
+            this._element.setAttribute("role", "button");
 
             this._isInputElement = (this._element.tagName === "INPUT");
             // Only take the value from the element if it hasn't been set

@@ -8,9 +8,9 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component;    
 
 /**
- * The input type="range" field
+ * Input Range
  */
-var RangeInput = exports.RangeInput = Montage.create(Component, {
+var InputRange = exports.InputRange = Montage.create(Component, {
     
     DEFAULT_WIDTH: {value: 300},
     HANDLE_ADJUST: {value: 5},
@@ -159,8 +159,8 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
     prepareForDraw: {
         value: function() {
             this.minX = this.sliderLeft = this.element.offsetLeft;
-            this.sliderWidth =  (this.width || RangeInput.DEFAULT_WIDTH); //this.element.offsetWidth || 300;            
-            this.element.style.width = (this.sliderWidth + RangeInput.HANDLE_ADJUST) + 'px';
+            this.sliderWidth =  (this.width || InputRange.DEFAULT_WIDTH); //this.element.offsetWidth || 300;            
+            this.element.style.width = (this.sliderWidth + InputRange.HANDLE_ADJUST) + 'px';
             
             this.maxX = this.sliderLeft + this.sliderWidth;
             
