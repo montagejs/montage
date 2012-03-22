@@ -104,7 +104,7 @@ var testPage = TestPageLoader.queueTest("popup-test", function() {
 
             it("is positioned relative to anchor by default", function() {
                 var popup = test.popup;
-                var anchor = popup.anchorEl, anchorHt, anchorWd, anchorPosition;
+                var anchor = popup.anchorElement, anchorHt, anchorWd, anchorPosition;
 
                 var anchorPosition = getElementPosition(anchor);
                 anchorHt = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
