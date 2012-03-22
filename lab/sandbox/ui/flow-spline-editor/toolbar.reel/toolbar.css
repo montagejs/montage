@@ -1,0 +1,59 @@
+.toolbar {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 33px;
+    border-top: 1px solid #1D1D1D;
+    border-bottom: 1px solid #1D1D1D;
+    background: -webkit-gradient(linear, left top, left bottom, from(#323232), to(#212121));
+}
+.toolbar .button {
+    display: block;
+    float: left;
+    width: 19px;
+    height: 19px;
+    padding: 7px;
+    border-left: 1px solid #363636;
+    border-right: 1px solid #1D1D1D;
+    cursor: pointer;
+    outline: none;
+}
+.toolbar .button:active {
+    border-left: 1px solid #1D1D1D;
+    border-right: 1px solid #363636;
+    background: -webkit-gradient(linear, left top, left bottom,  from(#212121), to(#323232));
+}
+.toolbar .button:after {
+    display: block;
+    content: "";
+    position: absolute;
+    background: url(toolbar-icons.png) no-repeat;
+    width: 19px;
+    height: 19px;
+    opacity: .35;
+}
+.toolbar .selected.button:after {
+    opacity: .85;
+}
+.toolbar .remove:after {
+    background-position: -20px 0;
+}
+.toolbar .move-knot:after {
+    background-position: -40px 0;
+}
+.toolbar .move-handler:after {
+    background-position: -60px 0;
+}
+.toolbar .weight:after {
+    background-position: -140px 0;
+}
+.toolbar .parameters:after {
+    background-position: -180px 0;
+}
+.toolbar .camera:after {
+    background-position: -160px 0;
+}
+.toolbar .zoom-extents:after {
+    background-position: -100px 0;
+}
