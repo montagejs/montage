@@ -400,7 +400,7 @@ describe("serialization/serializer-spec", function() {
                 object.addEventListener("action", Montage.create(), false);
 
                 var serialization = serializer.serializeObject(object);
-                expect(stripPP(serialization)).toBe('{"montage":{"prototype":"montage/core/core[Montage]","properties":{"type":"action","listener":{"@":"montage2"},"capture":false}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42},"listeners":[{"@":"montage"}]}}');
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42},"listeners":[{"type":"action","listener":{"@":"montage"},"capture":false}]}}');
             });
 
             it("should serialize the object manually without bindings", function() {
@@ -431,7 +431,7 @@ describe("serialization/serializer-spec", function() {
                 object.addEventListener("action", Montage.create(), false);
 
                 var serialization = serializer.serializeObject(object);
-                expect(stripPP(serialization)).toBe('{"montage":{"prototype":"montage/core/core[Montage]","properties":{"type":"action","listener":{"@":"montage2"},"capture":false}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"listeners":[{"@":"montage"}]}}');
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"listeners":[{"type":"action","listener":{"@":"montage"},"capture":false}]}}');
             });
         });
 
@@ -488,7 +488,7 @@ describe("serialization/serializer-spec", function() {
                 object.addEventListener("action", Montage.create(), false);
 
                 var serialization = serializer.serializeObject(object);
-                expect(stripPP(serialization)).toBe('{"montage":{"prototype":"montage/core/core[Montage]","properties":{"type":"action","listener":{"@":"montage2"},"capture":false}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42},"listeners":[{"@":"montage"}]}}');
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{"number":42},"listeners":[{"type":"action","listener":{"@":"montage"},"capture":false}]}}');
             });
 
             it("should serialize the object manually with bindings", function() {
@@ -519,7 +519,7 @@ describe("serialization/serializer-spec", function() {
                 object.addEventListener("action", Montage.create(), false);
 
                 var serialization = serializer.serializeObject(object);
-                expect(stripPP(serialization)).toBe('{"montage":{"prototype":"montage/core/core[Montage]","properties":{"type":"action","listener":{"@":"montage2"},"capture":false}},"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"listeners":[{"@":"montage"}],"bindings":{"number":{"<-":"@oneprop[prop]"}}}}');
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[Custom]","properties":{},"listeners":[{"type":"action","listener":{"@":"montage"},"capture":false}],"bindings":{"number":{"<-":"@oneprop[prop]"}}}}');
             });
         });
 
