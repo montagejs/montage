@@ -98,6 +98,26 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     }},
 
     /**
+     Initializes the deserializer with a string
+     @param {String|Object} serialization A string or JSON-style object
+     describing the serialized objects.
+     @param {Function} require The module loader for the containing package.
+     @param {String} origin Usually a file name.
+     */
+    init: {
+        value: function (serialization, require, origin) {
+            if (typeof serialization !== "string") {
+                serialization = JSON.stringify(serialization);
+            }
+            this._reset();
+            this._serializationString = serialization;
+            this._require = require;
+            this._origin = origin;
+            return this;
+        }
+    },
+
+    /**
      Initializes the deserializer with a string of serialized objects.
      @function
      @param {String} string A string of serialized objects.
@@ -119,6 +139,14 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     initWithObject: {value: function(object) {
         this._reset();
         this._serializationString = JSON.stringify(object);
+        return this;
+    }},
+
+    initWithObjectAndRequire: {value: function(string, require, origin) {
+        this._reset();
+        this._serializationString = JSON.stringify(object);
+        this._require = require;
+        this._origin = origin;
         return this;
     }},
 
@@ -999,6 +1027,24 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     }}
 });
 
+/**
+@function
+@param {String} serialization
+@param require
+@returns promise for the serialized object
+*/
+var deserializer = Deserializer.create();
+function deserialize(serialization, require, origin) {
+    var deferred = Promise.defer();
+    deserializer.init(serialization, require, origin)
+    .deserializeObject(function (object) {
+        deferred.resolve(object);
+    });
+    return deferred.promise;
+}
+
 if (typeof exports !== "undefined") {
     exports.Deserializer = Deserializer;
+    exports.deserialize = deserialize;
 }
+

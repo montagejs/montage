@@ -6,6 +6,7 @@
  var Montage = require("montage/core/core").Montage,
      Component = require("montage/ui/component").Component,
      Serializer = require("montage/core/serializer").Serializer,
+     serialize = require("montage/core/serializer").serialize,
      objects = require("serialization/testobjects-v2").objects;
 
 var stripPP = function stripPrettyPrintting(str) {
@@ -58,6 +59,14 @@ describe("serialization/serializer-spec", function() {
             var serialization = serializer._serializeValue({value: undefined});
             expect(serialization.hasOwnProperty("value")).toBeFalsy();
         });
+
+        it("should serialize string with shorthand", function() {
+            expect(JSON.parse(serialize("string"))).toEqual({
+                root: {
+                    value: "string"
+                }
+            });
+        });
     });
 
     describe("Native Objects Serialization", function() {
@@ -102,6 +111,14 @@ describe("serialization/serializer-spec", function() {
             var object = JSON.parse(serialization)["->"];
 
             expect((new Function(object.arguments, object.body))(2)).toBe(4);
+        });
+
+        it("should serialize array with shorthand", function() {
+            expect(JSON.parse(serialize([1, 2, 3]))).toEqual({
+                root: {
+                    value: [1, 2, 3]
+                }
+            });
         });
 
         // TODO: object literal with functions

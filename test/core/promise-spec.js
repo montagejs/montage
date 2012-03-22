@@ -121,7 +121,7 @@ describe("core/promise-spec", function () {
 
     describe("delayed promise", function () {
 
-        var delayed = Promise.ref(10).delay(1000);
+        var delayed = Promise.ref(10).delay(100);
         var value;
 
         delayed.then(function (_value) {
@@ -135,6 +135,16 @@ describe("core/promise-spec", function () {
             runs(function () {
                 expect(value).toBe(10);
             });
+        });
+
+        it("can time out", function () {
+            return Promise.delay(100)
+            .timeout(50)
+            .then(function () {
+                expect(true).toBe(false);
+            }, function (reason) {
+                expect(reason).toBe("Timed out");
+            })
         });
 
     });

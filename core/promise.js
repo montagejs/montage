@@ -565,18 +565,21 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
     delay: {
         value: function (timeout) {
-            var deferred = this.Promise.defer();
-            this.then(function (value) {
-                clearTimeout(handle);
-                deferred.resolve(value);
-            }, function (reason, error, rejection) {
-                clearTimeout(handle);
-                deferred.resolve(rejection);
+            var self = this;
+            var promise;
+            if (arguments.length === 0) {
+                timeout = this;
+            } else {
+                promise = this;
+            }
+            return Promise.ref(timeout)
+            .then(function (timeout) {
+                var deferred = self.Promise.defer();
+                setTimeout(function () {
+                    deferred.resolve(promise);
+                }, timeout);
+                return deferred.promise;
             });
-            var handle = setTimeout(function () {
-                deferred.reject("Timed out");
-            }, timeout);
-            return deferred.promise;
         }
     },
 
@@ -591,7 +594,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 deferred.resolve(rejection);
             }).end();
             var handle = setTimeout(function () {
-                deferred.reject("Timed out");
+                deferred.reject("Timed out", new Error("Timed out"));
             }, timeout);
             return deferred.promise;
         }

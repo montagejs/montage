@@ -7,6 +7,7 @@ var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
     logger = require("montage/core/logger").logger("deserializer-spec"),
     Deserializer = require("montage/core/deserializer").Deserializer,
+    deserialize = require("montage/core/deserializer").deserialize,
     objects = require("serialization/testobjects-v2").objects;
 
 logger.isError = true;
@@ -20,6 +21,7 @@ describe("serialization/deserializer-spec", function() {
     });
 
     describe("Native Types Deserialization", function() {
+
         it("should deserialize a string", function() {
             deserializer.initWithObject({
                 root: {
@@ -83,6 +85,25 @@ describe("serialization/deserializer-spec", function() {
                 expect(object).toBeNull();
             });
         });
+
+        it("should deserialize string with string shorthand", function () {
+            return deserialize('{"root":{"value":"string"}}')
+            .then(function (object) {
+                expect(object).toBe("string");
+            });
+        });
+
+        it("should deserialize string with object shorthand", function () {
+            return deserialize({
+                root: {
+                    value: "string"
+                }
+            })
+            .then(function (object) {
+                expect(object).toBe("string");
+            });
+        });
+
     });
 
     describe("Native Objects Deserialization", function() {
@@ -126,6 +147,14 @@ describe("serialization/deserializer-spec", function() {
                 expect(object(2)).toBe(4);
             });
         });
+
+        it("should deserialize string with shorthand", function () {
+            return deserialize('{"root":{"value":[1,2,3]}}')
+            .then(function (object) {
+                expect(object).toEqual([1,2,3]);
+            });
+        });
+
     });
 
     describe("User Objects Deserialization", function() {
