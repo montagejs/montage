@@ -10,7 +10,9 @@ var spec = queryString("spec");
 if (spec) {
     require.async(decodeURIComponent(spec)).then(function() {
         jasmine.getEnv().execute();
-        window.testpage.callNext();
+        if (window.testpage) {
+            window.testpage.callNext();
+        }
     });
 } else {
     var modules = [
@@ -89,7 +91,9 @@ if (spec) {
     .then(function () {
         modules.forEach(require);
         jasmine.getEnv().execute();
-        window.testpage.callNext();
+        if (window.testpage) {
+            window.testpage.callNext();
+        }
     });
 }
 
