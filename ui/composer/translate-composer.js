@@ -81,7 +81,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: 0
     },
-
     translateX: {
         get: function() {
             return this._translateX;
@@ -92,7 +91,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             } else {
                 var tmp = isNaN(value) ? 0 : value >> 0;
 
-                if (tmp < 0) {
+                if (tmp < this._startX) {
                     tmp = 0;
                 }
                     if (tmp > this._endX) {
@@ -110,7 +109,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: 0
     },
-
     translateY: {
         get: function() {
             return this._translateY;
@@ -121,7 +119,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             } else {
                 var tmp = isNaN(value) ? 0 : value >> 0;
 
-                if (tmp < 0) {
+                if (tmp < this._startY) {
                     tmp = 0;
                 }
                     if (tmp > this._endY) {
@@ -135,11 +133,29 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    _startX: {
+        enumerable: false,
+        value: 0
+    },
+    startX: {
+        get: function() {
+            return this._startX;
+        },
+        set: function(value) {
+            var tmp = isNaN(value) ? 0 : value >> 0;
+
+            if (this._startX != tmp) {
+                if (this._translateX > this._startX) {
+                    this.translateX = this._startX;
+                }
+                this._startX = tmp;
+            }
+        }
+    },
     _endX: {
         enumerable: false,
         value: 0
     },
-
     endX: {
         get: function() {
             return this._endX;
@@ -147,9 +163,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         set: function(value) {
             var tmp = isNaN(value) ? 0 : value >> 0;
 
-            if (tmp < 0) {
-                tmp = 0;
-            }
             if (this._endX != tmp) {
                 if (this._translateX > this._endX) {
                     this.translateX = this._endX;
@@ -159,11 +172,29 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    _startY: {
+        enumerable: false,
+        value: 0
+    },
+    startY: {
+        get: function() {
+            return this._startY;
+        },
+        set: function(value) {
+            var tmp = isNaN(value) ? 0 : value >> 0;
+
+            if (this._startY != tmp) {
+                if (this._translateY > this._startY) {
+                    this.translateY = this._startY;
+                }
+                this._startY = tmp;
+            }
+        }
+    },
     _endY: {
         enumerable: false,
         value: 0
     },
-
     endY: {
         get: function() {
             return this._endY;
@@ -171,9 +202,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         set: function(value) {
             var tmp = isNaN(value) ? 0 : value >> 0;
 
-            if (tmp < 0) {
-                tmp = 0;
-            }
             if (this._endY != tmp) {
                 if (this._translateY > this._endY) {
                     this.translateY = this._endY;
