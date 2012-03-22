@@ -1211,6 +1211,10 @@ Deserializer.defineDeserializationUnit("bindings", function(object, bindings, de
         if (!("boundObject" in binding)) {
             var targetPath = binding["<-"] || binding["->"] || binding["<->>"] || binding["<<->"];
 
+            if (targetPath[0] !== "@" || targetPath.slice(-1) !== "]") {
+                logger.error("Invalid binding syntax '" + targetPath + "', should be in the form of '@label[path]'.");
+                throw "Invalid binding syntax '" + targetPath + "'";
+            }
             if ("->" in binding || "<->>" in binding) {
                 binding.boundObject = object;
                 binding.boundObjectPropertyPath = sourcePath;
