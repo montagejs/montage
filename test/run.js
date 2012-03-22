@@ -79,6 +79,7 @@ if (spec) {
         "ui/number-input-spec",
         "ui/range-input-spec",
         "ui/popup-spec",
+        "ui/popup-in-window-spec",
         "ui/repetition-spec",
         "ui/select-input-spec",
         "ui/slider-spec",

@@ -13,16 +13,17 @@ var Montage = require("montage").Montage,
 var TestPopupPositionDelegate = Montage.create(Montage, {
     willPositionPopup: {
        value: function(popup, anchorPosition) {
-           if(anchor && anchorPosition) {
+           if(anchorPosition) {
+               console.log('anchorPosition : ', anchorPosition);
                if(window.innerHeight > 500 ){
                    return {
                        top: 10,
-                       left: anchorPosition[0]
+                       left: anchorPosition.left
                    };
                } else {
                    return {
                        bottom: 10,
-                       left: anchorPosition[0]
+                       left: anchorPosition.left
                    };
                }
            }
@@ -32,7 +33,7 @@ var TestPopupPositionDelegate = Montage.create(Montage, {
 });
 var aTestPopupPositionDelegate = Montage.create(TestPopupPositionDelegate);
 
-var PopupTest = exports.popupTest = Montage.create(Montage, {
+var PopupInWindowTest = exports.PopupInWindowTest = Montage.create(Montage, {
     deserializedFromTemplate: {
         value: function() {
             return this;

@@ -32,7 +32,7 @@ var TestPopupPositionDelegate = Montage.create(Montage, {
 });
 var aTestPopupPositionDelegate = Montage.create(TestPopupPositionDelegate);
 
-var PopupTest = exports.popupTest = Montage.create(Montage, {
+var PopupTest = exports.PopupTest = Montage.create(Montage, {
     deserializedFromTemplate: {
         value: function() {
             return this;
