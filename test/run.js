@@ -39,6 +39,7 @@ if (spec) {
         require.async("core/core-require-spec"),
         require.async("core/core-spec"),
         require.async("core/promise-spec"),
+        require.async("core/next-tick-spec"),
 
         require.async("data/blueprint-spec"),
         require.async("data/context-spec"),
