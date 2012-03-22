@@ -65,11 +65,11 @@
                         "readonly": {"<<->": "@owner[phoneReadOnly]"}
                     }
                 },
-                "edit-phone": {
+                "editPhone": {
                     "module": "montage/ui/button.reel",
                     "name": "Button",
                     "properties": {
-                        "element": {"#": "edit-phone"},
+                        "element": {"#": "editPhone"},
                         "identifier": "editPhone"
                     },
                     "listeners": [
@@ -88,17 +88,6 @@
                     },
                     "bindings": {
                         "value": {"<<->": "@owner[url]"}
-                    }
-                },
-
-                "zip": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
-                    "properties": {
-                        "element": {"#": "zip"}
-                    },
-                    "bindings": {
-                        "value": {"<<->": "@owner[zip]"}
                     }
                 },
 
@@ -132,11 +121,11 @@
                         "value": {"<<->": "@owner[dob]"}
                     }
                 },
-                "dob-error": {
+                "dobError": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
-                        "element": {"#": "dob-error"}
+                        "element": {"#": "dobError"}
                     },
                     "bindings": {
                         "value": {
@@ -161,12 +150,12 @@
                         }
                     ]
                 },
-                
-                "input-text-accordion1": {
+
+                "inputTextAccordion1": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
-                        "element": {"#": "input-text-accordion1"}
+                        "element": {"#": "inputTextAccordion1"}
                     }
                 },
 
@@ -184,7 +173,7 @@
                         }
                     }
                 }
-            
+
     }</script>
 
         <style>
@@ -195,7 +184,7 @@
             .input-text-example pre.json {
                 border: 0;
             }
-            
+
             .input-text-example #echo {
                 width: 400px;
             }
@@ -239,14 +228,14 @@
 
                          <label for="tel1">Phone Number</label>
                          <input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
-                         <button class="btn" id="edit-phone" type="button">Edit Phone Number</button>
+                         <button class="btn" id="editPhone" type="button">Edit Phone Number</button>
 
                          <label for="zipcode">US Postal code</label>
                           <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
 
                          <label for="date1">Date of Birth</label>
                          <input type="date" id="dob" value="" name="dob" pattern=""/>
-                         <div id="dob-error" class="error"></div>
+                         <div id="dobError" class="error"></div>
 
                          <div style="margin-top: 10px;">
                              <button class="btn" id="update" type="button">Update</button>
@@ -256,11 +245,11 @@
                      <div id="echo" class="prettyprint"></div>
                  </div>
             </div>
-            
-            
+
+
             <section>
-                
-                       <ul id="input-text-accordion1" class="accordion">
+
+                       <ul id="inputTextAccordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
@@ -282,14 +271,14 @@
 
      &lt;label for="tel1"&gt;Phone Number&lt;/label&gt;
      &lt;input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" /&gt;
-     &lt;button class="btn" id="edit-phone" type="button"&gt;Edit Phone Number&lt;/button&gt;
+     &lt;button class="btn" id="editPhone" type="button"&gt;Edit Phone Number&lt;/button&gt;
 
      &lt;label for="zipcode"&gt;US Postal code&lt;/label&gt;
       &lt;input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/&gt;
 
      &lt;label for="date1"&gt;Date of Birth&lt;/label&gt;
      &lt;input type="date" id="dob" value="" name="dob" pattern=""/&gt;
-     &lt;div id="dob-error" class="error"&gt;&lt;/div&gt;
+     &lt;div id="dobError" class="error"&gt;&lt;/div&gt;
 
      &lt;div style="margin-top: 10px;"&gt;
          &lt;button class="btn" id="update" type="button"&gt;Update&lt;/button&gt;
@@ -382,11 +371,11 @@
             }
         }
     },
-    "edit-phone": {
+    "editPhone": {
         "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
-            "element": {"#": "edit-phone"},
+            "element": {"#": "editPhone"},
             "identifier": "editPhone"
         },
         "listeners": [
@@ -465,11 +454,11 @@
             }
         }
     },
-    "dob-error": {
+    "dobError": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "dob-error"}
+            "element": {"#": "dobError"}
         },
         "bindings": {
             "value": {
@@ -569,13 +558,13 @@ exports.InputTextExample = Montage.create(Component, {
             this.phoneReadOnly = false;
         }
     }
-});                    
+});
                                     </pre>
                                 </div>
                             </li>
                         </ul>
-                
-                
+
+
             </section>
 
 

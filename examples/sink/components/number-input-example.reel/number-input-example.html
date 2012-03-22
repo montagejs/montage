@@ -16,7 +16,7 @@
                         "element": {"#": "number-input-example"}
                     }
                 },
-                "temp-converter": {
+                "tempConverter": {
                     "module": "components/number-input-example.reel",
                     "name": "TempConverter",
                     "properties": {
@@ -30,14 +30,14 @@
                         "element": {"#": "celsius"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@fahrenheitTextfield[value]", "converter": {"@": "temp-converter"}}
+                        "value": {"<<->": "@fahrenheitTextfield[value]", "converter": {"@": "tempConverter"}}
                     }
                 },
-                "number-accordion1": {
+                "numberAccordion1": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
-                        "element": {"#": "number-accordion1"}
+                        "element": {"#": "numberAccordion1"}
                     }
                 },
                 "fahrenheitTextfield": {
@@ -48,7 +48,7 @@
                         "value": "32"
                     }
                 }
-            
+
     }</script>
 
         <style>
@@ -87,7 +87,7 @@
            <section>
 
 
-<ul id="number-accordion1" class="accordion">
+<ul id="numberAccordion1" class="accordion">
    <li class="accordion-group">
        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
        <div class="accordion-inner montage-hidden" >
@@ -114,7 +114,7 @@
             "element": {"#": "number-input-example"}
         }
     },
-    "temp-converter": {
+    "tempConverter": {
         "module": "components/number-input-example.reel",
         "name": "TempConverter",
         "properties": {
@@ -131,7 +131,7 @@
             "value": {
                 "boundObject": {"@": "fahrenheitTextfield"},
                 "boundObjectPropertyPath": "value",
-                "converter": {"@": "temp-converter"}
+                "converter": {"@": "tempConverter"}
             }
         }
     },

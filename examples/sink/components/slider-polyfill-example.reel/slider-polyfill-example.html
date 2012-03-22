@@ -36,11 +36,11 @@
                     }
 
                 },
-                "red-value": {
+                "redValue": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
-                        "element": {"#": "red-value"}
+                        "element": {"#": "redValue"}
                     },
                     "bindings": {
                         "value": {"<-": "@owner[red]", "converter": {"@": "roundTo2Decimals"}}
@@ -56,11 +56,11 @@
                             "value": {"<<->": "@owner[green]"}
                         }
                     },
-                    "green-value": {
+                    "greenValue": {
                         "module": "montage/ui/dynamic-text.reel",
                         "name": "DynamicText",
                         "properties": {
-                            "element": {"#": "green-value"}
+                            "element": {"#": "greenValue"}
                         },
                         "bindings": {
                             "value": {"<-": "@owner[green]", "converter": {"@": "roundTo2Decimals"}}
@@ -76,17 +76,17 @@
                             "value": {"<<->": "@owner[blue]"}
                         }
                     },
-                    "blue-value": {
+                    "blueValue": {
                         "module": "montage/ui/dynamic-text.reel",
                         "name": "DynamicText",
                         "properties": {
-                            "element": {"#": "blue-value"}
+                            "element": {"#": "blueValue"}
                         },
                         "bindings": {
                             "value": {"<-": "@owner[blue]", "converter": {"@": "roundTo2Decimals"}}
                         }
                     },
-                    "result-hex-value": {
+                    "resultHexValue": {
                         "module": "montage/ui/dynamic-text.reel",
                         "name": "DynamicText",
                         "properties": {
@@ -174,17 +174,17 @@
                             <section>
                                 Red:
                                 <input id="color-red" type="range" min="0" max="15"  value="0"/>
-                                <span id="red-value" class="range-value"></span>
+                                <span id="redValue" class="range-value"></span>
                             </section>
                             <section>
                                 Green:
                                 <input id="color-green" type="range" min="0" max="15" value="0" />
-                                <span id="green-value" class="range-value"/>
+                                <span id="greenValue" class="range-value"/>
                             </section>
                             <section>
                                 Blue:
                                 <input id="color-blue" type="range" min="0" max="15" value="0" />
-                                <span id="blue-value" class="range-value" />
+                                <span id="blueValue" class="range-value" />
                             </section>
 
                         </section>
@@ -215,17 +215,17 @@
 &lt;section&gt;<br>
 Red:<br>
 &lt;input id="color-red" type="range" min="0" max="15" value="0"/&gt;<br>
-&lt;span id="red-value" class="range-value"&gt;&lt;/span&gt;<br>
+&lt;span id="redValue" class="range-value"&gt;&lt;/span&gt;<br>
 &lt;/section&gt;<br>
 &lt;section&gt;<br>
 Green:<br>
 &lt;input id="color-green" type="range" min="0" max="15" value="0" /&gt;<br>
-&lt;span id="green-value" class="range-value"/&gt;<br>
+&lt;span id="greenValue" class="range-value"/&gt;<br>
 &lt;/section&gt;<br>
 &lt;section&gt;<br>
 Blue:<br>
 &lt;input id="color-blue" type="range" min="0" max="15" value="0" /&gt;<br>
-&lt;span id="blue-value" class="range-value" /&gt;<br>
+&lt;span id="blueValue" class="range-value" /&gt;<br>
 &lt;/section&gt;<br>
 <br>
 &lt;/section&gt;<br>
@@ -271,11 +271,11 @@ Blue:<br>
         }
 
     },
-    "red-value": {
+    "redValue": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "red-value"}
+            "element": {"#": "redValue"}
         },
         "bindings": {
             "value": {
@@ -299,11 +299,11 @@ Blue:<br>
                 }
             }
         },
-        "green-value": {
+        "greenValue": {
             "module": "montage/ui/dynamic-text.reel",
             "name": "DynamicText",
             "properties": {
-                "element": {"#": "green-value"}
+                "element": {"#": "greenValue"}
             },
             "bindings": {
                 "value": {
@@ -327,11 +327,11 @@ Blue:<br>
                 }
             }
         },
-        "blue-value": {
+        "blueValue": {
             "module": "montage/ui/dynamic-text.reel",
             "name": "DynamicText",
             "properties": {
-                "element": {"#": "blue-value"}
+                "element": {"#": "blueValue"}
             },
             "bindings": {
                 "value": {
@@ -342,7 +342,7 @@ Blue:<br>
                 }
             }
         },
-        "result-hex-value": {
+        "resultHexValue": {
             "module": "montage/ui/dynamic-text.reel",
             "name": "DynamicText",
             "properties": {

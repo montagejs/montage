@@ -5,7 +5,7 @@
     <title>Image Example</title>
     <script type="text/montage-serialization">{
 
-    "main-image": {
+    "mainImage": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -18,11 +18,11 @@
         }
     },
 
-    "more-link": {
+    "moreLink": {
         "module": "montage/ui/anchor.reel",
         "name": "Anchor",
         "properties": {
-            "element": {"#": "more-link"}
+            "element": {"#": "moreLink"}
         },
         "bindings": {
             "href": {"<-": "@images[selectedObjects.0.href]"},
@@ -125,7 +125,7 @@
 
                     <div class="demo">
                         <img id="img-main" class="img-main"/>
-                        <div><a target="_blank" id="more-link">Click to learn more</a></div>
+                        <div><a target="_blank" id="moreLink">Click to learn more</a></div>
 
                         <p>Select an image from the list:</p>
                         <div class="row">
@@ -146,7 +146,7 @@
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;img id="img-main" class="img-main"/&gt;
-&lt;div&gt;&lt;a target="_blank" id="more-link"&gt;Click to learn more&lt;/a&gt;&lt;/div&gt;
+&lt;div&gt;&lt;a target="_blank" id="moreLink"&gt;Click to learn more&lt;/a&gt;&lt;/div&gt;
 
 &lt;p&gt;Select an image from the list:&lt;/p&gt;
 &lt;div class="row"&gt;
@@ -164,7 +164,7 @@
                        <div class="accordion-inner montage-hidden">
                         <pre class="prettyprint" >
 {
-    "main-image": {
+    "mainImage": {
         "module": "montage/ui/image.reel",
         "name": "Image",
         "properties": {
@@ -189,11 +189,11 @@
         }
     },
 
-    "more-link": {
+    "moreLink": {
         "module": "montage/ui/anchor.reel",
         "name": "Anchor",
         "properties": {
-            "element": {"#": "more-link"}
+            "element": {"#": "moreLink"}
         },
         "bindings": {
             "href": {

@@ -38,25 +38,25 @@
                     ]
                 },
 
-                "agree-checkbox": {
+                "agreeCheckbox": {
                     "module": "montage/ui/checkbox.reel",
                     "name": "Checkbox",
                     "properties": {
-                        "element": {"#": "agree-checkbox"}
+                        "element": {"#": "agreeCheckbox"}
                     }
                 },
-                "continue-button": {
+                "continueButton": {
                     "module": "montage/ui/button.reel",
                     "name": "Button",
                     "properties": {
-                        "element": {"#": "continue-button"}
+                        "element": {"#": "continueButton"}
                     },
                     "bindings": {
-                        "disabled": {"<-": "@agree-checkbox[checked]", "converter": {"@": "invert-converter"}}
+                        "disabled": {"<-": "@invertConverter[checked]", "converter": {"@": "invertConverter"}}
                     }
                 },
 
-                "invert-converter": {
+                "invertConverter": {
                     "module": "components/converters.reel",
                     "name": "InvertConverter"
                 },
@@ -130,35 +130,35 @@
                     }
                 },
 
-                "selected-value": {
+                "selectedValue": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
-                        "element": {"#": "selected-value"}
+                        "element": {"#": "selectedValue"}
                     },
                     "bindings": {
                         "value": {"<<->": "@owner[jsonSelectedItems]"}
                     }
                 },
-                "checkbox-accordion1": {
+                "checkboxAccordion1": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
-                        "element": {"#": "checkbox-accordion1"}
+                        "element": {"#": "checkboxAccordion1"}
                     }
                 },
-                "checkbox-accordion2": {
+                "checkboxAccordion2": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
-                        "element": {"#": "checkbox-accordion2"}
+                        "element": {"#": "checkboxAccordion2"}
                     }
                 },
-                "checkbox-accordion3": {
+                "checkboxAccordion3": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
-                        "element": {"#": "checkbox-accordion3"}
+                        "element": {"#": "checkboxAccordion3"}
                     }
                 },
 
@@ -178,7 +178,7 @@
                         "selectedItems": {"<<->": "@controller[selectedObjects]"}
                     }
                 }
-            
+
     }</script>
 
         <style>
@@ -210,7 +210,7 @@
             </div>
 
             <section>
-                <ul id="checkbox-accordion1" class="accordion">
+                <ul id="checkboxAccordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
@@ -279,19 +279,19 @@
 
             <div class="demo cb2">
                 <form class="form-stacked">
-                    <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label><br/>
-                    <input type="submit" id="continue-button" value="Continue" class="btn" disabled />
+                    <label class="checkbox inline"><input type="checkbox" id="agreeCheckbox"/> I agree to something</label><br/>
+                    <input type="submit" id="continueButton" value="Continue" class="btn" disabled />
                 </form>
             </div>
             <section>
-                <ul id="checkbox-accordion2" class="accordion">
+                <ul id="checkboxAccordion2" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
-    &lt;label class="checkbox inline"&gt;&lt;input type="checkbox" id="agree-checkbox"/&gt; I agree to something&lt;/label&gt;&lt;br/&gt;
-    &lt;input type="submit" id="continue-button" value="Continue" class="btn" disabled /&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input type="checkbox" id="agreeCheckbox"/&gt; I agree to something&lt;/label&gt;&lt;br/&gt;
+    &lt;input type="submit" id="continueButton" value="Continue" class="btn" disabled /&gt;
 &lt;/form&gt;
                             </pre>
                        </div>
@@ -301,30 +301,30 @@
                        <div class="accordion-inner montage-hidden">
                         <pre class="prettyprint" >
 {
-    "agree-checkbox": {
+    "agreeCheckbox": {
         "module": "montage/ui/checkbox.reel",
         "name": "Checkbox",
         "properties": {
-            "element": {"#": "agree-checkbox"}
+            "element": {"#": "agreeCheckbox"}
         }
     },
-    "continue-button": {
+    "continueButton": {
         "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
-            "element": {"#": "continue-button"}
+            "element": {"#": "continueButton"}
         },
         "bindings": {
             "disabled": {
-                "boundObject": {"@": "agree-checkbox"},
+                "boundObject": {"@": "agreeCheckbox"},
                 "boundObjectPropertyPath": "checked",
-                "converter": {"@": "invert-converter"},
+                "converter": {"@": "invertConverter"},
                 "oneway": true
             }
         }
     },
 
-    "invert-converter": {
+    "invertConverter": {
         "module": "components/converters.reel",
         "name": "InvertConverter"
     }
@@ -387,12 +387,12 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
 
                 <div>
                     <h5>Your selections: </h5>
-                    <span id="selected-value"  style="width: 400px;"></span>
+                    <span id="selectedValue"  style="width: 400px;"></span>
                 </div>
             </div>
 
             <section>
-                <ul id="checkbox-accordion3" class="accordion">
+                <ul id="checkboxAccordion3" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
@@ -416,7 +416,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
 
 &lt;div&gt;
     &lt;h5&gt;Your selections: &lt;/h5&gt;
-    &lt;span id="selected-value"  style="width: 400px;"&gt;&lt;/span&gt;
+    &lt;span id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
                             </pre>
                        </div>
@@ -524,11 +524,11 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
         }
     },
 
-    "selected-value": {
+    "selectedValue": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "selected-value"}
+            "element": {"#": "selectedValue"}
         },
         "bindings": {
             "value": {
