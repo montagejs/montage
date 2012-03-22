@@ -10,8 +10,8 @@
     <title>Photo Editor</title>
     <link rel="stylesheet" type="text/css" href="photo-editor.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "image": {
                 "module": "montage/ui/image.reel",
                 "name": "Image",
@@ -19,11 +19,7 @@
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "src": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photo.src",
-                        "oneway": true
-                    }
+                    "src": {"<-": "@owner[photo.src]"}
                 }
             },
 
@@ -31,10 +27,7 @@
                 "module": "montage/ui/controller/array-controller",
                 "name": "ArrayController",
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "pointMonitors"
-                    }
+                    "content": {"<<->": "@owner[pointMonitors]"}
                 }
             },
 
@@ -55,16 +48,8 @@
                     "element": {"#": "pointMarker"}
                 },
                 "bindings": {
-                    "x": {
-                        "boundObject": {"@": "pointMonitorRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.x",
-                        "oneway": true
-                    },
-                    "y": {
-                        "boundObject": {"@": "pointMonitorRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.y",
-                        "oneway": true
-                    }
+                    "x": {"<-": "@pointMonitorRepetition[objectAtCurrentIteration.x]"},
+                    "y": {"<-": "@pointMonitorRepetition[objectAtCurrentIteration.y]"}
                 }
             },
 
@@ -76,16 +61,8 @@
                     "axis": "x"
                 },
                 "bindings": {
-                    "container": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_canvas",
-                        "oneway": true
-                    },
-                    "rangeEnd": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_width",
-                        "oneway": true
-                    }
+                    "container": {"<-": "@owner[_canvas]"},
+                    "rangeEnd": {"<-": "@owner[_width]"}
                 }
             },
 
@@ -97,16 +74,8 @@
                     "axis": "y"
                 },
                 "bindings": {
-                    "container": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_canvas",
-                        "oneway": true
-                    },
-                    "rangeEnd": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_height",
-                        "oneway": true
-                    }
+                    "container": {"<-": "@owner[_canvas]"},
+                    "rangeEnd": {"<-": "@owner[_height]"}
                 }
             },
 
@@ -123,8 +92,8 @@
                     "verticalRuler": {"@": "verticalRuler"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

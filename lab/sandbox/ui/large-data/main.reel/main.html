@@ -8,8 +8,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Main Component</title>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "main.reel",
                 "name": "Main",
@@ -38,11 +38,7 @@
                     "maxValue": 50
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "itemsPerPageCount",
-                        "converter": {"@": "floorConverter"}
-                    }
+                    "value": {"<<->": "@owner[itemsPerPageCount]", "converter": {"@": "floorConverter"}}
                 }
             },
 
@@ -54,11 +50,7 @@
                     "element": {"#": "itemCount"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController.organizedObjects.count()",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner[collectionController.organizedObjects.count()]"}
                 }
             },
 
@@ -69,11 +61,7 @@
                     "element": {"#": "itemsPerPageCount"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "itemsPerPageCount",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner[itemsPerPageCount]"}
                 }
             },
 
@@ -85,16 +73,8 @@
                     "isSelectionEnabled": true
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController",
-                        "oneway": true
-                    },
-                    "indexMap": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "indexMap",
-                        "oneway": true
-                    }
+                    "contentController": {"<-": "@owner[collectionController]"},
+                    "indexMap": {"<-": "@owner[indexMap]"}
                 }
             },
 
@@ -105,11 +85,7 @@
                     "element": {"#": "item"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.label",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@list[objectAtCurrentIteration.label]"}
                 }
             },
 
@@ -120,10 +96,7 @@
                     "element": {"#": "selectedValueField"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController.selectedObjects.0.label"
-                    }
+                    "value": {"<<->": "@owner[collectionController.selectedObjects.0.label]"}
                 }
             },
 
@@ -144,8 +117,8 @@
                     "identifier": "previousPageButton"
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
     <style type="text/css">
         .item {

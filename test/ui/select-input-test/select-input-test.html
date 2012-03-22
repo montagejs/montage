@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>SelectInputTest</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-     <script type="text/montage-serialization">
-{
+     <script type="text/montage-serialization">{
+
     "dept": {
         "module": "montage/ui/select-input.reel",
         "name": "SelectInput",
@@ -20,11 +20,7 @@
             "valuePropertyPath": "code"
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "test"},
-                "boundObjectPropertyPath": "departments",
-                "oneway": true
-            }
+            "content": {"<-": "@test[departments]"}
         }
     },
 
@@ -111,11 +107,7 @@
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify",
-                    "converter": {"@": "justifyComparatorLeft"}
-                }
+                "pressed": {"<<->": "@test[justify]", "converter": {"@": "justifyComparatorLeft"}}
             }
         },
         "justifyCenter": {
@@ -126,11 +118,7 @@
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify",
-                    "converter": {"@": "justifyComparatorCenter"}
-                }
+                "pressed": {"<<->": "@test[justify]", "converter": {"@": "justifyComparatorCenter"}}
             }
         },
         "justifyRight": {
@@ -141,11 +129,7 @@
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify",
-                    "converter": {"@": "justifyComparatorRight"}
-                }
+                "pressed": {"<<->": "@test[justify]", "converter": {"@": "justifyComparatorRight"}}
             }
         },
         "justifySelect": {
@@ -155,10 +139,7 @@
                 "element": {"#": "justifySelect"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify"
-                }
+                "value": {"<<->": "@test[justify]"}
             }
         },
         "justifyResult": {
@@ -188,18 +169,9 @@
             "statesController": {"@": "statesController"}
         },
         "bindings": {
-            "selectedCountry": {
-                "boundObject": {"@": "country"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            },
-            "selectedState": {
-                "boundObject": {"@": "state"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            },
-            "selectedDept": {
-                "boundObject": {"@": "dept"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            }
+            "selectedCountry": {"<<->": "@country[contentController.selectedObjects.0]"},
+            "selectedState": {"<<->": "@state[contentController.selectedObjects.0]"},
+            "selectedDept": {"<<->": "@dept[contentController.selectedObjects.0]"}
         }
     },
 
@@ -211,8 +183,8 @@
 
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body>

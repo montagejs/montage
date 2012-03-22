@@ -22,7 +22,7 @@ exports.SearchResult = Montage.create(Component, {
         dependencies: ["result", "photoListController.content.count()"],
         get: function() {
 
-            if (!this.result) {
+            if (!this.result || !this.photoListController) {
                 return false;
             }
 

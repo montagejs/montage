@@ -3,8 +3,8 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="menu-bookmark.css">
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "textfield1": {
         "module": "montage/ui/textfield.reel",
         "name": "Textfield",
@@ -12,11 +12,7 @@
             "element": {"#": "txt-label"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "label",
-                "oneway": false
-            }
+            "value": {"<<->": "@owner[label]"}
         }
     },
     "button1": {
@@ -79,8 +75,8 @@
             "btnActionSheet": {"@": "button3"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 
     </head>

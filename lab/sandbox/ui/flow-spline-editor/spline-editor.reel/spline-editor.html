@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Spline Editor</title>
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "spline-editor.reel",
+                "name": "SplineEditor",
+                "properties": {
+                    "element": {"#": "spline-editor"},
+                    "topView": {"@": "topView"},
+                    "frontView": {"@": "frontView"},
+                    "toolbar": {"@": "toolbar"},
+                    "parametersEditor": {"#": "parameters-editor"}
+                },
+                "bindings": {
+                    "selectedTool": {
+                        "boundObject": {"@": "toolbar"},
+                        "boundObjectPropertyPath": "selectedTool",
+                        "oneway": true
+                    }
+                }
+            },
+            "topView": {
+                "module": "viewport.reel",
+                "name": "Viewport",
+                "properties": {
+                    "element": {"#": "top-view"},
+                    "_transformMatrix": [
+                        1, 0, 0, 0,
+                        0, 0, 1, 0,
+                        0, 1, 0, 0,
+                        0, 0, 0, 1
+                    ]
+                },
+                "bindings": {
+                    "centralX": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "centralX"
+                    },
+                    "centralY": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "centralZ"
+                    },
+                    "scale": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "scale"
+                    },
+                    "spline": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "spline"
+                    },
+                    "cameraPosition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "cameraPosition"
+                    },
+                    "cameraTargetPoint": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "cameraTargetPoint"
+                    },
+                    "cameraFov": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "cameraFov"
+                    },
+                    "cameraRoll": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "cameraRoll"
+                    },
+                    "closerKnot": {
+                        "boundObject": {"@": "frontView"},
+                        "boundObjectPropertyPath": "closerKnot"
+                    },
+                    "closerHandler": {
+                        "boundObject": {"@": "frontView"},
+                        "boundObjectPropertyPath": "closerHandler"
+                    }
+                }
+            },
+            "frontView": {
+                "module": "viewport.reel",
+                "name": "Viewport",
+                "properties": {
+                    "element": {"#": "front-view"}
+                },
+                "bindings": {
+                    "centralX": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "centralX"
+                    },
+                    "centralY": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "centralY"
+                    },
+                    "scale": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "scale"
+                    },
+                    "spline": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "spline"
+                    },
+                    "cameraPosition": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "cameraPosition"
+                    },
+                    "cameraTargetPoint": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "cameraTargetPoint"
+                    },
+                    "cameraFov": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "cameraFov"
+                    }
+                }
+            },
+            "toolbar": {
+                "module": "toolbar.reel",
+                "name": "Toolbar",
+                "properties": {
+                    "element": {"#": "toolbar"}
+                }
+            }
+        }
+    </script>
+    <link href="spline-editor.css" rel="stylesheet">
+</head>
+<body>
+    <div id="spline-editor" class="spline-editor">
+        <div id="top-view" class="top-view view"></div>
+        <div id="front-view" class="front-view view"></div>
+        <div id="toolbar" class="toolbar"></div>
+        <textarea id="parameters-editor" class="parameters-editor"></textarea>
+    </div>
+</body>
+</html>
