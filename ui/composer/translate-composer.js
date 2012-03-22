@@ -95,8 +95,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 if (tmp < 0) {
                     tmp = 0;
                 }
-                if (tmp > this._maxTranslateX) {
-                    tmp = this._maxTranslateX;
+                    if (tmp > this._endX) {
+                        tmp = this._endX;
                     }
                     if (!this._isSelfUpdate) {
                         this.isAnimating = false;
@@ -124,8 +124,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 if (tmp < 0) {
                     tmp = 0;
                 }
-                if (tmp > this._maxTranslateY) {
-                    tmp = this._maxTranslateY;
+                    if (tmp > this._endY) {
+                        tmp = this._endY;
                     }
                     if (!this._isSelfUpdate) {
                         this.isAnimating = false;
@@ -135,14 +135,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    _maxTranslateX: {
+    _endX: {
         enumerable: false,
         value: 0
     },
 
-    maxTranslateX: {
+    endX: {
         get: function() {
-            return this._maxTranslateX;
+            return this._endX;
         },
         set: function(value) {
             var tmp = isNaN(value) ? 0 : value >> 0;
@@ -150,23 +150,23 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (tmp < 0) {
                 tmp = 0;
             }
-            if (this._maxTranslateX != tmp) {
-                if (this._translateX > this._maxTranslateX) {
-                    this.translateX = this._maxTranslateX;
+            if (this._endX != tmp) {
+                if (this._translateX > this._endX) {
+                    this.translateX = this._endX;
                 }
-                this._maxTranslateX = tmp;
+                this._endX = tmp;
             }
         }
     },
 
-    _maxTranslateY: {
+    _endY: {
         enumerable: false,
         value: 0
     },
 
-    maxTranslateY: {
+    endY: {
         get: function() {
-            return this._maxTranslateY;
+            return this._endY;
         },
         set: function(value) {
             var tmp = isNaN(value) ? 0 : value >> 0;
@@ -174,11 +174,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (tmp < 0) {
                 tmp = 0;
             }
-            if (this._maxTranslateY != tmp) {
-                if (this._translateY > this._maxTranslateY) {
-                    this.translateY = this._maxTranslateY;
+            if (this._endY != tmp) {
+                if (this._translateY > this._endY) {
+                    this.translateY = this._endY;
                 }
-                this._maxTranslateY = tmp;
+                this._endY = tmp;
             }
         }
     },

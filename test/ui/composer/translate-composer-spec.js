@@ -43,7 +43,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     expect(test.y).toBe("5px");
                 });
             });
-            describe("maxTranslateX", function() {
+            describe("endX", function() {
                 it ("limits translateX", function() {
                     testPage.dragElementOffsetTo(test.example.element, 500, 0, null, null, function() {
                         runs(function() {
@@ -52,7 +52,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     });
                 });
             });
-            describe("maxTranslateY", function() {
+            describe("endY", function() {
                 it ("limits translateY", function() {
                     testPage.dragElementOffsetTo(test.example.element, 0, 500, null, null, function() {
                         runs(function() {
