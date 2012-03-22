@@ -37,7 +37,16 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 /**
     @private
 */
-    _document: {value: null},
+    _document: {
+        enumerable: false,
+        value: null
+    },
+
+    document: {
+        get: function() {
+            return this._document;
+        }
+    },
 /**
     @private
 */
@@ -131,6 +140,17 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     deserializer: {
         get: function() {
             return this._deserializer || (this._deserializer = Deserializer.create().initWithString(this._rootObjectSerialization));
+        }
+    },
+
+    initWithHtmlString: {
+        value: function(htmlString) {
+            var doc = this.createHtmlDocumentFromString(htmlString);
+
+            this._isLoaded = true;
+            this.initWithDocument(doc);
+
+            return this;
         }
     },
 
@@ -360,16 +380,11 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
      Instantiates the Template with no elements references.
      @function
      */
-    instantiate: {value: function() {
-        var self = this;
-        var deserializer = Deserializer.create();
-
-        function invokeTemplateDidLoad(owner) {
-            self._invokeTemplateDidLoadWithOwner(deserializer, owner);
-            callback(component);
+    instantiate: {
+        value: function(callback) {
+            return this.instantiateWithOwnerAndDocument(null, null, callback);
         }
-        deserializer.deserializeRootObjectWithElement(this._document, invokeTemplateDidLoad);
-    }},
+    },
 
     /**
      @private
