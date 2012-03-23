@@ -4,55 +4,65 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
+/**
+    @module montage/ui/text-input
+    @requires montage/ui/component
+    @requires montage/ui/native-control
+    @requires montage/core/core
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl;
 
-
-var TextInput = exports.TextInput =  Montage.create(NativeControl, {
-
 /**
-  Description TODO
-  @private
+    The base class for all text-based input components. You typically won't create instances of this prototype.
+    @class module:montage/ui/text-input.TextInput
+    @extends module:montage/ui/native-control.NativeControl
+    @see module:"montage/ui/date-input.reel".DateInput
+    @see module:"montage/ui/textfield.reel".Textfield
+    @see module:"montage/ui/number-input.reel".NumberInput
+    @see module:"montage/ui/range-input.reel".RangeInput
+    @see module:"montage/ui/textarea.reel".TextArea
+
 */
+var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends module:montage/ui/text-input.TextInput# */ {
+
     _hasFocus: {
         enumerable: false,
         value: false
     },
-/**
-  Description TODO
-  @private
-*/
+
     _value: {
         enumerable: false,
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
+
     _valueSyncedWithInputField: {
         enumerable: false,
         value: false
     },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    value: {
-        enumerable: true,
-        serializable: true,
-        get: function() {
-            return this._value;
-        },
-        set: function(value, fromInput) {
 
-            if(value !== this._value) {
-                if(this.converter) {
-                    var convertedValue;
-                    try {
-                        convertedValue = this.converter.revert(value);
+/**
+    The "typed" data value associated with the input element. When this property is set, if the component's <code>converter</code> property is non-null then its <code>revert()</code> method is invoked, passing it the newly assigned value. The <code>revert()</code> function is responsible for validating and converting the user-supplied value to its typed format. For example, in the case of a DateInput component (which extends TextInput) a user enters a string for the date (for example, "10-12-2005"). A <code>DateConverter</code> object is assigned to the component's <code>converter</code> property.
+
+    If the comopnent doesn't specify a converter object then the raw value is assigned to <code>value</code>.
+
+    @type {string}
+    @default null
+*/
+value: {
+    enumerable: true,
+    serializable: true,
+    get: function() {
+        return this._value;
+    },
+    set: function(value, fromInput) {
+
+        if(value !== this._value) {
+            if(this.converter) {
+                var convertedValue;
+                try {
+                    convertedValue = this.converter.revert(value);
                         if (this.error) {
                             this.error = null;
                         }
@@ -89,26 +99,25 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
             Object.getPropertyDescriptor(this, "value").set.call(this, newValue, true);
         }
     },
+
 /**
-        Description TODO
-        @type {Property}
-        @default null
-    */
+    A reference to a Converter object whose <code>revert()</code> function is invoked when a new value is assigned to the TextInput object's <code>value</code> property. The revert() function attempts to transform the newly assigned value into a "typed" data property. For instance, a DateInput component could assign a DateConverter object to this property to convert a user-supplied date string into a standard date format.
+    @type {Property}
+    @default null
+*/
     converter:{
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
+
     _error: {
         value: false
     },
- /**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
-    */
+
+/**
+    If an error is thrown by the converter object during a new value assignment, this property is set to <code>true</code>, and schedules a new draw cycle so the the UI can be updated to indicate the error state. the <code>montage-text-invalid</code> CSS class is assigned to the component's DOM element during the next draw cycle.
+    @type {boolean}
+    @default false
+*/
     error: {
         get: function() {
             return this._error;
@@ -121,6 +130,12 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
     },
 
     _errorMessage: {value: null},
+
+/**
+    The message to display when the component is in an error state.
+    @type {string}
+    @default null
+*/
     errorMessage: {
         get: function() {
             return this._errorMessage;
@@ -130,20 +145,16 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
         }
     },
 
-/**
-  Description TODO
-  @private
-*/
     _updateOnInput: {
         value: true
     },
 
-    // switch to turn off auto update upon keypress overriding the Converter flag
 /**
-        Description TODO
-        @type {Function}
-        @default {Boolean} true
-    */
+    When this property and the converter's <code>allowPartialConversion</code> are both true, as the user enters text in the input element each new character is added to the component's <code>value</code> property, which triggers the conversion. Depending on the type of input element being used, this behavior may not be desirable. For instance, you likely would not want to convert a date string as a user is entering it, only when they've completed their input.
+    Specifies whether
+    @type {boolean}
+    @default true
+*/
     updateOnInput: {
         get: function() {
             return !!this._updateOnInput;
@@ -154,10 +165,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
     },
 
     // Callbacks
-    /**
-    Description TODO
-    @function
-    */
+
     prepareForDraw: {
         enumerable: false,
         value: function() {
@@ -168,19 +176,13 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
             el.addEventListener('blur', this);
         }
     },
-/**
-  Description TODO
-  @private
-*/
+
     _setElementValue: {
         value: function(value) {
             this.element.value = (value == null ? '' : value);
         }
     },
-/**
-    Description TODO
-    @function
-    */
+
     draw: {
         enumerable: false,
         value: function() {
@@ -201,10 +203,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
             }
         }
     },
-/**
-    Description TODO
-    @function
-    */
+
     didDraw: {
         enumerable: false,
         value: function() {
@@ -215,11 +214,10 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
             this._valueSyncedWithInputField = true;
         }
     },
+
+
     // Event handlers
-/**
-    Description TODO
-    @function
-    */
+
     handleInput: {
         enumerable: false,
         value: function() {

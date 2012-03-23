@@ -9,31 +9,31 @@
     @requires montage/core/core
     @requires montage/ui/native-control
 */
-
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl;
-
 /**
   The Anchor component wraps a native <code>&lt;a&gt;</code> element and exposes its standard attributes as bindable properties.
   @class module:"montage/ui/anchor.reel".Anchor
   @extends module:montage/native-control.NativeControl
+  @example
+  <caption>Hello there</caption>
 */
 var Anchor = exports.Anchor = Montage.create(NativeControl, {
 
 });
 
-Anchor.addAttributes({ /** @lends module:"montage/ui/anchor.reel".Anchor# */
+Anchor.addAttributes( /** @lends module:"montage/ui/anchor.reel".Anchor# */ {
 
 /**
-    The link text.
+    The text displayed by the link.
     @type string
     @default null
 */
     textContent: null,
 
 /**
-    The link URL.
+    The link target URL.
     @type string
     @default null
 */

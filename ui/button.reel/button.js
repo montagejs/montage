@@ -4,46 +4,53 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
  /*global require, exports*/
+
+/**
+    @module "montage/ui/button.reel"
+    @requires montage/core/core
+    @requires montage/ui/component
+    @requires montage/ui/native-control
+    @requires montage/ui/composer/press-composer
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl,
     PressComposer = require("ui/composer/press-composer").PressComposer;
-/**
- * The Button input
- */
-var Button = exports.Button = Montage.create(NativeControl, {
-
-    /**
-    @event
-    @name action
-    @param {Event} event
-
-    Dispatched when the button is activated through a mouse click, finger tap,
-    or when focused and the spacebar is pressed.
-    */
-
-    /**
-    @event
-    @name hold
-    @param {Event} event
-
-    Dispatched when the button is pressed for a period of time, set by
-    {@link holdTimeout}.
-    */
 
 /**
-  Description TODO
-  @private
+    Wraps a native <code>&lt;button></code> or <code>&lt;input[type="button"]></code> HTML element. The element's standard attributes are exposed as bindable properties.
+    @class module:"montage/ui/button.reel".Button
+    @extends module:montage/native-control.NativeControl
+    @example
+<caption>JavaScript example</caption>
+
+
+var b1 = Button.create();
+b1.element = document.querySelector("btnElement");
+b1.addEventListener("action", this);
+    @example
+<caption>Serialized example</caption>
+{
+    "aButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "btnElement"}
+        }
+    }
+}
+&lt;button data-montage-id="btnElement"></button>
 */
+var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"montage/ui/button.reel".Button# */ {
+
     _preventFocus: {
         enumerable: false,
         value: false
     },
 
 /**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
+    Specifies whether the button should receive focus or not.
+    @type {boolean}
+    @default false
 */
     preventFocus: {
         get: function () {
@@ -58,6 +65,10 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
+
+/**
+    Enables or disables the Button from user input. When this property is set to <code>false</code>, the "disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to <code>true</code> the "disabled" CSS class is removed from the element's class list.
+*/
     //TODO we should prefer positive properties like enabled vs disabled, get rid of disabled
     enabled: {
         dependencies: ["disabled"],
@@ -70,7 +81,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     },
 
     /**
-        The Montage converted used to convert or format values displayed by this Button instance.
+        A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to <code>label</code>, the converter object's <code>convert()</code> method is invoked.
         @type {Property}
         @default null
     */
@@ -86,15 +97,14 @@ var Button = exports.Button = Montage.create(NativeControl, {
     _labelNode: {value:undefined, enumerable: false},
 
     _label: { value: undefined, enumerable: false },
+
     /**
-        The label for the button.
+        The label for the button. In an &lt;input> element this is taken from the element's <code>value</code> attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
 
-        In an `<input>` element this is the value property. On any other element
-        (including `<button>`) this is the first child node which is a text node.
-        If one isn't found it will be created.
+        If the button has a non-null <code>converter</code> property, the converter object's <code>convert()</code> method is called on the value before being assigned to the button instance.
 
-        @type {Property}
-        @default {String} element value
+        @type {string}
+        @default undefined
     */
     label: {
         get: function() {
@@ -123,7 +133,9 @@ var Button = exports.Button = Montage.create(NativeControl, {
     },
 
     /**
-    How long a press has to last for a hold event to be dispatched
+        The amount of time in milliseconds the user must press and hold the button a <code>hold</code> event is dispatched. The default is 1 second.
+        @type {number}
+        @default 1000
     */
     holdTimeout: {
         get: function() {
@@ -139,20 +151,15 @@ var Button = exports.Button = Montage.create(NativeControl, {
         value: null
     },
 
-    /**
-    True when the button is being interacted with, either through mouse click or
-    touch event.
-    @private
-    */
     _active: {
         enumerable: false,
         value: false
     },
 
     /**
-    Description TODO
-    @type {Function}
-    @default {Boolean} false
+        True when the button is being interacted with, either through mouse click or touch event.
+        @type {boolean}
+        @default false
     */
     active: {
         get: function() {
@@ -202,6 +209,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
             if (!this._preventFocus) {
                 this._element.focus();
+
             }
         }
     },
@@ -329,6 +337,25 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     }
 });
+
+// TODO: Display events in JSDoc output
+ /**
+ @event
+ @name action
+ @param {Event} event
+
+ Dispatched when the button is activated through a mouse click, finger tap,
+ or when focused and the spacebar is pressed.
+ */
+
+ /**
+ @event
+ @name hold
+ @param {Event} event
+
+ Dispatched when the button is pressed for a period of time, set by
+ {@link holdTimeout}.
+ */
 
 Button.addAttributes({
     autofocus: {value: false, dataType: 'boolean'},
