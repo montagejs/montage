@@ -859,7 +859,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     break;
 
                 case "reference":
-                    var object;
+                    var object,
+                        originalValue = value;
 
                     if (value in exports) {
                         object = exports[value];
@@ -873,6 +874,9 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
                     if (parent) {
                         parent[key] = object;
+                    }
+                    if (typeof object === "undefined") {
+                        logger.error("Missing object in serialization: '" + originalValue + "'" + (self._origin ? " in " + self._origin : ""));
                     }
                     return value;
                     break;
