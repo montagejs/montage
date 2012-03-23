@@ -27,7 +27,7 @@
                     "element": {"#": "searchResultImage"}
                 },
                 "bindings": {
-                    "src": {"<-": "@owner[result.media$group.media$thumbnail.2.url]"}
+                    "src": {"<-": "@owner.result.media$group.media$thumbnail.2.url"}
                 }
             },
 
@@ -72,7 +72,7 @@
                     }
                 },
                 "bindings": {
-                    "switchValue": {"<-": "@owner[resultAlreadyImported]", "converter": {"@": "actionSwitchValueConverter"}}
+                    "switchValue": {"<-": "@owner.resultAlreadyImported", "converter": {"@": "actionSwitchValueConverter"}}
                 }
             }
         

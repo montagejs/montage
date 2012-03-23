@@ -18,6 +18,7 @@ var Montage = require("montage").Montage,
     ChangeTypes = require("core/event/mutable-event").ChangeTypes,
     Serializer = require("core/serializer").Serializer,
     Deserializer = require("core/deserializer").Deserializer,
+    logger = require("core/logger").logger("binding");
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     AT_TARGET = 2,
     UNDERSCORE = "_";
@@ -1187,7 +1188,7 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
         var serialization = {};
 
         serializer.addObjectReference(this.boundObject);
-        serialization[this.oneway ? "<-" : "<<->"] = "@" + serializer.getObjectLabel(this.boundObject) + "[" + this.boundObjectPropertyPath + "]";
+        serialization[this.oneway ? "<-" : "<<->"] = "@" + serializer.getObjectLabel(this.boundObject) + "." + this.boundObjectPropertyPath;
         serialization.deferred = this.deferred;
         serialization.converter = this.converter;
 
@@ -1206,26 +1207,26 @@ Serializer.defineSerializationUnit("bindings", function(object) {
 Deserializer.defineDeserializationUnit("bindings", function(object, bindings, deserializer) {
     for (var sourcePath in bindings) {
         var binding = bindings[sourcePath],
-            bracketIndex;
+            dotIndex;
 
         if (!("boundObject" in binding)) {
             var targetPath = binding["<-"] || binding["->"] || binding["<->>"] || binding["<<->"];
 
-            if (targetPath[0] !== "@" || targetPath.slice(-1) !== "]") {
-                logger.error("Invalid binding syntax '" + targetPath + "', should be in the form of '@label[path]'.");
+            if (targetPath[0] !== "@") {
+                logger.error("Invalid binding syntax '" + targetPath + "', should be in the form of '@label.path'.");
                 throw "Invalid binding syntax '" + targetPath + "'";
             }
             if ("->" in binding || "<->>" in binding) {
                 binding.boundObject = object;
                 binding.boundObjectPropertyPath = sourcePath;
 
-                bracketIndex = targetPath.indexOf("[");
-                object = deserializer.getObjectByLabel(targetPath.slice(1, bracketIndex));
-                sourcePath = targetPath.slice(bracketIndex+1, -1);
+                dotIndex = targetPath.indexOf(".");
+                object = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
+                sourcePath = targetPath.slice(dotIndex+1);
             } else {
-                bracketIndex = targetPath.indexOf("[");
-                binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, bracketIndex));
-                binding.boundObjectPropertyPath = targetPath.slice(bracketIndex+1, -1);
+                dotIndex = targetPath.indexOf(".");
+                binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
+                binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
             }
 
             if ("<-" in binding || "->" in binding) {

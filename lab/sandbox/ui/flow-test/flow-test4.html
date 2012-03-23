@@ -18,7 +18,7 @@
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "data": {"<-": "@flow1[objectAtCurrentIteration]"}
+                    "data": {"<-": "@flow1.objectAtCurrentIteration"}
                 }
             },
             "translateComposer1": {
@@ -30,16 +30,16 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "maxTranslateX": {"<-": "@flow1[length]"},
-                    "translateX": {"<<->": "@flow1[origin]"}
+                    "maxTranslateX": {"<-": "@flow1.length"},
+                    "translateX": {"<<->": "@flow1.origin"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
-                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
+                    "componentList": {"<-": "@flow1._repetitionComponents"},
+                    "pointerPosition": {"<-": "@translateComposer1.pointerStartEventPosition"}
                 }
             },
             "flow1": {
@@ -67,16 +67,16 @@
                     "scale": 1000
                 },
                 "bindings": {
-                    "path": {"<-": "@path1[path]"},
-                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"}
+                    "path": {"<-": "@path1.path"},
+                    "selectedSlideIndex": {"<-": "@nearest.nearestNeighborComponent"}
                 }
             },
             "path1": {
                 "module": "montage/ui/flow-path",
                 "name": "FlowPath",
                 "bindings": {
-                    "translateX": {"<-": "@translateX[path]"},
-                    "rotateY": {"<-": "@rotateY[path]"}
+                    "translateX": {"<-": "@translateX.path"},
+                    "rotateY": {"<-": "@rotateY.path"}
                 }
             },
             "translateX": {
@@ -117,7 +117,7 @@
                     "element": {"#": "image2"}
                 },
                 "bindings": {
-                    "src": {"<-": "@flow2[objectAtCurrentIteration]"}
+                    "src": {"<-": "@flow2.objectAtCurrentIteration"}
                 }
             },
             "translateComposer2": {
@@ -129,24 +129,24 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "maxTranslateX": {"<-": "@flow2[length]"},
-                    "translateX": {"<<->": "@flow2[origin]"}
+                    "maxTranslateX": {"<-": "@flow2.length"},
+                    "translateX": {"<<->": "@flow2.origin"}
                 }
             },
             "nearest2": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {"<-": "@flow2[_repetitionComponents]"},
-                    "pointerPosition": {"<-": "@translateComposer2[pointerStartEventPosition]"}
+                    "componentList": {"<-": "@flow2._repetitionComponents"},
+                    "pointerPosition": {"<-": "@translateComposer2.pointerStartEventPosition"}
                 }
             },
             "path2": {
                 "module": "montage/ui/flow-path",
                 "name": "FlowPath",
                 "bindings": {
-                    "translateX": {"<-": "@translateX[path]"},
-                    "rotateY": {"<-": "@rotateY[path]"}
+                    "translateX": {"<-": "@translateX.path"},
+                    "rotateY": {"<-": "@rotateY.path"}
                 }
             },
             "flow2": {
@@ -167,9 +167,9 @@
                     "scale": 1000
                 },
                 "bindings": {
-                    "path": {"<-": "@path2[path]"},
-                    "selectedSlideIndex": {"<-": "@nearest2[nearestNeighborComponent]"},
-                    "origin": {"<-": "@translateComposer2[translateX]"}
+                    "path": {"<-": "@path2.path"},
+                    "selectedSlideIndex": {"<-": "@nearest2.nearestNeighborComponent"},
+                    "origin": {"<-": "@translateComposer2.translateX"}
                 }
             }
         

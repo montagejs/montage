@@ -26,12 +26,12 @@
 
                 "vegBinding": {
                     "value": {
-                        "disabled": {"<-": "@veg[checked]", "converter": {"@": "invertConverter"}}
+                        "disabled": {"<-": "@veg.checked", "converter": {"@": "invertConverter"}}
                     }
                 },
                 "fruitBinding": {
                     "value": {
-                        "disabled": {"<-": "@fruit[checked]", "converter": {"@": "invertConverter"}}
+                        "disabled": {"<-": "@fruit.checked", "converter": {"@": "invertConverter"}}
                     }
                 },
 
@@ -136,7 +136,7 @@
                         "automaticallyOrganizeObjects": true
                     },
                     "bindings": {
-                        "content": {"<-": "@owner[answers]"}
+                        "content": {"<-": "@owner.answers"}
                     }
                 },
 
@@ -159,7 +159,7 @@
                         "element": {"#": "answer-selection"}
                     },
                     "bindings": {
-                        "checked": {"<<->": "@list2[selectionAtCurrentIteration]"}
+                        "checked": {"<<->": "@list2.selectionAtCurrentIteration"}
                     }
                 },
 
@@ -170,7 +170,7 @@
                         "element": {"#": "answer-text"}
                     },
                     "bindings": {
-                        "value": {"<-": "@list2[objectAtCurrentIteration]"}
+                        "value": {"<-": "@list2.objectAtCurrentIteration"}
                     }
                 },
 
@@ -181,7 +181,7 @@
                         "element": {"#": "selected-answer"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[selectedAnswer]"}
+                        "value": {"<<->": "@owner.selectedAnswer"}
                     }
                 },
 
@@ -218,7 +218,7 @@
                         ]
                     },
                     "bindings": {
-                        "selectedAnswer": {"<<->": "@answersController[selectedObjects.0]"}
+                        "selectedAnswer": {"<<->": "@answersController.selectedObjects.0"}
                     }
                 }
             

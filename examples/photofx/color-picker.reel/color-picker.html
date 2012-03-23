@@ -20,7 +20,7 @@
                     "removalStrategy": "hide"
                 },
                 "bindings": {
-                    "condition": {"<-": "@owner[currentColor]"}
+                    "condition": {"<-": "@owner.currentColor"}
                 }
             },
 
@@ -37,7 +37,7 @@
                     "removalStrategy": "hide"
                 },
                 "bindings": {
-                    "condition": {"<-": "@owner[x]", "converter": {"@": "validNumberConverter"}}
+                    "condition": {"<-": "@owner.x", "converter": {"@": "validNumberConverter"}}
                 }
             },
 
@@ -48,7 +48,7 @@
                     "element": {"#": "redValue"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[currentColor.0]"}
+                    "value": {"<-": "@owner.currentColor.0"}
                 }
             },
             "greenValue": {
@@ -58,7 +58,7 @@
                     "element": {"#": "greenValue"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[currentColor.1]"}
+                    "value": {"<-": "@owner.currentColor.1"}
                 }
             },
             "blueValue": {
@@ -68,7 +68,7 @@
                     "element": {"#": "blueValue"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[currentColor.2]"}
+                    "value": {"<-": "@owner.currentColor.2"}
                 }
             },
             "xValue": {
@@ -78,7 +78,7 @@
                     "element": {"#": "xValue"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[x]"}
+                    "value": {"<-": "@owner.x"}
                 }
             },
             "yValue": {
@@ -88,7 +88,7 @@
                     "element": {"#": "yValue"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[y]"}
+                    "value": {"<-": "@owner.y"}
                 }
             },
             "owner": {

@@ -40,7 +40,7 @@
                     "element": {"#": "uuid"}
                 },
                 "bindings": {
-                    "value": {"<-": "@repetition1[objectAtCurrentIteration]"}
+                    "value": {"<-": "@repetition1.objectAtCurrentIteration"}
                 }
             },
             "repetition1": {
@@ -50,7 +50,7 @@
                     "element": {"#": "testList"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@appdelegate1[uuids]"}
+                    "objects": {"<-": "@appdelegate1.uuids"}
                 }
             }
         

@@ -18,7 +18,7 @@
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "data": {"<-": "@flow1[objectAtCurrentIteration]"}
+                    "data": {"<-": "@flow1.objectAtCurrentIteration"}
                 }
             },
             "translateComposer1": {
@@ -30,16 +30,16 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "maxTranslateX": {"<-": "@flow1[length]"},
-                    "translateX": {"<<->": "@flow1[origin]"}
+                    "maxTranslateX": {"<-": "@flow1.length"},
+                    "translateX": {"<<->": "@flow1.origin"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
-                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
+                    "componentList": {"<-": "@flow1._repetitionComponents"},
+                    "pointerPosition": {"<-": "@translateComposer1.pointerStartEventPosition"}
                 }
             },
             "flow1": {
@@ -67,8 +67,8 @@
                     "scale": 1000
                 },
                 "bindings": {
-                    "path": {"<-": "@path1[path]"},
-                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"}
+                    "path": {"<-": "@path1.path"},
+                    "selectedSlideIndex": {"<-": "@nearest.nearestNeighborComponent"}
                 }
             },
 
@@ -77,9 +77,9 @@
                 "module": "montage/ui/flow-path",
                 "name": "FlowPath",
                 "bindings": {
-                    "translateX": {"<-": "@translateX[path]"},
-                    "rotateY": {"<-": "@rotateY[path]"},
-                    "translateZ": {"<-": "@translateZ[path]"}
+                    "translateX": {"<-": "@translateX.path"},
+                    "rotateY": {"<-": "@rotateY.path"},
+                    "translateZ": {"<-": "@translateZ.path"}
                 }
             },
             "translateX": {

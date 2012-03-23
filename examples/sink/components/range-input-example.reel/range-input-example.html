@@ -31,7 +31,7 @@
                         "element": {"#": "color-red"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[red]"}
+                        "value": {"<<->": "@owner.red"}
                     }
                 },
                 "red-value": {
@@ -41,7 +41,7 @@
                         "element": {"#": "red-value"}
                     },
                     "bindings": {
-                        "value": {"<-": "@owner[red]", "converter": {"@": "roundTo2Decimals"}}
+                        "value": {"<-": "@owner.red", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
                 "green": {
@@ -51,7 +51,7 @@
                         "element": {"#": "color-green"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[green]"}
+                        "value": {"<<->": "@owner.green"}
                     }
                 },
                 "green-value": {
@@ -61,7 +61,7 @@
                         "element": {"#": "green-value"}
                     },
                     "bindings": {
-                        "value": {"<-": "@owner[green]", "converter": {"@": "roundTo2Decimals"}}
+                        "value": {"<-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
                 "blue": {
@@ -71,7 +71,7 @@
                         "element": {"#": "color-blue"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[blue]"}
+                        "value": {"<<->": "@owner.blue"}
                     }
                 },
                 "blue-value": {
@@ -81,7 +81,7 @@
                         "element": {"#": "blue-value"}
                     },
                     "bindings": {
-                        "value": {"<-": "@owner[blue]", "converter": {"@": "roundTo2Decimals"}}
+                        "value": {"<-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
 
@@ -92,7 +92,7 @@
                         "element": {"#": "sharpness-amount"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[sharpnessAmount]"}
+                        "value": {"<<->": "@owner.sharpnessAmount"}
                     }
                 },
                 "sharpness-amount-value": {
@@ -102,7 +102,7 @@
                         "element": {"#": "sharpness-amount-value"}
                     },
                     "bindings": {
-                        "value": {"<-": "@owner[sharpnessAmount]", "converter": {"@": "roundTo2Decimals"}}
+                        "value": {"<-": "@owner.sharpnessAmount", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
 

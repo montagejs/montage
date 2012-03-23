@@ -28,7 +28,7 @@
                     "isSelectionEnabled": true
                 },
                 "bindings": {
-                    "contentController": {"<-": "@owner[pointMonitorController]"}
+                    "contentController": {"<-": "@owner.pointMonitorController"}
                 }
             },
             "colorPicker": {
@@ -38,9 +38,9 @@
                     "element": {"#": "colorPicker"}
                 },
                 "bindings": {
-                    "currentColor": {"<<->": "@pointMonitorRepetition[objectAtCurrentIteration.color]"},
-                    "x": {"<<->": "@pointMonitorRepetition[objectAtCurrentIteration.x]"},
-                    "y": {"<<->": "@pointMonitorRepetition[objectAtCurrentIteration.y]"}
+                    "currentColor": {"<<->": "@pointMonitorRepetition.objectAtCurrentIteration.color"},
+                    "x": {"<<->": "@pointMonitorRepetition.objectAtCurrentIteration.x"},
+                    "y": {"<<->": "@pointMonitorRepetition.objectAtCurrentIteration.y"}
                 }
             }
         

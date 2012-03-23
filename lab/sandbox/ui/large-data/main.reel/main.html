@@ -38,7 +38,7 @@
                     "maxValue": 50
                 },
                 "bindings": {
-                    "value": {"<<->": "@owner[itemsPerPageCount]", "converter": {"@": "floorConverter"}}
+                    "value": {"<<->": "@owner.itemsPerPageCount", "converter": {"@": "floorConverter"}}
                 }
             },
 
@@ -50,7 +50,7 @@
                     "element": {"#": "itemCount"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[collectionController.organizedObjects.count()]"}
+                    "value": {"<-": "@owner.collectionController.organizedObjects.count()"}
                 }
             },
 
@@ -61,7 +61,7 @@
                     "element": {"#": "itemsPerPageCount"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[itemsPerPageCount]"}
+                    "value": {"<-": "@owner.itemsPerPageCount"}
                 }
             },
 
@@ -73,8 +73,8 @@
                     "isSelectionEnabled": true
                 },
                 "bindings": {
-                    "contentController": {"<-": "@owner[collectionController]"},
-                    "indexMap": {"<-": "@owner[indexMap]"}
+                    "contentController": {"<-": "@owner.collectionController"},
+                    "indexMap": {"<-": "@owner.indexMap"}
                 }
             },
 
@@ -85,7 +85,7 @@
                     "element": {"#": "item"}
                 },
                 "bindings": {
-                    "value": {"<-": "@list[objectAtCurrentIteration.label]"}
+                    "value": {"<-": "@list.objectAtCurrentIteration.label"}
                 }
             },
 
@@ -96,7 +96,7 @@
                     "element": {"#": "selectedValueField"}
                 },
                 "bindings": {
-                    "value": {"<<->": "@owner[collectionController.selectedObjects.0.label]"}
+                    "value": {"<<->": "@owner.collectionController.selectedObjects.0.label"}
                 }
             },
 

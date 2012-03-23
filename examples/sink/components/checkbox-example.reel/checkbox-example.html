@@ -52,7 +52,7 @@
                         "element": {"#": "continueButton"}
                     },
                     "bindings": {
-                        "disabled": {"<-": "@invertConverter[checked]", "converter": {"@": "invertConverter"}}
+                        "disabled": {"<-": "@invertConverter.checked", "converter": {"@": "invertConverter"}}
                     }
                 },
 
@@ -78,7 +78,7 @@
                         "automaticallyOrganizeObjects": true
                     },
                     "bindings": {
-                        "content": {"<-": "@owner[data]"}
+                        "content": {"<-": "@owner.data"}
                     }
                 },
 
@@ -102,8 +102,8 @@
                         "element": {"#": "link"}
                     },
                     "bindings": {
-                        "href": {"<-": "@list1[objectAtCurrentIteration.href]"},
-                        "textContent": {"<-": "@list1[objectAtCurrentIteration.src]"}
+                        "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+                        "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
                     }
                 },
 
@@ -114,7 +114,7 @@
                         "element": {"#": "desc"}
                     },
                     "bindings": {
-                        "value": {"<-": "@list1[objectAtCurrentIteration.description]"}
+                        "value": {"<-": "@list1.objectAtCurrentIteration.description"}
                     }
                 },
 
@@ -126,7 +126,7 @@
                         "element": {"#": "selection"}
                     },
                     "bindings": {
-                        "checked": {"<<->": "@list1[selectionAtCurrentIteration]"}
+                        "checked": {"<<->": "@list1.selectionAtCurrentIteration"}
                     }
                 },
 
@@ -137,7 +137,7 @@
                         "element": {"#": "selectedValue"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[jsonSelectedItems]"}
+                        "value": {"<<->": "@owner.jsonSelectedItems"}
                     }
                 },
                 "checkboxAccordion1": {
@@ -175,7 +175,7 @@
                         ]
                     },
                     "bindings": {
-                        "selectedItems": {"<<->": "@controller[selectedObjects]"}
+                        "selectedItems": {"<<->": "@controller.selectedObjects"}
                     }
                 }
 

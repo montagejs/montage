@@ -12,9 +12,9 @@
             "element": {"#": "img-main"}
         },
         "bindings": {
-            "src": {"<-": "@images[selectedObjects.0.src]"},
-            "title": {"<-": "@images[selectedObjects.0.description]"},
-            "alt": {"<-": "@images[selectedObjects.0.description]"}
+            "src": {"<-": "@images.selectedObjects.0.src"},
+            "title": {"<-": "@images.selectedObjects.0.description"},
+            "alt": {"<-": "@images.selectedObjects.0.description"}
         }
     },
 
@@ -25,8 +25,8 @@
             "element": {"#": "moreLink"}
         },
         "bindings": {
-            "href": {"<-": "@images[selectedObjects.0.href]"},
-            "textContent": {"<-": "@images[selectedObjects.0.href]"}
+            "href": {"<-": "@images.selectedObjects.0.href"},
+            "textContent": {"<-": "@images.selectedObjects.0.href"}
         }
     },
 
@@ -39,7 +39,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {"<-": "@owner[images]"}
+            "content": {"<-": "@owner.images"}
         }
     },
 
@@ -63,7 +63,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {"<-": "@list1[objectAtCurrentIteration.src]"}
+            "src": {"<-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 

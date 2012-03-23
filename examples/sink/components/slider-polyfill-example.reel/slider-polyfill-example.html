@@ -32,7 +32,7 @@
                         "element": {"#": "color-red"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[red]"}
+                        "value": {"<<->": "@owner.red"}
                     }
 
                 },
@@ -43,7 +43,7 @@
                         "element": {"#": "redValue"}
                     },
                     "bindings": {
-                        "value": {"<-": "@owner[red]", "converter": {"@": "roundTo2Decimals"}}
+                        "value": {"<-": "@owner.red", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
                 "green": {
@@ -53,7 +53,7 @@
                             "element": {"#": "color-green"}
                         },
                         "bindings": {
-                            "value": {"<<->": "@owner[green]"}
+                            "value": {"<<->": "@owner.green"}
                         }
                     },
                     "greenValue": {
@@ -63,7 +63,7 @@
                             "element": {"#": "greenValue"}
                         },
                         "bindings": {
-                            "value": {"<-": "@owner[green]", "converter": {"@": "roundTo2Decimals"}}
+                            "value": {"<-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
                         }
                     },
                     "blue": {
@@ -73,7 +73,7 @@
                             "element": {"#": "color-blue"}
                         },
                         "bindings": {
-                            "value": {"<<->": "@owner[blue]"}
+                            "value": {"<<->": "@owner.blue"}
                         }
                     },
                     "blueValue": {
@@ -83,7 +83,7 @@
                             "element": {"#": "blueValue"}
                         },
                         "bindings": {
-                            "value": {"<-": "@owner[blue]", "converter": {"@": "roundTo2Decimals"}}
+                            "value": {"<-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
                         }
                     },
                     "resultHexValue": {
@@ -93,7 +93,7 @@
                             "element": {"#": "result-hex"}
                         },
                         "bindings": {
-                            "value": {"<-": "@owner[resultHex]"}
+                            "value": {"<-": "@owner.resultHex"}
                         }
                     },
                     

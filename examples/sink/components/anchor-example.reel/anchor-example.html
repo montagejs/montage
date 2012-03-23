@@ -13,8 +13,8 @@
             "element": {"#": "link1"}
         },
         "bindings": {
-            "textContent": {"<<->": "@linkTextInput[value]", "deferred": false},
-            "href": {"<<->": "@urlTextInput[value]"}
+            "textContent": {"<<->": "@linkTextInput.value", "deferred": false},
+            "href": {"<<->": "@urlTextInput.value"}
         }
     },
 
@@ -42,7 +42,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {"<-": "@owner[data]"}
+            "content": {"<-": "@owner.data"}
         }
     },
 
@@ -66,8 +66,8 @@
             "element": {"#": "link"}
         },
         "bindings": {
-            "href": {"<-": "@list1[objectAtCurrentIteration.href]"},
-            "textContent": {"<-": "@list1[objectAtCurrentIteration.src]"}
+            "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -78,7 +78,7 @@
             "element": {"#": "desc"}
         },
         "bindings": {
-            "value": {"<-": "@list1[objectAtCurrentIteration.description]"}
+            "value": {"<-": "@list1.objectAtCurrentIteration.description"}
         }
     },
 
