@@ -34,10 +34,22 @@
 }
 
 .montage-popup-container {
-    background-color: #fff;
-    border-radius: 5px;
-    border: 2px solid #556270;
-
+    border: 1px solid #eee;
+    -webkit-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    -moz-box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    -webkit-transition: opacity .25s;
+    -moz-transition: opacity .25s;
+    -ms-transition: opacity .25s;
+    -o-transition: opacity .25s;
+    transition: opacity .25s;
+    background: white;
+    border: 1px solid rgba(0, 0, 0, .2);
+    cursor: default;
+    margin: 0;
+    outline: none;
+    width: auto;
+    border-radius: 3px;
 }
 
 .montage-popup-noborder {
