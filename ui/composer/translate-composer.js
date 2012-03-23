@@ -87,15 +87,15 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             if (this._axis === "vertical") {
-                this._translateX = 0;
+                this._translateX = this._minTranslateX;
             } else {
                 var tmp = isNaN(value) ? 0 : value >> 0;
 
-                if (tmp < this._startX) {
-                    tmp = 0;
+                if (tmp < this._minTranslateX) {
+                    tmp = this._minTranslateX;
                 }
-                    if (tmp > this._endX) {
-                        tmp = this._endX;
+                    if (tmp > this._maxTranslateX) {
+                        tmp = this._maxTranslateX;
                     }
                     if (!this._isSelfUpdate) {
                         this.isAnimating = false;
@@ -115,15 +115,15 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             if (this._axis === "horizontal") {
-                this._translateY = 0;
+                this._translateY = this._minTranslateY;
             } else {
                 var tmp = isNaN(value) ? 0 : value >> 0;
 
-                if (tmp < this._startY) {
-                    tmp = 0;
+                if (tmp < this._minTranslateY) {
+                    tmp = this._minTranslateY;
                 }
-                    if (tmp > this._endY) {
-                        tmp = this._endY;
+                    if (tmp > this._maxTranslateY) {
+                        tmp = this._maxTranslateY;
                     }
                     if (!this._isSelfUpdate) {
                         this.isAnimating = false;
@@ -133,80 +133,80 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    _startX: {
+    _minTranslateX: {
         enumerable: false,
         value: 0
     },
-    startX: {
+    minTranslateX: {
         get: function() {
-            return this._startX;
+            return this._minTranslateX;
         },
         set: function(value) {
-            var tmp = isNaN(value) ? 0 : value >> 0;
+            value = isNaN(value) ? 0 : value >> 0;
 
-            if (this._startX != tmp) {
-                if (this._translateX > this._startX) {
-                    this.translateX = this._startX;
+            if (this._minTranslateX != value) {
+                if (this._translateX < value) {
+                    this.translateX = value;
                 }
-                this._startX = tmp;
+                this._minTranslateX = value;
             }
         }
     },
-    _endX: {
+    _maxTranslateX: {
         enumerable: false,
         value: 0
     },
-    endX: {
+    maxTranslateX: {
         get: function() {
-            return this._endX;
+            return this._maxTranslateX;
         },
         set: function(value) {
-            var tmp = isNaN(value) ? 0 : value >> 0;
+            value = isNaN(value) ? 0 : value >> 0;
 
-            if (this._endX != tmp) {
-                if (this._translateX > this._endX) {
-                    this.translateX = this._endX;
+            if (this._maxTranslateX != value) {
+                if (this._translateX > value) {
+                    this.translateX = value;
                 }
-                this._endX = tmp;
+                this._maxTranslateX = value;
             }
         }
     },
 
-    _startY: {
+    _minTranslateY: {
         enumerable: false,
         value: 0
     },
-    startY: {
+    minTranslateY: {
         get: function() {
-            return this._startY;
+            return this._minTranslateY;
         },
         set: function(value) {
-            var tmp = isNaN(value) ? 0 : value >> 0;
+            value = isNaN(value) ? 0 : value >> 0;
 
-            if (this._startY != tmp) {
-                if (this._translateY > this._startY) {
-                    this.translateY = this._startY;
+            if (this._minTranslateY != value) {
+                if (this._translateY < value) {
+                    this.translateY = value;
                 }
-                this._startY = tmp;
+                this._minTranslateY = value;
             }
         }
     },
-    _endY: {
+    _maxTranslateY: {
         enumerable: false,
         value: 0
     },
-    endY: {
+    maxTranslateY: {
         get: function() {
-            return this._endY;
+            return this._maxTranslateY;
         },
         set: function(value) {
-            var tmp = isNaN(value) ? 0 : value >> 0;
+            value = isNaN(value) ? 0 : value >> 0;
 
-            if (this._endY != tmp) {
-                if (this._translateY > this._endY) {
-                    this.translateY = this._endY;
+            if (this._maxTranslateY != value) {
+                if (this._translateY > value) {
+                    this.translateY = value;
                 }
-                this._endY = tmp;
+                this._maxTranslateY = value;
             }
         }
     },

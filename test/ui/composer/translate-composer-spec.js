@@ -28,8 +28,8 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     });
                 });
                 it("can be set", function() {
-                    test.translate_composer.translateX = 5;
-                    expect(test.x).toBe("5px");
+                    test.translate_composer.translateX = 25;
+                    expect(test.x).toBe("25px");
                 });
             });
             describe("translateY", function() {
@@ -43,8 +43,8 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     expect(test.y).toBe("5px");
                 });
             });
-            describe("endX", function() {
-                it ("limits translateX", function() {
+            describe("maxTranslateX", function() {
+                it("limits translateX", function() {
                     testPage.dragElementOffsetTo(test.example.element, 500, 0, null, null, function() {
                         runs(function() {
                             expect(test.translate_composer.translateX).not.toBeGreaterThan(350);
@@ -52,11 +52,35 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     });
                 });
             });
-            describe("endY", function() {
+            describe("maxTranslateY", function() {
                 it ("limits translateY", function() {
                     testPage.dragElementOffsetTo(test.example.element, 0, 500, null, null, function() {
                         runs(function() {
                             expect(test.translate_composer.translateY).not.toBeGreaterThan(350);
+                        });
+                    });
+                });
+            });
+
+            describe("minTranslateX", function() {
+                it ("limits translateY", function() {
+                    testPage.dragElementOffsetTo(test.example.element, -500, 0, null, null, function() {
+                        // wait for the bounce to finish
+                        waits(test.translate_composer._bouncingDuration);
+                        runs(function() {
+                            expect(test.translate_composer.translateY).not.toBeLessThan(20);
+                        });
+                    });
+                });
+            });
+
+            describe("minTranslateX", function() {
+                it ("limits translateY", function() {
+                    testPage.dragElementOffsetTo(test.example.element, 0, -500, null, null, function() {
+                        // wait for the bounce to finish
+                        waits(test.translate_composer._bouncingDuration);
+                        runs(function() {
+                            expect(test.translate_composer.translateX).not.toBeLessThan(-40);
                         });
                     });
                 });
@@ -72,7 +96,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         runs(function() {
                             expect(test.translate_composer.translateX).toBeGreaterThan(49);
-                            expect(test.translate_composer.translateY).toBe(0);
+                            expect(test.translate_composer.translateY).toBe(-40);
                         });
                     });
                 });
@@ -83,8 +107,8 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
 
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         runs(function() {
-                            expect(test.translate_composer.translateX).toBe(0);
-                            expect(test.translate_composer.translateY).toBeGreaterThan(49);
+                            expect(test.translate_composer.translateX).toBe(20);
+                            expect(test.translate_composer.translateY).toBeGreaterThan(9);
                         });
                     });
                 });
