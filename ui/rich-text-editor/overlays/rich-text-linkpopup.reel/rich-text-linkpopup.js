@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module "montage/ui/rich-text-editor.reel/rich-text-resizer.reel"
+	@module "montage/ui/rich-text-editor/overlays/rich-text-resizer.reel"
     @requires montage/core/core
     @requires montage/ui/component
 */
@@ -12,10 +12,10 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
 /**
-    @class module:"montage/ui/rich-text-linkpopup.reel".RichTextLinkPopup
+    @class module:"montage/ui/rich-text-editor/overlays/rich-text-linkpopup.reel".RichTextLinkPopup
     @extends module:montage/ui/component.Component
 */
-exports.RichTextLinkPopup = Montage.create(Component,/** @lends module:"montage/ui/rich-text-linkpopup.reel".RichTextLinkPopup# */ {
+exports.RichTextLinkPopup = Montage.create(Component,/** @lends module:"montage/ui/rich-text-editor/overlays/rich-text-linkpopup.reel".RichTextLinkPopup# */ {
 
     /**
       Description TODO

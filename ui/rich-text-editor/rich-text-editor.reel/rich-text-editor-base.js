@@ -11,8 +11,8 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     MutableEvent = require("core/event/mutable-event").MutableEvent,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    RichTextLinkPopup = require("../rich-text-linkpopup.reel").RichTextLinkPopup,
-    RichTextResizer = require("../rich-text-resizer.reel").RichTextResizer,
+    RichTextLinkPopup = require("../overlays/rich-text-linkpopup.reel").RichTextLinkPopup,
+    RichTextResizer = require("../overlays/rich-text-resizer.reel").RichTextResizer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager,
     defaultUndoManager = require("core/undo-manager").defaultUndoManager;
 

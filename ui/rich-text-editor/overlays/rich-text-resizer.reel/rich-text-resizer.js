@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module "montage/ui/rich-text-editor.reel/rich-text-resizer.reel"
+	@module "montage/ui/rich-text-editor/overlays/rich-text-resizer.reel"
     @requires montage/core/core
     @requires montage/core/geometry/point
     @requires montage/ui/component
@@ -16,10 +16,10 @@ var Montage = require("montage").Montage,
     Point = require("core/geometry/point").Point;
 
 /**
-    @class module:"montage/ui/rich-text-editor.reel/rich-text-resizer.reel".RichTextResizer
+    @class module:"montage/ui/rich-text-editor/overlays/rich-text-resizer.reel".RichTextResizer
     @extends module:montage/ui/component.Component
 */
-exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui/rich-text-editor.reel/rich-text-resizer.reel".RichTextResizer# */ {
+exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui/rich-text-editor/overlays/rich-text-resizer.reel".RichTextResizer# */ {
 
     /**
       Description TODO
