@@ -45,11 +45,14 @@
             "properties": {
                 "component": {"@": "owner"},
                 "hasMomentum": false,
-                "hasBouncing": false
+                "hasBouncing": false,
+                "startTranslateSpeed": 1
             },
             "bindings": {
-                "maxTranslateX": {"<-": "@owner[_range]"},
-                "maxTranslateY": {"<-": "@owner[_range]"}
+                "minTranslateX": {"<-": "@owner[minValue]"},
+                "minTranslateY": {"<-": "@owner[minValue]"},
+                "maxTranslateX": {"<-": "@owner[maxValue]"},
+                "maxTranslateY": {"<-": "@owner[maxValue]"}
             },
             "listeners": [
                 {
@@ -64,7 +67,13 @@
             "properties": {
                 "component": {"@": "owner"},
                 "delegate": {"@": "owner"}
-            }
+            },
+            "listeners": [
+                {
+                    "type": "press",
+                    "listener": {"@": "owner"}
+                }
+            ]
         },
 
         "numberConverter": {
