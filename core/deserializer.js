@@ -789,7 +789,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 } else if ("@" in value) {
                     type = "reference";
                     value = value["@"];
-                } else if ("->" in value && typeof value["->"] === "object") {
+                } else if (typeof value["->"] === "object") {
                     type = "function";
                     value = value["->"];
                 } else if ("." in value && Object.keys(value).length === 1) {

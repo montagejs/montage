@@ -10,7 +10,9 @@ var spec = queryString("spec");
 if (spec) {
     require.async(decodeURIComponent(spec)).then(function() {
         jasmine.getEnv().execute();
-        window.testpage.callNext();
+        if (window.testpage) {
+            window.testpage.callNext();
+        }
     });
 } else {
     var modules = [
@@ -79,6 +81,7 @@ if (spec) {
         "ui/number-input-spec",
         "ui/range-input-spec",
         "ui/popup-spec",
+        "ui/popup-in-window-spec",
         "ui/repetition-spec",
         "ui/select-input-spec",
         "ui/slider-spec",
@@ -89,7 +92,9 @@ if (spec) {
     .then(function () {
         modules.forEach(require);
         jasmine.getEnv().execute();
-        window.testpage.callNext();
+        if (window.testpage) {
+            window.testpage.callNext();
+        }
     });
 }
 
