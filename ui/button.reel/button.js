@@ -13,6 +13,24 @@ var Montage = require("montage").Montage,
  */
 var Button = exports.Button = Montage.create(NativeControl, {
 
+    /**
+    @event
+    @name action
+    @param {Event} event
+
+    Dispatched when the button is activated through a mouse click, finger tap,
+    or when focused and the spacebar is pressed.
+    */
+
+    /**
+    @event
+    @name hold
+    @param {Event} event
+
+    Dispatched when the button is pressed for a period of time, set by
+    {@link holdTimeout}.
+    */
+
 /**
   Description TODO
   @private
@@ -105,6 +123,23 @@ var Button = exports.Button = Montage.create(NativeControl, {
     },
 
     /**
+    How long a press has to last for a hold event to be dispatched
+    */
+    holdTimeout: {
+        get: function() {
+            return this._pressComposer.longPressTimeout;
+        },
+        set: function(value) {
+            this._pressComposer.longPressTimeout = value;
+        }
+    },
+
+    _pressComposer: {
+        enumberable: false,
+        value: null
+    },
+
+    /**
     True when the button is being interacted with, either through mouse click or
     touch event.
     @private
@@ -129,13 +164,28 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
+    didCreate: {
+        value: function() {
+            this._pressComposer = PressComposer.create();
+            this.addComposer(this._pressComposer);
+        }
+    },
+
     prepareForActivationEvents: {
         value: function() {
-            var pressComposer = PressComposer.create();
-            this.addComposer(pressComposer);
-            pressComposer.addEventListener("pressstart", this, false);
-            pressComposer.addEventListener("press", this, false);
-            pressComposer.addEventListener("presscancel", this, false);
+            this._pressComposer.addEventListener("pressStart", this, false);
+            this._pressComposer.addEventListener("press", this, false);
+            this._pressComposer.addEventListener("pressCancel", this, false);
+        }
+    },
+
+    // Optimisation
+    addEventListener: {
+        value: function(type, listener, useCapture) {
+            NativeControl.addEventListener.call(this, type, listener, useCapture);
+            if (type === "hold") {
+                this._pressComposer.addEventListener("longPress", this, false);
+            }
         }
     },
 
@@ -144,7 +194,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     /**
     Called when the user starts interacting with the component.
     */
-    handlePressstart: {
+    handlePressStart: {
         value: function(event) {
             this.active = true;
 
@@ -166,10 +216,33 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
+    handleKeyup: {
+        value: function(event) {
+            console.log(event.keyCode);
+            // action event on spacebar
+            if (event.keyCode === 32) {
+                this.active = false;
+                this._dispatchActionEvent();
+            }
+        }
+    },
+
+    handleLongPress: {
+        value: function(event) {
+            // When we fire the "hold" event we don't want to fire the
+            // "action" event as well.
+            this._pressComposer.cancelPress();
+
+            var holdEvent = document.createEvent("CustomEvent");
+            holdEvent.initCustomEvent("hold", true, true, null);
+            this.dispatchEvent(holdEvent);
+        }
+    },
+
     /**
     Called when all interaction is over.
     */
-    handlePresscancel: {
+    handlePressCancel: {
         value: function(event) {
             this.active = false;
         }
@@ -186,10 +259,10 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
     didSetElement: {
         value: function() {
-            var o = NativeControl.didSetElement.call(this);
+            NativeControl.didSetElement.call(this);
 
             this._element.classList.add("montage-button");
-            this._element.setAttribute("aria-role", "button");
+            this._element.setAttribute("role", "button");
 
             this._isInputElement = (this._element.tagName === "INPUT");
             // Only take the value from the element if it hasn't been set
@@ -218,6 +291,8 @@ var Button = exports.Button = Montage.create(NativeControl, {
                     this._label = this._labelNode.data;
                 }
             }
+
+            this._element.addEventListener("keyup", this, false);
 
             this.needsDraw = true;
         }

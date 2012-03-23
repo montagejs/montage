@@ -127,6 +127,7 @@ var PrimordialPromise = Creatable.create({
 
             // automatically subcreate each of the contained promise types
             var creation = Object.create(this);
+            creation.AbstractPromise = this.AbstractPromise.create(promiseDescriptor);
             creation.DeferredPromise = this.DeferredPromise.create(promiseDescriptor);
             creation.FulfilledPromise = this.FulfilledPromise.create(promiseDescriptor);
             creation.RejectedPromise = this.RejectedPromise.create(promiseDescriptor);
@@ -156,7 +157,14 @@ var PrimordialPromise = Creatable.create({
         }
     },
 
+    // deprecated
     ref: {
+        get: function () {
+            return this.resolve;
+        }
+    },
+
+    resolve: {
         value: function (object) {
             // if it is already a promise, wrap it to guarantee
             // the full public API of this promise variety.
@@ -253,7 +261,8 @@ var PrimordialPromise = Creatable.create({
             self._reason = reason;
             self._error = error;
             self.Promise = this;
-            errors.push(error && error.stack || self);
+            rejections.push(self);
+            errors.push(error ? (error.stack ? error.stack : error) : reason);
             return self;
         }
     },
@@ -266,8 +275,9 @@ var PrimordialPromise = Creatable.create({
                     then: function (r, o, rejected) {
                         // remove this error from the list of unhandled errors on the console
                         if (rejected) {
-                            var at = errors.indexOf(this._error && this._error.stack || this);
+                            var at = rejections.indexOf(this);
                             if (at !== -1) {
+                                rejections.splice(at, 1);
                                 errors.splice(at, 1);
                             }
                         }
@@ -378,6 +388,10 @@ var PrimordialPromise = Creatable.create({
             }
 
         })
+    },
+
+    AbstractPromise: {
+        value: AbstractPromise
     }
 
 });
@@ -411,7 +425,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 try {
                     deferred.resolve(fulfilled ? fulfilled(value) : value);
                 } catch (error) {
-                    console.error(error.stack);
+                    console.error(error.stack || error, fulfilled);
                     deferred.reject(error.message, error);
                 }
             }
@@ -556,18 +570,21 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
     delay: {
         value: function (timeout) {
-            var deferred = this.Promise.defer();
-            this.then(function (value) {
-                clearTimeout(handle);
-                deferred.resolve(value);
-            }, function (reason, error, rejection) {
-                clearTimeout(handle);
-                deferred.resolve(rejection);
+            var self = this;
+            var promise;
+            if (arguments.length === 0) {
+                timeout = this;
+            } else {
+                promise = this;
+            }
+            return Promise.ref(timeout)
+            .then(function (timeout) {
+                var deferred = self.Promise.defer();
+                setTimeout(function () {
+                    deferred.resolve(promise);
+                }, timeout);
+                return deferred.promise;
             });
-            var handle = setTimeout(function () {
-                deferred.reject("Timed out");
-            }, timeout);
-            return deferred.promise;
         }
     },
 
@@ -582,7 +599,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
                 deferred.resolve(rejection);
             }).end();
             var handle = setTimeout(function () {
-                deferred.reject("Timed out");
+                deferred.reject("Timed out", new Error("Timed out"));
             }, timeout);
             return deferred.promise;
         }
@@ -657,6 +674,7 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
 });
 
+var rejections = [];
 var errors = [];
 // Live console objects are not handled on tablets
 if (typeof window !== "undefined" && !window.Touch) {

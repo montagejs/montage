@@ -13,11 +13,7 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
         el = el || component.element;
 
         var listener = testPage.addListener(component, fn);
-
-        testPage.mouseEvent({target: el}, "mousedown");
-        testPage.mouseEvent({target: el}, "mouseup");
-        testPage.mouseEvent({target: el}, "click");
-
+        testPage.clickOrTouch({target: el});
         // Return this so that it can be checked in tha calling function.
         return listener;
     };
@@ -42,6 +38,23 @@ var testPage = TestPageLoader.queueTest("buttontest", function() {
             });
             it("can be created from a button element", function(){
                 testButton(test.buttonbutton, "button button");
+            });
+
+            it("fires a 'hold' event when the button is pressed for a long time", function() {
+                var el = test.inputbutton.element;
+                var holdListener = testPage.addListener(test.inputbutton, null, "hold");
+                var actionListener = testPage.addListener(test.inputbutton, null, "action");
+
+                testPage.mouseEvent({target: el}, "mousedown");
+
+                waits(1010);
+                runs(function() {
+                    testPage.mouseEvent({target: el}, "mouseup");
+                    testPage.mouseEvent({target: el}, "click");
+
+                    expect(holdListener).toHaveBeenCalled();
+                    expect(actionListener).not.toHaveBeenCalled();
+                });
             });
 
             describe("disabled property", function(){

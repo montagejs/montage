@@ -10,8 +10,8 @@
     <title>ValueBasedEffect</title>
     <link rel="stylesheet" href="value-based-effect.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "enabledToggle": {
                 "module": "montage/ui/toggle-button.reel",
                 "name": "ToggleButton",
@@ -22,10 +22,7 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "enabled"
-                    }
+                    "pressed": {"<<->": "@owner[enabled]"}
                 }
             },
             "effectName": {
@@ -35,10 +32,7 @@
                     "element": {"#": "effectName"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "name"
-                    }
+                    "value": {"<<->": "@owner[name]"}
                 }
             },
             "valueSlider": {
@@ -49,18 +43,9 @@
                     "identifier": "valueSlider"
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "sliderValue"
-                    },
-                    "min": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "minValue"
-                    },
-                    "max": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "maxValue"
-                    }
+                    "value": {"<<->": "@owner[sliderValue]"},
+                    "min": {"<<->": "@owner[minValue]"},
+                    "max": {"<<->": "@owner[maxValue]"}
                 },
                 "listeners": [
                     {
@@ -89,12 +74,7 @@
                     "element": {"#": "valueDisplay"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true,
-                        "converter": {"@": "numberconverter1"}
-                    }
+                    "value": {"<-": "@owner[value]", "converter": {"@": "numberconverter1"}}
                 }
             },
             "resetListener": {
@@ -110,11 +90,7 @@
                 "module": "value-based-effect.reel",
                 "name": "ResetAvailableConverter",
                 "bindings": {
-                    "defaultValue": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "defaultValue",
-                        "oneway": true
-                    }
+                    "defaultValue": {"<-": "@owner[defaultValue]"}
                 }
             },
 
@@ -125,12 +101,7 @@
                     "element": {"#": "resetCondition"}
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true,
-                        "converter": {"@": "resetAvailableConverter"}
-                    }
+                    "condition": {"<-": "@owner[value]", "converter": {"@": "resetAvailableConverter"}}
                 }
             },
 
@@ -156,8 +127,8 @@
                     "element": {"#": "control"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

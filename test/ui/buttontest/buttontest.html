@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>ButtonTest</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "divbutton": {
         "module": "montage/ui/button.reel",
         "name": "Button",
@@ -110,10 +110,7 @@
             "converter": {"@": "uppercaseconverter"}
         },
         "bindings": {
-            "label": {
-                "boundObject": {"@": "textinput"},
-                "boundObjectPropertyPath": "value"
-            }
+            "label": {"<<->": "@textinput[value]"}
         }
     },
     "uppercaseconverter": {
@@ -173,6 +170,27 @@
         ]
     },
 
+    "loggingbutton": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "loggingbutton"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "test"}
+            }
+        ]
+    },
+
+    "output": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "output"},
+            "value": ""
+        }
+    },
 
     "test": {
         "module": "ui/buttontest/buttontest",
@@ -197,7 +215,8 @@
             "toggleinput2": {"@": "toggleinput2"},
             "toggleinput3": {"@": "toggleinput3"},
             "scroll": {"@": "scroll"},
-            "scroll_button": {"@": "scroll_button"}
+            "scroll_button": {"@": "scroll_button"},
+            "output": {"@": "output"}
         }
     },
     "application": {
@@ -207,15 +226,15 @@
             "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body>
     <h1>Button test</h1>
 
     <h2>Output</h2>
-    <span id="output">output</span>
+    <span id="output" data-montage-id="output">output</span>
 
     <h2>Basic</h2>
     <div id="divbutton">div button</div>
@@ -262,5 +281,7 @@
     <input type="button" id="toggleinput3" value="on">
 
     <input type="button" value="regular button" onclick="alert('hello');" />
+
+    <button id="loggingbutton">Logging button</button>
 </body>
 </html>

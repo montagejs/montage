@@ -9,8 +9,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
     <script src="../../../../montage.js"></script>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "row1": {
                 "module": "montage/ui/dynamic-text.reel",
                 "name": "DynamicText",
@@ -18,11 +18,7 @@
                     "element": {"#": "row"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@flow1[objectAtCurrentIteration]"}
                 }
             },
             "translateComposer1": {
@@ -30,29 +26,19 @@
                 "name": "TranslateComposer",
                 "properties": {
                     "component": {"@": "flow1"},
-                    "maxTranslateY": 1000
+                    "maxTranslateY": 1000,
+                    "invertAxis": true
                 },
                 "bindings": {
-                    "translateY": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "origin"
-                    }
+                    "translateY": {"<<->": "@flow1[origin]"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "_repetitionComponents",
-                        "oneway": true
-                    },
-                    "pointerPosition": {
-                        "boundObject": {"@": "translateComposer1"},
-                        "boundObjectPropertyPath": "pointerStartEventPosition",
-                        "oneway": true
-                    }
+                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
+                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
                 }
             },
             "flow1": {
@@ -84,26 +70,10 @@
                     "scale": 0
                 },
                 "bindings": {
-                    "path": {
-                        "boundObject": {"@": "path1"},
-                        "boundObjectPropertyPath": "path",
-                        "oneway": true
-                    },
-                    "cameraRotationAngle": {
-                        "boundObject": {"@": "slider3"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true
-                    },
-                    "hasElasticScrolling": {
-                        "boundObject": {"@": "checkbox"},
-                        "boundObjectPropertyPath": "checked",
-                        "oneway": true
-                    },
-                    "selectedSlideIndex": {
-                        "boundObject": {"@": "nearest"},
-                        "boundObjectPropertyPath": "nearestNeighborComponent",
-                        "oneway": true
-                    }
+                    "path": {"<-": "@path1[path]"},
+                    "cameraRotationAngle": {"<-": "@slider3[value]"},
+                    "hasElasticScrolling": {"<-": "@checkbox[checked]"},
+                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"}
                 }
             },
             "path1": {
@@ -136,8 +106,8 @@
                 "module": "flow-test",
                 "name": "FlowTest"
             }
-        }
-    </script>
+        
+    }</script>
     <style>
         .flow {
             position: absolute;

@@ -1,0 +1,31 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+.montage-inputText {
+  outline: none;
+  box-sizing: border-box;
+  font-size: 12px;
+  width: 10em;
+  height: 2.5em;
+  padding: 0.5em;
+  border: 1px solid #b3b3b3;
+  border-radius: 3px;
+  background-color: #ffffff;
+}
+
+.montage-inputText:hover {
+  border-color: #cccccc;
+}
+
+.montage-inputText:focus {
+  border-color: #7f7f7f;
+}
+
+
+/* Style for Touch */
+.montage-inputText {
+  font-size: 14px;
+}

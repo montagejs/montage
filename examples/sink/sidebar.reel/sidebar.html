@@ -11,8 +11,8 @@
 
     <link rel="stylesheet" href="sidebar.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
 
             "owner": {
                 "module": "sidebar.reel",
@@ -21,17 +21,13 @@
                     "element": {"#": "sidebar"}
                 },
                 "bindings": {
-                    "sandbox.selectedItem": {
-                        "boundObject": {"@": "navController"},
-                        "boundObjectPropertyPath": "selectedObjects.0",
-                        "oneway": true
-                    }
+                    "sandbox.selectedItem": {"<-": "@navController[selectedObjects.0]"}
                 }
 
 
             }
-        }
-    </script>
+        
+    }</script>
 </head>
 <body>
 
@@ -40,31 +36,31 @@
             <ul class="nav-group">
                 <h6 class="nav-label">Buttons and Links</h6>
                 <li class="nav-item active"><a class="nav-item" href="#button"><h4>Button</h4></a></li>
-                <li class="nav-item" ><a href="#toggle-button"><h4>Toggle</h4></a></li>
+                <li class="nav-item" ><a href="#toggleButton"><h4>Toggle</h4></a></li>
                 <li class="nav-item"><a href="#anchor"><h4>Anchor</h4></a></li>
             </ul>
             <ul class="nav-group">
                 <h6 class="nav-label">Text</h6>
-                <li class="nav-item"><a href="#dynamic-text"><h4>Dynamic Text</h4></a></li>
+                <li class="nav-item"><a href="#dynamicText"><h4>Dynamic Text</h4></a></li>
             </ul>
             <ul class="nav-group">
                 <h6 class="nav-label">Text Inputs</h6>
-                <li class="nav-item"><a href="#input-text"><h4>Textfield</h4></a></li>
+                <li class="nav-item"><a href="#inputText"><h4>Textfield</h4></a></li>
                 <li class="nav-item"><a href="#textarea"><h4>TextArea</h4></a></li>
                 <li class="nav-item"><a href="#autocomplete"><h4>Autocomplete</h4></a></li>
             </ul>
             <ul class="nav-group">
                 <h6 class="nav-label">Numerical Inputs</h6>
-                <li class="nav-item"><a href="#range-input2"><h4>Range</h4></a></li>
-                <li class="nav-item"><a href="#slider-polyfill"><h4>Range Polyfill</h4></a></li>
-                <li class="nav-item"><a href="#montage-slider"><h4>Montage Slider</h4></a></li>
-                <li class="nav-item"><a href="#number-input"><h4>Number</h4></a></li>
+                <li class="nav-item"><a href="#rangeInput2"><h4>Range</h4></a></li>
+                <li class="nav-item"><a href="#sliderPolyfill"><h4>Range Polyfill</h4></a></li>
+                <li class="nav-item"><a href="#montageSlider"><h4>Montage Slider</h4></a></li>
+                <li class="nav-item"><a href="#numberInput"><h4>Number</h4></a></li>
             </ul>
             <ul class="nav-group">
                 <h6 class="nav-label">Selection Inputs</h6>
-                <li class="nav-item"><a href="#select-input"><h4>Select</h4></a></li>
+                <li class="nav-item"><a href="#selectInput"><h4>Select</h4></a></li>
                 <li class="nav-item"><a href="#checkbox"><h4>Checkbox</h4></a></li>
-                <li class="nav-item"><a href="#radio-button"><h4>Radio Button</h4></a></li>
+                <li class="nav-item"><a href="#radioButton"><h4>Radio Button</h4></a></li>
             </ul>
             <ul class="nav-group">
                 <h6 class="nav-label">Lists</h6>
@@ -81,6 +77,7 @@
             </ul>
             <ul class="nav-group">
                 <h6 class="nav-label">Other</h6>
+                <li class="nav-item"><a href="#translateComposer"><h4>Translate composer</h4></a></li>
                 <li class="nav-item"><a href="#converters"><h4>Converters</h4></a></li>
                 <li class="nav-item"><a href="#progress"><h4>Progress</h4></a></li>
                 <li class="nav-item"><a href="#image"><h4>Image</h4></a></li>

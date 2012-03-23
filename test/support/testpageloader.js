@@ -316,7 +316,8 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     },
 
     addListener: {
-        value: function(component, fn) {
+        value: function(component, fn, type) {
+            type = type || "action";
             var buttonSpy = {
                 doSomething: fn || function(event) {
                     return 1+1;
@@ -325,7 +326,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             spyOn(buttonSpy, 'doSomething');
 
             var actionListener = Montage.create(ActionEventListener).initWithHandler_action_(buttonSpy, "doSomething");
-            component.addEventListener("action", actionListener);
+            component.addEventListener(type, actionListener);
 
             return buttonSpy.doSomething;
         }
@@ -376,11 +377,12 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             touch.clientX = eventInfo.clientX;
             touch.clientY = eventInfo.clientY;
             touch.target = eventInfo.target;
+            touch.identifier = 500;
 
             simulatedEvent.initEvent(eventName, true, true, doc.defaultView, 1, null, null, null, null, false, false, false, false, 0, null);
             simulatedEvent.touches = [touch];
             simulatedEvent.changedTouches = [touch];
-            eventInfo.target.dispatchEvent(simulatedEvent);
+                eventInfo.target.dispatchEvent(simulatedEvent);
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
                     this.waitForDraw();

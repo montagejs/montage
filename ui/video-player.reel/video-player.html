@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" type="text/css" href="video-player.css">
 
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "dynamictext1": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
@@ -38,13 +38,7 @@
             }
         },
         "bindings": {
-            "mediaSrc": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "src",
-                "oneway": true
-            }
+            "mediaSrc": {"<-": "@owner[src]"}
         }
     },
     "slider1": {
@@ -58,13 +52,7 @@
             "hasTapBarToScroll": true
         },
         "bindings": {
-            "value": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "controller.position",
-                "oneway": false
-            }
+            "value": {"<<->": "@owner[controller.position]"}
         }
     },
     "actioneventlistener1": {
@@ -330,8 +318,8 @@
             }
         }
     }
-}
-    </script>
+
+    }</script>
 
 
 </head>

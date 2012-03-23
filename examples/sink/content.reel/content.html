@@ -13,14 +13,7 @@
 
     <script type="text/montage-serialization">
         {
-            "tbi": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
-                "properties": {
-                    "value": "To be implemented"
-                }
-            },
-            "toggle-button": {
+            "toggleButton": {
                 "module": "components/toggle-button-example.reel",
                 "name": "ToggleButtonExample",
                 "properties": {
@@ -38,7 +31,7 @@
                 "properties": {
                 }
             },
-            "radio-button": {
+            "radioButton": {
                 "module": "components/radio-button-example.reel",
                 "name": "RadioButtonExample",
                 "properties": {
@@ -56,7 +49,7 @@
                 "properties": {
                 }
             },
-            "dynamic-text": {
+            "dynamicText": {
                 "module": "components/dynamic-text-example.reel",
                 "name": "DynamicTextExample",
                 "properties": {
@@ -104,7 +97,7 @@
                 "properties": {
                 }
             },
-            "input-text": {
+            "inputText": {
                 "module": "components/input-text-example.reel",
                 "name": "InputTextExample",
                 "properties": {
@@ -116,31 +109,31 @@
                 "properties": {
                 }
             },
-            "range-input": {
+            "rangeInput": {
                 "module": "components/range-input-example.reel",
                 "name": "RangeInputExample",
                 "properties": {
                 }
             },
-            "range-input2": {
+            "rangeInput2": {
                 "module": "components/range-input-example2.reel",
                 "name": "RangeInputExample2",
                 "properties": {
                 }
             },
-            "montage-slider": {
+            "montageSlider": {
                 "module": "components/montage-slider.reel",
                 "name": "MontageSlider",
                 "properties": {
                 }
             },
-            "number-input": {
+            "numberInput": {
                 "module": "components/number-input-example.reel",
                 "name": "NumberInputExample",
                 "properties": {
                 }
             },
-            "select-input": {
+            "selectInput": {
                 "module": "components/select-input-example.reel",
                 "name": "SelectInputExample",
                 "properties": {
@@ -158,7 +151,7 @@
                 "properties": {
                 }
             },
-            "slider-polyfill": {
+            "sliderPolyfill": {
                 "module": "components/slider-polyfill-example.reel",
                 "name": "SliderPolyfillExample",
                 "properties": {
@@ -171,45 +164,47 @@
                 }
             },
 
+            "translateComposer": {
+                "module": "components/translate-composer-example.reel",
+                "name": "TranslateComposerExample",
+                "properties": {}
+            },
+
             "content": {
                 "module": "montage/ui/substitution.reel",
                 "name": "Substitution",
                 "properties": {
                     "element": {"#": "content"},
                     "switchComponents": {
-                        "toggle-button": {"@": "toggle-button"},
+                        "toggleButton": {"@": "toggleButton"},
                         "button": {"@": "button"},
-                        "combo-box": {"@": "tbi"},
                         "checkbox": {"@": "checkbox"},
-                        "radio-button": {"@": "radio-button"},
+                        "radioButton": {"@": "radioButton"},
                         "image": {"@": "image"},
                         "popup1": {"@": "popup"},
                         "progress": {"@": "progress"},
-                        "dynamic-text": {"@": "dynamic-text"},
+                        "dynamicText": {"@": "dynamicText"},
                         "converters": {"@": "converters"},
                         "list": {"@": "list"},
                         "repetition": {"@": "repetition"},
                         "tabs": {"@": "tabs"},
-                        "input-text": {"@": "input-text"},
+                        "inputText": {"@": "inputText"},
                         "textarea": {"@": "textarea"},
-                        "number-input": {"@": "number-input"},
-                        "range-input2": {"@": "range-input2"},
-                        "select-input": {"@": "select-input"},
+                        "numberInput": {"@": "numberInput"},
+                        "rangeInput2": {"@": "rangeInput2"},
+                        "selectInput": {"@": "selectInput"},
                         "anchor": {"@": "anchor"},
                         "substitution": {"@": "substitution"},
                         "scroller": {"@": "scroller"},
-                        "montage-slider": {"@": "montage-slider"},
-                        "slider-polyfill": {"@": "slider-polyfill"},
+                        "montageSlider": {"@": "montageSlider"},
+                        "sliderPolyfill": {"@": "sliderPolyfill"},
+                        "translateComposer": {"@": "translateComposer"},
                         "autocomplete": {"@": "autocomplete"}
                     },
                     "delegate": {"@": "owner"}
                 },
                 "bindings": {
-                    "switchValue": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "sandbox.selectedItem",
-                        "oneway": true
-                    }
+                    "switchValue": {"<-": "@owner[sandbox.selectedItem]"}
                 }
             },
 
@@ -217,10 +212,12 @@
                 "module": "content.reel",
                 "name": "content",
                 "properties": {
-                    "element": {"#": "content"}
+                    "element": {"#": "content"},
+                    "contentDeck": {"@": "content"}
                 }
             }
-        }
+        
+    }
     </script>
 </head>
 <body>

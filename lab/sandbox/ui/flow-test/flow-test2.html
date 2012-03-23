@@ -9,8 +9,8 @@
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
     <script src="../../../../montage.js"></script>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "imaget1": {
                 "module": "image.reel",
                 "name": "Image",
@@ -18,45 +18,27 @@
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "src": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "src": {"<-": "@flow1[objectAtCurrentIteration]"}
                 }
             },
             "translateComposer1": {
                 "module": "montage/ui/composer/translate-composer",
                 "name": "TranslateComposer",
                 "properties": {
-                    "component": {"@": "flow1"}
+                    "component": {"@": "flow1"},
+                    "invertAxis": true
                 },
                 "bindings": {
-                    "maxTranslateX": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "length",
-                        "oneway": true
-                    },
-                    "translateX": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "origin"
-                    }
+                    "maxTranslateX": {"<-": "@flow1[length]"},
+                    "translateX": {"<<->": "@flow1[origin]"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {
-                        "boundObject": {"@": "flow1"},
-                        "boundObjectPropertyPath": "_repetitionComponents",
-                        "oneway": true
-                    },
-                    "pointerPosition": {
-                        "boundObject": {"@": "translateComposer1"},
-                        "boundObjectPropertyPath": "pointerStartEventPosition",
-                        "oneway": true
-                    }
+                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
+                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
                 }
             },
             "flow1": {
@@ -83,16 +65,8 @@
                     ]
                 },
                 "bindings": {
-                    "path": {
-                        "boundObject": {"@": "path1"},
-                        "boundObjectPropertyPath": "path",
-                        "oneway": true
-                    },
-                    "selectedSlideIndex": {
-                        "boundObject": {"@": "nearest"},
-                        "boundObjectPropertyPath": "nearestNeighborComponent",
-                        "oneway": true
-                    }
+                    "path": {"<-": "@path1[path]"},
+                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"}
                 }
             },
 
@@ -101,32 +75,16 @@
                 "module": "montage/ui/flow-path",
                 "name": "FlowPath",
                 "bindings": {
-                    "translateX": {
-                        "boundObject": {"@": "path1TranslateX"},
-                        "boundObjectPropertyPath": "path",
-                        "oneway": true
-                    },
-                    "translateY": {
-                        "boundObject": {"@": "path1TranslateY"},
-                        "boundObjectPropertyPath": "path",
-                        "oneway": true
-                    }
+                    "translateX": {"<-": "@path1TranslateX[path]"},
+                    "translateY": {"<-": "@path1TranslateY[path]"}
                 }
             },
             "path1TranslateX": {
                 "module": "montage/ui/flow-path-linear",
                 "name": "FlowPathLinear",
                 "bindings": {
-                    "origin": {
-                        "boundObject": {"@": "slider1"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true
-                    },
-                    "multiplier": {
-                        "boundObject": {"@": "slider2"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true
-                    }
+                    "origin": {"<-": "@slider1[value]"},
+                    "multiplier": {"<-": "@slider2[value]"}
                 }
             },
             "slider1": {
@@ -153,26 +111,10 @@
                 "module": "montage/ui/flow-path-cubic",
                 "name": "FlowPathCubic",
                 "bindings": {
-                    "a": {
-                        "boundObject": {"@": "slider3"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true
-                    },
-                    "b": {
-                        "boundObject": {"@": "slider4"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true
-                    },
-                    "c": {
-                        "boundObject": {"@": "slider5"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true
-                    },
-                    "d": {
-                        "boundObject": {"@": "slider6"},
-                        "boundObjectPropertyPath": "value",
-                        "oneway": true
-                    }
+                    "a": {"<-": "@slider3[value]"},
+                    "b": {"<-": "@slider4[value]"},
+                    "c": {"<-": "@slider5[value]"},
+                    "d": {"<-": "@slider6[value]"}
                 }
             },
             "slider3": {
@@ -220,8 +162,8 @@
                 "module": "flow-test",
                 "name": "FlowTest"
             }
-        }
-    </script>
+        
+    }</script>
     <style>
         .flow {
             position: absolute;
