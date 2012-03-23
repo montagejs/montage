@@ -495,6 +495,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    /**
+    How fast the cursor has to be moving before translating starts. Only
+    applied when another component has claimed the pointer.
+    */
+    startTranslateSpeed: {
+        value: 500
+    },
+
     _analyzeMovement: {
         value: function(velocity) {
 
@@ -538,8 +546,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                     this._stealPointer();
                 }
 
-            } else if (speed >= 500) {
-                // TODO not hardcode this threshold speed
+            } else if (speed >= this.startTranslateSpeed) {
                 this._stealPointer();
             }
 
