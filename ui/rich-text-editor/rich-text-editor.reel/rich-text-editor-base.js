@@ -1428,6 +1428,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             if (!element || element === editorElement) {
                 this._doingUndoRedo = true;
                 document.execCommand("undo", false, null);
+                this.markDirty();
                 if (this.undoManager) {
                     this.undoManager.add(label, this._redo, this, label, editorElement);
                 }
@@ -1447,6 +1448,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             if (!element || element === editorElement) {
                 this._doingUndoRedo = true;
                 document.execCommand("redo", false, null);
+                this.markDirty();
                 if (this.undoManager) {
                     this.undoManager.add(label, this._undo, this, label, editorElement);
                 }
