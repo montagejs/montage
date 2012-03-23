@@ -3,14 +3,10 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;
-
-exports.ResultsList = Montage.create(Component, {
-    
-    // contentController -> this.repetition.contentController
-    contentController: {value: null},
-    
-    activeIndexes: {value: null}
-
-});
+ .montage-autocomplete {
+     padding-right: 20px;
+ }
+ .montage-autocomplete-loading {
+     background: url('loading.gif') no-repeat;
+     background-position: right;
+ }

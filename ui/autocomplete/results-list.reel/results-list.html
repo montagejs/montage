@@ -2,7 +2,9 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Autocomplete results</title>
+    <title>Autocomplete Results Template</title>
+    <link rel="stylesheet" type="text/css" href="results-list.css">
+    
     <script type="text/montage-serialization">
 {
 
@@ -53,84 +55,23 @@
             }
         }
     },
-    
-    "loadingCard": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
-        "properties": {
-            "element": {"#": "loading"},
-            "value": "Searching for matches ..."
-        }
-    },
-    
-    "deck": {
-        "module": "montage/ui/substitution.reel",
-        "name": "Substitution",
-        "properties": {
-            "element": {"#": "deck"},
-            "switchComponents": {
-                "loading": {"@": "loadingCard"},
-                "results": {"@": "repetition1"}                
-            },
-            "switchValue": "loadingCard"
-        }
-    },
 
     "owner": {
         "module": "montage/ui/autocomplete/results-list.reel",
         "name": "ResultsList",
         "properties": {
-            "element": {"#": "results-list"},
-            "deck": {"@": "deck"}
+            "element": {"#": "results-list"}
         }
-        
-            
     }
 }
     </script>
 
-    <style>
-        div.results-list {
-            min-width: 200px;
-        }
-        div.results-list ul {
-            list-style: none;
-            margin: 0;
-            width: 200px;
-        }
-        div.results-list ul li {
-            border-bottom: 1px solid #eee;
-            border-top: 1px solid #eee;
-            cursor: default;
-            padding: 5px;
-        }
-        div.results-list ul li.active{
-            background-color: #eee;
-            color: #333;
-            cursor: pointer;
-        }
-        div.results-list ul .selected {
-            background-color: #fff;
-            cursor: default;
-            font-weight: bold;
-        }
-        div.results-list div.loading {
-            padding: 5px 10px;
-            
-        }
-
-    </style>
-
-
 </head>
 <body>
     <div id="results-list" class="results-list">
-            <div id="deck">
-                <ul class="repetition" id="repetition1">
-                    <li class="result-item" id="result-item"></li>
-                </ul>
-                <div id="loading" class="loading">Searching for matches ...</div>
-            </div>            
+        <ul class="repetition" id="repetition1">
+            <li class="result-item" id="result-item"></li>
+        </ul>
     </div>
 
 </body>
