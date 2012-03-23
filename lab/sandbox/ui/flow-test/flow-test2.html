@@ -18,7 +18,7 @@
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "src": {"<-": "@flow1[objectAtCurrentIteration]"}
+                    "src": {"<-": "@flow1.objectAtCurrentIteration"}
                 }
             },
             "translateComposer1": {
@@ -29,16 +29,16 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "maxTranslateX": {"<-": "@flow1[length]"},
-                    "translateX": {"<<->": "@flow1[origin]"}
+                    "maxTranslateX": {"<-": "@flow1.length"},
+                    "translateX": {"<<->": "@flow1.origin"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
-                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
+                    "componentList": {"<-": "@flow1._repetitionComponents"},
+                    "pointerPosition": {"<-": "@translateComposer1.pointerStartEventPosition"}
                 }
             },
             "flow1": {
@@ -65,8 +65,8 @@
                     ]
                 },
                 "bindings": {
-                    "path": {"<-": "@path1[path]"},
-                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"}
+                    "path": {"<-": "@path1.path"},
+                    "selectedSlideIndex": {"<-": "@nearest.nearestNeighborComponent"}
                 }
             },
 
@@ -75,16 +75,16 @@
                 "module": "montage/ui/flow-path",
                 "name": "FlowPath",
                 "bindings": {
-                    "translateX": {"<-": "@path1TranslateX[path]"},
-                    "translateY": {"<-": "@path1TranslateY[path]"}
+                    "translateX": {"<-": "@path1TranslateX.path"},
+                    "translateY": {"<-": "@path1TranslateY.path"}
                 }
             },
             "path1TranslateX": {
                 "module": "montage/ui/flow-path-linear",
                 "name": "FlowPathLinear",
                 "bindings": {
-                    "origin": {"<-": "@slider1[value]"},
-                    "multiplier": {"<-": "@slider2[value]"}
+                    "origin": {"<-": "@slider1.value"},
+                    "multiplier": {"<-": "@slider2.value"}
                 }
             },
             "slider1": {
@@ -111,10 +111,10 @@
                 "module": "montage/ui/flow-path-cubic",
                 "name": "FlowPathCubic",
                 "bindings": {
-                    "a": {"<-": "@slider3[value]"},
-                    "b": {"<-": "@slider4[value]"},
-                    "c": {"<-": "@slider5[value]"},
-                    "d": {"<-": "@slider6[value]"}
+                    "a": {"<-": "@slider3.value"},
+                    "b": {"<-": "@slider4.value"},
+                    "c": {"<-": "@slider5.value"},
+                    "d": {"<-": "@slider6.value"}
                 }
             },
             "slider3": {

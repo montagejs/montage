@@ -35,16 +35,16 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "maxTranslateX": {"<-": "@flow1[length]"},
-                    "translateX": {"<<->": "@flow1[origin]"}
+                    "maxTranslateX": {"<-": "@flow1.length"},
+                    "translateX": {"<<->": "@flow1.origin"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
-                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
+                    "componentList": {"<-": "@flow1._repetitionComponents"},
+                    "pointerPosition": {"<-": "@translateComposer1.pointerStartEventPosition"}
                 }
             },
             "flow1": {
@@ -72,8 +72,8 @@
                     "scale": 145
                 },
                 "bindings": {
-                    "path": {"<<->": "@owner[flowPath]"},
-                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"}
+                    "path": {"<<->": "@owner.flowPath"},
+                    "selectedSlideIndex": {"<-": "@nearest.nearestNeighborComponent"}
                 }
             },
             "owner": {

@@ -21,7 +21,7 @@
             "element": {"#": "horizontalValueString"}
         },
         "bindings": {
-            "value": {"<-": "@list1[objectAtCurrentIteration]"}
+            "value": {"<-": "@list1.objectAtCurrentIteration"}
         }
     },
     "slider1": {
@@ -32,7 +32,7 @@
             "element": {"#": "horizontalContent"}
         },
         "bindings": {
-            "value": {"<-": "@list1[objectAtCurrentIteration]"}
+            "value": {"<-": "@list1.objectAtCurrentIteration"}
         }
     },
     "list1": {
@@ -55,7 +55,7 @@
             "element": {"#": "verticalValueString"}
         },
         "bindings": {
-            "value": {"<-": "@list2[objectAtCurrentIteration]"}
+            "value": {"<-": "@list2.objectAtCurrentIteration"}
         }
     },
     "slider2": {
@@ -66,7 +66,7 @@
             "element": {"#": "verticalContent"}
         },
         "bindings": {
-            "value": {"<<->": "@list2[objectAtCurrentIteration]"}
+            "value": {"<<->": "@list2.objectAtCurrentIteration"}
         }
     },
     "list2": {

@@ -40,7 +40,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {"<-": "@repetition1[objectAtCurrentIteration.src]"}
+            "src": {"<-": "@repetition1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -51,7 +51,7 @@
             "element": {"#": "title"}
         },
         "bindings": {
-            "value": {"<-": "@repetition1[objectAtCurrentIteration.title]"}
+            "value": {"<-": "@repetition1.objectAtCurrentIteration.title"}
         }
     },
 
@@ -63,7 +63,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {"<-": "@owner[data]"}
+            "content": {"<-": "@owner.data"}
         }
     },
 
@@ -87,8 +87,8 @@
             "element": {"#": "link"}
         },
         "bindings": {
-            "href": {"<-": "@list1[objectAtCurrentIteration.href]"},
-            "textContent": {"<-": "@list1[objectAtCurrentIteration.src]"}
+            "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -99,7 +99,7 @@
             "element": {"#": "desc"}
         },
         "bindings": {
-            "value": {"<-": "@list1[objectAtCurrentIteration.description]"}
+            "value": {"<-": "@list1.objectAtCurrentIteration.description"}
         }
     },
 
@@ -111,7 +111,7 @@
             "element": {"#": "selection"}
         },
         "bindings": {
-            "checked": {"<<->": "@list1[selectionAtCurrentIteration]"}
+            "checked": {"<<->": "@list1.selectionAtCurrentIteration"}
         }
     },
 
@@ -122,7 +122,7 @@
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {"<<->": "@owner[jsonSelectedItems]"}
+            "value": {"<<->": "@owner.jsonSelectedItems"}
         }
     },
 
@@ -134,7 +134,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {"<-": "@owner[answers]"}
+            "content": {"<-": "@owner.answers"}
         }
     },
 
@@ -157,7 +157,7 @@
             "element": {"#": "answerSelection"}
         },
         "bindings": {
-            "checked": {"<<->": "@list2[selectionAtCurrentIteration]"}
+            "checked": {"<<->": "@list2.selectionAtCurrentIteration"}
         }
     },
 
@@ -168,7 +168,7 @@
             "element": {"#": "answerText"}
         },
         "bindings": {
-            "value": {"<-": "@list2[objectAtCurrentIteration]"}
+            "value": {"<-": "@list2.objectAtCurrentIteration"}
         }
     },
 
@@ -179,7 +179,7 @@
             "element": {"#": "selectedAnswer"}
         },
         "bindings": {
-            "value": {"<<->": "@owner[selectedAnswer]"}
+            "value": {"<<->": "@owner.selectedAnswer"}
         }
     },
 
@@ -222,8 +222,8 @@
             ]
         },
         "bindings": {
-            "selectedItems": {"<<->": "@controller[selectedObjects]"},
-            "selectedAnswer": {"<<->": "@answersController[selectedObjects.0]"}
+            "selectedItems": {"<<->": "@controller.selectedObjects"},
+            "selectedAnswer": {"<<->": "@answersController.selectedObjects.0"}
         }
     }
 

@@ -46,8 +46,8 @@
                 "maxlength": "5"
             },
             "bindings": {
-                "value": {"<<->": "@sample-form[firstName]"},
-                "title": {"<<->": "@sample-form[firstName]"}
+                "value": {"<<->": "@sample-form.firstName"},
+                "title": {"<<->": "@sample-form.firstName"}
 
             }
         },
@@ -58,7 +58,7 @@
                 "element": {"#": "lname"}
             },
             "bindings": {
-                "value": {"<<->": "@sample-form[lastName]"}
+                "value": {"<<->": "@sample-form.lastName"}
             }
         },
         "email1": {
@@ -68,7 +68,7 @@
                 "element": {"#": "email1"}
             },
             "bindings": {
-                "value": {"<<->": "@sample-form[email]"}
+                "value": {"<<->": "@sample-form.email"}
             }
         },
         "url1": {
@@ -78,7 +78,7 @@
                 "element": {"#": "url1"}
             },
             "bindings": {
-                "value": {"<<->": "@sample-form[url]"}
+                "value": {"<<->": "@sample-form.url"}
             }
         },
         "info1": {
@@ -103,7 +103,7 @@
                 "converter": {"@": "uppercaseconverter1"}
             },
             "bindings": {
-                "value": {"<-": "@info1[value]"}
+                "value": {"<-": "@info1.value"}
             }
         },
 
@@ -167,8 +167,8 @@
                 "element": {"#": "number1"}
             },
             "bindings": {
-                "value": {"<<->": "@range1[value]"},
-                "max": {"<-": "@limit-max[value]"}
+                "value": {"<<->": "@range1.value"},
+                "max": {"<-": "@limit-max.value"}
             }
         },
 
@@ -179,7 +179,7 @@
                 "element": {"#": "range1"}
             },
             "bindings": {
-                "max": {"<-": "@limit-max[value]"}
+                "max": {"<-": "@limit-max.value"}
             }
         },
 
@@ -190,7 +190,7 @@
                 "element": {"#": "max-value"}
             },
             "bindings": {
-                "value": {"<-": "@limit-max[value]"}
+                "value": {"<-": "@limit-max.value"}
             }
         },
 
@@ -201,7 +201,7 @@
                 "element": {"#": "check1"}
             },
             "bindings": {
-                "checked": {"<-": "@check3[checked]"}
+                "checked": {"<-": "@check3.checked"}
             }
         },
         "check2": {
@@ -226,7 +226,7 @@
                 "element": {"#": "check-text"}
             },
             "bindings": {
-                "value": {"<<->": "@check1[checked]"}
+                "value": {"<<->": "@check1.checked"}
             }
         },
 
@@ -258,7 +258,7 @@
                 "element": {"#": "radio-text"}
             },
             "bindings": {
-                "value": {"<<->": "@radio1[checked]"}
+                "value": {"<<->": "@radio1.checked"}
             }
         },
 
@@ -283,10 +283,10 @@
                 "countries": {"@": "country"}
             },
 			"bindings": {
-                "option1": {"<-": "@check3[checked]"},
-                "option2": {"<-": "@radio1[checked]"},
-                "selectedCountry": {"<-": "@country[selectedObjects.0]"},
-                "selectedState": {"<-": "@state[selectedObjects.0]"}
+                "option1": {"<-": "@check3.checked"},
+                "option2": {"<-": "@radio1.checked"},
+                "selectedCountry": {"<-": "@country.selectedObjects.0"},
+                "selectedState": {"<-": "@state.selectedObjects.0"}
             }
         },
 
@@ -297,7 +297,7 @@
                 "element": {"#": "json-output"}
             },
             "bindings": {
-                "value": {"<-": "@sample-form[json]"}
+                "value": {"<-": "@sample-form.json"}
             }
         }
 

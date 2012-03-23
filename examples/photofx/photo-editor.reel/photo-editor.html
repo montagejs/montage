@@ -19,7 +19,7 @@
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "src": {"<-": "@owner[photo.src]"}
+                    "src": {"<-": "@owner.photo.src"}
                 }
             },
 
@@ -27,7 +27,7 @@
                 "module": "montage/ui/controller/array-controller",
                 "name": "ArrayController",
                 "bindings": {
-                    "content": {"<<->": "@owner[pointMonitors]"}
+                    "content": {"<<->": "@owner.pointMonitors"}
                 }
             },
 
@@ -48,8 +48,8 @@
                     "element": {"#": "pointMarker"}
                 },
                 "bindings": {
-                    "x": {"<-": "@pointMonitorRepetition[objectAtCurrentIteration.x]"},
-                    "y": {"<-": "@pointMonitorRepetition[objectAtCurrentIteration.y]"}
+                    "x": {"<-": "@pointMonitorRepetition.objectAtCurrentIteration.x"},
+                    "y": {"<-": "@pointMonitorRepetition.objectAtCurrentIteration.y"}
                 }
             },
 
@@ -61,8 +61,8 @@
                     "axis": "x"
                 },
                 "bindings": {
-                    "container": {"<-": "@owner[_canvas]"},
-                    "rangeEnd": {"<-": "@owner[_width]"}
+                    "container": {"<-": "@owner._canvas"},
+                    "rangeEnd": {"<-": "@owner._width"}
                 }
             },
 
@@ -74,8 +74,8 @@
                     "axis": "y"
                 },
                 "bindings": {
-                    "container": {"<-": "@owner[_canvas]"},
-                    "rangeEnd": {"<-": "@owner[_height]"}
+                    "container": {"<-": "@owner._canvas"},
+                    "rangeEnd": {"<-": "@owner._height"}
                 }
             },
 

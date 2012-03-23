@@ -25,8 +25,8 @@
                     "element": {"#": "loadingPanel"}
                 },
                 "bindings": {
-                    "initializedModuleCount": {"<-": "@owner[initializedModules.count()]"},
-                    "requiredModuleCount": {"<-": "@owner[requiredModules.count()]"}
+                    "initializedModuleCount": {"<-": "@owner.initializedModules.count()"},
+                    "requiredModuleCount": {"<-": "@owner.requiredModules.count()"}
                 }
             }
 

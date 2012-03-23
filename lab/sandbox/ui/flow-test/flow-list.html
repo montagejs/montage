@@ -18,7 +18,7 @@
                     "element": {"#": "row"}
                 },
                 "bindings": {
-                    "value": {"<-": "@flow1[objectAtCurrentIteration]"}
+                    "value": {"<-": "@flow1.objectAtCurrentIteration"}
                 }
             },
             "translateComposer1": {
@@ -30,15 +30,15 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "translateY": {"<<->": "@flow1[origin]"}
+                    "translateY": {"<<->": "@flow1.origin"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
-                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
+                    "componentList": {"<-": "@flow1._repetitionComponents"},
+                    "pointerPosition": {"<-": "@translateComposer1.pointerStartEventPosition"}
                 }
             },
             "flow1": {
@@ -70,10 +70,10 @@
                     "scale": 0
                 },
                 "bindings": {
-                    "path": {"<-": "@path1[path]"},
-                    "cameraRotationAngle": {"<-": "@slider3[value]"},
-                    "hasElasticScrolling": {"<-": "@checkbox[checked]"},
-                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"}
+                    "path": {"<-": "@path1.path"},
+                    "cameraRotationAngle": {"<-": "@slider3.value"},
+                    "hasElasticScrolling": {"<-": "@checkbox.checked"},
+                    "selectedSlideIndex": {"<-": "@nearest.nearestNeighborComponent"}
                 }
             },
             "path1": {

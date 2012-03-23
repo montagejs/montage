@@ -18,7 +18,7 @@
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "data": {"<-": "@flow1[objectAtCurrentIteration]"}
+                    "data": {"<-": "@flow1.objectAtCurrentIteration"}
                 }
             },
             "translateComposer1": {
@@ -29,16 +29,16 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "maxTranslateX": {"<-": "@flow1[length]"},
-                    "translateX": {"<<->": "@flow1[origin]"}
+                    "maxTranslateX": {"<-": "@flow1.length"},
+                    "translateX": {"<<->": "@flow1.origin"}
                 }
             },
             "nearest": {
                 "module": "montage/ui/nearest-neighbor-component-search",
                 "name": "NearestNeighborComponentSearch",
                 "bindings": {
-                    "componentList": {"<-": "@flow1[_repetitionComponents]"},
-                    "pointerPosition": {"<-": "@translateComposer1[pointerStartEventPosition]"}
+                    "componentList": {"<-": "@flow1._repetitionComponents"},
+                    "pointerPosition": {"<-": "@translateComposer1.pointerStartEventPosition"}
                 }
             },
             "flow1": {
@@ -68,10 +68,10 @@
                     "cameraRotationAxisZ": 0
                 },
                 "bindings": {
-                    "path": {"<-": "@pathLerp1[resultPath]"},
-                    "cameraRotationAngle": {"<-": "@slider3[value]"},
-                    "selectedSlideIndex": {"<-": "@nearest[nearestNeighborComponent]"},
-                    "scale": {"<-": "@slider2[value]"}
+                    "path": {"<-": "@pathLerp1.resultPath"},
+                    "cameraRotationAngle": {"<-": "@slider3.value"},
+                    "selectedSlideIndex": {"<-": "@nearest.nearestNeighborComponent"},
+                    "scale": {"<-": "@slider2.value"}
                 }
             },
             "path1": {
@@ -108,9 +108,9 @@
                 "module": "montage/ui/flow-path-lerp",
                 "name": "FlowPathLerp",
                 "bindings": {
-                    "path1": {"<-": "@path1[path]"},
-                    "path2": {"<-": "@path2[path]"},
-                    "interpolant": {"<<->": "@slider1[value]"}
+                    "path1": {"<-": "@path1.path"},
+                    "path2": {"<-": "@path2.path"},
+                    "interpolant": {"<<->": "@slider1.value"}
                 }
             },
             "pathCode1": {
@@ -120,7 +120,7 @@
                     "element": {"#": "pathCode1"}
                 },
                 "bindings": {
-                    "value": {"<<->": "@path1[evalPath]"}
+                    "value": {"<<->": "@path1.evalPath"}
                 }
             },
             "pathCode2": {
@@ -130,7 +130,7 @@
                     "element": {"#": "pathCode2"}
                 },
                 "bindings": {
-                    "value": {"<<->": "@path2[evalPath]"}
+                    "value": {"<<->": "@path2.evalPath"}
                 }
             },
             "slider1": {
