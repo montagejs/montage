@@ -119,27 +119,21 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         enumerable: false,
         value: null
     },
-    // For the translate composer to work
-    _range: {
-        depends: ["maxValue", "minValue"],
-        get: function() {
-            return  ( this._maxValue || 1000 ) - ( this._minValue || 0 );
-        }
+
+    _startX: {
+        enumerable: false,
+        value: null
+    },
+    _startY: {
+        enumerable: false,
+        value: null
+    },
+    _direction: {
+        enumerable: false,
+        value: null
     },
 
     // draw
-
-    prepareForActivationEvents: {
-        value: function() {
-            this._input.addEventListener("blur", this, false);
-            this._pressComposer.addEventListener("pressStart", this, false);
-            this._pressComposer.addEventListener("press", this, false);
-            this._pressComposer.addEventListener("pressCancel", this, false);
-
-            console.log(this._translateComposer);
-            this._translateComposer.addEventListener("translateStart", this, false);
-        }
-    },
 
 
     // handlers
@@ -154,15 +148,52 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         }
     },
 
-    handlePressStart: {
+    handlePress: {
         value: function(event) {
-            console.log("handlePressStart", event);
+            console.log("handlePress", event);
+
         }
     },
 
+    handleTranslateStart: {
+        value: function(event) {
+            this._direction = null;
+            this._startX = event.translateX;
+            this._startY = event.translateY;
+        }
+    },
     handleTranslate: {
         value: function(event) {
-            console.log(event.translateY);
+            var value,
+                deltaX = event.translateX - this._startX,
+                deltaY = event.translateY - this._startY;
+
+            if (this._direction === "vertical") {
+                this.value = event.translateY - deltaY * 2;
+            } else if (this._direction === "horizontal") {
+                this.value = event.translateX;
+            } else {
+
+                if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                    value = event.translateY - deltaY * 2;
+                    if (Math.abs(deltaY) > 20) {
+                        this._direction = "vertical";
+                    }
+                } else {
+                    value = event.translateX;
+                    if (Math.abs(deltaX) > 20) {
+                        this._direction = "horizontal";
+                    }
+                }
+                this.value = value;
+            }
+        }
+    },
+    handleTranslateEnd: {
+        value: function(event) {
+            // sync the values for the next change
+            this._translateComposer.translateX = this._value;
+            this._translateComposer.translateY = this._value;
         }
     }
 

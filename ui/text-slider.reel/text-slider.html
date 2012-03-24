@@ -56,7 +56,15 @@
             },
             "listeners": [
                 {
+                    "type": "translateStart",
+                    "listener": {"@": "owner"}
+                },
+                {
                     "type": "translate",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "translateEnd",
                     "listener": {"@": "owner"}
                 }
             ]
