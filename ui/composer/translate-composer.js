@@ -251,7 +251,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             return this._invertAxis;
         },
         set: function(value) {
-            this._invertAxis = value ? true : false;
+            this._invertAxis = !!value;
         }
     },
 
@@ -591,6 +591,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: function(x, y) {
             var pointerDelta;
             this._isSelfUpdate = true;
+            var oldX = this._translateX, oldY = this._translateY;
             if (this._axis != "vertical") {
                 pointerDelta = this._invertAxis ? (this._pointerX - x) : (x - this._pointerX);
                 this.translateX += pointerDelta * this._pointerSpeedMultiplier;
@@ -603,7 +604,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             this._pointerX = x;
             this._pointerY = y;
             if (this._isFirstMove) {
-                this._dispatchTranslateStart();
+                this._dispatchTranslateStart(oldX, oldY);
                 this._isFirstMove = false;
             }
             if (this._shouldDispatchTranslate) {
@@ -640,10 +641,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
     _dispatchTranslateStart: {
         enumerable: false,
-        value: function() {
+        value: function(x, y) {
             var translateStartEvent = document.createEvent("CustomEvent");
 
             translateStartEvent.initCustomEvent("translateStart", true, true, null);
+            translateStartEvent.translateX = x;
+            translateStartEvent.translateY = y;
             this.dispatchEvent(translateStartEvent);
         }
     },
@@ -654,6 +657,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             var translateEndEvent = document.createEvent("CustomEvent");
 
             translateEndEvent.initCustomEvent("translateEnd", true, true, null);
+            translateEndEvent.translateX = this._translateX;
+            translateEndEvent.translateY = this._translateY;
             this.dispatchEvent(translateEndEvent);
         }
     },
