@@ -23,25 +23,25 @@ var testPage = TestPageLoader.queueTest("hot-text-test", function() {
 
             it("increases when dragged right", function() {
                 var oldValue = test.number.value;
-                testPage.dragElementOffsetTo(test.number.element, 0, 50, null, function() {
+                testPage.dragElementOffsetTo(test.number.element, 50, 0, null, function() {
                     expect(test.number.value).toBe(oldValue + 50);
                 }, null);
             });
             it("decreases when dragged left", function() {
                 var oldValue = test.number.value;
-                testPage.dragElementOffsetTo(test.number.element, 0, -50, null, function() {
+                testPage.dragElementOffsetTo(test.number.element, -50, 0, null, function() {
                     expect(test.number.value).toBe(oldValue - 50);
                 }, null);
             });
             it("increases when dragged up", function() {
                 var oldValue = test.number.value;
-                testPage.dragElementOffsetTo(test.number.element, -50, 0, null, function() {
+                testPage.dragElementOffsetTo(test.number.element, 0, -50, null, function() {
                     expect(test.number.value).toBe(oldValue + 50);
                 }, null);
             });
             it("decreases when dragged down", function() {
                 var oldValue = test.number.value;
-                testPage.dragElementOffsetTo(test.number.element, 50, 0, null, function() {
+                testPage.dragElementOffsetTo(test.number.element, 0, 50, null, function() {
                     expect(test.number.value).toBe(oldValue - 50);
                 }, null);
             });
