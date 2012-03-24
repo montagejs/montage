@@ -48,9 +48,8 @@ if (typeof window !== "undefined") {
     })();
 
     /**
-     * Initializes Montage and creates the application singleton if necessary.
-     * @param options
-     * @param callback
+     * Initializes Montage and creates the application singleton if
+     * necessary.
      */
     exports.initMontage = function () {
         var platform = exports.getPlatform();
@@ -105,6 +104,14 @@ if (typeof window !== "undefined") {
                         }
                     });
                 };
+
+                if ('autoPackage' in params) {
+                    montageRequire.injectPackageDescription(location, {
+                        mappings: {
+                            montage: "@"
+                        }
+                    });
+                }
 
                 return montageRequire.loadPackage(location)
                 .then(function (applicationRequire) {
@@ -382,10 +389,10 @@ if (typeof window !== "undefined") {
 
         },
 
-        initMontage: function (montageRequire, applicationRequire, options) {
+        initMontage: function (montageRequire, applicationRequire, params) {
             // If a module was specified in the config then we initialize it now
-            if (options.module) {
-                applicationRequire.async(options.module)
+            if (params.module) {
+                applicationRequire.async(params.module)
                 .end();
             } else {
             // otherwise we load the application
