@@ -10,5 +10,8 @@ var Montage = require("montage").Montage,
  * The Text input
  */
 var Textfield = exports.Textfield = Montage.create(TextInput, {
+
+    select: { value: function() { this._element.select(); } }
+
 });
 

@@ -164,6 +164,12 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
+    // HTMLInputElement/HTMLButtonElement methods
+
+    blur: { value: function() { this._element.blur(); } },
+    focus: { value: function() { this._element.focus(); } },
+    // click() deliberately omitted (it isn't available on <button> anyways)
+
     didCreate: {
         value: function() {
             this._pressComposer = PressComposer.create();

@@ -11,6 +11,12 @@ var Montage = require("montage").Montage,
 
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
+    // HTMLInputElement methods
+
+    blur: { value: function() { this._element.blur(); } },
+    focus: { value: function() { this._element.focus(); } },
+    // click() deliberately omitted, use checked = instead
+
     // Callbacks
     draw: {
         value: function() {
@@ -40,8 +46,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
             this._element.addEventListener('change', this);
         }
     },
-
-
 
     /**
     Fake the checking of the element.
