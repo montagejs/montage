@@ -130,6 +130,10 @@ var generateJunitXml = function(result) {
     output += '<testsuite>\n';
 
     var asserts = result.asserts;
+    if (result.exception) {
+        asserts = [result.exception];
+    }
+
     for (var i = 0, len = asserts.length; i < len; i++) {
         var assert = asserts[i];
 
@@ -185,6 +189,9 @@ var runTest = function(test, agent) {
                 }
             });
         }, 1000);
+    }).fail(function(data) {
+        console.error("Failed to run " + test.name);
+        console.error(data);
     });
 
     done.promise.then(generateJunitXml);
