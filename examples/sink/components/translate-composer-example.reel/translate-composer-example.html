@@ -19,9 +19,9 @@
             "pointerSpeedMultiplier": -1
         },
         "bindings": {
-            "axis": {"<-": "@axisSelect[value]"},
-            "hasMomentum": {"<<->": "@checkboxMomentum[checked]"},
-            "hasBouncing": {"<<->": "@checkboxBouncing[checked]"}
+            "axis": {"<-": "@axisSelect.value"},
+            "hasMomentum": {"<<->": "@checkboxMomentum.checked"},
+            "hasBouncing": {"<<->": "@checkboxBouncing.checked"}
         }
     },
 
@@ -41,8 +41,8 @@
             "example": {"@": "example"}
         },
         "bindings": {
-            "x": {"<-": "@translate_composer[translateX]"},
-            "y": {"<-": "@translate_composer[translateY]"}
+            "x": {"<-": "@translate_composer.translateX"},
+            "y": {"<-": "@translate_composer.translateY"}
         }
     },
 
@@ -75,7 +75,7 @@
             "element": {"#": "x_value"}
         },
         "bindings": {
-            "value": {"<<->": "@translate_composer[translateX]"}
+            "value": {"<<->": "@translate_composer.translateX"}
         }
     },
 
@@ -85,7 +85,7 @@
             "element": {"#": "y_value"}
         },
         "bindings": {
-            "value": {"<<->": "@translate_composer[translateY]"}
+            "value": {"<<->": "@translate_composer.translateY"}
         }
     },
     "translateAccordion1": {

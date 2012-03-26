@@ -1439,7 +1439,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
             });
 
             var serialization = serializer.serializeObject(sourceObject);
-            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"bindings":{"foo":{"<-":"@montage[bar]"}}}}')
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"bindings":{"foo":{"<-":"@montage.bar"}}}}')
         });
 
         it("should deserialize a oneway binding", function() {
@@ -1454,7 +1454,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
                         value: null
                     },
                     bindings: {
-                        value: {"<-": "@source[value]"}
+                        value: {"<-": "@source.value"}
                     }
                 },
 
@@ -1493,7 +1493,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
                         value: null
                     },
                     bindings: {
-                        value: {"<<->": "@source[value]"}
+                        value: {"<<->": "@source.value"}
                     }
                 },
 
@@ -1532,7 +1532,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
                         value: null
                     },
                     bindings: {
-                        value: {"->": "@source[value]"}
+                        value: {"->": "@source.value"}
                     }
                 },
 
@@ -1571,7 +1571,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
                         value: null
                     },
                     bindings: {
-                        value: {"<->>": "@source[value]"}
+                        value: {"<->>": "@source.value"}
                     }
                 },
 

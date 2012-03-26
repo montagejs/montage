@@ -18,9 +18,9 @@
                         "dept": {"@": "dept"}
                     },
                     "bindings": {
-                        "selectedCountry": {"<-": "@country[contentController.selectedObjects.0]"},
-                        "selectedState": {"<-": "@state[contentController.selectedObjects.0]"},
-                        "selectedDepts": {"<<->": "@dept[contentController.selectedObjects]"}
+                        "selectedCountry": {"<-": "@country.contentController.selectedObjects.0"},
+                        "selectedState": {"<-": "@state.contentController.selectedObjects.0"},
+                        "selectedDepts": {"<<->": "@dept.contentController.selectedObjects"}
                     }
                 },
                 "fname": {
@@ -30,8 +30,8 @@
                         "element": {"#": "fname"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[firstName]"},
-                        "title": {"<<->": "@owner[firstName]"}
+                        "value": {"<<->": "@owner.firstName"},
+                        "title": {"<<->": "@owner.firstName"}
                     }
                 },
 
@@ -42,7 +42,7 @@
                         "element": {"#": "lname"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[lastName]"}
+                        "value": {"<<->": "@owner.lastName"}
                     }
                 },
 
@@ -55,7 +55,7 @@
                         "valuePropertyPath": "code"
                     },
                     "bindings": {
-                        "content": {"<-": "@owner[departments]"}
+                        "content": {"<-": "@owner.departments"}
                     }
                 },
 
@@ -148,7 +148,7 @@
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {"<<->": "@owner[justify]", "converter": {"@": "justifyComparatorLeft"}}
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorLeft"}}
                     }
                 },
                 "justifyCenter": {
@@ -159,7 +159,7 @@
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {"<<->": "@owner[justify]", "converter": {"@": "justifyComparatorCenter"}}
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorCenter"}}
                     }
                 },
                 "justifyRight": {
@@ -170,7 +170,7 @@
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {"<<->": "@owner[justify]", "converter": {"@": "justifyComparatorRight"}}
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorRight"}}
                     }
                 },
                 "justifySelect": {
@@ -180,7 +180,7 @@
                         "element": {"#": "justifySelect"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[justify]"}
+                        "value": {"<<->": "@owner.justify"}
                     }
                 },
                 "justifyResult": {

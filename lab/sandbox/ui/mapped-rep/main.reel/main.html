@@ -74,7 +74,7 @@
                     "axis": "vertical"
                 },
                 "bindings": {
-                    "contentController": {"<-": "@owner[collectionController]"}
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -85,7 +85,7 @@
                     "element": {"#": "labelA"}
                 },
                 "bindings": {
-                    "value": {"<-": "@listA[objectAtCurrentIteration]"}
+                    "value": {"<-": "@listA.objectAtCurrentIteration"}
                 }
             },
 
@@ -97,7 +97,7 @@
                     "isSelectionEnabled": true
                 },
                 "bindings": {
-                    "contentController": {"<-": "@owner[collectionController]"}
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -108,7 +108,7 @@
                     "element": {"#": "labelB"}
                 },
                 "bindings": {
-                    "value": {"<-": "@listB[objectAtCurrentIteration]"}
+                    "value": {"<-": "@listB.objectAtCurrentIteration"}
                 }
             },
 
@@ -136,7 +136,7 @@
                     "mode": "bookends"
                 },
                 "bindings": {
-                    "contentController": {"<-": "@owner[collectionController]"}
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -147,7 +147,7 @@
                     "element": {"#": "labelC"}
                 },
                 "bindings": {
-                    "value": {"<-": "@listC[objectAtCurrentIteration]"}
+                    "value": {"<-": "@listC.objectAtCurrentIteration"}
                 }
             },
 

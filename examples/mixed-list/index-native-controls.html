@@ -31,7 +31,7 @@
                     "element": {"#": "testList"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@owner[objectList]"}
+                    "objects": {"<-": "@owner.objectList"}
                 }
             },
             "substitutionDelegate": {
@@ -52,7 +52,7 @@
                     }
                 },
                 "bindings": {
-                    "switchValue": {"<-": "@list[objectAtCurrentIteration.type]"}
+                    "switchValue": {"<-": "@list.objectAtCurrentIteration.type"}
                 }
             },
             "toggle": {
@@ -63,7 +63,7 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {"<-": "@list[objectAtCurrentIteration.value]"}
+                    "pressed": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "slider": {
@@ -73,7 +73,7 @@
 
                 },
                 "bindings": {
-                    "value": {"<-": "@list[objectAtCurrentIteration.value]"}
+                    "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "checkbox": {
@@ -83,7 +83,7 @@
 
                 },
                 "bindings": {
-                    "checked": {"<-": "@list[objectAtCurrentIteration.value]"}
+                    "checked": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "addAnObjectButton": {

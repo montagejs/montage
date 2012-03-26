@@ -21,7 +21,7 @@
                     "searchResultsList": {"@": "searchResultsList"}
                 },
                 "bindings": {
-                    "queryParameter": {"<<->": "@queryField[value]"}
+                    "queryParameter": {"<<->": "@queryField.value"}
                 }
             },
 
@@ -29,7 +29,7 @@
                 "module": "montage/ui/controller/array-controller",
                 "name": "ArrayController",
                 "bindings": {
-                    "content": {"<<->": "@owner[searchResults]"}
+                    "content": {"<<->": "@owner.searchResults"}
                 }
             },
 
@@ -66,8 +66,8 @@
                     "element": {"#": "searchResult"}
                 },
                 "bindings": {
-                    "result": {"<-": "@searchResultsList[objectAtCurrentIteration]"},
-                    "photoListController": {"<-": "@owner[photoListController]"}
+                    "result": {"<-": "@searchResultsList.objectAtCurrentIteration"},
+                    "photoListController": {"<-": "@owner.photoListController"}
                 }
             }
 

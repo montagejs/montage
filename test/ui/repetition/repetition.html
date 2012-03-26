@@ -63,7 +63,7 @@
                     "element": {"#": "list1"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list1Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list1Objects"}
                 }
             },
             "textfield1": {
@@ -73,7 +73,7 @@
                     "element": {"#": "textfield1"}
                 },
                 "bindings": {
-                    "text": {"<-": "@repetition2[objectAtCurrentIteration.text]"}
+                    "text": {"<-": "@repetition2.objectAtCurrentIteration.text"}
                 }
             },
             "repetition2": {
@@ -83,7 +83,7 @@
                     "element": {"#": "list2"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list2Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list2Objects"}
                 }
             },
             "textfield2": {
@@ -93,7 +93,7 @@
                     "element": {"#": "textfield2"}
                 },
                 "bindings": {
-                    "text": {"<-": "@repetition3[objectAtCurrentIteration.text]"}
+                    "text": {"<-": "@repetition3.objectAtCurrentIteration.text"}
                 }
             },
             "repetition3": {
@@ -103,7 +103,7 @@
                     "element": {"#": "list3a"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetition4[objectAtCurrentIteration]"}
+                    "objects": {"<-": "@repetition4.objectAtCurrentIteration"}
                 }
             },
             "repetition4": {
@@ -113,7 +113,7 @@
                     "element": {"#": "list3"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list3Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list3Objects"}
                 }
             },
             "componenty1": {
@@ -130,7 +130,7 @@
                     "element": {"#": "list4a"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetition5[objectAtCurrentIteration]"}
+                    "objects": {"<-": "@repetition5.objectAtCurrentIteration"}
                 }
             },
             "repetition5": {
@@ -140,7 +140,7 @@
                     "element": {"#": "list4"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list4Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list4Objects"}
                 }
             },
             "textfield3": {
@@ -166,7 +166,7 @@
                     "element": {"#": "list5a"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetition7[objectAtCurrentIteration]"}
+                    "objects": {"<-": "@repetition7.objectAtCurrentIteration"}
                 }
             },
             "repetition7": {
@@ -176,7 +176,7 @@
                     "element": {"#": "list5"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list5Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list5Objects"}
                 }
             },
             "componentrep1": {
@@ -200,7 +200,7 @@
                     "element": {"#": "list6comp1"}
                 },
                 "bindings": {
-                    "listObjects": {"<-": "@repetition9[objectAtCurrentIteration.elements1]"}
+                    "listObjects": {"<-": "@repetition9.objectAtCurrentIteration.elements1"}
                 }
             },
             "componentrep4": {
@@ -210,7 +210,7 @@
                     "element": {"#": "list6comp2"}
                 },
                 "bindings": {
-                    "listObjects": {"<-": "@repetition9[objectAtCurrentIteration.elements2]"}
+                    "listObjects": {"<-": "@repetition9.objectAtCurrentIteration.elements2"}
                 }
             },
             "repetition9": {
@@ -220,7 +220,7 @@
                     "element": {"#": "list6"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list6Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list6Objects"}
                 }
             },
             "textfield4": {
@@ -230,7 +230,7 @@
                     "element": {"#": "textfield5"}
                 },
                 "bindings": {
-                    "text": {"<-": "@repetitiontest1[text]"}
+                    "text": {"<-": "@repetitiontest1.text"}
                 }
             },
             "componentx2": {
@@ -248,7 +248,7 @@
                     "element": {"#": "list7"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list7Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list7Objects"}
                 }
             },
             "actioneventlistener1": {
@@ -281,7 +281,7 @@
                     "element": {"#": "list8"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list8Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list8Objects"}
                 }
             },
             "textfield6": {
@@ -298,7 +298,7 @@
                     "element": {"#": "list9"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list9Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list9Objects"}
                 }
             },
             "componentz1": {
@@ -331,7 +331,7 @@
                     "element": {"#": "list10"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@repetitiontest1[list10Objects]"}
+                    "objects": {"<-": "@repetitiontest1.list10Objects"}
                 }
             },
             "repetitionController": {
@@ -349,7 +349,7 @@
                     "automaticallyOrganizeObjects": true
                 },
                 "bindings": {
-                    "content": {"<-": "@repetitiontest1[simpleArrayControllerContent]"}
+                    "content": {"<-": "@repetitiontest1.simpleArrayControllerContent"}
                 }
              },
             "repetitionControllerText": {

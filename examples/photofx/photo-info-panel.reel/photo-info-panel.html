@@ -28,7 +28,7 @@
                     "element": {"#": "title"}
                 },
                 "bindings": {
-                    "value": {"<<->": "@owner[photo.title]"}
+                    "value": {"<<->": "@owner.photo.title"}
                 }
             },
             "author": {
@@ -38,7 +38,7 @@
                     "element": {"#": "author"}
                 },
                 "bindings": {
-                    "value": {"<<->": "@owner[photo.authors.0]"}
+                    "value": {"<<->": "@owner.photo.authors.0"}
                 }
             },
 
@@ -50,7 +50,7 @@
                     "removalStrategy": "hide"
                 },
                 "bindings": {
-                    "condition": {"<<->": "@owner[photo]"}
+                    "condition": {"<<->": "@owner.photo"}
                 }
             }
         

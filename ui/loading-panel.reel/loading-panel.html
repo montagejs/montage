@@ -29,8 +29,8 @@
                     "loading": true
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[initializedModuleCount]"},
-                    "max": {"<-": "@owner[requiredModuleCount]"}
+                    "value": {"<-": "@owner.initializedModuleCount"},
+                    "max": {"<-": "@owner.requiredModuleCount"}
                 }
             },
 
@@ -41,7 +41,7 @@
                     "element": {"#": "loadedCount"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[initializedModuleCount]"}
+                    "value": {"<-": "@owner.initializedModuleCount"}
                 }
             },
 
@@ -52,7 +52,7 @@
                     "element": {"#": "requiredCount"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[requiredModuleCount]"}
+                    "value": {"<-": "@owner.requiredModuleCount"}
                 }
             }
 

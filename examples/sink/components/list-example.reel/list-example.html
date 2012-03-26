@@ -67,7 +67,7 @@
             "element": {"#": "thumb-h"}
         },
         "bindings": {
-            "src": {"<<->": "@horizontal[objectAtCurrentIteration.src]"}
+            "src": {"<<->": "@horizontal.objectAtCurrentIteration.src"}
         }
     },
 
@@ -78,7 +78,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {"<-": "@verticalList[objectAtCurrentIteration.src]"}
+            "src": {"<-": "@verticalList.objectAtCurrentIteration.src"}
         }
     },
 
@@ -89,7 +89,7 @@
             "element": {"#": "title"}
         },
         "bindings": {
-            "value": {"<-": "@verticalList[objectAtCurrentIteration.title]"}
+            "value": {"<-": "@verticalList.objectAtCurrentIteration.title"}
         }
     },
 

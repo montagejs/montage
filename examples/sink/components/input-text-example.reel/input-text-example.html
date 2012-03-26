@@ -16,7 +16,7 @@
                         "element": {"#": "input-text-example"}
                     },
                     "bindings": {
-                        "phone": {"<<->": "@phone[value]"}
+                        "phone": {"<<->": "@phone.value"}
                     }
                 },
 
@@ -27,8 +27,8 @@
                         "element": {"#": "fname"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[firstName]"},
-                        "title": {"<<->": "@owner[firstName]"}
+                        "value": {"<<->": "@owner.firstName"},
+                        "title": {"<<->": "@owner.firstName"}
                     }
                 },
 
@@ -39,7 +39,7 @@
                         "element": {"#": "lname"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[lastName]"}
+                        "value": {"<<->": "@owner.lastName"}
                     }
                 },
 
@@ -50,7 +50,7 @@
                         "element": {"#": "email"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[email]"}
+                        "value": {"<<->": "@owner.email"}
                     }
                 },
 
@@ -62,7 +62,7 @@
                     },
                     "bindings": {
 
-                        "readonly": {"<<->": "@owner[phoneReadOnly]"}
+                        "readonly": {"<<->": "@owner.phoneReadOnly"}
                     }
                 },
                 "editPhone": {
@@ -87,7 +87,7 @@
                         "element": {"#": "url"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[url]"}
+                        "value": {"<<->": "@owner.url"}
                     }
                 },
 
@@ -98,7 +98,7 @@
                         "element": {"#": "zip"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[zip]"}
+                        "value": {"<<->": "@owner.zip"}
                     }
                 },
 
@@ -118,7 +118,7 @@
                         "converter": {"@": "dateConverter"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[dob]"}
+                        "value": {"<<->": "@owner.dob"}
                     }
                 },
                 "dobError": {
