@@ -5,7 +5,8 @@
  </copyright> */
 /*global require,exports,describe,it,expect */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader;
+    TestPageLoader = require("support/testpageloader").TestPageLoader,
+    EventInfo = require("support/testpageloader").EventInfo;
 
 var testPage = TestPageLoader.queueTest("rich-text-editor-test", function() {
     var test = testPage.test;
@@ -334,49 +335,213 @@ var testPage = TestPageLoader.queueTest("rich-text-editor-test", function() {
                         });
                     });
 
-                    describe ("undo/redo testing", function() {
-                        var text = "sample text";
+                });
 
-                        it("reset the undoManager's stacks", function() {
-                            test.resetUndoManager(test.editor1);
-                            expect(test.editor1.undoManager.undoStack.length).toBe(0);
+                describe ("undo/redo testing", function() {
+                    var text = "sample text";
+
+                    it("reset the undoManager's stacks", function() {
+                        test.resetUndoManager(test.editor1);
+                        expect(test.editor1.undoManager.undoStack.length).toBe(0);
+                        expect(test.editor1.undoManager.redoStack.length).toBe(0);
+                    });
+
+                    it("set content bold", function() {
+                        test.editor1.value = text;
+                        testPage.waitForDraw();
+                        runs(function(){
+                            test.editor1.selectAll();
+                            test.editor1.bold = true;
+                            expect(test.editor1.bold).toBeTruthy();
+                            expect(test.editor1.value).not.toBe(text);
+                        });
+                    });
+                    it("undo bold", function() {
+                        test.editor1.undo();
+                        waits(150);
+                        runs(function(){
+                            test.editor1.selectAll();
+                            expect(test.editor1.bold).toBeFalsy();
+                            expect(test.editor1.value).toBe(text);
+                        });
+                    });
+                    it("redo bold", function() {
+                        test.editor1.redo();
+                        waits(150);
+                        runs(function(){
+                            test.editor1.selectAll();
+                            expect(test.editor1.bold).toBeTruthy();
+                        });
+                    });
+
+                    it("test undo/redo stacks consistency", function() {
+                        runs(function(){
+                            expect(test.editor1.undoManager.undoStack.length).toBe(1);
                             expect(test.editor1.undoManager.redoStack.length).toBe(0);
                         });
+                    });
+                });
 
-                        it("set content bold", function() {
-                            test.editor1.value = text;
-                            testPage.waitForDraw();
-                            runs(function(){
-                                test.editor1.selectAll();
-                                test.editor1.bold = true;
-                                expect(test.editor1.bold).toBeTruthy();
-                                expect(test.editor1.value).not.toBe(text);
-                            });
+                describe ("focus testing", function() {
+                    it("set focus on editor 1", function() {
+                        test.editor1.focus();
+                        waits(150);
+                        runs(function() {
+                            expect(test.editor1.hasFocus).toBeTruthy();
+                            expect(test.editor1.isActiveElement).toBeTruthy();
+                            expect(test.editor2.hasFocus).toBeFalsy();
+                            expect(test.editor2.isActiveElement).toBeFalsy();
                         });
-                        it("undo bold", function() {
-                            runs(function(){
-                                test.editor1.undo();
-                                test.editor1.selectAll();
-                                expect(test.editor1.bold).toBeFalsy();
-                                expect(test.editor1.value).toBe(text);
-                            });
+                    });
+                    it("set focus on editor 2", function() {
+                        test.editor2.focus();
+                        waits(150);
+                        runs(function() {
+                            expect(test.editor1.hasFocus).toBeFalsy();
+                            expect(test.editor1.isActiveElement).toBeFalsy();
+                            expect(test.editor2.hasFocus).toBeTruthy();
+                            expect(test.editor2.isActiveElement).toBeTruthy();
                         });
-/* Failed on Safari, need to be investigated!
-                        it("redo bold", function() {
-                            runs(function(){
-                                test.editor1.redo();
-                                test.editor1.selectAll();
-                                expect(test.editor1.bold).toBeTruthy();
-                            });
+                    });
+                    it("blur editor 2", function() {
+                        var testwindow = window.open ("about:blank","testWindow", "height=0, width=0");
+                        testwindow.moveTo(0, 0);
+                        testwindow.focus();
+                        waits(0);       // 0 is just what we need for focus/blur events to be disptched
+                        runs(function() {
+                            expect(test.editor1.hasFocus).toBeFalsy();
+                            expect(test.editor1.isActiveElement).toBeFalsy();
+                            expect(test.editor2.hasFocus).toBeFalsy();
+                            expect(test.editor2.isActiveElement).toBeTruthy();
+                            testwindow.close();
                         });
-*/
-
                     });
 
                 });
 
-            });
+                describe ("read only testing", function() {
+                    it("set the editor read only", function() {
+                        test.editor1.readOnly = true;
+                        waits(150);
+                        runs(function() {
+                            expect(test.editor1.readOnly).toBeTruthy();
+                        });
+                    });
+                    it("check if the innerElement is read only", function() {
+                        runs(function() {
+                            expect(test.editor1.innerElement).toBeDefined();
+                            expect(test.editor1.innerElement.getAttribute("contenteditable")).toBe("false");
+                        });
+                    });
+                    it("set the editor writable", function() {
+                        test.editor1.readOnly = false;
+                        waits(150);
+                        runs(function() {
+                            expect(test.editor1.readOnly).toBeFalsy();
+                        });
+                    });
+                    it("check if the innerElement is editable", function() {
+                        runs(function() {
+                            expect(test.editor1.innerElement).toBeDefined();
+                            expect(test.editor1.innerElement.getAttribute("contenteditable")).toBe("true");
+                        });
+                    });
+                });
 
+                describe ("editor events testing", function() {
+                    var receiveEvent = false,
+                        method = function(event) {receiveEvent = true;},
+                        sampleText = "let's move the selection...";
+
+                    it("install editorChange event", function() {
+                        test.editor1.addEventListener("editorChange", method);
+                        test.editor1.value = "sample text";
+                        testPage.waitForDraw();
+                        runs(function() {
+                        });
+                    });
+                    it("make sure we receive and editorChange event", function() {
+                        waits(150);
+                        runs(function() {
+                            expect(receiveEvent).toBeTruthy();
+                            test.editor1.removeEventListener("editorChange", method);
+                        });
+                    });
+
+                    it("install editorSelect event", function() {
+                        receiveEvent = false;
+                        test.editor1.value = "";
+                        testPage.waitForDraw();
+                        runs(function() {
+                            test.editor1.selectAll();
+                            test.editor1.addEventListener("editorSelect", method);
+                            test.editor1.execCommand("inserthtml", false, sampleText);
+                        });
+                    });
+                    it("make sure the html fragment has been inserted to the correct editor and that we have receive an editorSelect event", function() {
+                        waits(150);
+                        runs(function() {
+                            expect(test.editor1.textValue).toBe(sampleText);
+                            expect(receiveEvent).toBeTruthy();
+                            test.editor1.removeEventListener("editorSelect", method);
+                        });
+                    });
+                });
+                describe ("overlays testing", function() {
+                    it("reset the editor and make sure we have the right overlays installed", function() {
+                        test.editor1.focus();
+                        test.editor1.value = '<img src="http://www.w3.org/html/logo/downloads/HTML5_Logo_64.png"><div><a href="http://www.w3.org/">www.W3.org</a></div><span>need sone text to positioning the carret in a neutral element</span>';
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(test.editor1.overlays).toBeDefined();
+                            expect(test.editor1.overlays.length).toBe(2);
+                            expect(test.editor1.overlays[0]._montage_metadata.objectName).toBe("RichTextResizer");
+                            expect(test.editor1.overlays[1]._montage_metadata.objectName).toBe("RichTextLinkPopup");
+                        });
+                    });
+                    it("click on an image, test the image overlay is active", function() {
+                        var element = test.editor1.innerElement.getElementsByTagName("IMG")[0],
+                            eventInfo = {
+                               target: element,
+                               clientX: element.offsetLeft + 5,
+                               clientY: element.offsetTop + 5
+                            };
+                        testPage.clickOrTouch(eventInfo);
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(test.editor1.activeOverlay).toBe(test.editor1.overlays[0]);
+                        });
+                    });
+                    it("hide the resizer overlay", function() {
+                        test.editor1.hideOverlay();
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(test.editor1.activeOverlay).toBeNull();
+                        });
+                    });
+                    it("select an anchor, test the link popup overlay is active", function() {
+                        var element = test.editor1.innerElement.getElementsByTagName("A")[0],
+                            range;
+
+                        range = document.createRange();
+                        range.selectNodeContents(element);
+                        range.collapse(true);
+
+                        test.editor1._selectedRange = range;
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(test.editor1.activeOverlay).toBe(test.editor1.overlays[1]);
+                        });
+                    });
+                    it("hide the link popup overlay", function() {
+                        test.editor1.hideOverlay();
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(test.editor1.activeOverlay).toBeNull();
+                        });
+                    });
+                });
+            });
         });
     });
 });
