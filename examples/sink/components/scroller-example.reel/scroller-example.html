@@ -167,14 +167,8 @@
             "element": {"#": "scroller"}
         },
         "bindings": {
-            "hasMomentum": {
-                "boundObject": {"@": "toggleMomentum"},
-                "boundObjectPropertyPath": "checked"
-            },
-            "hasBouncing": {
-                "boundObject": {"@": "toggleBouncing"},
-                "boundObjectPropertyPath": "checked"
-            }
+            "hasMomentum": {"&lt;&lt;-&gt;": "@toggleMomentum.checked"},
+            "hasBouncing": {"&lt;&lt;-&gt;": "@toggleBouncing.checked"}
         }
     },
 

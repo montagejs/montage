@@ -201,19 +201,9 @@
             "pointerSpeedMultiplier": -1
         },
         "bindings": {
-            "axis": {
-                "boundObject": {"@": "axisSelect"},
-                "boundObjectPropertyPath": "value",
-                "oneway": true
-            },
-            "hasMomentum": {
-                "boundObject": {"@": "checkboxMomentum"},
-                "boundObjectPropertyPath": "checked"
-            },
-            "hasBouncing": {
-                "boundObject": {"@": "checkboxBouncing"},
-                "boundObjectPropertyPath": "checked"
-            }
+            "axis": {"&lt;-": "@axisSelect.value"},
+            "hasMomentum": {"&lt;&lt;-&gt;": "@checkboxMomentum.checked"},
+            "hasBouncing": {"&lt;&lt;-&gt;": "@checkboxBouncing.checked"}
         }
     },
 
@@ -235,16 +225,8 @@
             "example": {"@": "example"}
         },
         "bindings": {
-            "x": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateX",
-                "oneway": true
-            },
-            "y": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateY",
-                "oneway": true
-            }
+            "x": {"&lt;-": "@translate_composer.translateX"},
+            "y": {"&lt;-": "@translate_composer.translateY"}
         }
     },
 
@@ -277,10 +259,7 @@
             "element": {"#": "x_value"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateX"
-            }
+            "value": {"&lt;&lt;-&gt;": "@translate_composer.translateX"}
         }
     },
 
@@ -290,10 +269,7 @@
             "element": {"#": "y_value"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateY"
-            }
+            "value": {"&lt;&lt;-&gt;": "@translate_composer.translateY"}
         }
     },
     "translateAccordion1": {

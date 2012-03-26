@@ -264,10 +264,7 @@ Blue:<br>
             "element": {"#": "color-red"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "red"
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.red"}
         }
 
     },
@@ -278,12 +275,7 @@ Blue:<br>
             "element": {"#": "redValue"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "red",
-                "converter": {"@": "roundTo2Decimals"},
-                "oneway": true
-            }
+            "value": {"&lt;-": "@owner.red", "converter": {"@": "roundTo2Decimals"}}
         }
     },
     "green": {
@@ -293,10 +285,7 @@ Blue:<br>
                 "element": {"#": "color-green"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "green"
-                }
+                "value": {"&lt;&lt;-&gt;": "@owner.green"}
             }
         },
         "greenValue": {
@@ -306,12 +295,7 @@ Blue:<br>
                 "element": {"#": "greenValue"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "green",
-                    "converter": {"@": "roundTo2Decimals"},
-                    "oneway": true
-                }
+                "value": {"&lt;-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
             }
         },
         "blue": {
@@ -321,10 +305,7 @@ Blue:<br>
                 "element": {"#": "color-blue"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "blue"
-                }
+                "value": {"&lt;&lt;-&gt;": "@owner.blue"}
             }
         },
         "blueValue": {
@@ -334,12 +315,7 @@ Blue:<br>
                 "element": {"#": "blueValue"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "blue",
-                    "converter": {"@": "roundTo2Decimals"},
-                    "oneway": true
-                }
+                "value": {"&lt;-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
             }
         },
         "resultHexValue": {
@@ -349,11 +325,7 @@ Blue:<br>
                 "element": {"#": "result-hex"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "resultHex",
-                    "oneway": true
-                }
+                "value": {"&lt;-": "@owner.resultHex"}
             }
         },
 

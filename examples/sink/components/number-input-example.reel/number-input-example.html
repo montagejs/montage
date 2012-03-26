@@ -128,11 +128,7 @@
             "element": {"#": "celsius"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "fahrenheitTextfield"},
-                "boundObjectPropertyPath": "value",
-                "converter": {"@": "tempConverter"}
-            }
+            "value": {"&lt;&lt;-&gt;": "@fahrenheitTextfield.value", "converter": {"@": "tempConverter"}}
         }
     },
     "fahrenheitTextfield": {
