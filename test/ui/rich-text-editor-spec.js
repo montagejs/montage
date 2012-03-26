@@ -490,7 +490,7 @@ var testPage = TestPageLoader.queueTest("rich-text-editor-test", function() {
                 describe ("overlays testing", function() {
                     it("reset the editor and make sure we have the right overlays installed", function() {
                         test.editor1.focus();
-                        test.editor1.value = '<img src="http://www.w3.org/html/logo/downloads/HTML5_Logo_64.png"><div><a href="http://www.w3.org/">www.W3.org</a></div><span>need sone text to positioning the carret in a neutral element</span>';
+                        test.editor1.value = '<img src="http://www.w3.org/html/logo/downloads/HTML5_Logo_64.png"><div><a href="http://www.w3.org/">www.W3.org</a></div><span>need some text to positioning the caret in a neutral element</span>';
                         testPage.waitForDraw();
                         runs(function() {
                             expect(test.editor1.overlays).toBeDefined();
