@@ -1,95 +1,95 @@
 {
-    "Button": {
+    "button": {
         "module": "montage/lab/skeleton/touch/button.reel",
         "name": "Button",
         "properties": {
-            "element": {"#": "Button"}
+            "element": {"#": "button"}
         }
     },
     
-    "Toggle": {
+    "toggle": {
         "module": "montage/lab/skeleton/touch/toggle.reel",
         "name": "Toggle",
         "properties": {
-            "element": {"#": "Toggle"}
+            "element": {"#": "toggle"}
         }
     },
     
-    "InputCheckbox": {
+    "inputCheckbox": {
         "module": "montage/lab/skeleton/touch/input-checkbox.reel",
         "name": "InputCheckbox",
         "properties": {
-            "element": {"#": "InputCheckbox"}
+            "element": {"#": "inputCheckbox"}
         }
     },
     
-    "InputRadio1": {
+    "inputRadio1": {
         "module": "montage/lab/skeleton/touch/input-radio.reel",
         "name": "InputRadio",
         "properties": {
-            "element": {"#": "InputRadio1"}
+            "element": {"#": "inputRadio1"}
         }
     },
-    "InputRadio2": {
+    "inputRadio2": {
         "module": "montage/lab/skeleton/touch/input-radio.reel",
         "name": "InputRadio",
         "properties": {
-            "element": {"#": "InputRadio2"}
+            "element": {"#": "inputRadio2"}
         }
     },
-    "InputRadio3": {
+    "inputRadio3": {
         "module": "montage/lab/skeleton/touch/input-radio.reel",
         "name": "InputRadio",
         "properties": {
-            "element": {"#": "InputRadio3"}
+            "element": {"#": "inputRadio3"}
         }
     },
     
-    "Select": {
+    "select": {
         "module": "montage/lab/skeleton/touch/select.reel",
         "name": "Select",
         "properties": {
-            "element": {"#": "Select"}
+            "element": {"#": "select"}
         }
     },
     
-    "InputText": {
+    "inputText": {
         "module": "montage/lab/skeleton/touch/input-text.reel",
         "name": "InputText",
         "properties": {
-            "element": {"#": "InputText"}
+            "element": {"#": "inputText"}
         }
     },
     
-    "Textarea": {
+    "textarea": {
         "module": "montage/lab/skeleton/touch/textarea.reel",
         "name": "Textarea",
         "properties": {
-            "element": {"#": "Textarea"}
+            "element": {"#": "textarea"}
         }
     },
     
-    "InputNumber": {
+    "inputNumber": {
         "module": "montage/lab/skeleton/touch/input-number.reel",
         "name": "InputNumber",
         "properties": {
-            "element": {"#": "InputNumber"}
+            "element": {"#": "inputNumber"}
         }
     },
     
-    "InputRange": {
+    "inputRange": {
         "module": "montage/lab/skeleton/touch/input-range.reel",
         "name": "InputRange",
         "properties": {
-            "element": {"#": "InputRange"}
+            "element": {"#": "inputRange"}
         }
     },
     
-    "Progress": {
+    "progress": {
         "module": "montage/lab/skeleton/touch/progress.reel",
         "name": "Progress",
         "properties": {
-            "element": {"#": "Progress"}
+            "element": {"#": "progress"}
         }
     }
     
