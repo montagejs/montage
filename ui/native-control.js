@@ -222,12 +222,9 @@ var NativeControl = exports.NativeControl = Montage.create(Component, {
 
                         }
                     }
-
+                    delete this._elementAttributeValues[attributeName];
                 }
             }
-            // the values have been flushed to the DOM.
-            this._elementAttributeValues = {};
-
         }
     }
 });
