@@ -39,14 +39,14 @@ var getElementPosition = function(obj) {
  * The Autocomplete input
  */
 var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
-    
+
     didCreate: {
         value: function() {
             this.delay = 500;
             this.minLength = 2;
         }
     },
-    
+
     hasTemplate: {value: true},
 
     delegate: {
@@ -69,7 +69,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         get: function(){
             return this._delay;
         },
-        set: function(value) {            
+        set: function(value) {
             if(value !== this._delay) {
                 if(String.isString(value)) {
                     value = parseInt(value, 10);
@@ -94,7 +94,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         },
         set: function(value) {
             this._tokens = value;
-            this.value = this._tokens.join(this.separator);
+            this._valueSyncedWithInputField = false;
             this.needsDraw = true;
         },
         modify: function(v) {
@@ -112,52 +112,45 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         },
         set: function(newValue, fromInput) {
             this._value = newValue;
-            console.log('setting value - ', newValue, fromInput, this._value);
 
             // get the entered text after the separator
             var value = this._value;
+
+
             if(fromInput) {
+                this._valueSyncedWithInputField = true;
                 if(value) {
                     var arr = value.split(this.separator).map(function(item) {
                         return item.trim();
                     });
                     this.activeTokenIndex = this._findActiveTokenIndex(this.tokens, arr);
-                    //console.log('active token = ', this.activeTokenIndex);
-
                     this._tokens = value.split(this.separator).map(function(item) {
                         return item.trim();
                     });
-
+                    //console.log('active token = ', this.activeTokenIndex);
                     if(this._tokens.length && this._tokens.length > 0) {
                         var searchTerm = this._tokens[this.activeTokenIndex];
-                        console.log('searchTerm', searchTerm);
-                        if(searchTerm && searchTerm.trim() !== '' && searchTerm.length >= this.minLength) {
-
+                        searchTerm = searchTerm ? searchTerm.trim() : '';
+                        if(searchTerm.length >= this.minLength) {
                             var self = this;
-                            clearTimeout(this.delayTimer);                            
+                            clearTimeout(this.delayTimer);
                             this.delayTimer = setTimeout(function() {
                                 self.delayTimer = null;
+                                console.log('SEARCH for ', searchTerm);
                                 self.performSearch(searchTerm);
                             }, this.delay);
-                            
                         } else {
                             this.showPopup = false;
                         }
                     } else {
                         this.showPopup = false;
                     }
-
-                } else {
-                    this.activeTokenIndex = 0;
-                    this._tokens = [];
-                    this.showPopup = false;
                 }
-
-            }
-
-            if(fromInput) {
-                this._valueSyncedWithInputField = true;
             } else {
+                this.activeTokenIndex = 0;
+                this._tokens = [];
+                this.showPopup = false;
+
                 this._valueSyncedWithInputField = false;
                 this.needsDraw = true;
             }
@@ -257,10 +250,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             if(value) {
                 this._suggestedValue = value;
                 var arr = this.tokens;
-                console.log('got suggested value = ', this._suggestedValue, this.tokens);
                 arr[this.activeTokenIndex] = this._suggestedValue;
-                console.log('arr after replacing value', arr);
-
                 this.tokens = arr;
                 this.showPopup = false;
             }
@@ -284,7 +274,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             if(value != this._showPopup) {
                 this._showPopup = value;
                 this.needsDraw = true;
-            }            
+            }
         }
     },
 
@@ -297,10 +287,9 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             return this._suggestions;
         },
         set: function(value) {
-            console.log('got suggestions: ', value);
+            //console.log('got suggestions: ', value);
             this.loadingStatus = 'complete';
             this._suggestions = value;
-            
             this.showPopup = (value && value.length > 0);
         }
     },
@@ -411,7 +400,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 oneway: true
             });
 
-
             Object.defineBinding(this, "suggestedValue", {
                 boundObject: this.resultsController,
                 boundObjectPropertyPath: "selectedObjects.0",
@@ -442,13 +430,19 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             this.addComposer(pressComposer);
         }
     },
-    
+
     draw: {
         value: function() {
             var el = this.element;
 
             var fn = Object.getPrototypeOf(Autocomplete).draw;
             fn.call(this);
+
+            if (!this._valueSyncedWithInputField) {
+                this.value = this.tokens.join(this.separator);
+                this.element.value = this.value;
+                this._valueSyncedWithInputField = true;
+            }
 
             console.log('DRAW called ', this.showPopup);
 
@@ -461,10 +455,10 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                     this.popup.hide();
                 }
             }
-            
+
             var isLoading = (this.loadingStatus === 'loading');
             this.element.classList[isLoading ? 'add' : 'remove']('montage-autocomplete-loading');
-            
+
 
         }
     },

@@ -50,7 +50,7 @@
                     "properties": {
                         "element": {"#": "state"},
                         "identifier": "state",
-                        "delay": "200",
+                        "delay": "1000",
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
@@ -58,17 +58,17 @@
                             "boundObject": {"@": "owner"},
                             "boundObjectPropertyPath": "state",
                             "oneway": false
-                        }                        
+                        }
                     }
                 },
-                
+
                 "members": {
                     "module": "montage/ui/autocomplete/autocomplete.reel",
                     "name": "Autocomplete",
                     "properties": {
                         "element": {"#": "members"},
                         "identifier": "members",
-                        "minLength": 1,
+                        "minLength": 2,
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
@@ -79,7 +79,7 @@
                         }
                     }
                 },
-                
+
                 "update": {
                     "module": "montage/ui/button.reel",
                     "name": "Button",
@@ -120,7 +120,7 @@
                 border: 0;
                 width: 300px;
             }
-            
+
         </style>
     </head>
     <body>
@@ -145,10 +145,10 @@
                      <label for="country">Country</label>
                      <input type="text" placeholder="Select your Country" id="country" required   style="width: 300px;" />
                      <label for="state">State</label>
-                     <input type="text" placeholder="Select the State" id="state"  style="width: 300px;" />   
-                     
+                     <input type="text" placeholder="Select the State" id="state"  style="width: 300px;" />
+
                      <label for="members">Fetching data from remote data source (type "Ari" or "Mar" to see results).</label>
-                     <input type="text" placeholder="Select members" id="members"  style="width: 300px;" class="autocomplete-members"/>                  
+                     <input type="text" placeholder="Select members" id="members"  style="width: 300px;" />
 
                      <div style="margin-top: 10px;">
                           <button class="btn" id="update" type="button">Update</button>
