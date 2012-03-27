@@ -80,9 +80,25 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         value: 1
     },
 
-    _units: {
+    _unit: {
         enumerable: false,
         value: null
+    },
+    unit: {
+        get: function() {
+            return this._unit;
+        },
+        set: function(value) {
+            if (this._unit !== value) {
+                this._unit = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+
+    _units: {
+        enumerable: false,
+        value: []
     },
     units: {
         get: function() {
