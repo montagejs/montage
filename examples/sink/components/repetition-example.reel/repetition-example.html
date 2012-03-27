@@ -3,8 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Image Example</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
 
     "places": {
         "name": "ArrayController",
@@ -40,11 +40,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "repetition1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "src": {"<-": "@repetition1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -55,11 +51,7 @@
             "element": {"#": "title"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "repetition1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.title",
-                "oneway": true
-            }
+            "value": {"<-": "@repetition1.objectAtCurrentIteration.title"}
         }
     },
 
@@ -71,11 +63,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "data",
-                "oneway": true
-            }
+            "content": {"<-": "@owner.data"}
         }
     },
 
@@ -99,16 +87,8 @@
             "element": {"#": "link"}
         },
         "bindings": {
-            "href": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
-                "oneway": true
-            },
-            "textContent": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -119,11 +99,7 @@
             "element": {"#": "desc"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
-                "oneway": true
-            }
+            "value": {"<-": "@list1.objectAtCurrentIteration.description"}
         }
     },
 
@@ -135,10 +111,7 @@
             "element": {"#": "selection"}
         },
         "bindings": {
-            "checked": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "selectionAtCurrentIteration"
-            }
+            "checked": {"<<->": "@list1.selectionAtCurrentIteration"}
         }
     },
 
@@ -149,10 +122,7 @@
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "jsonSelectedItems"
-            }
+            "value": {"<<->": "@owner.jsonSelectedItems"}
         }
     },
 
@@ -164,11 +134,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "answers",
-                "oneway": true
-            }
+            "content": {"<-": "@owner.answers"}
         }
     },
 
@@ -191,10 +157,7 @@
             "element": {"#": "answerSelection"}
         },
         "bindings": {
-            "checked": {
-                "boundObject": {"@": "list2"},
-                "boundObjectPropertyPath": "selectionAtCurrentIteration"
-            }
+            "checked": {"<<->": "@list2.selectionAtCurrentIteration"}
         }
     },
 
@@ -205,11 +168,7 @@
             "element": {"#": "answerText"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "list2"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration",
-                "oneway": true
-            }
+            "value": {"<-": "@list2.objectAtCurrentIteration"}
         }
     },
 
@@ -220,10 +179,7 @@
             "element": {"#": "selectedAnswer"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "selectedAnswer"
-            }
+            "value": {"<<->": "@owner.selectedAnswer"}
         }
     },
 
@@ -266,18 +222,12 @@
             ]
         },
         "bindings": {
-            "selectedItems": {
-                "boundObject": {"@": "controller"},
-                "boundObjectPropertyPath": "selectedObjects"
-            },
-            "selectedAnswer": {
-                "boundObject": {"@": "answersController"},
-                "boundObjectPropertyPath": "selectedObjects.0"
-            }
+            "selectedItems": {"<<->": "@controller.selectedObjects"},
+            "selectedAnswer": {"<<->": "@answersController.selectedObjects.0"}
         }
     }
-}
-    </script>
+
+    }</script>
 
     <style>
         .repetition .thumb {

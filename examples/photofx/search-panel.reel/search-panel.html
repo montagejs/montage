@@ -10,8 +10,8 @@
     <title>SearchPanel</title>
     <link rel="stylesheet" href="search-panel.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "search-panel.reel",
                 "name": "SearchPanel",
@@ -21,10 +21,7 @@
                     "searchResultsList": {"@": "searchResultsList"}
                 },
                 "bindings": {
-                    "queryParameter": {
-                        "boundObject": {"@": "queryField"},
-                        "boundObjectPropertyPath": "value"
-                    }
+                    "queryParameter": {"<<->": "@queryField.value"}
                 }
             },
 
@@ -32,10 +29,7 @@
                 "module": "montage/ui/controller/array-controller",
                 "name": "ArrayController",
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "searchResults"
-                    }
+                    "content": {"<<->": "@owner.searchResults"}
                 }
             },
 
@@ -72,21 +66,13 @@
                     "element": {"#": "searchResult"}
                 },
                 "bindings": {
-                    "result": {
-                        "boundObject": {"@": "searchResultsList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    },
-                    "photoListController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photoListController",
-                        "oneway": true
-                    }
+                    "result": {"<-": "@searchResultsList.objectAtCurrentIteration"},
+                    "photoListController": {"<-": "@owner.photoListController"}
                 }
             }
 
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

@@ -7,8 +7,8 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "owner": {
                     "module": "components/textarea-example.reel",
                     "name": "TextareaExample",
@@ -16,10 +16,7 @@
                         "element": {"#": "textarea-example"}
                     },
                     "bindings": {
-                        "info": {
-                            "boundObject": {"@": "info"},
-                            "boundObjectPropertyPath": "value"
-                        }
+                        "info": {"<<->": "@info.value"}
                     }
                 },
 
@@ -30,16 +27,8 @@
                         "element": {"#": "fname"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        },
-                        "title": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner.firstName"},
+                        "title": {"<<->": "@owner.firstName"}
                     }
                 },
 
@@ -50,11 +39,7 @@
                         "element": {"#": "lname"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "lastName",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner.lastName"}
                     }
                 },
                 "info": {
@@ -78,11 +63,11 @@
                         }
                     ]
                 },
-                "textarea-accordion1": {
+                "textareaAccordion1": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
-                        "element": {"#": "textarea-accordion1"}
+                        "element": {"#": "textareaAccordion1"}
                     }
                 },
                 "echo": {
@@ -99,8 +84,8 @@
                         }
                     }
                 }
-            }
-        </script>
+            
+    }</script>
 
         <style>
             .textarea-example textarea {
@@ -152,7 +137,7 @@
 
             <section>
 
-               <ul id="textarea-accordion1" class="accordion">
+               <ul id="textareaAccordion1" class="accordion">
                     <li class="accordion-group">
                         <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                         <div class="accordion-inner montage-hidden" >

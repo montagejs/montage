@@ -7,8 +7,8 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-        {
+        <script type="text/montage-serialization">{
+
 
             "owner": {
                 "prototype": "components/scroller-example.reel",
@@ -23,14 +23,8 @@
                     "element": {"#": "scroller"}
                 },
                 "bindings": {
-                    "hasMomentum": {
-                        "boundObject": {"@": "toggleMomentum"},
-                        "boundObjectPropertyPath": "checked"
-                    },
-                    "hasBouncing": {
-                        "boundObject": {"@": "toggleBouncing"},
-                        "boundObjectPropertyPath": "checked"
-                    }
+                    "hasMomentum": {"<<->": "@toggleMomentum.checked"},
+                    "hasBouncing": {"<<->": "@toggleBouncing.checked"}
                 }
             },
 
@@ -48,15 +42,15 @@
                     "checked": true
                 }
             },
-            "scroller-accordion1": {
+            "scrollerAccordion1": {
                 "module": "accordion.reel",
                 "name": "Accordion",
                 "properties": {
-                    "element": {"#": "scroller-accordion1"}
+                    "element": {"#": "scrollerAccordion1"}
                 }
             }
-        }
-        </script>
+        
+    }</script>
 
         <style>
             .scrollpanel {
@@ -128,7 +122,7 @@
             
             <section>
                 
-                <ul id="scroller-accordion1" class="accordion">
+                <ul id="scrollerAccordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >

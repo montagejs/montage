@@ -10,8 +10,8 @@
     <title>PhotoInfoPanel</title>
     <link rel="stylesheet" type="text/css" href="photo-info-panel.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "photo-info-panel.reel",
                 "name": "PhotoInfoPanel",
@@ -28,10 +28,7 @@
                     "element": {"#": "title"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photo.title"
-                    }
+                    "value": {"<<->": "@owner.photo.title"}
                 }
             },
             "author": {
@@ -41,10 +38,7 @@
                     "element": {"#": "author"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photo.authors.0"
-                    }
+                    "value": {"<<->": "@owner.photo.authors.0"}
                 }
             },
 
@@ -56,14 +50,11 @@
                     "removalStrategy": "hide"
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photo"
-                    }
+                    "condition": {"<<->": "@owner.photo"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

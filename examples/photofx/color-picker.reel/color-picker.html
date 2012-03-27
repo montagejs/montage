@@ -10,8 +10,8 @@
     <title>ColorPicker</title>
     <link rel="stylesheet" type="text/css" href="color-picker.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "colorCondition": {
                 "module": "montage/ui/condition.reel",
                 "name": "Condition",
@@ -20,11 +20,7 @@
                     "removalStrategy": "hide"
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "currentColor",
-                        "oneway": true
-                    }
+                    "condition": {"<-": "@owner.currentColor"}
                 }
             },
 
@@ -41,12 +37,7 @@
                     "removalStrategy": "hide"
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "x",
-                        "oneway": true,
-                        "converter": {"@": "validNumberConverter"}
-                    }
+                    "condition": {"<-": "@owner.x", "converter": {"@": "validNumberConverter"}}
                 }
             },
 
@@ -57,11 +48,7 @@
                     "element": {"#": "redValue"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "currentColor.0",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.currentColor.0"}
                 }
             },
             "greenValue": {
@@ -71,11 +58,7 @@
                     "element": {"#": "greenValue"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "currentColor.1",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.currentColor.1"}
                 }
             },
             "blueValue": {
@@ -85,11 +68,7 @@
                     "element": {"#": "blueValue"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "currentColor.2",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.currentColor.2"}
                 }
             },
             "xValue": {
@@ -99,11 +78,7 @@
                     "element": {"#": "xValue"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "x",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.x"}
                 }
             },
             "yValue": {
@@ -113,11 +88,7 @@
                     "element": {"#": "yValue"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "y",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.y"}
                 }
             },
             "owner": {
@@ -128,8 +99,8 @@
                     "colorWell": {"#": "colorWell"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

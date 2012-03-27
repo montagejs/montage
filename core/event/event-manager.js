@@ -103,13 +103,12 @@ var EventListenerDescriptor = Montage.create(Montage, {
     }
 });
 
-Serializer.defineSerializationUnit("listeners", function(object) {
+Serializer.defineSerializationUnit("listeners", function(object, serializer) {
     var eventManager = defaultEventManager,
         uuid = object.uuid,
         eventListenerDescriptors = [],
         descriptors,
         descriptor,
-        listenerDescriptor,
         listener;
 
     for (var type in eventManager.registeredEventListeners) {
@@ -119,12 +118,11 @@ Serializer.defineSerializationUnit("listeners", function(object) {
             for (var listenerUuid in descriptor.listeners) {
                 listener = descriptor.listeners[listenerUuid];
 
-                eventListenerDescriptor = EventListenerDescriptor.create();
-                eventListenerDescriptor.type = type;
-                eventListenerDescriptor.listener = listener.listener;
-                eventListenerDescriptor.capture = listener.capture;
-
-                eventListenerDescriptors.push(eventListenerDescriptor);
+                eventListenerDescriptors.push({
+                    type: type,
+                    listener: serializer.addObjectReference(listener.listener),
+                    capture: listener.capture
+                });
             }
         }
     }

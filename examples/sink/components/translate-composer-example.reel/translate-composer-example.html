@@ -8,8 +8,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Translate Composer Test</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "translate_composer": {
         "prototype": "montage/ui/composer/translate-composer",
         "properties": {
@@ -19,19 +19,9 @@
             "pointerSpeedMultiplier": -1
         },
         "bindings": {
-            "axis": {
-                "boundObject": {"@": "axisSelect"},
-                "boundObjectPropertyPath": "value",
-                "oneway": true
-            },
-            "hasMomentum": {
-                "boundObject": {"@": "checkbox-momentum"},
-                "boundObjectPropertyPath": "checked"
-            },
-            "hasBouncing": {
-                "boundObject": {"@": "checkbox-bouncing"},
-                "boundObjectPropertyPath": "checked"
-            }
+            "axis": {"<-": "@axisSelect.value"},
+            "hasMomentum": {"<<->": "@checkboxMomentum.checked"},
+            "hasBouncing": {"<<->": "@checkboxBouncing.checked"}
         }
     },
 
@@ -51,16 +41,8 @@
             "example": {"@": "example"}
         },
         "bindings": {
-            "x": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateX",
-                "oneway": true
-            },
-            "y": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateY",
-                "oneway": true
-            }
+            "x": {"<-": "@translate_composer.translateX"},
+            "y": {"<-": "@translate_composer.translateY"}
         }
     },
 
@@ -71,18 +53,18 @@
         }
     },
 
-    "checkbox-momentum": {
+    "checkboxMomentum": {
         "prototype": "montage/ui/checkbox.reel",
         "properties": {
-            "element": {"#": "checkbox-momentum"},
+            "element": {"#": "checkboxMomentum"},
             "checked": true
         }
     },
 
-    "checkbox-bouncing": {
+    "checkboxBouncing": {
         "prototype": "montage/ui/checkbox.reel",
         "properties": {
-            "element": {"#": "checkbox-bouncing"},
+            "element": {"#": "checkboxBouncing"},
             "checked": true
         }
     },
@@ -93,10 +75,7 @@
             "element": {"#": "x_value"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateX"
-            }
+            "value": {"<<->": "@translate_composer.translateX"}
         }
     },
 
@@ -106,21 +85,18 @@
             "element": {"#": "y_value"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateY"
-            }
+            "value": {"<<->": "@translate_composer.translateY"}
         }
     },
-    "translate-accordion1": {
+    "translateAccordion1": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
-            "element": {"#": "translate-accordion1"}
+            "element": {"#": "translateAccordion1"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 <style type="text/css">
     .wrap {
@@ -172,10 +148,10 @@
         <option value="vertical">Vertical</option>
     </select>
     <div>
-        <label for="cb1"><input type="checkbox" data-montage-id="checkbox-momentum" id="cb1" /> Momentum </label>
+        <label for="cb1"><input type="checkbox" data-montage-id="checkboxMomentum" id="cb1" /> Momentum </label>
     </div>
     <div>
-        <label for="cb2"><input type="checkbox" data-montage-id="checkbox-bouncing" id="cb2" /> Bouncing </label>
+        <label for="cb2"><input type="checkbox" data-montage-id="checkboxBouncing" id="cb2" /> Bouncing </label>
     </div>
     <code>translateX: <span id="x_value"></span></code>
     <code>translateY: <span id="y_value"></span></code>
@@ -183,7 +159,7 @@
             <div class="clear"></div>
             </div>
                     <section>
-                       <ul id="translate-accordion1" class="accordion">
+                       <ul id="translateAccordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
@@ -199,10 +175,10 @@
         &lt;option value="vertical"&gt;Vertical&lt;/option&gt;
     &lt;/select&gt;
     &lt;div&gt;
-        &lt;label for="cb1"&gt;&lt;input type="checkbox" data-montage-id="checkbox-momentum" id="cb1" /&gt; Momentum &lt;/label&gt;
+        &lt;label for="cb1"&gt;&lt;input type="checkbox" data-montage-id="checkboxMomentum" id="cb1" /&gt; Momentum &lt;/label&gt;
     &lt;/div&gt;
     &lt;div&gt;
-        &lt;label for="cb2"&gt;&lt;input type="checkbox" data-montage-id="checkbox-bouncing" id="cb2" /&gt; Bouncing &lt;/label&gt;
+        &lt;label for="cb2"&gt;&lt;input type="checkbox" data-montage-id="checkboxBouncing" id="cb2" /&gt; Bouncing &lt;/label&gt;
     &lt;/div&gt;
     &lt;code&gt;translateX: &lt;span id="x_value"&gt;&lt;/span&gt;&lt;/code&gt;
     &lt;code&gt;translateY: &lt;span id="y_value"&gt;&lt;/span&gt;&lt;/code&gt;
@@ -231,11 +207,11 @@
                 "oneway": true
             },
             "hasMomentum": {
-                "boundObject": {"@": "checkbox-momentum"},
+                "boundObject": {"@": "checkboxMomentum"},
                 "boundObjectPropertyPath": "checked"
             },
             "hasBouncing": {
-                "boundObject": {"@": "checkbox-bouncing"},
+                "boundObject": {"@": "checkboxBouncing"},
                 "boundObjectPropertyPath": "checked"
             }
         }
@@ -279,18 +255,18 @@
         }
     },
 
-    "checkbox-momentum": {
+    "checkboxMomentum": {
         "prototype": "montage/ui/checkbox.reel",
         "properties": {
-            "element": {"#": "checkbox-momentum"},
+            "element": {"#": "checkboxMomentum"},
             "checked": true
         }
     },
 
-    "checkbox-bouncing": {
+    "checkboxBouncing": {
         "prototype": "montage/ui/checkbox.reel",
         "properties": {
-            "element": {"#": "checkbox-bouncing"},
+            "element": {"#": "checkboxBouncing"},
             "checked": true
         }
     },
@@ -320,11 +296,11 @@
             }
         }
     },
-    "translate-accordion1": {
+    "translateAccordion1": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
-            "element": {"#": "translate-accordion1"}
+            "element": {"#": "translateAccordion1"}
         }
     }
 }

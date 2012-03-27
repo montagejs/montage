@@ -3,8 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Image Example</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
 
     "places": {
         "name": "ArrayController",
@@ -67,10 +67,7 @@
             "element": {"#": "thumb-h"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "horizontal"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src"
-            }
+            "src": {"<<->": "@horizontal.objectAtCurrentIteration.src"}
         }
     },
 
@@ -81,11 +78,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "verticalList"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "src": {"<-": "@verticalList.objectAtCurrentIteration.src"}
         }
     },
 
@@ -96,11 +89,7 @@
             "element": {"#": "title"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "verticalList"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.title",
-                "oneway": true
-            }
+            "value": {"<-": "@verticalList.objectAtCurrentIteration.title"}
         }
     },
 
@@ -126,8 +115,8 @@
             "element": {"#": "example-root"}
         }
     }
-}
-    </script>
+
+    }</script>
 
     <style>
         .v-list .thumb {

@@ -7,8 +7,8 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "owner": {
                     "module": "components/select-input-example.reel",
                     "name": "InputTextExample",
@@ -18,20 +18,9 @@
                         "dept": {"@": "dept"}
                     },
                     "bindings": {
-                        "selectedCountry": {
-                            "boundObject": {"@": "country"},
-                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
-                            "oneway": true
-                        },
-                        "selectedState": {
-                            "boundObject": {"@": "state"},
-                            "boundObjectPropertyPath": "contentController.selectedObjects.0",
-                            "oneway": true
-                        },
-                        "selectedDepts": {
-                            "boundObject": {"@": "dept"},
-                            "boundObjectPropertyPath": "contentController.selectedObjects"
-                        }
+                        "selectedCountry": {"<-": "@country.contentController.selectedObjects.0"},
+                        "selectedState": {"<-": "@state.contentController.selectedObjects.0"},
+                        "selectedDepts": {"<<->": "@dept.contentController.selectedObjects"}
                     }
                 },
                 "fname": {
@@ -41,16 +30,8 @@
                         "element": {"#": "fname"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        },
-                        "title": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner.firstName"},
+                        "title": {"<<->": "@owner.firstName"}
                     }
                 },
 
@@ -61,11 +42,7 @@
                         "element": {"#": "lname"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "lastName",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner.lastName"}
                     }
                 },
 
@@ -78,11 +55,7 @@
                         "valuePropertyPath": "code"
                     },
                     "bindings": {
-                        "content": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "departments",
-                            "oneway": true
-                        }
+                        "content": {"<-": "@owner.departments"}
                     }
                 },
 
@@ -146,90 +119,75 @@
                         }
                     }
                 },
-                "justify-comparator-left": {
+                "justifyComparatorLeft": {
                     "module": "components/select-input-example.reel",
                     "name": "JustifyConverter",
                     "properties": {
                         "justify": "left"
                     }
                 },
-                "justify-comparator-right": {
+                "justifyComparatorRight": {
                     "module": "components/select-input-example.reel",
                     "name": "JustifyConverter",
                     "properties": {
                         "justify": "right"
                     }
                 },
-                "justify-comparator-center": {
+                "justifyComparatorCenter": {
                     "module": "components/select-input-example.reel",
                     "name": "JustifyConverter",
                     "properties": {
                         "justify": "center"
                     }
                 },
-                "justify-left": {
+                "justifyLeft": {
                     "module": "montage/ui/toggle-button.reel",
                     "name": "ToggleButton",
                     "properties": {
-                        "element": {"#": "justify-left"},
+                        "element": {"#": "justifyLeft"},
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "justify",
-                            "converter": {"@": "justify-comparator-left"}
-                        }
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorLeft"}}
                     }
                 },
-                "justify-center": {
+                "justifyCenter": {
                     "module": "montage/ui/toggle-button.reel",
                     "name": "ToggleButton",
                     "properties": {
-                        "element": {"#": "justify-center"},
+                        "element": {"#": "justifyCenter"},
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "justify",
-                            "converter": {"@": "justify-comparator-center"}
-                        }
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorCenter"}}
                     }
                 },
-                "justify-right": {
+                "justifyRight": {
                     "module": "montage/ui/toggle-button.reel",
                     "name": "ToggleButton",
                     "properties": {
-                        "element": {"#": "justify-right"},
+                        "element": {"#": "justifyRight"},
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "justify",
-                            "converter": {"@": "justify-comparator-right"}
-                        }
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorRight"}}
                     }
                 },
-                "justify-select": {
+                "justifySelect": {
                     "module": "montage/ui/select-input.reel",
                     "name": "SelectInput",
                     "properties": {
-                        "element": {"#": "justify-select"}
+                        "element": {"#": "justifySelect"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "justify"
-                        }
+                        "value": {"<<->": "@owner.justify"}
                     }
                 },
-                "justify-result": {
+                "justifyResult": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
-                        "element": {"#": "justify-result"}
+                        "element": {"#": "justifyResult"}
                     },
                     "bindings": {
                         "value": {
@@ -239,22 +197,22 @@
                         }
                     }
                 },
-                "select-accordion1": {
+                "selectAccordion1": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
-                        "element": {"#": "select-accordion1"}
+                        "element": {"#": "selectAccordion1"}
                     }
                 },
-                "select-accordion2": {
+                "selectAccordion2": {
                     "module": "accordion.reel",
                     "name": "Accordion",
                     "properties": {
-                        "element": {"#": "select-accordion2"}
+                        "element": {"#": "selectAccordion2"}
                     }
                 }
-            }
-        </script>
+
+    }</script>
 
         <style>
             .select-input-example .error {
@@ -334,7 +292,7 @@
 
                  <section>
 
-                     <ul id="select-accordion1" class="accordion">
+                     <ul id="selectAccordion1" class="accordion">
                         <li class="accordion-group">
                             <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                             <div class="accordion-inner montage-hidden" >
@@ -645,12 +603,12 @@ exports.SelectInputExample = Montage.create(Component, {
                     </p>
 
                     <div style="height: 40px;">
-                        <button id="justify-left" class="btn justify">L</button>
-                        <button id="justify-center" class="btn justify">C</button>
-                        <button id="justify-right" class="btn justify">R</button>
+                        <button id="justifyLeft" class="btn justify">L</button>
+                        <button id="justifyCenter" class="btn justify">C</button>
+                        <button id="justifyRight" class="btn justify">R</button>
                     </div>
                     <div>
-                        <select id="justify-select" class="justify-select">
+                        <select id="justifySelect" class="justifySelect">
                                 <option value=""></option>
                                 <option value="left">Left</option>
                                 <option value="center">Center</option>
@@ -658,14 +616,14 @@ exports.SelectInputExample = Montage.create(Component, {
                         </select>
 
                         <p>
-                            Justify selection: <span id="justify-result"></span>
+                            Justify selection: <span id="justifyResult"></span>
                         </p>
                     </div>
                 </div>
             </section>
 
             <section>
-                <ul id="select-accordion2" class="accordion">
+                <ul id="selectAccordion2" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
@@ -673,12 +631,12 @@ exports.SelectInputExample = Montage.create(Component, {
 &lt;div class="demo"&gt;<br>
 &lt;div style="height: 40px;"&gt;<br>
 &lt;button id="justify-none" class="btn justify"&gt;-&lt;/button&gt;<br>
-&lt;button id="justify-left" class="btn justify"&gt;L&lt;/button&gt;<br>
-&lt;button id="justify-center" class="btn justify"&gt;C&lt;/button&gt;<br>
-&lt;button id="justify-right" class="btn justify"&gt;R&lt;/button&gt;<br>
+&lt;button id="justifyLeft" class="btn justify"&gt;L&lt;/button&gt;<br>
+&lt;button id="justifyCenter" class="btn justify"&gt;C&lt;/button&gt;<br>
+&lt;button id="justifyRight" class="btn justify"&gt;R&lt;/button&gt;<br>
 &lt;/div&gt;<br>
 &lt;div&gt;<br>
-&lt;select id="justify-select" class="justify-select"&gt;<br>
+&lt;select id="justifySelect" class="justifySelect"&gt;<br>
 &lt;option value=""&gt;&lt;/option&gt;<br>
 &lt;option value="left"&gt;Left&lt;/option&gt;<br>
 &lt;option value="center"&gt;Center&lt;/option&gt;<br>
@@ -686,7 +644,7 @@ exports.SelectInputExample = Montage.create(Component, {
 &lt;/select&gt;<br>
 <br>
 &lt;p&gt;<br>
-Justify selection: &lt;span id="justify-result"&gt;&lt;/span&gt;<br>
+Justify selection: &lt;span id="justifyResult"&gt;&lt;/span&gt;<br>
 &lt;/p&gt;<br>
 &lt;/div&gt;<br>
 &lt;/div&gt;
@@ -697,77 +655,77 @@ Justify selection: &lt;span id="justify-result"&gt;&lt;/span&gt;<br>
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
                        <div class="accordion-inner montage-hidden">
                         <pre class="prettyprint" >
-"justify-comparator-left": {
+"justifyComparatorLeft": {
     "module": "components/select-input-example.reel",
     "name": "JustifyConverter",
     "properties": {
         "justify": "left"
     }
 },
-"justify-comparator-right": {
+"justifyComparatorRight": {
     "module": "components/select-input-example.reel",
     "name": "JustifyConverter",
     "properties": {
         "justify": "right"
     }
 },
-"justify-comparator-center": {
+"justifyComparatorCenter": {
     "module": "components/select-input-example.reel",
     "name": "JustifyConverter",
     "properties": {
         "justify": "center"
     }
 },
-"justify-left": {
+"justifyLeft": {
     "module": "montage/ui/toggle-button.reel",
     "name": "ToggleButton",
     "properties": {
-        "element": {"#": "justify-left"},
+        "element": {"#": "justifyLeft"},
         "pressedClass": "success"
     },
     "bindings": {
         "pressed": {
             "boundObject": {"@": "owner"},
             "boundObjectPropertyPath": "justify",
-            "converter": {"@": "justify-comparator-left"}
+            "converter": {"@": "justifyComparatorLeft"}
         }
     }
 },
-"justify-center": {
+"justifyCenter": {
     "module": "montage/ui/toggle-button.reel",
     "name": "ToggleButton",
     "properties": {
-        "element": {"#": "justify-center"},
+        "element": {"#": "justifyCenter"},
         "pressedClass": "success"
     },
     "bindings": {
         "pressed": {
             "boundObject": {"@": "owner"},
             "boundObjectPropertyPath": "justify",
-            "converter": {"@": "justify-comparator-center"}
+            "converter": {"@": "justifyComparatorCenter"}
         }
     }
 },
-"justify-right": {
+"justifyRight": {
     "module": "montage/ui/toggle-button.reel",
     "name": "ToggleButton",
     "properties": {
-        "element": {"#": "justify-right"},
+        "element": {"#": "justifyRight"},
         "pressedClass": "success"
     },
     "bindings": {
         "pressed": {
             "boundObject": {"@": "owner"},
             "boundObjectPropertyPath": "justify",
-            "converter": {"@": "justify-comparator-right"}
+            "converter": {"@": "justifyComparatorRight"}
         }
     }
 },
-"justify-select": {
+"justifySelect": {
     "module": "montage/ui/select-input.reel",
     "name": "SelectInput",
     "properties": {
-        "element": {"#": "justify-select"}
+        "element": {"#": "justifySelect"}
     },
     "bindings": {
         "value": {
@@ -776,11 +734,11 @@ Justify selection: &lt;span id="justify-result"&gt;&lt;/span&gt;<br>
         }
     }
 },
-"justify-result": {
+"justifyResult": {
     "module": "montage/ui/dynamic-text.reel",
     "name": "DynamicText",
     "properties": {
-        "element": {"#": "justify-result"}
+        "element": {"#": "justifyResult"}
     },
     "bindings": {
         "value": {

@@ -37,7 +37,16 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 /**
     @private
 */
-    _document: {value: null},
+    _document: {
+        enumerable: false,
+        value: null
+    },
+
+    document: {
+        get: function() {
+            return this._document;
+        }
+    },
 /**
     @private
 */
@@ -131,6 +140,17 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     deserializer: {
         get: function() {
             return this._deserializer || (this._deserializer = Deserializer.create().initWithString(this._rootObjectSerialization));
+        }
+    },
+
+    initWithHtmlString: {
+        value: function(htmlString) {
+            var doc = this.createHtmlDocumentFromString(htmlString);
+
+            this._isLoaded = true;
+            this.initWithDocument(doc);
+
+            return this;
         }
     },
 
@@ -302,6 +322,12 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         this.instantiateWithOwnerAndDocument(component, document, callback);
     }},
 
+    instantiateWithDocument: {
+        value: function(document, callback) {
+            return this.instantiateWithOwnerAndDocument(null, document, callback);
+        }
+    },
+
     _partiallyInstantiateWithInstancesForDocument: {
         value: function(instances, targetDocument, callback) {
             var self = this,
@@ -360,16 +386,11 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
      Instantiates the Template with no elements references.
      @function
      */
-    instantiate: {value: function() {
-        var self = this;
-        var deserializer = Deserializer.create();
-
-        function invokeTemplateDidLoad(owner) {
-            self._invokeTemplateDidLoadWithOwner(deserializer, owner);
-            callback(component);
+    instantiate: {
+        value: function(callback) {
+            return this.instantiateWithOwnerAndDocument(null, null, callback);
         }
-        deserializer.deserializeRootObjectWithElement(this._document, invokeTemplateDidLoad);
-    }},
+    },
 
     /**
      @private
@@ -580,7 +601,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         for (var i = 0, cssTag; (cssTag = cssTags[i]); i++) {
             if ((url = cssTag.getAttribute("href"))) {
-                if (! /^http:\/\/|^\//.test(url)) { // TODO: look into base links...
+                if (! /^https?:\/\/|^\//.test(url)) { // TODO: look into base links...
                     url = rootUrl + url;
                 }
 
@@ -689,7 +710,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             src = script.getAttribute("src");
             scriptNode = doc.importNode(script, true);
             if (src) {
-                if (! /^http:\/\/|^\//.test(src)) { // TODO: look into base links...
+                if (! /^https?:\/\/|^\//.test(src)) { // TODO: look into base links...
                     scriptNode.src = src = rootUrl + src;
                 }
                 if (src in externalScriptsLoaded) continue;
@@ -830,7 +851,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                 url = link.getAttribute("href"),
                 rootUrl = this._rootUrl ? this._rootUrl[0] : "";
 
-            if (! /^http:\/\/|^\//.test(url)) {
+            if (! /^https?:\/\/|^\//.test(url)) {
                 url = rootUrl + url;
             }
 
@@ -942,7 +963,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     /**
      @private
      */
-    serializeSelf: {value: function(serializer) {
+    serializeProperties: {value: function(serializer) {
         serializer.set("owner", this._ownerSerialization);
         serializer.set("markup", this._document.body.innerHTML);
     }},
@@ -950,7 +971,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     /**
      @private
      */
-    deserializeSelf: {value: function(deserializer) {
+    deserializeProperties: {value: function(deserializer) {
         var markup = deserializer.get("markup"),
             owner = deserializer.get("owner"),
             _extends = deserializer.get("extends");

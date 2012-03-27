@@ -10,8 +10,8 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="../../montage.js"></script>
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "mixed-list",
                 "name": "MixedList"
@@ -31,11 +31,7 @@
                     "element": {"#": "testList"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "objectList",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@owner.objectList"}
                 }
             },
             "substitution": {
@@ -51,22 +47,14 @@
                     }
                 },
                 "bindings": {
-                    "switchValue": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.type",
-                        "oneway": true
-                    }
+                    "switchValue": {"<-": "@list.objectAtCurrentIteration.type"}
                 }
             },
             "toggle": {
                 "module": "montage/ui/bluemoon/toggle.reel",
                 "name": "Toggle",
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "slider": {
@@ -76,11 +64,7 @@
 
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "checkbox": {
@@ -90,11 +74,7 @@
 
                 },
                 "bindings": {
-                    "checked": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
-                        "oneway": true
-                    }
+                    "checked": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "addAnObjectButton": {
@@ -112,8 +92,8 @@
                 }
                 ]
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

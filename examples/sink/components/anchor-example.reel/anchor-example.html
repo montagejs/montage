@@ -3,8 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Anchor Example</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
 
     "link1" : {
         "name": "Anchor",
@@ -13,15 +13,8 @@
             "element": {"#": "link1"}
         },
         "bindings": {
-            "textContent": {
-                "boundObject": {"@": "linkTextInput"},
-                "boundObjectPropertyPath": "value",
-                "deferred": false
-            },
-            "href": {
-                "boundObject": {"@": "urlTextInput"},
-                "boundObjectPropertyPath": "value"
-            }
+            "textContent": {"<<->": "@linkTextInput.value", "deferred": false},
+            "href": {"<<->": "@urlTextInput.value"}
         }
     },
 
@@ -49,11 +42,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "data",
-                "oneway": true
-            }
+            "content": {"<-": "@owner.data"}
         }
     },
 
@@ -77,16 +66,8 @@
             "element": {"#": "link"}
         },
         "bindings": {
-            "href": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
-                "oneway": true
-            },
-            "textContent": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -97,26 +78,22 @@
             "element": {"#": "desc"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
-                "oneway": true
-            }
+            "value": {"<-": "@list1.objectAtCurrentIteration.description"}
         }
     },
 
-    "anchor-accordion1": {
+    "anchorAccordion1": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
-            "element": {"#": "anchor-accordion1"}
+            "element": {"#": "anchorAccordion1"}
         }
     },
-    "anchor-accordion2": {
+    "anchorAccordion2": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
-            "element": {"#": "anchor-accordion2"}
+            "element": {"#": "anchorAccordion2"}
         }
     },
 
@@ -133,8 +110,8 @@
             ]
         }
     }
-}
-    </script>
+
+    }</script>
 
     <style>
         .thumb {
@@ -188,7 +165,7 @@ a[icon="external"] {
                                         <p><a href="http://www.motorola.com" id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
                                      </div>
 
-                        <ul id="anchor-accordion1" class="accordion">
+                        <ul id="anchorAccordion1" class="accordion">
                              <li class="accordion-group">
                                  <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                  <div class="accordion-inner montage-hidden" >
@@ -284,7 +261,7 @@ a[icon="external"] {
                                     </tbody>
                                 </table>
 
-                       <ul id="anchor-accordion2" class="accordion">
+                       <ul id="anchorAccordion2" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >

@@ -126,6 +126,8 @@ if (typeof window !== "undefined") {
      @param config
      @param compiler
      */
+    var reverseReelExpression = /((.*)\.reel)\/\2$/;
+    var reverseReelFunction = function ($0, $1) { return $1 };
     exports.SerializationCompiler = function(config, compile) {
         return function(module) {
             compile(module);
@@ -134,22 +136,30 @@ if (typeof window !== "undefined") {
             var defaultFactory = module.factory;
             module.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
-                for (var symbol in exports) {
-                    var object = exports[symbol];
+                for (var name in exports) {
+                    var object = exports[name];
+                    // avoid attempting to initialize a non-object
+                    if (!(object instanceof Object)) {
                     // avoid attempting to reinitialize an aliased property
-                    if (object.hasOwnProperty("_montage_metadata")) {
-                        object._montage_metadata.aliases.push(symbol);
-                        object._montage_metadata.objectName = symbol;
+                    } else if (object.hasOwnProperty("_montage_metadata")) {
+                        object._montage_metadata.aliases.push(name);
+                        object._montage_metadata.objectName = name;
                     } else if (!Object.isSealed(object)) {
+                        var id = module.id.replace(
+                            reverseReelExpression,
+                            reverseReelFunction
+                        );
                         Object.defineProperty(
                             object,
                             "_montage_metadata",
                             {
                                 value: {
                                     require: require,
-                                    moduleId: module.id,
-                                    objectName: symbol,
-                                    aliases: [symbol],
+                                    module: id,
+                                    moduleId: id, // deprecated
+                                    property: name,
+                                    objectName: name, // deprecated
+                                    aliases: [name],
                                     isInstance: false
                                 }
                             }

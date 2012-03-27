@@ -28,7 +28,7 @@ if (typeof window !== "undefined") {
  */
 var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Serializer# */ {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
-    _serializedObjects: {value: {}}, // uuid -> string
+    _serializedObjects: {value: {}}, // label -> string
     _serializedReferences: {value: {}}, // uuid -> string
     _externalObjects: {value: null}, // label -> object
     _externalElements: {value: null},
@@ -38,6 +38,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     _objectNamesIndex: {value: null},
     _objectLabels: {value: null}, // uuid -> label
     _serializationUnits: {value: []},
+    _serializationUnitsIndex: {value: {}},
 
     serializeNullValues: {value: false},
 
@@ -48,7 +49,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
      @param {function} funktion The delegate function that creates the serialization unit. This function accepts the object being serialized as an argument and should return an object to be be JSON'd.
      */
     defineSerializationUnit: {value: function(name, funktion) {
-        this._serializationUnits.push({
+        this._serializationUnits.push(this._serializationUnitsIndex[name] = {
             name: name,
             funktion: funktion
         });
@@ -120,61 +121,117 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     },
 
     /**
-     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
+     This function is to be used in the context of serializeProperties delegate used for custom object serializations.
      It adds an entry to the "properties" serialization unit of the object being serialized.
      @function
      @param {string} name The name of the entry to be added.
      @param {string} value The value to be serialized.
      */
-    set: {value: function(name, value) {
-        var stack = this._objectStack;
-
-        return (stack[stack.length - 1][name] = value);
-    }},
-
-    /**
-     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
-     It adds an entry to the "properties" serialization unit of the object being serialized. The value for this entry will be stored as a reference only and not the value itself.
-     @function
-     @param {string} name The name of the entry to be added.
-     @param {string} value The value to be referenced.
-     */
-    setReference: {value: function(name, value) {
+    set: {value: function(name, value, type) {
         var stack = this._objectStack,
             stackElement = stack[stack.length - 1],
-            objectReferences = this._objectReferences,
-            uuid = stackElement.uuid;
+            objectReferences, uuid;
 
-        if (!(uuid in objectReferences)) {
-            objectReferences[uuid] = {};
+        stackElement[name] = value;
+        if (type === "reference") {
+            uuid = stackElement.uuid;
+            objectReferences = this._objectReferences;
+            if (!(uuid in objectReferences)) {
+                objectReferences[uuid] = {};
+            }
             objectReferences[uuid][name] = true;
         }
-
-        return (stackElement[name] = value);
     }},
 
     /**
-     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
+     This function is to be used in the context of serializeProperties delegate used for custom object serializations.
      It serializes all properties specified as part of the "properties" serialization unit.
      @function
      @param {array} propertyNames The array with the property names to be serialized.
      */
+    setAll: {value: function(propertyNames) {
+        var ix = this._objectStack.length - 2,
+            object = this._objectStack[ix];
+
+        if (!propertyNames) {
+            propertyNames = Montage.getSerializablePropertyNames(object);
+        }
+
+        for (var i = 0, l = propertyNames.length; i < l; i++) {
+            var propertyName = propertyNames[i];
+            this.set(propertyName, object[propertyName], Montage.getPropertyAttribute(object, propertyName, "serializable"));
+        }
+    }},
+
+    setProperty: {
+        value: function(name, value, type) {
+            var stack = this._objectStack,
+                stackElement = stack[stack.length - 1],
+                objectReferences, uuid;
+
+            stackElement.properties[name] = value;
+            if (type === "reference") {
+                objectReferences = this._objectReferences,
+                uuid = stackElement.properties.uuid;
+                if (!(uuid in objectReferences)) {
+                    objectReferences[uuid] = {};
+                }
+                objectReferences[uuid][name] = true;
+            }
+        }
+    },
+
     setProperties: {value: function(propertyNames) {
         var ix = this._objectStack.length - 2,
             object = this._objectStack[ix];
 
+        if (!propertyNames) {
+            propertyNames = Montage.getSerializablePropertyNames(object);
+        }
+
         for (var i = 0, l = propertyNames.length; i < l; i++) {
             var propertyName = propertyNames[i];
-            if (Montage.getPropertyAttribute(object, propertyName, "serializable") === "reference") {
-                this.setReference(propertyName, object[propertyName]);
-            } else {
-                this.set(propertyName, object[propertyName]);
-            }
+            this.setProperty(propertyName, object[propertyName], Montage.getPropertyAttribute(object, propertyName, "serializable"));
         }
     }},
 
+    setType: {
+        value: function(type, value) {
+            if (type === "object" || type === "prototype" || type === "value") {
+                var stack = this._objectStack,
+                stackElement = stack[stack.length - 1];
+
+                delete stackElement.prototype;
+                delete stackElement.object;
+                delete stackElement.value;
+                stackElement[type] = value;
+            }
+        }
+    },
+
+    setUnit: {
+        value: function(name) {
+            var stack = this._objectStack,
+                stackElement = stack[stack.length - 1];
+
+            if (stackElement._units.indexOf(name) === -1) {
+                stackElement._units.push(this._serializationUnitsIndex[name]);
+            }
+        }
+    },
+
+    setAllUnits: {
+        value: function() {
+            var stack = this._objectStack,
+                stackElement = stack[stack.length - 1];
+
+            stackElement._units.length = 0;
+            stackElement._units.push.apply(stackElement._units, this._serializationUnits);
+        }
+    },
+
     /**
-     This function is to be used in the context of serializeSelf delegate used for custom object serializations.
+     This function is to be used in the context of serializeProperties delegate used for custom object serializations.
      It adds an object to be serialized into the current serialization.
      @function
      @param {object} object The object to be serialized.
@@ -187,6 +244,23 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             this._serializedObjects[label] = {value: valueSerialization};
         }
     }},
+
+    addObjectReference: {
+        value: function(object) {
+            var label = this._getObjectLabel(object);
+
+            if (!this._serializedObjects[label]) {
+                this._externalObjects[label] = object;
+            }
+            return {"@": label};
+        }
+    },
+
+    getObjectLabel: {
+        value: function(object) {
+            return this._getObjectLabel(object);
+        }
+    },
 
     /**
      @private
@@ -216,7 +290,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
 
         for (var label in externalObjects) {
             var object = externalObjects[label];
-            if (this._serializedObjects[object.uuid]) {
+            if (this._serializedObjects[label]) {
                 delete externalObjects[label];
             }
         }
@@ -227,7 +301,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     /**
      Returns a list of the external elements that were referenced in the last serialization.
      @function
-     @returns {array} The arrat of external elements.
+     @returns {array} The array of external elements.
      */
     getExternalElements: {value: function() {
         return this._externalElements;
@@ -245,6 +319,13 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         for (var key in objects) {
             object = objects[key];
             propsString = [];
+            if ("prototype" in object) {
+                propsString.push('"prototype":' + object.prototype);
+                delete object.prototype;
+            } else if ("object" in object) {
+                propsString.push('"object":' + object.object);
+                delete object.object;
+            }
             for (var prop in object) {
                 propsString.push('"' + prop + '":' + object[prop]);
             }
@@ -269,8 +350,13 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         return label;
     }},
 
+    _labelRegexp: {
+        enumerable: false,
+        value: /^[a-zA-Z_$][0-9a-zA-Z_$]*$/
+    },
+
     _generateLabelForObject: {value: function(object) {
-        var objectName = object.identifier ||  Montage.getInfoForObject(object).objectName.toLowerCase(),
+        var objectName = (this._labelRegexp.test(object.identifier) ? object.identifier : null) ||  Montage.getInfoForObject(object).objectName.toLowerCase(),
             index = this._objectNamesIndex[objectName];
 
         if (index) {
@@ -282,17 +368,58 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         }
     }},
 
-    _applySerializationUnits: {value: function(serializedUnits, object) {
-        var units = this._serializationUnits,
-            value;
+    _applySerializationUnits: {value: function(serializedUnits, object, units) {
+        var value;
+
+        if (!units) {
+            units = this._serializationUnits;
+        }
 
         for (var i = 0, unit; (unit = units[i]); i++) {
-            value = unit.funktion(object);
+            value = unit.funktion(object, this);
             if (typeof value !== "undefined") {
                 serializedUnits[unit.name] = this._serializeValue(value, null, 2);
             }
         }
     }},
+
+    _isValueType: {
+        value: function(object) {
+            var typeOfObject = typeof object;
+
+            return object instanceof RegExp || object instanceof Element || Array.isArray(object) || Object.getPrototypeOf(object) === Object.prototype || object.constructor === Function || !(typeOfObject === "object" || typeOfObject === "function");
+        }
+    },
+
+    _applyTypeUnit: {
+        value: function(serializedUnits, object) {
+            if (this._isValueType(object)) {
+                serializedUnits.value = this._serializeValue(object);
+            } else {
+                var objectInfo = Montage.getInfoForObject(object),
+                    moduleId = this._require.identify(
+                        objectInfo.moduleId,
+                        objectInfo.require
+                    ),
+                    name = objectInfo.objectName;
+
+                this._findObjectNameRegExp.test(moduleId);
+                var defaultName = RegExp.$1.replace(this._toCamelCaseRegExp, this._replaceToCamelCase);
+
+                if (defaultName === name) {
+                    name = moduleId;
+                } else {
+                    name = moduleId + "[" + name + "]";
+                }
+
+                if (objectInfo.isInstance) {
+                    serializedUnits.prototype = this._serializeValue(name);
+                } else {
+                    serializedUnits.object = this._serializeValue(name);
+                }
+            }
+        }
+    },
 
     /**
     @private
@@ -322,7 +449,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         serializedReference = '{"@":"' + label + '"}';
 
         if (type === "reference") {
-            if (!this._serializedObjects[object.uuid]) {
+            if (!this._serializedObjects[label]) {
                 this._externalObjects[label] = object;
             }
         } else {
@@ -352,10 +479,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 serializedUnits.object = this._serializeValue(name);
             }
 
-            if (typeof object.serializeSelf === "function") {
+            if (typeof object.serializeProperties === "function") {
                 this._pushContextObject(object);
                 this._pushContextObject({});
-                object.serializeSelf(this, Montage.getSerializablePropertyNames(object));
+                object.serializeProperties(this, Montage.getSerializablePropertyNames(object));
                 serializedUnits.properties = this._serializeObjectLiteral(this._popContextObject(), null, 3);
                 this._popContextObject();
             } else {
@@ -387,30 +514,58 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     /**
      @private
      */
-    _serializeValue: {value: function(value, type) {
-        var indent = arguments[2] || 0;
-        // typeof regexp will be "function" on WebKit because it's a callable
-        // object.
-        // http://www.mail-archive.com/es-discuss@mozilla.org/msg02824.html
-        // https://bugs.webkit.org/show_bug.cgi?id=22082
-        if (value instanceof RegExp) {
-            return this._serializeRegExp(value);
-        } else if (value && (typeof value === "object" || typeof value === "function")) {
-            if (Element && value instanceof Element) {
-                return this._serializeElement(value);
-            } else if (Array.isArray(value)) {
-                return this._serializeArray(value, indent + 1);
-            } else if (Object.getPrototypeOf(value) === Object.prototype) {
-                return this._serializeObjectLiteral(value, null, indent + 1);
-            } else if (value.constructor === Function) {
-                return this._serializeFunction(value, indent);
+    _serializeValue: {value: function(value, type, indent) {
+        var indent = arguments[2] || 0,
+            typeOfValue = typeof value;
+
+            // typeof regexp will be "function" on WebKit because it's a callable
+            // object.
+            // http://www.mail-archive.com/es-discuss@mozilla.org/msg02824.html
+            // https://bugs.webkit.org/show_bug.cgi?id=22082
+            if (value instanceof RegExp) {
+                return this._serializeRegExp(value);
+            } else if (value != null && typeOfValue === "object" || typeOfValue === "function") {
+                if (Element && value instanceof Element) {
+                    return this._serializeElement(value);
+                } else if (Array.isArray(value)) {
+                    return this._serializeArray(value, indent + 1);
+                } else if (Object.getPrototypeOf(value) === Object.prototype) {
+                    return this._serializeObjectLiteral(value, null, indent + 1);
+                } else if (value.constructor === Function) {
+                    return this._serializeFunction(value, indent);
+                } else {
+                    // TODO: should refactor this to handle references here, doesn't make
+                    //       sense to wait until it hits _serializeObject for that to happen
+                    //       if we already have that information here, also, we need to
+                    //       support references to values in the future, not just objects.
+                    if (typeof value.serializeSelf === "function" && !(value.uuid in this._serializedReferences)) {
+                        return this._customSerialization(value, indent + 1);
+                    } else {
+                        return this._serializeObject(value, null, type);
+                    }
+                }
             } else {
-                return this._serializeObject(value, null, type);
+                return JSON.stringify(value);
             }
-        } else {
-            return JSON.stringify(value);
-        }
     }},
+
+    _customSerialization: {
+        value: function(object, indent) {
+            this._pushContextObject(object);
+            this._pushContextObject({properties: {}, _units: []});
+            var newObject = object.serializeSelf(this);
+            var objectDescriptor = this._popContextObject();
+            this._popContextObject();
+
+            if (typeof newObject === "undefined") {
+                return this._serializeValueWithDescriptor(object, objectDescriptor, indent);
+            } else {
+                // make sure the new returned object is serialized under the same label
+                this._objectLabels[newObject.uuid] = this._objectLabels[object.uuid]
+                return this._serializeValue(newObject, indent);
+            }
+        }
+    },
 
     /**
      @private
@@ -478,17 +633,58 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         return "[\n" + space + serializedElements.join(",\n" + space) + "]";
     }},
 
-    _serializeFunction: {value: function(funktion) {
-        var indent = arguments[1] || 0;
-        var space = new Array(indent + 1).join("  ");
-        var string = funktion.toString();
+    _serializeFunctionRegexp: {
+        enumerable: false,
+        value: /^function[^(]*\(([^\)]+)\)\s*\{([\s\S]*)\}$/m
+    },
 
-        var parseString = /^function[^(]*\(([^\)]+)\)\s*\{([\s\S]*)\}$/m.exec(string);
+    _serializeFunction: {value: function(funktion) {
+        var indent = arguments[1] || 0,
+            space = new Array(indent + 1).join("  "),
+            string = funktion.toString(),
+            parseString = this._serializeFunctionRegexp.exec(string);
+
         return this._serializeValue({"->": {arguments: parseString[1].split(/\s*,\s*/), body: parseString[2]}}, null, indent);
-    }}
+    }},
+
+    _serializeValueWithDescriptor: {
+        value: function(object, objectDescriptor, indent) {
+            var label;
+
+            if (!("prototype" in objectDescriptor || "object" in objectDescriptor || "value" in objectDescriptor)) {
+                this._applyTypeUnit(objectDescriptor, object);
+            }
+
+            if ("value" in objectDescriptor) {
+                return this._serializeValue(objectDescriptor.value);
+            } else {
+                objectDescriptor.properties = this._serializeObjectLiteral(objectDescriptor.properties, null, 3);
+                if (units = /* assignment */ objectDescriptor._units) {
+                    delete objectDescriptor._units;
+                    this._applySerializationUnits(objectDescriptor, object, units);
+                }
+                label = this._getObjectLabel(object);
+                this._serializedObjects[label] = objectDescriptor;
+                return this._serializedReferences[object.uuid] = '{"@":"' + label + '"}';
+            }
+        }
+    },
 });
 
+/**
+Creates a serialization for an object from the perspective of the
+given package.
+@function
+@param {Object} object
+@param require
+@returns serialization
+*/
+function serialize(object, require) {
+    return Serializer.create().initWithRequire(require).serializeObject(object);
+}
 
 if (typeof exports !== "undefined") {
     exports.Serializer = Serializer;
+    exports.serialize = serialize;
 }
+

@@ -41,10 +41,11 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
             return this._element;
         },
         set: function(value) {
-            //var component = Object.getPrototypeOf(NativeControl);
-            // call super set
             Object.getPropertyDescriptor(Component, "element").set.call(this, value);
-            this.didSetElement();
+
+            if (value) {
+                this.didSetElement();
+            }
         }
     },
 
@@ -207,7 +208,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                     this["_"+attributeName] = this._elementAttributeDescriptors[attributeName].value;
                 }
             }
-
+            this.needsDraw = true;
         }
     },
 
@@ -240,12 +241,9 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
 
                         }
                     }
-
+                    delete this._elementAttributeValues[attributeName];
                 }
             }
-            // the values have been flushed to the DOM.
-            this._elementAttributeValues = {};
-
         }
     }
 });

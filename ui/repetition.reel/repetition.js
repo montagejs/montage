@@ -490,7 +490,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Function} callback The callback method.
     */
     expandComponent: {value: function expandComponent(callback) {
-        this._setupIterationTemplate();
+        if (!this._refreshingItems) {
+            this._setupIterationTemplate();
+        }
         this._isComponentExpanded = true;
         if (callback) {
             callback();
@@ -1132,8 +1134,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @function
     */
     setupIterationDeserialization: {value: function() {
-        //        Montage.defineProperty(this, "deserializeSelf", {value: this.deserializeIteration});
-        this.deserializeSelf = this.deserializeIteration;
+        //        Montage.defineProperty(this, "deserializeProperties", {value: this.deserializeIteration});
+        this.deserializeProperties = this.deserializeIteration;
     }},
 /**
     Description TODO
@@ -1212,13 +1214,13 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     @param {Property} serializer TODO
     */
     serializeIteration: {value: function(serializer) {
-        serializer.set("element", this.element);
+        serializer.setProperty("element", this.element);
         var childComponents = this.childComponents;
         for (var i = 0, l = childComponents.length; i < l; i++) {
             serializer.addObject(childComponents[i]);
         }
         // iterations are already expanded
-        serializer.set("_isComponentExpanded", true);
+        serializer.setProperty("_isComponentExpanded", true);
     }},
 /**
     Description TODO

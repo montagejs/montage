@@ -3,8 +3,8 @@
     <head>
         <title>Button Group Sandbox</title>
         <script src="../../../montage.js" ></script>
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "bold": {
         "module": "montage/ui/toggle-button.reel",
         "name": "ToggleButton",
@@ -43,21 +43,9 @@
             "element": {"#": "display"}
         },
         "bindings": {
-            "bold": {
-                "boundObject": {"@": "bold"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            },
-            "italic": {
-                "boundObject": {"@": "italic"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            },
-            "underline": {
-                "boundObject": {"@": "underline"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            }
+            "bold": {"<-": "@bold.pressed"},
+            "italic": {"<-": "@italic.pressed"},
+            "underline": {"<-": "@underline.pressed"}
         }
     },
 
@@ -79,25 +67,25 @@
         ]
     },
 
-    "toggle-accordion1": {
+    "toggleAccordion1": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
-            "element": {"#": "toggle-accordion1"}
+            "element": {"#": "toggleAccordion1"}
         }
     },
-    "toggle-accordion2": {
+    "toggleAccordion2": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
-            "element": {"#": "toggle-accordion2"}
+            "element": {"#": "toggleAccordion2"}
         }
     },
-    "toggle-accordion3": {
+    "toggleAccordion3": {
         "module": "accordion.reel",
         "name": "Accordion",
         "properties": {
-            "element": {"#": "toggle-accordion3"}
+            "element": {"#": "toggleAccordion3"}
         }
     },
 
@@ -117,8 +105,8 @@
             "display": {"@": "display"}
         }
     }
-}
-    </script>
+
+    }</script>
     <style type="text/css">
         .font-styles button {
             height: 2.5em;
@@ -152,7 +140,7 @@
             </div>
 
             <section>
-                       <ul id="toggle-accordion1" class="accordion">
+                       <ul id="toggleAccordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
@@ -277,7 +265,7 @@ exports.StyleElement = Montage.create(Component, {
                 </div>
 
                 <section>
-                                       <ul id="toggle-accordion2" class="accordion">
+                                       <ul id="toggleAccordion2" class="accordion">
                                             <li class="accordion-group">
                                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                                 <div class="accordion-inner montage-hidden" >
@@ -346,7 +334,7 @@ exports.StyleElement = Montage.create(Component, {
 
                 <section>
 
-                                           <ul id="toggle-accordion3" class="accordion">
+                                           <ul id="toggleAccordion3" class="accordion">
                                                 <li class="accordion-group">
                                                     <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                                     <div class="accordion-inner montage-hidden" >

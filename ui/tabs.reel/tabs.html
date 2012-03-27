@@ -8,8 +8,8 @@
     <head>
         <title></title>
         <link rel="stylesheet" type="text/css" href="tabs.css">
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "navController": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
@@ -18,11 +18,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "tabs",
-                "oneway": true
-            }
+            "content": {"<-": "@owner.tabs"}
         }
     },
 
@@ -56,15 +52,11 @@
             }
         },
         "bindings": {
-            "selectedTabs": {
-                "boundObject": {"@": "navController"},
-                "boundObjectPropertyPath": "selectedObjects",
-                "oneway": true
-            }
+            "selectedTabs": {"<-": "@navController.selectedObjects"}
         }
     }
-}
-    </script>
+
+    }</script>
 
     </head>
 <body>

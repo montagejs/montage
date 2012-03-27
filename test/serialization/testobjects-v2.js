@@ -46,14 +46,14 @@ exports.DistinctLiteralProp = Montage.create(Montage, {
     prop: {value: {}, serializable: true, distinct: true}
 });
 
-exports.Custom = Montage.create(Montage, {
+exports.CustomProperties = Montage.create(Montage, {
     manchete: {value: 42},
 
-    serializeSelf: {value: function(serializer) {
+    serializeProperties: {value: function(serializer) {
         serializer.set("manchete", 226);
     }},
 
-    deserializeSelf: {value: function(serializer) {
+    deserializeProperties: {value: function(serializer) {
         this.manchete = serializer.get("manchete");
     }}
 });
@@ -61,18 +61,18 @@ exports.Custom = Montage.create(Montage, {
 exports.CustomRef = Montage.create(Montage, {
     object: {value: exports.Empty.create()},
 
-    serializeSelf: {value: function(serializer) {
-        serializer.setReference("object", this.object);
+    serializeProperties: {value: function(serializer) {
+        serializer.set("object", this.object, "reference");
     }},
 
-    deserializeSelf: {value: function(serializer) {
+    deserializeProperties: {value: function(serializer) {
         this.object = serializer.get("object");
     }}
 });
 
 exports.Singleton = Montage.create(Montage, {
     instance: {value: {another: "object"}},
-    deserializeSelf: {value: function(serializer) {
+    deserializeProperties: {value: function(serializer) {
         this.manchete = serializer.get("manchete");
         return this.instance;
     }}
@@ -91,6 +91,17 @@ exports.Comp = Montage.create(Montage, {
     }},
 });
 
+exports.Custom = Montage.create(Montage, {
+    number: {
+        serializable: true,
+        value: 42
+    }
+});
+
+exports.CustomDeserialization = Montage.create(exports.TwoProps, {
+
+});
+
 exports.objects = {
     Empty: exports.Empty,
     Simple: exports.Simple,
@@ -99,8 +110,10 @@ exports.objects = {
     SerializableAttribute: exports.SerializableAttribute,
     DistinctArrayProp: exports.DistinctArrayProp,
     DistinctLiteralProp: exports.DistinctLiteralProp,
-    Custom: exports.Custom,
+    CustomProperties: exports.CustomProperties,
     CustomRef: exports.CustomRef,
     Singleton: exports.Singleton,
-    Comp: exports.Comp
+    Comp: exports.Comp,
+    Custom: exports.Custom,
+    CustomDeserialization: exports.CustomDeserialization
 };

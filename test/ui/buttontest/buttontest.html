@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>ButtonTest</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "divbutton": {
         "module": "montage/ui/button.reel",
         "name": "Button",
@@ -110,10 +110,7 @@
             "converter": {"@": "uppercaseconverter"}
         },
         "bindings": {
-            "label": {
-                "boundObject": {"@": "textinput"},
-                "boundObjectPropertyPath": "value"
-            }
+            "label": {"<<->": "@textinput.value"}
         }
     },
     "uppercaseconverter": {
@@ -173,11 +170,11 @@
         ]
     },
 
-    "buttonwithinput": {
+    "loggingbutton": {
         "module": "montage/ui/button.reel",
         "name": "Button",
         "properties": {
-            "element": {"#": "buttonwithinput"}
+            "element": {"#": "loggingbutton"}
         },
         "listeners": [
             {
@@ -229,8 +226,8 @@
             "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body>
@@ -285,6 +282,6 @@
 
     <input type="button" value="regular button" onclick="alert('hello');" />
 
-    <button id="buttonwithinput"><input type="text" id="stupidinput"/></button>
+    <button id="loggingbutton">Logging button</button>
 </body>
 </html>

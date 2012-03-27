@@ -10,8 +10,8 @@
     <title>EffectsPanel</title>
     <link rel="stylesheet" type="text/css" href="effects-panel.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "invertToggle": {
                 "module": "montage/ui/toggle-button.reel",
                 "name": "ToggleButton",
@@ -22,10 +22,7 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.inverted"
-                    }
+                    "pressed": {"<<->": "@owner.editor.inverted"}
                 }
             },
             "desaturateToggle": {
@@ -38,10 +35,7 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.desaturated"
-                    }
+                    "pressed": {"<<->": "@owner.editor.desaturated"}
                 }
             },
             "multiplyControl": {
@@ -54,14 +48,8 @@
                     "maxValue": 20
                 },
                 "bindings": {
-                    "enabled": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.multiplyEffect"
-                    },
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.multiplyMultiplier"
-                    }
+                    "enabled": {"<<->": "@owner.editor.multiplyEffect"},
+                    "value": {"<<->": "@owner.editor.multiplyMultiplier"}
                 }
             },
             "colorInfoPanel": {
@@ -71,14 +59,8 @@
                     "element": {"#": "colorInfoPanel"}
                 },
                 "bindings": {
-                    "pointMonitorController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.pointMonitorController"
-                    },
-                    "editor": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor"
-                    }
+                    "pointMonitorController": {"<<->": "@owner.editor.pointMonitorController"},
+                    "editor": {"<<->": "@owner.editor"}
                 }
             },
 
@@ -89,10 +71,7 @@
                     "element": {"#": "photoInfoPanel"}
                 },
                 "bindings": {
-                    "photo": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.photo"
-                    }
+                    "photo": {"<<->": "@owner.editor.photo"}
                 }
             },
 
@@ -103,8 +82,8 @@
                     "element": {"#": "EffectsPanel"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>
