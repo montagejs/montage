@@ -96,7 +96,7 @@
                             "value": {"<-": "@owner.resultHex"}
                         }
                     },
-                    
+
                     "accordion1": {
                         "module": "accordion.reel",
                         "name": "Accordion",
@@ -104,7 +104,7 @@
                             "element": {"#": "slider-polyfill-accordion1"}
                         }
                     },
-                    
+
 
                 "reset": {
                     "module": "montage/ui/button.reel",
@@ -120,7 +120,7 @@
                         }
                     ]
                 }
-            
+
     }</script>
 
         <style>
@@ -144,6 +144,12 @@
             }
             #reset {
                 margin-top: 10px;
+            }
+
+            .slider-polyfill-example .control label {
+                width: 50px;
+                padding: 0;
+                text-align: left;
             }
         </style>
     </head>
@@ -172,17 +178,17 @@
 
                         <section class="control">
                             <section>
-                                Red:
+                                <label>Red:</label>
                                 <input id="color-red" type="range" min="0" max="15"  value="0"/>
                                 <span id="redValue" class="range-value"></span>
                             </section>
                             <section>
-                                Green:
+                                <label>Green:</label>
                                 <input id="color-green" type="range" min="0" max="15" value="0" />
                                 <span id="greenValue" class="range-value"/>
                             </section>
                             <section>
-                                Blue:
+                                <label>Blue:</label>
                                 <input id="color-blue" type="range" min="0" max="15" value="0" />
                                 <span id="blueValue" class="range-value" />
                             </section>
@@ -194,10 +200,10 @@
                     </div>
                 </div>
             </div>
-            
-            
+
+
             <section>
-                
+
                 <ul id="slider-polyfill-accordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
@@ -423,7 +429,7 @@ exports.SliderPolyfillExample = Montage.create(Component, {
                        </div>
                    </li>
                 </ul>
-                
+
             </section>
 
             <section>

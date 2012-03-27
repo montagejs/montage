@@ -78,14 +78,12 @@ var Notifier = exports.Notifier = Montage.create(Component, /** @lends module:"m
                 popup = Popup.create();
                 this.popup = popup;
                 popup.type = 'notify';
-                popup.boxed = false;
                 this.application._notifyPopup = popup;
 
                 notifier = Notifier.create();
                 popup.content = notifier;
             }
             notifier = popup.content;
-            //popup.modal = !!modal;
             notifier.msg = msg;
 
             if (!position) {
@@ -100,7 +98,7 @@ var Notifier = exports.Notifier = Montage.create(Component, /** @lends module:"m
 
             if(timeout) {
                 timeout = parseInt(timeout, 10) || 3000;
-                popup.autoDismiss = timeout;
+                popup.autoHide = timeout;
             }
 
             popup.show();
