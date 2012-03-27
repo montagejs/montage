@@ -1,0 +1,7 @@
+{
+    "name": "flow-scrolling-test",
+    "version": "0.0.0",
+    "mappings": {
+        "montage": "../../../../"
+    }
+}

@@ -91,6 +91,155 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _scrollingTransitionDurationMiliseconds: {
+        enumerable: false,
+        value: 500
+    },
+
+    _scrollingTransitionDuration: {
+        enumerable: false,
+        value: "500ms"
+    },
+
+    scrollingTransitionDuration: { // TODO: think about using the Date Converter
+        get: function () {
+            return this._scrollingTransitionDuration;
+        },
+        set: function (duration) {
+            var durationString = duration + "",
+                length = durationString.length,
+                value;
+
+            if ((length >= 2) && (durationString[length - 1] === "s")) {
+                if ((length >= 3) && (durationString[length - 2] === "m")) {
+                    value = durationString.substr(0, length - 2) - 0;
+                } else {
+                    value = durationString.substr(0, length - 1) * 1000;
+                }
+            } else {
+                value = durationString - 0;
+                durationString += "ms";
+            }
+            if (!isNaN(value) && (this._scrollingTransitionDurationMiliseconds !== value)) {
+                this._scrollingTransitionDurationMiliseconds = value;
+                this._scrollingTransitionDuration = durationString;
+            }
+        }
+    },
+
+    _scrollingTransitionTimingFunctionBezier: {
+        enumerable: false,
+        value: [.25, .1, .25, 1]
+    },
+
+    _scrollingTransitionTimingFunction: {
+        enumerable: false,
+        value: "ease"
+    },
+
+    _timingFunctions: {
+        enumerable: false,
+        value: {
+            "ease": [.25, .1, .25, 1],
+            "linear": [0, 0, 1, 1],
+            "ease-in": [.42, 0, 1, 1],
+            "ease-out": [0, 0, .58, 1],
+            "ease-in-out": [.42, 0, .58, 1]
+        }
+    },
+
+    scrollingTransitionTimingFunction: {
+        get: function () {
+            return this._scrollingTransitionTimingFunction;
+        },
+        set: function (timingFunction) {
+            var string = timingFunction + "";
+
+            if (this._timingFunctions.hasOwnProperty(string)) {
+                this._scrollingTransitionTimingFunction = string;
+                this._scrollingTransitionTimingFunctionBezier = this._timingFunctions[string];
+            } else {
+                if ((string.substr(0, 13) === "cubic-bezier(") && (string.substr(string.length - 1, 1) === ")")) {
+                    var bezier = string.substr(13, string.length - 14).split(","),
+                        i;
+
+                    if (bezier.length === 4) {
+                        for (i = 0; i < 4; i++) {
+                            bezier[i] -= 0;
+                            if (isNaN(bezier[i])) {
+                                return;
+                            }
+                        }
+                        if (bezier[0] < 0) {
+                            bezier[0] = 0;
+                        } else {
+                            if (bezier[0] > 1) {
+                                bezier[0] = 1;
+                            }
+                        }
+                        if (bezier[2] < 0) {
+                            bezier[2] = 0;
+                        } else {
+                            if (bezier[2] > 1) {
+                                bezier[2] = 1;
+                            }
+                        }
+                        // TODO: check it is not the same bezier
+                        this._scrollingTransitionTimingFunction = "cubic-bezier(" + bezier + ")";
+                        this._scrollingTransitionTimingFunctionBezier = bezier;
+                    }
+                }
+            }
+        }
+    },
+
+    _computeCssCubicBezierValue: {
+        enumerable: false,
+        value: function (x, bezier) {
+            var t = .5,
+                step = .25,
+                t2,
+                k,
+                i;
+
+            for (i = 0; i < 20; i++) { // TODO: optimize with Newton's method or similar
+                t2 = t * t;
+                k = 1 - t;
+                if ((3 * (k * k * t * bezier[0] + k * t2 * bezier[2]) + t2 * t) > x) {
+                    t -= step;
+                } else {
+                    t += step;
+                }
+                step *= .5;
+            }
+            t2 = t * t;
+            k = 1 - t;
+            return 3 * (k * k * t * bezier[1] + k * t2 * bezier[3]) + t2 * t;
+        }
+    },
+
+    startScrollingIndexToOffset: { // TODO: rewrite using draw cycle based animation
+        value: function (index, offset) {
+            var self = this;
+
+            this._scrollingOrigin = this.origin;
+            this._scrollingDestination = (index - offset) * this._scale;
+            this._isScrolling = true;
+            this._scrollingStartTime = Date.now();
+            this._scrollingInterval = window.setInterval(function () {
+                var time = (Date.now() - self._scrollingStartTime) / self._scrollingTransitionDurationMiliseconds, // TODO: division by zero
+                    interpolant = self._computeCssCubicBezierValue(time, self._scrollingTransitionTimingFunctionBezier);
+
+                if (time < 1) {
+                    self.origin = self._scrollingOrigin + (self._scrollingDestination - self._scrollingOrigin) * interpolant;
+                } else {
+                    self.origin = self._scrollingDestination;
+                    window.clearInterval(self._scrollingInterval);
+                }
+            }, 8);
+        }
+    },
+
     _isCameraUpdated: {
         enumerable: false,
         value: true
@@ -362,7 +511,6 @@ var Flow = exports.Flow = Montage.create(Component, {
 
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
-
             for (i = 0; i < intersections.length; i++) {
                 for (j = Math.ceil(intersections[i][0] + this._origin/this._scale); j < intersections[i][1] + this._origin/this._scale; j++) {
                     newIndexMap.push(j);
@@ -543,6 +691,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     _repetitionDraw: {
         enumerable: false,
         value: function () {
+            this.needsDraw = true;  // TODO: Review this causing continous redraw
         }
     },
 
