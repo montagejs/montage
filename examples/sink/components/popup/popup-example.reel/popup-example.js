@@ -135,38 +135,6 @@ exports.PopupExample = Montage.create(Component, {
         }
     },
 
-    // Custom Alert/Message
-    handleMessage_reply: {
-        value: function(e) {
-            this.log(e.detail);
-            this.messagePopup.hide();
-        }
-    },
-    handleMessage_close: {
-        value: function(e) {
-            this.log(e.detail);
-            this.messagePopup.hide();
-        }
-    },
-    handleShowMessagePopupAction: {
-        value: function(evt) {
-            var self = this, popup = this.messagePopup;
-            if(!popup) {
-                popup = Popup.create();
-                popup.content = this.customMessage;
-                popup.anchor = this.btnShowMessage;
-
-                this.messagePopup = popup;
-
-                this.customMessage.addEventListener('message_reply', this);
-                this.customMessage.addEventListener('message_close', this);
-            }
-
-            popup.show();
-            evt.stopPropagation();
-        }
-    },
-
     // Critical Error Dialog
     _criticalErrorPopup: {value: null},
     handleMessage_restart: {
