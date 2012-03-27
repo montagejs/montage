@@ -387,7 +387,7 @@ Button.addAttributes( /** @lends module:"montage/ui/button.reel".Button# */{
 
 /**
     The value of the id attribute of the form with which to associate the component's element.
-    @type string}
+    @type {string}
     @default null
 */
     form: null,
