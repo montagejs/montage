@@ -11,8 +11,7 @@
     <title>RichText Editor Test</title>
     <link rel="stylesheet" href="rich-text-editor-test.css" />
     <script src="../../../../montage.js"></script>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
             "undoManager": {
                 "object": "montage/core/undo-manager[defaultUndoManager]"
             },
@@ -39,31 +38,11 @@
                     }
                 ],
                 "bindings": {
-                    "justify": {
-                        "boundObject": {"@": "justify"},
-                        "boundObjectPropertyPath": "contentController.selectedIndexes",
-                        "converter": {"@": "indexesConverter"}
-                    },
-                    "fontName": {
-                        "boundObject": {"@": "fontname"},
-                        "boundObjectPropertyPath": "contentController.selectedIndexes",
-                        "converter": {"@": "fontnameConverter"}
-                    },
-                    "fontSize": {
-                        "boundObject": {"@": "fontsize"},
-                        "boundObjectPropertyPath": "contentController.selectedIndexes",
-                        "converter": {"@": "fontsizeConverter"}
-                    },
-                    "backColor": {
-                        "boundObject": {"@": "backcolor"},
-                        "boundObjectPropertyPath": "contentController.selectedIndexes",
-                        "converter": {"@": "backcolorConverter"}
-                    },
-                    "foreColor": {
-                        "boundObject": {"@": "forecolor"},
-                        "boundObjectPropertyPath": "contentController.selectedIndexes",
-                        "converter": {"@": "forecolorConverter"}
-                    }
+                    "justify": {"<<->": "@justify.contentController.selectedIndexes", "converter": {"@": "indexesConverter"}},
+                    "fontName": {"<<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
+                    "fontSize": {"<<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}},
+                    "backColor": {"<<->": "@backcolor.contentController.selectedIndexes", "converter": {"@": "backcolorConverter"}},
+                    "foreColor": {"<<->": "@forecolor.contentController.selectedIndexes", "converter": {"@": "forecolorConverter"}}
                 }
             },
 
@@ -74,10 +53,7 @@
                     "element": {"#": "boldToggle"}
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "bold"
-                    }
+                    "pressed": {"<<->": "@editor.bold"}
                 }
             },
 
@@ -88,10 +64,7 @@
                     "element": {"#": "underlineToggle" }
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "underline"
-                    }
+                    "pressed": {"<<->": "@editor.underline"}
                 }
             },
 
@@ -102,10 +75,7 @@
                     "element": {"#": "italicToggle" }
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "italic"
-                    }
+                    "pressed": {"<<->": "@editor.italic"}
                 }
             },
 
@@ -116,10 +86,7 @@
                     "element": {"#": "strikeToggle" }
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "strikeThrough"
-                    }
+                    "pressed": {"<<->": "@editor.strikeThrough"}
                 }
             },
 
@@ -139,11 +106,7 @@
                     "element": {"#": "subToggle" }
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "baselineShift",
-                        "converter": {"@": "subscriptConverter"}
-                    }
+                    "pressed": {"<<->": "@editor.baselineShift", "converter": {"@": "subscriptConverter"}}
                 }
             },
 
@@ -163,11 +126,7 @@
                     "element": {"#": "supToggle" }
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "baselineShift",
-                        "converter": {"@": "superscriptConverter"}
-                    }
+                    "pressed": {"<<->": "@editor.baselineShift", "converter": {"@": "superscriptConverter"}}
                 }
             },
 
@@ -219,11 +178,7 @@
                     "element": {"#": "unorderedlistToggle" }
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "listStyle",
-                        "converter": {"@": "unorderedListConverter"}
-                    }
+                    "pressed": {"<<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
                 }
             },
 
@@ -243,11 +198,7 @@
                     "element": {"#": "orderedlistToggle" }
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "listStyle",
-                        "converter": {"@": "orderedListConverter"}
-                    }
+                    "pressed": {"<<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
                 }
             },
 
@@ -454,16 +405,8 @@
                     "preventFocus": true
                 },
                 "bindings": {
-                    "enabled": {
-                        "boundObject": {"@": "delegate"},
-                        "boundObjectPropertyPath": "undoManager.canUndo",
-                        "oneway": true
-                    },
-                    "title": {
-                        "boundObject": {"@": "delegate"},
-                        "boundObjectPropertyPath": "undoManager.undoLabel",
-                        "oneway": true
-                    }
+                    "enabled": {"<-": "@delegate.undoManager.canUndo"},
+                    "title": {"<-": "@delegate.undoManager.undoLabel"}
                 },
                 "listeners": [
                     {
@@ -483,16 +426,8 @@
                     "preventFocus": true
                 },
                 "bindings": {
-                    "enabled": {
-                        "boundObject": {"@": "delegate"},
-                        "boundObjectPropertyPath": "undoManager.canRedo",
-                        "oneway": true
-                    },
-                    "title": {
-                        "boundObject": {"@": "delegate"},
-                        "boundObjectPropertyPath": "undoManager.redoLabel",
-                        "oneway": true
-                    }
+                    "enabled": {"<-": "@delegate.undoManager.canRedo"},
+                    "title": {"<-": "@delegate.undoManager.redoLabel"}
                 },
                 "listeners": [
                     {
@@ -510,10 +445,7 @@
                     "element": {"#": "checkbox-readonly"}
                 },
                 "bindings": {
-                    "checked": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "readOnly"
-                    }
+                    "checked": {"<<->": "@editor.readOnly"}
                 }
             },
 
@@ -542,11 +474,7 @@
                     "showSource": {"@": "checkboxSource"}
                 },
                 "bindings": {
-                    "readOnly": {
-                        "boundObject": {"@": "checkboxReadonly"},
-                        "boundObjectPropertyPath": "checked",
-                        "oneway": true
-                    }
+                    "readOnly": {"<-": "@checkboxReadonly.checked"}
                 }
             },
 
@@ -557,8 +485,7 @@
                     "delegate": {"@": "delegate"}
                 }
             }
-        }
-    </script>
+    }</script>
 </head>
 <body>
     <header>
