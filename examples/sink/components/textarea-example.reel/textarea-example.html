@@ -172,10 +172,7 @@
             "element": {"#": "textarea-example"}
         },
         "bindings": {
-            "info": {
-                "boundObject": {"@": "info"},
-                "boundObjectPropertyPath": "value"
-            }
+            "info": {"&lt;&lt;-&gt;": "@info.value"}
         }
     },
 
@@ -186,16 +183,8 @@
             "element": {"#": "fname"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "firstName",
-                "oneway": false
-            },
-            "title": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "firstName",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.firstName"},
+            "title": {"&lt;&lt;-&gt;": "@owner.firstName"}
         }
     },
 
@@ -206,11 +195,7 @@
             "element": {"#": "lname"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "lastName",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.lastName"}
         }
     },
     "info": {

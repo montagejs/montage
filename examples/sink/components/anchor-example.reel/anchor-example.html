@@ -190,14 +190,8 @@ a[icon="external"] {
        "element": {"#": "link1"}
    },
    "bindings": {
-       "textContent": {
-           "boundObject": {"@": "linkTextInput"},
-           "boundObjectPropertyPath": "value"
-       },
-       "href": {
-           "boundObject": {"@": "urlTextInput"},
-           "boundObjectPropertyPath": "value"
-       }
+       "textContent": {"&lt;&lt;-&gt;": "@linkTextInput.value"},
+       "href": {"&lt;&lt;-&gt;": "@urlTextInput.value"}
    }
 },
 
@@ -296,11 +290,7 @@ a[icon="external"] {
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "data",
-                "oneway": true
-            }
+            "content": {"&lt;-": "@owner.data"}
         }
     },
 
@@ -324,16 +314,8 @@ a[icon="external"] {
             "element": {"#": "link"}
         },
         "bindings": {
-            "href": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
-                "oneway": true
-            },
-            "textContent": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "href": {"&lt;-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"&lt;-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -344,11 +326,7 @@ a[icon="external"] {
             "element": {"#": "desc"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
-                "oneway": true
-            }
+            "value": {"&lt;-": "@list1.objectAtCurrentIteration.description"}
         }
     },
 
