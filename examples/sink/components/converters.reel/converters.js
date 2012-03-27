@@ -53,14 +53,6 @@ exports.Converters = Montage.create(Component, {
         value: null
     },
 
-    deserializedFromTemplate: {
-        enumerable: false,
-        value: function() {
-            this.$number = document.querySelector('#txt-number');
-            this.$currencyValue = document.querySelector('#txt-cur-value');
-        }
-    },
-
     applyNumberFormat: {
         value: function(evt) {
             var value = this.$number.value;

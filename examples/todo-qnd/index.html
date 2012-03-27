@@ -37,18 +37,18 @@
     }</script>
 </head>
 <body>
-    <div id="todoapp">
+    <div data-montage-id="todoapp">
         <div class="title">
             <h1>
                 Todos
             </h1>
         </div>
         <div class="content">
-            <div id="create-todo">
-                <input id="new-todo" placeholder="What needs to be done?" type="text"> <span class="ui-tooltip-top" style="display:none;">Press Enter to save this task</span>
+            <div data-montage-id="create-todo" class="create-todo">
+                <input data-montage-id="new-todo" placeholder="What needs to be done?" type="text"> <span class="ui-tooltip-top" style="display:none;">Press Enter to save this task</span>
             </div>
-            <div id="todos">
-                <ul style="margin-left: 2em" id="todo-list" data-montage-id="todo-list">
+            <div data-montage-id="todos">
+                <ul style="margin-left: 2em" data-montage-id="todo-list" class="todo-list">
                     <li class="todo" data-montage-id="todo-item">
                         <div class="display">
                             <input class="check" type="checkbox" data-montage-id="checkbox">
@@ -58,12 +58,12 @@
                     </li>
                 </ul>
             </div>
-            <div id="todo-stats">
-                <span class="todo-count" id="todo-count">
+            <div data-montage-id="todo-stats" class="todo-stats">
+                <span class="todo-count" data-montage-id="todo-count">
                     <span class="number">1</span>
                     <span class="word">item</span> left.
                 </span>
-                <span class="todo-clear" id="todo-clear">
+                <span class="todo-clear" data-montage-id="todo-clear">
                     <a href="#">
                         Clear <span class="number">1</span>
                         completed <span class="word">item</span>
@@ -72,7 +72,7 @@
             </div>
         </div>
     </div>
-    <div id="credits">
+    <div data-montage-id="credits" class="credits">
         Created by Montage Team, based on <a href="http://documentcloud.github.com/backbone/examples/todos/index.html">Backbone Todo</a>
     </div>
 </body>

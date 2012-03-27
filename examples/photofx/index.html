@@ -30,7 +30,7 @@
                 }
             }
 
-        
+
     }</script>
 
     <style type="text/css">
@@ -64,19 +64,19 @@
             text-shadow: 0 0px 6px hsla(200,100%,50%,.6);
         }
 
-        #montage-app-bootstrapper {
+        .montage-app-bootstrapper {
             display: none;
         }
 
-        .montage-app-bootstrapping #montage-app-bootstrapper {
+        .montage-app-bootstrapping .montage-app-bootstrapper {
             display: block;
         }
 
-        #montage-app-loader {
+        .montage-app-loader {
             display: none;
         }
 
-        .montage-app-loading #montage-app-loader {
+        .montage-app-loading .montage-app-loader {
             display: block;
         }
 
@@ -92,11 +92,11 @@
 
 </head>
 <body>
-    <div id="montage-app-bootstrapper">
+    <div data-montage-id="montage-app-bootstrapper" class="montage-app-bootstrapper">
         <h1>PhotoFX</h1>
     </div>
-    <div id="montage-app-loader">
-        <div id="loadingPanel"></div>
+    <div data-montage-id="montage-app-loader" class="montage-app-bootstrapper">
+        <div data-montage-id="loadingPanel"></div>
     </div>
 </body>
 </html>

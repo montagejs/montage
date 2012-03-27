@@ -138,7 +138,7 @@ a[icon="external"] {
 
 </head>
 <body>
-    <div id="example-root">
+    <div data-montage-id="example-root">
         <div class="row">
             <div class="span12">
                 <h3>Anchor</h3>
@@ -159,23 +159,23 @@ a[icon="external"] {
                             <div class="demo">
                                     <div class="app">
                                         Link text:
-                                        <input id="linkText" autofocus type="text" name="" value="">
+                                        <input data-montage-id="linkText" autofocus type="text" name="" value="">
                                         URL:
-                                        <input id="linkURL" type="text" name="" value="" placeholder="http://...">
-                                        <p><a href="http://www.motorola.com" id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
+                                        <input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://...">
+                                        <p><a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
                                      </div>
 
-                        <ul id="anchorAccordion1" class="accordion">
+                        <ul data-montage-id="anchorAccordion1" class="accordion">
                              <li class="accordion-group">
                                  <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                  <div class="accordion-inner montage-hidden" >
                                      <pre class="prettyprint" >
 
  Link text:
- &lt;input id="linkText" autofocus type="text" name="" value=""&gt;
+ &lt;input data-montage-id="linkText" autofocus type="text" name="" value=""&gt;
  URL:
- &lt;input id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
- &lt;a href="http://www.motorola.com" id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
+ &lt;input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
+ &lt;a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
                                     </pre>
                                  </div>
                              </li>
@@ -246,37 +246,37 @@ a[icon="external"] {
                                  </p>
 
                             <div class="demo">
-                                <table id="list1" class="bordered-table">
+                                <table data-montage-id="list1" class="bordered-table">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
                                             <th>Description</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="table-row">
+                                    <tbody data-montage-id="table-row">
                                         <tr>
-                                            <td><a id="link" target="_blank"></a></td>
-                                            <td><span id="desc"></span></td>
+                                            <td><a data-montage-id="link" target="_blank"></a></td>
+                                            <td><span data-montage-id="desc"></span></td>
                                         </tr>
                                     </tbody>
                                 </table>
 
-                       <ul id="anchorAccordion2" class="accordion">
+                       <ul data-montage-id="anchorAccordion2" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
                                     <pre class="prettyprint" >
-&lt;table id="list1" class="bordered-table"&gt;
+&lt;table data-montage-id="list1" class="bordered-table"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th&gt;Name&lt;/th&gt;
             &lt;th&gt;Description&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
-    &lt;tbody id="table-row"&gt;
+    &lt;tbody data-montage-id="table-row"&gt;
         &lt;tr&gt;
-            &lt;td&gt;&lt;a id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;span id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;

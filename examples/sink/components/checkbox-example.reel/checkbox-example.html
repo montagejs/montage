@@ -188,7 +188,7 @@
         </style>
     </head>
     <body>
-        <div id="checkbox-example" class="checkbox-example">
+        <div data-montage-id="checkbox-example" class="checkbox-example">
             <div class="row">
                 <div class="span12">
                     <h3>Checkbox</h3>
@@ -203,21 +203,21 @@
             <div class="demo cb1">
 
                 <form class="form-stacked">
-                    <label class="checkbox inline"><input id="checkbox1" type="checkbox" /> Milk </label>
-                    <label class="checkbox inline"><input id="checkbox2" type="checkbox" /> Eggs</label>
+                    <label class="checkbox inline"><input data-montage-id="checkbox1" type="checkbox" /> Milk </label>
+                    <label class="checkbox inline"><input data-montage-id="checkbox2" type="checkbox" /> Eggs</label>
                 </form>
 
             </div>
 
             <section>
-                <ul id="checkboxAccordion1" class="accordion">
+                <ul data-montage-id="checkboxAccordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
-    &lt;label class="checkbox inline"&gt;&lt;input id="checkbox1" type="checkbox" /&gt; Milk &lt;/label&gt;
-    &lt;label class="checkbox inline"&gt;&lt;input id="checkbox2" type="checkbox" /&gt; Eggs&lt;/label&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox1" type="checkbox" /&gt; Milk &lt;/label&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox2" type="checkbox" /&gt; Eggs&lt;/label&gt;
 &lt;/form&gt;
                             </pre>
                        </div>
@@ -279,19 +279,19 @@
 
             <div class="demo cb2">
                 <form class="form-stacked">
-                    <label class="checkbox inline"><input type="checkbox" id="agreeCheckbox"/> I agree to something</label><br/>
-                    <input type="submit" id="continueButton" value="Continue" class="btn" disabled />
+                    <label class="checkbox inline"><input type="checkbox" data-montage-id="agreeCheckbox"/> I agree to something</label><br/>
+                    <input type="submit" data-montage-id="continueButton" value="Continue" class="btn" disabled />
                 </form>
             </div>
             <section>
-                <ul id="checkboxAccordion2" class="accordion">
+                <ul data-montage-id="checkboxAccordion2" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
-    &lt;label class="checkbox inline"&gt;&lt;input type="checkbox" id="agreeCheckbox"/&gt; I agree to something&lt;/label&gt;&lt;br/&gt;
-    &lt;input type="submit" id="continueButton" value="Continue" class="btn" disabled /&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input type="checkbox" data-montage-id="agreeCheckbox"/&gt; I agree to something&lt;/label&gt;&lt;br/&gt;
+    &lt;input type="submit" data-montage-id="continueButton" value="Continue" class="btn" disabled /&gt;
 &lt;/form&gt;
                             </pre>
                        </div>
@@ -368,7 +368,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
 
             <h4>Using Checkbox to select multiple items within a Repetition </h4>
             <div class="demo cb3">
-                <table id="list1" class="bordered-table">
+                <table data-montage-id="list1" class="bordered-table">
                     <thead>
                         <tr>
                             <th>Selection</th>
@@ -376,28 +376,28 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
                             <th>Description</th>
                         </tr>
                     </thead>
-                    <tbody id="table-row">
+                    <tbody data-montage-id="table-row">
                         <tr>
-                             <td><input type="checkbox" id="selection" /></td>
-                            <td><a id="link" target="_blank"></a></td>
-                            <td><span id="desc"></span></td>
+                             <td><input type="checkbox" data-montage-id="selection" /></td>
+                            <td><a data-montage-id="link" target="_blank"></a></td>
+                            <td><span data-montage-id="desc"></span></td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div>
                     <h5>Your selections: </h5>
-                    <span id="selectedValue"  style="width: 400px;"></span>
+                    <span data-montage-id="selectedValue"  style="width: 400px;"></span>
                 </div>
             </div>
 
             <section>
-                <ul id="checkboxAccordion3" class="accordion">
+                <ul data-montage-id="checkboxAccordion3" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
-&lt;table id="list1" class="bordered-table"&gt;
+&lt;table data-montage-id="list1" class="bordered-table"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th&gt;Selection&lt;/th&gt;
@@ -405,18 +405,18 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             &lt;th&gt;Description&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
-    &lt;tbody id="table-row"&gt;
+    &lt;tbody data-montage-id="table-row"&gt;
         &lt;tr&gt;
-             &lt;td&gt;&lt;input type="checkbox" id="selection" /&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;a id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;span id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+             &lt;td&gt;&lt;input type="checkbox" data-montage-id="selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
 
 &lt;div&gt;
     &lt;h5&gt;Your selections: &lt;/h5&gt;
-    &lt;span id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
+    &lt;span data-montage-id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
                             </pre>
                        </div>
@@ -577,7 +577,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
                 </p>
             </section>
  -->
-            <div id="logger"></div>
+            <div data-montage-id="logger"></div>
 
         </div>
     </body>

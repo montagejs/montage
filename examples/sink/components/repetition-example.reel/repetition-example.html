@@ -261,7 +261,7 @@
 
 </head>
 <body>
-    <div id="example-root">
+    <div data-montage-id="example-root">
 
         <div class="row">
             <div class="span8">
@@ -275,24 +275,24 @@
         <h4>Demo: Simple Repetition</h4>
 
         <div class="demo simple">
-            <div class="repetition" id="repetition">
+            <div class="repetition" data-montage-id="repetition">
                 <div class="item">
-                    <img id="thumb" class="thumb" />
-                    <h3 id="title" class="title"></h3>
+                    <img data-montage-id="thumb" class="thumb" />
+                    <h3 data-montage-id="title" class="title"></h3>
                 </div>
             </div>
         </div>
 
         <section>
-            <ul id="repetition-accordion1" class="accordion">
+            <ul data-montage-id="repetition-accordion1" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;div class="repetition" id="repetition"&gt;
+&lt;div class="repetition" data-montage-id="repetition"&gt;
     &lt;div class="item"&gt;
-        &lt;img id="thumb" class="thumb" /&gt;
-        &lt;h3 id="title" class="title"&gt;&lt;/h3&gt;
+        &lt;img data-montage-id="thumb" class="thumb" /&gt;
+        &lt;h3 data-montage-id="title" class="title"&gt;&lt;/h3&gt;
     &lt;/div&gt;
 &lt;/div&gt;
                         </pre>
@@ -411,7 +411,7 @@
         <h4>Demo: Repetition supporting multiple Selections using checkbox</h4>
 
         <div class="demo selection">
-            <table id="list1" class="bordered-table">
+            <table data-montage-id="list1" class="bordered-table">
                 <thead>
                     <tr>
                         <th>Selection</th>
@@ -419,29 +419,29 @@
                         <th>Description</th>
                     </tr>
                 </thead>
-                <tbody id="table-row">
+                <tbody data-montage-id="table-row">
                     <tr>
-                         <td><input type="checkbox" id="selection" /></td>
-                        <td><a id="link" target="_blank"></a></td>
-                        <td><span id="desc"></span></td>
+                         <td><input type="checkbox" data-montage-id="selection" /></td>
+                        <td><a data-montage-id="link" target="_blank"></a></td>
+                        <td><span data-montage-id="desc"></span></td>
                     </tr>
                 </tbody>
             </table>
 
             <div>
                 <h5>Your selections: </h5>
-                <span id="selectedValue"  style="width: 400px;"></span>
+                <span data-montage-id="selectedValue"  style="width: 400px;"></span>
             </div>
         </div>
 
 
         <section>
-            <ul id="repetition-accordion2" class="accordion">
+            <ul data-montage-id="repetition-accordion2" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;table id="list1" class="bordered-table"&gt;
+&lt;table data-montage-id="list1" class="bordered-table"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th&gt;Selection&lt;/th&gt;
@@ -449,18 +449,18 @@
             &lt;th&gt;Description&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
-    &lt;tbody id="table-row"&gt;
+    &lt;tbody data-montage-id="table-row"&gt;
         &lt;tr&gt;
-             &lt;td&gt;&lt;input type="checkbox" id="selection" /&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;a id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;span id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+             &lt;td&gt;&lt;input type="checkbox" data-montage-id="selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
 
 &lt;div&gt;
     &lt;h5&gt;Your selections: &lt;/h5&gt;
-    &lt;span id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
+    &lt;span data-montage-id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
                         </pre>
                    </div>
@@ -624,42 +624,42 @@ table tr.selected {
 
             <h5>Overall, how satisfied are you with our product?</h5>
 
-            <table id="list2" class="bordered-table" style="width: auto;">
-                <tbody id="list2-rows">
+            <table data-montage-id="list2" class="bordered-table" style="width: auto;">
+                <tbody data-montage-id="list2-rows">
                     <tr>
-                         <td><input type="radio" id="answerSelection" name="answerSelection" /></td>
-                        <td><span id="answerText"></span></td>
+                         <td><input type="radio" data-montage-id="answerSelection" name="answerSelection" /></td>
+                        <td><span data-montage-id="answerText"></span></td>
                     </tr>
                 </tbody>
             </table>
 
             <div>
                 <h5>You selected: </h5>
-                <span id="selectedAnswer"  style="width: 400px;"></span>
+                <span data-montage-id="selectedAnswer"  style="width: 400px;"></span>
             </div>
         </div>
 
         <section>
 
-            <ul id="repetition-accordion3" class="accordion">
+            <ul data-montage-id="repetition-accordion3" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
 &lt;h5&gt;Overall, how satisfied are you with our product?&lt;/h5&gt;
 
-&lt;table id="list2" class="bordered-table" style="width: auto;"&gt;
-    &lt;tbody id="list2-rows"&gt;
+&lt;table data-montage-id="list2" class="bordered-table" style="width: auto;"&gt;
+    &lt;tbody data-montage-id="list2-rows"&gt;
         &lt;tr&gt;
-             &lt;td&gt;&lt;input type="radio" id="answerSelection" name="answerSelection" /&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;span id="answerText"&gt;&lt;/span&gt;&lt;/td&gt;
+             &lt;td&gt;&lt;input type="radio" data-montage-id="answerSelection" name="answerSelection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="answerText"&gt;&lt;/span&gt;&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
 
 &lt;div&gt;
     &lt;h5&gt;You selected: &lt;/h5&gt;
-    &lt;span id="selectedAnswer"  style="width: 400px;"&gt;&lt;/span&gt;
+    &lt;span data-montage-id="selectedAnswer"  style="width: 400px;"&gt;&lt;/span&gt;
 &lt;/div&gt;
                         </pre>
                    </div>

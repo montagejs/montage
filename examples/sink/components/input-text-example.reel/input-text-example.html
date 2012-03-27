@@ -191,7 +191,7 @@
         </style>
     </head>
     <body>
-        <div id="input-text-example" class="input-text-example">
+        <div data-montage-id="input-text-example" class="input-text-example">
             <div class="row">
                 <div class="span8">
                     <h3>Textfield</h3>
@@ -213,75 +213,75 @@
                 <div class="app">
                      <form class="form-stacked">
                          <label for="fname">First name</label>
-                         <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
+                         <input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/>
                          <label for="lname">Last name</label>
-                         <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
+                         <input type="text" placeholder="Enter last name" data-montage-id="lname" value="foo" maxlength="20"/>
 
                          <label for="pwd1">Password</label>
-                         <input type="password" id="pwd" value="abcdef" />
+                         <input type="password" data-montage-id="pwd" value="abcdef" />
 
                          <label for="email1">Email</label>
-                         <input type="email" id="email" value="foo@bar.com" />
+                         <input type="email" data-montage-id="email" value="foo@bar.com" />
 
                          <label for="url1">URL</label>
-                         <input type="url" id="url" value="http://www.google.com" />
+                         <input type="url" data-montage-id="url" value="http://www.google.com" />
 
                          <label for="tel1">Phone Number</label>
-                         <input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
-                         <button class="btn" id="editPhone" type="button">Edit Phone Number</button>
+                         <input type="tel" data-montage-id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
+                         <button class="btn" data-montage-id="editPhone" type="button">Edit Phone Number</button>
 
                          <label for="zipcode">US Postal code</label>
-                          <input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
+                          <input type="text" data-montage-id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
 
                          <label for="date1">Date of Birth</label>
-                         <input type="date" id="dob" value="" name="dob" pattern=""/>
-                         <div id="dobError" class="error"></div>
+                         <input type="date" data-montage-id="dob" value="" name="dob" pattern=""/>
+                         <div data-montage-id="dobError" class="error"></div>
 
                          <div style="margin-top: 10px;">
-                             <button class="btn" id="update" type="button">Update</button>
+                             <button class="btn" data-montage-id="update" type="button">Update</button>
                         </div>
                      </form>
 
-                     <div id="echo" class="prettyprint"></div>
+                     <div data-montage-id="echo" class="prettyprint"></div>
                  </div>
             </div>
 
 
             <section>
 
-                       <ul id="inputTextAccordion1" class="accordion">
+                       <ul data-montage-id="inputTextAccordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
                                     <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
      &lt;label for="fname"&gt;First name&lt;/label&gt;
-     &lt;input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/&gt;
+     &lt;input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/&gt;
      &lt;label for="lname"&gt;Last name&lt;/label&gt;
-     &lt;input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/&gt;
+     &lt;input type="text" placeholder="Enter last name" data-montage-id="lname" value="foo" maxlength="20"/&gt;
 
      &lt;label for="pwd1"&gt;Password&lt;/label&gt;
-     &lt;input type="password" id="pwd" value="abcdef" /&gt;
+     &lt;input type="password" data-montage-id="pwd" value="abcdef" /&gt;
 
      &lt;label for="email1"&gt;Email&lt;/label&gt;
-     &lt;input type="email" id="email" value="foo@bar.com" /&gt;
+     &lt;input type="email" data-montage-id="email" value="foo@bar.com" /&gt;
 
      &lt;label for="url1"&gt;URL&lt;/label&gt;
-     &lt;input type="url" id="url" value="http://www.google.com" /&gt;
+     &lt;input type="url" data-montage-id="url" value="http://www.google.com" /&gt;
 
      &lt;label for="tel1"&gt;Phone Number&lt;/label&gt;
-     &lt;input type="tel" id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" /&gt;
-     &lt;button class="btn" id="editPhone" type="button"&gt;Edit Phone Number&lt;/button&gt;
+     &lt;input type="tel" data-montage-id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" /&gt;
+     &lt;button class="btn" data-montage-id="editPhone" type="button"&gt;Edit Phone Number&lt;/button&gt;
 
      &lt;label for="zipcode"&gt;US Postal code&lt;/label&gt;
-      &lt;input type="text" id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/&gt;
+      &lt;input type="text" data-montage-id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/&gt;
 
      &lt;label for="date1"&gt;Date of Birth&lt;/label&gt;
-     &lt;input type="date" id="dob" value="" name="dob" pattern=""/&gt;
-     &lt;div id="dobError" class="error"&gt;&lt;/div&gt;
+     &lt;input type="date" data-montage-id="dob" value="" name="dob" pattern=""/&gt;
+     &lt;div data-montage-id="dobError" class="error"&gt;&lt;/div&gt;
 
      &lt;div style="margin-top: 10px;"&gt;
-         &lt;button class="btn" id="update" type="button"&gt;Update&lt;/button&gt;
+         &lt;button class="btn" data-montage-id="update" type="button"&gt;Update&lt;/button&gt;
     &lt;/div&gt;
  &lt;/form&gt;
             </pre>

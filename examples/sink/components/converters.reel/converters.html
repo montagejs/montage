@@ -14,7 +14,9 @@
             "num2Cmp": {"@": "dynamictext2"},
             "num3Cmp": {"@": "dynamictext3"},
             "num4Cmp": {"@": "dynamictext4"},
-            "currencyCmp": {"@": "dynamictext5"}
+            "currencyCmp": {"@": "dynamictext5"},
+            "$number": {"#": "txt-number"},
+            "$currencyValue": {"#": "txt-cur-value"}
         }
     },
     "textfield1": {
@@ -372,7 +374,7 @@
 
 </head>
 <body>
-    <div id="main">
+    <div data-montage-id="main">
         <div class="row">
             <div class="span">
                 <h3>Converters</h3>
@@ -392,42 +394,42 @@
         <p>String converters can beThe following examples demonstrate how to use a string converter on a DynamicText field to format its assigned value before being displayed. The value of the input text field (which is controlled by a Montage Textfield object.) This is done by creating a new converter object, and assinging that object to a DynamicText component's <code>converter</code> property.
         </p>
         <div class="demo string">
-            <input type="text" id="textfield1" placeholder="Enter some text here" />
+            <input type="text" data-montage-id="textfield1" placeholder="Enter some text here" />
 
             <p> 1) Dynamic text bound to the textfield without any converter<p>
-            <div id="text1" class="text example"></div>
+            <div data-montage-id="text1" class="text example"></div>
 
             <p>2) Dynamic text with an UpperCase converter</p>
-            <div id="text2" class="text"></div>
+            <div data-montage-id="text2" class="text"></div>
 
             <p>3) Dynamic text with a LowerCase converter</p>
-            <div id="text3" class="text"></div>
+            <div data-montage-id="text3" class="text"></div>
 
-            <textarea id="textarea1" style="width: 400px; height: 100px;">Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget</textarea>
-            <p id="text4"></p>
+            <textarea data-montage-id="textarea1" style="width: 400px; height: 100px;">Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget</textarea>
+            <p data-montage-id="text4"></p>
 
         </div>
 
         <section>
 
-            <ul id="convertersAccordion0" class="accordion">
+            <ul data-montage-id="convertersAccordion0" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;input type="text" id="textfield1" placeholder="Enter some text here" /&gt;
+&lt;input type="text" data-montage-id="textfield1" placeholder="Enter some text here" /&gt;
 
 &lt;p&gt; 1) Dynamic text bound to the textfield without any converter&lt;p&gt;
-&lt;div id="text1" class="text example"&gt;&lt;/div&gt;
+&lt;div data-montage-id="text1" class="text example"&gt;&lt;/div&gt;
 
 &lt;p&gt;2) Dynamic text with an UpperCase converter&lt;/p&gt;
-&lt;div id="text2" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="text2" class="text"&gt;&lt;/div&gt;
 
 &lt;p&gt;3) Dynamic text with a LowerCase converter&lt;/p&gt;
-&lt;div id="text3" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="text3" class="text"&gt;&lt;/div&gt;
 
-&lt;textarea id="textarea1" style="width: 400px; height: 100px;"&gt;Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget&lt;/textarea&gt;
-&lt;p id="text4"&gt;&lt;/p&gt;
+&lt;textarea data-montage-id="textarea1" style="width: 400px; height: 100px;"&gt;Lorem ipsum dolor sit amet, metus erat turpis hac, lacus placerat.Montes a dictum vestibulum in ridiculus vitae. Non volutpat turpis lorem ut, dictum sit risus a, donec dolor eget&lt;/textarea&gt;
+&lt;p data-montage-id="text4"&gt;&lt;/p&gt;
                         </pre>
                    </div>
                </li>
@@ -529,19 +531,19 @@
 
             <h4>Number to string converters </h4>
         <div class="demo number">
-            <input id="txt-number" type="number" name="txt-number" step="5"  />
+            <input data-montage-id="txt-number" type="number" name="txt-number" step="5"  />
 
             <p>Default - Number rounded to 2 decimals</p>
-            <div id="num1" class="text"></div>
+            <div data-montage-id="num1" class="text"></div>
 
             <p>Number in human readable form (K,M etc). Set property "shorten" to true.</p>
-            <div id="num2" class="text"></div>
+            <div data-montage-id="num2" class="text"></div>
 
             <p>Number in human readable form with 4 decimals</p>
-            <div id="num3" class="text"></div>
+            <div data-montage-id="num3" class="text"></div>
 
             <p>Number rounded to nearest integer</p>
-            <div id="num4" class="text"></div>
+            <div data-montage-id="num4" class="text"></div>
 
 
         </div>
@@ -549,24 +551,24 @@
 
         <section>
 
-            <ul id="convertersAccordion1" class="accordion">
+            <ul data-montage-id="convertersAccordion1" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;input id="txt-number" type="number" name="txt-number" step="5"  /&gt;
+&lt;input data-montage-id="txt-number" type="number" name="txt-number" step="5"  /&gt;
 
 &lt;p&gt;Default - Number rounded to 2 decimals&lt;/p&gt;
-&lt;div id="num1" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="num1" class="text"&gt;&lt;/div&gt;
 
 &lt;p&gt;Number in human readable form (K,M etc). Set property "shorten" to true.&lt;/p&gt;
-&lt;div id="num2" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="num2" class="text"&gt;&lt;/div&gt;
 
 &lt;p&gt;Number in human readable form with 4 decimals&lt;/p&gt;
-&lt;div id="num3" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="num3" class="text"&gt;&lt;/div&gt;
 
 &lt;p&gt;Number rounded to nearest integer&lt;/p&gt;
-&lt;div id="num4" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="num4" class="text"&gt;&lt;/div&gt;
                         </pre>
                    </div>
                </li>
@@ -677,45 +679,45 @@
             <h4>Date Converters </h4>
             <p>Date converters convert a string or number value to a formatted date string. The available format patterns are identical to the ones listed <a target="_new" href="http://www.ruby-doc.org/core/classes/Time.html#M000392">here</a>.</p>
         <div class="demo date">
-            <input id="txt-date" type="text" placeholder="Enter a Date in the mm-dd-yyyy format" />
+            <input data-montage-id="txt-date" type="text" placeholder="Enter a Date in the mm-dd-yyyy format" />
 
             <div>Default Date.toString()</div>
-            <div id="date1" class="text"></div>
+            <div data-montage-id="date1" class="text"></div>
 
             <div>Format using dd MM pattern</div>
-            <div id="date2" class="text"></div>
+            <div data-montage-id="date2" class="text"></div>
             <div>Pattern: d M Y H:i</div>
-            <div id="date3" class="text"></div>
+            <div data-montage-id="date3" class="text"></div>
 
             <div>Pattern: m/d/Y h:i A (eg: 08/20/2001 01:40 PM)</div>
-            <div id="date4" class="text"></div>
+            <div data-montage-id="date4" class="text"></div>
 
             <div>Pattern: 'c' ISO-8601 format </div>
-            <div id="date5" class="text"></div>
+            <div data-montage-id="date5" class="text"></div>
 
         </div>
 
         <section>
-            <ul id="convertersAccordion2" class="accordion">
+            <ul data-montage-id="convertersAccordion2" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;input id="txt-date" type="text" placeholder="Enter a Date in the mm-dd-yyyy format" /&gt;
+&lt;input data-montage-id="txt-date" type="text" placeholder="Enter a Date in the mm-dd-yyyy format" /&gt;
 
 &lt;div&gt;Default Date.toString()&lt;/div&gt;
-&lt;div id="date1" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="date1" class="text"&gt;&lt;/div&gt;
 
 &lt;div&gt;Format using dd MM pattern&lt;/div&gt;
-&lt;div id="date2" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="date2" class="text"&gt;&lt;/div&gt;
 &lt;div&gt;Pattern: d M Y H:i&lt;/div&gt;
-&lt;div id="date3" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="date3" class="text"&gt;&lt;/div&gt;
 
 &lt;div&gt;Pattern: m/d/Y h:i A (eg: 08/20/2001 01:40 PM)&lt;/div&gt;
-&lt;div id="date4" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="date4" class="text"&gt;&lt;/div&gt;
 
 &lt;div&gt;Pattern: 'c' ISO-8601 format &lt;/div&gt;
-&lt;div id="date5" class="text"&gt;&lt;/div&gt;
+&lt;div data-montage-id="date5" class="text"&gt;&lt;/div&gt;
                         </pre>
                    </div>
                </li>
@@ -859,28 +861,28 @@
         <p>The following example demonstrates how to create and use a custom converter, in this case to convert from degrees C to degrees F. </p>
 
         <div class="demo temp">
-            <section id="converter">
+            <section data-montage-id="converter">
             <p>Temperature in Celsius</p>
-            <input type="number" name="celsius" id="celsius"/>
+            <input type="number" name="celsius" data-montage-id="celsius"/>
 
             <p>Temperature in Fahrenheit</p>
-                <input type="number" name="fahrenheit" id="fahrenheit" >
+                <input type="number" name="fahrenheit" data-montage-id="fahrenheit" >
             </section>
 
 
         </div>
 
         <section>
-            <ul id="convertersAccordion3" class="accordion">
+            <ul data-montage-id="convertersAccordion3" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
 &lt;p&gt;Temperature in Celsius&lt;/p&gt;
-&lt;input type="number" name="celsius" id="celsius"/&gt;
+&lt;input type="number" name="celsius" data-montage-id="celsius"/&gt;
 
 &lt;p&gt;Temperature in Fahrenheit&lt;/p&gt;
-&lt;input type="number" name="fahrenheit" id="fahrenheit" &gt;
+&lt;input type="number" name="fahrenheit" data-montage-id="fahrenheit" &gt;
                         </pre>
                    </div>
                </li>
