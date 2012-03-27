@@ -87,7 +87,9 @@ if (spec) {
         "ui/select-input-spec",
         "ui/slider-spec",
         "ui/slot-spec",
-        "ui/textfield-spec"
+        "ui/textfield-spec",
+
+        "ui/example-components-spec"
     ];
     Promise.all(modules.map(require.deepLoad))
     .then(function () {
