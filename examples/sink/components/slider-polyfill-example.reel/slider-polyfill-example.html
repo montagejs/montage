@@ -96,7 +96,7 @@
                             "value": {"<-": "@owner.resultHex"}
                         }
                     },
-                    
+
                     "accordion1": {
                         "module": "accordion.reel",
                         "name": "Accordion",
@@ -104,7 +104,7 @@
                             "element": {"#": "slider-polyfill-accordion1"}
                         }
                     },
-                    
+
 
                 "reset": {
                     "module": "montage/ui/button.reel",
@@ -120,7 +120,7 @@
                         }
                     ]
                 }
-            
+
     }</script>
 
         <style>
@@ -148,7 +148,7 @@
         </style>
     </head>
     <body>
-        <div id="slider-polyfill-example" class="slider-polyfill-example">
+        <div data-montage-id="slider-polyfill-example" class="slider-polyfill-example">
             <div class="row">
                 <div class="span8">
                     <h3>Range Input Polyfill</h3>
@@ -165,40 +165,40 @@
                     <div class="span8">
                         <h5>Make your own color</h5>
 
-                        <div id="result" style="height: 100px;"></div>
-                        <h1 class="result-hex" id="result-hex"></h1>
+                        <div data-montage-id="result" style="height: 100px;"></div>
+                        <h1 class="result-hex" data-montage-id="result-hex"></h1>
                     </div>
                     <div class="span8">
 
                         <section class="control">
                             <section>
                                 Red:
-                                <input id="color-red" type="range" min="0" max="15"  value="0"/>
-                                <span id="redValue" class="range-value"></span>
+                                <input data-montage-id="color-red" type="range" min="0" max="15"  value="0"/>
+                                <span data-montage-id="redValue" class="range-value"></span>
                             </section>
                             <section>
                                 Green:
-                                <input id="color-green" type="range" min="0" max="15" value="0" />
-                                <span id="greenValue" class="range-value"/>
+                                <input data-montage-id="color-green" type="range" min="0" max="15" value="0" />
+                                <span data-montage-id="greenValue" class="range-value"/>
                             </section>
                             <section>
                                 Blue:
-                                <input id="color-blue" type="range" min="0" max="15" value="0" />
-                                <span id="blueValue" class="range-value" />
+                                <input data-montage-id="color-blue" type="range" min="0" max="15" value="0" />
+                                <span data-montage-id="blueValue" class="range-value" />
                             </section>
 
                         </section>
 
-                        <button id="reset" class="btn cancel small">Reset</button>
+                        <button data-montage-id="reset" class="btn cancel small">Reset</button>
 
                     </div>
                 </div>
             </div>
-            
-            
+
+
             <section>
-                
-                <ul id="slider-polyfill-accordion1" class="accordion">
+
+                <ul data-montage-id="slider-polyfill-accordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
@@ -206,31 +206,31 @@
 &lt;div class="span8"&gt;<br>
 &lt;h5&gt;Make your own color&lt;/h5&gt;<br>
 <br>
-&lt;div id="result" style="height: 100px;"&gt;&lt;/div&gt;<br>
-&lt;h1 class="result-hex" id="result-hex"&gt;&lt;/h1&gt;<br>
+&lt;div data-montage-id="result" style="height: 100px;"&gt;&lt;/div&gt;<br>
+&lt;h1 class="result-hex" data-montage-id="result-hex"&gt;&lt;/h1&gt;<br>
 &lt;/div&gt;<br>
 &lt;div class="span8"&gt;<br>
 <br>
 &lt;section class="control"&gt;<br>
 &lt;section&gt;<br>
 Red:<br>
-&lt;input id="color-red" type="range" min="0" max="15" value="0"/&gt;<br>
-&lt;span id="redValue" class="range-value"&gt;&lt;/span&gt;<br>
+&lt;input data-montage-id="color-red" type="range" min="0" max="15" value="0"/&gt;<br>
+&lt;span data-montage-id="redValue" class="range-value"&gt;&lt;/span&gt;<br>
 &lt;/section&gt;<br>
 &lt;section&gt;<br>
 Green:<br>
-&lt;input id="color-green" type="range" min="0" max="15" value="0" /&gt;<br>
-&lt;span id="greenValue" class="range-value"/&gt;<br>
+&lt;input data-montage-id="color-green" type="range" min="0" max="15" value="0" /&gt;<br>
+&lt;span data-montage-id="greenValue" class="range-value"/&gt;<br>
 &lt;/section&gt;<br>
 &lt;section&gt;<br>
 Blue:<br>
-&lt;input id="color-blue" type="range" min="0" max="15" value="0" /&gt;<br>
-&lt;span id="blueValue" class="range-value" /&gt;<br>
+&lt;input data-montage-id="color-blue" type="range" min="0" max="15" value="0" /&gt;<br>
+&lt;span data-montage-id="blueValue" class="range-value" /&gt;<br>
 &lt;/section&gt;<br>
 <br>
 &lt;/section&gt;<br>
 <br>
-&lt;button id="reset" class="btn cancel small"&gt;Reset&lt;/button&gt;<br>
+&lt;button data-montage-id="reset" class="btn cancel small"&gt;Reset&lt;/button&gt;<br>
 <br>
 &lt;/div&gt;
                             </pre>
@@ -423,7 +423,7 @@ exports.SliderPolyfillExample = Montage.create(Component, {
                        </div>
                    </li>
                 </ul>
-                
+
             </section>
 
             <section>

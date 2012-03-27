@@ -38,7 +38,7 @@
                     "element": {"#": "component-root"}
                 }
             }
-        
+
     }</script>
 
     <style>
@@ -52,7 +52,7 @@
     </head>
 
     <body>
-        <div id="component-root">
+        <div data-montage-id="component-root">
             <div class="row">
                 <div class="span12">
                     <h3>Dynamic Text</h3>
@@ -67,16 +67,16 @@
                 <p>This example displays the current time in a DynamicText component. The current time is calculated , which is provided by the component's controller. A <code>DateConverter</code> is used to format the time value in the hh:mm:ss format.
                 </p>
             <div class="demo">
-                <span id="currentTime" class="current-time"></span>
+                <span data-montage-id="currentTime" class="current-time"></span>
 
             </div>
 
-                       <ul id="dynamicTextAccordion1" class="accordion">
+                       <ul data-montage-id="dynamicTextAccordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
                                     <pre class="prettyprint" >
-&lt;span id="currentTime" class="currentTime"&gt;&lt;/span&gt;
+&lt;span data-montage-id="currentTime" class="currentTime"&gt;&lt;/span&gt;
             </pre>
                                 </div>
                             </li>

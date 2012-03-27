@@ -22,12 +22,12 @@ button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
 
 
 .main,
-#splash {
+.splash {
    display: none;
 }
 
-.montage-app-bootstrapping #splash,
-.montage-app-loading #splash {
+.montage-app-bootstrapping .splash,
+.montage-app-loading .splash {
    display: block;
 }
 
@@ -35,7 +35,7 @@ button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
    display: block;
 }
 
-#loadingIndicator {
+.loadingIndicator {
    -webkit-animation-name: fade;
    -webkit-animation-duration: 1000ms;
    -webkit-animation-iteration-count: infinite;

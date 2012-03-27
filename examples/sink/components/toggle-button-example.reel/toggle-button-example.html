@@ -115,7 +115,7 @@
     </style>
     </head>
     <body>
-        <div id="toggle-button-example">
+        <div data-montage-id="toggle-button-example">
             <div class="row ">
                 <div class="span12">
                     <h3>Toggle Button</h3>
@@ -131,27 +131,27 @@
 
                 <div class="app">
                     <div class="btn-group font-styles" style="display: inline-block">
-                        <button class="btn font-styles" id="bold" style="font-weight: bold;">B</button>
-                        <button class="btn font-styles" id="italic" style="font-family: serif; font-style: italic;">I</button>
-                        <button class="btn font-styles" id="underline" style="text-decoration: underline;">U</button>
+                        <button class="btn font-styles" data-montage-id="bold" style="font-weight: bold;">B</button>
+                        <button class="btn font-styles" data-montage-id="italic" style="font-family: serif; font-style: italic;">I</button>
+                        <button class="btn font-styles" data-montage-id="underline" style="text-decoration: underline;">U</button>
                     </div>
-                    <div><input type="text" id="display" value="This is some example text" /></div>
+                    <div><input type="text" data-montage-id="display" value="This is some example text" /></div>
                 </div>
             </div>
 
             <section>
-                       <ul id="toggleAccordion1" class="accordion">
+                       <ul data-montage-id="toggleAccordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
                                     <p>This example's markup defines three <code>&lt;button></code> elements.</p>
                                     <pre class="prettyprint" >
 &lt;div class="btn-group font-styles"&gt;
-    &lt;button class="btn font-styles" id="bold"&gt;B&lt;/button&gt;
-    &lt;button class="btn font-styles" id="italic" &gt;I&lt;/button&gt;
-    &lt;button class="btn font-styles" id="underline" &gt;U&lt;/button&gt;
+    &lt;button class="btn font-styles" data-montage-id="bold"&gt;B&lt;/button&gt;
+    &lt;button class="btn font-styles" data-montage-id="italic" &gt;I&lt;/button&gt;
+    &lt;button class="btn font-styles" data-montage-id="underline" &gt;U&lt;/button&gt;
 &lt;/div&gt;
-&lt;div&gt;&lt;input type="text" id="display" value="This is some example text"&gt;&lt;/div&gt;
+&lt;div&gt;&lt;input type="text" data-montage-id="display" value="This is some example text"&gt;&lt;/div&gt;
 </pre>
                                 </div>
                             </li>
@@ -248,17 +248,17 @@ exports.StyleElement = Montage.create(Component, {
 
                 <div class="demo demo2 sourceview">
                 <div class="app">
-                    <button class="btn" style="width: 5em" id="values"></button>
+                    <button class="btn" style="width: 5em" data-montage-id="values"></button>
                 </div>
                 </div>
 
                 <section>
-                                       <ul id="toggleAccordion2" class="accordion">
+                                       <ul data-montage-id="toggleAccordion2" class="accordion">
                                             <li class="accordion-group">
                                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                                 <div class="accordion-inner montage-hidden" >
                                                     <pre class="prettyprint">
-&lt;button class="btn" style="width: 5em" id="values"&gt;&lt;/button&gt;
+&lt;button class="btn" style="width: 5em" data-montage-id="values"&gt;&lt;/button&gt;
                                                     </pre>
                                                 </div>
                                             </li>
@@ -317,17 +317,17 @@ exports.StyleElement = Montage.create(Component, {
 
                 <!-- ToggleSwitch element -->
                 <div class="demo">
-                    <div id="toggle" style="margin-bottom: 5px"></div>
+                    <div data-montage-id="toggle" style="margin-bottom: 5px"></div>
                 </div>
 
                 <section>
 
-                                           <ul id="toggleAccordion3" class="accordion">
+                                           <ul data-montage-id="toggleAccordion3" class="accordion">
                                                 <li class="accordion-group">
                                                     <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                                     <div class="accordion-inner montage-hidden" >
                                                         <pre class="prettyprint" >
-&lt;div id="toggle"&gt;&lt;/div&gt;
+&lt;div data-montage-id="toggle"&gt;&lt;/div&gt;
                                 </pre>
                                                     </div>
                                                 </li>
@@ -353,7 +353,7 @@ exports.StyleElement = Montage.create(Component, {
 
                 </section>
 
-            <div id="logger">
+            <div data-montage-id="logger">
             </div>
             <section>
                 <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/toggle-button-example.reel" target="_blank">View source on GitHub</a>
