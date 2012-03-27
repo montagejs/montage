@@ -283,7 +283,7 @@ TextInput.addAttributes({
     formaction: null,
     formenctype: null,
     formmethod: null,
-    formnovalidate: null,
+    formnovalidate: {dataType: 'boolean'},
     formtarget: null,
     height: null,
     list: null,

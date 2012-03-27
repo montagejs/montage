@@ -30,7 +30,7 @@
                         "element": {"#": "celsius"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@fahrenheitTextfield[value]", "converter": {"@": "tempConverter"}}
+                        "value": {"<<->": "@fahrenheitTextfield.value", "converter": {"@": "tempConverter"}}
                     }
                 },
                 "numberAccordion1": {
@@ -128,11 +128,7 @@
             "element": {"#": "celsius"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "fahrenheitTextfield"},
-                "boundObjectPropertyPath": "value",
-                "converter": {"@": "tempConverter"}
-            }
+            "value": {"&lt;&lt;-&gt;": "@fahrenheitTextfield.value", "converter": {"@": "tempConverter"}}
         }
     },
     "fahrenheitTextfield": {

@@ -31,7 +31,7 @@
                     "element": {"#": "testList"}
                 },
                 "bindings": {
-                    "objects": {"<-": "@owner[objectList]"}
+                    "objects": {"<-": "@owner.objectList"}
                 }
             },
             "substitution": {
@@ -47,14 +47,14 @@
                     }
                 },
                 "bindings": {
-                    "switchValue": {"<-": "@list[objectAtCurrentIteration.type]"}
+                    "switchValue": {"<-": "@list.objectAtCurrentIteration.type"}
                 }
             },
             "toggle": {
                 "module": "montage/ui/bluemoon/toggle.reel",
                 "name": "Toggle",
                 "bindings": {
-                    "value": {"<-": "@list[objectAtCurrentIteration.value]"}
+                    "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "slider": {
@@ -64,7 +64,7 @@
 
                 },
                 "bindings": {
-                    "value": {"<-": "@list[objectAtCurrentIteration.value]"}
+                    "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "checkbox": {
@@ -74,7 +74,7 @@
 
                 },
                 "bindings": {
-                    "checked": {"<-": "@list[objectAtCurrentIteration.value]"}
+                    "checked": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "addAnObjectButton": {

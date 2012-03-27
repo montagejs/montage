@@ -19,7 +19,7 @@
                     "selectObjectsOnAddition": true
                 },
                 "bindings": {
-                    "content": {"<<->": "@owner[photos]"}
+                    "content": {"<<->": "@owner.photos"}
                 }
             },
             "gridMagnifier": {
@@ -36,7 +36,7 @@
                     "element": {"#": "editor"}
                 },
                 "bindings": {
-                    "photo": {"<-": "@photoController[selectedObjects.0]"}
+                    "photo": {"<-": "@photoController.selectedObjects.0"}
                 }
             },
             "effectsPanel": {
@@ -54,7 +54,7 @@
                     "element": {"#": "photoThumb"}
                 },
                 "bindings": {
-                    "photo": {"<-": "@photoList[objectAtCurrentIteration]"}
+                    "photo": {"<-": "@photoList.objectAtCurrentIteration"}
                 }
             },
             "photoList": {
@@ -75,7 +75,7 @@
                     "element": {"#": "supportsCrossOriginCanvasCondition"}
                 },
                 "bindings": {
-                    "condition": {"<-": "@owner[supportsCrossOriginCanvas]"}
+                    "condition": {"<-": "@owner.supportsCrossOriginCanvas"}
                 }
             },
 
@@ -102,7 +102,7 @@
                     "element": {"#": "removeSelectionCondition"}
                 },
                 "bindings": {
-                    "condition": {"<-": "@photoController[selectedObjects.0]"}
+                    "condition": {"<-": "@photoController.selectedObjects.0"}
                 }
             },
 
@@ -165,8 +165,8 @@
                     "identifier": "undoButton"
                 },
                 "bindings": {
-                    "label": {"<-": "@owner[undoManager.undoLabel]"},
-                    "enabled": {"<-": "@owner[undoManager.canUndo]"}
+                    "label": {"<-": "@owner.undoManager.undoLabel"},
+                    "enabled": {"<-": "@owner.undoManager.canUndo"}
                 },
                 "listeners": [
                     {
@@ -185,8 +185,8 @@
                     "identifier": "redoButton"
                 },
                 "bindings": {
-                    "label": {"<-": "@owner[undoManager.redoLabel]"},
-                    "enabled": {"<-": "@owner[undoManager.canRedo]"}
+                    "label": {"<-": "@owner.undoManager.redoLabel"},
+                    "enabled": {"<-": "@owner.undoManager.canRedo"}
                 },
                 "listeners": [
                     {

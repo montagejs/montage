@@ -20,7 +20,7 @@
                     "element": {"#": "currentTime"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[currentTime]"}
+                    "value": {"<-": "@owner.currentTime"}
                 }
             },
             "dynamicTextAccordion1": {
@@ -101,11 +101,7 @@
             "element": {"#": "currentTime"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "currentTime",
-                "oneway": true
-            }
+            "value": {"&lt;-": "@owner.currentTime"}
         }
     },
     "owner": {

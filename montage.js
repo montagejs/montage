@@ -48,9 +48,8 @@ if (typeof window !== "undefined") {
     })();
 
     /**
-     * Initializes Montage and creates the application singleton if necessary.
-     * @param options
-     * @param callback
+     * Initializes Montage and creates the application singleton if
+     * necessary.
      */
     exports.initMontage = function () {
         var platform = exports.getPlatform();
@@ -106,6 +105,14 @@ if (typeof window !== "undefined") {
                     });
                 };
 
+                if ('autoPackage' in params) {
+                    montageRequire.injectPackageDescription(location, {
+                        mappings: {
+                            montage: "@"
+                        }
+                    });
+                }
+
                 return montageRequire.loadPackage(location)
                 .then(function (applicationRequire) {
                     global.require = applicationRequire;
@@ -126,6 +133,8 @@ if (typeof window !== "undefined") {
      @param config
      @param compiler
      */
+    var reverseReelExpression = /((.*)\.reel)\/\2$/;
+    var reverseReelFunction = function ($0, $1) { return $1 };
     exports.SerializationCompiler = function(config, compile) {
         return function(module) {
             compile(module);
@@ -134,24 +143,30 @@ if (typeof window !== "undefined") {
             var defaultFactory = module.factory;
             module.factory = function(require, exports, module) {
                 defaultFactory.call(this, require, exports, module);
-                for (var symbol in exports) {
-                    var object = exports[symbol];
+                for (var name in exports) {
+                    var object = exports[name];
                     // avoid attempting to initialize a non-object
                     if (!(object instanceof Object)) {
                     // avoid attempting to reinitialize an aliased property
                     } else if (object.hasOwnProperty("_montage_metadata")) {
-                        object._montage_metadata.aliases.push(symbol);
-                        object._montage_metadata.objectName = symbol;
+                        object._montage_metadata.aliases.push(name);
+                        object._montage_metadata.objectName = name;
                     } else if (!Object.isSealed(object)) {
+                        var id = module.id.replace(
+                            reverseReelExpression,
+                            reverseReelFunction
+                        );
                         Object.defineProperty(
                             object,
                             "_montage_metadata",
                             {
                                 value: {
                                     require: require,
-                                    moduleId: module.id,
-                                    objectName: symbol,
-                                    aliases: [symbol],
+                                    module: id,
+                                    moduleId: id, // deprecated
+                                    property: name,
+                                    objectName: name, // deprecated
+                                    aliases: [name],
                                     isInstance: false
                                 }
                             }
@@ -382,10 +397,10 @@ if (typeof window !== "undefined") {
 
         },
 
-        initMontage: function (montageRequire, applicationRequire, options) {
+        initMontage: function (montageRequire, applicationRequire, params) {
             // If a module was specified in the config then we initialize it now
-            if (options.module) {
-                applicationRequire.async(options.module)
+            if (params.module) {
+                applicationRequire.async(params.module)
                 .end();
             } else {
             // otherwise we load the application

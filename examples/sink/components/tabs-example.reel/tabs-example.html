@@ -61,7 +61,7 @@
             "element": {"#": "tabs1-nav-text"}
         },
         "bindings": {
-            "value": {"<-": "@tabs1_nav[objectAtCurrentIteration.text]"}
+            "value": {"<-": "@tabs1_nav.objectAtCurrentIteration.text"}
         }
     },
 
@@ -72,7 +72,7 @@
             "element": {"#": "tabs1-nav-icon"}
         },
         "bindings": {
-            "src": {"<-": "@tabs1_nav[objectAtCurrentIteration.icon]"}
+            "src": {"<-": "@tabs1_nav.objectAtCurrentIteration.icon"}
         }
     },
 
@@ -147,7 +147,7 @@
             "element": {"#": "tabs2-nav-icon"}
         },
         "bindings": {
-            "src": {"<-": "@tabs2_nav[objectAtCurrentIteration.icon]"}
+            "src": {"<-": "@tabs2_nav.objectAtCurrentIteration.icon"}
         }
     },
 
@@ -344,11 +344,7 @@
             "element": {"#": "tabs1-nav-text"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "tabs1_nav"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.text",
-                "oneway": true
-            }
+            "value": {"&lt;-": "@tabs1_nav.objectAtCurrentIteration.text"}
         }
     },
 
@@ -359,11 +355,7 @@
             "element": {"#": "tabs1-nav-icon"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "tabs1_nav"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
-                "oneway": true
-            }
+            "src": {"&lt;-": "@tabs1_nav.objectAtCurrentIteration.icon"}
         }
     },
 
@@ -522,11 +514,7 @@
             "element": {"#": "tabs2-nav-icon"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "tabs2_nav"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.icon",
-                "oneway": true
-            }
+            "src": {"&lt;-": "@tabs2_nav.objectAtCurrentIteration.icon"}
         }
     },
 

@@ -52,7 +52,7 @@
                         "element": {"#": "continueButton"}
                     },
                     "bindings": {
-                        "disabled": {"<-": "@invertConverter[checked]", "converter": {"@": "invertConverter"}}
+                        "disabled": {"<-": "@invertConverter.checked", "converter": {"@": "invertConverter"}}
                     }
                 },
 
@@ -78,7 +78,7 @@
                         "automaticallyOrganizeObjects": true
                     },
                     "bindings": {
-                        "content": {"<-": "@owner[data]"}
+                        "content": {"<-": "@owner.data"}
                     }
                 },
 
@@ -102,8 +102,8 @@
                         "element": {"#": "link"}
                     },
                     "bindings": {
-                        "href": {"<-": "@list1[objectAtCurrentIteration.href]"},
-                        "textContent": {"<-": "@list1[objectAtCurrentIteration.src]"}
+                        "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+                        "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
                     }
                 },
 
@@ -114,7 +114,7 @@
                         "element": {"#": "desc"}
                     },
                     "bindings": {
-                        "value": {"<-": "@list1[objectAtCurrentIteration.description]"}
+                        "value": {"<-": "@list1.objectAtCurrentIteration.description"}
                     }
                 },
 
@@ -126,7 +126,7 @@
                         "element": {"#": "selection"}
                     },
                     "bindings": {
-                        "checked": {"<<->": "@list1[selectionAtCurrentIteration]"}
+                        "checked": {"<<->": "@list1.selectionAtCurrentIteration"}
                     }
                 },
 
@@ -137,7 +137,7 @@
                         "element": {"#": "selectedValue"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[jsonSelectedItems]"}
+                        "value": {"<<->": "@owner.jsonSelectedItems"}
                     }
                 },
                 "checkboxAccordion1": {
@@ -175,7 +175,7 @@
                         ]
                     },
                     "bindings": {
-                        "selectedItems": {"<<->": "@controller[selectedObjects]"}
+                        "selectedItems": {"<<->": "@controller.selectedObjects"}
                     }
                 }
 
@@ -315,12 +315,7 @@
             "element": {"#": "continueButton"}
         },
         "bindings": {
-            "disabled": {
-                "boundObject": {"@": "agreeCheckbox"},
-                "boundObjectPropertyPath": "checked",
-                "converter": {"@": "invertConverter"},
-                "oneway": true
-            }
+            "disabled": {"&lt;-": "@agreeCheckbox.checked", "converter": {"@": "invertConverter"}}
         }
     },
 
@@ -438,10 +433,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             ]
         },
         "bindings": {
-            "selectedItems": {
-                "boundObject": {"@": "controller"},
-                "boundObjectPropertyPath": "selectedObjects"
-            }
+            "selectedItems": {"&lt;&lt;-&gt;": "@controller.selectedObjects"}
         }
     },
 
@@ -453,11 +445,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "data",
-                "oneway": true
-            }
+            "content": {"&lt;-": "@owner.data"}
         }
     },
 
@@ -481,16 +469,8 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             "element": {"#": "link"}
         },
         "bindings": {
-            "href": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
-                "oneway": true
-            },
-            "textContent": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "href": {"&lt;-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"&lt;-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -501,11 +481,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             "element": {"#": "desc"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
-                "oneway": true
-            }
+            "value": {"&lt;-": "@list1.objectAtCurrentIteration.description"}
         }
     },
 
@@ -517,10 +493,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             "element": {"#": "selection"}
         },
         "bindings": {
-            "checked": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "selectionAtCurrentIteration"
-            }
+            "checked": {"&lt;&lt;-&gt;": "@list1.selectionAtCurrentIteration"}
         }
     },
 
@@ -531,10 +504,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "jsonSelectedItems"
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.jsonSelectedItems"}
         }
     }
 

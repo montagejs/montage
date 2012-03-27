@@ -11,7 +11,7 @@
 
                 "owner": {
                     "module": "components/slider-polyfill-example.reel",
-                    "name": "RangeInputExample",
+                    "name": "InputRangeExample",
                     "properties": {
                         "element": {"#": "slider-polyfill-example"},
                         "result": {"#": "result"}
@@ -26,13 +26,13 @@
 
                 },
                 "red": {
-                    "module": "montage/ui/skeleton/range-input.reel",
-                    "name": "RangeInput",
+                    "module": "montage/lab/skeleton/point/input-range.reel",
+                    "name": "InputRange",
                     "properties": {
                         "element": {"#": "color-red"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner[red]"}
+                        "value": {"<<->": "@owner.red"}
                     }
 
                 },
@@ -43,17 +43,17 @@
                         "element": {"#": "redValue"}
                     },
                     "bindings": {
-                        "value": {"<-": "@owner[red]", "converter": {"@": "roundTo2Decimals"}}
+                        "value": {"<-": "@owner.red", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
                 "green": {
-                        "module": "montage/ui/skeleton/range-input.reel",
-                        "name": "RangeInput",
+                        "module": "montage/lab/skeleton/point/input-range.reel",
+                        "name": "InputRange",
                         "properties": {
                             "element": {"#": "color-green"}
                         },
                         "bindings": {
-                            "value": {"<<->": "@owner[green]"}
+                            "value": {"<<->": "@owner.green"}
                         }
                     },
                     "greenValue": {
@@ -63,17 +63,17 @@
                             "element": {"#": "greenValue"}
                         },
                         "bindings": {
-                            "value": {"<-": "@owner[green]", "converter": {"@": "roundTo2Decimals"}}
+                            "value": {"<-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
                         }
                     },
                     "blue": {
-                        "module": "montage/ui/skeleton/range-input.reel",
-                        "name": "RangeInput",
+                        "module": "montage/lab/skeleton/point/input-range.reel",
+                        "name": "InputRange",
                         "properties": {
                             "element": {"#": "color-blue"}
                         },
                         "bindings": {
-                            "value": {"<<->": "@owner[blue]"}
+                            "value": {"<<->": "@owner.blue"}
                         }
                     },
                     "blueValue": {
@@ -83,7 +83,7 @@
                             "element": {"#": "blueValue"}
                         },
                         "bindings": {
-                            "value": {"<-": "@owner[blue]", "converter": {"@": "roundTo2Decimals"}}
+                            "value": {"<-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
                         }
                     },
                     "resultHexValue": {
@@ -93,7 +93,7 @@
                             "element": {"#": "result-hex"}
                         },
                         "bindings": {
-                            "value": {"<-": "@owner[resultHex]"}
+                            "value": {"<-": "@owner.resultHex"}
                         }
                     },
                     
@@ -243,7 +243,7 @@ Blue:<br>
 {
     "owner": {
         "module": "components/slider-polyfill-example.reel",
-        "name": "RangeInputExample",
+        "name": "InputRangeExample",
         "properties": {
             "element": {"#": "slider-polyfill-example"},
             "result": {"#": "result"}
@@ -258,16 +258,13 @@ Blue:<br>
 
     },
     "red": {
-        "module": "montage/ui/skeleton/range-input.reel",
-        "name": "RangeInput",
+        "module": "montage/lab/skeleton/point/input-range.reel",
+        "name": "InputRange",
         "properties": {
             "element": {"#": "color-red"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "red"
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.red"}
         }
 
     },
@@ -278,25 +275,17 @@ Blue:<br>
             "element": {"#": "redValue"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "red",
-                "converter": {"@": "roundTo2Decimals"},
-                "oneway": true
-            }
+            "value": {"&lt;-": "@owner.red", "converter": {"@": "roundTo2Decimals"}}
         }
     },
     "green": {
-            "module": "montage/ui/skeleton/range-input.reel",
-            "name": "RangeInput",
+            "module": "montage/lab/skeleton/point/input-range.reel",
+            "name": "InputRange",
             "properties": {
                 "element": {"#": "color-green"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "green"
-                }
+                "value": {"&lt;&lt;-&gt;": "@owner.green"}
             }
         },
         "greenValue": {
@@ -306,25 +295,17 @@ Blue:<br>
                 "element": {"#": "greenValue"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "green",
-                    "converter": {"@": "roundTo2Decimals"},
-                    "oneway": true
-                }
+                "value": {"&lt;-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
             }
         },
         "blue": {
-            "module": "montage/ui/skeleton/range-input.reel",
-            "name": "RangeInput",
+            "module": "montage/lab/skeleton/point/input-range.reel",
+            "name": "InputRange",
             "properties": {
                 "element": {"#": "color-blue"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "blue"
-                }
+                "value": {"&lt;&lt;-&gt;": "@owner.blue"}
             }
         },
         "blueValue": {
@@ -334,12 +315,7 @@ Blue:<br>
                 "element": {"#": "blueValue"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "blue",
-                    "converter": {"@": "roundTo2Decimals"},
-                    "oneway": true
-                }
+                "value": {"&lt;-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
             }
         },
         "resultHexValue": {
@@ -349,11 +325,7 @@ Blue:<br>
                 "element": {"#": "result-hex"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "resultHex",
-                    "oneway": true
-                }
+                "value": {"&lt;-": "@owner.resultHex"}
             }
         },
 

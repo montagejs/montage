@@ -12,9 +12,9 @@
             "element": {"#": "img-main"}
         },
         "bindings": {
-            "src": {"<-": "@images[selectedObjects.0.src]"},
-            "title": {"<-": "@images[selectedObjects.0.description]"},
-            "alt": {"<-": "@images[selectedObjects.0.description]"}
+            "src": {"<-": "@images.selectedObjects.0.src"},
+            "title": {"<-": "@images.selectedObjects.0.description"},
+            "alt": {"<-": "@images.selectedObjects.0.description"}
         }
     },
 
@@ -25,8 +25,8 @@
             "element": {"#": "moreLink"}
         },
         "bindings": {
-            "href": {"<-": "@images[selectedObjects.0.href]"},
-            "textContent": {"<-": "@images[selectedObjects.0.href]"}
+            "href": {"<-": "@images.selectedObjects.0.href"},
+            "textContent": {"<-": "@images.selectedObjects.0.href"}
         }
     },
 
@@ -39,7 +39,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {"<-": "@owner[images]"}
+            "content": {"<-": "@owner.images"}
         }
     },
 
@@ -63,7 +63,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {"<-": "@list1[objectAtCurrentIteration.src]"}
+            "src": {"<-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -171,21 +171,9 @@
             "element": {"#": "img-main"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.src",
-                "oneway": true
-            },
-            "title": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.description",
-                "oneway": true
-            },
-            "alt": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.description",
-                "oneway": true
-            }
+            "src": {"&lt;-": "@images.selectedObjects.0.src"},
+            "title": {"&lt;-": "@images.selectedObjects.0.description"},
+            "alt": {"&lt;-": "@images.selectedObjects.0.description"}
         }
     },
 
@@ -196,11 +184,7 @@
             "element": {"#": "moreLink"}
         },
         "bindings": {
-            "href": {
-                "boundObject": {"@": "images"},
-                "boundObjectPropertyPath": "selectedObjects.0.href",
-                "oneway": true
-            }
+            "href": {"&lt;-": "@images.selectedObjects.0.href"}
         }
     },
 
@@ -213,11 +197,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "images",
-                "oneway": true
-            }
+            "content": {"&lt;-": "@owner.images"}
         }
     },
 
@@ -241,11 +221,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "src": {"&lt;-": "@list1.objectAtCurrentIteration.src"}
         }
     }
 

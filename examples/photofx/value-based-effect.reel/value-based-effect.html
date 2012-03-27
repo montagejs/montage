@@ -22,7 +22,7 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@owner[enabled]"}
+                    "pressed": {"<<->": "@owner.enabled"}
                 }
             },
             "effectName": {
@@ -32,7 +32,7 @@
                     "element": {"#": "effectName"}
                 },
                 "bindings": {
-                    "value": {"<<->": "@owner[name]"}
+                    "value": {"<<->": "@owner.name"}
                 }
             },
             "valueSlider": {
@@ -43,9 +43,9 @@
                     "identifier": "valueSlider"
                 },
                 "bindings": {
-                    "value": {"<<->": "@owner[sliderValue]"},
-                    "min": {"<<->": "@owner[minValue]"},
-                    "max": {"<<->": "@owner[maxValue]"}
+                    "value": {"<<->": "@owner.sliderValue"},
+                    "min": {"<<->": "@owner.minValue"},
+                    "max": {"<<->": "@owner.maxValue"}
                 },
                 "listeners": [
                     {
@@ -74,7 +74,7 @@
                     "element": {"#": "valueDisplay"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[value]", "converter": {"@": "numberconverter1"}}
+                    "value": {"<-": "@owner.value", "converter": {"@": "numberconverter1"}}
                 }
             },
             "resetListener": {
@@ -90,7 +90,7 @@
                 "module": "value-based-effect.reel",
                 "name": "ResetAvailableConverter",
                 "bindings": {
-                    "defaultValue": {"<-": "@owner[defaultValue]"}
+                    "defaultValue": {"<-": "@owner.defaultValue"}
                 }
             },
 
@@ -101,7 +101,7 @@
                     "element": {"#": "resetCondition"}
                 },
                 "bindings": {
-                    "condition": {"<-": "@owner[value]", "converter": {"@": "resetAvailableConverter"}}
+                    "condition": {"<-": "@owner.value", "converter": {"@": "resetAvailableConverter"}}
                 }
             },
 

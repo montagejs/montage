@@ -322,6 +322,12 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         this.instantiateWithOwnerAndDocument(component, document, callback);
     }},
 
+    instantiateWithDocument: {
+        value: function(document, callback) {
+            return this.instantiateWithOwnerAndDocument(null, document, callback);
+        }
+    },
+
     _partiallyInstantiateWithInstancesForDocument: {
         value: function(instances, targetDocument, callback) {
             var self = this,

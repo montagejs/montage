@@ -19,7 +19,7 @@
 
                 },
                 "bindings": {
-                    "content": {"<<->": "@owner[tasks]"}
+                    "content": {"<<->": "@owner.tasks"}
                 }
             },
             "taskNoteField": {
@@ -40,7 +40,7 @@
                     }
                 },
                 "bindings": {
-                    "task": {"<<->": "@taskRepetition[objectAtCurrentIteration]"}
+                    "task": {"<<->": "@taskRepetition.objectAtCurrentIteration"}
                 }
             },
             "taskRepetition": {
@@ -65,7 +65,7 @@
                     "converter": {"@": "itemCountConverter"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[unfinishedTasks.count()]"}
+                    "value": {"<-": "@owner.unfinishedTasks.count()"}
                 }
             },
 
@@ -83,7 +83,7 @@
                     }
                 },
                 "bindings": {
-                    "tasksController": {"<-": "@owner[tasksController]"}
+                    "tasksController": {"<-": "@owner.tasksController"}
                 }
             },
 
@@ -94,7 +94,7 @@
                     "element": {"#": "markAllCompleteForm"}
                 },
                 "bindings": {
-                    "condition": {"<-": "@owner[tasksController.organizedObjects.count()]"}
+                    "condition": {"<-": "@owner.tasksController.organizedObjects.count()"}
                 }
             },
 
@@ -105,7 +105,7 @@
                     "element": {"#": "markAllCompleteButton"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner[unfinishedTasks]", "converter": {"@": "markAllReadValueConverter"}}
+                    "value": {"<-": "@owner.unfinishedTasks", "converter": {"@": "markAllReadValueConverter"}}
                 }
             },
 

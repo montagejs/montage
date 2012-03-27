@@ -27,7 +27,7 @@
                         "element": {"#": "note"}
                     },
                     "bindings": {
-                        "value": {"<-": "@owner[task.note]"}
+                        "value": {"<-": "@owner.task.note"}
                     }
                 },
 
@@ -38,7 +38,7 @@
                         "element": {"#": "completedCheckbox"}
                     },
                     "bindings": {
-                        "checked": {"<<->": "@owner[task.completed]"}
+                        "checked": {"<<->": "@owner.task.completed"}
                     }
                 }
             

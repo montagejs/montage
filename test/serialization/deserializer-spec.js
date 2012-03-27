@@ -510,7 +510,7 @@ describe("serialization/deserializer-spec", function() {
                 var root = objects.root,
                     info = Montage.getInfoForObject(root);
 
-                expect(info.moduleId).toBe("serialization/module-name.reel/module-name");
+                expect(info.moduleId).toBe("serialization/module-name.reel");
                 expect(info.objectName).toBe("ModuleName");
                 expect(info.isInstance).toBe(true);
             });

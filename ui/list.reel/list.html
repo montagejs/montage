@@ -18,10 +18,10 @@
             }
         },
         "bindings": {
-            "content": {"<-": "@owner[originalContent]"},
-            "objects": {"<-": "@owner[objects]"},
-            "contentController": {"<-": "@owner[contentController]"},
-            "isSelectionEnabled": {"<-": "@owner[isSelectionEnabled]"}
+            "content": {"<-": "@owner.originalContent"},
+            "objects": {"<-": "@owner.objects"},
+            "contentController": {"<-": "@owner.contentController"},
+            "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}
         }
     },
     "scroller1": {
@@ -33,7 +33,7 @@
             }
         },
         "bindings": {
-            "axis": {"<-": "@owner[axis]"}
+            "axis": {"<-": "@owner.axis"}
         }
     },
     "owner": {
