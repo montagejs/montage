@@ -185,13 +185,13 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
                 deltaY = event.translateY - this._startY;
 
             if (this._direction === "vertical") {
-                this.value = event.translateY - deltaY * 2;
+                this.value = event.translateY;
             } else if (this._direction === "horizontal") {
                 this.value = event.translateX;
             } else {
 
                 if (Math.abs(deltaY) > Math.abs(deltaX)) {
-                    value = event.translateY - deltaY * 2;
+                    value = event.translateY;
                     if (Math.abs(deltaY) > 20) {
                         this._direction = "vertical";
                     }
