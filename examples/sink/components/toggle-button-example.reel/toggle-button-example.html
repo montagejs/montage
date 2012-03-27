@@ -192,21 +192,9 @@
             "element": {"#": "display"}
         },
         "bindings": {
-            "bold": {
-                "boundObject": {"@": "bold"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            },
-            "italic": {
-                "boundObject": {"@": "italic"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            },
-            "underline": {
-                "boundObject": {"@": "underline"},
-                "boundObjectPropertyPath": "pressed",
-                "oneway": true
-            }
+            "bold": {"&lt;-": "@bold.pressed"},
+            "italic": {"&lt;-": "@italic.pressed"},
+            "underline": {"&lt;-": "@underline.pressed"}
         }
     }
 }

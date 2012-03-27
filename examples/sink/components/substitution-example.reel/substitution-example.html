@@ -224,11 +224,7 @@ h1.substitution-content {
             "element": {"#": "nav-item"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "repetition1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration",
-                "oneway": true
-            }
+            "value": {"&lt;-": "@repetition1.objectAtCurrentIteration"}
         }
     },
 
@@ -284,10 +280,7 @@ h1.substitution-content {
             "switchValue": "home"
         },
         "bindings": {
-            "switchValue": {
-                "boundObject": {"@": "controller"},
-                "boundObjectPropertyPath": "selectedObjects.0"
-            }
+            "switchValue": {"&lt;&lt;-&gt;": "@controller.selectedObjects.0"}
         }
     }
 }

@@ -343,20 +343,9 @@
          "dept": {"@": "dept"}
      },
      "bindings": {
-         "selectedCountry": {
-             "boundObject": {"@": "country"},
-             "boundObjectPropertyPath": "contentController.selectedObjects.0",
-             "oneway": true
-         },
-         "selectedState": {
-             "boundObject": {"@": "state"},
-             "boundObjectPropertyPath": "contentController.selectedObjects.0",
-             "oneway": true
-         },
-         "selectedDepts": {
-             "boundObject": {"@": "dept"},
-             "boundObjectPropertyPath": "contentController.selectedObjects"
-         }
+         "selectedCountry": {"&lt;-": "@country.contentController.selectedObjects.0"},
+         "selectedState": {"&lt;-": "@state.contentController.selectedObjects.0"},
+         "selectedDepts": {"&lt;&lt;-&gt;": "@dept.contentController.selectedObjects"}
      }
  },
 
@@ -367,16 +356,8 @@
          "element": {"#": "fname"}
      },
      "bindings": {
-         "value": {
-             "boundObject": {"@": "owner"},
-             "boundObjectPropertyPath": "firstName",
-             "oneway": false
-         },
-         "title": {
-             "boundObject": {"@": "owner"},
-             "boundObjectPropertyPath": "firstName",
-             "oneway": false
-         }
+         "value": {"&lt;&lt;-&gt;": "@owner.firstName"},
+         "title": {"&lt;&lt;-&gt;": "@owner.firstName"}
      }
  },
 
@@ -387,11 +368,7 @@
          "element": {"#": "lname"}
      },
      "bindings": {
-         "value": {
-             "boundObject": {"@": "owner"},
-             "boundObjectPropertyPath": "lastName",
-             "oneway": false
-         }
+         "value": {"&lt;&lt;-&gt;": "@owner.lastName"}
      }
  },
 
@@ -404,11 +381,7 @@
          "valuePropertyPath": "code"
      },
      "bindings": {
-         "content": {
-             "boundObject": {"@": "owner"},
-             "boundObjectPropertyPath": "departments",
-             "oneway": true
-         }
+         "content": {"&lt;-": "@owner.departments"}
      }
  },
 
@@ -684,11 +657,7 @@ Justify selection: &lt;span id="justifyResult"&gt;&lt;/span&gt;<br>
         "pressedClass": "success"
     },
     "bindings": {
-        "pressed": {
-            "boundObject": {"@": "owner"},
-            "boundObjectPropertyPath": "justify",
-            "converter": {"@": "justifyComparatorLeft"}
-        }
+        "pressed": {"&lt;&lt;-&gt;": "@owner.justify", "converter": {"@": "justifyComparatorLeft"}}
     }
 },
 "justifyCenter": {
@@ -699,11 +668,7 @@ Justify selection: &lt;span id="justifyResult"&gt;&lt;/span&gt;<br>
         "pressedClass": "success"
     },
     "bindings": {
-        "pressed": {
-            "boundObject": {"@": "owner"},
-            "boundObjectPropertyPath": "justify",
-            "converter": {"@": "justifyComparatorCenter"}
-        }
+        "pressed": {"&lt;&lt;-&gt;": "@owner.justify", "converter": {"@": "justifyComparatorCenter"}}
     }
 },
 "justifyRight": {
@@ -714,11 +679,7 @@ Justify selection: &lt;span id="justifyResult"&gt;&lt;/span&gt;<br>
         "pressedClass": "success"
     },
     "bindings": {
-        "pressed": {
-            "boundObject": {"@": "owner"},
-            "boundObjectPropertyPath": "justify",
-            "converter": {"@": "justifyComparatorRight"}
-        }
+        "pressed": {"&lt;&lt;-&gt;": "@owner.justify", "converter": {"@": "justifyComparatorRight"}}
     }
 },
 "justifySelect": {
@@ -728,10 +689,7 @@ Justify selection: &lt;span id="justifyResult"&gt;&lt;/span&gt;<br>
         "element": {"#": "justifySelect"}
     },
     "bindings": {
-        "value": {
-            "boundObject": {"@": "owner"},
-            "boundObjectPropertyPath": "justify"
-        }
+        "value": {"&lt;&lt;-&gt;": "@owner.justify"}
     }
 },
 "justifyResult": {

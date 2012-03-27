@@ -299,10 +299,7 @@
             "element": {"#": "input-text-example"}
         },
         "bindings": {
-            "phone": {
-                "boundObject": {"@": "phone"},
-                "boundObjectPropertyPath": "value"
-            }
+            "phone": {"&lt;&lt;-&gt;": "@phone.value"}
         }
     },
 
@@ -313,16 +310,8 @@
             "element": {"#": "fname"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "firstName",
-                "oneway": false
-            },
-            "title": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "firstName",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.firstName"},
+            "title": {"&lt;&lt;-&gt;": "@owner.firstName"}
         }
     },
 
@@ -333,11 +322,7 @@
             "element": {"#": "lname"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "lastName",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.lastName"}
         }
     },
 
@@ -348,11 +333,7 @@
             "element": {"#": "email"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "email",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.email"}
         }
     },
 
@@ -364,11 +345,7 @@
         },
         "bindings": {
 
-            "readonly": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "phoneReadOnly",
-                "oneway": false
-            }
+            "readonly": {"&lt;&lt;-&gt;": "@owner.phoneReadOnly"}
         }
     },
     "editPhone": {
@@ -393,11 +370,7 @@
             "element": {"#": "url"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "url",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.url"}
         }
     },
 
@@ -408,11 +381,7 @@
             "element": {"#": "zip"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "zip",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.zip"}
         }
     },
 
@@ -423,11 +392,7 @@
             "element": {"#": "zip"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "zip",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.zip"}
         }
     },
 
@@ -447,11 +412,7 @@
             "converter": {"@": "dateConverter"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "dob",
-                "oneway": false
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.dob"}
         }
     },
     "dobError": {

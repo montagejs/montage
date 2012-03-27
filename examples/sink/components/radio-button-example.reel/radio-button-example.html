@@ -323,22 +323,12 @@
 
     "veg-binding": {
         "value": {
-            "disabled": {
-                "boundObject": {"@": "veg"},
-                "boundObjectPropertyPath": "checked",
-                "oneway": true,
-                "converter": {"@": "invertConverter"}
-            }
+            "disabled": {"&lt;-": "@veg.checked", "converter": {"@": "invertConverter"}}
         }
     },
     "fruit-binding": {
         "value": {
-            "disabled": {
-                "boundObject": {"@": "fruit"},
-                "boundObjectPropertyPath": "checked",
-                "oneway": true,
-                "converter": {"@": "invertConverter"}
-            }
+            "disabled": {"&lt;-": "@fruit.checked", "converter": {"@": "invertConverter"}}
         }
     },
 
@@ -471,11 +461,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "answers",
-                "oneway": true
-            }
+            "content": {"&lt;-": "@owner.answers"}
         }
     },
 
@@ -498,10 +484,7 @@
             "element": {"#": "answer-selection"}
         },
         "bindings": {
-            "checked": {
-                "boundObject": {"@": "list2"},
-                "boundObjectPropertyPath": "selectionAtCurrentIteration"
-            }
+            "checked": {"&lt;&lt;-&gt;": "@list2.selectionAtCurrentIteration"}
         }
     },
 
@@ -512,11 +495,7 @@
             "element": {"#": "answer-text"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "list2"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration",
-                "oneway": true
-            }
+            "value": {"&lt;-": "@list2.objectAtCurrentIteration"}
         }
     },
 
@@ -527,10 +506,7 @@
             "element": {"#": "selected-answer"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "selectedAnswer"
-            }
+            "value": {"&lt;&lt;-&gt;": "@owner.selectedAnswer"}
         }
     },
 
@@ -545,10 +521,7 @@
             ]
         },
         "bindings": {
-            "selectedAnswer": {
-                "boundObject": {"@": "answersController"},
-                "boundObjectPropertyPath": "selectedObjects.0"
-            }
+            "selectedAnswer": {"&lt;&lt;-&gt;": "@answersController.selectedObjects.0"}
         }
     }
 }
