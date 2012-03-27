@@ -1,10 +1,7 @@
 {
-    "name": "loader",
+    "name": "montage-loader-example",
     "version": "0.0.0",
-    "mappings": {
-        "montage": "../../"
-    },
-    "directories": {
-        "lib": ""
+    "dependencies": {
+        "montage": "*"
     }
 }

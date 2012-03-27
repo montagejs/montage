@@ -417,10 +417,10 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
             if (owner) {
                 if (typeof owner._templateDidLoad === "function") {
-                    owner._templateDidLoad();
+                    owner._templateDidLoad(this);
                 }
                 if (typeof owner.templateDidLoad === "function") {
-                    owner.templateDidLoad();
+                    owner.templateDidLoad(this);
                 }
             }
         }
@@ -988,5 +988,12 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         if (_extends) {
             this._extends = _extends;
         }
-    }}
+    }},
+
+    title: {
+        get: function () {
+            return this._document.querySelector("head title").innerHTML;
+        }
+    }
+
 });

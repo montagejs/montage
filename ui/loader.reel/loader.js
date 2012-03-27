@@ -216,7 +216,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     // Implementation
 
     templateDidLoad: {
-        value: function() {
+        value: function(template) {
 
             if (logger.isDebug) {
                 logger.debug(this, "templateDidLoad");
@@ -343,6 +343,13 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
             this.childComponents.push(this._mainComponent);
             this._mainComponent.setElementWithParentComponent(document.createElement("div"), this);
             this._mainComponent.needsDraw = true;
+            this._mainComponent.templateDidLoad = (function (previous) {
+                return function () {
+                    if (previous)
+                        previous.apply(this, arguments);
+                    window.document.title = this._template.title;
+                };
+            })(this._mainComponent.templateDidLoad);
         }
     },
 
