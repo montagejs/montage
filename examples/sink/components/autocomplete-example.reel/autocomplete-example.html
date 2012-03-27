@@ -14,33 +14,6 @@
                     "name": "AutocompleteExample",
                     "properties": {
                         "element": {"#": "autocomplete-example"}
-                    },
-                    "bindings": {
-                        "info": {
-                            "boundObject": {"@": "info"},
-                            "boundObjectPropertyPath": "value"
-                        },
-                        "selectedStates": {"<-": "@state[tokens]"}
-                    }
-                },
-
-                "country": {
-                    "module": "montage/ui/autocomplete/autocomplete.reel",
-                    "name": "Autocomplete",
-                    "properties": {
-                        "element": {"#": "country"},
-                        "identifier": "country",
-                        "delegate": {"@": "owner"}
-                    },
-                    "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "country"
-                        },
-                        "title": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "country"
-                        }
                     }
                 },
 
@@ -50,15 +23,11 @@
                     "properties": {
                         "element": {"#": "state"},
                         "identifier": "state",
-                        "delay": "1000",
+                        "delay": "500",
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "state",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner.states"}
                     }
                 },
 
@@ -72,11 +41,7 @@
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "members",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner.members"}
                     }
                 },
 
@@ -101,11 +66,14 @@
                         "element": {"#": "echo"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "json",
-                            "oneway": "true"
-                        }
+                        "value": {"<-": "@owner.json"}
+                    }
+                },
+                "autocompleteAccordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "autocomplete-accordion1"}
                     }
                 }
             }
@@ -132,9 +100,6 @@
                     <p>
                         The Autocomplete component wraps an HTML <code>&lt;Autocomplete></code> element.
                     </p>
-                    <p>
-                        <a href="" target="_blank">View Documentation</a>
-                    </p>
                 </div>
             </div>
 
@@ -142,13 +107,12 @@
             <div class="demo">
 
                 <form class="form-stacked">
-                     <label for="country">Country</label>
-                     <input type="text" placeholder="Select your Country" id="country" required   style="width: 300px;" />
-                     <label for="state">State</label>
-                     <input type="text" placeholder="Select the State" id="state"  style="width: 300px;" />
 
-                     <label for="members">Fetching data from remote data source (type "Ari" or "Mar" to see results).</label>
-                     <input type="text" placeholder="Select members" id="members"  style="width: 300px;" />
+                     <label for="state">State: Suggestions from in-memory data</label>
+                     <input type="text" placeholder="Select the State" data-montage-id="state"  style="width: 300px;" />
+
+                     <label for="members">Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).</label>
+                     <input type="text" placeholder="Select members" data-montage-id="members"  style="width: 300px;" />
 
                      <div style="margin-top: 10px;">
                           <button class="btn" id="update" type="button">Update</button>
@@ -161,54 +125,240 @@
             </div>
 
             <section>
-                <a href="m-js/examples/sink/components/input-text-example.reel" target="_blank">View Demo Source</a>
+
+                                <ul id="autocomplete-accordion1" class="accordion">
+                                   <li class="accordion-group">
+                                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                       <div class="accordion-inner montage-hidden" >
+                                            <pre class="prettyprint" >
+&lt;div class="demo"&gt;<br>
+<br>
+&lt;form class="form-stacked"&gt;<br>
+<br>
+&lt;label for="state"&gt;State: Suggestions from in-memory data&lt;/label&gt;<br>
+&lt;input type="text" placeholder="Select the State" id="state" style="width: 300px;" /&gt;<br>
+<br>
+&lt;label for="members"&gt;Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).&lt;/label&gt;<br>
+&lt;input type="text" placeholder="Select members" id="members" style="width: 300px;" /&gt;<br>
+<br>
+&lt;div style="margin-top: 10px;"&gt;<br>
+&lt;button class="btn" id="update" type="button"&gt;Update&lt;/button&gt;<br>
+&lt;/div&gt;<br>
+<br>
+&lt;/form&gt;<br>
+<br>
+&lt;div id="echo"&gt;&lt;/div&gt;<br>
+<br>
+&lt;/div&gt;
+
+                                            </pre>
+                                       </div>
+                                   </li>
+                                   <li class="accordion-group">
+                                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                       <div class="accordion-inner montage-hidden">
+                                        <pre class="prettyprint" >
+{
+    "owner": {
+        "module": "components/autocomplete-example.reel",
+        "name": "AutocompleteExample",
+        "properties": {
+            "element": {"#": "autocomplete-example"}
+        },
+        "bindings": {
+            "info": {
+                "boundObject": {"@": "info"},
+                "boundObjectPropertyPath": "value"
+            },
+            "selectedStates": {"<-": "@state[tokens]"}
+        }
+    },
+
+    "state": {
+        "module": "montage/ui/autocomplete/autocomplete.reel",
+        "name": "Autocomplete",
+        "properties": {
+            "element": {"#": "state"},
+            "identifier": "state",
+            "delay": "1000",
+            "delegate": {"@": "owner"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "state",
+                "oneway": false
+            }
+        }
+    },
+
+    "members": {
+        "module": "montage/ui/autocomplete/autocomplete.reel",
+        "name": "Autocomplete",
+        "properties": {
+            "element": {"#": "members"},
+            "identifier": "members",
+            "minLength": 2,
+            "delegate": {"@": "owner"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "members",
+                "oneway": false
+            }
+        }
+    },
+
+    "update": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "update"},
+            "identifier": "update"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "echo": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "echo"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "json",
+                "oneway": "true"
+            }
+        }
+    }
+}
+                                        </pre>
+
+                                       </div>
+                                   </li>
+                                   <li class="accordion-group">
+                                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                       <div class="accordion-inner montage-hidden">
+                                           <pre class="prettyprint" >
+exports.AutocompleteExample = Montage.create(Component, {
+
+   json: {value: null},
+   state: {value: null},
+   selectedStates: {value: null},
+   members: {value: null},
+   info: {value: null},
+
+   _cachedStates: {value: null},
+
+   stateShouldGetSuggestions: {
+       value: function(autocomplete, searchTerm) {
+           var results = [];
+           if(searchTerm) {
+               var term = searchTerm.toLowerCase();
+               if(this._cachedStates && this._cachedStates[term]) {
+                   results = this._cachedStates;
+               } else {
+                   results = states.filter(function(item) {
+                       // @todo - memoize
+                       return (item.name.toLowerCase().indexOf(term) >= 0 || item.code.indexOf(term) >= 0);
+                   });
+                   this._cachedStates = results;
+               }
+           }
+           autocomplete.suggestions = results.map(function(item) {
+               return item.name;
+           });
+       }
+   },
+
+   membersShouldGetSuggestions: {
+       value: function(autocomplete, searchTerm) {
+           var results = [];
+           // The data set is based on https://www.google.com/fusiontables/DataSource?docid=1QJT7Wi2oj5zBgjxb2yvZWA42iNPUvnvE8ZOwhA
+           // Google fusion tables # 383121. However Google's API returns a CSV. So need to use this app to convert to json
+           var query = "SELECT FirstName,LastName from 383121 where FirstName like '%" + searchTerm + "%'"; //" OR LastName like '%" + searchTerm + "%'";
+           var uri = 'http://ft2json.appspot.com/q?sql=' + encodeURIComponent(query);
+
+           console.log('searching ...', uri);
+           var xhr = request(uri, 'get');
+           xhr.onload = function(e) {
+              try {
+                  var data;
+                  data = JSON.parse(this.response).data;
+                  var result = [];
+                  if(data && data.length > 0) {
+                      result = data.map(function(item) {
+                          return item.FirstName + ' ' + item.LastName;
+                      });
+                  }
+                  autocomplete.suggestions = result;
+
+              } catch(e) {
+                  autocomplete.suggestions = [];
+              }
+
+           };
+           xhr.ontimeout = function() {
+              console.log('xhr timed out');
+              autocomplete.suggestions = [];
+           };
+           xhr.onerror = function(e) {
+               console.log('xhr errored out');
+              autocomplete.suggestions = [];
+           };
+
+           /*
+           JSONP.request(, null, function(data) {
+               var result = [];
+               console.log('received data', data);
+               if(data && data.length > 0) {
+                   result = data.result.places.map(function(item) {
+                       return item.FirstName;
+                   });
+               }
+               console.log('result', result);
+               autocomplete.suggestions = result;
+           });
+           */
+
+       }
+   },
+
+   prepareForDraw: {
+       value: function() {
+           this.state = "Bar";
+       }
+   },
+
+   handleUpdateAction: {
+       value: function(event) {
+           console.log('data: ', this);
+           this.json = JSON.stringify({
+               state: this.state,
+               members: this.members
+           });
+       }
+   }
+});
+
+                                           </pre>
+                                       </div>
+                                   </li>
+                                </ul>
             </section>
 
             <section>
-                <h4>Component Properties</h4>
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Name</th>
-                      <th>Description</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>value</td>
-                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                    </tr>
-                    <tr>
-                      <td>converter</td>
-                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                    </tr>
-                    <tr>
-                      <td>error</td>
-                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                    </tr>
-                    <tr>
-                      <td>disabled</td>
-                      <td>...</td>
-                    </tr>
-                    <tr>
-                      <td>readonly</td>
-                      <td>...</td>
-                    </tr>
-                    <tr>
-                      <td>name</td>
-                      <td>...</td>
-                    </tr>
-
-                    <tr>
-                      <td>required</td>
-                      <td>...</td>
-                    </tr>
-                  </tbody>
-                </table>
-                <p>
-                    <a href="" target="_blank">View full Documentation</a>
-                </p>
+                <a href="m-js/examples/sink/components/autocomplete-example.reel" target="_blank">View Demo Source</a>
             </section>
+
+
 
     </body>
 </html>

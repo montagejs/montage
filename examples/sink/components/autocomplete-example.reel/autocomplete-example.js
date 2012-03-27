@@ -103,39 +103,11 @@ var jsonp = function(uri, params, callback) {
 exports.AutocompleteExample = Montage.create(Component, {
 
     json: {value: null},
-
-    country: {value: null},
-    state: {value: null},
-    selectedStates: {value: null},
+    states: {value: null},
     members: {value: null},
     info: {value: null},
     
     _cachedStates: {value: null},
-
-    countryShouldGetSuggestions: {
-        value: function(autocomplete, searchTerm) {
-
-            var results = [];
-            searchTerm = searchTerm.toLowerCase();
-
-            if(searchTerm.indexOf('a') === 0) {
-                results = ['Afghanistan', 'Algeria', 'Armenia'];
-            } else if(searchTerm.indexOf('b') === 0) {
-                results = ['Bosnia', 'Belarus'];
-            } else {
-                results = ['USA', 'India'];
-            }
-
-            //autocomplete.suggestions = results;
-            // to simulate API call
-
-            setTimeout(function() {
-                autocomplete.suggestions = results;
-            }, 1000);
-
-
-        }
-    },
 
     stateShouldGetSuggestions: {
         value: function(autocomplete, searchTerm) {
@@ -143,13 +115,16 @@ exports.AutocompleteExample = Montage.create(Component, {
             if(searchTerm) {
                 var term = searchTerm.toLowerCase();
                 if(this._cachedStates && this._cachedStates[term]) {
-                    results = this._cachedStates;
+                    results = this._cachedStates[term];
                 } else {
                     results = states.filter(function(item) {
                         // @todo - memoize
                         return (item.name.toLowerCase().indexOf(term) >= 0 || item.code.indexOf(term) >= 0);
                     });
-                    this._cachedStates = results;
+                    if(this._cachedStates == null) {
+                        this._cachedStates = {};
+                    }
+                    this._cachedStates[term] = results;
                 }                
             }
             autocomplete.suggestions = results.map(function(item) {
@@ -166,7 +141,7 @@ exports.AutocompleteExample = Montage.create(Component, {
             var query = "SELECT FirstName,LastName from 383121 where FirstName like '%" + searchTerm + "%'"; //" OR LastName like '%" + searchTerm + "%'";
             var uri = 'http://ft2json.appspot.com/q?sql=' + encodeURIComponent(query);
                         
-            console.log('searching ...', uri);
+            //console.log('searching ...', uri);
             var xhr = request(uri, 'get');
             xhr.onload = function(e) {
                try {
@@ -194,7 +169,6 @@ exports.AutocompleteExample = Montage.create(Component, {
                autocomplete.suggestions = [];
             };
             
-
             /*
             JSONP.request(, null, function(data) {
                 var result = [];
@@ -214,8 +188,7 @@ exports.AutocompleteExample = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
-            this.country = "Foo";
-            this.state = "Bar";
+            this.states = "Bar";
         }
     },
 
@@ -223,11 +196,8 @@ exports.AutocompleteExample = Montage.create(Component, {
         value: function(event) {   
             console.log('data: ', this);         
             this.json = JSON.stringify({
-                country: this.country,
-                state: this.state,
-                members: this.members,
-                info: this.info
-
+                state: this.states,
+                members: this.members
             });
         }
     }

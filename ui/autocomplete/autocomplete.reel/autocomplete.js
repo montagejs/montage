@@ -53,11 +53,12 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         value: null
     },
 
+    /*
     multiple: {
         value: null
     },
+    */
 
-    // Used if multiple = true
     separator: {
         value: ',',
         distinct: true
@@ -444,7 +445,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 this._valueSyncedWithInputField = true;
             }
 
-            console.log('DRAW called ', this.showPopup);
+            //console.log('DRAW called ', this.showPopup);
 
             if(this.showPopup) {
                 this.popup.show();
