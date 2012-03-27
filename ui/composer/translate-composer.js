@@ -241,17 +241,38 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    _invertAxis: {
+    invertAxis: {
+        depends: ["invertXAxis", "invertYAxis"],
+        get: function() {
+            return (this._invertXAxis === this._invertYAxis) ? this._invertXAxis : null;
+        },
+        set: function(value) {
+            this.invertXAxis = value;
+            this.invertYAxis = value;
+        }
+    },
+    _invertXAxis: {
         value: false,
         enumerable: false
     },
-
-    invertAxis: {
+    invertXAxis: {
         get: function() {
-            return this._invertAxis;
+            return this._invertXAxis;
         },
         set: function(value) {
-            this._invertAxis = !!value;
+            this._invertXAxis = !!value;
+        }
+    },
+    _invertYAxis: {
+        value: false,
+        enumerable: false
+    },
+    invertYAxis: {
+        get: function() {
+            return this._invertYAxis;
+        },
+        set: function(value) {
+            this._invertYAxis = !!value;
         }
     },
 
@@ -593,11 +614,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             this._isSelfUpdate = true;
             var oldX = this._translateX, oldY = this._translateY;
             if (this._axis != "vertical") {
-                pointerDelta = this._invertAxis ? (this._pointerX - x) : (x - this._pointerX);
+                pointerDelta = this._invertXAxis ? (this._pointerX - x) : (x - this._pointerX);
                 this.translateX += pointerDelta * this._pointerSpeedMultiplier;
             }
             if (this._axis != "horizontal") {
-                pointerDelta = this._invertAxis ? (this._pointerY - y) : (y - this._pointerY);
+                pointerDelta = this._invertYAxis ? (this._pointerY - y) : (y - this._pointerY);
                 this.translateY += pointerDelta * this._pointerSpeedMultiplier;
             }
             this._isSelfUpdate = false;
@@ -696,12 +717,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             endY = startY;
             if ((this._hasMomentum) && (event.velocity.speed > 40)) {
                 if (this._axis != "vertical") {
-                    momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertAxis ? 1 : -1);
+                    momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                 } else {
                     momentumX = 0;
                 }
                 if (this._axis != "horizontal") {
-                    momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertAxis ? 1 : -1);
+                    momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
                 } else {
                     momentumY = 0;
                 }
