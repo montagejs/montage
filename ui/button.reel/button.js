@@ -23,11 +23,11 @@ var Montage = require("montage").Montage,
     @extends module:montage/native-control.NativeControl
     @example
 <caption>JavaScript example</caption>
-
-
 var b1 = Button.create();
 b1.element = document.querySelector("btnElement");
-b1.addEventListener("action", this);
+b1.addEventListener("action", function(event) {
+    console.log("Got event 'action' event");
+});
     @example
 <caption>Serialized example</caption>
 {
@@ -35,7 +35,16 @@ b1.addEventListener("action", this);
         "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "btnElement"}
-        }
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "appListener"}
+            }
+        ]
+    },
+    "listener": {
+        "prototype": "appListener"
     }
 }
 &lt;button data-montage-id="btnElement"></button>
@@ -51,6 +60,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     Specifies whether the button should receive focus or not.
     @type {boolean}
     @default false
+    @event longpress
 */
     preventFocus: {
         get: function () {
@@ -81,7 +91,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     },
 
     /**
-        A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to <code>label</code>, the converter object's <code>convert()</code> method is invoked.
+        A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to <code>label</code>, the converter object's <code>convert()</code> method is invoked, passing it the newly assigned label value.
         @type {Property}
         @default null
     */
@@ -157,7 +167,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     },
 
     /**
-        True when the button is being interacted with, either through mouse click or touch event.
+        This property is true when the button is being interacted with, either through mouse click or touch event, otherwise false.
         @type {boolean}
         @default false
     */
@@ -249,6 +259,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
 
     /**
     Called when all interaction is over.
+    @private
     */
     handlePresscancel: {
         value: function(event) {
@@ -310,6 +321,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     /**
     Draws the label to the DOM.
     @function
+    @private
     */
     _drawLabel: {
         enumerable: false,
@@ -357,16 +369,82 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
  {@link holdTimeout}.
  */
 
-Button.addAttributes({
+Button.addAttributes( /** @lends module:"montage/ui/button.reel".Button# */{
+
+/**
+    Specifies whether the button should be focused as soon as the page is loaded.
+    @type {boolean}
+    @default false
+*/
     autofocus: {value: false, dataType: 'boolean'},
+
+/**
+    When true, the button is disabled to user input and "disabled" is added to its CSS class list.
+    @type {boolean}
+    @default false
+*/
     disabled: {value: false, dataType: 'boolean'},
+
+/**
+    The value of the id attribute of the form with which to associate the component's element.
+    @type string}
+    @default null
+*/
     form: null,
+
+/**
+    The URL to which the form data will be sumbitted.
+    @type {string}
+    @default null
+*/
     formaction: null,
+
+/**
+    The content type used to submit the form to the server.
+    @type {string}
+    @default null
+*/
     formenctype: null,
+
+/**
+    The HTTP method used to submit the form.
+    @type {string}
+    @default null
+*/
     formmethod: null,
+
+/**
+    Indicates if the form should be validated upon submission.
+    @type {boolean}
+    @default null
+*/
     formnovalidate: null,
+
+/**
+    The target frame or window in which the form output should be rendered.
+    @type string}
+    @default null
+*/
     formtarget: null,
+
+/**
+    A string indicating the input type of the component's element.
+    @type {string}
+    @default "button"
+*/
     type: {value: 'button'},
+
+/**
+    The name associated with the component's DOM element.
+    @type {string}
+    @default null
+*/
     name: null,
+
+/**
+    The value associated with the element.
+    @type {string}
+    @default null
+*/
     value: null
 });

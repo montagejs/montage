@@ -31,6 +31,8 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
 
 /**
     The HTML element associated with the NativeControl instance.
+    @type {element}
+    @default null
 */
     element: {
         serializable: true,

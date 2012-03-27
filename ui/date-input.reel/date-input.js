@@ -38,7 +38,7 @@ DateInput.addAttributes( /** @lends module:"montage/ui/date-input.reel".DateInpu
     min: null,
 
 /**
-	The value granularity of the element’s value.
+	The amount the date changes with each step.
 	@type {string|number}
 	@default null
 */

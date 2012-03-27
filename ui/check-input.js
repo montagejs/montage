@@ -17,7 +17,7 @@ var Montage = require("montage").Montage,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
 /**
-    The base class for the Checkbox component. You will not typically create this class directly.
+    The base class for the Checkbox component. You will not typically create this class directly but instead use the Checkbox component.
     @class module:montage/ui/text-input.CheckInput
     @extends module:montage/ui/native-control.NativeControl
     @see module:"montage/ui/checkbox.reel".CheckBox

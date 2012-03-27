@@ -44,7 +44,7 @@ Checkbox.addAttributes( /** @lends module:"montage/ui/checkbox.reel".Checkbox# *
     checked: {value: false, dataType: 'boolean'},
 
 /**
-    The value of the id attribute on the form with which to associate the element.
+    The value of the id attribute of the form with which to associate the element.
     @type {string}
     @default null
 */

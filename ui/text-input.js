@@ -102,8 +102,9 @@ value: {
 
 /**
     A reference to a Converter object whose <code>revert()</code> function is invoked when a new value is assigned to the TextInput object's <code>value</code> property. The revert() function attempts to transform the newly assigned value into a "typed" data property. For instance, a DateInput component could assign a DateConverter object to this property to convert a user-supplied date string into a standard date format.
-    @type {Property}
+    @type {Converter}
     @default null
+    @see {@link module:montage/core/converter.Converter}
 */
     converter:{
         value: null
