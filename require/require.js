@@ -269,6 +269,10 @@
                 }
             };
 
+            require.injectPackageDescription = function (location, description) {
+                Require.injectPackageDescription(location, description, config);
+            };
+
             require.identify = identify;
             require.inject = inject;
             require.progress = Require.progress;
@@ -292,6 +296,32 @@
         initializedModules: []
     };
 
+    Require.injectPackageDescription = function (location, description, config) {
+        var descriptions = config.descriptions = config.descriptions || {};
+        descriptions[location] = Promise.call(function () {
+            return description;
+        });
+    };
+
+    Require.loadPackageDescription = function (location, config) {
+        var descriptions = config.descriptions = config.descriptions || {};
+        if (descriptions[location] === void 0) {
+            var jsonPath = URL.resolve(location, 'package.json');
+            descriptions[location] = Require.read(jsonPath)
+            .then(function (json) {
+                try {
+                    return JSON.parse(json);
+                } catch (exception) {
+                    throw new SyntaxError(
+                        "in " + JSON.stringify(jsonPath) + ": " +
+                        exception.message
+                    );
+                }
+            });
+        }
+        return descriptions[location];
+    };
+
     Require.loadPackage = function (location, config) {
         location = URL.resolve(location, ".");
         config = config || {};
@@ -313,17 +343,8 @@
             dependency = normalizeDependency(dependency, viaConfig);
             var location = dependency.location;
             if (!loadingPackages[location]) {
-                var jsonPath = URL.resolve(location, 'package.json');
-                loadingPackages[location] = Require.read(jsonPath)
-                .then(function (json) {
-                    try {
-                        var packageDescription = JSON.parse(json);
-                    } catch (exception) {
-                        throw new SyntaxError(
-                            "in " + JSON.stringify(jsonPath) + ": " +
-                            exception.message
-                        );
-                    }
+                loadingPackages[location] = Require.loadPackageDescription(location, config)
+                .then(function (packageDescription) {
                     var subconfig = configurePackage(
                         location,
                         packageDescription,
