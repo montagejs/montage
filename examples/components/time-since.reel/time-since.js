@@ -14,21 +14,31 @@ var TimeSince = exports.TimeSince = Montage.create(Component, {
 
     didCreate: {
         value: function() {
-            this.time = new Date;
+            this._time = new Date;
         }
     },
 
-    time: {
+    _time: {
         value: null
     },
 
+    time: {
+        serializable: true,
+        get: function() {
+            return this._time;
+        },
+        set: function(value) {
+            this._time = new Date(value);
+            this._lastTimeDelta = null;
+            this.needsDraw = true;
+        }
+    },
+
     _lastTimeDelta: {
-        enumerable: false,
         value: null
     },
 
     _timeInterval: {
-        enumerable: false,
         value: null
     },
 
