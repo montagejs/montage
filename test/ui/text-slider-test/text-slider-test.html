@@ -33,6 +33,24 @@
         }
     },
 
+    "hex": {
+        "prototype": "montage/ui/text-slider.reel",
+        "properties": {
+            "element": {"#": "hex"},
+            "minValue": 0,
+            "maxValue": 255,
+            "converter": {"@": "hexConverter"}
+        }
+    },
+
+    "hexConverter": {
+        "prototype": "montage/core/converter/converter",
+        "properties": {
+            "convert": {"->": {"arguments": ["value"], "body": "return value.toString(16).toUpperCase()"}},
+            "revert": {"->": {"arguments": ["value"], "body": "return parseInt(value, 16)"}}
+        }
+    },
+
     "test": {
         "module": "ui/text-slider-test/text-slider-test",
         "name": "TextSliderTest",
@@ -55,9 +73,10 @@
 <body>
     <h1>TextSlider test</h1>
 
-    <div data-montage-id="number"></div>
-    <div data-montage-id="percent"></div>
-    <div data-montage-id="multiple"></div>
+    Infinite: <span data-montage-id="number"></span><br/>
+    Percent: <span data-montage-id="percent" style="width: 50px;"></span><br/>
+    <span data-montage-id="multiple"></span><br/>
+    Hex: <span data-montage-id="hex"></span>
 
 </body>
 </html>

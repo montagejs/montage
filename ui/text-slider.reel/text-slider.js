@@ -12,9 +12,20 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
 
     // Properties
 
-    converter: {
+    _converter: {
         enumerable: false,
         value: null
+    },
+    converter: {
+        get: function() {
+            return this._converter;
+        },
+        set: function(value) {
+            if (this._converter !== value) {
+                this._converter = value;
+                this.needsDraw = true;
+            }
+        }
     },
 
     _value: {
@@ -26,6 +37,10 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
             return this._value;
         },
         set: function(value) {
+            if (isNaN(value = parseFloat(value))) {
+                return false;
+            }
+
             if (this._minValue && value < this._minValue) {
                 value = this._minValue;
             } else if (this._maxValue && value > this._maxValue) {
@@ -34,10 +49,28 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
 
             if (this._value !== value) {
                 this._value = value;
+                this._translateComposer.translateX = value;
+                this._translateComposer.translateY = value;
                 this.needsDraw = true;
             }
         }
     },
+
+    convertedValue: {
+        dependencies: ["value", "converter"],
+        get: function() {
+            // TODO catch errors from conversion?
+            return (this._converter) ? this._converter.convert(this._value) : this._value;
+        },
+        set: function(value) {
+            if (this._converter) {
+                this.value = this._converter.revert(value);
+            } else {
+                this.value = value;
+            }
+        }
+    },
+
     _minValue: {
         enumerable: false,
         value: null
@@ -148,26 +181,54 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         enumerable: false,
         value: null
     },
+    _isEditing: {
+        enumerable: false,
+        value: false
+    },
 
     // draw
 
+    prepareForDraw: {
+        value: function() {
+            this._input.element.addEventListener("blur", this, false);
+        }
+    },
+
+    draw: {
+        value: function() {
+            if (this._isEditing) {
+                this._element.classList.add("montage-text-slider-editing");
+                console.log(this._unit);
+                this._input.value = this.convertedValue + ((this._unit) ? " " + this._unit : "");
+                // Replace this with just focus when merged
+                this._input.element.focus();
+            } else {
+                this._element.classList.remove("montage-text-slider-editing");
+            }
+        }
+    },
 
     // handlers
 
     surrenderPointer: {
         value: function(pointer, component) {
-            // if the value is being changed don't allow anything to take it
-            // TODO check what happens when the translate composer takes the
-            // pointer
-            console.log("text-slider surrenderPointer");
-            //return false;
+            // Don't allow the value to be dragged when we're being edited.
+            return !this._isEditing;
         }
     },
 
     handlePress: {
         value: function(event) {
-            console.log("handlePress", event);
+            this._isEditing = true;
+            this.needsDraw = true;
+        }
+    },
 
+    handleBlur: {
+        value: function(event) {
+            this._isEditing = false;
+            this.convertedValue = this._input.value;
+            this.needsDraw = true;
         }
     },
 
@@ -203,13 +264,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
                 }
                 this.value = value;
             }
-        }
-    },
-    handleTranslateEnd: {
-        value: function(event) {
-            // sync the values for the next change
-            this._translateComposer.translateX = this._value;
-            this._translateComposer.translateY = this._value;
         }
     }
 

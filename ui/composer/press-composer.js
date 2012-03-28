@@ -239,18 +239,19 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                 // in surrenderPointer, just end the interaction.
                 this._endInteraction(event);
                 return;
-            }
+            } else if (event.type === "mouseup") {
 
-            if (!isSurrendered && isTarget && event.type === "mouseup") {
-                this._dispatchPress(event);
-                this._endInteraction(event);
-                return;
-            }
-
-            if (!isSurrendered && !isTarget && event.type === "mouseup") {
-                this._dispatchPressCancel(event);
-                this._endInteraction(event);
-                return;
+                if (!isSurrendered && isTarget) {
+                    this._dispatchPress(event);
+                    this._endInteraction(event);
+                    return;
+                } else if (!isSurrendered && !isTarget) {
+                    this._dispatchPressCancel(event);
+                    this._endInteraction(event);
+                    return;
+                } else if (isSurrendered && !isTarget) {
+                    this._endInteraction(event);
+                }
             }
         }
     },
