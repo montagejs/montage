@@ -182,6 +182,12 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         //dependencies: ["_selectedIndexes"]
     },
 
+    // HTMLSelectElement methods
+
+    // add() and remove() deliberately omitted. Use the contentController instead
+    blur: { value: function() { this._element.blur(); } },
+    focus: { value: function() { this._element.focus(); } },
+
     // -------------------
     // Montage Callbacks
     // --------------------

@@ -153,6 +153,13 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, {
         }
     },
 
+    // HTMLInputElement methods
+
+    blur: { value: function() { this._element.blur(); } },
+    focus: { value: function() { this._element.focus(); } },
+    // select() defined where it's allowed
+    // click() deliberately omitted, use focus() instead
+
     // Callbacks
     /**
     Description TODO
