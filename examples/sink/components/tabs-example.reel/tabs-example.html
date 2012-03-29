@@ -215,16 +215,16 @@
                 margin: 20px;
             }
             /* display tabs2's navigation as a vertical tab */
-            #tabs2 .tabs2-nav .montage-tabs-list li {
+            .tabs2 .tabs2-nav .montage-tabs-list li {
                 display: block;
             }
 
-            #tabs2 .tabs2-nav {
+            .tabs2 .tabs2-nav {
                 float: left;
                 margin-top: 20px;
             }
 
-            #tabs2 .tabs2-content {
+            .tabs2 .tabs2-content {
                 float: left;
             }
 
@@ -241,7 +241,7 @@
         </style>
     </head>
     <body>
-        <div id="tabs-example" class="tabs-example">
+        <div data-montage-id="tabs-example" class="tabs-example">
             <div class="row">
                 <div class="span10">
                     <h3>Tabs</h3>
@@ -254,34 +254,34 @@
 
             <div class="demo horizontal">
 
-                <div id="tabs1" class="tab-view">
-                    <div id="tabs1-nav">
-                        <img id="tabs1-nav-icon" />
-                        <span id="tabs1-nav-text" class="nav-text" />
+                <div data-montage-id="tabs1" class="tab-view">
+                    <div data-montage-id="tabs1-nav">
+                        <img data-montage-id="tabs1-nav-icon" />
+                        <span data-montage-id="tabs1-nav-text" class="nav-text" />
                     </div>
-                    <div id="tabs1-content" class="tabs1-content tabs-content">
-                        <div id="tabs1-one">One</div>
-                        <div id="tabs1-two">Two</div>
-                        <img id="tabs1-three" />
+                    <div data-montage-id="tabs1-content" class="tabs1-content tabs-content">
+                        <div data-montage-id="tabs1-one">One</div>
+                        <div data-montage-id="tabs1-two">Two</div>
+                        <img data-montage-id="tabs1-three" />
                     </div>
                 </div>
             </div>
 
             <section>
-                <ul id="tabs-accordion1" class="accordion">
+                <ul data-montage-id="tabs-accordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
-&lt;div id="tabs1" class="tab-view"&gt;
-    &lt;div id="tabs1-nav"&gt;
-        &lt;img id="tabs1-nav-icon" /&gt;
-        &lt;span id="tabs1-nav-text" class="nav-text" /&gt;
+&lt;div data-montage-id="tabs1" class="tab-view"&gt;
+    &lt;div data-montage-id="tabs1-nav"&gt;
+        &lt;img data-montage-id="tabs1-nav-icon" /&gt;
+        &lt;span data-montage-id="tabs1-nav-text" class="nav-text" /&gt;
     &lt;/div&gt;
-    &lt;div id="tabs1-content" class="tabs1-content tabs-content"&gt;
-        &lt;div id="tabs1-one"&gt;One&lt;/div&gt;
-        &lt;div id="tabs1-two"&gt;Two&lt;/div&gt;
-        &lt;img id="tabs1-three" /&gt;
+    &lt;div data-montage-id="tabs1-content" class="tabs1-content tabs-content"&gt;
+        &lt;div data-montage-id="tabs1-one"&gt;One&lt;/div&gt;
+        &lt;div data-montage-id="tabs1-two"&gt;Two&lt;/div&gt;
+        &lt;img data-montage-id="tabs1-three" /&gt;
     &lt;/div&gt;
 &lt;/div&gt;
                             </pre>
@@ -421,36 +421,36 @@
 
             <h5>Vertical tabs with icons</h5>
             <div class="demo vertical">
-                <div id="tabs2" class="tab-view clearfix">
+                <div data-montage-id="tabs2" class="tab-view clearfix tabs2">
 
-                    <div id="tabs2-nav" class="tabs2-nav">
-                        <img id="tabs2-nav-icon" />
+                    <div data-montage-id="tabs2-nav" class="tabs2-nav">
+                        <img data-montage-id="tabs2-nav-icon" />
                     </div>
 
-                    <div id="tabs2-content" class="tabs2-content tabs-content">
-                        <div id="tabs2-one">One</div>
-                        <div id="tabs2-two">Two</div>
-                        <img id="tabs2-three" />
+                    <div data-montage-id="tabs2-content" class="tabs2-content tabs-content">
+                        <div data-montage-id="tabs2-one">One</div>
+                        <div data-montage-id="tabs2-two">Two</div>
+                        <img data-montage-id="tabs2-three" />
                     </div>
                 </div>
             </div>
 
             <section>
-                <ul id="tabs-accordion2" class="accordion">
+                <ul data-montage-id="tabs-accordion2" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
-&lt;div id="tabs2" class="tab-view clearfix"&gt;
+&lt;div data-montage-id="tabs2" class="tab-view clearfix tabs2"&gt;
 
-    &lt;div id="tabs2-nav" class="tabs2-nav"&gt;
-        &lt;img id="tabs2-nav-icon" /&gt;
+    &lt;div data-montage-id="tabs2-nav" class="tabs2-nav"&gt;
+        &lt;img data-montage-id="tabs2-nav-icon" /&gt;
     &lt;/div&gt;
 
-    &lt;div id="tabs2-content" class="tabs2-content tabs-content"&gt;
-        &lt;div id="tabs2-one"&gt;One&lt;/div&gt;
-        &lt;div id="tabs2-two"&gt;Two&lt;/div&gt;
-        &lt;img id="tabs2-three" /&gt;
+    &lt;div data-montage-id="tabs2-content" class="tabs2-content tabs-content"&gt;
+        &lt;div data-montage-id="tabs2-one"&gt;One&lt;/div&gt;
+        &lt;div data-montage-id="tabs2-two"&gt;Two&lt;/div&gt;
+        &lt;img data-montage-id="tabs2-three" /&gt;
     &lt;/div&gt;
 &lt;/div&gt;
                             </pre>
@@ -556,16 +556,16 @@
                            <pre class="prettyprint" >
 /* display tabs2's navigation as a vertical tab */
 
-#tabs2 .tabs2-nav .montage-tabs-list li {
+.tabs2 .tabs2-nav .montage-tabs-list li {
    display: block;
 }
 
-#tabs2 .tabs2-nav {
+.tabs2 .tabs2-nav {
    float: left;
    margin-top: 20px;
 }
 
-#tabs2 .tabs2-content {
+.tabs2 .tabs2-content {
    float: left;
 }
 

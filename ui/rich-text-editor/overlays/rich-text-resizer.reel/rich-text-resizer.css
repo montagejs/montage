@@ -30,94 +30,94 @@
     border-radius: 5px;
 }
 
-#montage-resizer-handle-n {
+.montage-resizer-handle.n {
     top: -4px;
     left: 50%;
     margin-left: -4px;
     cursor: n-resize;
 }
 
-#montage-resizer-handle-n:hover {
+.montage-resizer-handle.n:hover {
     top: -5px;
     margin-left: -5px;
 }
 
-#montage-resizer-handle-ne {
+.montage-resizer-handle.ne {
     top: -4px;
     right: -4px;
     cursor: ne-resize;
 }
 
-#montage-resizer-handle-ne:hover {
+.montage-resizer-handle.ne:hover {
     top: -5px;
     right: -5px;
 }
 
-#montage-resizer-handle-e {
+.montage-resizer-handle.e {
     right: -4px;
     top: 50%;
     margin-top: -4px;
     cursor: e-resize;
 }
 
-#montage-resizer-handle-e:hover {
+.montage-resizer-handle.e:hover {
     right: -5px;
     margin-top: -5px;
 }
 
-#montage-resizer-handle-se {
+.montage-resizer-handle.se {
     bottom: -4px;
     right: -4px;
     cursor: se-resize;
 }
 
-#montage-resizer-handle-se:hover {
+.montage-resizer-handle.se:hover {
     bottom: -5px;
     right: -5px;
 }
 
-#montage-resizer-handle-s {
+.montage-resizer-handle.s {
     bottom: -4px;
     left: 50%;
     margin-left: -4px;
     cursor: s-resize;
 }
 
-#montage-resizer-handle-s:hover {
+.montage-resizer-handle.s:hover {
     bottom: -5px;
     margin-left: -5px;
 }
 
-#montage-resizer-handle-sw {
+.montage-resizer-handle.sw {
     bottom: -4px;
     left: -4px;
     cursor: sw-resize;
 }
 
-#montage-resizer-handle-sw:hover {
+.montage-resizer-handle.sw:hover {
     bottom: -5px;
     left: -5px;
 }
 
-#montage-resizer-handle-w {
+.montage-resizer-handle.w {
     left: -4px;
     top: 50%;
     margin-top: -4px;
     cursor: w-resize;
 }
 
-#montage-resizer-handle-w:hover {
+.montage-resizer-handle.w:hover {
     left: -5px;
     margin-top: -5px;
 }
 
-#montage-resizer-handle-nw {
+.montage-resizer-handle.nw {
     top: -4px;
     left: -4px;
     cursor: nw-resize;
 }
 
-#montage-resizer-handle-nw:hover {
+.montage-resizer-handle.nw:hover {
     top: -5px;
     left: -5px;
 }

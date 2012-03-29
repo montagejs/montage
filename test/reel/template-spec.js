@@ -40,7 +40,7 @@ var testPage = TestPageLoader.queueTest("template", function() {
             it("should call templateDidLoad function on the root object", function() {
                 var component = objects.Comp.create();
                 component.element = document.createElement("div");
-                component.element.id = "myDiv";
+                component.element.setAttribute("data-montage-id", "myDiv");
                 component.child = objects.Comp.create();
                 var htmlDocument = document.implementation.createHTMLDocument("");
 
@@ -59,7 +59,7 @@ var testPage = TestPageLoader.queueTest("template", function() {
             it("should call deserializedFromTemplate function on the instantiated objects", function() {
                 var component = objects.Comp.create();
                 component.element = document.createElement("div");
-                component.element.id = "myDiv";
+                component.element.setAttribute("data-montage-id", "myDiv");
                 component.child = objects.Comp.create();
                 var htmlDocument = document.implementation.createHTMLDocument("");
 
@@ -163,7 +163,7 @@ var testPage = TestPageLoader.queueTest("template", function() {
 
         it("should be able to reference the template object", function() {
             var component = application.delegate.template;
-            
+
             expect(component.templateReference).toBe(component._template);
         });
 

@@ -105,7 +105,7 @@
                         "switchValue": {"<<->": "@controller.selectedObjects.0"}
                     }
                 }
-            
+
     }</script>
 
         <style>
@@ -141,7 +141,7 @@ h1.substitution-content {
         </style>
     </head>
     <body>
-        <div id="substitution-example" class="substitution-example">
+        <div data-montage-id="substitution-example" class="substitution-example">
             <div class="row">
                 <div class="span10">
                     <h3>Substitution</h3>
@@ -158,20 +158,20 @@ h1.substitution-content {
             <p>This example shows how to use Substitution to create a simple tabbed menu.</p>
             <div class="demo sub">
 
-                    <ul id="nav" class="tabsnav">
-                        <li><a href="javascript: void(0);" id="nav-item"></a></li>
+                    <ul data-montage-id="nav" class="tabsnav">
+                        <li><a href="javascript: void(0);" data-montage-id="nav-item"></a></li>
                     </ul>
-                    <h1 id="content" class="substitution-content"></h1>
+                    <h1 data-montage-id="content" class="substitution-content"></h1>
 
             </div>
 
             <section>
-                <ul id="substitutionAccordion1" class="accordion">
+                <ul data-montage-id="substitutionAccordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
-&lt;ul id="nav" class="tabs"&gt;
+&lt;ul data-montage-id="nav" class="tabs"&gt;
     &lt;li&gt;&lt;a href="#home"&gt;Home&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href="#products"&gt;Products&lt;/a&gt;&lt;/li&gt;
     &lt;li&gt;&lt;a href="#services"&gt;Services&lt;/a&gt;&lt;/li&gt;
@@ -179,7 +179,7 @@ h1.substitution-content {
 &lt;/ul&gt;
 
 
-&lt;div id="content" class="substitution-content"&gt;
+&lt;div data-montage-id="content" class="substitution-content"&gt;
 &lt;/div&gt;
                             </pre>
                        </div>

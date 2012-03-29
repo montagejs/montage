@@ -75,24 +75,24 @@
                     "switchValue": {"<-": "@owner.resultAlreadyImported", "converter": {"@": "actionSwitchValueConverter"}}
                 }
             }
-        
+
     }</script>
 
 </head>
 <body>
 
-    <div id="searchResult" class="SearchResult">
+    <div data-montage-id="searchResult" class="SearchResult">
         <div class="imagePanel">
-            <img src="" id="searchResultImage" class="SearchResultImage">
+            <img src="" data-montage-id="searchResultImage" class="SearchResultImage">
         </div>
         <div class="actionPanel">
-            <div id="actionSubstitution"></div>
+            <div data-montage-id="actionSubstitution"></div>
         </div>
 
         <!-- holding area for content to insert into the substitution -->
         <div class="montage-hidden">
-            <div id="addPhotoButton" class="submit addPhotoButton btn primary">Add Photo</div>
-            <span id="alreadyAddedNotice">Already Added</span>
+            <div data-montage-id="addPhotoButton" class="submit addPhotoButton btn primary">Add Photo</div>
+            <span data-montage-id="alreadyAddedNotice">Already Added</span>
         </div>
     </div>
 
