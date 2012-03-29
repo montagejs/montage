@@ -12,8 +12,7 @@
     <script type="text/montage-serialization">
 {
     "scroller1": {
-        "module": "montage/ui/scroller.reel",
-        "name": "Scroller",
+        "prototype": "montage/ui/scroller.reel",
         "properties": {
             "element": {"#": "scroller"},
             "hasMomentum": false
@@ -21,15 +20,13 @@
     },
 
     "test": {
-        "module": "ui/scroller-test/scroller-test",
-        "name": "ScrollerTest",
+        "prototype": "ui/scroller-test/scroller-test",
         "properties": {
             "scroller1": {"@": "scroller1"}
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

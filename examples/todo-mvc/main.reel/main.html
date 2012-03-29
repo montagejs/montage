@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">{
 
             "tasksController": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+                "prototype": "montage/ui/controller/array-controller",
                 "properties": {
 
                 },
@@ -23,8 +22,7 @@
                 }
             },
             "taskNoteField": {
-                "module": "montage/ui/textfield.reel",
-                "name": "Textfield",
+                "prototype": "montage/ui/textfield.reel",
                 "properties": {
                     "element": {
                         "#": "taskNoteField"
@@ -32,8 +30,7 @@
                 }
             },
             "taskEntry": {
-                "module": "task-entry.reel",
-                "name": "TaskEntry",
+                "prototype": "task-entry.reel",
                 "properties": {
                     "element": {
                         "#": "task"
@@ -44,8 +41,7 @@
                 }
             },
             "taskRepetition": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {
                         "#": "taskList"
@@ -56,8 +52,7 @@
                 }
             },
             "unfinishedCount": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {
                         "#": "unfinishedCount"
@@ -70,13 +65,11 @@
             },
 
             "itemCountConverter": {
-                "module": "item-count-converter",
-                "name": "ItemCountConverter"
+                "prototype": "item-count-converter"
             },
 
             "taskListControls": {
-                "module": "task-list-controls.reel",
-                "name": "TaskListControls",
+                "prototype": "task-list-controls.reel",
                 "properties": {
                     "element": {
                         "#": "taskListControls"
@@ -88,8 +81,7 @@
             },
 
             "markAllCompleteConditional": {
-                "module": "montage/ui/condition.reel",
-                "name": "Condition",
+                "prototype": "montage/ui/condition.reel",
                 "properties": {
                     "element": {"#": "markAllCompleteForm"}
                 },
@@ -99,8 +91,7 @@
             },
 
             "markAllCompleteButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "markAllCompleteButton"}
                 },
@@ -110,13 +101,11 @@
             },
 
             "markAllReadValueConverter": {
-                "module": "mark-all-read-value-converter",
-                "name": "MarkAllReadValueConverter"
+                "prototype": "mark-all-read-value-converter"
             },
 
             "owner": {
-                "module": "main.reel",
-                "name": "Main",
+                "prototype": "main.reel",
                 "properties": {
                     "element": {
                         "#": "main"

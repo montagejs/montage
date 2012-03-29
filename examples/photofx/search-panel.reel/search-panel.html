@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">{
 
             "owner": {
-                "module": "search-panel.reel",
-                "name": "SearchPanel",
+                "prototype": "search-panel.reel",
                 "properties": {
                     "element": {"#": "searchPanel"},
                     "searchForm": {"#": "searchForm"},
@@ -26,32 +25,28 @@
             },
 
             "searchResultsController": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+                "prototype": "montage/ui/controller/array-controller",
                 "bindings": {
                     "content": {"<<->": "@owner.searchResults"}
                 }
             },
 
             "queryField": {
-                "module": "montage/ui/textfield.reel",
-                "name": "Textfield",
+                "prototype": "montage/ui/textfield.reel",
                 "properties": {
                     "element": {"#": "queryField"}
                 }
             },
 
             "searchButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "searchButton"}
                 }
             },
 
             "searchResultsList": {
-                "module": "montage/ui/list.reel",
-                "name": "List",
+                "prototype": "montage/ui/list.reel",
                 "properties": {
                     "element": {"#": "searchResultsList"},
                     "contentController": {"@": "searchResultsController"},
@@ -60,8 +55,7 @@
             },
 
             "searchResult": {
-                "module": "search-result.reel",
-                "name": "SearchResult",
+                "prototype": "search-result.reel",
                 "properties": {
                     "element": {"#": "searchResult"}
                 },

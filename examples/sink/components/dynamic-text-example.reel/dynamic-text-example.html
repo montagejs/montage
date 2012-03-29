@@ -5,15 +5,13 @@
         <script type="text/montage-serialization">{
 
             "dateConverter1": {
-                "module": "montage/core/converter/date-converter",
-                "name": "DateConverter",
+                "prototype": "montage/core/converter/date-converter",
                 "properties": {
                     "pattern": "hh:mm:ss"
                 }
             },
             "currentTime": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "value": "",
                     "converter": {"@": "dateConverter1"},
@@ -24,16 +22,14 @@
                 }
             },
             "dynamicTextAccordion1": {
-                "module": "accordion.reel",
-                "name": "Accordion",
+                "prototype": "accordion.reel",
                 "properties": {
                     "element": {"#": "dynamicTextAccordion1"}
                 }
             },
 
             "owner": {
-                "module": "components/dynamic-text-example.reel",
-                "name": "DynamicTextExample",
+                "prototype": "components/dynamic-text-example.reel",
                 "properties": {
                     "element": {"#": "component-root"}
                 }
@@ -86,15 +82,13 @@
                                     <pre class="prettyprint" >
 {
     "dateConverter1": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "hh:mm:ss"
         }
     },
     "currentTime": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "",
             "converter": {"@": "dateConverter1"},
@@ -105,8 +99,7 @@
         }
     },
     "owner": {
-        "module": "components/dynamic-text-example.reel",
-        "name": "DynamicTextExample",
+        "prototype": "components/dynamic-text-example.reel",
         "properties": {
             "element": {"#": "component-root"}
         }

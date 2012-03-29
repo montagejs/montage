@@ -7,16 +7,14 @@
 <script type="text/montage-serialization">{
 
     "contentController": {
-        "module": "montage/ui/controller/array-controller",
-        "name": "ArrayController",
+        "prototype": "montage/ui/controller/array-controller",
         "properties": {
             "content": [1, 2]
         }
     },
 
     "dynamictext1": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "horizontalValueString"}
         },
@@ -25,8 +23,7 @@
         }
     },
     "slider1": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "maxValue": 2,
             "element": {"#": "horizontalContent"}
@@ -36,8 +33,7 @@
         }
     },
     "list1": {
-        "module": "montage/ui/list.reel",
-        "name": "List",
+        "prototype": "montage/ui/list.reel",
         "properties": {
             "element": {"#": "horizontalList"},
             "objects": [
@@ -49,8 +45,7 @@
         }
     },
     "dynamictext2": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "verticalValueString"}
         },
@@ -59,8 +54,7 @@
         }
     },
     "slider2": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "maxValue": 4,
             "element": {"#": "verticalContent"}
@@ -70,8 +64,7 @@
         }
     },
     "list2": {
-        "module": "montage/ui/list.reel",
-        "name": "List",
+        "prototype": "montage/ui/list.reel",
         "properties": {
             "element": {"#": "verticalList"},
             "contentController": {"@": "contentController"},

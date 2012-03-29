@@ -12,8 +12,7 @@
     <script type="text/montage-serialization">{
 
     "translate_composer": {
-        "module": "montage/ui/composer/translate-composer",
-        "name": "TranslateComposer",
+        "prototype": "montage/ui/composer/translate-composer",
         "properties": {
             "component": {"@": "example"},
             "maxTranslateX": 350,
@@ -31,8 +30,7 @@
     },
 
     "test": {
-        "module": "ui/composer/translate-composer-test/translate-composer-test",
-        "name": "TranslateComposerTest",
+        "prototype": "ui/composer/translate-composer-test/translate-composer-test",
         "properties": {
             "translate_composer": {"@": "translate_composer"},
             "example": {"@": "example"}
@@ -43,8 +41,7 @@
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

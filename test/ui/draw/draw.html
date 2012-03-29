@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">
 {
     "draw1": {
-        "module": "ui/draw/draw",
-        "name": "Draw",
+        "prototype": "ui/draw/draw",
         "properties": {
             "repetition": {"@": "repetition"},
             "componentC": {"@": "componentC"},
@@ -34,24 +33,21 @@
         }
     },
     "repetition": {
-        "module": "montage/ui/repetition.reel",
-        "name": "Repetition",
+        "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "repetition"},
             "objects": [1, 2, 3]
         }
     },
     "componentC": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentC"},
             "hasTemplate": false
         }
     },
     "componentC1": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentC1"},
             "hasTemplate": false
@@ -59,8 +55,7 @@
     },
 
     "componentNoelement": {
-        "module": "ui/draw/component-noelement.reel",
-        "name": "ComponentNoelement",
+        "prototype": "ui/draw/component-noelement.reel",
         "properties": {
             "value": "componentNoelement",
             "parentOfNoElement": {"@": "componentE"}
@@ -68,59 +63,51 @@
     },
 
     "componentD": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentD"},
             "hasTemplate": false
         }
     },
     "componentD1": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentD1"},
             "hasTemplate": false
         }
     },
     "componentDtarget": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentDtarget"},
             "hasTemplate": false
         }
     },
     "componentE": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentE"},
             "hasTemplate": false
         }
     },
     "componentE11": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentE11"},
             "hasTemplate": false
         }
     },
     "componentStyle": {
-        "module": "ui/draw/component-style.reel",
-        "name": "ComponentStyle",
+        "prototype": "ui/draw/component-style.reel",
         "properties": {
             "element": {"#": "component-style"}
         }
     },
     "componentWithoutIdentifier": {
-        "module": "montage/ui/component",
-        "name": "Component"
+        "prototype": "montage/ui/component"
     },
     "componentWithIdentifier": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "identifier": "anIdentifier"
         }
@@ -171,8 +158,7 @@
         }
     },
     "owner": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "draw1"}
         }

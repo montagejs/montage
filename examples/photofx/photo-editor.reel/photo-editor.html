@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">{
 
             "image": {
-                "module": "montage/ui/image.reel",
-                "name": "Image",
+                "prototype": "montage/ui/image.reel",
                 "properties": {
                     "element": {"#": "image"}
                 },
@@ -24,16 +23,14 @@
             },
 
             "pointMonitorController": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+                "prototype": "montage/ui/controller/array-controller",
                 "bindings": {
                     "content": {"<<->": "@owner.pointMonitors"}
                 }
             },
 
             "pointMonitorRepetition": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "pointMonitors"},
                     "isSelectionEnabled": true,
@@ -42,8 +39,7 @@
             },
 
             "pointMarker": {
-                "module": "point-marker.reel",
-                "name": "PointMarker",
+                "prototype": "point-marker.reel",
                 "properties": {
                     "element": {"#": "pointMarker"}
                 },
@@ -54,8 +50,7 @@
             },
 
             "horizontalRuler": {
-                "module": "ruler.reel",
-                "name": "Ruler",
+                "prototype": "ruler.reel",
                 "properties": {
                     "element": {"#": "horizontalRuler"},
                     "axis": "x"
@@ -67,8 +62,7 @@
             },
 
             "verticalRuler": {
-                "module": "ruler.reel",
-                "name": "Ruler",
+                "prototype": "ruler.reel",
                 "properties": {
                     "element": {"#": "verticalRuler"},
                     "axis": "y"
@@ -80,8 +74,7 @@
             },
 
             "owner": {
-                "module": "photo-editor.reel",
-                "name": "PhotoEditor",
+                "prototype": "photo-editor.reel",
                 "properties": {
                     "element": {"#": "editor"},
                     "_image": {"@": "image"},

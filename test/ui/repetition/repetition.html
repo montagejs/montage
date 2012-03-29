@@ -6,15 +6,13 @@
     <script type="text/montage-serialization">{
 
             "application": {
-                "module": "montage/ui/application",
-                "name": "Application",
+                "prototype": "montage/ui/application",
                 "properties": {
                     "delegate": {"@": "repetitiontest1"}
                 }
             },
             "repetitiontest1": {
-                "module": "ui/repetition/repetition-test",
-                "name": "RepetitionTest",
+                "prototype": "ui/repetition/repetition-test",
                 "properties": {
                     "repetition1": {"@": "repetition1"},
                     "list1Objects": [
@@ -57,8 +55,7 @@
                 }
             },
             "repetition1": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list1"}
                 },
@@ -67,8 +64,7 @@
                 }
             },
             "textfield1": {
-                "module": "ui/repetition/textfield.reel",
-                "name": "TextField",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield1"}
                 },
@@ -77,8 +73,7 @@
                 }
             },
             "repetition2": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list2"}
                 },
@@ -87,8 +82,7 @@
                 }
             },
             "textfield2": {
-                "module": "ui/repetition/textfield.reel",
-                "name": "TextField",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield2"}
                 },
@@ -97,8 +91,7 @@
                 }
             },
             "repetition3": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list3a"}
                 },
@@ -107,8 +100,7 @@
                 }
             },
             "repetition4": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list3"}
                 },
@@ -117,15 +109,13 @@
                 }
             },
             "componenty1": {
-                "module": "ui/repetition/componenty.reel",
-                "name": "ComponentY",
+                "prototype": "ui/repetition/componenty.reel[ComponentY]",
                 "properties": {
                     "element": {"#": "content3"}
                 }
             },
             "repetition6": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list4a"}
                 },
@@ -134,8 +124,7 @@
                 }
             },
             "repetition5": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list4"}
                 },
@@ -144,24 +133,21 @@
                 }
             },
             "textfield3": {
-                "module": "ui/repetition/textfield.reel",
-                "name": "TextField",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield4"},
                     "text": "X here"
                 }
             },
             "componentx1": {
-                "module": "ui/repetition/componentx.reel",
-                "name": "ComponentX",
+                "prototype": "ui/repetition/componentx.reel[ComponentX]",
                 "properties": {
                     "element": {"#": "content4"},
                     "textfield": {"@": "textfield3"}
                 }
             },
             "repetition8": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list5a"}
                 },
@@ -170,8 +156,7 @@
                 }
             },
             "repetition7": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list5"}
                 },
@@ -180,22 +165,19 @@
                 }
             },
             "componentrep1": {
-                "module": "ui/repetition/componentrep.reel",
-                "name": "ComponentRep",
+                "prototype": "ui/repetition/componentrep.reel[ComponentRep]",
                 "properties": {
                     "element": {"#": "componentrep1"}
                 }
             },
             "componentrep2": {
-                "module": "ui/repetition/componentrep.reel",
-                "name": "ComponentRep",
+                "prototype": "ui/repetition/componentrep.reel[ComponentRep]",
                 "properties": {
                     "element": {"#": "componentrep2"}
                 }
             },
             "componentrep3": {
-                "module": "ui/repetition/componentrep.reel",
-                "name": "ComponentRep",
+                "prototype": "ui/repetition/componentrep.reel[ComponentRep]",
                 "properties": {
                     "element": {"#": "list6comp1"}
                 },
@@ -204,8 +186,7 @@
                 }
             },
             "componentrep4": {
-                "module": "ui/repetition/componentrep.reel",
-                "name": "ComponentRep",
+                "prototype": "ui/repetition/componentrep.reel[ComponentRep]",
                 "properties": {
                     "element": {"#": "list6comp2"}
                 },
@@ -214,8 +195,7 @@
                 }
             },
             "repetition9": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list6"}
                 },
@@ -224,8 +204,7 @@
                 }
             },
             "textfield4": {
-                "module": "ui/repetition/textfield.reel",
-                "name": "TextField",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield5"}
                 },
@@ -234,16 +213,14 @@
                 }
             },
             "componentx2": {
-                "module": "ui/repetition/componentx.reel",
-                "name": "ComponentX",
+                "prototype": "ui/repetition/componentx.reel[ComponentX]",
                 "properties": {
                     "element": {"#": "content5"},
                     "textfield": {"@": "textfield4"}
                 }
             },
             "repetition10": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list7"}
                 },
@@ -252,16 +229,14 @@
                 }
             },
             "actioneventlistener1": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
+                "prototype": "montage/core/event/action-event-listener",
                 "properties": {
                     "handler": {"@": "repetitiontest1"},
                     "action": "listener"
                 }
             },
             "textfield5": {
-                "module": "ui/repetition/textfield.reel",
-                "name": "TextField",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield6"}
                 },
@@ -275,8 +250,7 @@
                 ]
             },
             "repetition11": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list8"}
                 },
@@ -285,15 +259,13 @@
                 }
             },
             "textfield6": {
-                "module": "ui/repetition/textfield.reel",
-                "name": "TextField",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield7"}
                 }
             },
             "repetition12": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list9"}
                 },
@@ -302,31 +274,27 @@
                 }
             },
             "componentz1": {
-                "module": "ui/repetition/componentz.reel",
-                "name": "ComponentZ",
+                "prototype": "ui/repetition/componentz.reel[ComponentZ]",
                 "properties": {
                     "element": {"#": "componentz1"},
                     "text": "o1"
                 }
             },
             "componentz2": {
-                "module": "ui/repetition/componentz.reel",
-                "name": "ComponentZ",
+                "prototype": "ui/repetition/componentz.reel[ComponentZ]",
                 "properties": {
                     "element": {"#": "componentz2"},
                     "text": "o2"
                 }
             },
             "componentslowload1": {
-                "module": "ui/repetition/componentslowload",
-                "name": "ComponentSlowLoad",
+                "prototype": "ui/repetition/componentslowload[ComponentSlowLoad]",
                 "properties": {
                     "element": {"#": "componentslowload1"}
                 }
             },
             "repetition13": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list10"}
                 },
@@ -335,16 +303,14 @@
                 }
             },
             "repetitionController": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "repetitionController"},
                     "contentController": {"@": "simpleArrayController"}
                 }
             },
             "simpleArrayController": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+                "prototype": "montage/ui/controller/array-controller",
                 "properties": {
                     "automaticallyOrganizeObjects": true
                 },
@@ -353,16 +319,14 @@
                 }
              },
             "repetitionControllerText": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "repetitionControllerText"},
                     "value": "foo"
                 }
             },
             "repetition14": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list11"},
                     "objects": [1, 2, 3]

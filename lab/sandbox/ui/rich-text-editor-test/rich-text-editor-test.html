@@ -17,8 +17,7 @@
             },
 
             "editor": {
-                "module": "montage/ui/rich-text-editor/rich-text-editor.reel",
-                "name": "RichTextEditor",
+                "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
                 "properties": {
                     "element": {"#": "editor-frame"},
                     "identifier": "editor",
@@ -47,8 +46,7 @@
             },
 
             "boldToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "boldToggle"}
                 },
@@ -58,8 +56,7 @@
             },
 
             "underlineToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "underlineToggle" }
                 },
@@ -69,8 +66,7 @@
             },
 
             "italicToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "italicToggle" }
                 },
@@ -80,8 +76,7 @@
             },
 
             "strikeToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "strikeToggle" }
                 },
@@ -91,8 +86,7 @@
             },
 
             "subscriptConverter": {
-                "module": "rich-text-editor-test",
-                "name": "ValueConverter",
+                "prototype": "rich-text-editor-test[ValueConverter]",
                 "properties": {
                     "value": "subscript",
                     "defaultValue": "baseline"
@@ -100,8 +94,7 @@
             },
 
             "subToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "subToggle" }
                 },
@@ -111,8 +104,7 @@
             },
 
             "superscriptConverter": {
-                "module": "rich-text-editor-test",
-                "name": "ValueConverter",
+                "prototype": "rich-text-editor-test[ValueConverter]",
                 "properties": {
                     "value": "superscript",
                     "defaultValue": "baseline"
@@ -120,8 +112,7 @@
             },
 
             "supToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "supToggle" }
                 },
@@ -131,8 +122,7 @@
             },
 
             "indentButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "indentButton" },
                     "action": "indent"
@@ -147,8 +137,7 @@
             },
 
             "outdentButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "outdentButton" },
                     "action": "outdent"
@@ -163,8 +152,7 @@
             },
 
             "unorderedListConverter": {
-                "module": "rich-text-editor-test",
-                "name": "ValueConverter",
+                "prototype": "rich-text-editor-test[ValueConverter]",
                 "properties": {
                     "value": "unordered",
                     "defaultValue": "none"
@@ -172,8 +160,7 @@
             },
 
             "unorderedlistToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "unorderedlistToggle" }
                 },
@@ -183,8 +170,7 @@
             },
 
             "orderedListConverter": {
-                "module": "rich-text-editor-test",
-                "name": "ValueConverter",
+                "prototype": "rich-text-editor-test[ValueConverter]",
                 "properties": {
                     "value": "ordered",
                     "defaultValue": "none"
@@ -192,8 +178,7 @@
             },
 
             "orderedlistToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "orderedlistToggle" }
                 },
@@ -218,16 +203,14 @@
             },
 
             "indexesConverter": {
-                "module": "rich-text-editor-test",
-                "name": "IndexesConverter",
+                "prototype": "rich-text-editor-test[IndexesConverter]",
                 "properties": {
                     "component": {"@": "justify"}
                 }
             },
 
             "justify": {
-                "module": "montage/ui/select-input.reel",
-                "name": "SelectInput",
+                "prototype": "montage/ui/select-input.reel",
                 "properties": {
                     "element": {"#": "justification"},
                     "contentController": {"@": "justificationController"}
@@ -256,16 +239,14 @@
             },
 
             "fontnameConverter": {
-                "module": "rich-text-editor-test",
-                "name": "FontnameConverter",
+                "prototype": "rich-text-editor-test[FontnameConverter]",
                 "properties": {
                     "component": {"@": "fontname"}
                 }
             },
 
             "fontname": {
-                "module": "montage/ui/select-input.reel",
-                "name": "SelectInput",
+                "prototype": "montage/ui/select-input.reel",
                 "properties": {
                     "element": {"#": "fontname"},
                     "contentController": {"@": "fontnameController"}
@@ -291,16 +272,14 @@
             },
 
             "fontsizeConverter": {
-                "module": "rich-text-editor-test",
-                "name": "IndexesConverter",
+                "prototype": "rich-text-editor-test[IndexesConverter]",
                 "properties": {
                     "component": {"@": "fontsize"}
                 }
             },
 
             "fontsize": {
-                "module": "montage/ui/select-input.reel",
-                "name": "SelectInput",
+                "prototype": "montage/ui/select-input.reel",
                 "properties": {
                     "element": {"#": "fontsize"},
                     "contentController": {"@": "fontsizeController"}
@@ -327,16 +306,14 @@
             },
 
             "backcolorConverter": {
-                "module": "rich-text-editor-test",
-                "name": "IndexesConverter",
+                "prototype": "rich-text-editor-test[IndexesConverter]",
                 "properties": {
                     "component": {"@": "backcolor"}
                 }
             },
 
             "backcolor": {
-                "module": "montage/ui/select-input.reel",
-                "name": "SelectInput",
+                "prototype": "montage/ui/select-input.reel",
                 "properties": {
                     "element": {"#": "backcolor"},
                     "contentController": {"@": "backcolorController"}
@@ -363,16 +340,14 @@
             },
 
             "forecolorConverter": {
-                "module": "rich-text-editor-test",
-                "name": "IndexesConverter",
+                "prototype": "rich-text-editor-test[IndexesConverter]",
                 "properties": {
                     "component": {"@": "forecolor"}
                 }
             },
 
             "forecolor": {
-                "module": "montage/ui/select-input.reel",
-                "name": "SelectInput",
+                "prototype": "montage/ui/select-input.reel",
                 "properties": {
                     "element": {"#": "forecolor"},
                     "contentController": {"@": "forecolorController"}
@@ -380,8 +355,7 @@
             },
 
             "resetButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "resetButton" },
                     "identifier": "reset",
@@ -397,8 +371,7 @@
             },
 
             "undoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "undoButton" },
                     "identifier": "undo",
@@ -418,8 +391,7 @@
             },
 
             "redoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "redoButton" },
                     "identifier": "redo",
@@ -439,8 +411,7 @@
             },
 
             "checkboxReadonly": {
-                "module": "montage/ui/checkbox.reel",
-                "name": "Checkbox",
+                "prototype": "montage/ui/checkbox.reel",
                 "properties": {
                     "element": {"#": "checkbox-readonly"}
                 },
@@ -450,8 +421,7 @@
             },
 
             "checkboxSource": {
-                "module": "montage/ui/checkbox.reel",
-                "name": "Checkbox",
+                "prototype": "montage/ui/checkbox.reel",
                 "properties": {
                     "element": {"#": "checkbox-source"},
                     "identifier": "showRawSource"
@@ -465,8 +435,7 @@
             },
 
             "delegate": {
-                "module": "rich-text-editor-test",
-                "name": "RichTextEditorTest",
+                "prototype": "rich-text-editor-test",
                 "properties": {
                     "editor": {"@": "editor"},
                     "undoManager": {"@": "undoManager"},
@@ -479,8 +448,7 @@
             },
 
             "owner": {
-                "module": "montage/ui/application",
-                "name": "Application",
+                "prototype": "montage/ui/application",
                 "properties": {
                     "delegate": {"@": "delegate"}
                 }

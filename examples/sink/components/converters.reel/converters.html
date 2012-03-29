@@ -6,8 +6,7 @@
     <script type="text/montage-serialization">{
 
     "owner": {
-        "module": "components/converters.reel",
-        "name": "Converters",
+        "prototype": "components/converters.reel",
         "properties": {
             "element": {"#": "main"},
             "num1Cmp": {"@": "dynamictext1"},
@@ -18,16 +17,14 @@
         }
     },
     "textfield1": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "value": "Hello World",
             "element": {"#": "textfield1"}
         }
     },
     "dynamictext6": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "Hello World",
             "element": {"#": "text1"}
@@ -37,15 +34,13 @@
         }
     },
     "uppercaseconverter1": {
-        "module": "montage/core/converter/upper-case-converter",
-        "name": "UpperCaseConverter",
+        "prototype": "montage/core/converter/upper-case-converter",
         "properties": {
 
         }
     },
     "dynamictext7": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "Hello World",
             "converter": {"@": "uppercaseconverter1"},
@@ -56,15 +51,13 @@
         }
     },
     "lowercaseconverter1": {
-        "module": "montage/core/converter/lower-case-converter",
-        "name": "LowerCaseConverter",
+        "prototype": "montage/core/converter/lower-case-converter",
         "properties": {
 
         }
     },
     "dynamictext8": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "Hello World",
             "converter": {"@": "lowercaseconverter1"},
@@ -75,22 +68,19 @@
         }
     },
     "textarea1": {
-        "module": "montage/ui/textarea.reel",
-        "name": "Textarea",
+        "prototype": "montage/ui/textarea.reel",
         "properties": {
             "element": {"#": "textarea1"}
         }
     },
     "uppercaseconverter2": {
-        "module": "montage/core/converter/upper-case-converter",
-        "name": "UpperCaseConverter",
+        "prototype": "montage/core/converter/upper-case-converter",
         "properties": {
 
         }
     },
     "dynamictext9": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "",
             "converter": {"@": "uppercaseconverter2"},
@@ -101,15 +91,13 @@
         }
     },
     "dateconverter1": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "MM-dd-yyyy"
         }
     },
     "textfield2": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "converter": {"@": "dateconverter1"},
             "updateOnInput": false,
@@ -120,8 +108,7 @@
         }
     },
     "dynamictext10": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "date1"}
         },
@@ -130,15 +117,13 @@
         }
     },
     "dateconverter2": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "dd MMM"
         }
     },
     "dynamictext11": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "dateconverter2"},
             "element": {"#": "date2"}
@@ -148,15 +133,13 @@
         }
     },
     "dateconverter3": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "dd MMM yyyy hh:mm tt"
         }
     },
     "dynamictext12": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "dateconverter3"},
             "element": {"#": "date3"}
@@ -166,15 +149,13 @@
         }
     },
     "dateconverter4": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "MM/dd/yyyy HH:mm"
         }
     },
     "dynamictext13": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "dateconverter4"},
             "element": {"#": "date4"}
@@ -184,15 +165,13 @@
         }
     },
     "dateconverter5": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "MM-dd-yyyy"
         }
     },
     "dynamictext14": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "dateconverter5"},
             "element": {"#": "date5"}
@@ -202,15 +181,13 @@
         }
     },
     "numberconverter1": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "decimals": 2
         }
     },
     "textfield3": {
-        "module": "montage/ui/number-input.reel",
-        "name": "NumberInput",
+        "prototype": "montage/ui/number-input.reel",
         "properties": {
             "element": {"#": "txt-number"}
         },
@@ -219,8 +196,7 @@
         }
     },
     "dynamictext1": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "num1"},
             "converter": {"@": "numberconverter1"}
@@ -230,16 +206,14 @@
         }
     },
     "numberconverter2": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "shorten": true,
             "decimals": 2
         }
     },
     "dynamictext2": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "numberconverter2"},
             "element": {"#": "num2"}
@@ -249,16 +223,14 @@
         }
     },
     "numberconverter3": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "shorten": true,
             "decimals": 4
         }
     },
     "dynamictext3": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "numberconverter3"},
             "element": {"#": "num3"}
@@ -268,15 +240,13 @@
         }
     },
     "numberconverter4": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "round": true
         }
     },
     "dynamictext4": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "numberconverter4"},
             "element": {"#": "num4"}
@@ -287,23 +257,20 @@
     },
 
     "numberconverter5": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "decimals": 2,
             "allowPartialConversion": true
         }
     },
     "tempConverter": {
-        "module": "components/converters.reel",
-        "name": "TempConverter",
+        "prototype": "components/converters.reel[TempConverter]",
         "properties": {
 
         }
     },
     "celsiusTextfield": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "celsius"}
         },
@@ -312,37 +279,32 @@
         }
     },
     "fahrenheitTextfield": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "fahrenheit"},
             "value": "32"
         }
     },
     "convertersAccordion1": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "convertersAccordion1"}
         }
     },
     "convertersAccordion2": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "convertersAccordion2"}
         }
     },
     "convertersAccordion3": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "convertersAccordion3"}
         }
     },
     "convertersAccordion0": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "convertersAccordion0"}
         }
@@ -437,16 +399,14 @@
                     <pre class="prettyprint" >
 {
     "textfield1": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "value": "Hello World",
             "element": {"#": "textfield1"}
         }
     },
     "dynamictext6": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "Hello World",
             "element": {"#": "text1"}
@@ -456,15 +416,13 @@
         }
     },
     "uppercaseconverter1": {
-        "module": "montage/core/converter/upper-case-converter",
-        "name": "UpperCaseConverter",
+        "prototype": "montage/core/converter/upper-case-converter",
         "properties": {
 
         }
     },
     "dynamictext7": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "Hello World",
             "converter": {"@": "uppercaseconverter1"},
@@ -475,15 +433,13 @@
         }
     },
     "lowercaseconverter1": {
-        "module": "montage/core/converter/lower-case-converter",
-        "name": "LowerCaseConverter",
+        "prototype": "montage/core/converter/lower-case-converter",
         "properties": {
 
         }
     },
     "dynamictext8": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "Hello World",
             "converter": {"@": "lowercaseconverter1"},
@@ -494,15 +450,13 @@
         }
     },
     "textarea1": {
-        "module": "montage/ui/textarea.reel",
-        "name": "Textarea",
+        "prototype": "montage/ui/textarea.reel",
         "properties": {
             "element": {"#": "textarea1"}
         }
     },
     "uppercaseconverter2": {
-        "module": "montage/core/converter/upper-case-converter",
-        "name": "UpperCaseConverter",
+        "prototype": "montage/core/converter/upper-case-converter",
         "properties": {
 
         }
@@ -567,8 +521,7 @@
                     <pre class="prettyprint" >
 {
     "dynamictext1": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "num1"},
             "converter": {"@": "numberconverter1"}
@@ -578,16 +531,14 @@
         }
     },
     "numberconverter2": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "shorten": true,
             "decimals": 2
         }
     },
     "dynamictext2": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "numberconverter2"},
             "element": {"#": "num2"}
@@ -597,16 +548,14 @@
         }
     },
     "numberconverter3": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "shorten": true,
             "decimals": 4
         }
     },
     "dynamictext3": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "numberconverter3"},
             "element": {"#": "num3"}
@@ -616,15 +565,13 @@
         }
     },
     "numberconverter4": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "round": true
         }
     },
     "dynamictext4": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "numberconverter4"},
             "element": {"#": "num4"}
@@ -635,8 +582,7 @@
     },
 
     "numberconverter5": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "decimals": 2,
             "allowPartialConversion": true
@@ -704,15 +650,13 @@
                     <pre class="prettyprint" >
 {
     "dateconverter1": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "MM-dd-yyyy"
         }
     },
     "textfield2": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "converter": {"@": "dateconverter1"},
             "updateOnInput": false,
@@ -723,8 +667,7 @@
         }
     },
     "dynamictext10": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "date1"}
         },
@@ -733,15 +676,13 @@
         }
     },
     "dateconverter2": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "dd MMM"
         }
     },
     "dynamictext11": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "dateconverter2"},
             "element": {"#": "date2"}
@@ -751,15 +692,13 @@
         }
     },
     "dateconverter3": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "dd MMM yyyy hh:mm tt"
         }
     },
     "dynamictext12": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "dateconverter3"},
             "element": {"#": "date3"}
@@ -769,15 +708,13 @@
         }
     },
     "dateconverter4": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "MM/dd/yyyy HH:mm"
         }
     },
     "dynamictext13": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "dateconverter4"},
             "element": {"#": "date4"}
@@ -787,15 +724,13 @@
         }
     },
     "dateconverter5": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "MM-dd-yyyy"
         }
     },
     "dynamictext14": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "converter": {"@": "dateconverter5"},
             "element": {"#": "date5"}
@@ -851,23 +786,20 @@
                     <pre class="prettyprint" >
 {
     "numberconverter5": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "decimals": 2,
             "allowPartialConversion": true
         }
     },
     "tempConverter": {
-        "module": "components/converters.reel",
-        "name": "TempConverter",
+        "prototype": "components/converters.reel[TempConverter]",
         "properties": {
 
         }
     },
     "celsiusTextfield": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "celsius"},
             "converter": {"@": "numberconverter5"}
@@ -877,8 +809,7 @@
         }
     },
     "fahrenheitTextfield": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "fahrenheit"},
             "value": "32"

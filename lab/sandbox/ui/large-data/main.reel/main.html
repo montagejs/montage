@@ -11,8 +11,7 @@
     <script type="text/montage-serialization">{
 
             "owner": {
-                "module": "main.reel",
-                "name": "Main",
+                "prototype": "main.reel",
                 "properties": {
                     "element": {"#": "main"}
                 },
@@ -25,13 +24,11 @@
             },
 
             "floorConverter": {
-                "module": "main.reel",
-                "name": "FloorConverter"
+                "prototype": "main.reel[FloorConverter]"
             },
 
             "itemsPerPage": {
-                "module": "montage/ui/bluemoon/slider.reel",
-                "name": "Slider",
+                "prototype": "montage/ui/bluemoon/slider.reel",
                 "properties": {
                     "element": {"#": "itemsPerPage"},
                     "minValue": 0,
@@ -44,8 +41,7 @@
 
 
             "itemCount": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "itemCount"}
                 },
@@ -55,8 +51,7 @@
             },
 
             "itemsPerPageCount": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "itemsPerPageCount"}
                 },
@@ -66,8 +61,7 @@
             },
 
             "list": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "list"},
                     "isSelectionEnabled": true
@@ -79,8 +73,7 @@
             },
 
             "item": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "item"}
                 },
@@ -90,8 +83,7 @@
             },
 
             "selectedValueField": {
-                "module": "montage/ui/textfield.reel",
-                "name": "Textfield",
+                "prototype": "montage/ui/textfield.reel",
                 "properties": {
                     "element": {"#": "selectedValueField"}
                 },
@@ -101,8 +93,7 @@
             },
 
             "nextPageButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "nextPageButton"},
                     "identifier": "nextPageButton"
@@ -110,8 +101,7 @@
             },
 
             "previousPageButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "previousPageButton"},
                     "identifier": "previousPageButton"
