@@ -153,9 +153,10 @@ var generateJunitXml = function(result) {
 
             // TODO escape string
             output += '  <testcase classname="'+ filename +'" name="' + escapeInvalidXmlChars(short_message) + '">\n';
-            output += '    <failure type="' +
-                escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">' +
-                escapeInvalidXmlChars(assert.message || "") +'</failure>\n';
+            output += '    <failure type="' + escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">' +
+                escapeInvalidXmlChars("Line " + assert.lineNumber) + "\n" +
+                escapeInvalidXmlChars(assert.message || "") +
+                      '    </failure>\n';
             output += '  </testcase>\n';
         }
     }
@@ -208,6 +209,7 @@ var runTest = function(test, agent) {
 
 var gotScripts = Q.defer();
 var tests;
+process.chdir(__dirname);
 walk("..", gotScripts.node());
 
 gotScripts.promise.then(function(files) {
