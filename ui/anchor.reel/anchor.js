@@ -12,6 +12,11 @@ var Montage = require("montage").Montage,
  */
 var Anchor = exports.Anchor = Montage.create(NativeControl, {
 
+    // HTMLAnchorElement methods
+
+    blur: { value: function() { this._element.blur(); } },
+    focus: { value: function() { this._element.focus(); } }
+
 });
 
 http://www.w3.org/TR/html5/text-level-semantics.html#the-a-element

@@ -10,6 +10,8 @@ TextInput = require("ui/text-input").TextInput;
 
 var Textarea = exports.Textarea = Montage.create(TextInput, {
 
+    select: { value: function() { this._element.select(); } },
+
     textContent: {
         get: function() {
             return this.value;
