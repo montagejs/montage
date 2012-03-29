@@ -59,7 +59,7 @@ var RangeInput = exports.RangeInput = Montage.create(TextInput, {
     }
 });
 
-RangeInput.addAttributes({
+RangeInput.addAttributes( /** @lends module:"montage/ui/range-input.reel".RangeInput# */ {
 /**
     The maximum value displayed but the input control.
     @type {number}

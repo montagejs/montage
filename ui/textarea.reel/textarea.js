@@ -20,7 +20,7 @@ TextInput = require("ui/text-input").TextInput;
    @extends module:montage/text-input.TextInput
  */
 
-var TextArea = exports.TextArea = Montage.create(TextInput, {
+var TextArea = exports.TextArea = Montage.create(TextInput, /** @lends module:"montage/ui/textarea.reel".TextArea# */ {
 
     select: { value: function() { this._element.select(); } },
 
@@ -40,7 +40,7 @@ var TextArea = exports.TextArea = Montage.create(TextInput, {
 
 });
 
-TextArea.addAttributes({
+TextArea.addAttributes( /** @lends module:"montage/ui/textarea.reel".TextArea# */ {
 /**
     Specifies whether the element should be focused as soon as the page is loaded.
     @type {boolean}
