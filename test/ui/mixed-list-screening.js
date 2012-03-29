@@ -1,28 +1,31 @@
 var agent = new Agent();
 
 var config = script.require('config.js').config();
-agent.gotoUrl(config.montage_url+"/examples/mixed-list/index.html");
 
-agent.setWindowSize(927, 956);
+agent.gotoUrl(config.montage_url + "/examples/mixed-list/index.html");
+test(["Slider", "Checkbox", "Toggle"]);
+agent.gotoUrl(config.montage_url + "/examples/mixed-list/index-native-controls.html");
+test(["RangeInput", "Checkbox", "ToggleButton"]);
 
-assertEqual("Add", agent.element("//*[@id='button']").getText());
-assertEqual("Toggle", agent.component("//*[@id='content']/UL/LI[1]/DIV").getObjectName());
+function test(arrayComponents) {
+    agent.setWindowSize(927, 956);
 
-var arrayComponents = ["Slider","Checkbox","Toggle"];
-var j=2;
-var component;
+    assertEqual("Add", agent.element("//*[@id='button']").getText());
+    assertEqual(arrayComponents[2], agent.component("//*[@id='content']/UL/LI[1]/*").getObjectName());
 
-while (arrayComponents.length != 0)
-   {
-   agent.element("//*[@id='button']").click(Mouse.LEFT,22,6);
-   agent.wait(2000);
+    var j = 2;
+    var component;
 
-   component = agent.component("//*[@id='content']/UL/LI["+j+"]/*").getObjectName();
+    while (arrayComponents.length !== 0) {
+        agent.element("//*[@id='button']").click(Mouse.LEFT, 22, 6);
+        agent.wait(1000);
 
-   j++;
+        component = agent.component("//*[@id='content']/UL/LI[" + j + "]/*").getObjectName();
 
-   var index = arrayComponents.indexOf(component);
+        j++;
 
-   if (index != -1)
-     arrayComponents.splice(index, 1);
-   }
+        var index = arrayComponents.indexOf(component);
+
+        if (index != -1) arrayComponents.splice(index, 1);
+    }
+}
