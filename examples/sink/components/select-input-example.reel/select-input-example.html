@@ -112,11 +112,7 @@
                         "element": {"#": "echo"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "json",
-                            "oneway": "true"
-                        }
+                        "value": {"<-": "@owner.json"}
                     }
                 },
                 "justifyComparatorLeft": {
@@ -190,11 +186,7 @@
                         "element": {"#": "justifyResult"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "justify",
-                            "oneway": "true"
-                        }
+                        "value": {"<-": "@owner.justify"}
                     }
                 },
                 "selectAccordion1": {
@@ -438,11 +430,7 @@
          "element": {"#": "echo"}
      },
      "bindings": {
-         "value": {
-             "boundObject": {"@": "owner"},
-             "boundObjectPropertyPath": "json",
-             "oneway": "true"
-         }
+         "value": {"&lt;-": "@owner.json"}
      }
  }
 }
@@ -699,11 +687,7 @@ Justify selection: &lt;span id="justifyResult"&gt;&lt;/span&gt;<br>
         "element": {"#": "justifyResult"}
     },
     "bindings": {
-        "value": {
-            "boundObject": {"@": "owner"},
-            "boundObjectPropertyPath": "justify",
-            "oneway": "true"
-        }
+        "value": {"&lt;-": "@owner.justify"}
     }
 },
                         </pre>
@@ -737,7 +721,7 @@ exports.JustifyConverter = Montage.create(Converter, {
             </section>
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
             </section>
 
 <!--

@@ -43,6 +43,9 @@
                 "properties": {
                     "element": {"#": "sidebar"},
                     "sandbox": {"@": "owner"}
+                },
+                "bindings": {
+                    "selectedItem": {"<<->": "@owner.selectedItem"}
                 }
             },
 
@@ -52,6 +55,9 @@
                 "properties": {
                     "element": {"#": "content"},
                     "sandbox": {"@": "owner"}
+                },
+                "bindings": {
+                    "selectedItem": {"<<->": "@owner.selectedItem"}
                 }
             }
         }
