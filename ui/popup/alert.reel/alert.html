@@ -8,8 +8,8 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
         <link rel="stylesheet" type="text/css" href="alert.css">
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "dynamictext1": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
@@ -19,13 +19,7 @@
             }
         },
         "bindings": {
-            "value": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "title",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.title"}
         }
     },
     "dynamictext2": {
@@ -37,13 +31,7 @@
             }
         },
         "bindings": {
-            "value": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "msg",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.msg"}
         }
     },
     "dynamictext3": {
@@ -55,13 +43,7 @@
             }
         },
         "bindings": {
-            "value": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "details",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.details"}
         }
     },
     "button1": {
@@ -91,8 +73,8 @@
             }
         }
     }
-}
-    </script>
+
+    }</script>
 
 
     </head>

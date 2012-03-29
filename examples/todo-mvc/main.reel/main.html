@@ -10,8 +10,8 @@
     <title>Main Component</title>
     <link rel="stylesheet" type="text/css" href="main.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "tasksController": {
                 "module": "montage/ui/controller/array-controller",
                 "name": "ArrayController",
@@ -19,12 +19,7 @@
 
                 },
                 "bindings": {
-                    "content": {
-                        "boundObject": {
-                            "@": "owner"
-                        },
-                        "boundObjectPropertyPath": "tasks"
-                    }
+                    "content": {"<<->": "@owner.tasks"}
                 }
             },
             "taskNoteField": {
@@ -45,12 +40,7 @@
                     }
                 },
                 "bindings": {
-                    "task": {
-                        "boundObject": {
-                            "@": "taskRepetition"
-                        },
-                        "boundObjectPropertyPath": "objectAtCurrentIteration"
-                    }
+                    "task": {"<<->": "@taskRepetition.objectAtCurrentIteration"}
                 }
             },
             "taskRepetition": {
@@ -75,13 +65,7 @@
                     "converter": {"@": "itemCountConverter"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {
-                            "@": "owner"
-                        },
-                        "boundObjectPropertyPath": "unfinishedTasks.count()",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.unfinishedTasks.count()"}
                 }
             },
 
@@ -99,13 +83,7 @@
                     }
                 },
                 "bindings": {
-                    "tasksController": {
-                        "boundObject": {
-                            "@": "owner"
-                        },
-                        "boundObjectPropertyPath": "tasksController",
-                        "oneway": true
-                    }
+                    "tasksController": {"<-": "@owner.tasksController"}
                 }
             },
 
@@ -116,11 +94,7 @@
                     "element": {"#": "markAllCompleteForm"}
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "tasksController.organizedObjects.count()",
-                        "oneway": true
-                    }
+                    "condition": {"<-": "@owner.tasksController.organizedObjects.count()"}
                 }
             },
 
@@ -131,12 +105,7 @@
                     "element": {"#": "markAllCompleteButton"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "unfinishedTasks",
-                        "oneway": true,
-                        "converter": {"@": "markAllReadValueConverter"}
-                    }
+                    "value": {"<-": "@owner.unfinishedTasks", "converter": {"@": "markAllReadValueConverter"}}
                 }
             },
 
@@ -166,8 +135,8 @@
                     }
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

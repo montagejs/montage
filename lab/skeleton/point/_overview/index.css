@@ -1,0 +1,72 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+@import url(http://fonts.googleapis.com/css?family=Homenaje);
+
+body {
+    margin: 0;
+    color: #444;
+    font: 13px/1.231 sans-serif;
+	background-color: hsl(200,0%,90%);
+}
+
+h1 {
+    padding-right: 1em;
+    margin: 50px 0;
+    text-align: center;
+    line-height: 60px;
+    color: #aaa;
+    font-size: 50px;
+    font-family: 'Homenaje', sans-serif ;
+}
+
+h1 .logo {
+    vertical-align: middle;
+    width: 75px;
+    height: 60px;
+    margin: 0 20px;
+    background: url(img/logo.png) no-repeat center center;
+}
+
+h1 span {
+    display: inline-block;
+}
+
+.tip {
+    cursor: help;
+    color: hsl(200,100%,50%);
+}
+
+th {
+    color: #aaa;
+    font-family: 'Homenaje', sans-serif ;
+    font-size: 1.8em;
+    font-weight: normal;
+}
+
+
+table {
+    width: 100%;
+    margin: 0 auto 100px auto;
+    padding: 0;
+    list-style: none;
+    border-bottom: 1px solid hsla(0,0%,0%,.1);
+}
+
+td {
+    width: 50%;
+    text-align: center;
+    padding: 20px;
+    border-top: 1px solid hsla(0,0%,0%,.1);
+}
+
+
+/* For testing */
+.montage-rangeInput {
+    /width: 100px !important;
+    /box-shadow: 0 0 0 10px pink;
+}
+

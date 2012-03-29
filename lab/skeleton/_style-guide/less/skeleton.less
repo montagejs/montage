@@ -1,0 +1,442 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+
+/* Montage Skeleton Theme */
+
+/* Colors ------------------------------- */
+@color-input:      hsl(0,0%,100%);
+@color-active:     hsl(0,0%,95%);
+@color-passive:    hsl(0,0%,85%);
+@color-border:     hsl(0,0%,70%);
+
+/* Layout ------------------------------- */
+@size-s:           12px;
+@size-m:           14px;
+@size-l:           16px;
+
+@size-x:           1em;
+@size-xx:          1.5em;
+@size-xxx:         2em;
+@size-xxxx:        2.5em;
+
+@width:            10em;
+
+@border-radius:    3px;
+@border-radius-m:  @size-l * @size-xx;
+
+@border: 1px solid @color-border;
+
+.removeAppearance() {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+}
+.border-box() {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.states-button() {
+    cursor: pointer;
+    &:hover {
+        background-color: lighten(@color-active, 10%);
+    }
+    &:active {
+        background-color: darken(@color-active, 5%);
+    }
+    &:focus {
+        border-color: darken(@color-border, 20%);
+    }
+}
+.states-text() {
+    &:hover {
+        border-color: lighten(@color-border, 10%);
+    }
+    &:focus {
+        border-color: darken(@color-border, 20%);
+    }
+}
+
+
+
+/* Theme -------------------------------------------------------------- */
+
+
+/* Button ------------------------------- */
+button.skeleton {
+    .removeAppearance();
+    .border-box();
+    font-size: @size-s;
+    height: @size-xxxx;
+    min-width: @size-xxxx;
+    margin: 0 2px;
+    padding: 0 1em;
+    vertical-align: middle;
+    border-radius: @border-radius;
+    border: @border;
+    background-color: @color-active;
+    .states-button();
+}
+
+.mobile button.skeleton {
+    font-size: @size-l;    
+    border-radius: @border-radius-m;
+}
+
+/* Button + Icon ------------------------------- */
+button.skeleton > i {
+    font-size: 1.2em;
+}
+
+
+/* ButtonGroup ------------------------------- */
+.buttonGroup button.skeleton {
+    margin: 0;
+    border-radius: 0;
+    margin-left: -1px;
+}
+.buttonGroup button.skeleton:first-child {
+    border-radius: @border-radius 0 0 @border-radius;
+}
+.buttonGroup button.skeleton:last-child {
+    border-radius: 0 @border-radius @border-radius 0;
+}
+
+.mobile .buttonGroup button.skeleton:first-child {
+    border-radius: @border-radius-m 0 0 @border-radius-m;
+}
+.mobile .buttonGroup button.skeleton:last-child {
+    border-radius: 0 @border-radius-m @border-radius-m 0;
+}
+
+
+/* Toggle ------------------------------- */
+.skeleton-toggle {
+    .border-box();
+    font-size: @size-s;
+    position: relative;
+    display: inline-block;
+    width: @size-xxx * 2;
+    height: @size-xxx;
+    border-radius: @border-radius;
+    vertical-align: middle;
+    border: @border;
+    background: @color-passive;
+}
+.skeleton-toggle-thumb {
+    .border-box();
+    position: absolute;
+    left: 0;
+    display: inline-block;
+    margin: -1px;
+    width: @size-xxx;
+    height: inherit;
+    border-radius: inherit;
+    border: @border;
+    background: @color-active;
+    .states-button();
+}
+
+.mobile .skeleton-toggle {
+    font-size: @size-l;
+    border-radius: @border-radius-m;
+}
+
+
+/* Checkbox ------------------------------- */
+input.skeleton[type="checkbox"] {
+    .removeAppearance();
+    .border-box();
+    font-size: @size-s;
+    width: @size-xx;
+    height: @size-xx;
+    border-radius: @border-radius;
+    vertical-align: middle;
+    border: @border;
+    background: @color-active;
+    .states-button();
+}
+input.skeleton[type="checkbox"]:checked {
+    background: hsl(0,0%,95%) url(../assets/img/checkbox.png) no-repeat center center;
+}
+
+.mobile input.skeleton[type="checkbox"] {
+    font-size: @size-l;
+}
+
+
+/* Label ------------------------------- */
+label.skeleton {
+    font-size: @size-m;
+    line-height: @size-m;
+    vertical-align: middle;
+}
+.mobile label.skeleton {
+    font-size: @size-l;
+    font-size: @size-l;
+    vertical-align: middle;
+}
+
+
+
+/* Radio ------------------------------- */
+input.skeleton[type="radio"] {
+    .removeAppearance();
+    .border-box();
+    font-size: @size-s;
+    width: @size-xx;
+    height: @size-xx;
+    border-radius: 1em;
+    border: @border;
+    background: @color-active;
+    .states-button();
+}
+input.skeleton[type="radio"]:checked {
+    background: @color-active url(../assets/img/radio.png) no-repeat center center;
+}
+
+.mobile input.skeleton[type="radio"] {
+    font-size: @size-l;
+}
+
+
+/* Select ------------------------------- */
+select.skeleton {
+    .removeAppearance();
+    .border-box();
+    font-size: @size-s;
+    height: @size-xxxx;
+    padding: 0 @size-xxx 0 @size-x;
+    border-radius: @border-radius;
+    border: @border;
+    background: @color-active url(../assets/img/select.png) no-repeat right center;
+    .states-button();
+}
+
+.mobile select.skeleton {
+    font-size: @size-l;
+    border-radius: @size-xx @size-x @size-x @size-xx;
+}
+
+
+/* Input Text ------------------------------- */
+input.skeleton[type="text"],
+input.skeleton[type="password"],
+input.skeleton[type="search"] {
+    .removeAppearance();
+    .border-box();
+    font-size: @size-s;
+    width: @width;
+    height: @size-xxxx;
+    padding: 0.5em;
+    border: @border;
+    border-radius: @border-radius;
+    background-color: @color-input;
+    .states-text();
+}
+
+.mobile input.skeleton[type="text"],
+.mobile input.skeleton[type="password"],
+.mobile input.skeleton[type="search"] {
+    font-size: @size-m;
+}
+
+
+/* Textarea ------------------------------- */
+textarea.skeleton {
+    .removeAppearance();
+    .border-box();
+    font-size: @size-s;
+    width: @width;
+    min-width: @width;
+    padding: 0.5em;
+    resize: vertical;
+    border: @border;
+    border-radius: @border-radius;
+    background-color: @color-input;
+    .states-text();
+}
+
+.mobile textarea.skeleton {
+    font-size: @size-m;
+}
+
+
+/* Input Combos ------------------------------- */
+.skeleton-icon-input,
+.skeleton-icon-input-button {
+    font-size: @size-s;
+}
+
+.skeleton-icon-input > i,
+.skeleton-icon-input-button > i {
+    .border-box();
+    font-size: inherit;
+    line-height: @size-xxxx;
+    display: inline-block;
+    width: @size-xxxx;
+    height: @size-xxxx;
+    vertical-align: middle;
+    color: @color-border;
+    border-radius: @border-radius 0 0 @border-radius;
+    border: @border;
+    border-right: none;
+    background-color: @color-input;
+}
+
+.skeleton-icon-input > input.skeleton,
+.skeleton-icon-input-button > input.skeleton {
+    font-size: inherit;
+    width: @width - @size-xxxx;
+    height: @size-xxxx;
+    vertical-align: middle;
+    border-radius: 0 @border-radius @border-radius 0;
+}
+
+.skeleton-icon-input-button > input.skeleton {
+    border-radius: 0;
+}
+.skeleton-icon-input-button > button.skeleton {
+    font-size: inherit;
+    margin: 0;
+    border-left: none;
+    border-radius: 0 @border-radius @border-radius 0;
+}
+
+.mobile .skeleton-icon-input,
+.mobile .skeleton-icon-input-button {
+    font-size: @size-m;
+}
+.mobile .skeleton-icon-input-button > i {
+    border-radius:  @border-radius-m 0 0 @border-radius-m;
+}
+.mobile .skeleton-icon-input-button > button.skeleton {
+    border-radius: 0 @border-radius-m @border-radius-m 0;
+}
+
+
+
+
+/* Number ------------------------------- */
+.skeleton-input-number {
+    font-size: @size-s;
+    position: relative;
+    display: inline-block;
+    width: @width/2;
+    margin-right: @size-xxxx;
+}
+
+.skeleton-input-number > input.skeleton {
+    font-size: inherit;
+    width: @width/2;
+    vertical-align: middle;
+    border-radius: @border-radius 0 0 @border-radius;
+    .states-text();
+}
+.skeleton-input-number > button.skeleton {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    width: @size-xxxx;
+    height: @size-xxxx/2;
+    right: -@size-xxxx;
+}
+.skeleton-input-number > button.plus {
+    border-width: 1px 1px 0 0;
+    border-radius: 0 @border-radius 0 0;
+    top: 0px;
+}
+.skeleton-input-number > button.minus {
+    border-width: 1px 1px 1px 0;
+    border-radius: 0 0 @border-radius 0;
+    bottom: 0px;
+}
+
+.mobile .skeleton-input-number {
+    font-size: @size-l;
+    width: auto;
+    margin: 0;
+}
+.mobile .skeleton-input-number > input.skeleton {
+    font-size: inherit;
+    border-radius: 0;
+    text-align: center;
+}
+.mobile .skeleton-input-number > button.skeleton {
+    position: static;
+    height: @size-xxxx;
+    top: auto;
+    right: auto;
+}
+.mobile .skeleton-input-number > button.plus {
+    border-width: 1px 1px 1px 0;
+    border-radius: 0 @size-xxxx @size-xxxx 0;
+}
+.mobile .skeleton-input-number > button.minus {
+    border-width: 1px 0 1px 1px;
+    border-radius: @size-xxxx 0 0 @size-xxxx;
+}
+
+
+
+
+/* Range ------------------------------- */
+.skeleton-range {
+    position: relative;
+    font-size: @size-s;
+    display: inline-block;
+    width: @width;
+    height: 0.4em;
+    border-radius: @border-radius;
+    border: @border;
+    background-color: @color-passive;
+}
+
+.skeleton-range > button.skeleton {
+    position: absolute;
+    //.border-box();
+    font-size: inherit;
+    padding: 0;
+    margin: -(@size-xx/2)+0.1em -@size-xx/2;
+    min-width: 0;
+    border-radius: @size-xx;
+    width: @size-xx;
+    height: @size-xx;
+    left: 50%;
+}
+
+.mobile .skeleton-range {
+    font-size: @size-l;
+}
+
+
+/* Progress ------------------------------- */
+.skeleton-progress {
+    position: relative;
+    font-size: @size-s;
+    display: inline-block;
+    width: @width;
+    height: 10px;
+    border-radius: @border-radius;
+    border: @border;
+    background-color: @color-passive;
+}
+
+.skeleton-progress .skeleton-progress-bar {
+    position: absolute;
+    height: inherit;
+    border-radius: @border-radius - 1px;
+    top: 0;
+    left: 0;
+    background-color: @color-active;
+    width: 50%;
+}
+
+.mobile .skeleton-progress {
+    font-size: @size-l;
+}

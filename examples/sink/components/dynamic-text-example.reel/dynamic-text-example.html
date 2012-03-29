@@ -2,42 +2,44 @@
 <html>
     <head>
         <title>Dynamic Text Example</title>
-        <script type="text/montage-serialization">
-{
-    "dateConverter1": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
-        "properties": {
-            "pattern": "hh:mm:ss"
-        }
-    },
-    "current-time": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
-        "properties": {
-            "value": "",
-            "converter": {"@": "dateConverter1"},
-            "element": {"#": "current-time"}
-        },
-        "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "currentTime",
-                "oneway": true
+        <script type="text/montage-serialization">{
+
+            "dateConverter1": {
+                "module": "montage/core/converter/date-converter",
+                "name": "DateConverter",
+                "properties": {
+                    "pattern": "hh:mm:ss"
+                }
+            },
+            "currentTime": {
+                "module": "montage/ui/dynamic-text.reel",
+                "name": "DynamicText",
+                "properties": {
+                    "value": "",
+                    "converter": {"@": "dateConverter1"},
+                    "element": {"#": "currentTime"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.currentTime"}
+                }
+            },
+            "dynamicTextAccordion1": {
+                "module": "accordion.reel",
+                "name": "Accordion",
+                "properties": {
+                    "element": {"#": "dynamicTextAccordion1"}
+                }
+            },
+
+            "owner": {
+                "module": "components/dynamic-text-example.reel",
+                "name": "DynamicTextExample",
+                "properties": {
+                    "element": {"#": "component-root"}
+                }
             }
-        }
-    },
-
-
-    "owner": {
-        "module": "components/dynamic-text-example.reel",
-        "name": "DynamicTextExample",
-        "properties": {
-            "element": {"#": "component-root"}
-        }
-    }
-}
-    </script>
+        
+    }</script>
 
     <style>
         .current-time {
@@ -52,26 +54,121 @@
     <body>
         <div id="component-root">
             <div class="row">
-                <div class="span8">
+                <div class="span12">
                     <h3>Dynamic Text</h3>
                     <p class="">
-                    The DynamicText component lets you easily display a string of text in any element that has a <code>innerHtml</code> property. This includes any element with an opening and closing angle brackets. The following example binds the current time to a DynamicText component's <code>value</code>.
+                    The DynamicText component lets you display a string of text in a DOM element.
                     </p>
                 </div>
             </div>
-            
+
             <h4>Demo</h4>
 
-            <div class="demo">
-                <p>This example combines a DynamicText component, whose value is bound to the <code>currentTime</code> property that's definedthe component's controller JavaScript object (components/dynamic-text-example.reel/dynamic-text-example.js). Lastly, a DateConverter is used to format the time value in the hh:mm:ss format.
+                <p>This example displays the current time in a DynamicText component. The current time is calculated , which is provided by the component's controller. A <code>DateConverter</code> is used to format the time value in the hh:mm:ss format.
                 </p>
-                <span id="current-time" class="current-time"></span>
+            <div class="demo">
+                <span id="currentTime" class="current-time"></span>
+
             </div>
 
+                       <ul id="dynamicTextAccordion1" class="accordion">
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                <div class="accordion-inner montage-hidden" >
+                                    <pre class="prettyprint" >
+&lt;span id="currentTime" class="currentTime"&gt;&lt;/span&gt;
+            </pre>
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+{
+    "dateConverter1": {
+        "module": "montage/core/converter/date-converter",
+        "name": "DateConverter",
+        "properties": {
+            "pattern": "hh:mm:ss"
+        }
+    },
+    "currentTime": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "value": "",
+            "converter": {"@": "dateConverter1"},
+            "element": {"#": "currentTime"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@owner.currentTime"}
+        }
+    },
+    "owner": {
+        "module": "components/dynamic-text-example.reel",
+        "name": "DynamicTextExample",
+        "properties": {
+            "element": {"#": "component-root"}
+        }
+    }
+}
+             </pre>
+
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.DynamicTextExample = Montage.create(Component, {
+
+    _currentTime: {value: null},
+    currentTime: {
+        set: function(value) {
+            this._currentTime = value;
+            this.needsDraw = false;
+        },
+        get: function() {return this._currentTime;}
+    },
+
+    _intervalId: {value: null},
+
+    didBecomeInactiveInSlot: {
+        value: function() {
+            if(this._intervalId) {
+                clearInterval(this._intervalId);
+                this._intervalId = null;
+            }
+        }
+    },
+
+    didBecomeActiveInSlot: {
+        value: function() {
+            var self = this;
+            if(this._intervalId) {
+                clearInterval(this._intervalId);
+            }
+            this._intervalId = setInterval(function() {
+                self.currentTime = new Date(Date.now());
+            }, 1000);
+        }
+    }
+
+});
+                                    </pre>
+                                </div>
+                            </li>
+                        </ul>
+
+
+
             <section>
-                <a href="m-js/examples/sink/components/substitution-example.reel" target="_blank">View Demo Source</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/dynamic-text-example.reel" target="_blank">View source on GitHub</a>
             </section>
-            
+<!--
             <section>
                 <h4>Component Properties</h4>
                 <table>
@@ -85,13 +182,14 @@
                       <tr>
                         <td>value</td>
                         <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                      </tr>                    
-                    
+                      </tr>
+
                   </tbody>
                 </table>
                 <p>
                     <a href="" target="_blank">View full Documentation</a>
                 </p>
             </section>
-    </body>
+
+ -->    </body>
 </html>

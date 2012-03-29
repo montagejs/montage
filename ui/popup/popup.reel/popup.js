@@ -21,8 +21,29 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     hasTemplate: {value: true},
 
-    // anchor element to which this popup must be anchored to
-    anchor: {value: null},
+    // the HTML Element to which the popup must be anchored to
+    anchorElement: {value: null},
+
+    _anchor: {value: null},
+    /**
+    * The HTMLElement or Montage Component that the popup must be anchored to
+    */
+    anchor: {
+        get: function() {
+            return this._anchor;
+        },
+        set: function(value) {
+            if(value) {
+                this._anchor = value;
+                if(value.nodeName) {
+                    // HTMLElement
+                    this.anchorElement = value;
+                } else {
+                    this.anchorElement = value.element;
+                }
+            }
+        }
+    },
 
     // A Delegate to control positioning (and other features, in future) of the popup in a custom manner
     delegate: {value: null},
@@ -138,7 +159,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     /**
     * Number of milliseconds after which the Popup must be dismissed. Default is 0.
     */
-    autoDismiss: { value: 0 },
+    autoHide: { value: 0 },
 
     /** @private */
     _displayed: { value: false },
@@ -188,26 +209,37 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     curWd += obj.offsetWidth;
                 } while ((obj = obj.offsetParent));
             }
-            return [curleft,curtop, curHt, curWd];
+            return {
+                top: curtop,
+                left: curleft,
+                height: curHt,
+                width: curWd
+            };
+            //return [curleft,curtop, curHt, curWd];
 
+        }
+    },
+
+    _getCSSValue: {
+        value: function(value) {
+            if(value != null) {
+                if(typeof value === 'number') {
+                    value = value + 'px';
+                }
+                return value;
+            }
+            return '';
         }
     },
 
     _positionPopup: {
         value: function() {
-            var position, delegate = this.delegate, anchor = this.anchor, type = this.type;
+            var defaultPosition, position, delegate = this.delegate, anchor = this.anchorElement, type = this.type;
 
-            // if a delegate is provided, use that to get the position
-            if(delegate && (typeof delegate.willPositionPopup === 'function')) {
-                var anchorPosition;
-                if(anchor) {
-                    anchorPosition = this._getElementPosition(anchor);
-                }
-                position = delegate.willPositionPopup(this, anchor, anchorPosition);
-            } else if(this.position !== null) {
+            if(this.position !== null) {
                 // If a position has been specified but no delegate has been provided
                 // we assume that the position is static and hence use that
-                position = this.position;
+                defaultPosition = this.position;
             } else {
                 // @todo - advanced positioning support
                 var $el = this.contentEl || this.content.element;
@@ -220,43 +252,46 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
                 if (anchor) {
                     // if an anchor is provided, we position the popup relative to the anchor
-                    //
-                    if (anchor.nodeName) {
-                        // if anchor is an element
-                        var elPosition = this._getElementPosition(anchor);
-                        var tgtHeight = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
-                        var tgtWidth = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
+                    var elPosition = this._getElementPosition(anchor);
+                    var tgtHeight = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
+                    var tgtWidth = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
 
-                        position = {
-                            top: elPosition[1] + tgtHeight + 20 /* pointer */,
-                            left: elPosition[0] + (tgtWidth / 2) - (elWidth / 2)
-                        };
+                    defaultPosition = {
+                        top: elPosition.top + tgtHeight,
+                        left: elPosition.left + (tgtWidth / 2) - (elWidth / 2)
+                    };
 
-                        if (position.left < 0) {
-                            position.left = elPosition[0];
-                            this._showHidePointer(false);
-                            // dont show the pointer - @todo - support pointer arrow at different parts of the popup
-                        }
-                    } else {
-                        // anchor is absolute position {top, left}
-                        position = anchor;
+                    if (defaultPosition.left < 0) {
+                        defaultPosition.left = elPosition.left;
+                        this._showHidePointer(false);
+                        // dont show the pointer - @todo - support pointer arrow at different parts of the popup
                     }
+
                 } else {
                     // No positioning hints provided. POsition it at the center of the viewport by default
-                    position = {
+                    defaultPosition = {
                         top: (viewportHeight / 2 - (elHeight / 2)),
                         left: (viewportWidth / 2 - (elWidth / 2))
                     };
                 }
             }
+
+
+            // if a delegate is provided, use that to get the position
+            if(delegate && (typeof delegate.willPositionPopup === 'function')) {
+                position = delegate.willPositionPopup(this, defaultPosition);
+            } else {
+                position = defaultPosition;
+            }
+
             //this.position = position;
             var popupSlot = this._popupSlot;
 
             if(position) {
-                popupSlot.element.style.top = (position.top ? position.top + 'px' : '');
-                popupSlot.element.style.left = (position.left ? position.left + 'px' : '');
-                popupSlot.element.style.right = (position.right ? position.right + 'px' : '');
-                popupSlot.element.style.bottom = (position.bottom ? position.bottom + 'px' : '');
+                popupSlot.element.style.top = this._getCSSValue(position.top);
+                popupSlot.element.style.left = this._getCSSValue(position.left);
+                popupSlot.element.style.right = this._getCSSValue(position.right);
+                popupSlot.element.style.bottom = this._getCSSValue(position.bottom);
             }
 
         }
@@ -313,6 +348,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     */
     show: {
         value: function() {
+            //console.log("popup show", this.element);
             var type = this.type,
                 self = this;
             this.application.getPopupSlot(type, this, function(slot) {
@@ -328,13 +364,16 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     */
     hide: {
         value: function() {
+            //console.log('popup hide', this.element);
             this._removeEventListeners();
 
             var type = this.type,
                 self = this;
 
-            this.application.returnPopupSlot(type);
-            this.displayed = false;
+            this.application.getPopupSlot(type, this, function(slot) {
+                self.application.returnPopupSlot(type);
+                self.displayed = false;
+            });
         }
     },
 
@@ -376,6 +415,14 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     this.element.classList.add('montage-modal');
                 } else {
                     this.element.classList.remove('montage-modal');
+
+                    if (this.autoHide) {
+                        var self = this;
+                        setTimeout(function() {
+                            self.hide();
+                        }, this.autoHide);
+                    }
+
                 }
 
                 // @todo - positioning should happen inside the draw. Looks like this is only possible
@@ -389,12 +436,6 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // TODO do we want the panel to be focusable?
                 this.content.element.setAttribute("tabindex", "0"); // Make the popup content focusable
 
-                if (this.autoDismiss) {
-                    var self = this;
-                    setTimeout(function() {
-                        self.hide();
-                    }, this.autoDismiss);
-                }
             } else {
                 if (!this.element.classList.contains('montage-invisible')) {
                     this.element.classList.add('montage-invisible');

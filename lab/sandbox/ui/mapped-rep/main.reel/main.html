@@ -8,8 +8,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Main Component</title>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "main.reel",
                 "name": "Main",
@@ -74,11 +74,7 @@
                     "axis": "vertical"
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController",
-                        "oneway": true
-                    }
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -89,11 +85,7 @@
                     "element": {"#": "labelA"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "listA"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@listA.objectAtCurrentIteration"}
                 }
             },
 
@@ -105,11 +97,7 @@
                     "isSelectionEnabled": true
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController",
-                        "oneway": true
-                    }
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -120,11 +108,7 @@
                     "element": {"#": "labelB"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "listB"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@listB.objectAtCurrentIteration"}
                 }
             },
 
@@ -152,11 +136,7 @@
                     "mode": "bookends"
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController",
-                        "oneway": true
-                    }
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -167,11 +147,7 @@
                     "element": {"#": "labelC"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "listC"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@listC.objectAtCurrentIteration"}
                 }
             },
 
@@ -204,8 +180,8 @@
                     }
                 ]
             }
-        }
-    </script>
+        
+    }</script>
 
     <style type="text/css">
 

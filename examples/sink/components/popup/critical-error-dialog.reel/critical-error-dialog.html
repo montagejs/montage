@@ -3,8 +3,8 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="critical-error-dialog.css">
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "dynamictext2": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
@@ -12,11 +12,7 @@
             "element": {"#": "msg-detail"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "details",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.details"}
         }
     },
     "button1": {
@@ -33,6 +29,20 @@
             }
         ]
     },
+    "restartLater": {
+        "module": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "identifier": "RestartLater",
+            "element": {"#": "action-restart-later"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
     "owner": {
         "module": "components/popup/critical-error-dialog.reel",
         "name": "CriticalErrorDialog",
@@ -40,8 +50,8 @@
             "element": {"#": "dialog-container"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 
     </head>
@@ -58,7 +68,8 @@
 
             <div class="montage-popup-footer">
                 <div class="dialog-actions">
-                    <button class="btn primary action-restart" id="action-restart">Restart</button>
+                    <button class="btn primary action-restart" id="action-restart">Restart Now</button>
+                    <button class="btn secondary action-restart-later" id="action-restart-later">Restart Later</button>
                 </div>
                 <div class="clearfix"></div>
             </div>

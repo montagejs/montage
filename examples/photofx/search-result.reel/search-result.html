@@ -10,8 +10,8 @@
     <title>SearchPanel</title>
     <link rel="stylesheet" href="search-result.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "search-result.reel",
                 "name": "SearchResult",
@@ -27,11 +27,7 @@
                     "element": {"#": "searchResultImage"}
                 },
                 "bindings": {
-                    "src": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "result.media$group.media$thumbnail.2.url",
-                        "oneway": true
-                    }
+                    "src": {"<-": "@owner.result.media$group.media$thumbnail.2.url"}
                 }
             },
 
@@ -76,16 +72,11 @@
                     }
                 },
                 "bindings": {
-                    "switchValue": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "resultAlreadyImported",
-                        "oneway": true,
-                        "converter": {"@": "actionSwitchValueConverter"}
-                    }
+                    "switchValue": {"<-": "@owner.resultAlreadyImported", "converter": {"@": "actionSwitchValueConverter"}}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

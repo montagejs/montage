@@ -8,7 +8,7 @@ var Montage = require("montage").Montage,
 Component = require("ui/component").Component,
 TextInput = require("ui/text-input").TextInput;
 
-var TextArea = exports.TextArea = Montage.create(TextInput, {
+var Textarea = exports.Textarea = Montage.create(TextInput, {
 
     textContent: {
         get: function() {
@@ -21,7 +21,7 @@ var TextArea = exports.TextArea = Montage.create(TextInput, {
 
 });
 
-TextArea.addAttributes({
+Textarea.addAttributes({
         autofocus: {dataType: 'boolean'},
         cols: null,
         dirname: null,

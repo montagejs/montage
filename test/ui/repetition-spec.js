@@ -7,6 +7,10 @@ var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     Template = require("montage/ui/template").Template;
 
+var stripPP = function stripPrettyPrintting(str) {
+    return str.replace(/\n\s*/g, "");
+};
+
 var testPage = TestPageLoader.queueTest("repetition", function() {
     describe("ui/repetition-spec", function() {
         var eventManager,
@@ -37,6 +41,11 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     expect(querySelectorAll(".list3 > *").length).toBe(0);
                 });
             });
+        });
+
+        it("should not serialize bindings in the iteration template", function() {
+            var serialization = delegate.repetition1._iterationTemplate._ownerSerialization;
+            expect(stripPP(serialization)).toBe('{"owner":{"prototype":"montage/ui/repetition.reel","properties":{"element":{"#":"list1"},"_isComponentExpanded":true}}}')
         });
 
         describe("The static repetition", function() {

@@ -49,14 +49,13 @@ exports.Sidebar = Montage.create(Component, {
             if(window.Touch) {
                 this.element.addEventListener('touchend', this);
             } else {
-                this.element.addEventListener('mouseup', this);
+                this.element.addEventListener('click', this);
             }
         }
     },
 
     handleNavItemClicked: {
         value: function(href) {
-            console.log("nav item clicked = " + href);
             var hash = href.substring(href.lastIndexOf('#')+1);
             this.sandbox.selectedItem = hash;
         }
@@ -86,7 +85,7 @@ exports.Sidebar = Montage.create(Component, {
                 if(a) {
                     this._highlightSelection($li);
                     this.handleNavItemClicked(a.href);
-                    event.preventDefault();
+                    //event.preventDefault();
                 }
             }
         }

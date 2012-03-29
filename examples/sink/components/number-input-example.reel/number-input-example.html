@@ -7,8 +7,8 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "owner": {
                     "module": "components/number-input-example.reel",
                     "name": "NumberInputExample",
@@ -16,7 +16,7 @@
                         "element": {"#": "number-input-example"}
                     }
                 },
-                "temp-converter": {
+                "tempConverter": {
                     "module": "components/number-input-example.reel",
                     "name": "TempConverter",
                     "properties": {
@@ -30,11 +30,14 @@
                         "element": {"#": "celsius"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "fahrenheitTextfield"},
-                            "boundObjectPropertyPath": "value",
-                            "converter": {"@": "temp-converter"}
-                        }
+                        "value": {"<<->": "@fahrenheitTextfield.value", "converter": {"@": "tempConverter"}}
+                    }
+                },
+                "numberAccordion1": {
+                    "module": "accordion.reel",
+                    "name": "Accordion",
+                    "properties": {
+                        "element": {"#": "numberAccordion1"}
                     }
                 },
                 "fahrenheitTextfield": {
@@ -45,8 +48,8 @@
                         "value": "32"
                     }
                 }
-            }
-        </script>
+
+    }</script>
 
         <style>
 
@@ -56,32 +59,133 @@
         <div id="number-input-example" class="number-input-example">
             <div class="row">
                 <div class="span8">
-                    <h3>number-input</h3>
+                    <h3>NumberInput</h3>
                     <p>
-                        The number-input component wraps an HTML input type=number element and provides data binding support.
+                        The NumberInput component wraps an HTML input element of type "number".
                     </p>
-                    <p>
+<!--                     <p>
                         <a href="" target="_blank">View Documentation</a>
-                    </p>
+                    </p> -->
                 </div>
             </div>
 
             <h4>Demo</h4>
-            <div class="demo">
+            <div class="demo number1">
                 <form class="form-stacked">
                     <label for="celsius">Temperature in Celsius</label>
-                    <input type="number" name="celsius" id="celsius" step="2" required />
+                    <input type="number" name="celsius" id="celsius" step="2"  />
 
                     <label for="fahrenheit">Temperature in Fahrenheit</label>
-                    <input type="number" name="fahrenheit" id="fahrenheit" step="4" required />
+                    <input type="number" name="fahrenheit" id="fahrenheit" step="4" />
                 </form>
-            </div>
+           </div>
 
-            <section>
-                <a href="m-js/examples/sink/components/input-text-example.reel" target="_blank">View Demo Source</a>
+
+
+
+
+           <section>
+
+
+<ul id="numberAccordion1" class="accordion">
+   <li class="accordion-group">
+       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+       <div class="accordion-inner montage-hidden" >
+           <pre class="prettyprint" >
+&lt;form class="form-stacked"&gt;
+   &lt;label for="celsius"&gt;Temperature in Celsius&lt;/label&gt;
+   &lt;input type="number" name="celsius" id="celsius" step="2" required /&gt;
+
+   &lt;label for="fahrenheit"&gt;Temperature in Fahrenheit&lt;/label&gt;
+   &lt;input type="number" name="fahrenheit" id="fahrenheit" step="4" required /&gt;
+&lt;/form&gt;
+</pre>
+       </div>
+   </li>
+   <li class="accordion-group">
+       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+       <div class="accordion-inner montage-hidden">
+<pre class="prettyprint" >
+{
+    "owner": {
+        "module": "components/number-input-example.reel",
+        "name": "NumberInputExample",
+        "properties": {
+            "element": {"#": "number-input-example"}
+        }
+    },
+    "tempConverter": {
+        "module": "components/number-input-example.reel",
+        "name": "TempConverter",
+        "properties": {
+
+        }
+    },
+    "celsiusTextfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "celsius"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@fahrenheitTextfield.value", "converter": {"@": "tempConverter"}}
+        }
+    },
+    "fahrenheitTextfield": {
+        "module": "montage/ui/textfield.reel",
+        "name": "Textfield",
+        "properties": {
+            "element": {"#": "fahrenheit"},
+            "value": "32"
+        }
+    }
+}
+</pre>
+
+       </div>
+   </li>
+   <li class="accordion-group">
+       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+       <div class="accordion-inner montage-hidden">
+           <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+   Component = require("montage/ui/component").Component,
+   Converter = require("montage/core/converter/converter").Converter;
+
+/* Custom converter to convert from Celsius to Fahrenheit and vice-versa */
+exports.TempConverter = Montage.create(Converter, {
+
+   allowPartialConversion: {
+       value: true
+   },
+
+   // convert fahrenheit to celsius (showing our non-metric heritage here)
+   convert: {
+       value: function(value) {
+           return new Number((parseInt(value, 10) - 32) / 1.8).toFixed(2);
+       }
+   },
+
+   // revert celsius to fahrenheit
+   revert: {
+       value: function(value) {
+           return new Number((1.8 * parseInt(value, 10)) + 32).toFixed(2);
+       }
+   }
+
+});
+           </pre>
+       </div>
+   </li>
+</ul>
+
             </section>
 
-            <section>
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/number-input-example.reel" target="_blank">View source on GitHub</a>
+        </section>
+
+<!--             <section>
                 <h4>Component Properties</h4>
                 <table>
                   <thead>
@@ -132,7 +236,7 @@
                 <p>
                     <a href="" target="_blank">View full Documentation</a>
                 </p>
-            </section>
+            </section> -->
         </div>
     </body>
 </html>

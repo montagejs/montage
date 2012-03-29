@@ -10,8 +10,8 @@
     <title>Ruler</title>
     <link rel="stylesheet" type="text/css" href="ruler.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
 
             "positionText": {
                 "module": "montage/ui/dynamic-text.reel",
@@ -20,11 +20,7 @@
                     "element": {"#": "positionText"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "position",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.position"}
                 }
             },
 
@@ -35,11 +31,7 @@
                     "element": {"#": "savedPositionText"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "savedPosition",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.savedPosition"}
                 }
             },
 
@@ -50,11 +42,7 @@
                     "element": {"#": "distanceText"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "distance",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.distance"}
                 }
             },
 
@@ -68,8 +56,8 @@
                     "distanceText": {"@": "distanceText"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

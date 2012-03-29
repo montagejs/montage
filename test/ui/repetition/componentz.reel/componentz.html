@@ -6,8 +6,8 @@
  </copyright> -->
 <html>
 <head>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "textfield1": {
                 "module": "ui/repetition/textfield.reel",
                 "name": "TextField",
@@ -16,10 +16,7 @@
                     "text": "a component Z textfield"
                 },
                 "bindings": {
-                    "text": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "text"
-                    }
+                    "text": {"<<->": "@owner.text"}
                 }
             },
             "repetition1": {
@@ -39,8 +36,8 @@
                     "element": {"#": "componentz"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 </head>
 <body>
     <div id="componentz">

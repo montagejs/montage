@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Native slider component</title>
+    <script type="text/montage-serialization">{
+
+        "red": {
+            "module": "montage/ui/range-input.reel",
+            "name": "RangeInput",
+            "properties": {
+                "element": {"#": "red"}
+            }
+        },
+
+        "green": {
+            "module": "montage/ui/range-input.reel",
+            "name": "RangeInput",
+            "properties": {
+                "element": {"#": "green"}
+            }
+        },
+
+        "blue": {
+            "module": "montage/ui/range-input.reel",
+            "name": "RangeInput",
+            "properties": {
+                "element": {"#": "blue"}
+            }
+        },
+        "alpha": {
+            "module": "montage/ui/range-input.reel",
+            "name": "RangeInput",
+            "properties": {
+                "element": {"#": "alpha"}
+            }
+        },
+        "rangeInputAccordion1": {
+            "module": "accordion.reel",
+            "name": "Accordion",
+            "properties": {
+                "element": {"#": "rangeInputAccordion1"}
+            }
+        },
+
+        "owner": {
+            "name": "RangeInputExample2",
+            "module": "components/range-input-example2.reel",
+            "properties": {
+                "element": {"#": "range-input-example"},
+                "colorchip": {"#": "chip"}
+            },
+            "bindings": {
+                "red": {"<<->": "@red.value"},
+                "green": {"<<->": "@green.value"},
+                "blue": {"<<->": "@blue.value"},
+                "opacity": {"<<->": "@alpha.value"}
+            }
+        }
+    
+    }</script>
+    <style type="text/css" media="screen">
+        .chip {
+            width: 400px;
+            height: 200px;
+            background: whitesmoke;
+            /*float:left;*/
+        }
+
+        .controls  {
+            /*position: absolute;*/
+            width: 400px;
+        }
+
+        .controls .montage-slider {
+            /*position: relative;*/
+            width: 200px;
+            left: 40px;
+        }
+
+        .label {
+            /*position: absolute;*/
+            color: black;
+            top: 30%;
+            text-align: left;
+            font-family: Arial, "MS Trebuchet", sans-serif;
+            font-size: 16px;
+        }
+
+        .slider-item {
+            position: relative;
+            background: whitesmoke;
+            margin: 5px;
+            border: 1px solid #999;
+            border-radius: 5px;
+            padding-left: 15px;
+        }
+
+        .range-input-example .demo{
+
+        }
+        .range-input-example .control {
+            background-color: whitesmoke;
+            padding: 5px;
+        }
+        .range-input-example input[type=range] {
+            width: 100px;
+            vertical-align: middle;
+        }
+        .range-input-example .range-value {
+            padding: 2px;
+            border: 1px solid #aaa;
+        }
+
+    </style>
+</head>
+    <body>
+        <div id="range-input-example" class="range-input-example">
+            <div class="row">
+                <div class="span8">
+                    <h3>Range Input</h3>
+                    <p>
+                        The Range Input component wraps an HTML input "range" type.
+                    </p>
+                </div>
+            </div>
+
+            <h4>Example - Color changer</h4>
+            <div class="demo range1">
+                <div class="span12">
+                        <div id="chip" class="chip"></div>
+                        <div id="controls" class="controls">
+                            <div class="slider-item">
+                                <input id="red" type="range" min="0" max="255" step="1" value="255"/>
+                                <span class="label">Red</span>
+                            </div>
+                            <div class="slider-item">
+                                <input id="green" type="range" min="0" max="255" step="1" value="0"/>
+                                <span class="label">Green</span>
+                            </div>
+                            <div class="slider-item">
+                                <input id="blue" type="range" min="0" max="255" step="1" value="0"/>
+                                <span class="label">Blue</span>
+                            </div>
+                            <div class="slider-item">
+                                <input id="alpha" type="range" min="0" max="1" step="0.1" value="1"/>
+                                <span class="label">Opacity</span>
+                            </div>
+                        </div>
+
+                </div>
+
+            </div>
+
+
+        <section>
+
+           <ul id="rangeInputAccordion1" class="accordion">
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                    <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;div id="chip" class="chip"&gt;
+&lt;/div&gt;
+&lt;div id="controls" class="controls"&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;input id="red" type="range" min="0" max="255" step="1" value="255"/&gt;
+        &lt;span class="label"&gt;Red&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;input id="green" type="range" min="0" max="255" step="1" value="0"/&gt;
+        &lt;span class="label"&gt;Green&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;input id="blue" type="range" min="0" max="255" step="1" value="0"/&gt;
+        &lt;span class="label"&gt;Blue&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;input id="alpha" type="range" min="0" max="1" step="0.1" value="1"/&gt;
+        &lt;span class="label"&gt;Alpha&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+                            </pre>
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "red": {
+        "module": "montage/ui/range-input.reel",
+        "name": "RangeInput",
+        "properties": {
+            "element": {"#": "red"}
+        }
+    },
+
+    "green": {
+        "module": "montage/ui/range-input.reel",
+        "name": "RangeInput",
+        "properties": {
+            "element": {"#": "green"}
+        }
+    },
+
+    "blue": {
+        "module": "montage/ui/range-input.reel",
+        "name": "RangeInput",
+        "properties": {
+            "element": {"#": "blue"}
+        }
+    },
+    "alpha": {
+        "module": "montage/ui/range-input.reel",
+        "name": "RangeInput",
+        "properties": {
+            "element": {"#": "alpha"}
+        }
+    },
+
+    "owner": {
+        "name": "RangeInputExample2",
+        "module": "components/range-input-example2.reel",
+        "properties": {
+            "element": {"#": "range-input-example"},
+            "colorchip": {"#": "chip"}
+        },
+        "bindings": {
+            "red": {"&lt;&lt;-&gt;": "@red.value"},
+            "green": {"&lt;&lt;-&gt;": "@green.value"},
+            "blue": {"&lt;&lt;-&gt;": "@blue.value"},
+            "opacity": {"&lt;&lt;-&gt;": "@alpha.value"}
+        }
+    }
+}
+ </pre>
+
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage;
+var Component = require("montage/ui/component").Component;
+
+exports.RangeInputExample2 = Montage.create(Component, {
+
+    _red: {
+        value: 125
+    },
+
+    _green: {
+        value: 125
+    },
+
+    _blue: {
+        value: 125
+    },
+
+    _opacity: {
+        value: 1.0
+    },
+
+    colorchip: {
+        value: null
+    },
+
+    red: {
+        get: function() {
+            return this._red;
+        },
+        set: function(value) {
+            this._red = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    blue: {
+        get: function() {
+            return this._blue;
+        },
+        set: function(value) {
+            this._blue = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    green: {
+        get: function() {
+            return this._green;
+        },
+        set: function(value) {
+            this._green = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    opacity: {
+        get: function() {
+            return this._opacity;
+        },
+        set: function(value) {
+            this._opacity = value;
+            this.needsDraw = true;
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            // Prettify code examples
+            prettyPrint();
+        }
+    },
+
+
+    draw: {
+        value: function() {
+            this.colorchip.style.background = "rgb(" + this.red + "," + this.green + ", " + this.blue + ")";
+            this.colorchip.style.opacity = this.opacity;
+            console.log(this.colorchip.style.background);
+        }
+    }
+
+});
+                        </pre>
+                    </div>
+                </li>
+            </ul>
+
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/range-input-example2.reel" target="_blank">View source on GitHub</a>
+        </section>
+
+
+        </section>
+    </body>
+</html>

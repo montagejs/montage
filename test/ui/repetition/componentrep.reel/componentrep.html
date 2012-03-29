@@ -6,8 +6,8 @@
  </copyright> -->
 <html>
 <head>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "textfield1": {
                 "module": "ui/repetition/textfield.reel",
                 "name": "TextField",
@@ -15,10 +15,7 @@
                     "element": {"#": "textfield"}
                 },
                 "bindings": {
-                    "text": {
-                        "boundObject": {"@": "repetition1"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.text"
-                    }
+                    "text": {"<<->": "@repetition1.objectAtCurrentIteration.text"}
                 }
             },
             "repetition1": {
@@ -28,10 +25,7 @@
                     "element": {"#": "list1"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "listObjects"
-                    }
+                    "objects": {"<<->": "@owner.listObjects"}
                 }
             },
             "owner": {
@@ -41,8 +35,8 @@
                     "element": {"#": "componentrep"}
                 }
             }
-        }
-    </script>
+        
+    }</script>
 </head>
 <body>
     <div id="componentrep">

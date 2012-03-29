@@ -74,7 +74,25 @@
 
                 if (result.type == 'expect' && result.passed && !result.passed()) {
                     failures += 1;
-                    failure += (failures + ": " + escapeInvalidXmlChars(result.message) + " ");
+
+                    var message = result.message;
+
+                    var originalStack = result.trace.stacktrace || result.trace.stack || "";
+                    originalStack = originalStack.split("\n");
+                    // Remove the first error message
+                    originalStack.shift();
+                    var stack = [];
+                    // Get rid of all stack trace lines that are inside Jasmine.
+                    for (var j = 0, len = originalStack.length; j < len; j++) {
+                        if (originalStack[j].indexOf("jasmine") === -1) {
+                            stack.push(originalStack[j]);
+                        }
+                    }
+                    if (stack.length > 0) {
+                        message += "\n" + stack.join("\n");
+                    }
+
+                    failure += (failures + ": " + escapeInvalidXmlChars(message) + "\n");
                 }
             }
             if (failure) {

@@ -10,8 +10,8 @@
     <title>PhotoFX Main</title>
     <link rel="stylesheet" type="text/css" href="main.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "photoController": {
                 "module": "montage/ui/controller/array-controller",
                 "name": "ArrayController",
@@ -19,10 +19,7 @@
                     "selectObjectsOnAddition": true
                 },
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photos"
-                    }
+                    "content": {"<<->": "@owner.photos"}
                 }
             },
             "gridMagnifier": {
@@ -39,11 +36,7 @@
                     "element": {"#": "editor"}
                 },
                 "bindings": {
-                    "photo": {
-                        "boundObject": {"@": "photoController"},
-                        "boundObjectPropertyPath": "selectedObjects.0",
-                        "oneway": true
-                    }
+                    "photo": {"<-": "@photoController.selectedObjects.0"}
                 }
             },
             "effectsPanel": {
@@ -61,11 +54,7 @@
                     "element": {"#": "photoThumb"}
                 },
                 "bindings": {
-                    "photo": {
-                        "boundObject": {"@": "photoList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "photo": {"<-": "@photoList.objectAtCurrentIteration"}
                 }
             },
             "photoList": {
@@ -86,11 +75,7 @@
                     "element": {"#": "supportsCrossOriginCanvasCondition"}
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "supportsCrossOriginCanvas",
-                        "oneway": true
-                    }
+                    "condition": {"<-": "@owner.supportsCrossOriginCanvas"}
                 }
             },
 
@@ -117,11 +102,7 @@
                     "element": {"#": "removeSelectionCondition"}
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "photoController"},
-                        "boundObjectPropertyPath": "selectedObjects.0",
-                        "oneway": true
-                    }
+                    "condition": {"<-": "@photoController.selectedObjects.0"}
                 }
             },
 
@@ -184,16 +165,8 @@
                     "identifier": "undoButton"
                 },
                 "bindings": {
-                    "label": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "undoManager.undoLabel",
-                        "oneway": true
-                    },
-                    "enabled": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "undoManager.canUndo",
-                        "oneway": true
-                    }
+                    "label": {"<-": "@owner.undoManager.undoLabel"},
+                    "enabled": {"<-": "@owner.undoManager.canUndo"}
                 },
                 "listeners": [
                     {
@@ -212,16 +185,8 @@
                     "identifier": "redoButton"
                 },
                 "bindings": {
-                    "label": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "undoManager.redoLabel",
-                        "oneway": true
-                    },
-                    "enabled": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "undoManager.canRedo",
-                        "oneway": true
-                    }
+                    "label": {"<-": "@owner.undoManager.redoLabel"},
+                    "enabled": {"<-": "@owner.undoManager.canRedo"}
                 },
                 "listeners": [
                     {
@@ -232,8 +197,8 @@
                 ]
             }
 
-        }
-    </script>
+        
+    }</script>
 
 </head>
 <body>

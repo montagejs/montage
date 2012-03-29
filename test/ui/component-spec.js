@@ -453,6 +453,13 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     expect(testPage.test.componentToBeCleaned.text._element.textContent).toBe("New Text");
                 })
             })
+
         });
+
+        it("does not allow the element to be changed", function() {
+            var oldElement = testPage.test.text1.element;
+            testPage.test.text1.element = testPage.document.createElement("div");
+            expect(testPage.test.text1.element).toBe(oldElement);
+        })
     });
 });
