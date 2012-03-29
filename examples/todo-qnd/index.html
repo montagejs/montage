@@ -45,7 +45,7 @@
         </div>
         <div class="content">
             <div data-montage-id="create-todo" class="create-todo">
-                <input data-montage-id="new-todo" placeholder="What needs to be done?" type="text"> <span class="ui-tooltip-top" style="display:none;">Press Enter to save this task</span>
+                <input id="new-todo" data-montage-id="new-todo" placeholder="What needs to be done?" type="text"> <span class="ui-tooltip-top" style="display:none;">Press Enter to save this task</span>
             </div>
             <div data-montage-id="todos">
                 <ul style="margin-left: 2em" data-montage-id="todo-list" class="todo-list">
@@ -59,11 +59,11 @@
                 </ul>
             </div>
             <div data-montage-id="todo-stats" class="todo-stats">
-                <span class="todo-count" data-montage-id="todo-count">
+                <span id="todo-count" class="todo-count" data-montage-id="todo-count">
                     <span class="number">1</span>
                     <span class="word">item</span> left.
                 </span>
-                <span class="todo-clear" data-montage-id="todo-clear">
+                <span id="todo-clear" class="todo-clear" data-montage-id="todo-clear">
                     <a href="#">
                         Clear <span class="number">1</span>
                         completed <span class="word">item</span>
