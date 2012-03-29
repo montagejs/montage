@@ -222,8 +222,9 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function (index, offset) {
             var self = this;
 
+            window.clearInterval(this._scrollingInterval);
             this._scrollingOrigin = this.origin;
-            this._scrollingDestination = (index - offset) * this._scale;
+            this._scrollingDestination = index - offset;
             this._isScrolling = true;
             this._scrollingStartTime = Date.now();
             this._scrollingInterval = window.setInterval(function () {
@@ -512,7 +513,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
             for (i = 0; i < intersections.length; i++) {
-                for (j = Math.ceil(intersections[i][0] + this._origin/this._scale); j < intersections[i][1] + this._origin/this._scale; j++) {
+                for (j = Math.ceil(intersections[i][0] + this._origin); j < intersections[i][1] + this._origin; j++) {
                     newIndexMap.push(j);
                 }
             }
@@ -561,7 +562,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     slide.index = this._repetition.indexMap[i];
                     slide.time = iOffset.time;
                     slide.speed = iOffset.speed;
-                    pos = this._splinePath.getPositionAtTime(slide.time / 300);
+                    pos = this._splinePath.getPositionAtTime(slide.time);
                     if (pos) {
                         if (iStyle.display !== "block") {
                             iStyle.display = "block";
@@ -779,7 +780,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (typeof this.animatingHash[this._selectedSlideIndex] !== "undefined") {
                 var tmp = this.slide[this._selectedSlideIndex].x;
 
-                this.origin += (this._selectedSlideIndex * this._scale) - tmp;
+                this.origin += this._selectedSlideIndex - tmp;
             }
         }
     },
@@ -905,17 +906,17 @@ var Flow = exports.Flow = Montage.create(Component, {
                 for (i = min; i < max; i++) {
                     if (i != this._selectedSlideIndex) {
                         if (typeof this.animatingHash[i] === "undefined") {
-                            x = i * this._scale;
+                            x = i;
                         } else {
                             x = this.slide[i].x;
                         }
                         x += tmp;
                         if (i < this._selectedSlideIndex) {
-                            if (x < i * this._scale) {
+                            if (x < i) {
                                 this.startAnimating(i, x);
                             }
                         } else {
-                            if (x > i * this._scale) {
+                            if (x > i) {
                                 this.startAnimating(i, x);
                             }
                         }
@@ -929,7 +930,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                             time = Date.now(),
                             interval1 = self.lastDrawTime ? (time - self.lastDrawTime) * 0.015 * this._elasticScrollingSpeed : 0,
                             interval = interval1 / _iterations,
-                            mW = self._scale, x,
+                            x,
                             epsilon = .5;
 
                         for (n = 0; n < _iterations; n++) {
@@ -937,18 +938,18 @@ var Flow = exports.Flow = Montage.create(Component, {
                                 i = self.animating[j];
                                 if (i < self._selectedSlideIndex) {
                                     if (typeof self.animatingHash[i + 1] === "undefined") {
-                                        x = ((i + 1) * self._scale);
+                                        x = i + 1;
                                     } else {
                                         x = self.slide[i + 1].x;
                                     }
-                                    self.slide[i].speed = x - self.slide[i].x - mW;
+                                    self.slide[i].speed = x - self.slide[i].x - 1;
                                 } else {
                                     if (typeof self.animatingHash[i - 1] === "undefined") {
-                                        x = ((i - 1) * self._scale);
+                                        x = i - 1;
                                     } else {
                                         x = self.slide[i - 1].x;
                                     }
-                                    self.slide[i].speed = x - self.slide[i].x + mW;
+                                    self.slide[i].speed = x - self.slide[i].x + 1;
                                 }
                                 self.slide[i].x += (self.slide[i].speed) * interval;
                             }
@@ -957,14 +958,14 @@ var Flow = exports.Flow = Montage.create(Component, {
                         while (j < animatingLength) {
                             i = self.animating[j];
                             if (i < self._selectedSlideIndex) {
-                                if (self.slide[i].x > i * self._scale - epsilon) {
+                                if (self.slide[i].x > i - epsilon) {
                                     self.stopAnimating(i);
                                     animatingLength--;
                                 } else {
                                     j++;
                                 }
                             } else {
-                                if (self.slide[i].x < i * self._scale + epsilon) {
+                                if (self.slide[i].x < i + epsilon) {
                                     self.stopAnimating(i);
                                     animatingLength--;
                                 } else {
@@ -988,28 +989,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 }
             }
             this._origin = value;
-            this.needsDraw = true;
-        }
-    },
-
-    _scale: {
-        enumerable: false,
-        value: 100
-    },
-
-    scale: {
-        get: function () {
-            return this._scale;
-        },
-        set: function (value) {
-            var oldScale = this._scale;
-
-            this._scale = value;
-            this.length = value * (this._numberOfNodes - 1);
-            if (!this.isAnimating) {
-                this.selectedSlideIndex = null;
-                this.origin = this._origin * value / oldScale;
-            }
+            this._translateComposer.translateX = value * 300;
             this.needsDraw = true;
         }
     },
@@ -1052,7 +1032,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 value: function (nodeNumber) {
                     if (typeof self.animatingHash[nodeNumber] === "undefined") {
                         return {
-                            time: (nodeNumber * self._scale) - self._origin,
+                            time: nodeNumber - self._origin,
                             speed: 0
                         }
                     } else {
@@ -1064,6 +1044,21 @@ var Flow = exports.Flow = Montage.create(Component, {
                     this.needsDraw = true;
                 }
             };
+        }
+    },
+
+    _translateX: {
+        enumerable: false,
+        value: 0
+    },
+
+    translateX: {
+        get: function () {
+            return this._translateX;
+        },
+        set: function (value) {
+            this._translateX = value;
+            this.origin = this._translateX / 300;
         }
     }
 });

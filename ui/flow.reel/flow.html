@@ -9,12 +9,27 @@
     <title></title>
     <script type="text/montage-serialization">
         {
-            "repetition1": {
+            "repetition": {
                 "module": "montage/ui/repetition.reel",
                 "name": "Repetition",
                 "properties": {
                     "element": {
                         "#": "montage-flow-repetition"
+                    }
+                }
+            },
+            "translateComposer": {
+                "module": "montage/ui/composer/translate-composer",
+                "name": "TranslateComposer",
+                "properties": {
+                    "component": {"@": "owner"},
+                    "maxTranslateX": 250000
+                },
+                "bindings": {
+                    "element": {
+                        "boundObject": {"@": "owner"},
+                        "boundObjectPropertyPath": "_element",
+                        "oneway": true
                     }
                 }
             },
@@ -26,7 +41,17 @@
                         "#": "montage-flow"
                     },
                     "_repetition": {
-                        "@": "repetition1"
+                        "@": "repetition"
+                    },
+                    "_translateComposer": {
+                        "@": "translateComposer"
+                    }
+                },
+                "bindings": {
+                    "translateX": {
+                        "boundObject": {"@": "translateComposer"},
+                        "boundObjectPropertyPath": "translateX",
+                        "oneway": true
                     }
                 }
             }
