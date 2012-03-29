@@ -14,14 +14,30 @@ exports.Content = Montage.create(Component, {
 
     contentDeck: {value: null},
 
+    _selectedItem: {value: null},
+    selectedItem: {
+        serializable: true,
+        get: function() {
+            return this._selectedItem;
+        },
+        set: function(value) {
+            this._selectedItem = value;
+            this.needsDraw = true;
+        }
+    },
+
     _hash: {value: null},
     hash: {
         get: function() {
             return this._hash;
         },
-        set: function(value) {
-            this._hash = value;
-            this.needsDraw = true;
+        set: function(hash) {
+            this._hash = hash;
+
+            if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
+                this.selectedItem = hash.substring(hash.indexOf('#')+1);
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -35,17 +51,6 @@ exports.Content = Montage.create(Component, {
                 componentShown.didBecomeActiveInSlot();
             }
         }
-    },
-
-    draw: {
-        value: function() {
-            var hash = this.hash;
-            if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
-                this.contentDeck.switchValue = hash.substring(hash.indexOf('#')+1);;
-            }
-        }
     }
-
-
 
 });

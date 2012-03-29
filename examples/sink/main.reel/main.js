@@ -13,7 +13,7 @@ exports.Main = Montage.create(Component, {
     _selectedItem: {value: null},
     selectedItem: {
         get: function() {return this._selectedItem;},
-        set: function(value) {this._selectedItem = value;}
+        set: function(value) {this._selectedItem = value; this.needsDraw = true;}
     },
 
     templateDidLoad: {
@@ -51,7 +51,6 @@ exports.Main = Montage.create(Component, {
     didDraw: {
         value: function() {
             console.log('main didDraw');
-
         }
     }
 
