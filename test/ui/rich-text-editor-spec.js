@@ -407,7 +407,7 @@ var testPage = TestPageLoader.queueTest("rich-text-editor-test", function() {
                         var testwindow = window.open ("about:blank","testWindow", "height=0, width=0");
                         testwindow.moveTo(0, 0);
                         testwindow.focus();
-                        waits(0);       // 0 is just what we need for focus/blur events to be disptched
+                        waits(150);
                         runs(function() {
                             expect(test.editor1.hasFocus).toBeFalsy();
                             expect(test.editor1.isActiveElement).toBeFalsy();
