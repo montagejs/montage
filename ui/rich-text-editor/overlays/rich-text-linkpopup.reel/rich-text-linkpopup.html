@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="rich-text-linkpopup.css">
+    <script type="text/montage-serialization">
+        {
+            "link": {
+                "module": "montage/ui/anchor.reel",
+                "name": "Anchor",
+                "properties": {
+                    "element": {"#": "link"}
+                }
+            },
+
+            "owner": {
+                "module": "montage/ui/rich-text-editor/overlays/rich-text-linkpopup.reel",
+                "name": "RichTextLinkPopup",
+                "properties": {
+                    "element": {"#": "linkpopup-container"},
+                    "link": {"@": "link"}
+                }
+            }
+        }
+    </script>
+</head>
+<body>
+    <div data-montage-id="linkpopup-container" class="montage-link-popup" contentEditable="false">
+        <a data-montage-id="link" target="_blank"></a>
+    </div>
+</body>
+</html>

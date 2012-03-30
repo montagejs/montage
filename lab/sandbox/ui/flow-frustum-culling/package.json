@@ -1,0 +1,7 @@
+{
+    "name": "flow-frustum-culling",
+    "version": "0.0.0",
+    "mappings": {
+        "montage": "../../../../"
+    }
+}

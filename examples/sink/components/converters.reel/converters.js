@@ -53,14 +53,6 @@ exports.Converters = Montage.create(Component, {
         value: null
     },
 
-    deserializedFromTemplate: {
-        enumerable: false,
-        value: function() {
-            this.$number = document.querySelector('#txt-number');
-            this.$currencyValue = document.querySelector('#txt-cur-value');
-        }
-    },
-
     applyNumberFormat: {
         value: function(evt) {
             var value = this.$number.value;
@@ -99,14 +91,16 @@ exports.TempConverter = Montage.create(Converter, {
     // convert fahrenheit to celsius (showing our non-metric heritage here)
     convert: {
         value: function(value) {
-            return (parseInt(value, 10) - 32) / 1.8;
+            var result = (parseInt(value, 10) - 32) / 1.8;
+            return result.toFixed(2);
         }
     },
 
     // revert celsius to fahrenheit
     revert: {
         value: function(value) {
-            return (1.8 * parseInt(value, 10)) + 32;
+            var result = (1.8 * parseInt(value, 10)) + 32;
+            return result.toFixed(2);
         }
     }
 

@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Translate Composer Test</title>
     <script type="text/javascript" src="../../../../montage.js" data-package="../../../"></script>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "translate_composer": {
         "module": "montage/ui/composer/translate-composer",
         "name": "TranslateComposer",
@@ -18,7 +18,7 @@
             "component": {"@": "example"},
             "maxTranslateX": 350,
             "maxTranslateY": 350,
-            "pointerSpeedMultiplier": -1
+            "hasMomentum": false
         }
     },
     "example": {
@@ -38,16 +38,8 @@
             "example": {"@": "example"}
         },
         "bindings": {
-            "x": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateX",
-                "oneway": true
-            },
-            "y": {
-                "boundObject": {"@": "translate_composer"},
-                "boundObjectPropertyPath": "translateY",
-                "oneway": true
-            }
+            "x": {"<-": "@translate_composer.translateX"},
+            "y": {"<-": "@translate_composer.translateY"}
         }
     },
     "application": {
@@ -57,8 +49,8 @@
             "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 <style type="text/css">
     .wrap {

@@ -57,6 +57,23 @@ var testPage = TestPageLoader.queueTest("slot-test", function() {
                 });
             });
 
+            it("should draw a component that has an element but the element is not part of the DOM when the slot content is set", function() {
+                var content = testPage.test.componentInPageWithElement;
+                slot.content = null;
+                testpage.waitForDraw();
+
+                runs(function() {
+                    slot.content = content;
+                    content.value = "This is new text";
+                    testPage.waitForDraw();
+
+                    runs(function() {
+                        expect(slot.element.childNodes.length).toEqual(1);
+                        expect(slot.element.childNodes[0].textContent).toBe("This is new text");
+                    });
+                });
+            });
+
             it("should append the incoming component's element if there was no content", function() {
                 var content = testPage.test.componentWithNoElement;
 

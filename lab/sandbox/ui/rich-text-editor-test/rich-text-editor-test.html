@@ -1,0 +1,540 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <title>RichText Editor Test</title>
+    <link rel="stylesheet" href="rich-text-editor-test.css" />
+    <script src="../../../../montage.js"></script>
+    <script type="text/montage-serialization">{
+            "undoManager": {
+                "object": "montage/core/undo-manager[defaultUndoManager]"
+            },
+
+            "editor": {
+                "module": "montage/ui/rich-text-editor/rich-text-editor.reel",
+                "name": "RichTextEditor",
+                "properties": {
+                    "element": {"#": "editor-frame"},
+                    "identifier": "editor",
+                    "delegate": {"@": "delegate"},
+                    "undoManager": {"@": "undoManager"}
+                },
+                "listeners": [
+                    {
+                        "type": "editorChange",
+                        "listener": {"@": "delegate"},
+                        "capture": false
+                    },
+                    {
+                        "type": "editorSelect",
+                        "listener": {"@": "delegate"},
+                        "capture": false
+                    }
+                ],
+                "bindings": {
+                    "justify": {"<<->": "@justify.contentController.selectedIndexes", "converter": {"@": "indexesConverter"}},
+                    "fontName": {"<<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
+                    "fontSize": {"<<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}},
+                    "backColor": {"<<->": "@backcolor.contentController.selectedIndexes", "converter": {"@": "backcolorConverter"}},
+                    "foreColor": {"<<->": "@forecolor.contentController.selectedIndexes", "converter": {"@": "forecolorConverter"}}
+                }
+            },
+
+            "boldToggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "element": {"#": "boldToggle"}
+                },
+                "bindings": {
+                    "pressed": {"<<->": "@editor.bold"}
+                }
+            },
+
+            "underlineToggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "element": {"#": "underlineToggle" }
+                },
+                "bindings": {
+                    "pressed": {"<<->": "@editor.underline"}
+                }
+            },
+
+            "italicToggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "element": {"#": "italicToggle" }
+                },
+                "bindings": {
+                    "pressed": {"<<->": "@editor.italic"}
+                }
+            },
+
+            "strikeToggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "element": {"#": "strikeToggle" }
+                },
+                "bindings": {
+                    "pressed": {"<<->": "@editor.strikeThrough"}
+                }
+            },
+
+            "subscriptConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "subscript",
+                    "defaultValue": "baseline"
+                }
+            },
+
+            "subToggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "element": {"#": "subToggle" }
+                },
+                "bindings": {
+                    "pressed": {"<<->": "@editor.baselineShift", "converter": {"@": "subscriptConverter"}}
+                }
+            },
+
+            "superscriptConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "superscript",
+                    "defaultValue": "baseline"
+                }
+            },
+
+            "supToggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "element": {"#": "supToggle" }
+                },
+                "bindings": {
+                    "pressed": {"<<->": "@editor.baselineShift", "converter": {"@": "superscriptConverter"}}
+                }
+            },
+
+            "indentButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "indentButton" },
+                    "action": "indent"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "outdentButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "outdentButton" },
+                    "action": "outdent"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "editor"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "unorderedListConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "unordered",
+                    "defaultValue": "none"
+                }
+            },
+
+            "unorderedlistToggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "element": {"#": "unorderedlistToggle" }
+                },
+                "bindings": {
+                    "pressed": {"<<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
+                }
+            },
+
+            "orderedListConverter": {
+                "module": "rich-text-editor-test",
+                "name": "ValueConverter",
+                "properties": {
+                    "value": "ordered",
+                    "defaultValue": "none"
+                }
+            },
+
+            "orderedlistToggle": {
+                "module": "montage/ui/toggle-button.reel",
+                "name": "ToggleButton",
+                "properties": {
+                    "element": {"#": "orderedlistToggle" }
+                },
+                "bindings": {
+                    "pressed": {"<<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
+                }
+            },
+
+            "justificationController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                        {"text" : "Left", "value": "left"},
+                        {"text" : "Center", "value": "center"},
+                        {"text" : "Right", "value": "right"},
+                        {"text" : "Full", "value": "full"}
+                    ]
+                }
+            },
+
+            "indexesConverter": {
+                "module": "rich-text-editor-test",
+                "name": "IndexesConverter",
+                "properties": {
+                    "component": {"@": "justify"}
+                }
+            },
+
+            "justify": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "justification"},
+                    "contentController": {"@": "justificationController"}
+                }
+            },
+
+            "fontnameController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                        {"text" : "Arial", "value": "Arial"},
+                        {"text" : "Arial Black", "value": "Arial Black"},
+                        {"text" : "Courier New", "value": "Courier New"},
+                        {"text" : "Garamond", "value": "Garamond"},
+                        {"text" : "Georgia", "value": "Georgia"},
+                        {"text" : "Open Sans", "value": "Open Sans"},
+                        {"text" : "Tahoma", "value": "Tahoma"},
+                        {"text" : "Times", "value": "Times New Roman"},
+                        {"text" : "Trebuchet", "value": "Trebuchet MS"},
+                        {"text" : "Verdana", "value": "Verdana"}
+                    ]
+                }
+            },
+
+            "fontnameConverter": {
+                "module": "rich-text-editor-test",
+                "name": "FontnameConverter",
+                "properties": {
+                    "component": {"@": "fontname"}
+                }
+            },
+
+            "fontname": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "fontname"},
+                    "contentController": {"@": "fontnameController"}
+                }
+            },
+
+            "fontsizeController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                        {"text" : "8pt", "value": "1"},
+                        {"text" : "10pt", "value": "2"},
+                        {"text" : "12pt", "value": "3"},
+                        {"text" : "14pt", "value": "4"},
+                        {"text" : "18pt", "value": "5"},
+                        {"text" : "24pt", "value": "6"},
+                        {"text" : "36pt", "value": "7"}
+                    ]
+                }
+            },
+
+            "fontsizeConverter": {
+                "module": "rich-text-editor-test",
+                "name": "IndexesConverter",
+                "properties": {
+                    "component": {"@": "fontsize"}
+                }
+            },
+
+            "fontsize": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "fontsize"},
+                    "contentController": {"@": "fontsizeController"}
+                }
+            },
+
+            "backcolorController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                        {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
+                        {"text" : "Black", "value": "rgb(0, 0, 0)"},
+                        {"text" : "Blue", "value": "rgb(0, 0, 139)"},
+                        {"text" : "Gray", "value": "rgb(139, 139, 139)"},
+                        {"text" : "Green", "value": "rgb(0, 139, 0)"},
+                        {"text" : "Red", "value": "rgb(139, 0, 0)"},
+                        {"text" : "Yellow", "value": "rgb(255, 255, 0)"},
+                        {"text" : "White", "value": "rgb(255, 255, 255)"}
+                    ]
+                }
+            },
+
+            "backcolorConverter": {
+                "module": "rich-text-editor-test",
+                "name": "IndexesConverter",
+                "properties": {
+                    "component": {"@": "backcolor"}
+                }
+            },
+
+            "backcolor": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "backcolor"},
+                    "contentController": {"@": "backcolorController"}
+                }
+            },
+
+            "forecolorController": {
+                "name": "ArrayController",
+                "module": "montage/ui/controller/array-controller",
+                "properties": {
+                    "selectObjectsOnAddition": false,
+                    "automaticallyOrganizeObjects": false,
+                    "content": [
+                    {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
+                    {"text" : "Black", "value": "rgb(0, 0, 0)"},
+                    {"text" : "Blue", "value": "rgb(0, 0, 255)"},
+                    {"text" : "Gray", "value": "rgb(51, 51, 51)"},
+                    {"text" : "Green", "value": "rgb(0, 255, 0)"},
+                    {"text" : "Red", "value": "rgb(255, 0, 0)"},
+                    {"text" : "Yellow", "value": "rgb(255, 255, 0)"},
+                    {"text" : "White", "value": "rgb(255, 255, 255)"}
+                    ]
+                }
+            },
+
+            "forecolorConverter": {
+                "module": "rich-text-editor-test",
+                "name": "IndexesConverter",
+                "properties": {
+                    "component": {"@": "forecolor"}
+                }
+            },
+
+            "forecolor": {
+                "module": "montage/ui/select-input.reel",
+                "name": "SelectInput",
+                "properties": {
+                    "element": {"#": "forecolor"},
+                    "contentController": {"@": "forecolorController"}
+                }
+            },
+
+            "resetButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "resetButton" },
+                    "identifier": "reset",
+                    "preventFocus": true
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "delegate"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "undoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "undoButton" },
+                    "identifier": "undo",
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "enabled": {"<-": "@delegate.undoManager.canUndo"},
+                    "title": {"<-": "@delegate.undoManager.undoLabel"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "delegate"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "redoButton": {
+                "module": "montage/ui/button.reel",
+                "name": "Button",
+                "properties": {
+                    "element": {"#": "redoButton" },
+                    "identifier": "redo",
+                    "preventFocus": true
+                },
+                "bindings": {
+                    "enabled": {"<-": "@delegate.undoManager.canRedo"},
+                    "title": {"<-": "@delegate.undoManager.redoLabel"}
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "delegate"},
+                        "capture": false
+                    }
+                ]
+            },
+
+            "checkboxReadonly": {
+                "module": "montage/ui/checkbox.reel",
+                "name": "Checkbox",
+                "properties": {
+                    "element": {"#": "checkbox-readonly"}
+                },
+                "bindings": {
+                    "checked": {"<<->": "@editor.readOnly"}
+                }
+            },
+
+            "checkboxSource": {
+                "module": "montage/ui/checkbox.reel",
+                "name": "Checkbox",
+                "properties": {
+                    "element": {"#": "checkbox-source"},
+                    "identifier": "showRawSource"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "delegate"}
+                    }
+                ]
+            },
+
+            "delegate": {
+                "module": "rich-text-editor-test",
+                "name": "RichTextEditorTest",
+                "properties": {
+                    "editor": {"@": "editor"},
+                    "undoManager": {"@": "undoManager"},
+                    "source": {"#": "source-frame"},
+                    "showSource": {"@": "checkboxSource"}
+                },
+                "bindings": {
+                    "readOnly": {"<-": "@checkboxReadonly.checked"}
+                }
+            },
+
+            "owner": {
+                "module": "montage/ui/application",
+                "name": "Application",
+                "properties": {
+                    "delegate": {"@": "delegate"}
+                }
+            }
+    }</script>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="btn-group">
+                <button data-montage-id="boldToggle" class="btn font-styles" style="font-weight: bold;" title="Bold">B</button>
+                <button data-montage-id="italicToggle" class="btn font-styles" style="font-family: serif; font-style: italic;" title="Italic">I</button>
+                <button data-montage-id="underlineToggle" class="btn font-styles" style="text-decoration: underline;" title="Underline">U</button>
+                <button data-montage-id="strikeToggle" class="btn font-styles" style="text-decoration: line-through; " title="Strike Through">ABC</button>
+            </div>
+            <div class="btn-group">
+                <button data-montage-id="subToggle" class="btn font-styles" title="Subscript">sub</button>
+                <button data-montage-id="supToggle" class="btn font-styles" title="Superscript">sup</button>
+            </div>
+            <div class="btn-group">
+                <button data-montage-id="outdentButton" class="btn font-styles" title="Outdent">&lt;</button>
+                <button data-montage-id="indentButton" class="btn font-styles" title="indent">&gt;</button>
+                <button data-montage-id="unorderedlistToggle" class="btn font-styles" title="Unordered List">•</button>
+                <button data-montage-id="orderedlistToggle" class="btn font-styles" title="Ordered List">1.</button>
+            </div>
+            <div class="btn-group">
+                <select data-montage-id="justification" class="font-styles" style="min-width: 70px" title="Justification"></select>
+            </div>
+            <div class="btn-group">
+                <select data-montage-id="fontname" class="font-styles" style="min-width: 70px" title="Font Name"></select>
+                <select data-montage-id="fontsize" class="font-styles" style="min-width: 70px" title="Font Size"></select>
+            </div>
+            <div class="btn-group">
+                <select data-montage-id="forecolor" class="font-styles" style="min-width: 70px" title="Fore Color"></select>
+                <select data-montage-id="backcolor" class="font-styles" style="min-width: 70px" title="Back Color"></select>
+            </div>
+        </nav>
+    </header>
+    <article class="hideSource">
+        <section class="source" data-montage-id="source-frame"></section>
+        <section class="editor">
+            <div data-montage-id="editor-frame">
+            </div>
+        </section>
+    </article>
+    <footer>
+        <button data-montage-id="resetButton" class="btn" title="Reset">Reset</button>
+        &nbsp;&nbsp;
+        <button data-montage-id="undoButton" class="btn" title="Undo" disabled="disabled">Undo</button>
+        <button data-montage-id="redoButton" class="btn" title="Redo" disabled="disabled">Redo</button>
+        <div class="leftBox">
+            <label class="checkbox inline" data-montage-id="read-only"><input data-montage-id="checkbox-readonly" type="checkbox" /> Read only </label>
+            <label class="checkbox inline" data-montage-id="show-source"><input data-montage-id="checkbox-source" type="checkbox" /> Show raw output </label>
+        </div>
+    </footer>
+</body>
+</html>

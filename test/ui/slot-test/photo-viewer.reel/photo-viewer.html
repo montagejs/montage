@@ -7,8 +7,8 @@
 <html>
 <head>
     <title>PhotoViewer</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "dynamictext1": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
@@ -16,11 +16,7 @@
             "element": {"#": "description"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "photo.description",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.photo.description"}
         }
     },
     "dynamictext2": {
@@ -30,11 +26,7 @@
             "element": {"#": "location"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "photo.location",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.photo.location"}
         }
     },
     "owner": {
@@ -44,8 +36,8 @@
             "element": {"#": "PhotoViewer"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body id="PhotoViewer">

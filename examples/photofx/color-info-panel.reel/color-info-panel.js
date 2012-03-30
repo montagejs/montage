@@ -5,6 +5,7 @@
  </copyright> */
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
+var undoManager = require("montage/core/undo-manager").defaultUndoManager;
 
 exports.ColorInfoPanel = Montage.create(Component, {
 
@@ -90,7 +91,7 @@ exports.ColorInfoPanel = Montage.create(Component, {
 
                     // If the new x and y were null, this pickColor cleared a marker, label it as such
                     var undoLabel = (null == x || null == y) ? "clear color marker" : "set color marker"
-                    document.application.undoManager.add(undoLabel, this.pickColor, this, monitor, originalX, originalY, null, true);
+                    undoManager.add(undoLabel, this.pickColor, this, monitor, originalX, originalY, null, true);
                 }
 
                 this._undoColorPickInfo = null;

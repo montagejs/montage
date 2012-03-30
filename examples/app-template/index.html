@@ -8,7 +8,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Loader Example</title>
-    <script src="../../montage.js" data-package="."></script>
+    <script src="../../montage.js" data-auto-package></script>
 
     <script type="text/montage-serialization">
         {
@@ -36,19 +36,19 @@
             margin: 40px 0 0 0;
         }
 
-        #montage-app-bootstrapper {
+        .montage-app-bootstrapper {
             display: none;
             color: red;
         }
-        .montage-app-bootstrapping #montage-app-bootstrapper {
+        .montage-app-bootstrapping .montage-app-bootstrapper {
             display: block;
         }
 
-        #montage-app-loader {
+        .montage-app-loader {
             color: green;
             display: none;
         }
-        .montage-app-loading #montage-app-loader {
+        .montage-app-loading .montage-app-loader {
             display: block;
         }
 
@@ -68,11 +68,11 @@
         <p>This is the loader example. This text here will be present until the main component is drawn as it is not part
             of any of the loader elements. If the main component is not drawable within <strong>1000ms</strong> you'll see the bootstrapper.</p>
     </div>-->
-    <div id="montage-app-bootstrapper">
+    <div data-montage-id="montage-app-bootstrapper" class="montage-app-bootstrapper">
         <h1>Bootstrapper</h1>
         <p>This is the bootstrapper content which will now be shown for at least <strong>1500ms</strong>.</p>
     </div>
-    <div id="montage-app-loader">
+    <div data-montage-id="montage-app-loader" class="montage-app-loader">
         <h1>Loader</h1>
         <p>This is the loader content which will now be shown for at least <strong>2000ms</strong>.</p>
     </div>

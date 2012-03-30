@@ -37,7 +37,16 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 /**
     @private
 */
-    _document: {value: null},
+    _document: {
+        enumerable: false,
+        value: null
+    },
+
+    document: {
+        get: function() {
+            return this._document;
+        }
+    },
 /**
     @private
 */
@@ -131,6 +140,17 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     deserializer: {
         get: function() {
             return this._deserializer || (this._deserializer = Deserializer.create().initWithString(this._rootObjectSerialization));
+        }
+    },
+
+    initWithHtmlString: {
+        value: function(htmlString) {
+            var doc = this.createHtmlDocumentFromString(htmlString);
+
+            this._isLoaded = true;
+            this.initWithDocument(doc);
+
+            return this;
         }
     },
 
@@ -234,6 +254,39 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         }
     },
 
+    _deserialize: {
+        value: function(instances, targetDocument, callback) {
+            var self = this,
+                defaultApplication = applicationExports.application;
+
+            this.getDeserializer(function(deserializer) {
+                var externalObjects;
+
+                if (deserializer) {
+                    externalObjects = self._externalObjects;
+                    if (externalObjects) {
+                        for (var label in externalObjects) {
+                            if (!(label in instances)) {
+                                instances[label] = externalObjects[label];
+                            }
+                        }
+                    }
+
+                    instances.application = defaultApplication;
+                    instances.template = self;
+
+                    if (self._document === window.document) {
+                        deserializer.deserializeWithInstancesAndDocument(instances, self._document, callback);
+                    } else {
+                        deserializer.deserializeWithInstancesAndElementForDocument(instances, self._document.body, targetDocument, callback);
+                    }
+                } else {
+                    callback();
+                }
+            });
+        }
+    },
+
     /**
      Instantiates the Template by specifying an object as the owner and a document where the elements referenced in the serialization should be found.
      @function
@@ -242,50 +295,16 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
      @param {Function} callback The callback function to invoke when the template is instantiated.
     */
     instantiateWithOwnerAndDocument: {
-        value: function(owner, document, callback) {
-            var self = this,
-                defaultApplication = applicationExports.application;
-            this.getDeserializer(function(deserializer) {
-                function invokeTemplateDidLoad(objects) {
-                    owner = objects.owner;
-                    self._invokeTemplateDidLoadWithOwner(deserializer, owner);
-                    self.waitForStyles(function() {
-                        callback(owner);
-                    });
+        value: function(owner, targetDocument, callback) {
+            var self = this;
+
+            this._partiallyInstantiateWithInstancesForDocument({owner: owner}, targetDocument, function(objects) {
+                if (objects) {
+                    self._invokeTemplateDidLoad(objects);
                 }
-
-                var externalObjects,
-                    targetDocument,
-                    instances;
-
-                if (deserializer) {
-                    externalObjects = self._externalObjects;
-                    if (externalObjects) {
-                        instances = Object.create(externalObjects);
-                        instances.owner = owner;
-                        instances.application = defaultApplication;
-                    } else {
-                        instances = {owner: owner, application: defaultApplication};
-                    }
-
-                    if (owner && owner._element) {
-                        targetDocument = owner._element.ownerDocument;
-                    }
-
-                    if (self._document === window.document) {
-                        deserializer.deserializeWithInstancesAndDocument(instances, self._document, invokeTemplateDidLoad);
-                    } else {
-                        self.setupDocument(window.document);
-                        deserializer.deserializeWithInstancesAndElementForDocument(instances, self._document.body, targetDocument, invokeTemplateDidLoad);
-                    }
-                } else {
-                    if (self._document !== window.document) {
-                        self.setupDocument(window.document);
-                    }
-                    self.waitForStyles(function() {
-                        callback();
-                    });
-                }
+                self.waitForStyles(function() {
+                    callback(objects ? objects.owner : null);
+                });
             });
         }
     },
@@ -303,32 +322,86 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         this.instantiateWithOwnerAndDocument(component, document, callback);
     }},
 
+    instantiateWithDocument: {
+        value: function(document, callback) {
+            return this.instantiateWithOwnerAndDocument(null, document, callback);
+        }
+    },
+
+    _partiallyInstantiateWithInstancesForDocument: {
+        value: function(instances, targetDocument, callback) {
+            var self = this,
+                owner = instances.owner;
+
+            if (!targetDocument && owner && owner._element) {
+                targetDocument = owner._element.ownerDocument;
+            }
+
+            function importHeaders(objects) {
+                if (self._document !== targetDocument) {
+                    self.exportHeaders(targetDocument);
+                }
+                callback(objects);
+            }
+
+            this._deserialize(instances, targetDocument, function(objects, element) {
+                if (self._extends && !self._isExpanded) {
+                    var _extends = self._extends,
+                        element = _extends.element,
+                        instances = _extends.instances,
+                        instancesMapping = _extends.instancesMapping,
+                        elementId = _extends.elementId;
+
+                    if (!element && elementId) {
+                        element = element.querySelector("*[data-montage-id='" + elementId + "']");
+                    }
+
+                    if (!instances) {
+                        if (instancesMapping) {
+                            instances = {};
+                            for (var label in instancesMapping) {
+                                instances[label] = objects[instancesMapping[label]];
+                            }
+                            instances.owner = objects.owner;
+                        } else {
+                            instances = {owner: objects.owner};
+                        }
+                    }
+                    self._extendsTemplateWithInstances(_extends.templateModuleId, element, instances, function(extendsObjects) {
+                        var labels = Object.keys(extendsObjects);
+
+                        for (var i =0, label; (label = labels[i]); i++) {
+                            objects[label] = extendsObjects[label];
+                        }
+                        importHeaders(objects);
+                    });
+                } else {
+                    importHeaders(objects);
+                }
+            });
+        }
+    },
+
     /**
      Instantiates the Template with no elements references.
      @function
      */
-    instantiate: {value: function() {
-        var self = this;
-        var deserializer = Deserializer.create();
-
-        function invokeTemplateDidLoad(owner) {
-            self._invokeTemplateDidLoadWithOwner(deserializer, owner);
-            callback(component);
+    instantiate: {
+        value: function(callback) {
+            return this.instantiateWithOwnerAndDocument(null, null, callback);
         }
-        deserializer.deserializeRootObjectWithElement(this._document, invokeTemplateDidLoad);
-    }},
+    },
 
     /**
      @private
      */
-    _invokeTemplateDidLoadWithOwner: {
-        value: function(deserializer, owner) {
-            var objects = deserializer.getObjectsFromLastDeserialization(),
-                hasTemplateDidDeserializeObject = owner && typeof owner.templateDidDeserializeObject === "function",
-                i,
-                object;
+    _invokeTemplateDidLoad: {
+        value: function(objects) {
+            var owner = objects.owner,
+                labels = Object.keys(objects),
+                hasTemplateDidDeserializeObject = owner && typeof owner.templateDidDeserializeObject === "function";
 
-            for (i = 0; (object = objects[i]); i++) {
+            for (var i = 0, object; (object = objects[labels[i]]); i++) {
                 if (owner !== object) {
                     if (typeof object._deserializedFromTemplate === "function") {
                         object._deserializedFromTemplate(owner);
@@ -353,12 +426,102 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         }
     },
 
+    defineExtension: {
+        value: function(templateModuleId, elementId, instances) {
+            this._extends = {
+                templateModuleId: templateModuleId,
+                element: elementId,
+                instancesMapping: instances
+            }
+        }
+    },
+
+    _extendsTemplateWithInstances: {
+        value: function(templateModuleId, element, instances, callback) {
+            var self = this,
+                owner = instances.owner,
+                ownerTemplateElement,
+                ownerTemplateDocument;
+
+            // replace destination with the nodes inside source, merge the attributes from source with attributesElement
+            function importNodes(source, destination, attributesElement) {
+                var nextSibling = destination.nextSibling,
+                    parentNode = destination.parentNode,
+                    nodes = source.childNodes,
+                    attributes = source.attributes;
+
+                parentNode.removeChild(destination);
+                if (nextSibling) {
+                    for (var i = 0, l = nodes.length; i < l; i++) {
+                        parentNode.insertBefore(nodes[0], nextSibling);
+                    }
+                } else {
+                    for (var i = 0, l = nodes.length; i < l; i++) {
+                        parentNode.appendChild(nodes[0]);
+                    }
+                }
+
+                for (var i = 0, attribute; (attribute = attributes[i]); i++) {
+                    var attributeName = attribute.nodeName;
+                    if (attributeName === "id" || attributeName === "data-montage-id") {
+                        continue;
+                    } else {
+                        var value = (attributesElement.getAttribute(attributeName) || "") + " " + attribute.nodeValue;
+                    }
+
+                    attributesElement.setAttribute(attributeName, value);
+                }
+            }
+
+            ownerTemplateElement = owner._templateElement;
+            ownerTemplateDocument = ownerTemplateElement.ownerDocument;
+
+            // reset this property in order to use it at the extended template
+            owner._templateElement = null;
+
+            Template.templateWithModuleId(window.require, templateModuleId, function(template) {
+                template._partiallyInstantiateWithInstancesForDocument({owner: owner}, ownerTemplateDocument, function(objects) {
+                    importNodes(owner._templateElement, element, ownerTemplateElement);
+                    if (!self._isExpanded) {
+                        var elementId = self.getMontageIdByElement(element),
+                            ownerTemplateElementId = self.getMontageIdByElement(ownerTemplateElement),
+                            templateElementId = self.getMontageIdByElement(owner._templateElement);
+
+                        importNodes(
+                            self._document.importNode(template.getMontageElementById(templateElementId), true),
+                            self.getMontageElementById(elementId),
+                            self.getMontageElementById(ownerTemplateElementId)
+                        );
+                        template.exportHeaders(self._document);
+                        self._isExpanded = true;
+                    }
+                    self._deserializer.chainDeserializer(template._deserializer);
+                    owner._templateElement = ownerTemplateElement;
+                    callback(objects);
+                });
+            });
+        }
+    },
+
+    getMontageIdByElement: {
+        value: function(element) {
+            return element.getAttribute("data-montage-id") || element.id;
+        }
+    },
+
+    getMontageElementById: {
+        value: function(id) {
+            return this._document.querySelector("*[data-montage-id='" + id + "']") ||
+                   this._document.getElementById(id);
+        }
+    },
+
     /**
      Inserts all styles and scripts found in the Template object into the document given.
      @function
      @param {HTMLDocument} doc The document to insert the styles and scripts.
      */
-    setupDocument: {value: function(doc) {
+    exportHeaders: {value: function(doc) {
         this.insertStylesInDocumentIfNeeded(doc);
         this.insertScriptsInDocumentIfNeeded(doc);
     }},
@@ -438,7 +601,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         for (var i = 0, cssTag; (cssTag = cssTags[i]); i++) {
             if ((url = cssTag.getAttribute("href"))) {
-                if (! /^http:\/\/|^\//.test(url)) { // TODO: look into base links...
+                if (! /^https?:\/\/|^\//.test(url)) { // TODO: look into base links...
                     url = rootUrl + url;
                 }
 
@@ -547,7 +710,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             src = script.getAttribute("src");
             scriptNode = doc.importNode(script, true);
             if (src) {
-                if (! /^http:\/\/|^\//.test(src)) { // TODO: look into base links...
+                if (! /^https?:\/\/|^\//.test(src)) { // TODO: look into base links...
                     scriptNode.src = src = rootUrl + src;
                 }
                 if (src in externalScriptsLoaded) continue;
@@ -561,7 +724,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     }},
 
     /**
-     <i>This function is meant to work with insertScriptsInDocumentIfNeeded, insertStylesInDocumentIfNeeded and setupDocument</i>.
+     <i>This function is meant to work with insertScriptsInDocumentIfNeeded, insertStylesInDocumentIfNeeded and exportHeaders</i>.
      This function informs the caller when the Template styles have been loaded into the document.
      @function
      @param {Function} callback The function to invoke when all linked CSS files have been loaded.
@@ -688,7 +851,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                 url = link.getAttribute("href"),
                 rootUrl = this._rootUrl ? this._rootUrl[0] : "";
 
-            if (! /^http:\/\/|^\//.test(url)) {
+            if (! /^https?:\/\/|^\//.test(url)) {
                 url = rootUrl + url;
             }
 
@@ -728,10 +891,13 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                 self = this;
 
             if (serialization) {
+                // no need to be always duplicating this on instantiation
+                this._removeSerialization();
                 callback(this._createDeserializer(serialization));
             } else {
                 this.getExternalSerialization(this._document, function(serialization) {
                     if (serialization) {
+                        self._removeSerialization();
                         callback(self._createDeserializer(serialization));
                     } else {
                         callback(self._deserializer = false);
@@ -767,6 +933,16 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         script.textContent = this._ownerSerialization = serialization;
     }},
 
+    _removeSerialization: {
+        value: function() {
+            var script = this._document.querySelector("script[type='" + this._SCRIPT_TYPE + "']");
+
+            if (script) {
+                script.parentNode.removeChild(script);
+            }
+        }
+    },
+
     /**
      Converts the reel's HTML document into text.
      @function
@@ -787,7 +963,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     /**
      @private
      */
-    serializeSelf: {value: function(serializer) {
+    serializeProperties: {value: function(serializer) {
         serializer.set("owner", this._ownerSerialization);
         serializer.set("markup", this._document.body.innerHTML);
     }},
@@ -795,9 +971,22 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     /**
      @private
      */
-    deserializeSelf: {value: function(deserializer) {
-        this._document = document.implementation.createHTMLDocument("");
-        this._document.body.innerHTML = deserializer.get("markup");
-        this._ownerSerialization = deserializer.get("owner");
+    deserializeProperties: {value: function(deserializer) {
+        var markup = deserializer.get("markup"),
+            owner = deserializer.get("owner"),
+            _extends = deserializer.get("extends");
+
+        if (markup) {
+            this._document = document.implementation.createHTMLDocument("");
+            this._document.body.innerHTML = markup;
+        }
+
+        if (owner) {
+            this._ownerSerialization = owner;
+        }
+
+        if (_extends) {
+            this._extends = _extends;
+        }
     }}
 });

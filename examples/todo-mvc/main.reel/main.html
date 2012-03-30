@@ -10,8 +10,8 @@
     <title>Main Component</title>
     <link rel="stylesheet" type="text/css" href="main.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "tasksController": {
                 "module": "montage/ui/controller/array-controller",
                 "name": "ArrayController",
@@ -19,12 +19,7 @@
 
                 },
                 "bindings": {
-                    "content": {
-                        "boundObject": {
-                            "@": "owner"
-                        },
-                        "boundObjectPropertyPath": "tasks"
-                    }
+                    "content": {"<<->": "@owner.tasks"}
                 }
             },
             "taskNoteField": {
@@ -45,12 +40,7 @@
                     }
                 },
                 "bindings": {
-                    "task": {
-                        "boundObject": {
-                            "@": "taskRepetition"
-                        },
-                        "boundObjectPropertyPath": "objectAtCurrentIteration"
-                    }
+                    "task": {"<<->": "@taskRepetition.objectAtCurrentIteration"}
                 }
             },
             "taskRepetition": {
@@ -75,13 +65,7 @@
                     "converter": {"@": "itemCountConverter"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {
-                            "@": "owner"
-                        },
-                        "boundObjectPropertyPath": "unfinishedTasks.count()",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.unfinishedTasks.count()"}
                 }
             },
 
@@ -99,13 +83,7 @@
                     }
                 },
                 "bindings": {
-                    "tasksController": {
-                        "boundObject": {
-                            "@": "owner"
-                        },
-                        "boundObjectPropertyPath": "tasksController",
-                        "oneway": true
-                    }
+                    "tasksController": {"<-": "@owner.tasksController"}
                 }
             },
 
@@ -116,11 +94,7 @@
                     "element": {"#": "markAllCompleteForm"}
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "tasksController.organizedObjects.count()",
-                        "oneway": true
-                    }
+                    "condition": {"<-": "@owner.tasksController.organizedObjects.count()"}
                 }
             },
 
@@ -131,12 +105,7 @@
                     "element": {"#": "markAllCompleteButton"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "unfinishedTasks",
-                        "oneway": true,
-                        "converter": {"@": "markAllReadValueConverter"}
-                    }
+                    "value": {"<-": "@owner.unfinishedTasks", "converter": {"@": "markAllReadValueConverter"}}
                 }
             },
 
@@ -166,35 +135,35 @@
                     }
                 }
             }
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
 
-    <div id="main" class="main">
+    <div data-montage-id="main" class="main">
         <h1>Todos</h1>
 
-        <form id="taskForm">
+        <form data-montage-id="taskForm" class="taskForm">
             <div>
-                <label><span>Task</span><input id="taskNoteField" class="taskNoteField" type="text" placeholder="What needs to be done?" size="64"></label>
+                <label><span>Task</span><input data-montage-id="taskNoteField" class="taskNoteField" type="text" placeholder="What needs to be done?" size="64"></label>
                 <input type="submit" value="Add">
             </div>
         </form>
 
-        <form id="markAllCompleteForm">
-            <div><input type="submit" value="Mark all as complete" id="markAllCompleteButton"></div>
+        <form data-montage-id="markAllCompleteForm">
+            <div><input type="submit" value="Mark all as complete" data-montage-id="markAllCompleteButton"></div>
         </form>
 
-        <ul id="taskList" class="taskList">
+        <ul data-montage-id="taskList" class="taskList">
             <li>
-                <div id="task"></div>
+                <div data-montage-id="task"></div>
             </li>
         </ul>
 
         <div class="taskStats">
-            <span id="unfinishedCount" class="unfinishedCount"></span> left
-            <div id="taskListControls" class="taskListControls"></div>
+            <span data-montage-id="unfinishedCount" class="unfinishedCount"></span> left
+            <div data-montage-id="taskListControls" class="taskListControls"></div>
         </div>
     </div>
 

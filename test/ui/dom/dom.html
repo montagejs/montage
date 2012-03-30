@@ -10,7 +10,7 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Slot Test</title>
+    <title>DOM Test</title>
     <script src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">{
         "application": {
@@ -51,18 +51,27 @@
         h1 {
             font-size: 20px;
         }
+
+        /*
+        Different browsers lay things out with pixel differences, so we do
+        this to normalise.
+        */
+        body > * {
+            position: absolute;
+            top: 23px;
+            left: 46px;
+        }
+
         .border {
             border: #000088 double thick;
         }
         .translate {
-            position: relative;
             -webkit-transform: translate(10px);
             -o-transform: translate(10px);
             -moz-transform: translate(10px);
             transform: translate(10px);
         }
         .scale_rotate {
-            position: relative;
             -webkit-transform-origin: top left;
             -webkit-transform: translate(10px,10px) rotate(66deg) scale(0.3);
             -o-transform-origin: top left;

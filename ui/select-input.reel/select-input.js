@@ -4,26 +4,41 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
+/**
+    @module "montage/ui/select-input.reel"
+    @requires montage/ui/component
+    @requires montage/ui/controller/array-controller
+    @requires montage/ui/native-control
+    @requires montage/ui/composer/press-composer
+*/
+
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     ArrayController = require("ui/controller/array-controller").ArrayController,
     NativeControl = require("ui/native-control").NativeControl,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
-
-var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
+/**
+ * Wraps the a &lt;select> element with binding support for the element's standard attributes. Uses an ArrayController instance to manage the element's contents and selection.
+   @class module:"montage/ui/select-input.reel".SelectInput
+   @extends module:montage/native-control.NativeControl
+   @summary
+   If the &lt;select> markup contains <option> is provided in the markup and <code>contentController</code> is not, the <code>contentController</code> collection is populated with the options from the markup. If <code>contentController</code> is present, any options in the markup are overwritten by the values from the <code>contentController</code> when they are available.
+ */
+var SelectInput = exports.SelectInput =  Montage.create(NativeControl, /** @lends module:"montage/ui/select-input.reel".SelectInput */ {
 
     _fromInput: {value: null},
+    _synching: {value: null},
+    //_internalSet: {value: null},
 
     __selectedIndexes: {value: null, enumerable: false},
     _selectedIndexes: {
         set: function(value) {
             this.__selectedIndexes = value;
-            if(!this._fromInput) {
-                this.needsDraw = true;
-            } else {
-                this._fromInput = false;
+            if(this.needsDraw === false) {
+                this.needsDraw = this._synching || !this._fromInput;
             }
+
         },
         get: function() {
             return this.__selectedIndexes;
@@ -35,6 +50,9 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     //-----------------------
 
     _content: {value: null, enumerable: false},
+/**
+    An array of items to to assign to the component's <code>contentController</code> property, which is an ArrayController.
+*/
     content: {
         set: function(value) {
             if(!Array.isArray(value)) {
@@ -55,15 +73,26 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
         }
     },
 
-    // If contentController is provided, this allows the developer to specify
+    // If a <code>contentController</code> is provided, this allows the developer to specify
     // which property in each element provides the "value" part of <option>
+    /**
+        Specifies the property belonging to the component's <code>contentController</code> to use as the "value" part of the <option>.
+    */
     valuePropertyPath: {value: null},
-    // Property on iterated object from which textContent of the <option>
-    // is received
+
+    /**
+        Specifies the property belonging to the component's <code>contentController</code> to use as the text content of the <option>.
+    */
     textPropertyPath: {value: null},
 
 
     _contentController: {value: null, enumerable: false},
+
+/**
+    An ArrayController instance used to manage the content and selection of the select input control.
+    @type {module:montage/ui/controller/array-controller.ArrayController}
+    @default null
+*/
     contentController: {
         get: function() {
             return this._contentController;
@@ -101,6 +130,91 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
         }
     },
+
+    _getSelectedValuesFromIndexes: {
+        value: function() {
+            var selectedObjects = this.contentController ? this.contentController.selectedObjects : null;
+            var arr = [];
+            if(selectedObjects && selectedObjects.length > 0) {
+                var i=0, len = selectedObjects.length, valuePath;
+                for(; i<len; i++) {
+                    valuePath = this.valuePropertyPath || 'value';
+                    if(selectedObjects[i][valuePath]) {
+                        arr.push(selectedObjects[i][valuePath]);
+                    }
+                }
+            }
+            return arr;
+
+        }
+    },
+
+    _synchValues: {
+        value: function() {
+            if(!this._synching) {
+                this._synching = true;
+                this.values = this._getSelectedValuesFromIndexes();
+                this.value = ((this.values && this.values.length > 0) ? this.values[0] : null);
+                this._synching = false;
+            }
+        }
+    },
+
+
+    _values: {value: null},
+    values: {
+        get: function() {
+            return this._values;
+        },
+        set: function(valuesArray) {
+            var content = this.contentController ? this.contentController.content : null;
+            if(valuesArray && content) {
+                this._values = valuesArray;
+
+                if(!this._synching) {
+                    var selectedIndexes = [];
+                    var i=0, len = this._values.length, index;
+                    for(; i<len; i++) {
+                        index = this._indexOf(this._values[i]);
+                        if(index >= 0) {
+                            selectedIndexes.push(index);
+                        }
+                    }
+                    this._synching = true;
+                    this.contentController.selectedIndexes = selectedIndexes;
+                    this._synching = false;
+                }
+            }
+        }
+        //dependencies: ["_selectedIndexes"]
+    },
+
+    _value: {value: null},
+    value: {
+        get: function() {
+            return this._value;
+        },
+        set: function(value) {
+            this._value = value;
+
+            if(!this._synching) {
+                if(value == null) {
+                    this.values = [];
+                } else {
+                    this.values = [value];
+                }
+            }
+
+
+        }
+        //dependencies: ["_selectedIndexes"]
+    },
+
+    // HTMLSelectElement methods
+
+    // add() and remove() deliberately omitted. Use the contentController instead
+    blur: { value: function() { this._element.blur(); } },
+    focus: { value: function() { this._element.focus(); } },
 
     // -------------------
     // Montage Callbacks
@@ -141,7 +255,7 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
                     }
                     this._fromInput = true;
                     this.contentController.selectedIndexes = selectedIndexes;
-                    
+
                 }
             }
 
@@ -225,8 +339,10 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
     draw: {
         enumerable: false,
         value: function() {
-
             var elem = this.element;
+
+            this._fromInput = false;
+            this._synching = false;
 
             this._removeAll(elem);
             this._refreshOptions();
@@ -236,6 +352,14 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
         }
     },
+
+    didDraw: {
+        value: function() {
+            this._synchValues();
+        }
+    },
+
+
 
     // find the index of the object with the specified value in the _content array
     _indexOf: {
@@ -296,8 +420,11 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
             if(arr.length > 0) {
                 this._fromInput = true;
+                this._synching = false;
                 this.contentController.selectedIndexes = arr;
+                this._synchValues();
             }
+
         }
     }
 
@@ -306,13 +433,53 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, {
 
 //http://www.w3.org/TR/html5/the-button-element.html#the-select-element
 
-SelectInput.addAttributes({
+SelectInput.addAttributes( /** @lends module:"montage/ui/select-input.reel".SelectInput */ {
+/**
+    Specifies whether the element should be focused as soon as the page is loaded.
+    @type {boolean}
+    @default false
+*/
         autofocus: {dataType: 'boolean'},
+
+/**
+    When true, the select control is disabled to user input and "disabled" is added to its CSS class list.
+    @type {boolean}
+    @default false
+*/
         disabled: {dataType: 'boolean'},
+
+/**
+    The value of the <code>id</code> attribute of the form with which to associate the component's element.
+    @type string}
+    @default null
+*/
         form: null,
+/**
+    Specifies if multiple selections are enabled on the select element.
+    @type {boolean}
+    @default false
+*/
         multiple: {dataType: 'boolean'},
+
+/**
+    The name associated with the select input element.
+    @type {string}
+    @default null
+*/
         name: null,
+
+/**
+    When true, the user will be required to select a value from the control before submitting the form.
+    @type {string}
+    @default false
+*/
         required: {dataType: 'boolean'},
+
+/**
+   The number of options from the select element to display to the user.
+   @type {number}
+   @default 1
+*/
         size: {dataType: 'number', value: '1'}
 });
 

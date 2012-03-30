@@ -60,37 +60,42 @@ var testPage = TestPageLoader.queueTest("dom", function() {
         describe("convertPointFrom functions", function() {
             describe("heading", function() {
                 it("should return correct position", function() {
-                    testConvertPoint(testPage.test.convertPoint1, 8,13,23,213);
+                    testConvertPoint(testPage.test.convertPoint1, 46,36,61,236);
                 });
             });
             describe("paragraph", function() {
                 it("should return correct position", function() {
-                    testConvertPoint(testPage.test.convertPoint2, 8,56,23,256);
+                    testConvertPoint(testPage.test.convertPoint2, 46,43,61,243);
                 });
-            });
-            describe("paragraph including a link", function() {
-                it("should return correct position", function() {
-                    testConvertPoint(testPage.test.convertPoint3, 8,99,23,299);
+
+                describe("including a link", function() {
+                    it("should return correct position", function() {
+                        testConvertPoint(testPage.test.convertPoint3, 46,43,61,243);
+                    });
+                })
+
+                describe("including a link with border", function() {
+                    it("should return correct position", function() {
+                        testConvertPoint(testPage.test.convertPoint4, 46,43,61,243);
+                    });
                 });
-            });
-            describe("paragraph including a link with border", function() {
-                it("should return correct position", function() {
-                    testConvertPoint(testPage.test.convertPoint4, 8,142,23,342);
-                });
-            });
-            describe("translated paragraph including a link with border", function() {
-                it("should return correct position", function() {
-                    testConvertPoint(testPage.test.convertPoint5, 18,185,33,385);
-                });
-            });
-            describe("translated paragraph including a link with border and a break", function() {
-                it("should return correct position", function() {
-                    testConvertPoint(testPage.test.convertPoint6, 18,228,33,428);
-                });
-            });
-            describe("translated, rotated, and scaled paragraph including a link with border and a break", function() {
-                it("should return correct position", function() {
-                    testConvertPoint(testPage.test.convertPoint7, 18,304,-35,333);
+
+                describe("translated", function() {
+                    describe("including a link with border", function() {
+                        it("should return correct position", function() {
+                            testConvertPoint(testPage.test.convertPoint5, 56,43,71,243);
+                        });
+                    });
+                    describe("including a link with border and a break", function() {
+                        it("should return correct position", function() {
+                            testConvertPoint(testPage.test.convertPoint6, 56,43,71,243);
+                        });
+                    });
+                    describe(", rotated, and scaled including a link with border and a break", function() {
+                        it("should return correct position", function() {
+                            testConvertPoint(testPage.test.convertPoint7, 56,53,3,82);
+                        });
+                    });
                 });
             });
         });

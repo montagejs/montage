@@ -36,8 +36,8 @@
 
     <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
         <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-         <script type="text/montage-serialization">
-    {
+         <script type="text/montage-serialization">{
+
         "fname": {
             "module": "montage/ui/textfield.reel",
             "name": "Textfield",
@@ -46,16 +46,8 @@
                 "maxlength": "5"
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "firstName",
-                    "oneway": false
-                },
-                "title": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "firstName",
-                    "oneway": false
-                }
+                "value": {"<<->": "@sample-form.firstName"},
+                "title": {"<<->": "@sample-form.firstName"}
 
             }
         },
@@ -66,11 +58,7 @@
                 "element": {"#": "lname"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "lastName",
-                    "oneway": false
-                }
+                "value": {"<<->": "@sample-form.lastName"}
             }
         },
         "email1": {
@@ -80,11 +68,7 @@
                 "element": {"#": "email1"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "email",
-                    "oneway": false
-                }
+                "value": {"<<->": "@sample-form.email"}
             }
         },
         "url1": {
@@ -94,11 +78,7 @@
                 "element": {"#": "url1"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "url",
-                    "oneway": false
-                }
+                "value": {"<<->": "@sample-form.url"}
             }
         },
         "info1": {
@@ -123,11 +103,7 @@
                 "converter": {"@": "uppercaseconverter1"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "info1"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": true
-                }
+                "value": {"<-": "@info1.value"}
             }
         },
 
@@ -191,16 +167,8 @@
                 "element": {"#": "number1"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "range1"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": false
-                },
-                "max": {
-                    "boundObject": {"@": "limit-max"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": true
-                }
+                "value": {"<<->": "@range1.value"},
+                "max": {"<-": "@limit-max.value"}
             }
         },
 
@@ -211,11 +179,7 @@
                 "element": {"#": "range1"}
             },
             "bindings": {
-                "max": {
-                    "boundObject": {"@": "limit-max"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": true
-                }
+                "max": {"<-": "@limit-max.value"}
             }
         },
 
@@ -226,11 +190,7 @@
                 "element": {"#": "max-value"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "limit-max"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": true
-                }
+                "value": {"<-": "@limit-max.value"}
             }
         },
 
@@ -241,11 +201,7 @@
                 "element": {"#": "check1"}
             },
             "bindings": {
-                "checked": {
-                    "boundObject": {"@": "check3"},
-                    "boundObjectPropertyPath": "checked",
-                    "oneway": true
-                }
+                "checked": {"<-": "@check3.checked"}
             }
         },
         "check2": {
@@ -270,10 +226,7 @@
                 "element": {"#": "check-text"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "check1"},
-                    "boundObjectPropertyPath": "checked"
-                }
+                "value": {"<<->": "@check1.checked"}
             }
         },
 
@@ -305,10 +258,7 @@
                 "element": {"#": "radio-text"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "radio1"},
-                    "boundObjectPropertyPath": "checked"
-                }
+                "value": {"<<->": "@radio1.checked"}
             }
         },
 
@@ -333,26 +283,10 @@
                 "countries": {"@": "country"}
             },
 			"bindings": {
-                "option1": {
-                    "boundObject": {"@": "check3"},
-                    "boundObjectPropertyPath": "checked",
-                    "oneway": true
-                },
-                "option2": {
-                    "boundObject": {"@": "radio1"},
-                    "boundObjectPropertyPath": "checked",
-                    "oneway": true
-                },
-                "selectedCountry": {
-                    "boundObject": {"@": "country"},
-                    "boundObjectPropertyPath": "selectedObjects.0",
-                    "oneway": true
-                },
-                "selectedState": {
-                    "boundObject": {"@": "state"},
-                    "boundObjectPropertyPath": "selectedObjects.0",
-                    "oneway": true
-                }
+                "option1": {"<-": "@check3.checked"},
+                "option2": {"<-": "@radio1.checked"},
+                "selectedCountry": {"<-": "@country.selectedObjects.0"},
+                "selectedState": {"<-": "@state.selectedObjects.0"}
             }
         },
 
@@ -363,16 +297,12 @@
                 "element": {"#": "json-output"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "json",
-                    "oneway": true
-                }
+                "value": {"<-": "@sample-form.json"}
             }
         }
 
-    }
-        </script>
+    
+    }</script>
 
         <style>
             :invalid {

@@ -3,8 +3,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Image Example</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
 
     "places": {
         "name": "ArrayController",
@@ -40,11 +40,7 @@
             "element": {"#": "thumb"}
         },
         "bindings": {
-            "src": {
-                "boundObject": {"@": "repetition1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "src": {"<-": "@repetition1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -55,11 +51,7 @@
             "element": {"#": "title"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "repetition1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.title",
-                "oneway": true
-            }
+            "value": {"<-": "@repetition1.objectAtCurrentIteration.title"}
         }
     },
 
@@ -71,11 +63,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "data",
-                "oneway": true
-            }
+            "content": {"<-": "@owner.data"}
         }
     },
 
@@ -99,16 +87,8 @@
             "element": {"#": "link"}
         },
         "bindings": {
-            "href": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.href",
-                "oneway": true
-            },
-            "textContent": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                "oneway": true
-            }
+            "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
         }
     },
 
@@ -119,11 +99,7 @@
             "element": {"#": "desc"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration.description",
-                "oneway": true
-            }
+            "value": {"<-": "@list1.objectAtCurrentIteration.description"}
         }
     },
 
@@ -135,28 +111,22 @@
             "element": {"#": "selection"}
         },
         "bindings": {
-            "checked": {
-                "boundObject": {"@": "list1"},
-                "boundObjectPropertyPath": "selectionAtCurrentIteration"
-            }
+            "checked": {"<<->": "@list1.selectionAtCurrentIteration"}
         }
     },
 
-    "selected-value": {
+    "selectedValue": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "selected-value"}
+            "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "jsonSelectedItems"
-            }
+            "value": {"<<->": "@owner.jsonSelectedItems"}
         }
     },
 
-    "answers-controller": {
+    "answersController": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
         "properties": {
@@ -164,11 +134,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "answers",
-                "oneway": true
-            }
+            "content": {"<-": "@owner.answers"}
         }
     },
 
@@ -180,52 +146,66 @@
                 "#": "list2-rows"
             },
             "isSelectionEnabled": false,
-            "contentController": {"@": "answers-controller"}
+            "contentController": {"@": "answersController"}
         }
     },
 
-    "answer-selection": {
+    "answerSelection": {
         "module": "montage/ui/radio-button.reel",
         "name": "RadioButton",
         "properties": {
-            "element": {"#": "answer-selection"}
+            "element": {"#": "answerSelection"}
         },
         "bindings": {
-            "checked": {
-                "boundObject": {"@": "list2"},
-                "boundObjectPropertyPath": "selectionAtCurrentIteration"
-            }
+            "checked": {"<<->": "@list2.selectionAtCurrentIteration"}
         }
     },
 
-    "answer-text": {
+    "answerText": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "answer-text"}
+            "element": {"#": "answerText"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "list2"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration",
-                "oneway": true
-            }
+            "value": {"<-": "@list2.objectAtCurrentIteration"}
         }
     },
 
-    "selected-answer": {
+    "selectedAnswer": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
         "properties": {
-            "element": {"#": "selected-answer"}
+            "element": {"#": "selectedAnswer"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "selectedAnswer"
-            }
+            "value": {"<<->": "@owner.selectedAnswer"}
         }
     },
+
+
+    "repetition_accordion1": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "repetition-accordion1"}
+        }
+    },
+    "repetition_accordion2": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "repetition-accordion2"}
+        }
+    },
+    "repetition_accordion3": {
+        "module": "accordion.reel",
+        "name": "Accordion",
+        "properties": {
+            "element": {"#": "repetition-accordion3"}
+        }
+    },
+
 
     "owner": {
         "module": "components/image-example.reel",
@@ -242,18 +222,12 @@
             ]
         },
         "bindings": {
-            "selectedItems": {
-                "boundObject": {"@": "controller"},
-                "boundObjectPropertyPath": "selectedObjects"
-            },
-            "selectedAnswer": {
-                "boundObject": {"@": "answers-controller"},
-                "boundObjectPropertyPath": "selectedObjects.0"
-            }
+            "selectedItems": {"<<->": "@controller.selectedObjects"},
+            "selectedAnswer": {"<<->": "@answersController.selectedObjects.0"}
         }
     }
-}
-    </script>
+
+    }</script>
 
     <style>
         .repetition .thumb {
@@ -287,7 +261,7 @@
 
 </head>
 <body>
-    <div id="example-root">
+    <div data-montage-id="example-root">
 
         <div class="row">
             <div class="span8">
@@ -300,19 +274,136 @@
 
         <h4>Demo: Simple Repetition</h4>
 
-        <div class="demo">
-            <div class="repetition" id="repetition">
+        <div class="demo simple">
+            <div class="repetition" data-montage-id="repetition">
                 <div class="item">
-                    <img id="thumb" class="thumb" />
-                    <h3 id="title" class="title"></h3>
+                    <img data-montage-id="thumb" class="thumb" />
+                    <h3 data-montage-id="title" class="title"></h3>
                 </div>
             </div>
         </div>
 
+        <section>
+            <ul data-montage-id="repetition-accordion1" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;div class="repetition" data-montage-id="repetition"&gt;
+    &lt;div class="item"&gt;
+        &lt;img data-montage-id="thumb" class="thumb" /&gt;
+        &lt;h3 data-montage-id="title" class="title"&gt;&lt;/h3&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "places": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true,
+            "content": [
+                {"src": "images/IMG_1.jpg", "title": "Title One"},
+                {"src": "images/IMG_2.jpg", "title": "Title Two"},
+                {"src": "images/IMG_3.jpg", "title": "Title Three"}
+            ]
+        }
+    },
+
+    "repetition1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "repetition"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "places"},
+            "orientation": "vertical"
+        }
+    },
+
+    "thumb": {
+        "module": "montage/ui/image.reel",
+        "name": "Image",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {"&lt;-": "@repetition1.objectAtCurrentIteration.src"}
+        }
+    },
+
+    "title": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "title"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@repetition1.objectAtCurrentIteration.title"}
+        }
+    },
+
+    "owner": {
+        "module": "components/image-example.reel",
+        "name": "ImageExample",
+        "properties": {
+            "element": {"#": "example-root"}
+        }
+    }
+}
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
+.repetition .thumb {
+   width: 96px;
+   height: 96px;
+   border: 5px solid #fff;
+
+}
+
+.repetition {
+   width: 400px;
+}
+.repetition .item {
+   border: 1px solid #fff;
+}
+.repetition .selected {
+   border: 1px solid #FE4365;
+}
+
+.repetition .title {
+   display: inline-block;
+   vertical-align: top;
+}
+
+                       </pre>
+                   </div>
+               </li>
+            </ul>
+
+        </section>
+
+
+
+
         <h4>Demo: Repetition supporting multiple Selections using checkbox</h4>
 
-        <div class="demo">
-            <table id="list1" class="bordered-table">
+        <div class="demo selection">
+            <table data-montage-id="list1" class="bordered-table">
                 <thead>
                     <tr>
                         <th>Selection</th>
@@ -320,49 +411,336 @@
                         <th>Description</th>
                     </tr>
                 </thead>
-                <tbody id="table-row">
+                <tbody data-montage-id="table-row">
                     <tr>
-                         <td><input type="checkbox" id="selection" /></td>
-                        <td><a id="link" target="_blank"></a></td>
-                        <td><span id="desc"></span></td>
+                         <td><input type="checkbox" data-montage-id="selection" /></td>
+                        <td><a data-montage-id="link" target="_blank"></a></td>
+                        <td><span data-montage-id="desc"></span></td>
                     </tr>
                 </tbody>
             </table>
 
             <div>
                 <h5>Your selections: </h5>
-                <span id="selected-value"  style="width: 400px;"></span>
+                <span data-montage-id="selectedValue"  style="width: 400px;"></span>
             </div>
         </div>
+
+
+        <section>
+            <ul data-montage-id="repetition-accordion2" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;table data-montage-id="list1" class="bordered-table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Selection&lt;/th&gt;
+            &lt;th&gt;Name&lt;/th&gt;
+            &lt;th&gt;Description&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody data-montage-id="table-row"&gt;
+        &lt;tr&gt;
+             &lt;td&gt;&lt;input type="checkbox" data-montage-id="selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div&gt;
+    &lt;h5&gt;Your selections: &lt;/h5&gt;
+    &lt;span data-montage-id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
+&lt;/div&gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "list1": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "controller"},
+            "axis": "horizontal"
+        }
+    },
+
+    "link": {
+        "module": "montage/ui/anchor.reel",
+        "name": "Anchor",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {"&lt;-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"&lt;-": "@list1.objectAtCurrentIteration.src"}
+        }
+    },
+
+    "desc": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@list1.objectAtCurrentIteration.description"}
+        }
+    },
+
+
+    "selection": {
+        "module": "montage/ui/checkbox.reel",
+        "name": "Checkbox",
+        "properties": {
+            "element": {"#": "selection"}
+        },
+        "bindings": {
+            "checked": {"&lt;&lt;-&gt;": "@list1.selectionAtCurrentIteration"}
+        }
+    },
+
+    "selectedValue": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "selectedValue"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.jsonSelectedItems"}
+        }
+    },
+    "owner": {
+        "module": "components/image-example.reel",
+        "name": "ImageExample",
+        "properties": {
+            "element": {"#": "example-root"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        },
+        "bindings": {
+            "selectedItems": {"&lt;&lt;-&gt;": "@controller.selectedObjects"}
+        }
+    }
+}
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+   Component = require("montage/ui/component").Component;
+
+exports.RepetitionExample = Montage.create(Component, {
+
+   jsonSelectedItems: {
+       value: null
+   },
+
+   _selectedItems: {value: null},
+
+   selectedItems: {
+       get: function(){ return this._selectedItems; },
+       set: function(v) {
+
+           this._selectedItems = v;
+           this.jsonSelectedItems = JSON.stringify(this._selectedItems||[]);
+           console.log('selected items = ', v);
+       }
+   },
+});
+
+                       </pre>
+                   </div>
+               </li>
+
+               <li class="accordion-group">
+                      <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                      <div class="accordion-inner montage-hidden">
+                          <pre class="prettyprint" >
+table tr.selected {
+  background-color: #F5D663;
+}
+
+                          </pre>
+                      </div>
+                  </li>
+            </ul>
+
+
+        </section>
+
 
 
         <h4>Demo: Repetition supporting single Selection using a Radiobutton</h4>
 
 
-        <div class="demo">
+        <div class="demo radiobutton">
 
             <h5>Overall, how satisfied are you with our product?</h5>
 
-            <table id="list2" class="bordered-table" style="width: auto;">
-                <tbody id="list2-rows">
+            <table data-montage-id="list2" class="bordered-table" style="width: auto;">
+                <tbody data-montage-id="list2-rows">
                     <tr>
-                         <td><input type="radio" id="answer-selection" name="answer-selection" /></td>
-                        <td><span id="answer-text"></span></td>
+                         <td><input type="radio" data-montage-id="answerSelection" name="answerSelection" /></td>
+                        <td><span data-montage-id="answerText"></span></td>
                     </tr>
                 </tbody>
             </table>
 
             <div>
                 <h5>You selected: </h5>
-                <span id="selected-answer"  style="width: 400px;"></span>
+                <span data-montage-id="selectedAnswer"  style="width: 400px;"></span>
             </div>
         </div>
 
         <section>
-            <a href="m-js/examples/sink/components/repetition-example.reel" target="_blank">View Demo Source</a>
+
+            <ul data-montage-id="repetition-accordion3" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;h5&gt;Overall, how satisfied are you with our product?&lt;/h5&gt;
+
+&lt;table data-montage-id="list2" class="bordered-table" style="width: auto;"&gt;
+    &lt;tbody data-montage-id="list2-rows"&gt;
+        &lt;tr&gt;
+             &lt;td&gt;&lt;input type="radio" data-montage-id="answerSelection" name="answerSelection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="answerText"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div&gt;
+    &lt;h5&gt;You selected: &lt;/h5&gt;
+    &lt;span data-montage-id="selectedAnswer"  style="width: 400px;"&gt;&lt;/span&gt;
+&lt;/div&gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "answersController": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"&lt;-": "@owner.answers"}
+        }
+    },
+
+    "list2": {
+        "module": "montage/ui/repetition.reel",
+        "name": "Repetition",
+        "properties": {
+            "element": {
+                "#": "list2-rows"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "answersController"}
+        }
+    },
+
+    "answerSelection": {
+        "module": "montage/ui/radio-button.reel",
+        "name": "RadioButton",
+        "properties": {
+            "element": {"#": "answerSelection"}
+        },
+        "bindings": {
+            "checked": {"&lt;&lt;-&gt;": "@list2.selectionAtCurrentIteration"}
+        }
+    },
+
+    "answerText": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "answerText"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@list2.objectAtCurrentIteration"}
+        }
+    },
+
+    "selectedAnswer": {
+        "module": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "selectedAnswer"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.selectedAnswer"}
+        }
+    },
+
+    "owner": {
+        "module": "components/image-example.reel",
+        "name": "ImageExample",
+        "properties": {
+            "element": {"#": "example-root"},
+            "answers": [
+                "Very Satisfied", "Satisfied", "Neutral", "Unsatisfied", "Very Unsatisfied", "Dont want to answer"
+            ]
+        },
+        "bindings": {
+            "selectedAnswer": {"&lt;&lt;-&gt;": "@answersController.selectedObjects.0"}
+        }
+    }
+}
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+   Component = require("montage/ui/component").Component;
+
+exports.RepetitionExample = Montage.create(Component, {
+
+   selectedAnswer: {value: null},
+
+});
+
+                       </pre>
+                   </div>
+               </li>
+            </ul>
+
         </section>
 
 
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/repetition-example.reel" target="_blank">View source on GitHub</a>
+        </section>
+
+<!--
         <section>
             <h4>Component Properties</h4>
             <table>
@@ -393,122 +771,7 @@
             </p>
         </section>
 
-
-
-        <section>
-            <h6>Serialization</h6>
-<ul>
-    <li>
-<p>Define the ArrayController that holds the data for the repetition:</p>
-<pre class="prettyprint linenums">
-"places": {
-    "name": "ArrayController",
-    "module": "montage/ui/controller/array-controller",
-    "properties": {
-        "selectObjectsOnAddition": true,
-        "automaticallyOrganizeObjects": true,
-        "content": [
-            {"src": "images/IMG_1.jpg", "title": "Title One"},
-            {"src": "images/IMG_2.jpg", "title": "Title Two"},
-            {"src": "images/IMG_3.jpg", "title": "Title Three"}
-        ]
-    }
-}
-</pre>
-
-    </li>
-
-
-<li><p>Define the Repetition, set its orientation, and set its <code>contentController</code> to the <code>places</code> ArrayController previously defined:</p>
-
-<pre class="prettyprint linenums">
-"repetition1": {
-    "module": "montage/ui/repetition.reel",
-    "name": "Repetition",
-    "properties": {
-        "element": {
-            "#": "repetition"
-        },
-        "isSelectionEnabled": true,
-        "contentController": {"@": "places"},
-        "orientation": "vertical"
-    }
-}
-</pre>
-</li>
-
-
-<li>Bind the  thumbnail for each row in the repetition by specifying <code>"objectAtCurrentIteration.src"</code>  is used to specify the current Object during the iteration.
-
-<pre class="prettyprint linenums">
-"thumb": {
-    "module": "montage/ui/image.reel",
-    "name": "Image",
-    "properties": {
-        "element": {"#": "thumb"}
-    },
-    "bindings": {
-        "src": {
-            "boundObject": {"@": "repetition1"},
-            "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-            "oneway": true
-        }
-    }
-}
-</pre>
-</li>
-</ul>
-        </section>
-
-        <section>
-            <h6>HTML Markup</h6>
-            <pre class="prettyprint linenums">
-&lt;div class="repetition" id="repetition"&gt;
-    &lt;div class="item"&gt;
-        &lt;img id="thumb" class="thumb" /&gt;
-        &lt;h3 id="title" class="title"&gt;&lt;/h3&gt;
-    &lt;/div&gt;
-&lt;/div&gt;
-            </pre>
-        </section>
-
-        <section>
-        <h6>CSS</h6>
-        To highlight the currently selected item, the <code class="prettyprint">isSelectionEnabled</code> must be enabled on the Repetition component. A descendant selector named <code>.selected</code> is added to the <code>.repetition</code> selector. The Repetition component adds the .selected class to the currently selected item in the repetition.
-        <pre class="prettyprint">
-&lt;style&gt;
-    .repetition {
-        width: 400px;
-    }
-    .repetition .item {
-        border: 1px solid #fff;
-    }
-    .repetition .selected {
-        border: 1px solid #FE4365;
-    }
-
-    .repetition .title {
-        display: inline-block;
-        vertical-align: top;
-    }
-     .repetition .thumb {
-        width: 96px;
-        height: 96px;
-        border: 5px solid #fff;
-
-    }
-&lt;/style&gt;
-        </pre>
-
-        <p>You can also style the active item (that is, the item getting a <code>mousedown</code> or <code>touchstart</code> event) by adding a <code>.active</code> descendant selector to the main repetition element.</p>
-
-        <pre class="prettyprint">
-.repetition .active {
-    border: 1px solid blue;
-}
-       </pre>
-
-        </section>
+ -->
 
     </div>
 

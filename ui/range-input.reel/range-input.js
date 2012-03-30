@@ -4,13 +4,23 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /*global require,exports */
+
+/**
+    @module "montage/ui/range-input.reel"
+    @requires montage/ui/component
+    @requires montage/ui/text-input
+    @requires montage/ui/composer/press-composer
+*/
+
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TextInput = require("ui/text-input").TextInput,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
 /**
- * The input type="range" field
+ * Wraps the a &lt;input type="range"> element with binding support for the element's standard attributes.
+   @class module:"montage/ui/range-input.reel".RangeInput
+   @extends module:montage/text-input.TextInput
  */
 var RangeInput = exports.RangeInput = Montage.create(TextInput, {
     prepareForActivationEvents: {
@@ -18,13 +28,13 @@ var RangeInput = exports.RangeInput = Montage.create(TextInput, {
             var pressComposer = PressComposer.create();
             pressComposer.delegate = this;
             this.addComposer(pressComposer);
-            pressComposer.addEventListener("pressstart", this, false);
+            pressComposer.addEventListener("pressStart", this, false);
             pressComposer.addEventListener("press", this, false);
-            pressComposer.addEventListener("presscancel", this, false);
+            pressComposer.addEventListener("pressCancel", this, false);
         }
     },
 
-    handlePressstart: {
+    handlePressStart: {
         value: function(e) {
             var interactionStartEvent = document.createEvent("CustomEvent");
             interactionStartEvent.initCustomEvent("montage_range_interaction_start", true, true, null);
@@ -49,8 +59,25 @@ var RangeInput = exports.RangeInput = Montage.create(TextInput, {
     }
 });
 
-RangeInput.addAttributes({
+RangeInput.addAttributes( /** @lends module:"montage/ui/range-input.reel".RangeInput# */ {
+/**
+    The maximum value displayed but the input control.
+    @type {number}
+    @default null
+*/
     max: {dataType: 'number'},
+
+/**
+    The minimum value displayed but the input control.
+    @type {number}
+    @default null
+*/
     min: {dataType: 'number'},
+
+/**
+    The amount the number changes with each step. The step size can be a number, or the string 'any'.
+    @type {number|string}
+    @default null
+*/
     step: null // number or 'any'
 });

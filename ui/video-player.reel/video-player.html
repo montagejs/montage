@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
     <link rel="stylesheet" type="text/css" href="video-player.css">
 
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "dynamictext1": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
@@ -38,13 +38,7 @@
             }
         },
         "bindings": {
-            "mediaSrc": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "src",
-                "oneway": true
-            }
+            "mediaSrc": {"<-": "@owner.src"}
         }
     },
     "slider1": {
@@ -58,13 +52,7 @@
             "hasTapBarToScroll": true
         },
         "bindings": {
-            "value": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "controller.position",
-                "oneway": false
-            }
+            "value": {"<<->": "@owner.controller.position"}
         }
     },
     "actioneventlistener1": {
@@ -330,37 +318,37 @@
             }
         }
     }
-}
-    </script>
+
+    }</script>
 
 
 </head>
 <body>
 
-<div id="video-player" class="montage-video-player">
-    <video id="video-tag" class="video"></video>
+<div data-montage-id="video-player" class="montage-video-player">
+    <video data-montage-id="video-tag" class="video"></video>
 
-    <div id="controlWrapper" class="control-wrapper">
-        <div id="controller" class="controller">
+    <div data-montage-id="controlWrapper" class="control-wrapper">
+        <div data-montage-id="controller" class="controller">
             <div class="controller-button-panel">
-                <div id="repeatButton" class="repeat controller-button" title="Repeat Video"></div>
-                <div id="rewindButton" class="rw controller-button" title="Rewind"> </div>
-                <div id="playButton" class="play controller-button" title="Play/Pause"> </div>
-                <div id="ffButton" class="ff controller-button" title="Fast Forward"> </div>
+                <div data-montage-id="repeatButton" class="repeat controller-button" title="Repeat Video"></div>
+                <div data-montage-id="rewindButton" class="rw controller-button" title="Rewind"> </div>
+                <div data-montage-id="playButton" class="play controller-button" title="Play/Pause"> </div>
+                <div data-montage-id="ffButton" class="ff controller-button" title="Fast Forward"> </div>
             </div>
             <div class="controller-scrubber-panel">
-                <div id="position" class="position controller-text"></div>
-                <div id="durationSlider" class="scrubber dark"></div>
-                <div id="duration" class="duration controller-text"></div>
+                <div data-montage-id="position" class="position controller-text"></div>
+                <div data-montage-id="durationSlider" class="scrubber dark"></div>
+                <div data-montage-id="duration" class="duration controller-text"></div>
             </div>
             <div class="controller-volume-panel">
-                <div id="muteButton" class="mute controller-button" title="Mute"></div>
-                <div id="decreaseVolume" class="volume-minus controller-button" title="Decrease Volume"> </div>
-                <div class="volume controller-progress"><div id="volumeLevel" class="volume-progress"></div></div>
-                <div id="increaseVolume" class="volume-plus controller-button" title="Increase Volume"> </div>
+                <div data-montage-id="muteButton" class="mute controller-button" title="Mute"></div>
+                <div data-montage-id="decreaseVolume" class="volume-minus controller-button" title="Decrease Volume"> </div>
+                <div class="volume controller-progress"><div data-montage-id="volumeLevel" class="volume-progress"></div></div>
+                <div data-montage-id="increaseVolume" class="volume-plus controller-button" title="Increase Volume"> </div>
             </div>
-            <div id="fullScreenPanel" class="controller-fullscreen-panel">
-                <div id="fullScreenButton" class="fullscreen controller-button" title="Toggle Fullscreen"> </div>
+            <div data-montage-id="fullScreenPanel" class="controller-fullscreen-panel">
+                <div data-montage-id="fullScreenButton" class="fullscreen controller-button" title="Toggle Fullscreen"> </div>
             </div>
 
         </div>

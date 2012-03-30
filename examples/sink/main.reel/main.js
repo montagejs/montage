@@ -7,10 +7,13 @@ var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.Main = Montage.create(Component, {
+    content: {value: null},
+    sidebar: {value: null},
+
     _selectedItem: {value: null},
     selectedItem: {
         get: function() {return this._selectedItem;},
-        set: function(value) {this._selectedItem = value;}
+        set: function(value) {this._selectedItem = value; this.needsDraw = true;}
     },
 
     templateDidLoad: {
@@ -22,7 +25,6 @@ exports.Main = Montage.create(Component, {
     deserializedFromTemplate: {
         value: function() {
             console.log("main deserializedFromTemplate");
-            //console.log('context = ' + window.location.hash);
         }
     },
 
@@ -30,6 +32,25 @@ exports.Main = Montage.create(Component, {
         value: function() {
             console.log("main prepareForDraw");
 
+            // routing logic
+            this.content.hash = window.location.hash;
+            var self = this;
+            window.onhashchange = function(event) {
+                event.preventDefault();
+                self.content.hash = window.location.hash;
+            };
+        }
+    },
+
+    draw: {
+        value: function() {
+            console.log('main draw');
+        }
+    },
+
+    didDraw: {
+        value: function() {
+            console.log('main didDraw');
         }
     }
 

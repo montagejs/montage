@@ -8,8 +8,8 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
         <link rel="stylesheet" type="text/css" href="alert.css">
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "dynamictext1": {
         "module": "montage/ui/dynamic-text.reel",
         "name": "DynamicText",
@@ -19,13 +19,7 @@
             }
         },
         "bindings": {
-            "value": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "title",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.title"}
         }
     },
     "dynamictext2": {
@@ -37,13 +31,7 @@
             }
         },
         "bindings": {
-            "value": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "msg",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.msg"}
         }
     },
     "dynamictext3": {
@@ -55,13 +43,7 @@
             }
         },
         "bindings": {
-            "value": {
-                "boundObject": {
-                    "@": "owner"
-                },
-                "boundObjectPropertyPath": "details",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.details"}
         }
     },
     "button1": {
@@ -91,26 +73,26 @@
             }
         }
     }
-}
-    </script>
+
+    }</script>
 
 
     </head>
     <body>
-        <div id="alert-container" class="montage-alert-dialog">
+        <div data-montage-id="alert-container" class="montage-alert-dialog">
 
             <div class="montage-popup-header">
-                <h3 id="title" class="title"></h3>
+                <h3 data-montage-id="title" class="title"></h3>
             </div>
 
             <div class="montage-alert-content">
-                    <div id="msg" class="msg"></div>
-                    <div id="msg-detail" class="msg-detail"></div>
+                    <div data-montage-id="msg" class="msg"></div>
+                    <div data-montage-id="msg-detail" class="msg-detail"></div>
             </div>
 
             <div class="montage-popup-footer">
                 <div class="montage-alert-actions">
-                    <button class="submit" id="action-ok">OK</button>
+                    <button class="submit" data-montage-id="action-ok">OK</button>
                 </div>
                 <div class="clearfix"></div>
             </div>

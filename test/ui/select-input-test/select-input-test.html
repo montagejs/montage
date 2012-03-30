@@ -9,8 +9,8 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>SelectInputTest</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-     <script type="text/montage-serialization">
-{
+     <script type="text/montage-serialization">{
+
     "dept": {
         "module": "montage/ui/select-input.reel",
         "name": "SelectInput",
@@ -20,11 +20,7 @@
             "valuePropertyPath": "code"
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "test"},
-                "boundObjectPropertyPath": "departments",
-                "oneway": true
-            }
+            "content": {"<-": "@test.departments"}
         }
     },
 
@@ -73,14 +69,93 @@
             "element": {"#": "country1"}
         }
     },
-    
-    "no-default-selection": {
+
+    "noDefaultSelection": {
         "module": "montage/ui/select-input.reel",
         "name": "SelectInput",
         "properties": {
-            "element": {"#": "no-default-selection"}
+            "element": {"#": "noDefaultSelection"}
         }
     },
+
+        "justifyComparatorLeft": {
+            "module": "ui/controls/select-input-fail.reel",
+            "name": "JustifyConverter",
+            "properties": {
+                "justify": "left"
+            }
+        },
+        "justifyComparatorRight": {
+            "module": "ui/controls/select-input-fail.reel",
+            "name": "JustifyConverter",
+            "properties": {
+                "justify": "right"
+            }
+        },
+        "justifyComparatorCenter": {
+            "module": "ui/controls/select-input-fail.reel",
+            "name": "JustifyConverter",
+            "properties": {
+                "justify": "center"
+            }
+        },
+        "justifyLeft": {
+            "module": "montage/ui/toggle-button.reel",
+            "name": "ToggleButton",
+            "properties": {
+                "element": {"#": "justifyLeft"},
+                "pressedClass": "success"
+            },
+            "bindings": {
+                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorLeft"}}
+            }
+        },
+        "justifyCenter": {
+            "module": "montage/ui/toggle-button.reel",
+            "name": "ToggleButton",
+            "properties": {
+                "element": {"#": "justifyCenter"},
+                "pressedClass": "success"
+            },
+            "bindings": {
+                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorCenter"}}
+            }
+        },
+        "justifyRight": {
+            "module": "montage/ui/toggle-button.reel",
+            "name": "ToggleButton",
+            "properties": {
+                "element": {"#": "justifyRight"},
+                "pressedClass": "success"
+            },
+            "bindings": {
+                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorRight"}}
+            }
+        },
+        "justifySelect": {
+            "module": "montage/ui/select-input.reel",
+            "name": "SelectInput",
+            "properties": {
+                "element": {"#": "justifySelect"}
+            },
+            "bindings": {
+                "value": {"<<->": "@test.justify"}
+            }
+        },
+        "justifyResult": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {"#": "justifyResult"}
+            },
+            "bindings": {
+                "value": {
+                    "boundObject": {"@": "test"},
+                    "boundObjectPropertyPath": "justify",
+                    "oneway": "true"
+                }
+            }
+        },
 
     "test": {
         "module": "ui/select-input-test/select-input-test",
@@ -89,22 +164,14 @@
             "dept": {"@": "dept"},
             "state": {"@": "state"},
             "country": {"@": "country"},
-            "noDefaultSelection": {"@": "no-default-selection"},
+            "noDefaultSelection": {"@": "noDefaultSelection"},
+            "justifySelect": {"@": "justifySelect"},
             "statesController": {"@": "statesController"}
         },
         "bindings": {
-            "selectedCountry": {
-                "boundObject": {"@": "country"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            },
-            "selectedState": {
-                "boundObject": {"@": "state"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            },
-            "selectedDept": {
-                "boundObject": {"@": "dept"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            }
+            "selectedCountry": {"<<->": "@country.contentController.selectedObjects.0"},
+            "selectedState": {"<<->": "@state.contentController.selectedObjects.0"},
+            "selectedDept": {"<<->": "@dept.contentController.selectedObjects.0"}
         }
     },
 
@@ -116,8 +183,8 @@
 
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body>
@@ -141,8 +208,8 @@
 
                 <label for="state">State</label>
                 <select id="state" required="true"></select>
-                
-                <select id="no-default-selection">
+
+                <select id="noDefaultSelection">
                     <option value="name">Name</option>
                     <option value="tags">Tags</option>
                 </select>
@@ -166,6 +233,31 @@
             </div>
             </form>
         </div>
+
+        <section>
+            <h2>Test binding to SelectInput.value</h2>
+            <div class="demo">
+                <div style="height: 40px;">
+                    <button id="justify-none" class="btn justify">-</button>
+                    <button id="justifyLeft" class="btn justify">L</button>
+                    <button id="justifyCenter" class="btn justify">C</button>
+                    <button id="justifyRight" class="btn justify">R</button>
+                </div>
+                <div>
+                    <select id="justifySelect" class="justifySelect">
+                            <option value=""></option>
+                            <option value="left">Left</option>
+                            <option value="center">Center</option>
+                            <option value="right">Right</option>
+                    </select>
+
+                    <p>
+                        Justify selection: <span id="justifyResult"></span>
+                    </p>
+                </div>
+            </div>
+        </section>
+
     </div>
 
 </body>

@@ -8,8 +8,8 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Main Component</title>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
                 "module": "main.reel",
                 "name": "Main",
@@ -74,11 +74,7 @@
                     "axis": "vertical"
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController",
-                        "oneway": true
-                    }
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -89,11 +85,7 @@
                     "element": {"#": "labelA"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "listA"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@listA.objectAtCurrentIteration"}
                 }
             },
 
@@ -105,11 +97,7 @@
                     "isSelectionEnabled": true
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController",
-                        "oneway": true
-                    }
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -120,11 +108,7 @@
                     "element": {"#": "labelB"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "listB"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@listB.objectAtCurrentIteration"}
                 }
             },
 
@@ -152,11 +136,7 @@
                     "mode": "bookends"
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "collectionController",
-                        "oneway": true
-                    }
+                    "contentController": {"<-": "@owner.collectionController"}
                 }
             },
 
@@ -167,11 +147,7 @@
                     "element": {"#": "labelC"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "listC"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@listC.objectAtCurrentIteration"}
                 }
             },
 
@@ -204,8 +180,8 @@
                     }
                 ]
             }
-        }
-    </script>
+
+    }</script>
 
     <style type="text/css">
 
@@ -235,30 +211,30 @@
 </head>
 <body>
 
-    <div id="main" class="main">
+    <div data-montage-id="main" class="main">
 
         <div>
-            <button id="selectFirstButton">Select First</button>
-            <button id="selectLastButton">Select Last</button>
-            <button id="clearSelectionButton">Clear Selection</button>
-            <button id="shuffleFlowButton">Shuffle Flow</button>
-            <button id="pushButton">Push</button>
-            <button id="popButton">Pop</button>
+            <button data-montage-id="selectFirstButton">Select First</button>
+            <button data-montage-id="selectLastButton">Select Last</button>
+            <button data-montage-id="clearSelectionButton">Clear Selection</button>
+            <button data-montage-id="shuffleFlowButton">Shuffle Flow</button>
+            <button data-montage-id="pushButton">Push</button>
+            <button data-montage-id="popButton">Pop</button>
         </div>
 
         <h2>List</h2>
-        <ul id="listA">
-            <li id="labelA"></li>
+        <ul data-montage-id="listA">
+            <li data-montage-id="labelA"></li>
         </ul>
 
         <h2>Random Flow</h2>
-        <ul id="listB" class="flow">
-            <li id="labelB" class="content"></li>
+        <ul data-montage-id="listB" class="flow">
+            <li data-montage-id="labelB" class="content"></li>
         </ul>
 
         <h2>Bookend Flow</h2>
-        <ul id="listC" class="steps">
-            <li id="labelC" class="content"></li>
+        <ul data-montage-id="listC" class="steps">
+            <li data-montage-id="labelC" class="content"></li>
         </ul>
 
     </div>

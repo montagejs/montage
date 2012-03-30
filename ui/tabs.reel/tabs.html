@@ -8,8 +8,8 @@
     <head>
         <title></title>
         <link rel="stylesheet" type="text/css" href="tabs.css">
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "navController": {
         "name": "ArrayController",
         "module": "montage/ui/controller/array-controller",
@@ -18,11 +18,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "tabs",
-                "oneway": true
-            }
+            "content": {"<-": "@owner.tabs"}
         }
     },
 
@@ -56,22 +52,18 @@
             }
         },
         "bindings": {
-            "selectedTabs": {
-                "boundObject": {"@": "navController"},
-                "boundObjectPropertyPath": "selectedObjects",
-                "oneway": true
-            }
+            "selectedTabs": {"<-": "@navController.selectedObjects"}
         }
     }
-}
-    </script>
+
+    }</script>
 
     </head>
 <body>
 
-    <div id='tabs-nav' class='montage-tabs montage-container'>
-        <div id="montage-tabs-indicator" class="montage-tabs-indicator" style="display: none;"></div>
-        <ul id="tab-list" class='montage-tabs-list montage-clearfix'>
+    <div data-montage-id='tabs-nav' class='montage-tabs montage-container'>
+        <div data-montage-id="montage-tabs-indicator" class="montage-tabs-indicator" style="display: none;"></div>
+        <ul data-montage-id="tab-list" class='montage-tabs-list montage-clearfix'>
             <li></li>
         </ul>
     </div>

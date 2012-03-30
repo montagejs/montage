@@ -121,7 +121,7 @@ describe("core/promise-spec", function () {
 
     describe("delayed promise", function () {
 
-        var delayed = Promise.ref(10).delay(1000);
+        var delayed = Promise.ref(10).delay(100);
         var value;
 
         delayed.then(function (_value) {
@@ -137,46 +137,14 @@ describe("core/promise-spec", function () {
             });
         });
 
-    });
-
-    describe("timed out promise", function () {
-
-        var deferred = Promise.defer();
-        var timed = deferred.promise.timeout(1000);
-        var halftime;
-        var fulltime;
-        var fulfillment;
-        var rejection;
-
-        timed.then(function (value) {
-            fulfillment = value;
-        }, function (error) {
-            rejection = error;
-        });
-
-        setTimeout(function () {
-            halftime = true;
-        }, 500);
-
-        setTimeout(function () {
-            fulltime = true;
-        }, 1100);
-
-        waitsFor(function () {
-            return halftime;
-        });
-
-        it("isn't timed out yet", function () {
-            expect(timed.isResolved()).toBe(false);
-        });
-
-        waitsFor(function () {
-            return fulltime;
-        });
-
-        it("is timed out", function () {
-            expect(timed.isRejected()).toBe(true);
-            expect(rejection).toBe("Timed out");
+        it("can time out", function () {
+            return Promise.delay(100)
+            .timeout(50)
+            .then(function () {
+                expect(true).toBe(false);
+            }, function (reason) {
+                expect(reason).toBe("Timed out");
+            })
         });
 
     });

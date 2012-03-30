@@ -9,6 +9,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Component Layout</title>
     <script type="text/montage-serialization">{
+
         "owner": {
             "prototype": "ui/draw/component-layout.reel",
             "properties": {
@@ -23,10 +24,7 @@
                 "hasTemplate": false
             },
             "bindings": {
-                "content": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "left"
-                }
+                "content": {"<<->": "@owner.left"}
             }
         },
 
@@ -37,12 +35,10 @@
                 "hasTemplate": false
             },
             "bindings": {
-                "content": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "right"
-                }
+                "content": {"<<->": "@owner.right"}
             }
         }
+    
     }</script>
 
 </head>
