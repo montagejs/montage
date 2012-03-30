@@ -12,16 +12,14 @@
     <script type="text/montage-serialization">
 {
     "test": {
-        "module": "ui/popup-in-window-test/popup-in-window-test",
-        "name": "PopupInWindowTest",
+        "prototype": "ui/popup-in-window-test/popup-in-window-test",
         "properties": {
             "testPopup": {"@": "testPopup"},
             "popupButton": {"@": "popupButton"}
         }
     },
     "testPopup": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "testPopup"},
             "identifier": "testPopup",
@@ -29,16 +27,14 @@
         }
     },
     "popupButton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "popupButton"},
             "identifier": "popupButton"
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

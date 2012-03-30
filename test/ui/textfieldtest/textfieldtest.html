@@ -13,24 +13,21 @@
      <script type="text/montage-serialization">
 {
     "textfield1": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "textfield1"}
         }
     },
 
     "textfield2": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "textfield2"}
         }
     },
 
     "txt3": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "txt3"},
             "accept": "",
@@ -64,15 +61,13 @@
 
 
     "dateconverter1": {
-        "module": "montage/core/converter/date-converter",
-        "name": "DateConverter",
+        "prototype": "montage/core/converter/date-converter",
         "properties": {
             "pattern": "MM-dd-yyyy"
         }
     },
     "date1": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "date1"},
             "converter": {"@": "dateconverter1"}
@@ -80,8 +75,7 @@
     },
 
     "test": {
-        "module": "ui/textfieldtest/textfieldtest",
-        "name": "TextfieldTest",
+        "prototype": "ui/textfieldtest/textfieldtest[TextfieldTest]",
         "properties": {
             "txt1": {"@": "textfield1"},
             "txt2": {"@": "textfield2"},
@@ -91,8 +85,7 @@
     },
 
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
 

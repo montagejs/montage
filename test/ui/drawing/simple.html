@@ -11,30 +11,26 @@
     <script type="text/montage-serialization">
 {
     "test1": {
-        "module": "ui/drawing/test",
-        "name": "Test",
+        "prototype": "ui/drawing/test",
         "properties": {
 
         }
     },
     "custom1": {
-        "module": "ui/drawing/component/custom.reel",
-        "name": "Custom",
+        "prototype": "ui/drawing/component/custom.reel",
         "properties": {
             "element": {"#": "custom"}
         }
     },
     "dynamictext1": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "dynamictext"},
             "value": "Test Value"
         }
     },
     "owner": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test1"},
             "components": [

@@ -12,83 +12,72 @@
     <script type="text/montage-serialization">{
 
     "divbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "divbutton"}
         }
     },
     "inputbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "inputbutton"}
         }
     },
     "buttonbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "buttonbutton"}
         }
     },
 
     "disabledbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "disabledbutton"}
         }
     },
     "disabledinput": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "disabledinput"}
         }
     },
     "disabledinputszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "disabledinputszn"},
             "disabled": true
         }
     },
     "enabledinputszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "enabledinputszn"},
             "enabled": true
         }
     },
     "buttonlabelszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "buttonlabelszn"},
             "label": "pass"
         }
     },
     "inputlabelszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "inputlabelszn"},
             "label": "pass"
         }
     },
     "buttonnested": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "buttonnested"}
         }
     },
     "inputactionszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "inputactionszn"},
             "action": {"->": {"arguments":[], "body": "window.actionFunction = true;"}}
@@ -96,15 +85,13 @@
     },
 
     "textinput": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "textinput"}
         }
     },
     "converterbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "converterbutton"},
             "converter": {"@": "uppercaseconverter"}
@@ -114,16 +101,14 @@
         }
     },
     "uppercaseconverter": {
-        "module": "montage/core/converter/upper-case-converter",
-        "name": "UpperCaseConverter",
+        "prototype": "montage/core/converter/upper-case-converter",
         "properties": {
 
         }
     },
 
     "toggleinput": {
-        "module": "montage/ui/toggle-button.reel",
-        "name": "ToggleButton",
+        "prototype": "montage/ui/toggle-button.reel",
         "properties": {
             "element": {"#": "toggleinput"},
             "pressedLabel": "on",
@@ -131,8 +116,7 @@
         }
     },
     "toggleinput2": {
-        "module": "montage/ui/toggle-button.reel",
-        "name": "ToggleButton",
+        "prototype": "montage/ui/toggle-button.reel",
         "properties": {
             "element": {"#": "toggleinput2"},
             "pressedLabel": "on",
@@ -140,8 +124,7 @@
         }
     },
     "toggleinput3": {
-        "module": "montage/ui/toggle-button.reel",
-        "name": "ToggleButton",
+        "prototype": "montage/ui/toggle-button.reel",
         "properties": {
             "element": {"#": "toggleinput3"},
             "pressed": true,
@@ -150,15 +133,13 @@
     },
 
     "scroll": {
-        "module": "montage/ui/scroller.reel",
-        "name": "Scroller",
+        "prototype": "montage/ui/scroller.reel",
         "properties": {
             "element": {"#": "scroll"}
         }
     },
     "scroll_button": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "scroll_button"}
         },
@@ -171,8 +152,7 @@
     },
 
     "loggingbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "loggingbutton"}
         },
@@ -193,8 +173,7 @@
     },
 
     "test": {
-        "module": "ui/buttontest/buttontest",
-        "name": "ButtonTest",
+        "prototype": "ui/buttontest/buttontest[ButtonTest]",
         "properties": {
             "divbutton": {"@": "divbutton"},
             "inputbutton": {"@": "inputbutton"},
@@ -220,8 +199,7 @@
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

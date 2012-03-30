@@ -7,8 +7,7 @@
     <script type="text/montage-serialization">
 {
     "component1": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "hasTemplate": false,
             "element": {"#": "drawTrigger"}
@@ -16,8 +15,7 @@
     },
 
     "component2": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "hasTemplate": false,
             "element": {"#": "child"}
@@ -25,15 +23,13 @@
     },
 
     "test": {
-        "module": "events/object-hierarchy-test/object-hierarchy-test",
-        "name": "ObjectHierarchyTest",
+        "prototype": "events/object-hierarchy-test/object-hierarchy-test",
         "properties": {
             "component1": {"@": "component1"}
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

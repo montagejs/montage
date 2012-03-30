@@ -13,16 +13,14 @@
     <script type="text/montage-serialization">{
 
             "owner": {
-                "module": "search-result.reel",
-                "name": "SearchResult",
+                "prototype": "search-result.reel",
                 "properties": {
                     "element": {"#": "searchResult"}
                 }
             },
 
             "searchResultImage": {
-                "module": "montage/ui/image.reel",
-                "name": "Image",
+                "prototype": "montage/ui/image.reel",
                 "properties": {
                     "element": {"#": "searchResultImage"}
                 },
@@ -32,8 +30,7 @@
             },
 
             "addPhotoListener": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
+                "prototype": "montage/core/event/action-event-listener",
                 "properties": {
                     "handler": {"@": "owner"},
                     "action": "addPhotoAction"
@@ -41,8 +38,7 @@
             },
 
             "addPhotoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "addPhotoButton"},
                     "identifier": "addPhotoButton"
@@ -57,13 +53,11 @@
             },
 
             "actionSwitchValueConverter": {
-                "module": "search-result.reel",
-                "name": "ActionSwitchValueConverter"
+                "prototype": "search-result.reel[ActionSwitchValueConverter]"
             },
 
             "actionSubstitution": {
-                "module": "montage/ui/substitution.reel",
-                "name": "Substitution",
+                "prototype": "montage/ui/substitution.reel",
                 "properties": {
                     "element": {"#": "actionSubstitution"},
                     "switchComponents": {
