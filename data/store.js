@@ -433,9 +433,9 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} relationshipName TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @returns this.pledgeForSourceObjectRelationshipNamed$Implementation(sourceObject, relationshipName, context, aTransactionId)
+     @returns this.pledgeForSourceObjectAssociationNamed$Implementation(sourceObject, relationshipName, context, aTransactionId)
      */
-    pledgeForSourceObjectRelationshipNamed: {
+    pledgeForSourceObjectAssociationNamed: {
         value: function(sourceObject, relationshipName, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
@@ -448,7 +448,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                         aTransactionId = TransactionId.manager.startTransaction();
                     }
                 }
-                return this.pledgeForSourceObjectRelationshipNamed$Implementation(sourceObject, relationshipName, context, aTransactionId);
+                return this.pledgeForSourceObjectAssociationNamed$Implementation(sourceObject, relationshipName, context, aTransactionId);
             } finally {
                 if (!hadOpenTransaction) {
                     TransactionId.manager.closeTransaction(aTransactionId);
@@ -465,10 +465,10 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns Promise.ref(null)
      */
-    pledgeForSourceObjectRelationshipNamed$Implementation: {
+    pledgeForSourceObjectAssociationNamed$Implementation: {
         value: function(sourceObject, relationshipName, context, transactionId) {
             if (this.parent !== null) {
-                return this.parent.pledgeForSourceObjectRelationshipNamed$Implementation(sourceObject, relationshipName, context, transactionId);
+                return this.parent.pledgeForSourceObjectAssociationNamed$Implementation(sourceObject, relationshipName, context, transactionId);
             }
             return Promise.ref(null);
         }
@@ -483,9 +483,9 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} relationship TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @returns this.pledgeForSourceObjectRelationship$Implementation(sourceObject, relationship, context, aTransactionId)
+     @returns this.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, aTransactionId)
      */
-    pledgeForSourceObjectRelationship: {
+    pledgeForSourceObjectAssociation: {
         value: function(sourceObject, relationship, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
@@ -498,7 +498,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                         aTransactionId = TransactionId.manager.startTransaction();
                     }
                 }
-                return this.pledgeForSourceObjectRelationship$Implementation(sourceObject, relationship, context, aTransactionId);
+                return this.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, aTransactionId);
             } finally {
                 if (!hadOpenTransaction) {
                     TransactionId.manager.closeTransaction(aTransactionId);
@@ -514,12 +514,12 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} relationship TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @returns this.parent.pledgeForSourceObjectRelationship$Implementation(sourceObject, relationship, context, transactionId)
+     @returns this.parent.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, transactionId)
      */
-    pledgeForSourceObjectRelationship$Implementation: {
+    pledgeForSourceObjectAssociation$Implementation: {
         value: function(sourceObject, relationship, context, transactionId) {
             if (this.parent !== null) {
-                return this.parent.pledgeForSourceObjectRelationship$Implementation(sourceObject, relationship, context, transactionId);
+                return this.parent.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, transactionId);
             }
         }
     },
@@ -996,9 +996,9 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} relationshipName TODO
      @param {Property} context TODO
      @param {Property} transactionId TODO
-     @returns store.pledgeForSourceObjectRelationship(sourceObject, relationship, context, transactionId) or Promise.ref(null)
+     @returns store.pledgeForSourceObjectAssociation(sourceObject, relationship, context, transactionId) or Promise.ref(null)
      */
-    pledgeForSourceObjectRelationshipNamed$Implementation: {
+    pledgeForSourceObjectAssociationNamed$Implementation: {
         value: function(sourceObject, relationshipName, context, transactionId) {
             var store = null;
             var relationship = null;
@@ -1013,7 +1013,7 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
                 }
             }
             if (store !== null) {
-                return store.pledgeForSourceObjectRelationship(sourceObject, relationship, context, transactionId);
+                return store.pledgeForSourceObjectAssociation(sourceObject, relationship, context, transactionId);
             }
             return Promise.ref(null);
         }
@@ -1046,7 +1046,7 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns Promise.ref(null)
      */
-    pledgeForSourceObjectRelationship$Implementation: {
+    pledgeForSourceObjectAssociation$Implementation: {
         value: function(sourceObject, relationship, context, transactionId) {
             return Promise.ref(null);
         }
