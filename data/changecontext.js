@@ -327,7 +327,7 @@ var ChangeContext = exports.ChangeContext = Montage.create(Store, /** @lends mod
      @param {Object} instance TODO
      */
     willModifyPropertyForInstance:  {
-        value: function(attribute, instance) {
+        value: function(attribute, instance, value) {
             // TODO [PJYF Sep 30 2011] We should probably be smarter.
             this._modified.add(instance);
         }
