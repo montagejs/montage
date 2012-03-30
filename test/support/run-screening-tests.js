@@ -127,6 +127,7 @@ var generateJunitXml = function(result) {
 
     var filename;
     var output = "";
+    var passes = 0;
 
     // building xml by concatenating strings, woo!
     // but seriously, this is a really bad idea, but I don't want to include a
@@ -148,10 +149,9 @@ var generateJunitXml = function(result) {
         }
 
         if (assert.success) {
+            passes++;
             output += '  <testcase classname="'+ filename +'" name="' + escapeInvalidXmlChars(short_message) + '" />\n';
         } else {
-
-            // TODO escape string
             output += '  <testcase classname="'+ filename +'" name="' + escapeInvalidXmlChars(short_message) + '">\n';
             output += '    <failure type="' + escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">' +
                 escapeInvalidXmlChars("Line " + assert.lineNumber) + "\n" +
@@ -163,9 +163,10 @@ var generateJunitXml = function(result) {
 
     output += '</testsuite>\n';
 
+    console.log(result.status + ": " + filename + " (" + passes + "/" + asserts.length + ")");
 
     filename = "TEST-" + filename.replace(/[^a-z\\-]/g, "_") + ".xml";
-    console.log("Writing ../" + filename + " ...");
+    console.log("Writing ../" + filename);
     fs.writeFileSync("../" + filename, output, "utf8");
 };
 
