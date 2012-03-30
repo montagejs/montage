@@ -218,26 +218,26 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    startScrollingIndexToOffset: { // TODO: rewrite using draw cycle based animation
-        value: function (index, offset) {
-            var self = this;
+    _isTransitioningScroll: {
+        enumerable: false,
+        value: false
+    },
 
-            window.clearInterval(this._scrollingInterval);
+    stopScrolling: {
+        value: function () {
+            this._isTransitioningScroll = false;
+            // TODO: Fire scrollingTransitionCancel event
+        }
+    },
+
+    startScrollingIndexToOffset: { // TODO: Fire scrollingTransitionStart event
+        value: function (index, offset) {
             this._scrollingOrigin = this.origin;
             this._scrollingDestination = index - offset;
             this._isScrolling = true;
             this._scrollingStartTime = Date.now();
-            this._scrollingInterval = window.setInterval(function () {
-                var time = (Date.now() - self._scrollingStartTime) / self._scrollingTransitionDurationMiliseconds, // TODO: division by zero
-                    interpolant = self._computeCssCubicBezierValue(time, self._scrollingTransitionTimingFunctionBezier);
-
-                if (time < 1) {
-                    self.origin = self._scrollingOrigin + (self._scrollingDestination - self._scrollingOrigin) * interpolant;
-                } else {
-                    self.origin = self._scrollingDestination;
-                    window.clearInterval(self._scrollingInterval);
-                }
-            }, 8);
+            this._isTransitioningScroll = true;
+            this.needsDraw = true;
         }
     },
 
@@ -506,10 +506,22 @@ var Flow = exports.Flow = Montage.create(Component, {
         enumerable: false,
         value: function () {
             var newIndexMap = [],
+                intersections,
                 i,
-                j,
-                intersections = this._computeVisibleRange();
+                j;
 
+            if (this._isTransitioningScroll) {
+                var time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds, // TODO: division by zero
+                    interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
+
+                if (time < 1) {
+                    this.origin = this._scrollingOrigin + (this._scrollingDestination - this._scrollingOrigin) * interpolant;
+                } else {
+                    this.origin = this._scrollingDestination;
+                    this._isTransitioningScroll = false;
+                }
+            }
+            intersections = this._computeVisibleRange();
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
             for (i = 0; i < intersections.length; i++) {
@@ -534,7 +546,10 @@ var Flow = exports.Flow = Montage.create(Component, {
                 iStyle,
                 pos;
 
-            if (this.isAnimating) {
+            if (this._isTransitioningScroll) {
+                this.needsDraw = true;
+            }
+            if (this.isAnimating) { // move it to willDraw
                 this._animationInterval();
             }
             if (this._isCameraUpdated) {
@@ -730,7 +745,9 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     ////////////////////// offset /////////////////////////
 
-    isAnimating: {
+    // TODO: rename isAnimating and animationInterval to elasticAnimation
+
+    isAnimating: { 
         enumerable: false,
         value: false
     },
