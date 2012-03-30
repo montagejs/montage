@@ -36,7 +36,7 @@ body {
    box-shadow: 	inset 0px 1px 2px 1px hsla(0,0%,100%,1), 0px 2px 5px hsla(0,0%,0%,.1);
 }
 
-.converter #title {
+.converter .title {
    margin: 0 0 5px 0;
    text-align: center;
    font: 24px/40px "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;

@@ -227,7 +227,7 @@
         </style>
     </head>
     <body>
-        <div id="select-input-example" class="select-input-example">
+        <div data-montage-id="select-input-example" class="select-input-example">
             <div class="row">
                 <div class="span8">
                     <h3>Select Input</h3>
@@ -248,17 +248,17 @@
                  </p>
                  <form class="form-stacked">
                      <label for="fname">First Name</label>
-                     <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
+                     <input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/>
                      <label for="lname">Last Name</label>
-                     <input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/>
+                     <input type="text" placeholder="Enter last name" data-montage-id="lname" value="foo" maxlength="20"/>
 
                      <label for="dept">Department</label>
-                      <select id="dept" required="true" multiple="true" size="3">
+                      <select data-montage-id="dept" required="true" multiple="true" size="3">
                           <option>Please select a Department</option>
                       </select>
 
                      <label for="country">Country</label>
-                     <select id="country" required>
+                     <select data-montage-id="country" required>
                          <option value="">Please select a Country</option>
                          <option value="USA" selected="true">United States of America</option>
                          <option value="INR" >India</option>
@@ -267,16 +267,16 @@
                      </select>
 
                      <label for="state">State</label>
-                     <select id="state" required="true">
+                     <select data-montage-id="state" required="true">
                          <option>Please select a country...</option>
                      </select>
 
                      <div style="margin-top: 10px;">
-                         <button class="btn" id="update" type="button">Update</button>
+                         <button class="btn" data-montage-id="update" type="button">Update</button>
                     </div>
                  </form>
 
-                 <div id="echo"></div>
+                 <div data-montage-id="echo"></div>
 
 
             </div>
@@ -284,24 +284,24 @@
 
                  <section>
 
-                     <ul id="selectAccordion1" class="accordion">
+                     <ul data-montage-id="selectAccordion1" class="accordion">
                         <li class="accordion-group">
                             <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                             <div class="accordion-inner montage-hidden" >
                                  <pre class="prettyprint" >
  &lt;form class="form-stacked"&gt;
     &lt;label for="fname"&gt;First Name&lt;/label&gt;
-    &lt;input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/&gt;
+    &lt;input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/&gt;
     &lt;label for="lname"&gt;Last Name&lt;/label&gt;
-    &lt;input type="text" placeholder="Enter last name" id="lname" value="foo" maxlength="20"/&gt;
+    &lt;input type="text" placeholder="Enter last name" data-montage-id="lname" value="foo" maxlength="20"/&gt;
 
     &lt;label for="dept"&gt;Department&lt;/label&gt;
-     &lt;select id="dept" required="true" multiple="true" size="3"&gt;
+     &lt;select data-montage-id="dept" required="true" multiple="true" size="3"&gt;
          &lt;option&gt;Please select a Department&lt;/option&gt;
      &lt;/select&gt;
 
     &lt;label for="country"&gt;Country&lt;/label&gt;
-    &lt;select id="country" required&gt;
+    &lt;select data-montage-id="country" required&gt;
         &lt;option value=""&gt;Please select a Country&lt;/option&gt;
         &lt;option value="USA" selected="true"&gt;United States of America&lt;/option&gt;
         &lt;option value="INR" &gt;India&lt;/option&gt;
@@ -310,12 +310,12 @@
     &lt;/select&gt;
 
     &lt;label for="state"&gt;State&lt;/label&gt;
-    &lt;select id="state" required="true"&gt;
+    &lt;select data-montage-id="state" required="true"&gt;
         &lt;option&gt;Please select a country...&lt;/option&gt;
     &lt;/select&gt;
 
     &lt;div style="margin-top: 10px;"&gt;
-        &lt;button class="btn" id="update"&gt;Update&lt;/button&gt;
+        &lt;button class="btn" data-montage-id="update"&gt;Update&lt;/button&gt;
    &lt;/div&gt;
  &lt;/form&gt;
                                  </pre>
@@ -564,12 +564,12 @@ exports.SelectInputExample = Montage.create(Component, {
                     </p>
 
                     <div style="height: 40px;">
-                        <button id="justifyLeft" class="btn justify">L</button>
-                        <button id="justifyCenter" class="btn justify">C</button>
-                        <button id="justifyRight" class="btn justify">R</button>
+                        <button data-montage-id="justifyLeft" class="btn justify">L</button>
+                        <button data-montage-id="justifyCenter" class="btn justify">C</button>
+                        <button data-montage-id="justifyRight" class="btn justify">R</button>
                     </div>
                     <div>
-                        <select id="justifySelect" class="justifySelect">
+                        <select data-montage-id="justifySelect" class="justifySelect">
                                 <option value=""></option>
                                 <option value="left">Left</option>
                                 <option value="center">Center</option>
@@ -577,27 +577,27 @@ exports.SelectInputExample = Montage.create(Component, {
                         </select>
 
                         <p>
-                            Justify selection: <span id="justifyResult"></span>
+                            Justify selection: <span data-montage-id="justifyResult"></span>
                         </p>
                     </div>
                 </div>
             </section>
 
             <section>
-                <ul id="selectAccordion2" class="accordion">
+                <ul data-montage-id="selectAccordion2" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;div class="demo"&gt;<br>
 &lt;div style="height: 40px;"&gt;<br>
-&lt;button id="justify-none" class="btn justify"&gt;-&lt;/button&gt;<br>
-&lt;button id="justifyLeft" class="btn justify"&gt;L&lt;/button&gt;<br>
-&lt;button id="justifyCenter" class="btn justify"&gt;C&lt;/button&gt;<br>
-&lt;button id="justifyRight" class="btn justify"&gt;R&lt;/button&gt;<br>
+&lt;button data-montage-id="justify-none" class="btn justify"&gt;-&lt;/button&gt;<br>
+&lt;button data-montage-id="justifyLeft" class="btn justify"&gt;L&lt;/button&gt;<br>
+&lt;button data-montage-id="justifyCenter" class="btn justify"&gt;C&lt;/button&gt;<br>
+&lt;button data-montage-id="justifyRight" class="btn justify"&gt;R&lt;/button&gt;<br>
 &lt;/div&gt;<br>
 &lt;div&gt;<br>
-&lt;select id="justifySelect" class="justifySelect"&gt;<br>
+&lt;select data-montage-id="justifySelect" class="justifySelect"&gt;<br>
 &lt;option value=""&gt;&lt;/option&gt;<br>
 &lt;option value="left"&gt;Left&lt;/option&gt;<br>
 &lt;option value="center"&gt;Center&lt;/option&gt;<br>
@@ -605,7 +605,7 @@ exports.SelectInputExample = Montage.create(Component, {
 &lt;/select&gt;<br>
 <br>
 &lt;p&gt;<br>
-Justify selection: &lt;span id="justifyResult"&gt;&lt;/span&gt;<br>
+Justify selection: &lt;span data-montage-id="justifyResult"&gt;&lt;/span&gt;<br>
 &lt;/p&gt;<br>
 &lt;/div&gt;<br>
 &lt;/div&gt;

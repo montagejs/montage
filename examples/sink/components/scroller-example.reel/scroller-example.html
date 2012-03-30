@@ -50,7 +50,7 @@
                     "element": {"#": "scrollerAccordion1"}
                 }
             }
-        
+
     }</script>
 
         <style>
@@ -64,7 +64,7 @@
         </style>
     </head>
     <body>
-        <div id="scrollview-example" class="scrollview-example">
+        <div data-montage-id="scrollview-example" class="scrollview-example">
             <div class="row">
                 <div class="span12">
                     <h3>Scroller</h3>
@@ -81,15 +81,15 @@
                 <p>In the following example</p>
             <div class="demo">
                     <div>
-                        <label for="cb1"><input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /> Toggle momenutum </label>
+                        <label for="cb1"><input type="checkbox" data-montage-id="toggleMomentum" data-montage-id="cb1" /> Toggle momenutum </label>
                     </div>
                     <div>
-                        <label for="cb2"><input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /> Toggle bouncing </label>
+                        <label for="cb2"><input type="checkbox" data-montage-id="toggleBouncing" data-montage-id="cb2" /> Toggle bouncing </label>
                     </div>
 
                     <div data-montage-id="scroller" class="scrollpanel" >
-                        <p><b>A large paragraph</b> 
-                            
+                        <p><b>A large paragraph</b>
+
                         Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
                         tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
                         quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
@@ -102,9 +102,9 @@
                         cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
                         proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
                         </p>
-                        
+
                         <img src="images/IMG_3.jpg" alt="The Universe">
-                        
+
                         <p>Another large paragraph...
                             Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
                             tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
@@ -120,16 +120,16 @@
                         </p>
                     </div>
             </div>
-            
+
             <section>
-                
-                <ul id="scrollerAccordion1" class="accordion">
+
+                <ul data-montage-id="scrollerAccordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
-&lt;label for="cb1"&gt;Toggle momenutum&lt;input type="checkbox" data-montage-id="toggleMomentum" id="cb1" /&gt;&lt;/label&gt;
-&lt;label for="cb2"&gt;Toggle bouncing&lt;input type="checkbox" data-montage-id="toggleBouncing" id="cb2" /&gt;&lt;/label&gt;
+&lt;label for="cb1"&gt;Toggle momenutum&lt;input type="checkbox" data-montage-id="toggleMomentum" data-montage-id="cb1" /&gt;&lt;/label&gt;
+&lt;label for="cb2"&gt;Toggle bouncing&lt;input type="checkbox" data-montage-id="toggleBouncing" data-montage-id="cb2" /&gt;&lt;/label&gt;
 
 &lt;div data-montage-id="scroller" style="height: 400px; width: 500px; margin: auto; -webkit-user-select: none; -moz-user-select: none "&gt;
     &lt;p&gt;&lt;b&gt;A large paragraph&lt;/b&gt; Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -188,7 +188,7 @@
         }
     }
 }
-                            
+
                         </pre>
 
                        </div>
@@ -209,7 +209,7 @@
                        </div>
                    </li>
                 </ul>
-                
+
             </section>
 
 

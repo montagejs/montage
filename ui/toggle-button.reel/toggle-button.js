@@ -3,22 +3,31 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+
+/**
+    @module "montage/ui/toggle-button.reel"
+    @requires montage/ui/component
+    @requires "montage/ui/button.reel"
+*/
+
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     Button = require("ui/button.reel/button").Button;
 /**
- * The Text input
+  The ToggleButton component extends the Button component to include state management (pressed or not pressed), and the ability to specify labels and CSS classes for each state.
+  @class module:"montage/ui/toggle-button.reel".ToggleButton
+  @extends module:"montage/button.reel".Button
  */
-var ToggleButton = exports.ToggleButton = Montage.create(Button, {
+var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends module:"montage/ui/toggle-button.reel".ToggleButton# */ {
     _pressed: {
         enumerable: false,
         value: false
     },
-    /**
-        Whether the toggle button is down/pressed or not.
-        @type {Property}
-        @default {Boolean} false
-    */
+/**
+    Gets and sets the ToggleButton's current state, updates the button's label to its <code>pressedLabel</code> or <code>unpressedLabel</code>, and requests a draw.
+    @type {Boolean}
+    @default false
+*/
     pressed: {
         get: function() {
             return this._pressed;
@@ -35,13 +44,11 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         value: null,
         serializable: true
     },
-    /**
-        The value the button should take when it is in the unpressed state. If
-        this is not set at initialization it will be set to the `value` of the
-        button.
-        @type {Property}
-        @default {String} null
-    */
+/**
+    The label to display when the ToggleButton is in its unpressed state. By default, it is set to the value of the <code>value</code> attribute assigned to the input element.
+    @type {String}
+    @default null
+*/
     unpressedLabel: {
         get: function() {
             return this._unpressedLabel;
@@ -60,13 +67,11 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         value: null,
         serializable: true
     },
-    /**
-        The value the button should take when it is in the pressed state. If
-        this is not set at initialization it will be set to the `value` of the
-        button.
-        @type {Property}
-        @default {String} null
-    */
+/**
+    The value the button should take when it is in the pressed state. By default, it is set to the value of the <code>value</code> attribute assigned to the input element.
+    @type {Property}
+    @default {String} null
+*/
     pressedLabel: {
         get: function() {
             return this._pressedLabel;
@@ -85,12 +90,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
         value: "pressed",
         serializable: true
     },
-    /**
-        The class that should be added to the element when the button is in
-        the pressed state. It is removed when the button is unpressed.
-        @type {Property}
-        @default {String} "pressed"
-    */
+/**
+    The CSS class that should be added to the element's class list when the button is in
+    the pressed state. It is removed when the button is unpressed.
+    @type {string}
+    @default "pressed"
+*/
     pressedClass: {
         get: function() {
             return this._pressedClass;
@@ -104,13 +109,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
     },
 
     /**
-        The current value of the button. It will be set to unpressedLabel or
-        pressedLabel depending on state.
+        The current value of the button. It is set to the value of <code>unpressedLabel</code> or
+        <code>pressedLabel</code> depending on the ToggleButton's state.
 
-        Setting this property equal to unpressedLabel or pressedLabel will
-        change the pressed state of the button to `false` and `true` respectively.
-        @type {Property}
-        @default {String} null, or the value of the element
+        Setting this property equal to <code>unpressedLabel</code> or <code>pressedLabel</code> will change the <code>pressed</code> state of the button to `false` or `true`, respectively.
+        @type {string}
+        @default null
     */
     label: {
       get: function() {
@@ -163,8 +167,8 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, {
     },
 
     /**
-        Change the button to the inverse of its current state.
-        @type {Function}
+        Toggles the state of the button.
+        @function
     */
     toggle: {
         value: function() {

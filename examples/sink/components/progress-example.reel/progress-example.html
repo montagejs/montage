@@ -55,7 +55,7 @@
                     }
                 }
 
-            
+
     }</script>
 
         <style>
@@ -75,7 +75,7 @@
 
     </head>
     <body>
-        <div id="progress-example" class="progress-example">
+        <div data-montage-id="progress-example" class="progress-example">
             <div class="row">
                 <div class="span8">
                     <h3>Progress</h3>
@@ -90,31 +90,31 @@
             <div class="demo">
 
                 <h5>Progress bar bound to ProgressExample.uploadProgress property</h5>
-                <progress id="progress1" max="100" value="60"></progress>
+                <progress data-montage-id="progress1" max="100" value="60"></progress>
 
                 <h5>Progress bar bound to the value in the textfield</h5>
 
-                <progress id="progress2" max="100" style="width: 300px;" value="10"></progress>
+                <progress data-montage-id="progress2" max="100" style="width: 300px;" value="10"></progress>
 
-                <input id="text1" type="number" min="0" max="100" value="25"  style="width: 50px;" />
+                <input data-montage-id="text1" type="number" min="0" max="100" value="25"  style="width: 50px;" />
             </div>
-            
-            
-                
+
+
+
             <section>
-                <ul id="progress-accordion1" class="accordion">
+                <ul data-montage-id="progress-accordion1" class="accordion">
                    <li class="accordion-group">
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;h5&gt;Progress bar bound to ProgressExample.uploadProgress property&lt;/h5&gt;
-&lt;progress id="progress1" max="100" value="60"&gt;&lt;/progress&gt;
+&lt;progress data-montage-id="progress1" max="100" value="60"&gt;&lt;/progress&gt;
 
 &lt;h5&gt;Progress bar bound to the value in the textfield&lt;/h5&gt;
 
-&lt;progress id="progress2" max="100" style="width: 300px;" value="10"&gt;&lt;/progress&gt;
+&lt;progress data-montage-id="progress2" max="100" style="width: 300px;" value="10"&gt;&lt;/progress&gt;
 
-&lt;input id="text1" type="number" min="0" max="100" value="25"  style="width: 50px;" /&gt;
+&lt;input data-montage-id="text1" type="number" min="0" max="100" value="25"  style="width: 50px;" /&gt;
                             </pre>
                        </div>
                    </li>
