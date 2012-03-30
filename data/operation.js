@@ -22,14 +22,20 @@ var _operationManager = null;
  */
 var Operation = exports.Operation = Montage.create(Montage, /** @lends module:montage/data/operation.Operation# */ {
 
-    manager: {
-        get: function() {
+    init:{
+        value:function () {
+            return this;
+        }
+    },
+
+    manager:{
+        get:function () {
             if (_operationManager === null) {
                 _operationManager = OperationManager.create().init();
             }
             return _operationManager;
         },
-        set: function(manager) {
+        set:function (manager) {
             _operationManager = manager;
         }
     }
@@ -42,14 +48,42 @@ var Operation = exports.Operation = Montage.create(Montage, /** @lends module:mo
  */
 var OperationManager = exports.OperationManager = Montage.create(Montage, /** @lends module:montage/data/operation.OperationManager# */ {
 
-    init: {
-        value: function() {
+    init:{
+        value:function () {
             return this;
+        }
+    },
+
+    createNoopOperation:{
+        value:function () {
+            if (_noopOperation === null) {
+                _noopOperation = NoopOperation.create().init();
+            }
+            return _noopOperation;
+        }
+    },
+
+    createInsertOperation:{
+        value:function () {
+            return InsertOperation.create().init();
+        }
+    },
+
+    createDeleteOperation:{
+        value:function () {
+            return DeleteOperation.create().init();
+        }
+    },
+
+    createChangeOperation:{
+        value:function () {
+            return ChangeOperation.create().init();
         }
     }
 
 });
 
+var _noopOperation = null;
 /**
  @class module:montage/data/operation.NoopOperation
  @extends module:montage/core/core.Operation
@@ -78,10 +112,10 @@ var DeleteOperation = exports.DeleteOperation = Montage.create(Operation, /** @l
 });
 
 /**
- @class module:montage/data/operation.UpdateOperation
+ @class module:montage/data/operation.ChangeOperation
  @extends module:montage/core/core.Operation
  */
-var UpdateOperation = exports.UpdateOperation = Montage.create(Operation, /** @lends module:montage/data/operation.UpdateOperation# */ {
+var ChangeOperation = exports.ChangeOperation = Montage.create(Operation, /** @lends module:montage/data/operation.ChangeOperation# */ {
 
 
 });

@@ -8,8 +8,8 @@ var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
 var ToOneAttribute = require("montage/data/blueprint").ToOneAttribute;
 var ToManyAttribute = require("montage/data/blueprint").ToManyAttribute;
-var ToOneRelationship = require("montage/data/blueprint").ToOneRelationship;
-var ToManyRelationship = require("montage/data/blueprint").ToManyRelationship;
+var ToOneAssociation = require("montage/data/blueprint").ToOneAssociation;
+var ToManyAssociation = require("montage/data/blueprint").ToManyAssociation;
 var TestSelectorEvaluator = require("data/object/testaccess/testselectorevaluator").TestSelectorEvaluator; // registering the evaluators
 var logger = require("montage/core/logger").logger("testblueprint");
 
@@ -57,18 +57,18 @@ var TestBlueprint = exports.TestBlueprint = Montage.create(Blueprint, {
     /*
      * Conventional method to crete new attribute. This can be overwritten by specific stores.
      */
-    createToOneRelationship: {
+    createToOneAssociation: {
         value: function() {
-            return TestToOneRelationship.create();
+            return TestToOneAssociation.create();
         }
     },
 
     /*
      * Conventional method to crete new attribute. This can be overwritten by specific stores.
      */
-    createToManyRelationship: {
+    createToManyAssociation: {
         value: function() {
-            return TestToManyRelationship.create();
+            return TestToManyAssociation.create();
         }
     }
 
@@ -78,7 +78,7 @@ var TestToOneAttribute = exports.TestToOneAttribute = Montage.create(ToOneAttrib
 
 });
 
-var TestToOneRelationship = exports.TestToOneRelationship = Montage.create(ToOneRelationship, {
+var TestToOneAssociation = exports.TestToOneAssociation = Montage.create(ToOneAssociation, {
 
 });
 
@@ -86,6 +86,6 @@ var TestToManyAttribute = exports.TestToManyAttribute = Montage.create(ToManyAtt
 
 });
 
-var TestToManyRelationship = exports.TestToManyRelationship = Montage.create(ToManyRelationship, {
+var TestToManyAssociation = exports.TestToManyAssociation = Montage.create(ToManyAssociation, {
 
 });

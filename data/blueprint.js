@@ -547,9 +547,9 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      @param {String} inverse TODO
      @returns relationship
      */
-    addToOneRelationshipNamed: {
+    addToOneAssociationNamed: {
         value: function(name, inverse) {
-            var relationship = this.addAttribute(this.createToOneRelationship().initWithName(name));
+            var relationship = this.addAttribute(this.createToOneAssociation().initWithName(name));
             if ((inverse != null) && (typeof inverse.targetBlueprint === "object")) {
                 relationship.targetBlueprint = inverse.blueprint;
                 inverse.targetBlueprint = this;
@@ -564,9 +564,9 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      @param {String} inverse TODO
      @returns relationship
      */
-    addToManyRelationshipNamed: {
+    addToManyAssociationNamed: {
         value: function(name, inverse) {
-            var relationship = this.addAttribute(this.createToManyRelationship().initWithName(name));
+            var relationship = this.addAttribute(this.createToManyAssociation().initWithName(name));
             if ((inverse != null) && (typeof inverse.targetBlueprint === "object")) {
                 relationship.targetBlueprint = inverse.blueprint;
                 inverse.targetBlueprint = this;
@@ -605,11 +605,11 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      Conventional method to create new attribute.<br>
      This can be overwritten by specific stores.
      @function
-     @returns {Function} ToOneRelationship.create()
+     @returns {Function} ToOneAssociation.create()
      */
-    createToOneRelationship: {
+    createToOneAssociation: {
         value: function() {
-            return ToOneRelationship.create();
+            return ToOneAssociation.create();
         }
     },
 
@@ -617,11 +617,11 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      Conventional method to create new attribute.<br>
      This can be overwritten by specific stores.
      @function
-     @returns {Function} ToOneRelationship.create()
+     @returns {Function} ToOneAssociation.create()
      */
-    createToManyRelationship: {
+    createToManyAssociation: {
         value: function() {
-            return ToManyRelationship.create();
+            return ToManyAssociation.create();
         }
     },
     /**
@@ -934,7 +934,7 @@ var Attribute = Montage.create(Montage, /** @lends module:montage/data/blueprint
      @type {Property}
      @default {Boolean} false
      */
-    isRelationship: {
+    isAssociation: {
         value: false,
         serializable: false
     },
@@ -996,9 +996,9 @@ var ToOneAttribute = exports.ToOneAttribute = Montage.create(Attribute, /** @len
 
 });
 /**
- @class module:montage/data/blueprint.ToOneRelationship
+ @class module:montage/data/blueprint.ToOneAssociation
  */
-var ToOneRelationship = exports.ToOneRelationship = Montage.create(ToOneAttribute, /** @lends module:montage/data/blueprint.ToOneRelationship# */ {
+var ToOneAssociation = exports.ToOneAssociation = Montage.create(ToOneAttribute, /** @lends module:montage/data/blueprint.ToOneAssociation# */ {
     /**
      Description TODO
      @type {Property}
@@ -1014,7 +1014,7 @@ var ToOneRelationship = exports.ToOneRelationship = Montage.create(ToOneAttribut
      @type {Property}
      @default {Boolean} false
      */
-    isRelationship: {
+    isAssociation: {
         value: true,
         serializable: false
     }
@@ -1043,9 +1043,9 @@ var ToManyAttribute = exports.ToManyAttribute = Montage.create(Attribute, /** @l
 
 });
 /**
- @class module:montage/data/blueprint.ToManyRelationship
+ @class module:montage/data/blueprint.ToManyAssociation
  */
-var ToManyRelationship = exports.ToManyRelationship = Montage.create(ToManyAttribute, /** @lends module:montage/data/blueprint.ToManyRelationship# */ {
+var ToManyAssociation = exports.ToManyAssociation = Montage.create(ToManyAttribute, /** @lends module:montage/data/blueprint.ToManyAssociation# */ {
     /**
      Description TODO
      @type {Property}
@@ -1061,7 +1061,7 @@ var ToManyRelationship = exports.ToManyRelationship = Montage.create(ToManyAttri
      @type {Property}
      @default {Boolean} false
      */
-    isRelationship: {
+    isAssociation: {
         value: true,
         serializable: false
     },
