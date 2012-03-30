@@ -10,13 +10,13 @@
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
-var Q = require("core/promise");
+var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("pledge");
 /**
  @class module:montage/data/pledge.Pledge
- @extends module:montage/core/core.Montage
+ @extends module:montage/core/promise.Promise
  */
-var Pledge = exports.Pledge = Montage.create(Montage, /** @lends module:montage/data/pledge.Pledge# */ {
+var Pledge = exports.Pledge = Montage.create(Promise, /** @lends module:montage/data/pledge.Pledge# */ {
 
     /**
      Description TODO
@@ -204,7 +204,7 @@ var PledgedSortedSet = exports.PledgedSortedSet = Montage.create(Pledge, /** @le
      */
     empty: {
         value: function () {
-            return length == 0;
+            return this.length() == 0;
         }
     },
 

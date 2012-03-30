@@ -6,11 +6,11 @@
 var Montage = require("montage").Montage;
 var ToOneAttribute = require("montage/data/blueprint").ToOneAttribute;
 var ToManyAttribute = require("montage/data/blueprint").ToManyAttribute;
-var ToOneRelationship = require("montage/data/blueprint").ToOneRelationship;
-var ToManyRelationship = require("montage/data/blueprint").ToManyRelationship;
+var ToOneAssociation = require("montage/data/blueprint").ToOneAssociation;
+var ToManyAssociation = require("montage/data/blueprint").ToManyAssociation;
 var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
-var Context = require("montage/data/context").Context;
+var ChangeContext = require("montage/data/changecontext").ChangeContext;
 
 var Serializer = require("montage/core/serializer").Serializer;
 var Deserializer = require("montage/core/deserializer").Deserializer;
@@ -63,18 +63,18 @@ describe("Blueprint", function() {
         var personBlueprint = Blueprint.create().initWithName("Person");
         var companyBlueprint = Blueprint.create().initWithName("Company");
 
-        var employerRelationship = ToOneRelationship.create().initWithName("employer");
-        employerRelationship.targetBlueprint = companyBlueprint;
-        var employeesRelationship = ToManyRelationship.create().initWithName("employees");
-        employeesRelationship.targetBlueprint = personBlueprint;
+        var employerAssociation = ToOneAssociation.create().initWithName("employer");
+        employerAssociation.targetBlueprint = companyBlueprint;
+        var employeesAssociation = ToManyAssociation.create().initWithName("employees");
+        employeesAssociation.targetBlueprint = personBlueprint;
 
-        personBlueprint.addAttribute(employerRelationship);
-        companyBlueprint.addAttribute(employeesRelationship);
+        personBlueprint.addAttribute(employerAssociation);
+        companyBlueprint.addAttribute(employeesAssociation);
 
         it("basic properties should be correct", function() {
-            expect(personBlueprint.attributeForName("employer")).toBe(employerRelationship);
+            expect(personBlueprint.attributeForName("employer")).toBe(employerAssociation);
             expect(personBlueprint.attributeForName("employer").targetBlueprint).toBe(companyBlueprint);
-            expect(companyBlueprint.attributeForName("employees")).toBe(employeesRelationship);
+            expect(companyBlueprint.attributeForName("employees")).toBe(employeesAssociation);
             expect(companyBlueprint.attributeForName("employees").targetBlueprint).toBe(personBlueprint);
         });
     });
@@ -107,8 +107,8 @@ describe("Blueprint", function() {
             addMontageMetadataToProto("Person", "mymodule", Person);
 
             louis = Person.create();
-            // context = Montage.create(Context).init();
-            context = Context.create().init();
+            // context = Montage.create(ChangeContext).init();
+            context = ChangeContext.create().init();
             //temporary
             context.addBlueprintBinder(binder);
 
@@ -139,7 +139,7 @@ describe("Blueprint", function() {
             binder.addBlueprint(personBlueprint);
             var Shape = Montage.create(Montage);
             addMontageMetadataToProto("Shape", "mymodule", Shape);
-            context = Context.create().init();
+            context = ChangeContext.create().init();
             //temporary
             context.addBlueprintBinder(binder);
             circle = Shape.create();

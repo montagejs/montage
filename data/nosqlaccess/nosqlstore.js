@@ -58,7 +58,7 @@ var NoSqlStore = exports.NoSqlStore = Montage.create(Store,/** @lends module:mon
     @param {Property} transactionId TODO
     @returns null
     */
-    pledgeForSourceObjectRelationship$Implementation: {
+    pledgeForSourceObjectAssociation$Implementation: {
         value: function(sourceObject, relationship, context, transactionId) {
             // TODO [PJYF Apr 28 2011] We need to implement it.
             return null;
