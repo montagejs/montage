@@ -204,7 +204,7 @@ var PledgedSortedSet = exports.PledgedSortedSet = Montage.create(Pledge, /** @le
      */
     empty: {
         value: function () {
-            return length == 0;
+            return this.length() == 0;
         }
     },
 

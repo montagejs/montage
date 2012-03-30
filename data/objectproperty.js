@@ -93,8 +93,8 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
             for (i = 0; attribute = blueprint.attributes[i]; i++) {
                 if (attribute.isDerived) {
                     this.addDerivedProperty(prototype, attribute);
-                } else if (attribute.isRelationship) {
-                    this.addRelationship(prototype, attribute);
+                } else if (attribute.isAssociation) {
+                    this.addAssociation(prototype, attribute);
                 } else {
                     this.addProperty(prototype, attribute);
                 }
@@ -256,10 +256,10 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
      @param {Property} prototype TODO
      @param {Object} attribute relationship to add
      */
-    addRelationship:{
+    addAssociation:{
         value:function (prototype, attribute) {
             this.addPropertyStorage(prototype, attribute);
-            this.addRelationshipDefinition(prototype, attribute);
+            this.addAssociationDefinition(prototype, attribute);
             this.addPropertyStoredValue(prototype, attribute);
         }
     },
@@ -271,7 +271,65 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
      @param {Property} prototype TODO
      @param {Object} attribute TODO
      */
-    addRelationshipDefinition:{
+    addAssociationDefinition:{
+        value:function (prototype, attribute) {
+            if (attribute.isToMany) {
+                this.addToManyAssociationDefinition(prototype, attribute);
+            } else {
+                this.addToOneAssociationDefinition(prototype, attribute);
+            }
+         }
+    },
+
+    /**
+     Description TODO
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute TODO
+     */
+    addToOneAssociationDefinition:{
+        value:function (prototype, attribute) {
+            var relationshipKey = attribute.name.toCapitalized();
+            var key = "addTo" + relationshipKey;
+            if (!prototype.hasOwnProperty(key)) {
+                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                    return null;
+                }});
+            } else {
+                if (logger.isError) {
+                    logger.error("We have an issue here. The developer should not override the method " + key + ".");
+                }
+            }
+            key = "removeFrom" + relationshipKey;
+            if (!prototype.hasOwnProperty(key)) {
+                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                    return null;
+                }});
+            } else {
+                if (logger.isError) {
+                    logger.error("We have an issue here. The developer should not override the method " + key + ".");
+                }
+            }
+            key = "clear" + relationshipKey;
+            if (!prototype.hasOwnProperty(key)) {
+                Montage.defineProperty(prototype, key, { serializable:false, enumerable:false, value:function () {
+                    return null;
+                }});
+            } else {
+                if (logger.isError) {
+                    logger.error("We have an issue here. The developer should not override the method " + key + ".");
+                }
+            }
+        }
+    },
+
+    /**
+     Description TODO
+     @function
+     @param {Property} prototype TODO
+     @param {Object} attribute TODO
+     */
+    addToManyAssociationDefinition:{
         value:function (prototype, attribute) {
             var relationshipKey = attribute.name.toCapitalized();
             var key = "addTo" + relationshipKey;
@@ -346,9 +404,10 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
             var storageKey = "_" + attribute.name;
             var previousValue = this[storageKey];
             if ((typeof previousValue === 'undefined') || (previousValue !== value)) {
+                value.addEventListener("change", this._onObjectsChange, false);
                 //
                 if ((typeof this.context !== 'undefined') && (this.context !== null)) {
-                    this.context.willModifyPropertyForInstance(attribute, this);
+                    this.context.willModifyPropertyForInstance(attribute, this, value);
                 }
             }
         }

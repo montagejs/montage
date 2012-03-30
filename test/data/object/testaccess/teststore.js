@@ -38,7 +38,7 @@ var TestStore = exports.TestStore = Montage.create(Store, {
         }
     },
 
-    pledgeForSourceObjectRelationship$Implementation: {
+    pledgeForSourceObjectAssociation$Implementation: {
         value: function(sourceObject, relationship, context, transactionId) {
             // TODO [PJYF Apr 28 2011] We need to implement it.
             return Promise.ref(null);
