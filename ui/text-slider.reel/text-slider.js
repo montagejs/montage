@@ -190,7 +190,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
-            this._input.element.addEventListener("blur", this, false);
+            this._inputElement.addEventListener("blur", this, false);
         }
     },
 
@@ -199,9 +199,9 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
             if (this._isEditing) {
                 this._element.classList.add("montage-text-slider-editing");
                 console.log(this._unit);
-                this._input.value = this.convertedValue + ((this._unit) ? " " + this._unit : "");
+                this._inputElement.value = this.convertedValue + ((this._unit) ? " " + this._unit : "");
                 // Replace this with just focus when merged
-                this._input.element.focus();
+                this._inputElement.focus();
             } else {
                 this._element.classList.remove("montage-text-slider-editing");
             }
@@ -227,7 +227,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
     handleBlur: {
         value: function(event) {
             this._isEditing = false;
-            this.convertedValue = this._input.value;
+            this.convertedValue = this._inputElement.value;
             this.needsDraw = true;
         }
     },
