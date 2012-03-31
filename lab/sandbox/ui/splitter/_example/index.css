@@ -1,0 +1,60 @@
+/* @override http://localhost:8082/montage/lab/sandbox/ui/splitter/_example/index.css */
+
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+@import url(http://fonts.googleapis.com/css?family=Homenaje);
+
+body {
+    margin: 0;
+    color: #444;
+    font: 13px/1.231 sans-serif;
+	background-color: hsl(200,0%,90%);
+}
+
+h1, h2 {
+    padding-right: 1em;
+    margin: 50px 0 0 0;
+    text-align: center;
+    line-height: 60px;
+    color: #aaa;
+    font-family: 'Homenaje', sans-serif ;
+}
+
+h1 {
+    font-size: 50px;
+}
+
+.highlight {
+    color: hsl(200,100%,50%);
+}
+
+.hint {
+    font-size: 14px;
+    text-align: center;
+    color: hsl(0,0%,50%);
+    margin-bottom: 50px;
+}
+
+
+/* Splitter ----------------------------------- */
+
+/* Those styles below are not part of the splitter.reel */
+
+
+.montage-splitterH {
+    /min-height: 80px;
+}
+
+.montage-splitterV {
+    /min-height: 120px;
+}
+
+.montage-splitter-child {
+    text-align: center;
+    line-height: 50px;
+}
+

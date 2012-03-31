@@ -1,0 +1,74 @@
+/* @override http://localhost:8082/montage/lab/sandbox/ui/splitter/splitter.reel/splitter.css */
+
+
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+.montage-splitterH,
+.montage-splitterV {
+    display: -webkit-box;
+    box-sizing: border-box;
+    position: relative;
+    /width: 100%;
+    /height: 100%;
+    padding: 10px;
+    background-color: #f2f2f2;
+}
+
+.montage-splitterV {
+    -webkit-box-orient: vertical;
+}
+
+
+
+/* Children */
+
+.montage-splitter-child {
+    -webkit-box-flex: 1;
+    position: relative;
+    box-sizing: inherit;
+    border: 1px solid #b3b3b3;
+    background: white;
+}
+
+.montage-splitter-child.montage-splitterH,
+.montage-splitter-child.montage-splitterV {
+    padding: 0;
+    border: none;
+    background: none;
+}
+
+
+
+/* Thumb */
+
+.montage-splitter-thumb {
+    background: url(splitter.svg) no-repeat;
+    opacity: .15;
+    -webkit-user-select: none;
+    -webkit-user-drag: element;
+}
+.montage-splitter-thumb:hover {
+    opacity: .3;
+    background-color: hsl(0,0%,70%);
+}
+.montage-splitter-thumb:active,
+.montage-splitter-thumb:-webkit-drag {
+    opacity: 1;
+    background-color: hsl(0,0%,90%);
+}
+
+.montage-splitterH > .montage-splitter-thumb {
+    width: 10px;
+    cursor: col-resize;
+    background-position: -45px center;
+}
+
+.montage-splitterV > .montage-splitter-thumb {
+    height: 10px;
+    cursor: row-resize;
+    background-position: center -15px;
+}
