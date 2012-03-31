@@ -1,5 +1,10 @@
+.montage-hot-text {
+    display: inline-block;
+}
+
 .montage-hot-text-input {
     display: none;
+    width: 100%;
 }
 
 .montage-hot-text-editing .montage-hot-text-input {
