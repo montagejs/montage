@@ -15,10 +15,6 @@
             "prototype": "montage/ui/textfield.reel",
             "properties": {
                 "element": {"#": "input"}
-            },
-            "bindings": {
-                "value": {"<<->": "@owner[value]"},
-                "converter": {"<-": "@owner[converter]"}
             }
         },
         "value": {
@@ -27,7 +23,7 @@
                 "element": {"#": "value"}
             },
             "bindings": {
-                "value": {"<-": "@owner[value]"}
+                "value": {"<-": "@owner[convertedValue]"}
             }
         },
         "units": {
@@ -36,7 +32,7 @@
                 "element": {"#": "units"}
             },
             "bindings": {
-                "value": {"<-": "@owner[units]"}
+                "value": {"<-": "@owner[unit]"}
             }
         },
 
@@ -62,10 +58,6 @@
                 },
                 {
                     "type": "translate",
-                    "listener": {"@": "owner"}
-                },
-                {
-                    "type": "translateEnd",
                     "listener": {"@": "owner"}
                 }
             ]
@@ -93,7 +85,6 @@
             "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "hot-text"},
-                "converter": {"@": "numberConverter"},
 
                 "_input": {"@": "input"},
                 "_unitsLabel": {"@": "units"},
@@ -106,10 +97,10 @@
     </script>
 </head>
 <body>
-    <div data-montage-id="hot-text" class="montage-hot-text">
-        <input type="text" data-montage-id="input" style="display: none" class="montage-hot-text-input"/>
+    <span data-montage-id="hot-text" class="montage-hot-text">
+        <input type="text" data-montage-id="input" class="montage-hot-text-input"/>
         <span data-montage-id="value" class="montage-hot-text-value"></span>
         <span data-montage-id="units" class="montage-hot-text-label"></span>
-    </div>
+    </span>
 </body>
 </html>

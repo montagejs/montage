@@ -1,3 +1,15 @@
+.montage-hot-text-input {
+    display: none;
+}
+
+.montage-hot-text-editing .montage-hot-text-input {
+    display: inherit;
+}
+
 .montage-hot-text-value {
     border-bottom: 1px dotted #000;
+}
+
+.montage-hot-text-editing .montage-hot-text-value, .montage-hot-text-editing .montage-hot-text-label {
+    display: none;
 }
