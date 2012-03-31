@@ -191,6 +191,7 @@ var HotText = exports.HotText = Montage.create(Component, {
     prepareForDraw: {
         value: function() {
             this._inputElement.addEventListener("blur", this, false);
+            this._inputElement.addEventListener("keydown", this, false);
         }
     },
 
@@ -198,7 +199,6 @@ var HotText = exports.HotText = Montage.create(Component, {
         value: function() {
             if (this._isEditing) {
                 this._element.classList.add("montage-hot-text-editing");
-                console.log(this._unit);
                 this._inputElement.value = this.convertedValue + ((this._unit) ? " " + this._unit : "");
                 // Replace this with just focus when merged
                 this._inputElement.focus();
@@ -229,6 +229,19 @@ var HotText = exports.HotText = Montage.create(Component, {
             this._isEditing = false;
             this.convertedValue = this._inputElement.value;
             this.needsDraw = true;
+        }
+    },
+    handleKeydown: {
+        value: function(event) {
+            if (event.keyCode === 38) {
+                // up
+                this.value += this.stepSize;
+                this.needsDraw = true;
+            } else if (event.keyCode === 40) {
+                // down
+                this.value -= this.stepSize;
+                this.needsDraw = true;
+            }
         }
     },
 
