@@ -249,8 +249,13 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
                 this.value -= this.stepSize;
                 this.needsDraw = true;
             } else if (event.keyCode === 13) {
+                // enter
                 this._isEditing = false;
                 this.convertedValue = this._inputElement.value;
+                this.needsDraw = true;
+            } else if (event.keyCode === 27) {
+                // esc
+                this._isEditing = false;
                 this.needsDraw = true;
             }
         }
