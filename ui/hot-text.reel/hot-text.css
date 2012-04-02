@@ -13,6 +13,7 @@
 
 .montage-hot-text-value {
     border-bottom: 1px dotted #000;
+    cursor: all-scroll;
 }
 
 .montage-hot-text-editing .montage-hot-text-value, .montage-hot-text-editing .montage-hot-text-label {
