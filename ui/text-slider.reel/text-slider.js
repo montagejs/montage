@@ -49,8 +49,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
 
             if (this._value !== value) {
                 this._value = value;
-                this._translateComposer.translateX = value;
-                this._translateComposer.translateY = value;
                 this.needsDraw = true;
             }
         }
@@ -205,6 +203,15 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
             } else {
                 this._element.classList.remove("montage-text-slider-editing");
             }
+
+            if (this._direction === "horizontal") {
+                document.body.style.cursor = "ew-resize";
+            } else if (this._direction === "vertical") {
+                document.body.style.cursor = "ns-resize";
+            } else {
+                document.body.style.cursor = "auto";
+            }
+
         }
     },
 
@@ -248,6 +255,8 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
     handleTranslateStart: {
         value: function(event) {
             this._direction = null;
+            this._translateComposer.translateX = this._value;
+            this._translateComposer.translateY = this._value;
             this._startX = event.translateX;
             this._startY = event.translateY;
         }
@@ -277,6 +286,12 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
                 }
                 this.value = value;
             }
+        }
+    },
+    handleTranslateEnd: {
+        value: function(event) {
+            this._direction = null;
+            this.needsDraw = true;
         }
     }
 
