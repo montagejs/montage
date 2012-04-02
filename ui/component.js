@@ -1140,16 +1140,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
         }
     },
-
-    /**
-        Allows draw to be called even if the children can't draw.
-        @type {Property}
-        @default {Boolean} false
-    */
-    allowsPartialDraw: {
-        value: false
-    },
-
 /**
         Description TODO
         @type {Property}
@@ -1691,14 +1681,6 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             }
         },
         enumerable: false
-    },
-/**
-        Description TODO
-        @type {Property}
-        @default null
-    */
-    dispatchDrawEvent: {
-        value: null
     },
 /**
   Description TODO

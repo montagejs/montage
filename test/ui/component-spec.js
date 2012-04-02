@@ -329,7 +329,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     spyOn(testPage.test.componentB2, 'draw').andCallThrough();
                     spyOn(testPage.test.componentB2, 'didDraw').andCallThrough();
                     // trigger test
-                    testPage.test.componentB.allowsPartialDraw = true;
                     testPage.test.componentB.needsDraw = true;
                     testPage.test.componentB1.needsDraw = true;
                     testPage.test.componentB2.needsDraw = true;
