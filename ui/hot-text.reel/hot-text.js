@@ -248,6 +248,10 @@ var HotText = exports.HotText = Montage.create(Component, {
                 // down
                 this.value -= this.stepSize;
                 this.needsDraw = true;
+            } else if (event.keyCode === 13) {
+                this._isEditing = false;
+                this.convertedValue = this._inputElement.value;
+                this.needsDraw = true;
             }
         }
     },
