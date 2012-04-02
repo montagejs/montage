@@ -45,11 +45,11 @@ h1 {
 /* Those styles below are not part of the splitter.reel */
 
 
-.montage-splitterH {
+.montage-splitterRow {
     /min-height: 80px;
 }
 
-.montage-splitterV {
+.montage-splitterCol {
     /min-height: 120px;
 }
 
