@@ -540,23 +540,12 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    _repetitionDraw: {
-        enumerable: false,
-        value: function () {
-        }
-    },
-
     templateDidLoad: {
         value: function() {
             var orphanedFragment,
-                currentContentRange = this.element.ownerDocument.createRange(),
-                oldRepetitionDraw = this._repetition.draw,
-                self = this;
+                currentContentRange = this.element.ownerDocument.createRange();
 
-            this._repetition.draw = function () {
-                oldRepetitionDraw.call(self._repetition);
-                self._repetitionDraw();
-            };
+
             currentContentRange.selectNodeContents(this.element);
             orphanedFragment = currentContentRange.extractContents();
             this._repetition.element.appendChild(orphanedFragment);
