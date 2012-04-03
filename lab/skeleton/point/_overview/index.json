@@ -1,6 +1,6 @@
 {
     "button": {
-        "module": "montage/ui/skeleton/point/button.reel",
+        "module": "montage/lab/skeleton/point/button.reel",
         "name": "Button",
         "properties": {
             "element": {"#": "button"}
@@ -8,85 +8,85 @@
     },
     
     "toggle": {
-        "module": "montage/ui/skeleton/point/toggle.reel",
+        "module": "montage/lab/skeleton/point/toggle.reel",
         "name": "Toggle",
         "properties": {
             "element": {"#": "toggle"}
         }
     },
     
-    "checkbox": {
-        "module": "montage/ui/skeleton/point/input-checkbox.reel",
+    "inputCheckbox": {
+        "module": "montage/lab/skeleton/point/input-checkbox.reel",
         "name": "InputCheckbox",
         "properties": {
-            "element": {"#": "input-checkbox"}
+            "element": {"#": "inputCheckbox"}
         }
     },
     
-    "radio1": {
-        "module": "montage/ui/skeleton/point/input-radio.reel",
+    "inputRadio1": {
+        "module": "montage/lab/skeleton/point/input-radio.reel",
         "name": "InputRadio",
         "properties": {
-            "element": {"#": "input-radio1"}
+            "element": {"#": "inputRadio1"}
         }
     },
-    "radio2": {
-        "module": "montage/ui/skeleton/point/input-radio.reel",
+    "inputRadio2": {
+        "module": "montage/lab/skeleton/point/input-radio.reel",
         "name": "InputRadio",
         "properties": {
-            "element": {"#": "input-radio2"}
+            "element": {"#": "inputRadio2"}
         }
     },
-    "radio3": {
-        "module": "montage/ui/skeleton/point/input-radio.reel",
+    "inputRadio3": {
+        "module": "montage/lab/skeleton/point/input-radio.reel",
         "name": "InputRadio",
         "properties": {
-            "element": {"#": "input-radio3"}
+            "element": {"#": "inputRadio3"}
         }
     },
     
     "select": {
-        "module": "montage/ui/skeleton/point/select.reel",
+        "module": "montage/lab/skeleton/point/select.reel",
         "name": "Select",
         "properties": {
             "element": {"#": "select"}
         }
     },
     
-    "input-text": {
-        "module": "montage/ui/skeleton/point/input-text.reel",
+    "inputText": {
+        "module": "montage/lab/skeleton/point/input-text.reel",
         "name": "InputText",
         "properties": {
-            "element": {"#": "input-text"}
+            "element": {"#": "inputText"}
         }
     },
     
     "textarea": {
-        "module": "montage/ui/skeleton/point/textarea.reel",
+        "module": "montage/lab/skeleton/point/textarea.reel",
         "name": "Textarea",
         "properties": {
             "element": {"#": "textarea"}
         }
     },
     
-    "input-number": {
-        "module": "montage/ui/skeleton/point/input-number.reel",
+    "inputNumber": {
+        "module": "montage/lab/skeleton/point/input-number.reel",
         "name": "InputNumber",
         "properties": {
-            "element": {"#": "input-number"}
+            "element": {"#": "inputNumber"}
         }
     },
     
-    "input-range": {
-        "module": "montage/ui/skeleton/point/input-range.reel",
+    "inputRange": {
+        "module": "montage/lab/skeleton/point/input-range.reel",
         "name": "InputRange",
         "properties": {
-            "element": {"#": "input-range"}
+            "element": {"#": "inputRange"}
         }
     },
     
     "progress": {
-        "module": "montage/ui/skeleton/point/progress.reel",
+        "module": "montage/lab/skeleton/point/progress.reel",
         "name": "Progress",
         "properties": {
             "element": {"#": "progress"}
