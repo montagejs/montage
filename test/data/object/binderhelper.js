@@ -6,13 +6,17 @@
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
-var logger = require("montage/core/logger").logger("CompanyBinder");
+
+exports.companyBinder = function () {
+    return exports.BinderHelper.companyBinder();
+};
 
 exports.BinderHelper = Montage.create(Montage, {
 
     companyBinder: {
         value: function() {
             var companyBinder = BlueprintBinder.create().initWithName("CompanyBinder");
+
             var personBlueprint = companyBinder.addBlueprintNamed("Person", "data/object/person");
             personBlueprint.addToOneAttributeNamed("name");
             personBlueprint.addToManyAttributeNamed("phoneNumbers");
@@ -20,7 +24,7 @@ exports.BinderHelper = Montage.create(Montage, {
             var companyBlueprint = companyBinder.addBlueprintNamed("Company", "data/object/company");
             companyBlueprint.addToOneAttributeNamed("name");
 
-            companyBlueprint.addToManyAssociationNamed("employees", personBlueprint.addToOneAssociationNamed("employer"));
+            companyBlueprint.addToManyAssociationNamed("directReports", personBlueprint.addToOneAssociationNamed("supervisor"));
 
             var projectBlueprint = companyBinder.addBlueprintNamed("Project", "data/object/project");
             projectBlueprint.addToOneAttributeNamed("name");
@@ -29,7 +33,7 @@ exports.BinderHelper = Montage.create(Montage, {
 
             companyBlueprint.addToManyAssociationNamed("projects", personBlueprint.addToOneAssociationNamed("company"));
 
-            personBlueprint.addToManyAssociationNamed("projects", projectBlueprint.addToManyAssociationNamed("employees"));
+            personBlueprint.addToManyAssociationNamed("projects", projectBlueprint.addToManyAssociationNamed("contributors"));
 
             return companyBinder;
         }

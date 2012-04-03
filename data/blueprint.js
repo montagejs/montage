@@ -231,7 +231,6 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
             var key = moduleId + "." + prototypeName;
             var blueprint = this._blueprintForPrototypeTable[key];
             if (typeof blueprint === "undefined") {
-                blueprint = UnknownBlueprint;
                 var aBlueprint, index;
                 for (index = 0; typeof (aBlueprint = this.blueprints[index]) !== "undefined"; index++) {
                     if ((aBlueprint.prototypeName === prototypeName) && (aBlueprint.moduleId === moduleId)) {
@@ -241,8 +240,12 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
                 }
                 this._blueprintForPrototypeTable[key] = blueprint;
             }
-            if (blueprint === UnknownBlueprint) {
-                blueprint = null;
+            if (!blueprint) {
+                throw new Error(
+                    "No such blueprint: " + JSON.stringify(prototypeName) +
+                    " in " + JSON.stringify(moduleId) + ". Consider: " +
+                    JSON.stringify(Object.keys(this._blueprintForPrototypeTable))
+                );
             }
             return blueprint;
         }
@@ -889,7 +892,7 @@ var Attribute = Montage.create(Montage, /** @lends module:montage/data/blueprint
             return [
                 this.blueprint.identifier,
                 this.name
-            ].join(".");
+            ].join("_");
         }
     },
     /**
@@ -1079,7 +1082,7 @@ var ToManyAssociation = exports.ToManyAssociation = Montage.create(ToManyAttribu
 });
 /**
  A derived is attribute is calculated using other attributes of the object.<br/>
- 
+
  @class module:montage/data/blueprint.DerivedAttribute
  */
 var DerivedAttribute = exports.DerivedAttribute = Montage.create(Attribute, /** @lends module:montage/data/blueprint.DerivedAttribute# */ {

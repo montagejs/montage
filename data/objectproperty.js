@@ -404,7 +404,7 @@ var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends
             var storageKey = "_" + attribute.name;
             var previousValue = this[storageKey];
             if ((typeof previousValue === 'undefined') || (previousValue !== value)) {
-                value.addEventListener("change", this._onObjectsChange, false);
+                // XXX value.addEventListener("change", this._onObjectsChange, false);
                 //
                 if ((typeof this.context !== 'undefined') && (this.context !== null)) {
                     this.context.willModifyPropertyForInstance(attribute, this, value);
