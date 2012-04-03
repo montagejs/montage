@@ -1774,6 +1774,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     if (typeof component.willDraw === "function") {
                         component.willDraw(this._frameTime);
                     }
+                    if (drawLogger.isDebug) {
+                        drawLogger.debug(component._montage_metadata.objectName, " didDraw");
+                    }
                 }
                 this._drawIfNeeded();
                 start = j;
@@ -1787,10 +1790,13 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
 
             this.requestedAnimationFrame = null; // Allow a needsDraw called during a draw to schedule the next draw
             // TODO: add the posibility to display = "none" the body during development (IKXARIA-3631).
-            for (i = 0; i < j; i++) {
+            for (i = j-1; i >= 0; i--) {
                 component = needsDrawList[i];
                 component._draw();
                 component.draw(this._frameTime);
+                if (drawLogger.isDebug) {
+                    drawLogger.debug(component._montage_metadata.objectName, " draw");
+                }
             }
 
             for (i = 0; i < j; i++) {
@@ -1801,6 +1807,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     firstDrawEvent.initCustomEvent("firstDraw", true, false, null);
                     component.dispatchEvent(firstDrawEvent);
                     component._completedFirstDraw = true;
+                }
+                if (drawLogger.isDebug) {
+                    drawLogger.debug(component._montage_metadata.objectName, " didDraw");
                 }
             }
             return !!needsDrawList.length;
