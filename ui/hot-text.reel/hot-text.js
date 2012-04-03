@@ -202,6 +202,7 @@ var HotText = exports.HotText = Montage.create(Component, {
                 this._inputElement.focus();
             } else {
                 this._element.classList.remove("montage-hot-text-editing");
+                this._inputElement.blur();
             }
 
             if (this._direction === "horizontal") {
@@ -240,9 +241,11 @@ var HotText = exports.HotText = Montage.create(Component, {
 
     handleBlur: {
         value: function(event) {
-            this._isEditing = false;
-            this.convertedValue = this._inputElement.value;
-            this.needsDraw = true;
+            if (this._isEditing) {
+                this._isEditing = false;
+                this.convertedValue = this._inputElement.value;
+                this.needsDraw = true;
+            }
         }
     },
     handleKeydown: {
