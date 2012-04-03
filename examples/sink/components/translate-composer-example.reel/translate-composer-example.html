@@ -20,8 +20,7 @@
         },
         "bindings": {
             "axis": {"<-": "@axisSelect.value"},
-            "hasMomentum": {"<<->": "@checkboxMomentum.checked"},
-            "hasBouncing": {"<<->": "@checkboxBouncing.checked"}
+            "hasMomentum": {"<<->": "@checkboxMomentum.checked"}
         }
     },
 
@@ -57,14 +56,6 @@
         "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "checkboxMomentum"},
-            "checked": true
-        }
-    },
-
-    "checkboxBouncing": {
-        "prototype": "montage/ui/checkbox.reel",
-        "properties": {
-            "element": {"#": "checkboxBouncing"},
             "checked": true
         }
     },
@@ -132,7 +123,7 @@
             <div class="span12">
                 <h3>TranslateComposer</h3>
                 <p class="">
-                    The TranslateComposer listens for touch/mouse events on an element or component and then calculates properties based on the mouse movement, such as momentum and bounce. You can then bind these calculated properties to another element or component, such as a slider control, for example.The following example uses the TranslateComposer to drag an element around the screen.
+                    The TranslateComposer listens for touch/mouse events on an element or component and then calculates properties based on the mouse movement, such as momentum. You can then bind these calculated properties to another element or component, such as a slider control, for example.The following example uses the TranslateComposer to drag an element around the screen.
                 </p>
             </div>
         </div>
@@ -149,9 +140,6 @@
     </select>
     <div>
         <label for="cb1"><input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" /> Momentum </label>
-    </div>
-    <div>
-        <label for="cb2"><input type="checkbox" data-montage-id="checkboxBouncing" data-montage-id="cb2" /> Bouncing </label>
     </div>
     <code>translateX: <span data-montage-id="x_value"></span></code>
     <code>translateY: <span data-montage-id="y_value"></span></code>
@@ -177,9 +165,6 @@
     &lt;div&gt;
         &lt;label for="cb1"&gt;&lt;input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" /&gt; Momentum &lt;/label&gt;
     &lt;/div&gt;
-    &lt;div&gt;
-        &lt;label for="cb2"&gt;&lt;input type="checkbox" data-montage-id="checkboxBouncing" data-montage-id="cb2" /&gt; Bouncing &lt;/label&gt;
-    &lt;/div&gt;
     &lt;code&gt;translateX: &lt;span data-montage-id="x_value"&gt;&lt;/span&gt;&lt;/code&gt;
     &lt;code&gt;translateY: &lt;span data-montage-id="y_value"&gt;&lt;/span&gt;&lt;/code&gt;
 &lt;/div&gt;
@@ -202,8 +187,7 @@
         },
         "bindings": {
             "axis": {"&lt;-": "@axisSelect.value"},
-            "hasMomentum": {"&lt;&lt;-&gt;": "@checkboxMomentum.checked"},
-            "hasBouncing": {"&lt;&lt;-&gt;": "@checkboxBouncing.checked"}
+            "hasMomentum": {"&lt;&lt;-&gt;": "@checkboxMomentum.checked"}
         }
     },
 
@@ -241,14 +225,6 @@
         "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "checkboxMomentum"},
-            "checked": true
-        }
-    },
-
-    "checkboxBouncing": {
-        "prototype": "montage/ui/checkbox.reel",
-        "properties": {
-            "element": {"#": "checkboxBouncing"},
             "checked": true
         }
     },

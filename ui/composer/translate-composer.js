@@ -91,16 +91,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             } else {
                 var tmp=isNaN(value)?0:value>>0;
 
-                if ((!this._hasBouncing)||(!this._isSelfUpdate)) {
-                    if (tmp<0) {
-                        tmp=0;
-                    }
-                    if (tmp>this._maxTranslateX) {
-                        tmp=this._maxTranslateX;
-                    }
-                    if (!this._isSelfUpdate) {
-                        this.isAnimating = false;
-                    }
+                if (tmp<0) {
+                    tmp=0;
+                }
+                if (tmp>this._maxTranslateX) {
+                    tmp=this._maxTranslateX;
+                }
+                if (!this._isSelfUpdate) {
+                    this.isAnimating = false;
                 }
                 this._translateX=tmp;
             }
@@ -122,16 +120,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             } else {
                 var tmp=isNaN(value)?0:value>>0;
 
-                if ((!this._hasBouncing)||(!this._isSelfUpdate)) {
-                    if (tmp<0) {
-                        tmp=0;
-                    }
-                    if (tmp>this._maxTranslateY) {
-                        tmp=this._maxTranslateY;
-                    }
-                    if (!this._isSelfUpdate) {
-                        this.isAnimating = false;
-                    }
+                if (tmp<0) {
+                    tmp=0;
+                }
+                if (tmp>this._maxTranslateY) {
+                    tmp=this._maxTranslateY;
+                }
+                if (!this._isSelfUpdate) {
+                    this.isAnimating = false;
                 }
                 this._translateY=tmp;
             }
@@ -236,20 +232,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    _hasBouncing: {
-        enumerable: false,
-        value: true
-    },
-
-    hasBouncing: {
-        get: function () {
-            return this._hasBouncing;
-        },
-        set: function (value) {
-            this._hasBouncing=value?true:false;
-        }
-    },
-
     __momentumDuration: {
         enumerable: false,
         value: 650
@@ -264,21 +246,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (this.__momentumDuration<1) this.__momentumDuration=1;
         },
         enumerable: false
-    },
-
-    __bouncingDuration: {
-        enumerable: false,
-        value: 750
-    },
-
-    _bouncingDuration: {
-        get: function () {
-            return this.__bouncingDuration;
-        },
-        set: function (value) {
-            this.__bouncingDuration=isNaN(value)?1:value>>0;
-            if (this.__bouncingDuration<1) this.__bouncingDuration=1;
-        }
     },
 
     _pointerX: {
@@ -670,9 +637,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: function (event) {
 
-            var animateBouncingX=false,
-                animateBouncingY=false,
-                animateMomentum=false,
+            var animateMomentum=false,
                 momentumX,
                 momentumY,
                 startX=this._translateX,
@@ -682,8 +647,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 endX=startX,
                 endY,
                 self=this,
-                startTimeBounceX=false,
-                startTimeBounceY=false,
                 startTime=Date.now();
 
             startY=this._translateY;
@@ -721,96 +684,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 tmpX=posX;
                 tmpY=posY;
 
-                if (self._hasBouncing) {
-                    if (endX<0) {
-                        if (tmpX<0) {
-                            if (!startTimeBounceX) {
-                                animateBouncingX=true;
-                                startTimeBounceX=time;
-                            }
-                            t=time-startTimeBounceX;
-                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
-                                if (t>self.__bouncingDuration) {
-                                    t=self.__bouncingDuration;
-                                }
-                                tmpX=tmpX*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
-                            } else {
-                                tmpX=0;
-                                animateBouncingX=false;
-                            }
-                        } else {
-                            animateBouncingX=false;
-                        }
-                    }
-
-                    if (endY<0) {
-                        if (tmpY<0) {
-                            if (!startTimeBounceY) {
-                                animateBouncingY=true;
-                                startTimeBounceY=time;
-                            }
-                            t=time-startTimeBounceY;
-                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
-                                if (t>self.__bouncingDuration) {
-                                    t=self.__bouncingDuration;
-                                }
-                                tmpY=tmpY*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
-                            } else {
-                                tmpY=0;
-                                animateBouncingY=false;
-                            }
-                        } else {
-                            animateBouncingY=false;
-                        }
-                    }
-
-                    if (endX>self._maxTranslateX) {
-                        if (tmpX>self._maxTranslateX) {
-                            if (!startTimeBounceX) {
-                                animateBouncingX=true;
-                                startTimeBounceX=time;
-                            }
-                            t=time-startTimeBounceX;
-                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
-                                if (t>self.__bouncingDuration) {
-                                    t=self.__bouncingDuration;
-                                }
-                                tmpX=self._maxTranslateX+(tmpX-self._maxTranslateX)*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
-                            } else {
-                                tmpX=self._maxTranslateX;
-                                animateBouncingX=false;
-                            }
-                        } else {
-                            animateBouncingX=false;
-                        }
-                    }
-
-                    if (endY>self._maxTranslateY) {
-                        if (tmpY>self._maxTranslateY) {
-                            if (!startTimeBounceY) {
-                                animateBouncingY=true;
-                                startTimeBounceY=time;
-                            }
-                            t=time-startTimeBounceY;
-                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
-                                if (t>self.__bouncingDuration) {
-                                    t=self.__bouncingDuration;
-                                }
-                                tmpY=self._maxTranslateY+(tmpY-self._maxTranslateY)*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
-                            } else {
-                                tmpY=self._maxTranslateY;
-                                animateBouncingY=false;
-                            }
-                        } else {
-                            animateBouncingY=false;
-                        }
-                    }
-                }
                 self._isSelfUpdate=true;
                 self.translateX=tmpX;
                 self.translateY=tmpY;
                 self._isSelfUpdate=false;
-                self.isAnimating = animateMomentum||animateBouncingX||animateBouncingY;
+                self.isAnimating = animateMomentum;
                 if (self.isAnimating) {
                     self.needsFrame=true;
                 } else {

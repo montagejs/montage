@@ -24,8 +24,7 @@
                     "axis": "vertical"
                 },
                 "bindings": {
-                    "hasMomentum": {"<<->": "@toggleMomentum.checked"},
-                    "hasBouncing": {"<<->": "@toggleBouncing.checked"}
+                    "hasMomentum": {"<<->": "@toggleMomentum.checked"}
                 }
             },
 
@@ -33,13 +32,6 @@
                 "prototype": "montage/ui/checkbox.reel",
                 "properties": {
                     "element": {"#": "toggleMomentum"},
-                    "checked": true
-                }
-            },
-            "toggleBouncing": {
-                "prototype": "montage/ui/checkbox.reel",
-                "properties": {
-                    "element": {"#": "toggleBouncing"},
                     "checked": true
                 }
             },
@@ -69,7 +61,7 @@
                 <div class="span12">
                     <h3>Scroller</h3>
                     <p>
-                        The Scroller component provides vertical and horizontal scrolling of fixed height elements. It supports momentum and bounce behaviors that you can control or disable.
+                        The Scroller component provides vertical and horizontal scrolling of fixed height elements. It supports momentum behavior that you can control or disable.
                     </p>
 <!--                     <p>
                         <a href="" target="_blank">View Documentation</a>
@@ -82,9 +74,6 @@
             <div class="demo">
                     <div>
                         <label for="cb1"><input type="checkbox" data-montage-id="toggleMomentum" data-montage-id="cb1" /> Toggle momenutum </label>
-                    </div>
-                    <div>
-                        <label for="cb2"><input type="checkbox" data-montage-id="toggleBouncing" data-montage-id="cb2" /> Toggle bouncing </label>
                     </div>
 
                     <div data-montage-id="scroller" class="scrollpanel" >
@@ -129,7 +118,6 @@
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;label for="cb1"&gt;Toggle momenutum&lt;input type="checkbox" data-montage-id="toggleMomentum" data-montage-id="cb1" /&gt;&lt;/label&gt;
-&lt;label for="cb2"&gt;Toggle bouncing&lt;input type="checkbox" data-montage-id="toggleBouncing" data-montage-id="cb2" /&gt;&lt;/label&gt;
 
 &lt;div data-montage-id="scroller" style="height: 400px; width: 500px; margin: auto; -webkit-user-select: none; -moz-user-select: none "&gt;
     &lt;p&gt;&lt;b&gt;A large paragraph&lt;/b&gt; Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
@@ -168,8 +156,7 @@
             "element": {"#": "scroller"}
         },
         "bindings": {
-            "hasMomentum": {"&lt;&lt;-&gt;": "@toggleMomentum.checked"},
-            "hasBouncing": {"&lt;&lt;-&gt;": "@toggleBouncing.checked"}
+            "hasMomentum": {"&lt;&lt;-&gt;": "@toggleMomentum.checked"}
         }
     },
 
@@ -177,13 +164,6 @@
         "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "toggleMomentum"},
-            "checked": true
-        }
-    },
-    "toggleBouncing": {
-        "prototype": "montage/ui/checkbox.reel",
-        "properties": {
-            "element": {"#": "toggleBouncing"},
             "checked": true
         }
     }

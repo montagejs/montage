@@ -101,20 +101,6 @@ exports.Scroller = Montage.create(Component, {
         }
     },
 
-    _hasBouncing: {
-        enumerable: false,
-        value: true
-    },
-
-    hasBouncing: {
-        get: function () {
-            return this._hasBouncing;
-        },
-        set: function (value) {
-            this._hasBouncing = value;
-        }
-    },
-
     _content: {
         enumerable: false,
         value: null
