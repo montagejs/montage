@@ -224,6 +224,13 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         }
     },
 
+    handlePressStart: {
+        value: function(event) {
+            // reset translate composer ready for more translation
+            this._translateComposer.translateX = this._value;
+            this._translateComposer.translateY = this._value;
+        }
+    },
     handlePress: {
         value: function(event) {
             this._isEditing = true;
@@ -264,32 +271,29 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
     handleTranslateStart: {
         value: function(event) {
             this._direction = null;
-            this._translateComposer.translateX = this._value;
-            this._translateComposer.translateY = this._value;
-            this._startX = event.translateX;
-            this._startY = event.translateY;
+            this._startX = this._value;
+            this._startY = this._value;
         }
     },
     handleTranslate: {
         value: function(event) {
-            var value,
-                deltaX = event.translateX - this._startX,
-                deltaY = event.translateY - this._startY;
-
             if (this._direction === "vertical") {
                 this.value = event.translateY;
             } else if (this._direction === "horizontal") {
                 this.value = event.translateX;
             } else {
+                var value,
+                    deltaX = Math.abs(event.translateX - this._startX),
+                    deltaY = Math.abs(event.translateY - this._startY);
 
-                if (Math.abs(deltaY) > Math.abs(deltaX)) {
+                if (deltaY > deltaX) {
                     value = event.translateY;
-                    if (Math.abs(deltaY) > 20) {
+                    if (deltaY > 20) {
                         this._direction = "vertical";
                     }
                 } else {
                     value = event.translateX;
-                    if (Math.abs(deltaX) > 20) {
+                    if (deltaX > 20) {
                         this._direction = "horizontal";
                     }
                 }
