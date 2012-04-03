@@ -165,10 +165,13 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
     */
     editorSelectionDidChange: {
         value: function(range) {
-            if (this._ignoreNextSelectionchanged) {
+            if (this._ignoreNextSelectionchanged || this._finalizeDrag) {
                 this._ignoreNextSelectionchanged = false;
-            } else if (this._editor.activeOverlay == this) {
-                this._editor.hideOverlay();
+            } else {
+                if (this._editor.activeOverlay == this) {
+                    this._editor.hideOverlay();
+                }
+                this.target = null;
             }
 
             return false;
@@ -338,7 +341,6 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 }
 
                 this._finalizeDrag = false;
-                this._ignoreNextSelectionchanged = true;
             }
         }
     },

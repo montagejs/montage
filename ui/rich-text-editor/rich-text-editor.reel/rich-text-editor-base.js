@@ -907,10 +907,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     handleInput: {
         enumerable: false,
         value: function(event) {
-            if (!this._executingCommand && !this._nextInputIsNotTyping) {
+            if (!this._executingCommand && !this._ignoreNextInputEvent) {
                 this._startTyping();
             }
-            delete this._nextInputIsNotTyping;
+            delete this._ignoreNextInputEvent;
 
             if (this._hasSelectionChangeEvent === false) {
                 this.handleSelectionchange();
@@ -1149,7 +1149,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 if (this.undoManager) {
                     this.undoManager.add("Move", this._undo, this, "Move", this._innerElement);
                 }
-                this._nextInputIsNotTyping = true;
+                this._ignoreNextInputEvent = true;
 
                 this.handleDragend(event);
                 this.handleSelectionchange();
@@ -1253,7 +1253,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             if (this.undoManager) {
                 this.undoManager.add("Cut", this._undo, this, "Cut", this._innerElement);
             }
-            this._nextInputIsNotTyping = true;
+            this._ignoreNextInputEvent = true;
         }
     },
 
@@ -1389,34 +1389,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     doAction: {
         enumerable: true,
         value: function(action, value) {
-            var savedActiveElement = document.activeElement,
-                editorElement = this._innerElement;
-
-            if (!editorElement) {
-                return;
-            }
-
-            // Make sure we are the active element before calling execCommand
-            if (editorElement != savedActiveElement) {
-                editorElement.focus();
-            }
-
-            if (value === undefined) {
-                value = false;
-            }
-
             this.execCommand(action, false, value);
 
             // Force an update states right away
             this._updateStates();
-
-            this.handleSelectionchange();
-            this.markDirty();
-
-            // Reset the focus
-            if (editorElement != savedActiveElement) {
-                savedActiveElement.focus();
-            }
         }
     },
 
@@ -1427,6 +1403,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             var editorElement = this._innerElement;
             if (!element || element === editorElement) {
                 this._doingUndoRedo = true;
+                this._ignoreNextInputEvent = true;
                 document.execCommand("undo", false, null);
                 this.markDirty();
                 if (this.undoManager) {
@@ -1447,6 +1424,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             var editorElement = this._innerElement;
             if (!element || element === editorElement) {
                 this._doingUndoRedo = true;
+                this._ignoreNextInputEvent = true;
                 document.execCommand("redo", false, null);
                 this.markDirty();
                 if (this.undoManager) {

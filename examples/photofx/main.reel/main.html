@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">{
 
             "photoController": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+                "prototype": "montage/ui/controller/array-controller",
                 "properties": {
                     "selectObjectsOnAddition": true
                 },
@@ -23,15 +22,13 @@
                 }
             },
             "gridMagnifier": {
-                "module": "grid-magnifier.reel",
-                "name": "GridMagnifier",
+                "prototype": "grid-magnifier.reel",
                 "properties": {
                     "element": {"#": "gridMagnifier"}
                 }
             },
             "photoEditor": {
-                "module": "photo-editor.reel",
-                "name": "PhotoEditor",
+                "prototype": "photo-editor.reel",
                 "properties": {
                     "element": {"#": "editor"}
                 },
@@ -40,16 +37,14 @@
                 }
             },
             "effectsPanel": {
-                "module": "effects-panel.reel",
-                "name": "EffectsPanel",
+                "prototype": "effects-panel.reel",
                 "properties": {
                     "element": {"#": "effectsPanel"},
                     "editor": {"@": "photoEditor"}
                 }
             },
             "photoThumb": {
-                "module": "photo-thumb.reel",
-                "name": "PhotoThumb",
+                "prototype": "photo-thumb.reel",
                 "properties": {
                     "element": {"#": "photoThumb"}
                 },
@@ -58,8 +53,7 @@
                 }
             },
             "photoList": {
-                "module": "montage/ui/list.reel",
-                "name": "List",
+                "prototype": "montage/ui/list.reel",
                 "properties": {
                     "element": {"#": "photoList"},
                     "axis": "horizontal",
@@ -69,8 +63,7 @@
             },
 
             "supportsCrossOriginCanvasCondition": {
-                "module": "montage/ui/condition.reel",
-                "name": "Condition",
+                "prototype": "montage/ui/condition.reel",
                 "properties": {
                     "element": {"#": "supportsCrossOriginCanvasCondition"}
                 },
@@ -80,8 +73,7 @@
             },
 
             "addPhotosButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "addPhotosButton"},
                     "identifier": "addPhotosButton"
@@ -96,8 +88,7 @@
             },
 
             "removeSelectionCondition": {
-                "module": "montage/ui/condition.reel",
-                "name": "Condition",
+                "prototype": "montage/ui/condition.reel",
                 "properties": {
                     "element": {"#": "removeSelectionCondition"}
                 },
@@ -107,8 +98,7 @@
             },
 
             "removePhotoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "removePhotoButton"},
                     "identifier": "removePhotoButton"
@@ -123,16 +113,14 @@
             },
 
             "searchPanel": {
-                "module": "search-panel.reel",
-                "name": "SearchPanel",
+                "prototype": "search-panel.reel",
                 "properties": {
                     "photoListController": {"@": "photoController"}
                 }
             },
 
             "owner": {
-                "module": "main.reel",
-                "name": "Main",
+                "prototype": "main.reel",
                 "properties": {
                     "element": {"#": "main"},
                     "photoListController": {"@": "photoController"},
@@ -142,8 +130,7 @@
             },
 
             "toggleControlsButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "toggleControlsButton"},
                     "identifier": "toggleShowControlsButton"
@@ -158,8 +145,7 @@
             },
 
             "undoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "undoButton"},
                     "identifier": "undoButton"
@@ -178,8 +164,7 @@
             },
 
             "redoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "redoButton"},
                     "identifier": "redoButton"

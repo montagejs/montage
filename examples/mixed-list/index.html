@@ -13,20 +13,17 @@
     <script type="text/montage-serialization">{
 
             "owner": {
-                "module": "mixed-list",
-                "name": "MixedList"
+                "prototype": "mixed-list"
             },
             "scroller": {
-                "module": "montage/ui/scroller.reel",
-                "name": "Scroller",
+                "prototype": "montage/ui/scroller.reel",
                 "properties": {
                     "element": {"#": "scroller"},
                     "axis": "vertical"
                  }
             },
             "list": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "testList"}
                 },
@@ -35,8 +32,7 @@
                 }
             },
             "substitution": {
-                "module": "montage/ui/substitution.reel",
-                "name": "Substitution",
+                "prototype": "montage/ui/substitution.reel",
                 "properties": {
                     "element": {"#": "substitution"},
                     "switchComponents": {
@@ -51,15 +47,13 @@
                 }
             },
             "toggle": {
-                "module": "montage/ui/bluemoon/toggle.reel",
-                "name": "Toggle",
+                "prototype": "montage/ui/bluemoon/toggle.reel",
                 "bindings": {
                     "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "slider": {
-                "module": "montage/ui/bluemoon/slider.reel",
-                "name": "Slider",
+                "prototype": "montage/ui/bluemoon/slider.reel",
                 "properties": {
 
                 },
@@ -68,8 +62,7 @@
                 }
             },
             "checkbox": {
-                "module": "montage/ui/bluemoon/checkbox.reel",
-                "name": "Checkbox",
+                "prototype": "montage/ui/bluemoon/checkbox.reel",
                 "properties": {
 
                 },
@@ -78,8 +71,7 @@
                 }
             },
             "addAnObjectButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "button"},
                     "identifier": "addButton"
