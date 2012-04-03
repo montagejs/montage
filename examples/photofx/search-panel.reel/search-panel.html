@@ -10,54 +10,43 @@
     <title>SearchPanel</title>
     <link rel="stylesheet" href="search-panel.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
-                "module": "search-panel.reel",
-                "name": "SearchPanel",
+                "prototype": "search-panel.reel",
                 "properties": {
                     "element": {"#": "searchPanel"},
                     "searchForm": {"#": "searchForm"},
                     "searchResultsList": {"@": "searchResultsList"}
                 },
                 "bindings": {
-                    "queryParameter": {
-                        "boundObject": {"@": "queryField"},
-                        "boundObjectPropertyPath": "value"
-                    }
+                    "queryParameter": {"<<->": "@queryField.value"}
                 }
             },
 
             "searchResultsController": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+                "prototype": "montage/ui/controller/array-controller",
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "searchResults"
-                    }
+                    "content": {"<<->": "@owner.searchResults"}
                 }
             },
 
             "queryField": {
-                "module": "montage/ui/textfield.reel",
-                "name": "Textfield",
+                "prototype": "montage/ui/textfield.reel",
                 "properties": {
                     "element": {"#": "queryField"}
                 }
             },
 
             "searchButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "searchButton"}
                 }
             },
 
             "searchResultsList": {
-                "module": "montage/ui/list.reel",
-                "name": "List",
+                "prototype": "montage/ui/list.reel",
                 "properties": {
                     "element": {"#": "searchResultsList"},
                     "contentController": {"@": "searchResultsController"},
@@ -66,43 +55,34 @@
             },
 
             "searchResult": {
-                "module": "search-result.reel",
-                "name": "SearchResult",
+                "prototype": "search-result.reel",
                 "properties": {
                     "element": {"#": "searchResult"}
                 },
                 "bindings": {
-                    "result": {
-                        "boundObject": {"@": "searchResultsList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    },
-                    "photoListController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photoListController",
-                        "oneway": true
-                    }
+                    "result": {"<-": "@searchResultsList.objectAtCurrentIteration"},
+                    "photoListController": {"<-": "@owner.photoListController"}
                 }
             }
 
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
 
-    <div id="searchPanel" class="SearchPanel">
+    <div data-montage-id="searchPanel" class="SearchPanel">
 
-        <form id="searchForm" class="searchForm">
-            <input type="text" id="queryField">
-            <input type="submit" id="searchButton" class="submit btn" value="Search">
+        <form data-montage-id="searchForm" class="searchForm">
+            <input type="text" data-montage-id="queryField">
+            <input type="submit" data-montage-id="searchButton" class="submit btn" value="Search">
         </form>
 
         <div class="searchArea">
             <div class="loadingIndicator">Searching…</div>
 
-            <div id="searchResultsList" class="SearchResultsList">
-                <div id="searchResult"></div>
+            <div data-montage-id="searchResultsList" class="SearchResultsList">
+                <div data-montage-id="searchResult"></div>
             </div>
         </div>
 

@@ -10,67 +10,50 @@
     <title>PhotoFX Main</title>
     <link rel="stylesheet" type="text/css" href="main.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "photoController": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+                "prototype": "montage/ui/controller/array-controller",
                 "properties": {
                     "selectObjectsOnAddition": true
                 },
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photos"
-                    }
+                    "content": {"<<->": "@owner.photos"}
                 }
             },
             "gridMagnifier": {
-                "module": "grid-magnifier.reel",
-                "name": "GridMagnifier",
+                "prototype": "grid-magnifier.reel",
                 "properties": {
                     "element": {"#": "gridMagnifier"}
                 }
             },
             "photoEditor": {
-                "module": "photo-editor.reel",
-                "name": "PhotoEditor",
+                "prototype": "photo-editor.reel",
                 "properties": {
                     "element": {"#": "editor"}
                 },
                 "bindings": {
-                    "photo": {
-                        "boundObject": {"@": "photoController"},
-                        "boundObjectPropertyPath": "selectedObjects.0",
-                        "oneway": true
-                    }
+                    "photo": {"<-": "@photoController.selectedObjects.0"}
                 }
             },
             "effectsPanel": {
-                "module": "effects-panel.reel",
-                "name": "EffectsPanel",
+                "prototype": "effects-panel.reel",
                 "properties": {
                     "element": {"#": "effectsPanel"},
                     "editor": {"@": "photoEditor"}
                 }
             },
             "photoThumb": {
-                "module": "photo-thumb.reel",
-                "name": "PhotoThumb",
+                "prototype": "photo-thumb.reel",
                 "properties": {
                     "element": {"#": "photoThumb"}
                 },
                 "bindings": {
-                    "photo": {
-                        "boundObject": {"@": "photoList"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "photo": {"<-": "@photoList.objectAtCurrentIteration"}
                 }
             },
             "photoList": {
-                "module": "montage/ui/list.reel",
-                "name": "List",
+                "prototype": "montage/ui/list.reel",
                 "properties": {
                     "element": {"#": "photoList"},
                     "axis": "horizontal",
@@ -80,23 +63,17 @@
             },
 
             "supportsCrossOriginCanvasCondition": {
-                "module": "montage/ui/condition.reel",
-                "name": "Condition",
+                "prototype": "montage/ui/condition.reel",
                 "properties": {
                     "element": {"#": "supportsCrossOriginCanvasCondition"}
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "supportsCrossOriginCanvas",
-                        "oneway": true
-                    }
+                    "condition": {"<-": "@owner.supportsCrossOriginCanvas"}
                 }
             },
 
             "addPhotosButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "addPhotosButton"},
                     "identifier": "addPhotosButton"
@@ -111,23 +88,17 @@
             },
 
             "removeSelectionCondition": {
-                "module": "montage/ui/condition.reel",
-                "name": "Condition",
+                "prototype": "montage/ui/condition.reel",
                 "properties": {
                     "element": {"#": "removeSelectionCondition"}
                 },
                 "bindings": {
-                    "condition": {
-                        "boundObject": {"@": "photoController"},
-                        "boundObjectPropertyPath": "selectedObjects.0",
-                        "oneway": true
-                    }
+                    "condition": {"<-": "@photoController.selectedObjects.0"}
                 }
             },
 
             "removePhotoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "removePhotoButton"},
                     "identifier": "removePhotoButton"
@@ -142,16 +113,14 @@
             },
 
             "searchPanel": {
-                "module": "search-panel.reel",
-                "name": "SearchPanel",
+                "prototype": "search-panel.reel",
                 "properties": {
                     "photoListController": {"@": "photoController"}
                 }
             },
 
             "owner": {
-                "module": "main.reel",
-                "name": "Main",
+                "prototype": "main.reel",
                 "properties": {
                     "element": {"#": "main"},
                     "photoListController": {"@": "photoController"},
@@ -161,8 +130,7 @@
             },
 
             "toggleControlsButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "toggleControlsButton"},
                     "identifier": "toggleShowControlsButton"
@@ -177,23 +145,14 @@
             },
 
             "undoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "undoButton"},
                     "identifier": "undoButton"
                 },
                 "bindings": {
-                    "label": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "undoManager.undoLabel",
-                        "oneway": true
-                    },
-                    "enabled": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "undoManager.canUndo",
-                        "oneway": true
-                    }
+                    "label": {"<-": "@owner.undoManager.undoLabel"},
+                    "enabled": {"<-": "@owner.undoManager.canUndo"}
                 },
                 "listeners": [
                     {
@@ -205,23 +164,14 @@
             },
 
             "redoButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "redoButton"},
                     "identifier": "redoButton"
                 },
                 "bindings": {
-                    "label": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "undoManager.redoLabel",
-                        "oneway": true
-                    },
-                    "enabled": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "undoManager.canRedo",
-                        "oneway": true
-                    }
+                    "label": {"<-": "@owner.undoManager.redoLabel"},
+                    "enabled": {"<-": "@owner.undoManager.canRedo"}
                 },
                 "listeners": [
                     {
@@ -232,36 +182,36 @@
                 ]
             }
 
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
 
-    <div id="main" class="PhotoFX main">
+    <div data-montage-id="main" class="PhotoFX main">
 
         <div class="mainMenu">
-            <button id="toggleControlsButton" class="btn primary ToggleControlsButton">✎</button>
-            <button id="undoButton" class="btn UndoButton">⤺ </button>
-            <button id="redoButton" class="btn RedoButton">⤻ </button>
+            <button data-montage-id="toggleControlsButton" class="btn primary ToggleControlsButton">✎</button>
+            <button data-montage-id="undoButton" class="btn UndoButton">⤺ </button>
+            <button data-montage-id="redoButton" class="btn RedoButton">⤻ </button>
         </div>
 
         <div class="editArea">
-            <div id="gridMagnifier"></div>
-            <div id="editor"></div>
+            <div data-montage-id="gridMagnifier"></div>
+            <div data-montage-id="editor"></div>
         </div>
 
-        <div id="effectsPanel" class="floatingPanel"></div>
+        <div data-montage-id="effectsPanel" class="floatingPanel"></div>
 
         <div class="PhotoPanel floatingPanel">
-            <div id="photoList" class="PhotoList">
-                <div id="photoThumb"></div>
+            <div data-montage-id="photoList" class="PhotoList">
+                <div data-montage-id="photoThumb"></div>
             </div>
-            <div id="supportsCrossOriginCanvasCondition">
+            <div data-montage-id="supportsCrossOriginCanvasCondition">
                 <div class="controlPanel">
-                    <button id="addPhotosButton" class="text AddPhotosButton btn success">Add Photos…</button>
-                    <div id="removeSelectionCondition">
-                        <button id="removePhotoButton" class="text RemovePhotosButton btn danger">Remove Photo</button>
+                    <button data-montage-id="addPhotosButton" class="text AddPhotosButton btn success">Add Photos…</button>
+                    <div data-montage-id="removeSelectionCondition">
+                        <button data-montage-id="removePhotoButton" class="text RemovePhotosButton btn danger">Remove Photo</button>
                     </div>
                 </div>
             </div>

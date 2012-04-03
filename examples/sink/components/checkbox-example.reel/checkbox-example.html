@@ -7,11 +7,10 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "checkbox1": {
-                    "module": "montage/ui/checkbox.reel",
-                    "name": "Checkbox",
+                    "prototype": "montage/ui/checkbox.reel",
                     "properties": {
                         "element": {"#": "checkbox1"}
                     },
@@ -24,8 +23,7 @@
                 },
 
                 "checkbox2": {
-                    "module": "montage/ui/checkbox.reel",
-                    "name": "Checkbox",
+                    "prototype": "montage/ui/checkbox.reel",
                     "properties": {
                         "element": {"#": "checkbox2"},
                         "checked": true
@@ -38,43 +36,34 @@
                     ]
                 },
 
-                "agree-checkbox": {
-                    "module": "montage/ui/checkbox.reel",
-                    "name": "Checkbox",
+                "agreeCheckbox": {
+                    "prototype": "montage/ui/checkbox.reel",
                     "properties": {
-                        "element": {"#": "agree-checkbox"}
+                        "element": {"#": "agreeCheckbox"}
                     }
                 },
-                "continue-button": {
-                    "module": "montage/ui/button.reel",
-                    "name": "Button",
+                "continueButton": {
+                    "prototype": "montage/ui/button.reel",
                     "properties": {
-                        "element": {"#": "continue-button"}
+                        "element": {"#": "continueButton"}
                     },
                     "bindings": {
-                        "disabled": {
-                            "boundObject": {"@": "agree-checkbox"},
-                            "boundObjectPropertyPath": "checked",
-                            "converter": {"@": "invert-converter"},
-                            "oneway": true
-                        }
+                        "disabled": {"<-": "@agreeCheckbox.checked", "converter": {"@": "invertConverter"}}
                     }
                 },
 
-                "invert-converter": {
-                    "module": "components/converters.reel",
-                    "name": "InvertConverter"
+                "invertConverter": {
+                    "prototype": "components/converters.reel[InvertConverter]"
                 },
 
                 "logger": {
-                    "module": "logger.reel",
-                    "name": "Logger",
+                    "prototype": "logger.reel",
                     "properties": {
                         "element": {"#": "logger"}
                     }
                 },
-                
-                
+
+
                 "controller": {
                     "name": "ArrayController",
                     "module": "montage/ui/controller/array-controller",
@@ -83,17 +72,12 @@
                         "automaticallyOrganizeObjects": true
                     },
                     "bindings": {
-                        "content": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "data",
-                            "oneway": true
-                        }
+                        "content": {"<-": "@owner.data"}
                     }
                 },
 
                 "list1": {
-                    "module": "montage/ui/repetition.reel",
-                    "name": "Repetition",
+                    "prototype": "montage/ui/repetition.reel",
                     "properties": {
                         "element": {
                             "#": "table-row"
@@ -105,73 +89,68 @@
                 },
 
                 "link": {
-                    "module": "montage/ui/anchor.reel",
-                    "name": "Anchor",
+                    "prototype": "montage/ui/anchor.reel",
                     "properties": {
                         "element": {"#": "link"}
                     },
                     "bindings": {
-                        "href": {
-                            "boundObject": {"@": "list1"},
-                            "boundObjectPropertyPath": "objectAtCurrentIteration.href",
-                            "oneway": true
-                        },
-                        "textContent": {
-                            "boundObject": {"@": "list1"},
-                            "boundObjectPropertyPath": "objectAtCurrentIteration.src",
-                            "oneway": true
-                        }
+                        "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+                        "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
                     }
                 },
 
                 "desc": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "desc"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "list1"},
-                            "boundObjectPropertyPath": "objectAtCurrentIteration.description",
-                            "oneway": true
-                        }
+                        "value": {"<-": "@list1.objectAtCurrentIteration.description"}
                     }
                 },
 
 
                 "selection": {
-                    "module": "montage/ui/checkbox.reel",
-                    "name": "Checkbox",
+                    "prototype": "montage/ui/checkbox.reel",
                     "properties": {
                         "element": {"#": "selection"}
                     },
                     "bindings": {
-                        "checked": {
-                            "boundObject": {"@": "list1"},
-                            "boundObjectPropertyPath": "selectionAtCurrentIteration"
-                        }
+                        "checked": {"<<->": "@list1.selectionAtCurrentIteration"}
                     }
                 },
 
-                "selected-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                "selectedValue": {
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
-                        "element": {"#": "selected-value"}
+                        "element": {"#": "selectedValue"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "jsonSelectedItems"
-                        }
+                        "value": {"<<->": "@owner.jsonSelectedItems"}
                     }
                 },
-                
+                "checkboxAccordion1": {
+                    "prototype": "accordion.reel",
+                    "properties": {
+                        "element": {"#": "checkboxAccordion1"}
+                    }
+                },
+                "checkboxAccordion2": {
+                    "prototype": "accordion.reel",
+                    "properties": {
+                        "element": {"#": "checkboxAccordion2"}
+                    }
+                },
+                "checkboxAccordion3": {
+                    "prototype": "accordion.reel",
+                    "properties": {
+                        "element": {"#": "checkboxAccordion3"}
+                    }
+                },
+
 
                 "owner": {
-                    "module": "components/checkbox-example.reel",
-                    "name": "CheckboxExample",
+                    "prototype": "components/checkbox-example.reel",
                     "properties": {
                         "element": {"#": "checkbox-example"},
                         "data": [
@@ -181,14 +160,11 @@
                         ]
                     },
                     "bindings": {
-                        "selectedItems": {
-                            "boundObject": {"@": "controller"},
-                            "boundObjectPropertyPath": "selectedObjects"
-                        }                     
+                        "selectedItems": {"<<->": "@controller.selectedObjects"}
                     }
                 }
-            }
-        </script>
+
+    }</script>
 
         <style>
            table tr.selected {
@@ -197,33 +173,176 @@
         </style>
     </head>
     <body>
-        <div id="checkbox-example" class="checkbox-example">
+        <div data-montage-id="checkbox-example" class="checkbox-example">
             <div class="row">
-                <div class="span8">
+                <div class="span12">
                     <h3>Checkbox</h3>
                     <p>
                         The Checkbox component wraps an HTML checkbox input type with custom styles and functionality.
                     </p>
                 </div>
             </div>
-            
-            <h4>Demo</h4>
 
-            <div class="demo">
-                
+            <h4>Examples</h4>
+
+            <div class="demo cb1">
+
                 <form class="form-stacked">
-                    <label class="checkbox inline"><input id="checkbox1" type="checkbox" /> Milk </label>
-                    <label class="checkbox inline"><input id="checkbox2" type="checkbox" /> Eggs</label>
+                    <label class="checkbox inline"><input data-montage-id="checkbox1" type="checkbox" /> Milk </label>
+                    <label class="checkbox inline"><input data-montage-id="checkbox2" type="checkbox" /> Eggs</label>
                 </form>
-                
+
+            </div>
+
+            <section>
+                <ul data-montage-id="checkboxAccordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;form class="form-stacked"&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox1" type="checkbox" /&gt; Milk &lt;/label&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox2" type="checkbox" /&gt; Eggs&lt;/label&gt;
+&lt;/form&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "checkbox1": {
+        "prototype": "montage/ui/checkbox.reel",
+        "properties": {
+            "element": {"#": "checkbox1"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
+    "checkbox2": {
+        "prototype": "montage/ui/checkbox.reel",
+        "properties": {
+            "element": {"#": "checkbox2"},
+            "checked": true
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
+    "logger": {
+        "prototype": "logger.reel",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                </ul>
+
+            </section>
+
+
+
                 <h4>Binding the Checkbox to a Button's disabled state</h4>
+
+
+            <div class="demo cb2">
                 <form class="form-stacked">
-                    <label class="checkbox inline"><input type="checkbox" id="agree-checkbox"/> I agree to something</label><br/>
-                    <input type="submit" id="continue-button" value="Continue" class="btn" disabled />
+                    <label class="checkbox inline"><input type="checkbox" data-montage-id="agreeCheckbox"/> I agree to something</label><br/>
+                    <input type="submit" data-montage-id="continueButton" value="Continue" class="btn" disabled />
                 </form>
-                
-                <h4>Using Checkbox to select multiple items within a Repetition </h4>
-                <table id="list1" class="bordered-table">
+            </div>
+            <section>
+                <ul data-montage-id="checkboxAccordion2" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;form class="form-stacked"&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input type="checkbox" data-montage-id="agreeCheckbox"/&gt; I agree to something&lt;/label&gt;&lt;br/&gt;
+    &lt;input type="submit" data-montage-id="continueButton" value="Continue" class="btn" disabled /&gt;
+&lt;/form&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "agreeCheckbox": {
+        "prototype": "montage/ui/checkbox.reel",
+        "properties": {
+            "element": {"#": "agreeCheckbox"}
+        }
+    },
+    "continueButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "continueButton"}
+        },
+        "bindings": {
+            "disabled": {"&lt;-": "@agreeCheckbox.checked", "converter": {"@": "invertConverter"}}
+        }
+    },
+
+    "invertConverter": {
+        "prototype": "components/converters.reel[InvertConverter]"
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+
+var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
+
+   allowPartialConversion: {
+       value: true
+   },
+
+   convert: {
+       enumerable: false,
+       value: function(v) {
+           return !v;
+       }
+   },
+
+   revert: {
+       value: function(v) {
+           return !v;
+       }
+   }
+});
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+
+            </section>
+
+
+
+            <h4>Using Checkbox to select multiple items within a Repetition </h4>
+            <div class="demo cb3">
+                <table data-montage-id="list1" class="bordered-table">
                     <thead>
                         <tr>
                             <th>Selection</th>
@@ -231,25 +350,150 @@
                             <th>Description</th>
                         </tr>
                     </thead>
-                    <tbody id="table-row">
+                    <tbody data-montage-id="table-row">
                         <tr>
-                             <td><input type="checkbox" id="selection" /></td>
-                            <td><a id="link" target="_blank"></a></td>
-                            <td><span id="desc"></span></td>
+                             <td><input type="checkbox" data-montage-id="selection" /></td>
+                            <td><a data-montage-id="link" target="_blank"></a></td>
+                            <td><span data-montage-id="desc"></span></td>
                         </tr>
                     </tbody>
                 </table>
 
                 <div>
                     <h5>Your selections: </h5>
-                    <span id="selected-value"  style="width: 400px;"></span>
+                    <span data-montage-id="selectedValue"  style="width: 400px;"></span>
                 </div>
-                
             </div>
+
             <section>
-                <a href="m-js/examples/sink/components/substitution-example.reel" target="_blank">View Demo Source</a>
+                <ul data-montage-id="checkboxAccordion3" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;table data-montage-id="list1" class="bordered-table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Selection&lt;/th&gt;
+            &lt;th&gt;Name&lt;/th&gt;
+            &lt;th&gt;Description&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody data-montage-id="table-row"&gt;
+        &lt;tr&gt;
+             &lt;td&gt;&lt;input type="checkbox" data-montage-id="selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div&gt;
+    &lt;h5&gt;Your selections: &lt;/h5&gt;
+    &lt;span data-montage-id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "owner": {
+        "prototype": "components/checkbox-example.reel",
+        "properties": {
+            "element": {"#": "checkbox-example"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        },
+        "bindings": {
+            "selectedItems": {"&lt;&lt;-&gt;": "@controller.selectedObjects"}
+        }
+    },
+
+    "controller": {
+        "name": "ArrayController",
+        "module": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"&lt;-": "@owner.data"}
+        }
+    },
+
+    "list1": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "controller"},
+            "axis": "horizontal"
+        }
+    },
+
+    "link": {
+        "prototype": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {"&lt;-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"&lt;-": "@list1.objectAtCurrentIteration.src"}
+        }
+    },
+
+    "desc": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@list1.objectAtCurrentIteration.description"}
+        }
+    },
+
+
+    "selection": {
+        "prototype": "montage/ui/checkbox.reel",
+        "properties": {
+            "element": {"#": "selection"}
+        },
+        "bindings": {
+            "checked": {"&lt;&lt;-&gt;": "@list1.selectionAtCurrentIteration"}
+        }
+    },
+
+    "selectedValue": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "selectedValue"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.jsonSelectedItems"}
+        }
+    }
+
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                </ul>
             </section>
-            
+
+
+            <section>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/checkbox-example.reel" target="_blank">View source on GitHub</a>
+            </section>
+<!--
             <section>
                 <h4>Component Properties</h4>
                 <table>
@@ -268,15 +512,15 @@
                       <td>name</td>
                       <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
                     </tr>
-                    
+
                   </tbody>
                 </table>
                 <p>
                     <a href="" target="_blank">View full Documentation</a>
                 </p>
             </section>
-
-            <div id="logger"></div>
+ -->
+            <div data-montage-id="logger"></div>
 
         </div>
     </body>

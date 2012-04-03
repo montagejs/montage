@@ -1,3 +1,73 @@
+# v0.7.0
+
+-   Adding `ownerComponent` property to the Component.
+    When the template is deserialized we populate the ownerComponent property of any component created within it's
+    serialization with the owner of the template.
+-   Adding `setElementWithParentComponent` function on the Component.
+    This formalizes the API to set a detached element to a component. The caller is responsible for appending the
+    element to the DOM before prepareForDraw is called on the callee.
+-   Serialization changes
+    -   Specifying types and references
+        1.  Changed the way we specify an object by merging the module id and the name into only one string using
+            `"<module>[<name>]"` (e.g.: `"montage/ui/button.reel[Button]"`). When the name matches the last part of the module
+            id then it's automatically inferred and there's no need to provide it. The last part of the module id is considered
+            to be the last path component (e.g.: `"event-name"` in `"montage/event/event-name"`) transformed to CamelCase with
+            dashes stripped (e.g.: `"EventName"`). When the last path component ends with `".reel"` then the component is
+            considered without its `".reel"` suffix (e.g: `"RadioButton"` for `"montage/ui/radio-button.reel"`). Under these new
+            rules we reach the following equivalence: `"montage/ui/button.reel[Button]" === "montage/ui/button.reel"`.
+        2.  The possibility to point to an object instead of just being able to declare an instance of a specific prototype.
+            We were using the pair `module/name` to declare an instance of that prototype, with this new change only one
+            property is needed -- `prototype` -- using the rules defined in 1). If, instead of a new object, we just want to
+            point to an existing one the new `object` property name should be used.
+
+            In practice this means a change from:
+
+                ```javascript
+                {
+                    "label": {
+                        "module": "montage/ui/button.reel",
+                        "name": "Button",
+                        "properties": {...}
+                    }
+                }
+                ```
+            to
+                ```javascript
+                {
+                    "label": {
+                        "prototype": "montage/ui/button.reel",
+                        "properties": {...}
+                    }
+                }
+                ```
+    -   Serialization labels are now used as the value of the identifier property by default.
+
+-   Properties with a leading underscore in their name are now {enumerable: false} by default.
+    i.e. defining a property as
+        ```javascript
+        _name: {value: null}
+        ```
+    is equivalent to doing
+        ```javascript
+        _name: {value: null, enumerable:false}
+        ```
+-   Components
+    -   Repetition: Adding indexMap property to provide the necessary underpinnings for large data handling.
+    -   SelectInput: Adding values and value property to be able to bind directly to the value of the selected option(s)
+    -   Scroller: Replaces Scrollview. Now uses the Translate composer.
+    -   Scrollview: _deprecated_
+-   Browser Support
+    -   Better support for Firefox
+    -   Better support for Opera
+
+# v0.6.0
+
+-   Native Controls based on HTML5 input elements
+-   Composers to add aggregate events and time dependent behaviors as is needed for scroll momentum and bouncing.
+-   Component Contents to make it easier to use existing wrapper components such as repetition in your own.
+-   Condition Component API improvements to lazily load parts of your component tree and easily show or hide sections of your page.
+-   Misc bug fixes and optimizations mostly in the loading of the app and the require/package system..
+
 # v0.5.0
 
 -   Added UndoManager.

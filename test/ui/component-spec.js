@@ -84,7 +84,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     componentDtarget.content = originalContent;
                     testPage.waitForDraw();
                     runs(function() {
-                        expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div>D1</div>\n    </h1>\n");
+                        expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div data-montage-id=\"componentD1\">D1</div>\n    </h1>\n");
                     });
                 });
 
@@ -453,6 +453,13 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     expect(testPage.test.componentToBeCleaned.text._element.textContent).toBe("New Text");
                 })
             })
+
         });
+
+        it("does not allow the element to be changed", function() {
+            var oldElement = testPage.test.text1.element;
+            testPage.test.text1.element = testPage.document.createElement("div");
+            expect(testPage.test.text1.element).toBe(oldElement);
+        })
     });
 });

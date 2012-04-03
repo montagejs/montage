@@ -7,26 +7,23 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "owner": {
-                    "module": "components/slider-example.reel",
-                    "name": "SliderExample",
+                    "prototype": "components/slider-example.reel",
                     "properties": {
                         "element": {"#": "slider-example"},
                         "image": {"#": "image"}
                     }
                 },
                 "roundTo2Decimals": {
-                    "module": "montage/core/converter/number-converter",
-                    "name": "NumberConverter",
+                    "prototype": "montage/core/converter/number-converter",
                     "properties": {
                         "decimals": 2
                     }
                 },
                 "red": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
+                    "prototype": "montage/ui/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "color-red"},
                         "minValue": "-1",
@@ -35,30 +32,20 @@
                         "value": "0"
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "red"
-                        }
+                        "value": {"<<->": "@owner.red"}
                     }
                 },
                 "red-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "red-value"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "red",
-                            "converter": {"@": "roundTo2Decimals"},
-                            "oneway": true
-                        }
+                        "value": {"<-": "@owner.red", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
                 "green": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
+                    "prototype": "montage/ui/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "color-green"},
                         "minValue": "-1",
@@ -67,30 +54,20 @@
                         "value": "0"
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "green"
-                        }
+                        "value": {"<<->": "@owner.green"}
                     }
                 },
                 "green-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "green-value"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "green",
-                            "converter": {"@": "roundTo2Decimals"},
-                            "oneway": true
-                        }
+                        "value": {"<-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
                 "blue": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
+                    "prototype": "montage/ui/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "color-blue"},
                         "minValue": "-1",
@@ -99,31 +76,21 @@
                         "value": "0"
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "blue"
-                        }
+                        "value": {"<<->": "@owner.blue"}
                     }
                 },
                 "blue-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "blue-value"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "blue",
-                            "converter": {"@": "roundTo2Decimals"},
-                            "oneway": true
-                        }
+                        "value": {"<-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
 
                 "sharpness": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
+                    "prototype": "montage/ui/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "sharpness-amount"},
                         "minValue": "0",
@@ -132,31 +99,21 @@
                         "value": "0"
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "sharpnessAmount"
-                        }
+                        "value": {"<<->": "@owner.sharpnessAmount"}
                     }
                 },
                 "sharpness-amount-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "sharpness-amount-value"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "sharpnessAmount",
-                            "converter": {"@": "roundTo2Decimals"},
-                            "oneway": true
-                        }
+                        "value": {"<-": "@owner.sharpnessAmount", "converter": {"@": "roundTo2Decimals"}}
                     }
                 },
 
                 "reset": {
-                    "module": "montage/ui/button.reel",
-                    "name": "Button",
+                    "prototype": "montage/ui/button.reel",
                     "properties": {
                         "element": {"#": "reset"},
                         "identifier": "reset"
@@ -168,8 +125,8 @@
                         }
                     ]
                 }
-            }
-        </script>
+
+    }</script>
 
         <style>
             .slider-example .demo{
@@ -193,7 +150,7 @@
         </style>
     </head>
     <body>
-        <div id="slider-example" class="slider-example">
+        <div data-montage-id="slider-example" class="slider-example">
             <div class="row">
                 <div class="span8">
                     <h3>Slider</h3>
@@ -207,25 +164,25 @@
             <div class="demo">
             <div class="row">
                 <div class="span6">
-                    <img id="image" src="images/IMG_1416.jpg" style="height: 300px; width: 450px;" class="image"/>
+                    <img data-montage-id="image" id="image" src="images/IMG_1416.jpg" style="height: 300px; width: 450px;" class="image"/>
                 </div>
                 <div class="span6">
                     <h6>Color</h6>
                     <div class="control">
                         <div>
                             Red:
-                            <div id="color-red" />
-                            <span id="red-value" class="range-value">0.5</span>
+                            <div data-montage-id="color-red" />
+                            <span data-montage-id="red-value" class="range-value">0.5</span>
                         </div>
                         <div>
                             Green:
-                            <div id="color-green"  />
-                            <span id="green-value" class="range-value"/>
+                            <div data-montage-id="color-green"  />
+                            <span data-montage-id="green-value" class="range-value"/>
                         </div>
                         <div>
                             Blue:
-                            <div id="color-blue"  />
-                            <span id="blue-value" class="range-value" />
+                            <div data-montage-id="color-blue"  />
+                            <span data-montage-id="blue-value" class="range-value" />
                         </div>
 
 
@@ -236,23 +193,23 @@
                     <div class="control">
                         <div>
                             Amount:
-                            <div id="sharpness-amount" />
-                            <span id="sharpness-amount-value" class="range-value">0.5</span>
+                            <div data-montage-id="sharpness-amount" />
+                            <span data-montage-id="sharpness-amount-value" class="range-value">0.5</span>
                         </div>
                     </div>
 
 
-                    <button id="reset" class="btn cancel small">Reset</button>
+                    <button data-montage-id="reset" class="btn cancel small">Reset</button>
 
                 </div>
             </div>
             </div>
 
             <section>
-                <a href="m-js/examples/sink/components/slider-example.reel" target="_blank">View Demo Source</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/slider-example.reel" target="_blank">View source on GitHub</a>
             </section>
 
-            <section>
+<!--             <section>
                 <h4>Component Properties</h4>
                 <table>
                   <thead>
@@ -295,6 +252,6 @@
                 <p>
                     <a href="" target="_blank">View full Documentation</a>
                 </p>
-            </section>
+            </section> -->
     </body>
 </html>

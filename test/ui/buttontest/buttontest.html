@@ -9,86 +9,75 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>ButtonTest</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "divbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "divbutton"}
         }
     },
     "inputbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "inputbutton"}
         }
     },
     "buttonbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "buttonbutton"}
         }
     },
 
     "disabledbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "disabledbutton"}
         }
     },
     "disabledinput": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "disabledinput"}
         }
     },
     "disabledinputszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "disabledinputszn"},
             "disabled": true
         }
     },
     "enabledinputszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "enabledinputszn"},
             "enabled": true
         }
     },
     "buttonlabelszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "buttonlabelszn"},
             "label": "pass"
         }
     },
     "inputlabelszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "inputlabelszn"},
             "label": "pass"
         }
     },
     "buttonnested": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "buttonnested"}
         }
     },
     "inputactionszn": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "inputactionszn"},
             "action": {"->": {"arguments":[], "body": "window.actionFunction = true;"}}
@@ -96,37 +85,30 @@
     },
 
     "textinput": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "textinput"}
         }
     },
     "converterbutton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "converterbutton"},
             "converter": {"@": "uppercaseconverter"}
         },
         "bindings": {
-            "label": {
-                "boundObject": {"@": "textinput"},
-                "boundObjectPropertyPath": "value"
-            }
+            "label": {"<<->": "@textinput.value"}
         }
     },
     "uppercaseconverter": {
-        "module": "montage/core/converter/upper-case-converter",
-        "name": "UpperCaseConverter",
+        "prototype": "montage/core/converter/upper-case-converter",
         "properties": {
 
         }
     },
 
     "toggleinput": {
-        "module": "montage/ui/toggle-button.reel",
-        "name": "ToggleButton",
+        "prototype": "montage/ui/toggle-button.reel",
         "properties": {
             "element": {"#": "toggleinput"},
             "pressedLabel": "on",
@@ -134,8 +116,7 @@
         }
     },
     "toggleinput2": {
-        "module": "montage/ui/toggle-button.reel",
-        "name": "ToggleButton",
+        "prototype": "montage/ui/toggle-button.reel",
         "properties": {
             "element": {"#": "toggleinput2"},
             "pressedLabel": "on",
@@ -143,8 +124,7 @@
         }
     },
     "toggleinput3": {
-        "module": "montage/ui/toggle-button.reel",
-        "name": "ToggleButton",
+        "prototype": "montage/ui/toggle-button.reel",
         "properties": {
             "element": {"#": "toggleinput3"},
             "pressed": true,
@@ -153,15 +133,13 @@
     },
 
     "scroll": {
-        "module": "montage/ui/scroller.reel",
-        "name": "Scroller",
+        "prototype": "montage/ui/scroller.reel",
         "properties": {
             "element": {"#": "scroll"}
         }
     },
     "scroll_button": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "scroll_button"}
         },
@@ -173,10 +151,29 @@
         ]
     },
 
+    "loggingbutton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "loggingbutton"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "test"}
+            }
+        ]
+    },
+
+    "output": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "output"},
+            "value": ""
+        }
+    },
 
     "test": {
-        "module": "ui/buttontest/buttontest",
-        "name": "ButtonTest",
+        "prototype": "ui/buttontest/buttontest[ButtonTest]",
         "properties": {
             "divbutton": {"@": "divbutton"},
             "inputbutton": {"@": "inputbutton"},
@@ -197,25 +194,25 @@
             "toggleinput2": {"@": "toggleinput2"},
             "toggleinput3": {"@": "toggleinput3"},
             "scroll": {"@": "scroll"},
-            "scroll_button": {"@": "scroll_button"}
+            "scroll_button": {"@": "scroll_button"},
+            "output": {"@": "output"}
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body>
     <h1>Button test</h1>
 
     <h2>Output</h2>
-    <span id="output">output</span>
+    <span id="output" data-montage-id="output">output</span>
 
     <h2>Basic</h2>
     <div id="divbutton">div button</div>
@@ -262,5 +259,7 @@
     <input type="button" id="toggleinput3" value="on">
 
     <input type="button" value="regular button" onclick="alert('hello');" />
+
+    <button id="loggingbutton">Logging button</button>
 </body>
 </html>

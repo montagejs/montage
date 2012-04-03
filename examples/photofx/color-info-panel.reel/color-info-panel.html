@@ -10,61 +10,45 @@
     <title>ColorInfoPanel</title>
     <link rel="stylesheet" type="text/css" href="color-info-panel.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
-                "module": "color-info-panel.reel",
-                "name": "ColorInfoPanel",
+                "prototype": "color-info-panel.reel",
                 "properties": {
                     "element": {"#": "ColorInfoPanel"}
                 }
             },
 
             "pointMonitorRepetition": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "pointMonitors"},
                     "isSelectionEnabled": true
                 },
                 "bindings": {
-                    "contentController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "pointMonitorController",
-                        "oneway": true
-                    }
+                    "contentController": {"<-": "@owner.pointMonitorController"}
                 }
             },
             "colorPicker": {
-                "module": "color-picker.reel",
-                "name": "ColorPicker",
+                "prototype": "color-picker.reel",
                 "properties": {
                     "element": {"#": "colorPicker"}
                 },
                 "bindings": {
-                    "currentColor": {
-                        "boundObject": {"@": "pointMonitorRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.color"
-                    },
-                    "x": {
-                        "boundObject": {"@": "pointMonitorRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.x"
-                    },
-                    "y": {
-                        "boundObject": {"@": "pointMonitorRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.y"
-                    }
+                    "currentColor": {"<<->": "@pointMonitorRepetition.objectAtCurrentIteration.color"},
+                    "x": {"<<->": "@pointMonitorRepetition.objectAtCurrentIteration.x"},
+                    "y": {"<<->": "@pointMonitorRepetition.objectAtCurrentIteration.y"}
                 }
             }
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
 
-    <div id="ColorInfoPanel" class="ColorInfoPanel">
-        <div id="pointMonitors">
-            <div id="colorPicker"></div>
+    <div data-montage-id="ColorInfoPanel" class="ColorInfoPanel">
+        <div data-montage-id="pointMonitors">
+            <div data-montage-id="colorPicker"></div>
         </div>
     </div>
 

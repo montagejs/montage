@@ -9,22 +9,17 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>SelectInputTest</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-     <script type="text/montage-serialization">
-{
+     <script type="text/montage-serialization">{
+
     "dept": {
-        "module": "montage/ui/select-input.reel",
-        "name": "SelectInput",
+        "prototype": "montage/ui/select-input.reel",
         "properties": {
             "element": {"#": "dept"},
             "textPropertyPath": "name",
             "valuePropertyPath": "code"
         },
         "bindings": {
-            "content": {
-                "boundObject": {"@": "test"},
-                "boundObjectPropertyPath": "departments",
-                "oneway": true
-            }
+            "content": {"<-": "@test.departments"}
         }
     },
 
@@ -40,8 +35,7 @@
     },
 
     "state": {
-        "module": "montage/ui/select-input.reel",
-        "name": "SelectInput",
+        "prototype": "montage/ui/select-input.reel",
         "properties": {
             "element": {"#": "state"},
             "contentController": {"@": "statesController"},
@@ -51,121 +45,94 @@
     },
 
     "country": {
-        "module": "montage/ui/select-input.reel",
-        "name": "SelectInput",
+        "prototype": "montage/ui/select-input.reel",
         "properties": {
             "element": {"#": "country"}
         }
     },
 
     "scroll1": {
-        "module": "montage/ui/scroller.reel",
-        "name": "Scroller",
+        "prototype": "montage/ui/scroller.reel",
         "properties": {
             "element": {"#": "scroller"}
         }
     },
 
     "country1": {
-        "module": "montage/ui/select-input.reel",
-        "name": "SelectInput",
+        "prototype": "montage/ui/select-input.reel",
         "properties": {
             "element": {"#": "country1"}
         }
     },
 
-    "no-default-selection": {
-        "module": "montage/ui/select-input.reel",
-        "name": "SelectInput",
+    "noDefaultSelection": {
+        "prototype": "montage/ui/select-input.reel",
         "properties": {
-            "element": {"#": "no-default-selection"}
+            "element": {"#": "noDefaultSelection"}
         }
     },
 
-        "justify-comparator-left": {
-            "module": "ui/controls/select-input-fail.reel",
-            "name": "JustifyConverter",
+        "justifyComparatorLeft": {
+            "prototype": "ui/controls/select-input-fail.reel[JustifyConverter]",
             "properties": {
                 "justify": "left"
             }
         },
-        "justify-comparator-right": {
-            "module": "ui/controls/select-input-fail.reel",
-            "name": "JustifyConverter",
+        "justifyComparatorRight": {
+            "prototype": "ui/controls/select-input-fail.reel[JustifyConverter]",
             "properties": {
                 "justify": "right"
             }
         },
-        "justify-comparator-center": {
-            "module": "ui/controls/select-input-fail.reel",
-            "name": "JustifyConverter",
+        "justifyComparatorCenter": {
+            "prototype": "ui/controls/select-input-fail.reel[JustifyConverter]",
             "properties": {
                 "justify": "center"
             }
         },
-        "justify-left": {
-            "module": "montage/ui/toggle-button.reel",
-            "name": "ToggleButton",
+        "justifyLeft": {
+            "prototype": "montage/ui/toggle-button.reel",
             "properties": {
-                "element": {"#": "justify-left"},
+                "element": {"#": "justifyLeft"},
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify",
-                    "converter": {"@": "justify-comparator-left"}
-                }
+                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorLeft"}}
             }
         },
-        "justify-center": {
-            "module": "montage/ui/toggle-button.reel",
-            "name": "ToggleButton",
+        "justifyCenter": {
+            "prototype": "montage/ui/toggle-button.reel",
             "properties": {
-                "element": {"#": "justify-center"},
+                "element": {"#": "justifyCenter"},
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify",
-                    "converter": {"@": "justify-comparator-center"}
-                }
+                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorCenter"}}
             }
         },
-        "justify-right": {
-            "module": "montage/ui/toggle-button.reel",
-            "name": "ToggleButton",
+        "justifyRight": {
+            "prototype": "montage/ui/toggle-button.reel",
             "properties": {
-                "element": {"#": "justify-right"},
+                "element": {"#": "justifyRight"},
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify",
-                    "converter": {"@": "justify-comparator-right"}
-                }
+                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorRight"}}
             }
         },
-        "justify-select": {
-            "module": "montage/ui/select-input.reel",
-            "name": "SelectInput",
+        "justifySelect": {
+            "prototype": "montage/ui/select-input.reel",
             "properties": {
-                "element": {"#": "justify-select"}
+                "element": {"#": "justifySelect"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify"
-                }
+                "value": {"<<->": "@test.justify"}
             }
         },
-        "justify-result": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+        "justifyResult": {
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
-                "element": {"#": "justify-result"}
+                "element": {"#": "justifyResult"}
             },
             "bindings": {
                 "value": {
@@ -177,42 +144,31 @@
         },
 
     "test": {
-        "module": "ui/select-input-test/select-input-test",
-        "name": "SelectInputTest",
+        "prototype": "ui/select-input-test/select-input-test",
         "properties": {
             "dept": {"@": "dept"},
             "state": {"@": "state"},
             "country": {"@": "country"},
-            "noDefaultSelection": {"@": "no-default-selection"},
-            "justifySelect": {"@": "justify-select"},
+            "noDefaultSelection": {"@": "noDefaultSelection"},
+            "justifySelect": {"@": "justifySelect"},
             "statesController": {"@": "statesController"}
         },
         "bindings": {
-            "selectedCountry": {
-                "boundObject": {"@": "country"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            },
-            "selectedState": {
-                "boundObject": {"@": "state"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            },
-            "selectedDept": {
-                "boundObject": {"@": "dept"},
-                "boundObjectPropertyPath": "contentController.selectedObjects.0"
-            }
+            "selectedCountry": {"<<->": "@country.contentController.selectedObjects.0"},
+            "selectedState": {"<<->": "@state.contentController.selectedObjects.0"},
+            "selectedDept": {"<<->": "@dept.contentController.selectedObjects.0"}
         }
     },
 
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
 
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body>
@@ -237,7 +193,7 @@
                 <label for="state">State</label>
                 <select id="state" required="true"></select>
 
-                <select id="no-default-selection">
+                <select id="noDefaultSelection">
                     <option value="name">Name</option>
                     <option value="tags">Tags</option>
                 </select>
@@ -267,12 +223,12 @@
             <div class="demo">
                 <div style="height: 40px;">
                     <button id="justify-none" class="btn justify">-</button>
-                    <button id="justify-left" class="btn justify">L</button>
-                    <button id="justify-center" class="btn justify">C</button>
-                    <button id="justify-right" class="btn justify">R</button>
+                    <button id="justifyLeft" class="btn justify">L</button>
+                    <button id="justifyCenter" class="btn justify">C</button>
+                    <button id="justifyRight" class="btn justify">R</button>
                 </div>
                 <div>
-                    <select id="justify-select" class="justify-select">
+                    <select id="justifySelect" class="justifySelect">
                             <option value=""></option>
                             <option value="left">Left</option>
                             <option value="center">Center</option>
@@ -280,7 +236,7 @@
                     </select>
 
                     <p>
-                        Justify selection: <span id="justify-result"></span>
+                        Justify selection: <span id="justifyResult"></span>
                     </p>
                 </div>
             </div>

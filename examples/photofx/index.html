@@ -11,35 +11,25 @@
     <link rel="stylesheet" href="bootstrap.min.css">
     <script src="../../montage.js" data-package="."></script>
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
-                "module": "montage/ui/loader.reel",
-                "name": "Loader"
+                "prototype": "montage/ui/loader.reel"
             },
 
             "loadingPanel": {
-                "module": "montage/ui/loading-panel.reel",
-                "name": "LoadingPanel",
+                "prototype": "montage/ui/loading-panel.reel",
                 "properties": {
                     "element": {"#": "loadingPanel"}
                 },
                 "bindings": {
-                    "initializedModuleCount": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "initializedModules.count()",
-                        "oneway": true
-                    },
-                    "requiredModuleCount": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "requiredModules.count()",
-                        "oneway": true
-                    }
+                    "initializedModuleCount": {"<-": "@owner.initializedModules.count()"},
+                    "requiredModuleCount": {"<-": "@owner.requiredModules.count()"}
                 }
             }
 
-        }
-    </script>
+
+    }</script>
 
     <style type="text/css">
 
@@ -72,19 +62,19 @@
             text-shadow: 0 0px 6px hsla(200,100%,50%,.6);
         }
 
-        #montage-app-bootstrapper {
+        .montage-app-bootstrapper {
             display: none;
         }
 
-        .montage-app-bootstrapping #montage-app-bootstrapper {
+        .montage-app-bootstrapping .montage-app-bootstrapper {
             display: block;
         }
 
-        #montage-app-loader {
+        .montage-app-loader {
             display: none;
         }
 
-        .montage-app-loading #montage-app-loader {
+        .montage-app-loading .montage-app-loader {
             display: block;
         }
 
@@ -100,11 +90,11 @@
 
 </head>
 <body>
-    <div id="montage-app-bootstrapper">
+    <div data-montage-id="montage-app-bootstrapper" class="montage-app-bootstrapper">
         <h1>PhotoFX</h1>
     </div>
-    <div id="montage-app-loader">
-        <div id="loadingPanel"></div>
+    <div data-montage-id="montage-app-loader" class="montage-app-bootstrapper">
+        <div data-montage-id="loadingPanel"></div>
     </div>
 </body>
 </html>

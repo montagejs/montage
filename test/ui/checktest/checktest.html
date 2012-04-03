@@ -8,34 +8,30 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>CheckTest</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "check1": {
-        "module": "montage/ui/checkbox.reel",
-        "name": "Checkbox",
+        "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "check1"}
         }
     },
     "check2": {
-        "module": "montage/ui/checkbox.reel",
-        "name": "Checkbox",
+        "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "check2"}
         }
     },
 
     "check_szn1": {
-        "module": "montage/ui/checkbox.reel",
-        "name": "Checkbox",
+        "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "check_szn1"},
             "checked": false
         }
     },
     "check_szn2": {
-        "module": "montage/ui/checkbox.reel",
-        "name": "Checkbox",
+        "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "check_szn2"},
             "checked": true
@@ -43,60 +39,49 @@
     },
 
     "check_bound1": {
-        "module": "montage/ui/checkbox.reel",
-        "name": "Checkbox",
+        "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "check_bound1"},
             "checked": true
         },
         "bindings": {
-            "checked": {
-                "boundObject": {"@": "check_bound2"},
-                "boundObjectPropertyPath": "checked",
-                "oneway": true
-            }
+            "checked": {"<-": "@check_bound2.checked"}
         }
     },
     "check_bound2": {
-        "module": "montage/ui/checkbox.reel",
-        "name": "Checkbox",
+        "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "check_bound2"}
         }
     },
 
     "radio1": {
-        "module": "montage/ui/radio-button.reel",
-        "name": "RadioButton",
+        "prototype": "montage/ui/radio-button.reel",
         "properties": {
             "element": {"#": "radio1"}
         }
     },
     "radio2": {
-        "module": "montage/ui/radio-button.reel",
-        "name": "RadioButton",
+        "prototype": "montage/ui/radio-button.reel",
         "properties": {
             "element": {"#": "radio2"}
         }
     },
     "radio3": {
-        "module": "montage/ui/radio-button.reel",
-        "name": "RadioButton",
+        "prototype": "montage/ui/radio-button.reel",
         "properties": {
             "element": {"#": "radio3"}
         }
     },
 
     "scroll": {
-        "module": "montage/ui/scroller.reel",
-        "name": "Scroller",
+        "prototype": "montage/ui/scroller.reel",
         "properties": {
             "element": {"#": "scroll"}
         }
     },
     "scroll_check": {
-        "module": "montage/ui/checkbox.reel",
-        "name": "Checkbox",
+        "prototype": "montage/ui/checkbox.reel",
         "properties": {
             "element": {"#": "scroll_check"}
         },
@@ -109,8 +94,7 @@
     },
 
     "test": {
-        "module": "ui/checktest/checktest",
-        "name": "CheckTest",
+        "prototype": "ui/checktest/checktest[CheckTest]",
         "properties": {
             "check1": {"@": "check1"},
             "check2": {"@": "check2"},
@@ -126,14 +110,13 @@
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }
     }
-}
-    </script>
+
+    }</script>
 </head>
 <body>
     <h1>Checkbox tests</h1>

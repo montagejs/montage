@@ -7,66 +7,46 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "owner": {
-                    "module": "components/textarea-example.reel",
-                    "name": "TextareaExample",
+                    "prototype": "components/textarea-example.reel",
                     "properties": {
                         "element": {"#": "textarea-example"}
                     },
                     "bindings": {
-                        "info": {
-                            "boundObject": {"@": "info"},
-                            "boundObjectPropertyPath": "value"
-                        }
+                        "info": {"<<->": "@info.value"}
                     }
                 },
 
                 "fname": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
+                    "prototype": "montage/ui/textfield.reel",
                     "properties": {
                         "element": {"#": "fname"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        },
-                        "title": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "firstName",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner.firstName"},
+                        "title": {"<<->": "@owner.firstName"}
                     }
                 },
 
                 "lname": {
-                    "module": "montage/ui/textfield.reel",
-                    "name": "Textfield",
+                    "prototype": "montage/ui/textfield.reel",
                     "properties": {
                         "element": {"#": "lname"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "lastName",
-                            "oneway": false
-                        }
+                        "value": {"<<->": "@owner.lastName"}
                     }
                 },
                 "info": {
-                    "module": "montage/ui/TextArea.reel",
-                    "name": "TextArea",
+                    "prototype": "montage/ui/textarea.reel",
                     "properties": {
                         "element": {"#": "info"}
                     }
                 },
                 "update": {
-                    "module": "montage/ui/button.reel",
-                    "name": "Button",
+                    "prototype": "montage/ui/button.reel",
                     "properties": {
                         "element": {"#": "update"},
                         "identifier": "update"
@@ -78,9 +58,14 @@
                         }
                     ]
                 },
+                "textareaAccordion1": {
+                    "prototype": "accordion.reel",
+                    "properties": {
+                        "element": {"#": "textareaAccordion1"}
+                    }
+                },
                 "echo": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "echo"}
                     },
@@ -92,8 +77,8 @@
                         }
                     }
                 }
-            }
-        </script>
+
+    }</script>
 
         <style>
             .textarea-example textarea {
@@ -106,48 +91,150 @@
         </style>
     </head>
     <body>
-        <div id="textarea-example" class="textarea-example">
+        <div data-montage-id="textarea-example" class="textarea-example">
 
             <div class="row">
                 <div class="span8">
-                    <h3>TextArea</h3>
+                    <h3>Textarea</h3>
                     <p>
-                        The TextArea component wraps an HTML <code>&lt;textarea></code> element.
+                        The Textarea component wraps an HTML <code>&lt;textarea></code> element.
                     </p>
-                    <p>
+<!--                     <p>
                         <a href="" target="_blank">View Documentation</a>
-                    </p>
+                    </p> -->
                 </div>
             </div>
 
             <h4>Demo</h4>
-            <div class="demo">
+            <div class="demo textarea1">
 
                 <form class="form-stacked">
                      <label for="fname">First Name</label>
-                     <input type="text" placeholder="Enter first name" id="fname" required  value="foo" maxlength="20"/>
+                     <input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/>
                      <label for="lname">Last Name</label>
-                     <input type="text" placeholder="Enter last name" id="lname" value="bar" maxlength="20"/>
+                     <input type="text" placeholder="Enter last name" data-montage-id="lname" value="bar" maxlength="20"/>
 
                      <label for="info">Tell us a bit about yourself</label>
-                     <textarea required id="info">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum. Vestibulum pretium, lectus nec venenatis volutpat, purus lectus ultrices risus, a condimentum risus mi et quam. Pellentesque auctor fringilla neque. Duis eu massa ut lorem iaculis vestibulum. Maecenas facilisis elit sed justo. Quisque volutpat malesuada velit.
+                     <textarea required data-montage-id="info">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum. Vestibulum pretium, lectus nec venenatis volutpat, purus lectus ultrices risus, a condimentum risus mi et quam. Pellentesque auctor fringilla neque. Duis eu massa ut lorem iaculis vestibulum. Maecenas facilisis elit sed justo. Quisque volutpat malesuada velit.
                      </textarea>
 
                      <div style="margin-top: 10px;">
-                          <button class="btn" id="update" type="button">Update</button>
+                          <button class="btn" data-montage-id="update" type="button">Update</button>
                      </div>
 
                 </form>
 
-                <pre id="echo"></pre>
+                <div data-montage-id="echo"></div>
 
             </div>
 
             <section>
-                <a href="m-js/examples/sink/components/input-text-example.reel" target="_blank">View Demo Source</a>
+
+               <ul data-montage-id="textareaAccordion1" class="accordion">
+                    <li class="accordion-group">
+                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                        <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;form class="form-stacked"&gt;
+     &lt;label for="fname"&gt;First Name&lt;/label&gt;
+     &lt;input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/&gt;
+     &lt;label for="lname"&gt;Last Name&lt;/label&gt;
+     &lt;input type="text" placeholder="Enter last name" data-montage-id="lname" value="bar" maxlength="20"/&gt;
+
+     &lt;label for="info"&gt;Tell us a bit about yourself&lt;/label&gt;
+     &lt;textarea required data-montage-id="info"&gt;Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum. Vestibulum pretium, lectus nec venenatis volutpat, purus lectus ultrices risus, a condimentum risus mi et quam. Pellentesque auctor fringilla neque. Duis eu massa ut lorem iaculis vestibulum. Maecenas facilisis elit sed justo. Quisque volutpat malesuada velit.
+     &lt;/textarea&gt;
+
+     &lt;div style="margin-top: 10px;"&gt;
+          &lt;button class="btn" data-montage-id="update" type="button"&gt;Update&lt;/button&gt;
+     &lt;/div&gt;
+
+&lt;/form&gt;
+&lt;div id=&quot;echo&quot;&gt;&lt;/div&gt;
+                            </pre>
+                        </div>
+                    </li>
+                    <li class="accordion-group">
+                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                        <div class="accordion-inner montage-hidden">
+                            <pre class="prettyprint" >
+{
+    "owner": {
+        "prototype": "components/textarea-example.reel",
+        "properties": {
+            "element": {"#": "textarea-example"}
+        },
+        "bindings": {
+            "info": {"&lt;&lt;-&gt;": "@info.value"}
+        }
+    },
+
+    "fname": {
+        "prototype": "montage/ui/textfield.reel",
+        "properties": {
+            "element": {"#": "fname"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.firstName"},
+            "title": {"&lt;&lt;-&gt;": "@owner.firstName"}
+        }
+    },
+
+    "lname": {
+        "prototype": "montage/ui/textfield.reel",
+        "properties": {
+            "element": {"#": "lname"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.lastName"}
+        }
+    },
+    "info": {
+        "prototype": "montage/ui/Textarea.reel",
+        "properties": {
+            "element": {"#": "info"}
+        }
+    },
+    "update": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "update"},
+            "identifier": "update"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "echo": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "echo"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "json",
+                "oneway": "true"
+            }
+        }
+    }
+}
+     </pre>
+
+                        </div>
+                    </li>
+                </ul>
+
             </section>
 
             <section>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/textarea-example.reel" target="_blank">View source on GitHub</a>
+            </section>
+
+<!--             <section>
                 <h4>Component Properties</h4>
                 <table>
                   <thead>
@@ -191,7 +278,7 @@
                 <p>
                     <a href="" target="_blank">View full Documentation</a>
                 </p>
-            </section>
+            </section> -->
 
     </body>
 </html>

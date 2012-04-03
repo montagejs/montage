@@ -7,45 +7,34 @@
 <html>
 <head>
     <title>PhotoViewer</title>
-    <script type="text/montage-serialization">
-{
+    <script type="text/montage-serialization">{
+
     "dynamictext1": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "description"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "photo.description",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.photo.description"}
         }
     },
     "dynamictext2": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "location"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "photo.location",
-                "oneway": true
-            }
+            "value": {"<-": "@owner.photo.location"}
         }
     },
     "owner": {
-        "module": "ui/slot-test/photo-viewer.reel",
-        "name": "PhotoViewer",
+        "prototype": "ui/slot-test/photo-viewer.reel",
         "properties": {
             "element": {"#": "PhotoViewer"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 </head>
 <body id="PhotoViewer">

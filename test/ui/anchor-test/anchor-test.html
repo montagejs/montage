@@ -13,16 +13,14 @@
      <script type="text/montage-serialization">
 {
     "link1": {
-        "module": "montage/ui/anchor.reel",
-        "name": "Anchor",
+        "prototype": "montage/ui/anchor.reel",
         "properties": {
             "element": {"#": "link1"}
         }
     },
 
     "link2": {
-        "module": "montage/ui/anchor.reel",
-        "name": "Anchor",
+        "prototype": "montage/ui/anchor.reel",
         "properties": {
             "element": {"#": "link2"},
             "href": "http://www.google.com"
@@ -30,8 +28,7 @@
     },
 
     "link3": {
-        "module": "montage/ui/anchor.reel",
-        "name": "Anchor",
+        "prototype": "montage/ui/anchor.reel",
         "properties": {
             "element": {"#": "link3"}
         }
@@ -39,8 +36,7 @@
 
 
     "test": {
-        "module": "ui/anchor-test/anchor-test",
-        "name": "AnchorTest",
+        "prototype": "ui/anchor-test/anchor-test",
         "properties": {
             "link1": {"@": "link1"},
             "link2": {"@": "link2"},
@@ -49,8 +45,7 @@
     },
 
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
 

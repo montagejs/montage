@@ -3,25 +3,22 @@
 <head>
     <title>Template</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "externalserialization": {
-                "module": "reel/template/externalserialization.reel",
-                "name": "ExternalSerialization",
+                "prototype": "reel/template/externalserialization.reel[ExternalSerialization]",
                 "properties": {
                     "element": {"#": "externalserialization"}
                 }
             },
             "componentslowstyle1": {
-                "module": "reel/template/componentslowstyle.reel",
-                "name": "ComponentSlowStyle",
+                "prototype": "reel/template/componentslowstyle.reel[ComponentSlowStyle]",
                 "properties": {
 
                 }
             },
             "reeltest1": {
-                "module": "reel/template/template-test",
-                "name": "TemplateTest",
+                "prototype": "reel/template/template-test",
                 "properties": {
                     "text": "This is some text",
                     "array": [
@@ -31,28 +28,27 @@
                         "array"
                     ],
                     "slowstyle": {"@": "componentslowstyle1"},
-                    "script": {"@": "componentscript1"}
+                    "script": {"@": "componentscript1"},
+                    "template": {"@": "componenttemplate"},
+                    "daughter": {"@": "componentdaughter"},
+                    "granddaughter": {"@": "componentgranddaughter"},
+                    "granddaughtersister": {"@": "componentgranddaughtersister"}
                 }
             },
             "actioneventlistener1": {
-                "module": "montage/core/event/action-event-listener",
-                "name": "ActionEventListener",
+                "prototype": "montage/core/event/action-event-listener",
                 "properties": {
                     "handler": {"@": "reeltest1"},
                     "action": "listener"
                 }
             },
             "textfield1": {
-                "module": "reel/template/textfield.reel",
-                "name": "TextField",
+                "prototype": "reel/template/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield0"}
                 },
                 "bindings": {
-                    "text": {
-                        "boundObject": {"@": "reeltest1"},
-                        "boundObjectPropertyPath": "text"
-                    }
+                    "text": {"<<->": "@reeltest1.text"}
                 },
                 "listeners": [
                     {
@@ -63,58 +59,78 @@
                 ]
             },
             "componenty1": {
-                "module": "reel/template/componenty.reel",
-                "name": "ComponentY",
+                "prototype": "reel/template/componenty.reel[ComponentY]",
                 "properties": {
                     "element": {"#": "content1"}
                 }
             },
             "textfield2": {
-                "module": "reel/template/textfield.reel",
-                "name": "TextField",
+                "prototype": "reel/template/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield3"},
                     "text": "X here"
                 }
             },
             "componentx1": {
-                "module": "reel/template/componentx.reel",
-                "name": "ComponentX",
+                "prototype": "reel/template/componentx.reel[ComponentX]",
                 "properties": {
                     "element": {"#": "content2"},
                     "textfield": {"@": "textfield2"}
                 }
             },
             "componentstyle1": {
-                "module": "reel/template/componentstyle.reel",
-                "name": "ComponentStyle",
+                "prototype": "reel/template/componentstyle.reel[ComponentStyle]",
                 "properties": {
                     "element": {"#": "componentstyle"}
                 }
             },
             "componentscript1": {
-                "module": "reel/template/componentscript.reel",
-                "name": "ComponentScript",
+                "prototype": "reel/template/componentscript.reel[ComponentScript]",
                 "properties": {
                     "element": {"#": "componentscript1"}
                 }
             },
             "componentscript2": {
-                "module": "reel/template/componentscript.reel",
-                "name": "ComponentScript",
+                "prototype": "reel/template/componentscript.reel[ComponentScript]",
                 "properties": {
                     "element": {"#": "componentscript2"}
                 }
             },
+            "componenttemplate": {
+                "prototype": "reel/template/componenttemplate.reel[ComponentTemplate]",
+                "properties": {
+                    "element": {"#": "componenttemplate"}
+                }
+            },
+            "componentson": {
+                "prototype": "reel/template/componentson.reel[ComponentSon]",
+                "properties": {
+                    "element": {"#": "componentson"}
+                }
+            },
+            "componentdaughter": {
+                "prototype": "reel/template/componentdaughter.reel[ComponentDaughter]",
+                "properties": {
+                    "element": {"#": "componentdaughter"}
+                }
+            },
+            "componentgranddaughter": {
+                "prototype": "reel/template/componentgranddaughter.reel[ComponentGranddaughter]",
+                "properties": {
+                    "element": {"#": "componentgranddaughter"}
+                }
+            },
+            "componentgranddaughtersister": {
+                "prototype": "reel/template/componentgranddaughter.reel[ComponentGranddaughter]"
+            },
             "application": {
-                "module": "montage/ui/application",
-                "name": "Application",
+                "prototype": "montage/ui/application",
                 "properties": {
                     "delegate": {"@": "reeltest1"}
                 }
             }
-        }
-    </script>
+
+    }</script>
 
     <style>
         h2 {
@@ -124,25 +140,33 @@
 </head>
 <body>
     <h2>Component</h2>
-    <span id="textfield0" class="textfield0"></span>
+    <span data-montage-id="textfield0" class="textfield0"></span>
 
     <h2>Static Component Composition (SCC)</h2>
-    <div id="content1" class="content1"></div>
+    <div data-montage-id="content1" class="content1"></div>
 
     <h2>Dynamic Component Composition (DCC)</h2>
-    <div id="content2" class="content2">
-        <span id="textfield3" class="textfield3"></span>
+    <div data-montage-id="content2" class="content2">
+        <span data-montage-id="textfield3" class="textfield3"></span>
     </div>
 
     <h2>Styled Component</h2>
-    <div id="componentstyle" class="componentstyle"></div>
+    <div data-montage-id="componentstyle" class="componentstyle"></div>
 
     <h2>Slow Styled Component</h2>
-    <div id="componentslowstyle" class="componentslowstyle"></div>
+    <div data-montage-id="componentslowstyle" class="componentslowstyle"></div>
 
-    <div id="componentscript1" class="componentscript1"></div>
-    <div id="componentscript2" class="componentscript2"></div>
+    <div data-montage-id="componentscript1" class="componentscript1"></div>
+    <div data-montage-id="componentscript2" class="componentscript2"></div>
 
-    <div id="externalserialization" class="externalserialization"></div>
+    <div data-montage-id="externalserialization" class="externalserialization"></div>
+
+    <div data-montage-id="componenttemplate" class="componenttemplate"></div>
+
+    <div data-montage-id="componentson" class="componentson"></div>
+
+    <div data-montage-id="componentdaughter" class="componentdaughter"></div>
+    <div data-montage-id="componentgranddaughter" class="componentgranddaughter"></div>
+    <div data-montage-id="componentgranddaughtersister" class="componentgranddaughtersister"></div>
 </body>
 </html>

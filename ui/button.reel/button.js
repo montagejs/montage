@@ -4,28 +4,63 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
  /*global require, exports*/
+
+/**
+    @module "montage/ui/button.reel"
+    @requires montage/core/core
+    @requires montage/ui/component
+    @requires montage/ui/native-control
+    @requires montage/ui/composer/press-composer
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl,
     PressComposer = require("ui/composer/press-composer").PressComposer;
-/**
- * The Button input
- */
-var Button = exports.Button = Montage.create(NativeControl, {
 
 /**
-  Description TODO
-  @private
+    Wraps a native <code>&lt;button></code> or <code>&lt;input[type="button"]></code> HTML element. The element's standard attributes are exposed as bindable properties.
+    @class module:"montage/ui/button.reel".Button
+    @extends module:montage/native-control.NativeControl
+    @example
+<caption>JavaScript example</caption>
+var b1 = Button.create();
+b1.element = document.querySelector("btnElement");
+b1.addEventListener("action", function(event) {
+    console.log("Got event 'action' event");
+});
+    @example
+<caption>Serialized example</caption>
+{
+    "aButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "btnElement"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "appListener"}
+            }
+        ]
+    },
+    "listener": {
+        "prototype": "appListener"
+    }
+}
+&lt;button data-montage-id="btnElement"></button>
 */
+var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"montage/ui/button.reel".Button# */ {
+
     _preventFocus: {
         enumerable: false,
         value: false
     },
 
 /**
-        Description TODO
-        @type {Function}
-        @default {Boolean} false
+    Specifies whether the button should receive focus or not.
+    @type {boolean}
+    @default false
+    @event longpress
 */
     preventFocus: {
         get: function () {
@@ -40,6 +75,10 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
+
+/**
+    Enables or disables the Button from user input. When this property is set to <code>false</code>, the "disabled" CSS style is applied to the button's DOM element during the next draw cycle. When set to <code>true</code> the "disabled" CSS class is removed from the element's class list.
+*/
     //TODO we should prefer positive properties like enabled vs disabled, get rid of disabled
     enabled: {
         dependencies: ["disabled"],
@@ -52,7 +91,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     },
 
     /**
-        The Montage converted used to convert or format values displayed by this Button instance.
+        A Montage converter object used to convert or format the label displayed by the Button instance. When a new value is assigned to <code>label</code>, the converter object's <code>convert()</code> method is invoked, passing it the newly assigned label value.
         @type {Property}
         @default null
     */
@@ -68,15 +107,14 @@ var Button = exports.Button = Montage.create(NativeControl, {
     _labelNode: {value:undefined, enumerable: false},
 
     _label: { value: undefined, enumerable: false },
+
     /**
-        The label for the button.
+        The label for the button. In an &lt;input> element this is taken from the element's <code>value</code> attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
 
-        In an `<input>` element this is the value property. On any other element
-        (including `<button>`) this is the first child node which is a text node.
-        If one isn't found it will be created.
+        If the button has a non-null <code>converter</code> property, the converter object's <code>convert()</code> method is called on the value before being assigned to the button instance.
 
-        @type {Property}
-        @default {String} element value
+        @type {string}
+        @default undefined
     */
     label: {
         get: function() {
@@ -105,19 +143,33 @@ var Button = exports.Button = Montage.create(NativeControl, {
     },
 
     /**
-    True when the button is being interacted with, either through mouse click or
-    touch event.
-    @private
+        The amount of time in milliseconds the user must press and hold the button a <code>hold</code> event is dispatched. The default is 1 second.
+        @type {number}
+        @default 1000
     */
+    holdTimeout: {
+        get: function() {
+            return this._pressComposer.longPressTimeout;
+        },
+        set: function(value) {
+            this._pressComposer.longPressTimeout = value;
+        }
+    },
+
+    _pressComposer: {
+        enumberable: false,
+        value: null
+    },
+
     _active: {
         enumerable: false,
         value: false
     },
 
     /**
-    Description TODO
-    @type {Function}
-    @default {Boolean} false
+        This property is true when the button is being interacted with, either through mouse click or touch event, otherwise false.
+        @type {boolean}
+        @default false
     */
     active: {
         get: function() {
@@ -129,13 +181,34 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
+    // HTMLInputElement/HTMLButtonElement methods
+
+    blur: { value: function() { this._element.blur(); } },
+    focus: { value: function() { this._element.focus(); } },
+    // click() deliberately omitted (it isn't available on <button> anyways)
+
+    didCreate: {
+        value: function() {
+            this._pressComposer = PressComposer.create();
+            this.addComposer(this._pressComposer);
+        }
+    },
+
     prepareForActivationEvents: {
         value: function() {
-            var pressComposer = PressComposer.create();
-            this.addComposer(pressComposer);
-            pressComposer.addEventListener("pressstart", this, false);
-            pressComposer.addEventListener("press", this, false);
-            pressComposer.addEventListener("presscancel", this, false);
+            this._pressComposer.addEventListener("pressStart", this, false);
+            this._pressComposer.addEventListener("press", this, false);
+            this._pressComposer.addEventListener("pressCancel", this, false);
+        }
+    },
+
+    // Optimisation
+    addEventListener: {
+        value: function(type, listener, useCapture) {
+            NativeControl.addEventListener.call(this, type, listener, useCapture);
+            if (type === "hold") {
+                this._pressComposer.addEventListener("longPress", this, false);
+            }
         }
     },
 
@@ -144,7 +217,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     /**
     Called when the user starts interacting with the component.
     */
-    handlePressstart: {
+    handlePressStart: {
         value: function(event) {
             this.active = true;
 
@@ -152,6 +225,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
             if (!this._preventFocus) {
                 this._element.focus();
+
             }
         }
     },
@@ -166,10 +240,34 @@ var Button = exports.Button = Montage.create(NativeControl, {
         }
     },
 
+    handleKeyup: {
+        value: function(event) {
+            console.log(event.keyCode);
+            // action event on spacebar
+            if (event.keyCode === 32) {
+                this.active = false;
+                this._dispatchActionEvent();
+            }
+        }
+    },
+
+    handleLongPress: {
+        value: function(event) {
+            // When we fire the "hold" event we don't want to fire the
+            // "action" event as well.
+            this._pressComposer.cancelPress();
+
+            var holdEvent = document.createEvent("CustomEvent");
+            holdEvent.initCustomEvent("hold", true, true, null);
+            this.dispatchEvent(holdEvent);
+        }
+    },
+
     /**
     Called when all interaction is over.
+    @private
     */
-    handlePresscancel: {
+    handlePressCancel: {
         value: function(event) {
             this.active = false;
         }
@@ -186,10 +284,10 @@ var Button = exports.Button = Montage.create(NativeControl, {
 
     didSetElement: {
         value: function() {
-            var o = NativeControl.didSetElement.call(this);
+            NativeControl.didSetElement.call(this);
 
             this._element.classList.add("montage-button");
-            this._element.setAttribute("aria-role", "button");
+            this._element.setAttribute("role", "button");
 
             this._isInputElement = (this._element.tagName === "INPUT");
             // Only take the value from the element if it hasn't been set
@@ -219,6 +317,8 @@ var Button = exports.Button = Montage.create(NativeControl, {
                 }
             }
 
+            this._element.addEventListener("keyup", this, false);
+
             this.needsDraw = true;
         }
     },
@@ -227,6 +327,7 @@ var Button = exports.Button = Montage.create(NativeControl, {
     /**
     Draws the label to the DOM.
     @function
+    @private
     */
     _drawLabel: {
         enumerable: false,
@@ -255,16 +356,101 @@ var Button = exports.Button = Montage.create(NativeControl, {
     }
 });
 
-Button.addAttributes({
+// TODO: Display events in JSDoc output
+ /**
+ @event
+ @name action
+ @param {Event} event
+
+ Dispatched when the button is activated through a mouse click, finger tap,
+ or when focused and the spacebar is pressed.
+ */
+
+ /**
+ @event
+ @name hold
+ @param {Event} event
+
+ Dispatched when the button is pressed for a period of time, set by
+ {@link holdTimeout}.
+ */
+
+Button.addAttributes( /** @lends module:"montage/ui/button.reel".Button# */{
+
+/**
+    Specifies whether the button should be focused as soon as the page is loaded.
+    @type {boolean}
+    @default false
+*/
     autofocus: {value: false, dataType: 'boolean'},
+
+/**
+    When true, the button is disabled to user input and "disabled" is added to its CSS class list.
+    @type {boolean}
+    @default false
+*/
     disabled: {value: false, dataType: 'boolean'},
+
+/**
+    The value of the id attribute of the form with which to associate the component's element.
+    @type {string}
+    @default null
+*/
     form: null,
+
+/**
+    The URL to which the form data will be sumbitted.
+    @type {string}
+    @default null
+*/
     formaction: null,
+
+/**
+    The content type used to submit the form to the server.
+    @type {string}
+    @default null
+*/
     formenctype: null,
+
+/**
+    The HTTP method used to submit the form.
+    @type {string}
+    @default null
+*/
     formmethod: null,
-    formnovalidate: null,
+
+/**
+    Indicates if the form should be validated upon submission.
+    @type {boolean}
+    @default null
+*/
+    formnovalidate: {dataType: 'boolean'},
+
+/**
+    The target frame or window in which the form output should be rendered.
+    @type string}
+    @default null
+*/
     formtarget: null,
+
+/**
+    A string indicating the input type of the component's element.
+    @type {string}
+    @default "button"
+*/
     type: {value: 'button'},
+
+/**
+    The name associated with the component's DOM element.
+    @type {string}
+    @default null
+*/
     name: null,
+
+/**
+    The value associated with the element.
+    @type {string}
+    @default null
+*/
     value: null
 });

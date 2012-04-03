@@ -1,0 +1,141 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+.montage-resizer {
+    display: inline-block;
+}
+
+.montage-resizer-container {
+    position: absolute;
+    border: 1px solid black;
+}
+
+.montage-resizer-handle {
+    position: absolute;
+    width: 7px;
+    height: 7px;
+    border: 1px solid black;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+    background: white;
+}
+
+.montage-resizer-handle:hover {
+    width: 9px;
+    height: 9px;
+    -moz-border-radius: 5px;
+    border-radius: 5px;
+}
+
+.montage-resizer-handle.n {
+    top: -4px;
+    left: 50%;
+    margin-left: -4px;
+    cursor: n-resize;
+}
+
+.montage-resizer-handle.n:hover {
+    top: -5px;
+    margin-left: -5px;
+}
+
+.montage-resizer-handle.ne {
+    top: -4px;
+    right: -4px;
+    cursor: ne-resize;
+}
+
+.montage-resizer-handle.ne:hover {
+    top: -5px;
+    right: -5px;
+}
+
+.montage-resizer-handle.e {
+    right: -4px;
+    top: 50%;
+    margin-top: -4px;
+    cursor: e-resize;
+}
+
+.montage-resizer-handle.e:hover {
+    right: -5px;
+    margin-top: -5px;
+}
+
+.montage-resizer-handle.se {
+    bottom: -4px;
+    right: -4px;
+    cursor: se-resize;
+}
+
+.montage-resizer-handle.se:hover {
+    bottom: -5px;
+    right: -5px;
+}
+
+.montage-resizer-handle.s {
+    bottom: -4px;
+    left: 50%;
+    margin-left: -4px;
+    cursor: s-resize;
+}
+
+.montage-resizer-handle.s:hover {
+    bottom: -5px;
+    margin-left: -5px;
+}
+
+.montage-resizer-handle.sw {
+    bottom: -4px;
+    left: -4px;
+    cursor: sw-resize;
+}
+
+.montage-resizer-handle.sw:hover {
+    bottom: -5px;
+    left: -5px;
+}
+
+.montage-resizer-handle.w {
+    left: -4px;
+    top: 50%;
+    margin-top: -4px;
+    cursor: w-resize;
+}
+
+.montage-resizer-handle.w:hover {
+    left: -5px;
+    margin-top: -5px;
+}
+
+.montage-resizer-handle.nw {
+    top: -4px;
+    left: -4px;
+    cursor: nw-resize;
+}
+
+.montage-resizer-handle.nw:hover {
+    top: -5px;
+    left: -5px;
+}
+
+.montage-resizer-image {
+    position: absolute;
+    display: none;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0.5;
+}
+
+.montage-editor-resizing .montage-resizer-image {
+    display: block;
+}
+
+.montage-resizer-element::selection {
+    background: rgba(0,0,0,0);
+}

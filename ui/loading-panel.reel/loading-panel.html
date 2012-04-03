@@ -11,79 +11,59 @@
 
     <link rel="stylesheet" href="loading-panel.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
-                "module": "montage/ui/loading-panel.reel",
-                "name": "LoadingPanel",
+                "prototype": "montage/ui/loading-panel.reel",
                 "properties": {
                     "element": {"#": "loadingPanel"}
                 }
             },
 
             "loadingIndicator": {
-                "module": "montage/ui/bluemoon/progress.reel",
-                "name": "Progress",
+                "prototype": "montage/ui/bluemoon/progress.reel",
                 "properties": {
                     "element": {"#": "loadingIndicator"},
                     "loading": true
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "initializedModuleCount",
-                        "oneway": true
-                    },
-                    "max": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "requiredModuleCount",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.initializedModuleCount"},
+                    "max": {"<-": "@owner.requiredModuleCount"}
                 }
             },
 
             "loadedCount": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "loadedCount"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "initializedModuleCount",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.initializedModuleCount"}
                 }
             },
 
              "requiredCount": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "requiredCount"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "requiredModuleCount",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.requiredModuleCount"}
                 }
             }
 
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
 
-    <div id="loadingPanel" class="montage-loading-panel">
-        <div id="loadingIndicator" class="loadingIndicator"></div>
-        <div id="loadingCount" class="loadingCount">
-            <span id="loadedCount" class="loadedCount">0</span>
+    <div data-montage-id="loadingPanel" class="montage-loading-panel">
+        <div data-montage-id="loadingIndicator" class="loadingIndicator"></div>
+        <div data-montage-id="loadingCount" class="loadingCount">
+            <span data-montage-id="loadedCount" class="loadedCount">0</span>
             <span class="divider">/</span>
-            <span id="requiredCount" class="requiredCount">0</span>
+            <span data-montage-id="requiredCount" class="requiredCount">0</span>
         </div>
     </div>
 

@@ -10,11 +10,10 @@
     <title>EffectsPanel</title>
     <link rel="stylesheet" type="text/css" href="effects-panel.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "invertToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "invertToggle"},
                     "pressedClass": "success",
@@ -22,15 +21,11 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.inverted"
-                    }
+                    "pressed": {"<<->": "@owner.editor.inverted"}
                 }
             },
             "desaturateToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "desaturateToggle"},
                     "pressedClass": "success",
@@ -38,15 +33,11 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.desaturated"
-                    }
+                    "pressed": {"<<->": "@owner.editor.desaturated"}
                 }
             },
             "multiplyControl": {
-                "module": "value-based-effect.reel",
-                "name": "ValueBasedEffect",
+                "prototype": "value-based-effect.reel",
                 "properties": {
                     "element": {"#": "multiplyControl"},
                     "name": "ON",
@@ -54,69 +45,51 @@
                     "maxValue": 20
                 },
                 "bindings": {
-                    "enabled": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.multiplyEffect"
-                    },
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.multiplyMultiplier"
-                    }
+                    "enabled": {"<<->": "@owner.editor.multiplyEffect"},
+                    "value": {"<<->": "@owner.editor.multiplyMultiplier"}
                 }
             },
             "colorInfoPanel": {
-                "module": "color-info-panel.reel",
-                "name": "ColorInfoPanel",
+                "prototype": "color-info-panel.reel",
                 "properties": {
                     "element": {"#": "colorInfoPanel"}
                 },
                 "bindings": {
-                    "pointMonitorController": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.pointMonitorController"
-                    },
-                    "editor": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor"
-                    }
+                    "pointMonitorController": {"<<->": "@owner.editor.pointMonitorController"},
+                    "editor": {"<<->": "@owner.editor"}
                 }
             },
 
             "photoInfoPanel": {
-                "module": "photo-info-panel.reel",
-                "name": "PhotoInfoPanel",
+                "prototype": "photo-info-panel.reel",
                 "properties": {
                     "element": {"#": "photoInfoPanel"}
                 },
                 "bindings": {
-                    "photo": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "editor.photo"
-                    }
+                    "photo": {"<<->": "@owner.editor.photo"}
                 }
             },
 
             "owner": {
-                "module": "effects-panel.reel",
-                "name": "EffectsPanel",
+                "prototype": "effects-panel.reel",
                 "properties": {
                     "element": {"#": "EffectsPanel"}
                 }
             }
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
 
-    <div id="EffectsPanel" class="EffectsPanel">
+    <div data-montage-id="EffectsPanel" class="EffectsPanel">
         <ul class="effectsList">
-            <li>Invert Colors<button id="invertToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
-            <li>Desaturate<button id="desaturateToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
-            <li>Multiply<div id="multiplyControl" class=""></div></li>
+            <li>Invert Colors<button data-montage-id="invertToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
+            <li>Desaturate<button data-montage-id="desaturateToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
+            <li>Multiply<div data-montage-id="multiplyControl" class=""></div></li>
         </ul>
-        <div id="colorInfoPanel"></div>
-        <div id="photoInfoPanel"></div>
+        <div data-montage-id="colorInfoPanel"></div>
+        <div data-montage-id="photoInfoPanel"></div>
     </div>
 
 </body>

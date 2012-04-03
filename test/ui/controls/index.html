@@ -36,98 +36,67 @@
 
     <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
         <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-         <script type="text/montage-serialization">
-    {
+         <script type="text/montage-serialization">{
+
         "fname": {
-            "module": "montage/ui/textfield.reel",
-            "name": "Textfield",
+            "prototype": "montage/ui/textfield.reel",
             "properties": {
                 "element": {"#": "fname"},
                 "maxlength": "5"
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "firstName",
-                    "oneway": false
-                },
-                "title": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "firstName",
-                    "oneway": false
-                }
+                "value": {"<<->": "@sample-form.firstName"},
+                "title": {"<<->": "@sample-form.firstName"}
 
             }
         },
         "lname": {
-            "module": "montage/ui/textfield.reel",
-            "name": "Textfield",
+            "prototype": "montage/ui/textfield.reel",
             "properties": {
                 "element": {"#": "lname"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "lastName",
-                    "oneway": false
-                }
+                "value": {"<<->": "@sample-form.lastName"}
             }
         },
         "email1": {
-            "module": "montage/ui/textfield.reel",
-            "name": "Textfield",
+            "prototype": "montage/ui/textfield.reel",
             "properties": {
                 "element": {"#": "email1"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "email",
-                    "oneway": false
-                }
+                "value": {"<<->": "@sample-form.email"}
             }
         },
         "url1": {
-            "module": "montage/ui/textfield.reel",
-            "name": "Textfield",
+            "prototype": "montage/ui/textfield.reel",
             "properties": {
                 "element": {"#": "url1"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "url",
-                    "oneway": false
-                }
+                "value": {"<<->": "@sample-form.url"}
             }
         },
         "info1": {
-            "module": "montage/ui/textarea.reel",
-            "name": "TextArea",
+            "prototype": "montage/ui/textarea.reel[TextArea]",
             "properties": {
                 "element": {"#": "info1"}
             }
         },
         "uppercaseconverter1": {
-            "module": "montage/core/converter/upper-case-converter",
-            "name": "UpperCaseConverter",
+            "prototype": "montage/core/converter/upper-case-converter",
             "properties": {
 
             }
         },
         "text1": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "text1"},
                 "converter": {"@": "uppercaseconverter1"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "info1"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": true
-                }
+                "value": {"<-": "@info1.value"}
             }
         },
 
@@ -142,8 +111,7 @@
         },
 
         "state": {
-            "module": "montage/ui/select-input.reel",
-            "name": "SelectInput",
+            "prototype": "montage/ui/select-input.reel",
             "properties": {
                 "element": {"#": "state"},
                 "contentController": {"@": "statesController"},
@@ -153,23 +121,20 @@
         },
 
         "country": {
-            "module": "montage/ui/select-input.reel",
-            "name": "SelectInput",
+            "prototype": "montage/ui/select-input.reel",
             "properties": {
                 "element": {"#": "country"}
             }
         },
 
         "dateconverter1": {
-            "module": "montage/core/converter/date-converter",
-            "name": "DateConverter",
+            "prototype": "montage/core/converter/date-converter",
             "properties": {
                 "pattern": "MM-dd-yyyy"
             }
         },
         "date1": {
-            "module": "montage/ui/textfield.reel",
-            "name": "Textfield",
+            "prototype": "montage/ui/textfield.reel",
             "properties": {
                 "element": {"#": "date1"},
                 "converter": {"@": "dateconverter1"}
@@ -177,152 +142,112 @@
         },
 
         "limit-max": {
-            "module": "montage/ui/number-input.reel",
-            "name": "NumberInput",
+            "prototype": "montage/ui/number-input.reel",
             "properties": {
                 "element": {"#": "limit-max"}
             }
         },
 
         "number1": {
-            "module": "montage/ui/number-input.reel",
-            "name": "NumberInput",
+            "prototype": "montage/ui/number-input.reel",
             "properties": {
                 "element": {"#": "number1"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "range1"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": false
-                },
-                "max": {
-                    "boundObject": {"@": "limit-max"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": true
-                }
+                "value": {"<<->": "@range1.value"},
+                "max": {"<-": "@limit-max.value"}
             }
         },
 
         "range1": {
-            "module": "montage/ui/range-input.reel",
-            "name": "RangeInput",
+            "prototype": "montage/ui/range-input.reel",
             "properties": {
                 "element": {"#": "range1"}
             },
             "bindings": {
-                "max": {
-                    "boundObject": {"@": "limit-max"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": true
-                }
+                "max": {"<-": "@limit-max.value"}
             }
         },
 
         "max-value": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "max-value"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "limit-max"},
-                    "boundObjectPropertyPath": "value",
-                    "oneway": true
-                }
+                "value": {"<-": "@limit-max.value"}
             }
         },
 
         "check1": {
-            "module": "montage/ui/checkbox.reel",
-            "name": "Checkbox",
+            "prototype": "montage/ui/checkbox.reel",
             "properties": {
                 "element": {"#": "check1"}
             },
             "bindings": {
-                "checked": {
-                    "boundObject": {"@": "check3"},
-                    "boundObjectPropertyPath": "checked",
-                    "oneway": true
-                }
+                "checked": {"<-": "@check3.checked"}
             }
         },
         "check2": {
-            "module": "montage/ui/checkbox.reel",
-            "name": "Checkbox",
+            "prototype": "montage/ui/checkbox.reel",
             "properties": {
                 "element": {"#": "check2"}
             }
         },
         "check3": {
-            "module": "montage/ui/checkbox.reel",
-            "name": "Checkbox",
+            "prototype": "montage/ui/checkbox.reel",
             "properties": {
                 "element": {"#": "check3"},
                 "checked": true
             }
         },
         "check-text": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "check-text"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "check1"},
-                    "boundObjectPropertyPath": "checked"
-                }
+                "value": {"<<->": "@check1.checked"}
             }
         },
 
         "radio1": {
-            "module": "montage/ui/radio-button.reel",
-            "name": "RadioButton",
+            "prototype": "montage/ui/radio-button.reel",
             "properties": {
                 "element": {"#": "radio1"}
             }
         },
         "radio2": {
-            "module": "montage/ui/radio-button.reel",
-            "name": "RadioButton",
+            "prototype": "montage/ui/radio-button.reel",
             "properties": {
                 "element": {"#": "radio2"}
             }
         },
         "radio3": {
-            "module": "montage/ui/radio-button.reel",
-            "name": "RadioButton",
+            "prototype": "montage/ui/radio-button.reel",
             "properties": {
                 "element": {"#": "radio3"}
             }
         },
         "radio-text": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "radio-text"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "radio1"},
-                    "boundObjectPropertyPath": "checked"
-                }
+                "value": {"<<->": "@radio1.checked"}
             }
         },
 
         "button1": {
-            "module": "montage/ui/button.reel",
-            "name": "Button",
+            "prototype": "montage/ui/button.reel",
             "properties": {
                 "element": {"#": "button1"}
             }
         },
 
         "sample-form": {
-            "module": "ui/controls/sample-form.reel",
-            "name": "SampleForm",
+            "prototype": "ui/controls/sample-form.reel",
             "properties": {
                 "element": {"#": "input-form"},
                 "fname": {"@": "fname"},
@@ -333,46 +258,25 @@
                 "countries": {"@": "country"}
             },
 			"bindings": {
-                "option1": {
-                    "boundObject": {"@": "check3"},
-                    "boundObjectPropertyPath": "checked",
-                    "oneway": true
-                },
-                "option2": {
-                    "boundObject": {"@": "radio1"},
-                    "boundObjectPropertyPath": "checked",
-                    "oneway": true
-                },
-                "selectedCountry": {
-                    "boundObject": {"@": "country"},
-                    "boundObjectPropertyPath": "selectedObjects.0",
-                    "oneway": true
-                },
-                "selectedState": {
-                    "boundObject": {"@": "state"},
-                    "boundObjectPropertyPath": "selectedObjects.0",
-                    "oneway": true
-                }
+                "option1": {"<-": "@check3.checked"},
+                "option2": {"<-": "@radio1.checked"},
+                "selectedCountry": {"<-": "@country.selectedObjects.0"},
+                "selectedState": {"<-": "@state.selectedObjects.0"}
             }
         },
 
         "json-output": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "json-output"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "sample-form"},
-                    "boundObjectPropertyPath": "json",
-                    "oneway": true
-                }
+                "value": {"<-": "@sample-form.json"}
             }
         }
 
-    }
-        </script>
+    
+    }</script>
 
         <style>
             :invalid {

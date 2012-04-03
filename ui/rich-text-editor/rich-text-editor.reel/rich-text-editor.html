@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="rich-text-editor.css">
+    <script type="text/montage-serialization">
+        {
+            "overlay": {
+                "prototype": "montage/ui/slot.reel",
+                "properties": {
+                    "element": {"#": "editor-slot"},
+                    "delegate": {"@": "owner"}
+                }
+            },
+
+            "owner": {
+                "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
+                "properties": {
+                    "element": {"#": "rich-text-editor-container"},
+                    "_overlaySlot": {"@": "overlay"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <div data-montage-id="rich-text-editor-container">
+        <div class="montage-editor" contenteditable="false"></div>
+        <div data-montage-id="editor-slot" class="montage-editor-overlay"></div>
+    </div>
+</body>
+</html>
+

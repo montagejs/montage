@@ -5,7 +5,7 @@
  </copyright> */
 
 
-#testList { visibility: hidden; } /* Hide to avoid initial appearing */
+.testList { visibility: hidden; } /* Hide to avoid initial appearing */
 
 html {
     background-color: hsl(0,0%,94%);
@@ -23,7 +23,7 @@ ul {
     padding: 0;
 }
 
-#generateUUIDForm {
+.generateUUIDForm {
     margin-bottom: 20px;
 }
 

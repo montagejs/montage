@@ -7,99 +7,75 @@
 <html>
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
-        <script type="text/montage-serialization">
-            {
+        <script type="text/montage-serialization">{
+
                 "owner": {
-                    "module": "ui/controls/select-input-good.reel",
-                    "name": "InputTextExample",
+                    "prototype": "ui/controls/select-input-good.reel[InputTextExample]",
                     "properties": {
                         "element": {"#": "select-input-example"}
                     },
                     "bindings": {
-                        "justify": {
-                            "boundObject": {"@": "justify-select"},
-                            "boundObjectPropertyPath": "value"
-                        }
-                    }                 
+                        "justify": {"<<->": "@justifySelect.value"}
+                    }
                 },
-                "justify-comparator-left": {
-                    "module": "ui/controls/select-input-good.reel",
-                    "name": "JustifyConverter",
+                "justifyComparatorLeft": {
+                    "prototype": "ui/controls/select-input-good.reel[JustifyConverter]",
                     "properties": {
                         "justify": "left"
                     }
                 },
-                "justify-comparator-right": {
-                    "module": "ui/controls/select-input-good.reel",
-                    "name": "JustifyConverter",
+                "justifyComparatorRight": {
+                    "prototype": "ui/controls/select-input-good.reel[JustifyConverter]",
                     "properties": {
                         "justify": "right"
                     }
                 },
-                "justify-comparator-center": {
-                    "module": "ui/controls/select-input-good.reel",
-                    "name": "JustifyConverter",
+                "justifyComparatorCenter": {
+                    "prototype": "ui/controls/select-input-good.reel[JustifyConverter]",
                     "properties": {
                         "justify": "center"
                     }
-                },                
-                "justify-left": {
-                    "module": "montage/ui/toggle-button.reel",
-                    "name": "ToggleButton",
+                },
+                "justifyLeft": {
+                    "prototype": "montage/ui/toggle-button.reel",
                     "properties": {
-                        "element": {"#": "justify-left"},
-                        "pressedClass": "success"                        
+                        "element": {"#": "justifyLeft"},
+                        "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "justify",
-                            "converter": {"@": "justify-comparator-left"}
-                        }
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorLeft"}}
                     }
                 },
-                "justify-center": {
-                    "module": "montage/ui/toggle-button.reel",
-                    "name": "ToggleButton",
+                "justifyCenter": {
+                    "prototype": "montage/ui/toggle-button.reel",
                     "properties": {
-                        "element": {"#": "justify-center"},
-                        "pressedClass": "success"                        
+                        "element": {"#": "justifyCenter"},
+                        "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "justify",
-                            "converter": {"@": "justify-comparator-center"}
-                        }
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorCenter"}}
                     }
                 },
-                "justify-right": {
-                    "module": "montage/ui/toggle-button.reel",
-                    "name": "ToggleButton",
+                "justifyRight": {
+                    "prototype": "montage/ui/toggle-button.reel",
                     "properties": {
-                        "element": {"#": "justify-right"},
-                        "pressedClass": "success"                        
+                        "element": {"#": "justifyRight"},
+                        "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "justify",
-                            "converter": {"@": "justify-comparator-right"}
-                        }
+                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorRight"}}
                     }
                 },
-                "justify-select": {
-                    "module": "montage/ui/select-input.reel",
-                    "name": "SelectInput",
+                "justifySelect": {
+                    "prototype": "montage/ui/select-input.reel",
                     "properties": {
-                        "element": {"#": "justify-select"}
-                    }                    
+                        "element": {"#": "justifySelect"}
+                    }
                 },
-                "justify-result": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                "justifyResult": {
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
-                        "element": {"#": "justify-result"}
+                        "element": {"#": "justifyResult"}
                     },
                     "bindings": {
                         "value": {
@@ -109,8 +85,8 @@
                         }
                     }
                 }
-            }
-        </script>
+
+    }</script>
 
         <style>
             .select-input-example .error {
@@ -120,7 +96,7 @@
             .select-input-example pre {
                 border: 0;
             }
-            
+
             .select-input-example .justify {
                 width: 40px;
                 padding: 5px;
@@ -132,25 +108,25 @@
 
             <h4>Demo</h4>
 
-            
+
             <section>
                 <div class="demo">
                     <div style="height: 40px;">
                         <button id="justify-none" class="btn justify">-</button>
-                        <button id="justify-left" class="btn justify">L</button>
-                        <button id="justify-center" class="btn justify">C</button>
-                        <button id="justify-right" class="btn justify">R</button>
-                    </div>  
+                        <button id="justifyLeft" class="btn justify">L</button>
+                        <button id="justifyCenter" class="btn justify">C</button>
+                        <button id="justifyRight" class="btn justify">R</button>
+                    </div>
                     <div>
-                        <select id="justify-select" class="justify-select">
+                        <select id="justifySelect" class="justifySelect">
                                 <option value=""></option>
                                 <option value="left">Left</option>
                                 <option value="center">Center</option>
                                 <option value="right">Right</option>
                         </select>
-                        
+
                         <p>
-                            Justify selection: <span id="justify-result"></span>
+                            Justify selection: <span id="justifyResult"></span>
                         </p>
                     </div>
                 </div>

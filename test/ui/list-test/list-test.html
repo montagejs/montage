@@ -12,22 +12,19 @@
     <script type="text/montage-serialization">
 {
     "listtest1": {
-        "module": "ui/list-test/list-test",
-        "name": "ListTest",
+        "prototype": "ui/list-test/list-test",
         "properties": {
             "list": {"@": "list1"}
         }
     },
     "slider1": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {"#": "slider"}
         }
     },
     "list1": {
-        "module": "montage/ui/list.reel",
-        "name": "List",
+        "prototype": "montage/ui/list.reel",
         "properties": {
             "element": {"#": "list"},
             "objects": [
@@ -38,8 +35,7 @@
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "listtest1"}
         }
@@ -50,9 +46,9 @@
 </head>
 <body>
 
-<div id="list" class="list">
+<div data-montage-id="list" class="list">
     List Item
-    <span id="slider" class="slider"></span>
+    <span data-montage-id="slider" class="slider"></span>
 </div>
 
 </body>

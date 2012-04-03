@@ -1,0 +1,31 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+.montage-link-popup {
+    position: absolute;
+    padding: 12px 20px;
+    border: 1px solid;
+
+    -webkit-box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    -moz-box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    box-shadow: 0 1px 3px rgba(0,0,0,.2);
+    -webkit-border-radius: 2px;
+    -moz-border-radius: 2px;
+    border-radius: 2px;
+    border-color: #BBB #BBB #A8A8A8;
+
+    background-color: white;
+    color: #666;
+    font: 13px/normal "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+
+    cursor: default;
+}
+
+.montage-link-popup a {
+    cursor: pointer;
+    text-decoration: none;
+    color: #15C;
+}

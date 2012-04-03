@@ -7,32 +7,28 @@
     <script type="text/montage-serialization">
 {
     "component1": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentA"},
             "hasTemplate": false
         }
     },
     "component2": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentB"},
             "hasTemplate": false
         }
     },
     "claimedpointertest1": {
-        "module": "claimed-pointer-test/claimed-pointer-test",
-        "name": "ClaimedPointerTest",
+        "prototype": "claimed-pointer-test/claimed-pointer-test",
         "properties": {
             "componentA": {"@": "component1"},
             "componentB": {"@": "component2"}
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "claimedpointertest1"}
         }

@@ -8,49 +8,37 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-    {
+    <script type="text/montage-serialization">{
+
         "test": {
-            "module": "ui/condition/test",
-            "name": "Test"
+            "prototype": "ui/condition/test"
         },
         "conditionHide": {
-            "module": "montage/ui/condition.reel",
-            "name": "Condition",
+            "prototype": "montage/ui/condition.reel",
             "properties": {
                 "element": {"#": "hideMe"}
             },
             "bindings": {
-                "condition": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "hideValue",
-                    "oneway": false
-                }
+                "condition": {"<<->": "@test.hideValue"}
             }
         },
         "conditionRemove": {
-            "module": "montage/ui/condition.reel",
-            "name": "Condition",
+            "prototype": "montage/ui/condition.reel",
             "properties": {
                 "element": {"#": "removeContent"}
             },
             "bindings": {
-                "condition": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "removeValue",
-                    "oneway": false
-                }
+                "condition": {"<<->": "@test.removeValue"}
             }
         },
         "application": {
-            "module": "montage/ui/application",
-            "name": "Application",
+            "prototype": "montage/ui/application",
             "properties": {
                 "delegate" : {"@": "test"}
             }
         }
-    }
-    </script>
+    
+    }</script>
 
 </head>
 <body>

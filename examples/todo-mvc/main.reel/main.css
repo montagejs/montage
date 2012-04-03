@@ -51,12 +51,12 @@
     font-size: 14px;
 }
 
-#taskForm label span,
-#taskForm input[type=submit] {
+.taskForm label span,
+.taskForm input[type=submit] {
     display: none;
 }
 
-#taskForm .taskNoteField {
+.taskForm .taskNoteField {
     outline: none;
     width: 100%;
     -moz-box-sizing: border-box;

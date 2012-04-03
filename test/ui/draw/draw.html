@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">
 {
     "draw1": {
-        "module": "ui/draw/draw",
-        "name": "Draw",
+        "prototype": "ui/draw/draw",
         "properties": {
             "repetition": {"@": "repetition"},
             "componentC": {"@": "componentC"},
@@ -29,28 +28,26 @@
             "componentWithIdentifier": {"@": "componentWithIdentifier"},
             "componentOwner": {"@": "componentOwner"},
             "componentLayout": {"@": "componentLayout"},
-            "componentToBeCleaned": {"@": "componentToBeCleaned"}
+            "componentToBeCleaned": {"@": "componentToBeCleaned"},
+            "text1": {"@": "text1"}
         }
     },
     "repetition": {
-        "module": "montage/ui/repetition.reel",
-        "name": "Repetition",
+        "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "repetition"},
             "objects": [1, 2, 3]
         }
     },
     "componentC": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentC"},
             "hasTemplate": false
         }
     },
     "componentC1": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentC1"},
             "hasTemplate": false
@@ -58,8 +55,7 @@
     },
 
     "componentNoelement": {
-        "module": "ui/draw/component-noelement.reel",
-        "name": "ComponentNoelement",
+        "prototype": "ui/draw/component-noelement.reel",
         "properties": {
             "value": "componentNoelement",
             "parentOfNoElement": {"@": "componentE"}
@@ -67,59 +63,51 @@
     },
 
     "componentD": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentD"},
             "hasTemplate": false
         }
     },
     "componentD1": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentD1"},
             "hasTemplate": false
         }
     },
     "componentDtarget": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentDtarget"},
             "hasTemplate": false
         }
     },
     "componentE": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentE"},
             "hasTemplate": false
         }
     },
     "componentE11": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "componentE11"},
             "hasTemplate": false
         }
     },
     "componentStyle": {
-        "module": "ui/draw/component-style.reel",
-        "name": "ComponentStyle",
+        "prototype": "ui/draw/component-style.reel",
         "properties": {
             "element": {"#": "component-style"}
         }
     },
     "componentWithoutIdentifier": {
-        "module": "montage/ui/component",
-        "name": "Component"
+        "prototype": "montage/ui/component"
     },
     "componentWithIdentifier": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "identifier": "anIdentifier"
         }
@@ -170,8 +158,7 @@
         }
     },
     "owner": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "draw1"}
         }
@@ -188,28 +175,28 @@
     <div class="componentB1">B1</div>
     <div class="componentB2">B2</div>
 </div>
-<div id="componentC">
-    <div id="fakeComponentC1"></div>
+<div data-montage-id="componentC">
+    <div data-montage-id="fakeComponentC1"></div>
 </div>
 <div data-montage-id="componentC1">C1</div>
-<div id="componentD">
+<div data-montage-id="componentD">
     <h1>
-        <div id="componentD1">D1</div>
+        <div data-montage-id="componentD1">D1</div>
     </h1>
 </div>
-<div id="componentDtarget"></div>
-<div id="repetition"><h3>Original Content</h3><p>here</p></div>
-<div id="componentE">
-    <div id="componentE1">
-        <div id="componentE11"></div>
+<div data-montage-id="componentDtarget"></div>
+<div data-montage-id="repetition"><h3>Original Content</h3><p>here</p></div>
+<div data-montage-id="componentE">
+    <div data-montage-id="componentE1" id="componentE1">
+        <div data-montage-id="componentE11"></div>
     </div>
 </div>
-<div style="margin: 2px" id="component-style"></div>
-<div id="component-owner"></div>
-<div id="component-layout"></div>
-<div id="component-layout-left">Left</div>
-<div id="component-layout-right">Right</div>
-<div id="component-tobeclean">
+<div style="margin: 2px" data-montage-id="component-style"></div>
+<div data-montage-id="component-owner"></div>
+<div data-montage-id="component-layout"></div>
+<div data-montage-id="component-layout-left">Left</div>
+<div data-montage-id="component-layout-right">Right</div>
+<div data-montage-id="component-tobeclean">
     To Be Clean
     <span data-montage-id="text1"></span>
 </div>

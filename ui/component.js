@@ -136,23 +136,32 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         },
         set: function(value) {
             if (value == null) {
-                console.log("Warning: Tried to set element of ", this, " as " + value + ".");
+                console.warn("Tried to set element of ", this, " to ", value);
                 return;
             }
 
-            this.eventManager.registerEventHandlerForElement(this, value);
-
             if (this.isDeserializing) {
+                this.eventManager.registerEventHandlerForElement(this, value);
+
                 // if this component has a template and has been already instantiated then assume the value is the template.
                 if (this._isTemplateInstantiated) {
-                    this._templateElement = value;
+                    // this is important for component extension, we don't want to override template element
+                    if (!this._templateElement) {
+                        this._templateElement = value;
+                    }
                 } else {
                     this._element = value;
                     if (!this.blockDrawGate.value && this._element) {
                         this.blockDrawGate.setField("element", true);
                     }
                 }
+            } else if (!this._firstDraw) {
+                // If a draw has happened then at some point the element has been set
+                console.error("Cannot change element of ", this, " after it has been set");
+                return;
             } else {
+                this.eventManager.registerEventHandlerForElement(this, value);
+
                 this._element = value;
                 if (!this.blockDrawGate.value && this._element) {
                     this.blockDrawGate.setField("element", true);
@@ -614,9 +623,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-    serializeSelf: {
-        value: function(serializer, propertyNames) {
-            serializer.setProperties(propertyNames);
+    serializeProperties: {
+        value: function(serializer) {
+            serializer.setAll();
             var childComponents = this.childComponents;
             for (var i = 0, l = childComponents.length; i < l; i++) {
                 serializer.addObject(childComponents[i]);
@@ -900,15 +909,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         if (!templateModuleId) {
             moduleId = info.moduleId;
             // TODO: backwards compatibility for components with its controller outside the reel folder
-            //console.log(moduleId);
-            if (/([^\/]+)\.reel\/\1$/.exec(moduleId)) {
-                templateModuleId = moduleId + ".html";
-            } else if (/([^\/]+)\.reel$/.exec(moduleId)) {
-                templateModuleId = moduleId + "/" + RegExp.$1 + ".html";
-            } else {
-                templateModuleId = moduleId + ".reel/" + moduleId.split("/").pop() + ".html";
-            }
-            //console.log(moduleId + " === " + templateModuleId);
+            //if (/([^\/]+)\.reel\/\1$/.exec(moduleId)) {
+            //    templateModuleId = moduleId + ".html";
+            //} else if (/([^\/]+)\.reel$/.exec(moduleId)) {
+            //    templateModuleId = moduleId + "/" + RegExp.$1 + ".html";
+            //} else {
+                var slashIndex = moduleId.lastIndexOf("/");
+                //templateModuleId = moduleId + ".reel/" + moduleId.split("/").pop() + ".html";
+                templateModuleId = moduleId + "/" + moduleId.slice(slashIndex === -1 ? 0 : slashIndex+1, -5) + ".html";
+            //}
         }
         if (logger.isDebug) {
             logger.debug(this, "Will load " + templateModuleId);
@@ -1057,11 +1066,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this._templateElement) {
                 this._replaceElementWithTemplate();
             }
-            // TODO: removeAttribute only here for backwards compatibility
-            if (!this._element.getAttribute("data-montage-id")) {
-                this._element.removeAttribute("id");
-            }
-
             // This will schedule a second draw for any component that has children
             var childComponents = this.childComponents;
             for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {

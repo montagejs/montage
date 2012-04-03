@@ -3,25 +3,19 @@
     <head>
         <meta http-equiv="content-type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="menu-bookmark.css">
-        <script type="text/montage-serialization">
-{
+        <script type="text/montage-serialization">{
+
     "textfield1": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "txt-label"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "label",
-                "oneway": false
-            }
+            "value": {"<<->": "@owner.label"}
         }
     },
     "button1": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-bookmark"},
             "identifier": "Addbookmark"
@@ -34,8 +28,7 @@
         ]
     },
     "button2": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "identifier": "Addandfavorite",
             "element": {"#": "action-bookmark-fav"}
@@ -49,8 +42,7 @@
     },
 
     "button3": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "identifier": "ShowActionSheet",
             "element": {"#": "action-bookmark-test"}
@@ -64,38 +56,36 @@
     },
 
     "actionsheet": {
-        "module": "components/popup/action-sheet.reel",
-        "name": "ActionSheet",
+        "prototype": "components/popup/action-sheet.reel",
         "properties": {
         }
     },
 
     "owner": {
-        "module": "components/popup/menu-bookmark.reel",
-        "name": "MenuBookmark",
+        "prototype": "components/popup/menu-bookmark.reel",
         "properties": {
             "element": {"#": "menu-container"},
             "actionSheet": {"@": "actionsheet"},
             "btnActionSheet": {"@": "button3"}
         }
     }
-}
-    </script>
+
+    }</script>
 
 
     </head>
     <body>
-        <div id="menu-container" class="menu-container" >
+        <div data-montage-id="menu-container" class="menu-container" >
             <h3 class="title">Bookmark</h3>
             <div class="content">
                 <div class="action-container">
-                    <button class="btn primary action" id="action-bookmark" style="margin: 10px 0;">Add Bookmark</button>
-                    <button class="btn action" id="action-bookmark-fav">Bookmark &amp; Favorite</button>
-                    <button class="btn action" id="action-bookmark-test">Show Action Sheet &raquo;</button>
+                    <button class="btn primary action" data-montage-id="action-bookmark" style="margin: 10px 0;">Add Bookmark</button>
+                    <button class="btn action" data-montage-id="action-bookmark-fav">Bookmark &amp; Favorite</button>
+                    <button class="btn action" data-montage-id="action-bookmark-test">Show Action Sheet &raquo;</button>
                 </div>
                 <div class="msg-container">
                     <label>Add a custom label</label>
-                    <input id="txt-label" type="text" class="textfield" value="The New York Times - Breaking News" />
+                    <input data-montage-id="txt-label" type="text" class="textfield" value="The New York Times - Breaking News" />
                 </div>
 
             </div>

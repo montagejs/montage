@@ -1,0 +1,84 @@
+{
+    "button": {
+        "prototype": "montage/ui/skeleton/point/button.reel",
+        "properties": {
+            "element": {"#": "button"}
+        }
+    },
+    
+    "toggle": {
+        "prototype": "montage/ui/skeleton/point/toggle.reel",
+        "properties": {
+            "element": {"#": "toggle"}
+        }
+    },
+    
+    "checkbox": {
+        "prototype": "montage/ui/skeleton/point/input-checkbox.reel",
+        "properties": {
+            "element": {"#": "input-checkbox"}
+        }
+    },
+    
+    "radio1": {
+        "prototype": "montage/ui/skeleton/point/input-radio.reel",
+        "properties": {
+            "element": {"#": "input-radio1"}
+        }
+    },
+    "radio2": {
+        "prototype": "montage/ui/skeleton/point/input-radio.reel",
+        "properties": {
+            "element": {"#": "input-radio2"}
+        }
+    },
+    "radio3": {
+        "prototype": "montage/ui/skeleton/point/input-radio.reel",
+        "properties": {
+            "element": {"#": "input-radio3"}
+        }
+    },
+    
+    "select": {
+        "prototype": "montage/ui/skeleton/point/select.reel",
+        "properties": {
+            "element": {"#": "select"}
+        }
+    },
+    
+    "input-text": {
+        "prototype": "montage/ui/skeleton/point/input-text.reel",
+        "properties": {
+            "element": {"#": "input-text"}
+        }
+    },
+    
+    "textarea": {
+        "prototype": "montage/ui/skeleton/point/textarea.reel",
+        "properties": {
+            "element": {"#": "textarea"}
+        }
+    },
+    
+    "input-number": {
+        "prototype": "montage/ui/skeleton/point/input-number.reel",
+        "properties": {
+            "element": {"#": "input-number"}
+        }
+    },
+    
+    "input-range": {
+        "prototype": "montage/ui/skeleton/point/input-range.reel",
+        "properties": {
+            "element": {"#": "input-range"}
+        }
+    },
+    
+    "progress": {
+        "prototype": "montage/ui/skeleton/point/progress.reel",
+        "properties": {
+            "element": {"#": "progress"}
+        }
+    }
+    
+}

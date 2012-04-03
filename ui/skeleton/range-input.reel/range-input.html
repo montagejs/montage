@@ -18,24 +18,11 @@
             "component": {"@": "owner"},
             "axis": "horizontal",
             "hasBouncing": false,
-            "hasMomentum": false,
-            "invertAxis": true
+            "hasMomentum": false
         },
         "bindings": {
-            "maxTranslateX": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "sliderWidth",
-                "oneway": true
-            },
-            "translateX": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "sliderLeft",
-                "oneway": true
-            },
-            "translateX": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "positionX"
-            }
+            "maxTranslateX": {"<-": "@owner.sliderWidth"},
+            "translateX": {"<<->": "@owner.positionX"}            
         }
     },
     "owner": {

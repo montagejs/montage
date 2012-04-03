@@ -8,7 +8,7 @@
 
 var Montage = require("montage").Montage;
 
-exports.UndoManager = Montage.create(Montage, {
+var UndoManager = exports.UndoManager = Montage.create(Montage, {
 
     enabled: {
         value: true
@@ -237,4 +237,14 @@ exports.UndoManager = Montage.create(Montage, {
         }
     }
 
+});
+
+var _defaultUndoManager = null;
+Montage.defineProperty(exports, "defaultUndoManager", {
+    get: function() {
+        if (!_defaultUndoManager) {
+            _defaultUndoManager = UndoManager.create();
+        }
+        return _defaultUndoManager;
+    }
 });

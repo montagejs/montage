@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>PopupTest</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+{
+    "test": {
+        "prototype": "ui/popup-in-window-test/popup-in-window-test",
+        "properties": {
+            "testPopup": {"@": "testPopup"},
+            "popupButton": {"@": "popupButton"}
+        }
+    },
+    "testPopup": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "testPopup"},
+            "identifier": "testPopup",
+            "hasTemplate": false
+        }
+    },
+    "popupButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "popupButton"},
+            "identifier": "popupButton"
+        }
+    },
+    "application": {
+        "prototype": "montage/ui/application",
+        "properties": {
+            "delegate": {"@": "test"}
+        }
+    }
+}
+    </script>
+    <style>
+        .popupButton {
+            position:absolute;
+            top:30%;
+            bottom:0;
+            left:0;
+            right:0;
+            width:200px;
+            height:70px;
+            border-radius:5px;
+            border:1px solid black;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+    <!-- TODOz: need to come up with some content here -->
+    <div id="popupButton" class="popupButton">PopupButton</div>
+    <section id="testPopup" class="testPopup" style="display: none;height: 100px; width: 200px; overflow: none;">
+        <p>Lorem ipsum dolor sit amet.</p>
+    </section>
+</body>
+</html>

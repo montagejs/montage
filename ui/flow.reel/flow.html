@@ -10,8 +10,7 @@
     <script type="text/montage-serialization">
         {
             "repetition": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {
                         "#": "montage-flow-repetition"
@@ -19,23 +18,17 @@
                 }
             },
             "translateComposer": {
-                "module": "montage/ui/composer/translate-composer",
-                "name": "TranslateComposer",
+                "prototype": "montage/ui/composer/translate-composer",
                 "properties": {
                     "component": {"@": "owner"},
                     "maxTranslateX": 250000
                 },
                 "bindings": {
-                    "element": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_element",
-                        "oneway": true
-                    }
+                    "element": {"<-": "@owner._element"}
                 }
             },
             "owner": {
-                "module": "montage/ui/flow.reel",
-                "name": "Flow",
+                "prototype": "montage/ui/flow.reel",
                 "properties": {
                     "element": {
                         "#": "montage-flow"
@@ -48,11 +41,7 @@
                     }
                 },
                 "bindings": {
-                    "translateX": {
-                        "boundObject": {"@": "translateComposer"},
-                        "boundObjectPropertyPath": "translateX",
-                        "oneway": true
-                    }
+                    "translateX": {"<-": "@translateComposer.translateX"}
                 }
             }
         }
@@ -78,8 +67,8 @@
     </style>
 </head>
 <body>
-    <div id="montage-flow" class="montage-flow">
-        <div id="montage-flow-repetition" class="montage-flow-repetition"></div>
+    <div data-montage-id="montage-flow" class="montage-flow">
+        <div data-montage-id="montage-flow-repetition" class="montage-flow-repetition"></div>
     </div>
 </body>
 </html>

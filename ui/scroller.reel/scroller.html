@@ -7,11 +7,10 @@
 <html>
     <head>
     <title></title>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "scrollbars": {
-                "module": "montage/ui/scroll-bars.reel",
-                "name": "ScrollBars",
+                "prototype": "montage/ui/scroll-bars.reel",
                 "properties": {
                     "element": {
                         "#": "scrollbars"
@@ -19,50 +18,19 @@
                 }
             },
             "translateComposer1": {
-                "module": "montage/ui/composer/translate-composer",
-                "name": "TranslateComposer",
+                "prototype": "montage/ui/composer/translate-composer",
                 "properties": {
-                    "component": {"@": "owner"}
+                    "component": {"@": "owner"},
+                    "invertAxis": true
                 },
                 "bindings": {
-                    "translateX": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "scrollX",
-                        "oneway": false
-                    },
-                    "translateY": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "scrollY",
-                        "oneway": false
-                    },
-                    "maxTranslateY": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_maxTranslateY"
-                    },
-                    "maxTranslateX": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_maxTranslateX"
-                    },
-                    "axis": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "axis"
-                    },
-                    "hasBouncing": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "hasBouncing"
-                    },
-                    "hasMomentum": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "hasMomentum"
-                    },
-                    "bouncingDuration": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "bouncingDuration"
-                    },
-                    "momentumDuration": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "momentumDuration"
-                    }
+                    "translateX": {"<<->": "@owner.scrollX"},
+                    "translateY": {"<<->": "@owner.scrollY"},
+                    "maxTranslateY": {"<<->": "@owner._maxTranslateY"},
+                    "maxTranslateX": {"<<->": "@owner._maxTranslateX"},
+                    "axis": {"<<->": "@owner.axis"},
+                    "hasBouncing": {"<<->": "@owner.hasBouncing"},
+                    "hasMomentum": {"<<->": "@owner.hasMomentum"}
                 },
                 "listeners": [
                     {
@@ -76,8 +44,7 @@
                 ]
             },
             "owner": {
-                "module": "montage/ui/scroller.reel",
-                "name": "Scroller",
+                "prototype": "montage/ui/scroller.reel",
                 "properties": {
                     "_content": {
                         "#": "content"
@@ -90,8 +57,8 @@
                     }
                 }
             }
-        }
-    </script>
+
+    }</script>
     <style>
         .montage-scroller {
             position: relative;
@@ -105,9 +72,9 @@
     </style>
 </head>
 <body>
-    <div id="montage-scroller" class="montage-scroller">
-        <div id="scrollbars"></div>
-        <div id="content" class="content"></div>
+    <div data-montage-id="montage-scroller" class="montage-scroller">
+        <div data-montage-id="scrollbars"></div>
+        <div data-montage-id="content" class="content"></div>
     </div>
 </body>
 </html>

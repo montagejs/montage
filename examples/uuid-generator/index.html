@@ -10,19 +10,17 @@
     <link rel="stylesheet" type="text/css" href="style.css">
 
     <script src="../../montage.js"></script>
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "appdelegate1": {
-                "module": "app-delegate",
-                "name": "AppDelegate",
+                "prototype": "app-delegate",
                 "properties": {
                 }
             },
-            "generate-uuid": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+            "generateUuid": {
+                "prototype": "montage/ui/button.reel",
                 "properties": {
-                    "element": {"#": "generate-uuid"},
+                    "element": {"#": "generateUuid"},
                     "identifier": "generateUUID"
                 },
                 "listeners": [
@@ -34,46 +32,36 @@
                 ]
             },
             "textfield1": {
-                "module": "montage/ui/textfield.reel",
-                "name": "Textfield",
+                "prototype": "montage/ui/textfield.reel",
                 "properties": {
                     "element": {"#": "uuid"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "repetition1"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@repetition1.objectAtCurrentIteration"}
                 }
             },
             "repetition1": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "testList"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "appdelegate1"},
-                        "boundObjectPropertyPath": "uuids",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@appdelegate1.uuids"}
                 }
             }
-        }
-    </script>
+
+    }</script>
 
 
 </head>
 <body>
 
-    <form id="generateUUIDForm">
-        <button id="generate-uuid" class="" type="button">Generate UUID</button>
+    <form data-montage-id="generateUUIDForm" class="generateUUIDForm">
+        <button data-montage-id="generateUuid" class="" type="button">Generate UUID</button>
     </form>
 
-    <ul id="testList">
-        <li><input type="text" id="uuid" readonly size="48" /></li>
+    <ul data-montage-id="testList">
+        <li><input type="text" data-montage-id="uuid" readonly size="48" /></li>
     </ul>
 
 </body>

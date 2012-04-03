@@ -11,202 +11,190 @@
 
     <link rel="stylesheet" href="content.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "tbi": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "value": "To be implemented"
                 }
             },
-            "toggle-button": {
-                "module": "components/toggle-button-example.reel",
-                "name": "ToggleButtonExample",
+            "toggleButton": {
+                "prototype": "components/toggle-button-example.reel",
                 "properties": {
                 }
             },
             "button": {
-                "module": "components/button-example.reel",
-                "name": "ButtonExample",
+                "prototype": "components/button-example.reel",
                 "properties": {
                 }
             },
             "checkbox": {
-                "module": "components/checkbox-example.reel",
-                "name": "CheckboxExample",
+                "prototype": "components/checkbox-example.reel",
                 "properties": {
                 }
             },
-            "radio-button": {
-                "module": "components/radio-button-example.reel",
-                "name": "RadioButtonExample",
+            "radioButton": {
+                "prototype": "components/radio-button-example.reel",
                 "properties": {
                 }
             },
             "image": {
-                "module": "components/image-example.reel",
-                "name": "ImageExample",
+                "prototype": "components/image-example.reel",
                 "properties": {
                 }
             },
             "converters": {
-                "module": "components/converters.reel",
-                "name": "Converters",
+                "prototype": "components/converters.reel",
                 "properties": {
                 }
             },
-            "dynamic-text": {
-                "module": "components/dynamic-text-example.reel",
-                "name": "DynamicTextExample",
+            "dynamicText": {
+                "prototype": "components/dynamic-text-example.reel",
                 "properties": {
                 }
             },
             "list": {
-                "module": "components/list-example.reel",
-                "name": "ListExample",
+                "prototype": "components/list-example.reel",
                 "properties": {
                 }
             },
             "popup": {
-                "module": "components/popup/popup-example.reel",
-                "name": "PopupExample",
+                "prototype": "components/popup/popup-example.reel",
                 "properties": {
                 }
             },
             "progress": {
-                "module": "components/progress-example.reel",
-                "name": "ProgressExample",
+                "prototype": "components/progress-example.reel",
                 "properties": {
                 }
             },
             "repetition": {
-                "module": "components/repetition-example.reel",
-                "name": "RepetitionExample",
+                "prototype": "components/repetition-example.reel",
                 "properties": {
                 }
             },
             "slider": {
-                "module": "components/slider-example.reel",
-                "name": "SliderExample",
+                "prototype": "components/slider-example.reel",
                 "properties": {
                 }
             },
             "tabs": {
-                "module": "components/tabs-example.reel",
-                "name": "TabsExample",
+                "prototype": "components/tabs-example.reel",
                 "properties": {
                 }
             },
             "substitution": {
-                "module": "components/substitution-example.reel",
-                "name": "SubstitutionExample",
+                "prototype": "components/substitution-example.reel",
                 "properties": {
                 }
             },
-            "input-text": {
-                "module": "components/input-text-example.reel",
-                "name": "InputTextExample",
+            "inputText": {
+                "prototype": "components/input-text-example.reel",
                 "properties": {
                 }
             },
             "textarea": {
-                "module": "components/textarea-example.reel",
-                "name": "TextareaExample",
+                "prototype": "components/textarea-example.reel",
                 "properties": {
                 }
             },
-            "range-input": {
-                "module": "components/range-input-example.reel",
-                "name": "RangeInputExample",
+            "rangeInput": {
+                "prototype": "components/range-input-example.reel",
                 "properties": {
                 }
             },
-            "number-input": {
-                "module": "components/number-input-example.reel",
-                "name": "NumberInputExample",
+            "rangeInput2": {
+                "prototype": "components/range-input-example2.reel",
                 "properties": {
                 }
             },
-            "select-input": {
-                "module": "components/select-input-example.reel",
-                "name": "SelectInputExample",
+            "montageSlider": {
+                "prototype": "components/montage-slider.reel",
+                "properties": {
+                }
+            },
+            "numberInput": {
+                "prototype": "components/number-input-example.reel",
+                "properties": {
+                }
+            },
+            "selectInput": {
+                "prototype": "components/select-input-example.reel",
                 "properties": {
                 }
             },
             "anchor": {
-                "module": "components/anchor-example.reel",
-                "name": "AnchorExample",
+                "prototype": "components/anchor-example.reel",
                 "properties": {
                 }
             },
             "scroller": {
-                "module": "components/scroller-example.reel",
-                "name": "ScrollerExample",
+                "prototype": "components/scroller-example.reel",
                 "properties": {
                 }
             },
-            "slider-polyfill": {
-                "module": "components/slider-polyfill-example.reel",
-                "name": "SliderPolyfillExample",
+            "sliderPolyfill": {
+                "prototype": "components/slider-polyfill-example.reel",
                 "properties": {
                 }
             },
 
+            "translateComposer": {
+                "prototype": "components/translate-composer-example.reel",
+                "properties": {}
+            },
+
             "content": {
-                "module": "montage/ui/substitution.reel",
-                "name": "Substitution",
+                "prototype": "montage/ui/substitution.reel",
                 "properties": {
                     "element": {"#": "content"},
                     "switchComponents": {
-                        "toggle-button": {"@": "toggle-button"},
+                        "toggleButton": {"@": "toggleButton"},
                         "button": {"@": "button"},
                         "combo-box": {"@": "tbi"},
                         "checkbox": {"@": "checkbox"},
-                        "radio-button": {"@": "radio-button"},
+                        "radioButton": {"@": "radioButton"},
                         "image": {"@": "image"},
                         "popup1": {"@": "popup"},
                         "progress": {"@": "progress"},
-                        "dynamic-text": {"@": "dynamic-text"},
+                        "dynamicText": {"@": "dynamicText"},
                         "converters": {"@": "converters"},
                         "list": {"@": "list"},
                         "repetition": {"@": "repetition"},
                         "tabs": {"@": "tabs"},
-                        "slider": {"@": "slider"},
-                        "input-text": {"@": "input-text"},
+                        "inputText": {"@": "inputText"},
                         "textarea": {"@": "textarea"},
-                        "number-input": {"@": "number-input"},
-                        "range-input": {"@": "range-input"},
-                        "select-input": {"@": "select-input"},
+                        "numberInput": {"@": "numberInput"},
+                        "rangeInput2": {"@": "rangeInput2"},
+                        "selectInput": {"@": "selectInput"},
                         "anchor": {"@": "anchor"},
                         "substitution": {"@": "substitution"},
-                        "slider-polyfill": {"@": "slider-polyfill"},
-                        "scroller": {"@": "scroller"}
+                        "scroller": {"@": "scroller"},
+                        "montageSlider": {"@": "montageSlider"},
+                        "sliderPolyfill": {"@": "sliderPolyfill"},
+                        "translateComposer": {"@": "translateComposer"}
                     },
                     "delegate": {"@": "owner"}
                 },
                 "bindings": {
-                    "switchValue": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "sandbox.selectedItem",
-                        "oneway": true
-                    }
+                    "switchValue": {"<-": "@owner.selectedItem"}
                 }
             },
 
             "owner": {
-                "module": "content.reel",
-                "name": "content",
+                "prototype": "content.reel[content]",
                 "properties": {
-                    "element": {"#": "content"}
+                    "element": {"#": "content"},
+                    "contentDeck": {"@": "content"}
                 }
             }
-        }
-    </script>
+
+    }</script>
 </head>
 <body>
 
-    <div id="content" class="content">
+    <div data-montage-id="content" class="content">
         <h5>Please select a Component to view</h5>
     </div>
 

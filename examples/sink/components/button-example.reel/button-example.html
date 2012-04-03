@@ -1,13 +1,13 @@
+<!doctype html>
 <html>
 <head>
 	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+    <title></title>
     <script type="text/montage-serialization">
 {
     "button1": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "button1"},
             "identifier": "button1"
@@ -22,8 +22,7 @@
 
 
     "button2": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "button2"}
         },
@@ -35,12 +34,11 @@
         ]
     },
 
-    "button3": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+    "settingsButton": {
+        "prototype": "montage/ui/button.reel",
         "properties": {
-            "element": {"#": "button3"},
-            "identifier": "button3"
+            "element": {"#": "settings"},
+            "identifier": "settings"
         },
         "listeners": [
             {
@@ -51,8 +49,7 @@
     },
 
     "copy": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "copy"}
         },
@@ -64,8 +61,7 @@
         ]
     },
     "cut": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "cut"}
         },
@@ -77,8 +73,7 @@
         ]
     },
     "paste": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "paste"}
         },
@@ -90,19 +85,40 @@
         ]
     },
 
-
-
     "logger": {
-        "module": "logger.reel",
-        "name": "Logger",
+        "prototype": "logger.reel",
         "properties": {
             "element": {"#": "logger"}
         }
     },
 
+    "accordion1": {
+        "prototype": "accordion.reel",
+        "properties": {
+            "element": {"#": "accordion1"}
+        }
+    },
+    "accordion2": {
+        "prototype": "accordion.reel",
+        "properties": {
+            "element": {"#": "accordion2"}
+        }
+    },
+    "accordion3": {
+        "prototype": "accordion.reel",
+        "properties": {
+            "element": {"#": "accordion3"}
+        }
+    },
+    "accordion4": {
+        "prototype": "accordion.reel",
+        "properties": {
+            "element": {"#": "accordion4"}
+        }
+    },
+
     "owner": {
-        "module": "components/button-example.reel",
-        "name": "ButtonExample",
+        "prototype": "components/button-example.reel",
         "properties": {
             "element": {"#": "buttontest"},
             "logger": {"@": "logger"}
@@ -111,79 +127,413 @@
 }
     </script>
 
-    <style>
 
-        .button-example .montage-button.text, .button-example .montage-button.submit, .button-example .montage-button.cancel {
-            line-height: 32px;
-            padding: 2px 24px 0 24px;
-            font-size: 1.1em;
-            height: 32px;
-        }
-
-        .eventlog {
-            margin-top: 10px;
-        }
-
-        .settings:before {
-            content: url(images/settings.png);
-            vertical-align: middle;
-            display: inline-block;
-            padding-right: 0.5em;
-        }
-
-    </style>
 </head>
 <body>
-    <div id="buttontest" class="button-example">
+    <div data-montage-id="buttontest" class="button-example">
         <div class="row">
-            <div class="span8">
+            <div class="span12">
                 <h3>Button</h3>
                 <p class="">
-                        The Button component converts a &lt;div&gt; or &lt;input&gt; element into a styled, clickable button. It supports three behavior modes (transient, toggle, and mixed) for different uses. You can different assign labels to different button states.
+                        The Button component wraps a <code>&lt;button></code> or <code>&lt;input type="button"></code> element, and exposes the <a href="http://dev.w3.org/html5/spec/the-button-element.html#the-button-element" target="_blank">standard attributes</a> of those elements as properties, which you can use with data binding, for example.
                     </p>
             </div>
         </div>
 
-        <h4>Demo</h4>
-        
-        <div class="demo">
-            
-            <p>Default Button with an identifier to link it to an action handler</p>
-            <button class="text btn" id="button1">Click Me</button>
-                
-            <p>Submit Button without a specific handler. In this case, handleAction will be called on action.</p>
-            <input type="submit" class="btn submit" id="button2" value="I am a Submit Button"/> 
-            
-            <p>Cancel Button with a specific handler - handleButton3Action</p>
-            <div class="btn cancel" id="button3">I am a Cancel Button</div>  
-            
-            <h4>Button group</h4>
+        <h4>Examples
+<!--                             <small>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/button-example.reel" target="_blank">View source on GitHub</a>
+        </small> -->
 
-            <p>Putting buttons in a group is a matter of wrapping the buttons in an
-            element and giving it a class.</p>
+        </h4>
 
-            <div class="btn-group">
-                <button class="btn" id="copy">Copy</button>
-                <button class="btn" id="cut">Cut</button>
-                <button class="btn" id="paste">Paste</button>
-            </div> 
 
-            <h4>Image</h4>
-
-            <p>It is recommended that images are added to buttons using CSS, either by
-            setting a background image, or by using the <code>:before</code> and
-            <code>:after</code> pseudo elements with the <code>content</code>
-            property, as follows:</p>
-
-            <button class="btn settings" id="image">Settings</button>
-            
+        <!-- <h4>Basic button with event handler</h4> -->
+        <p>Button with an identifier used to link it to an handler method.</p>
+        <div class="demo demo1">
+            <div class="app">
+                        <button class="text btn" data-montage-id="button1">Click Me</button>
+            </div>
         </div>
 
         <section>
-            <a href="m-js/examples/sink/components/button-example.reel" target="_blank">View Demo Source</a>
+            <ul data-montage-id="accordion1" class="accordion">
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                    <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;button class="text btn" data-montage-id="button1"&gt;Click Me&lt;/button&gt;
+</pre>
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint">
+{
+    "button1": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "button1"},
+            "identifier": "button1"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "logger": {
+        "prototype": "logger.reel",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    },
+    "owner": {
+        "prototype": "components/button-example.reel",
+        "properties": {
+            "element": {"#": "buttontest"},
+            "logger": {"@": "logger"}
+        }
+    },
+
+}
+</pre>
+
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.ButtonExample = Montage.create(Component, {
+
+    handleButton1Action: {
+        value: function() {
+            this.log("Button - button1 - clicked");
+        }
+    },
+
+    log: {
+        value: function(msg) {
+            this.logger.log(msg);
+        }
+    },
+
+});
+                        </pre>
+                    </div>
+                </li>
+            </ul>
+
+            </section>
+
+
+            <p>Submit Button without a specific handler. In this case, the <code>handleAction()</code> method defined in <strong>button-example.html</strong> will be called on when the <code>"action"</code> event is dispatched.</p>
+
+<div class="demo demo2">
+        <div class="app">
+            <input type="submit" class="btn submit" data-montage-id="button2" value="Submit"/>
+         </div>
+</div>
+
+            <!-- Source view markup -->
+
+            <section>
+                        <ul data-montage-id="accordion2" class="accordion">
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                <div class="accordion-inner montage-hidden" >
+                                    <pre class="prettyprint" >
+&lt;input type="submit" class="btn submit" data-montage-id="button2" value="I am a Submit Button"/&gt;
+            </pre>
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+{
+    "button2": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "button2"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "owner": {
+        "prototype": "components/button-example.reel",
+        "properties": {
+            "element": {"#": "buttontest"},
+            "logger": {"@": "logger"}
+        }
+    }
+}
+             </pre>
+
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.ButtonExample = Montage.create(Component, {
+
+    handleAction: {
+        value: function() {
+            this.log("Fallback action handler invoked as there is no specific handler for this button");
+        }
+    }
+
+    log: {
+        value: function(msg) {
+            this.logger.log(msg);
+        }
+    },
+
+});
+                                    </pre>
+                                </div>
+                            </li>
+                        </ul>
+
+            </section>
+
+
+
+            <h4>Button groups</h4>
+            <p>To create a button group, wrap the buttons in an parent element that applies appropriate CSS styles.</p>
+
+
+<div class="demo demo3">
+    <div class="app">
+        <div class="btn-group">
+            <button class="btn" data-montage-id="copy">Copy</button>
+            <button class="btn" data-montage-id="cut">Cut</button>
+            <button class="btn" data-montage-id="paste">Paste</button>
+        </div>
+    </div>
+</div>
+
+    <section>
+                <ul data-montage-id="accordion3" class="accordion">
+                    <li class="accordion-group">
+                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                        <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint">
+&lt;div class="btn-group"&gt;
+    &lt;button class="btn" data-montage-id="copy"&gt;Copy&lt;/button&gt;
+    &lt;button class="btn" data-montage-id="cut"&gt;Cut&lt;/button&gt;
+    &lt;button class="btn" data-montage-id="paste"&gt;Paste&lt;/button&gt;
+&lt;/div&gt;
+                    </pre>
+
+                        </div>
+                    </li>
+                    <li class="accordion-group">
+                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                        <div class="accordion-inner montage-hidden">
+                            <pre class="prettyprint">
+{
+    "copy": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "copy"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+    "cut": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "cut"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+    "paste": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "paste"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    }
+}
+    </pre>
+
+                        </div>
+                    </li>
+                    <li class="accordion-group">
+                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS (partial)</a></div>
+                        <div class="accordion-inner montage-hidden">
+                            <pre class="prettyprint">
+.btn-group {
+    position:relative;zoom:1;
+}
+.btn-group:before,.btn-group:after {
+    display:table;*display:inline;content:"";zoom:1;
+}
+.btn-group:after {
+    clear:both;
+}
+                </pre>
+                        </div>
+                    </li>
+                </ul>
+
+</section>
+
+
+
+
+            <h4>Adding an image icon</h4>
+
+            <p>To add an image icon to a Button use CSS, either by
+            setting a background image, or with the <code>:before</code> and
+            <code>:after</code> pseudo elements with the <code>content</code>
+            property:</p>
+
+
+            <div class="demo demo4">
+
+                <div class="app">
+                    <button class="btn settings" data-montage-id="settings">Settings</button>
+                </div>
+            </div>
+
+            <section>
+            <ul data-montage-id="accordion4" class="accordion">
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                    <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint-dark-dark">
+&lt;button class="btn settings" data-montage-id="settings"&gt;Settings&lt;/button&gt;
+</pre>
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint">
+{
+    "settingsButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "settings"},
+            "identifier": "settings"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "owner": {
+        "prototype": "components/button-example.reel",
+        "properties": {
+            "element": {"#": "buttontest"},
+            "logger": {"@": "logger"}
+        }
+    }
+}
+</pre>
+
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint">
+.settings:before {
+    content: url(images/settings.png);
+    vertical-align: middle;
+    display: inline-block;
+    padding-right: 0.5em;
+}
+</pre>
+                    </div>
+                </li>
+            </ul>
+
+
+        </section>
+
+                    <section>
+                        <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/button-example.reel" target="_blank">View source on GitHub</a>
+                    </section>
+
+    <section>
+            <h4>Handling mouse/touch events on a Button</h4>
+            <p>When a event occurs on a component (or any element) which has registered an event listener for the event type, the Montage event manager infers what function handler on the listener object to call. This topic is covered in detail in <a href="http://tetsubo.org/docs/montage/event-handling/" title="Event Handling">Event Handling</a>.
+
+                <p>For example, consider the following serialized Button component. It declares an event listener for the button's "action" event, and also assigns  the value "button1" to its "identifier" property. </p>
+
+        <pre class="prettyprint linenums">
+"button1": {
+    "prototype": "montage/ui/button.reel",
+    "properties": {
+        "element": {"#": "button1"},
+        "identifier": "button1"
+    },
+    "listeners": [
+        {
+            "type": "action",
+            "listener": {"@": "owner"}
+        }
+    ]
+}
+</pre>
+
+<p>The specified listener object (<code>owner</code>) implements the following function, which is automatically invoked when the Button dispatches the "action event."</p>
+
+<pre class="prettyprint linenums">
+handleButton1Action: {
+    value: function() {
+        this.log("Button - button1 - clicked");
+    }
+}
+</pre>
+
+<p>For more information, see <a href="http://tetsubo.org/docs/montage/event-handling/" title="Event Handling">Event Handling</a>.</p>
+
         </section>
 
 
+        <section>
+
+
+        <div data-montage-id="logger"></div>
+
+        </section>
+    </div>
+
+<!-- Commenting out until API reference has these items documented. then will link to those pages. - Tim
         <section>
             <h4>Component Properties</h4>
             <table>
@@ -210,42 +560,13 @@
                   <td>selectedTabValue</td>
                   <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
                 </tr>
-                
+
               </tbody>
             </table>
             <p>
                 <a href="" target="_blank">View full Documentation</a>
             </p>
         </section>
-
-
-        <section>
-            <h4>Handling Button Click/Touch Events</h4>
-            <p>To setup a handler for a Button, implement a function with the following naming convention:
-            <pre class="prettyprint">"handle" + &lt; button Identifier capitalized &gt; + "Action"</pre>
-            </p>
-            <p>
-                Eg: for button with identifier = "button1":
-            </p>
-
-<pre class="prettyprint linenums">
-handleButton1Action: {
-    value: function() {
-        this.log("Button - button1 - clicked");
-    }
-}
-</pre>
-
-        </section>
-
-
-        <section>
-            
-
-            <div id="logger">
-                <h2>Logger</h2>
-            </div>
-        </section>
-    </div>
+ -->
 </body>
 </html>

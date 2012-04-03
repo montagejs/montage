@@ -10,37 +10,27 @@
     <title>Photo Editor</title>
     <link rel="stylesheet" type="text/css" href="photo-editor.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "image": {
-                "module": "montage/ui/image.reel",
-                "name": "Image",
+                "prototype": "montage/ui/image.reel",
                 "properties": {
                     "element": {"#": "image"}
                 },
                 "bindings": {
-                    "src": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "photo.src",
-                        "oneway": true
-                    }
+                    "src": {"<-": "@owner.photo.src"}
                 }
             },
 
             "pointMonitorController": {
-                "module": "montage/ui/controller/array-controller",
-                "name": "ArrayController",
+                "prototype": "montage/ui/controller/array-controller",
                 "bindings": {
-                    "content": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "pointMonitors"
-                    }
+                    "content": {"<<->": "@owner.pointMonitors"}
                 }
             },
 
             "pointMonitorRepetition": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "pointMonitors"},
                     "isSelectionEnabled": true,
@@ -49,70 +39,42 @@
             },
 
             "pointMarker": {
-                "module": "point-marker.reel",
-                "name": "PointMarker",
+                "prototype": "point-marker.reel",
                 "properties": {
                     "element": {"#": "pointMarker"}
                 },
                 "bindings": {
-                    "x": {
-                        "boundObject": {"@": "pointMonitorRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.x",
-                        "oneway": true
-                    },
-                    "y": {
-                        "boundObject": {"@": "pointMonitorRepetition"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.y",
-                        "oneway": true
-                    }
+                    "x": {"<-": "@pointMonitorRepetition.objectAtCurrentIteration.x"},
+                    "y": {"<-": "@pointMonitorRepetition.objectAtCurrentIteration.y"}
                 }
             },
 
             "horizontalRuler": {
-                "module": "ruler.reel",
-                "name": "Ruler",
+                "prototype": "ruler.reel",
                 "properties": {
                     "element": {"#": "horizontalRuler"},
                     "axis": "x"
                 },
                 "bindings": {
-                    "container": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_canvas",
-                        "oneway": true
-                    },
-                    "rangeEnd": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_width",
-                        "oneway": true
-                    }
+                    "container": {"<-": "@owner._canvas"},
+                    "rangeEnd": {"<-": "@owner._width"}
                 }
             },
 
             "verticalRuler": {
-                "module": "ruler.reel",
-                "name": "Ruler",
+                "prototype": "ruler.reel",
                 "properties": {
                     "element": {"#": "verticalRuler"},
                     "axis": "y"
                 },
                 "bindings": {
-                    "container": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_canvas",
-                        "oneway": true
-                    },
-                    "rangeEnd": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "_height",
-                        "oneway": true
-                    }
+                    "container": {"<-": "@owner._canvas"},
+                    "rangeEnd": {"<-": "@owner._height"}
                 }
             },
 
             "owner": {
-                "module": "photo-editor.reel",
-                "name": "PhotoEditor",
+                "prototype": "photo-editor.reel",
                 "properties": {
                     "element": {"#": "editor"},
                     "_image": {"@": "image"},
@@ -123,25 +85,25 @@
                     "verticalRuler": {"@": "verticalRuler"}
                 }
             }
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
 
-    <div id="editor" class="PhotoEditor">
-        <img id="image" class="image" />
+    <div data-montage-id="editor" class="PhotoEditor">
+        <img data-montage-id="image" class="image" />
 
         <div class="canvasFrame">
-            <div id="horizontalRuler" class="horizontalRuler ruler"></div>
-            <div id="verticalRuler" class="verticalRuler ruler"></div>
+            <div data-montage-id="horizontalRuler" class="horizontalRuler ruler"></div>
+            <div data-montage-id="verticalRuler" class="verticalRuler ruler"></div>
 
-            <div id="toolLayer" class="toolLayer">
-                <div id="pointMonitors">
-                    <div id="pointMarker"></div>
+            <div data-montage-id="toolLayer" class="toolLayer">
+                <div data-montage-id="pointMonitors">
+                    <div data-montage-id="pointMarker"></div>
                 </div>
             </div>
-            <canvas id="canvas" class="canvas"></canvas>
+            <canvas data-montage-id="canvas" class="canvas"></canvas>
         </div>
     </div>
 

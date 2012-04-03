@@ -8,49 +8,37 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">
-    {
+    <script type="text/montage-serialization">{
+
         "test": {
-            "module": "ui/condition/test",
-            "name": "Test"
+            "prototype": "ui/condition/test"
         },
         "outerCondition": {
-            "module": "montage/ui/condition.reel",
-            "name": "Condition",
+            "prototype": "montage/ui/condition.reel",
             "properties": {
                 "element": {"#": "outerCondition"}
             },
             "bindings": {
-                "condition": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "outerConditionValue",
-                    "oneway": false
-                }
+                "condition": {"<<->": "@test.outerConditionValue"}
             }
         },
         "innerCondition": {
-            "module": "montage/ui/condition.reel",
-            "name": "Condition",
+            "prototype": "montage/ui/condition.reel",
             "properties": {
                 "element": {"#": "innerCondition"}
             },
             "bindings": {
-                "condition": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "innerConditionValue",
-                    "oneway": false
-                }
+                "condition": {"<<->": "@test.innerConditionValue"}
             }
         },
         "application": {
-            "module": "montage/ui/application",
-            "name": "Application",
+            "prototype": "montage/ui/application",
             "properties": {
                 "delegate" : {"@": "test"}
             }
         }
-    }
-    </script>
+    
+    }</script>
 
 </head>
 <body>

@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>RichText Editor Test</title>
+    <link rel="stylesheet" type="text/css" href="../bootstrap.min.css" />
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+     <script type="text/montage-serialization">
+{
+
+     "editor1": {
+         "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
+         "properties": {
+             "element": {"#": "editor1"}
+         }
+     },
+
+     "editor2": {
+         "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
+         "properties": {
+             "element": {"#": "editor2"},
+             "value": "Montage Rocks!"
+         }
+     },
+
+    "test": {
+        "prototype": "ui/rich-text-editor-test/rich-text-editor-test",
+        "properties": {
+            "editor1": {"@": "editor1"},
+            "editor2": {"@": "editor2"}
+        }
+    },
+
+    "application": {
+        "prototype": "montage/ui/application",
+        "properties": {
+            "delegate": {"@": "test"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <h1>RichText Editor test</h1>
+    <div id="editor1" style="width: 400px; height: 200px">Hello Montage</div>
+    <div id="editor2" style="width: 400px; height: 200px">Hello Montage</div>
+</body>
+</html>

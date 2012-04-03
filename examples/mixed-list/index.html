@@ -10,37 +10,29 @@
     <link rel="stylesheet" type="text/css" href="style.css">
     <script src="../../montage.js"></script>
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
             "owner": {
-                "module": "mixed-list",
-                "name": "MixedList"
+                "prototype": "mixed-list"
             },
             "scroller": {
-                "module": "montage/ui/scroller.reel",
-                "name": "Scroller",
+                "prototype": "montage/ui/scroller.reel",
                 "properties": {
                     "element": {"#": "scroller"},
                     "axis": "vertical"
                  }
             },
             "list": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "testList"}
                 },
                 "bindings": {
-                    "objects": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "objectList",
-                        "oneway": true
-                    }
+                    "objects": {"<-": "@owner.objectList"}
                 }
             },
             "substitution": {
-                "module": "montage/ui/substitution.reel",
-                "name": "Substitution",
+                "prototype": "montage/ui/substitution.reel",
                 "properties": {
                     "element": {"#": "substitution"},
                     "switchComponents": {
@@ -51,55 +43,35 @@
                     }
                 },
                 "bindings": {
-                    "switchValue": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.type",
-                        "oneway": true
-                    }
+                    "switchValue": {"<-": "@list.objectAtCurrentIteration.type"}
                 }
             },
             "toggle": {
-                "module": "montage/ui/bluemoon/toggle.reel",
-                "name": "Toggle",
+                "prototype": "montage/ui/bluemoon/toggle.reel",
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "slider": {
-                "module": "montage/ui/bluemoon/slider.reel",
-                "name": "Slider",
+                "prototype": "montage/ui/bluemoon/slider.reel",
                 "properties": {
 
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "checkbox": {
-                "module": "montage/ui/bluemoon/checkbox.reel",
-                "name": "Checkbox",
+                "prototype": "montage/ui/bluemoon/checkbox.reel",
                 "properties": {
 
                 },
                 "bindings": {
-                    "checked": {
-                        "boundObject": {"@": "list"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration.value",
-                        "oneway": true
-                    }
+                    "checked": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "addAnObjectButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "button"},
                     "identifier": "addButton"
@@ -112,15 +84,15 @@
                 }
                 ]
             }
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
-    <button id="button">Add</button>
-    <div id="scroller" class="scroller">
-        <ul id="testList">
-            <li id="substitution"></li>
+    <button data-montage-id="button">Add</button>
+    <div data-montage-id="scroller" class="scroller">
+        <ul data-montage-id="testList">
+            <li data-montage-id="substitution"></li>
         </ul>
     </div>
 </body>

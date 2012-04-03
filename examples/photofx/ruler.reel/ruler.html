@@ -10,57 +10,41 @@
     <title>Ruler</title>
     <link rel="stylesheet" type="text/css" href="ruler.css">
 
-    <script type="text/montage-serialization">
-        {
+    <script type="text/montage-serialization">{
+
 
             "positionText": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "positionText"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "position",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.position"}
                 }
             },
 
             "savedPositionText": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "savedPositionText"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "savedPosition",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.savedPosition"}
                 }
             },
 
             "distanceText": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "distanceText"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "distance",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@owner.distance"}
                 }
             },
 
             "owner": {
-                "module": "ruler.reel",
-                "name": "Ruler",
+                "prototype": "ruler.reel",
                 "properties": {
                     "element": {"#": "ruler"},
                     "positionText": {"@": "positionText"},
@@ -68,16 +52,16 @@
                     "distanceText": {"@": "distanceText"}
                 }
             }
-        }
-    </script>
+
+    }</script>
 
 </head>
 <body>
 
-    <div id="ruler" class="Ruler">
-        <span id="savedPositionText" class="savedPositionText"></span>
-        <span id="distanceText" class="distanceText"></span>
-        <span id="positionText" class="positionText"></span>
+    <div data-montage-id="ruler" class="Ruler">
+        <span data-montage-id="savedPositionText" class="savedPositionText"></span>
+        <span data-montage-id="distanceText" class="distanceText"></span>
+        <span data-montage-id="positionText" class="positionText"></span>
     </div>
 
 </body>
