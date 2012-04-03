@@ -7,8 +7,7 @@
     <script type="text/montage-serialization">
 {
     "button1": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "button1"},
             "identifier": "button1"
@@ -23,8 +22,7 @@
 
 
     "button2": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "button2"}
         },
@@ -37,8 +35,7 @@
     },
 
     "settingsButton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "settings"},
             "identifier": "settings"
@@ -52,8 +49,7 @@
     },
 
     "copy": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "copy"}
         },
@@ -65,8 +61,7 @@
         ]
     },
     "cut": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "cut"}
         },
@@ -78,8 +73,7 @@
         ]
     },
     "paste": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "paste"}
         },
@@ -92,45 +86,39 @@
     },
 
     "logger": {
-        "module": "logger.reel",
-        "name": "Logger",
+        "prototype": "logger.reel",
         "properties": {
             "element": {"#": "logger"}
         }
     },
 
     "accordion1": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "accordion1"}
         }
     },
     "accordion2": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "accordion2"}
         }
     },
     "accordion3": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "accordion3"}
         }
     },
     "accordion4": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "accordion4"}
         }
     },
 
     "owner": {
-        "module": "components/button-example.reel",
-        "name": "ButtonExample",
+        "prototype": "components/button-example.reel",
         "properties": {
             "element": {"#": "buttontest"},
             "logger": {"@": "logger"}
@@ -184,8 +172,7 @@
                         <pre class="prettyprint">
 {
     "button1": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "button1"},
             "identifier": "button1"
@@ -198,15 +185,13 @@
         ]
     },
     "logger": {
-        "module": "logger.reel",
-        "name": "Logger",
+        "prototype": "logger.reel",
         "properties": {
             "element": {"#": "logger"}
         }
     },
     "owner": {
-        "module": "components/button-example.reel",
-        "name": "ButtonExample",
+        "prototype": "components/button-example.reel",
         "properties": {
             "element": {"#": "buttontest"},
             "logger": {"@": "logger"}
@@ -274,8 +259,7 @@ exports.ButtonExample = Montage.create(Component, {
                                     <pre class="prettyprint" >
 {
     "button2": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "button2"}
         },
@@ -287,8 +271,7 @@ exports.ButtonExample = Montage.create(Component, {
         ]
     },
     "owner": {
-        "module": "components/button-example.reel",
-        "name": "ButtonExample",
+        "prototype": "components/button-example.reel",
         "properties": {
             "element": {"#": "buttontest"},
             "logger": {"@": "logger"}
@@ -365,8 +348,7 @@ exports.ButtonExample = Montage.create(Component, {
                             <pre class="prettyprint">
 {
     "copy": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "copy"}
         },
@@ -378,8 +360,7 @@ exports.ButtonExample = Montage.create(Component, {
         ]
     },
     "cut": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "cut"}
         },
@@ -391,8 +372,7 @@ exports.ButtonExample = Montage.create(Component, {
         ]
     },
     "paste": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "paste"}
         },
@@ -462,8 +442,7 @@ exports.ButtonExample = Montage.create(Component, {
                         <pre class="prettyprint">
 {
     "settingsButton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "settings"},
             "identifier": "settings"
@@ -476,8 +455,7 @@ exports.ButtonExample = Montage.create(Component, {
         ]
     },
     "owner": {
-        "module": "components/button-example.reel",
-        "name": "ButtonExample",
+        "prototype": "components/button-example.reel",
         "properties": {
             "element": {"#": "buttontest"},
             "logger": {"@": "logger"}
@@ -518,8 +496,7 @@ exports.ButtonExample = Montage.create(Component, {
 
         <pre class="prettyprint linenums">
 "button1": {
-    "module": "montage/ui/button.reel",
-    "name": "Button",
+    "prototype": "montage/ui/button.reel",
     "properties": {
         "element": {"#": "button1"},
         "identifier": "button1"

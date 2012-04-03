@@ -28,8 +28,7 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "main.reel",
-                "name": "Main",
+                "prototype": "main.reel",
                 "properties": {
                     "element": {"#": "main"},
                     "content": {"@": "content"},
@@ -38,8 +37,7 @@
             },
 
             "sidebar": {
-                "module": "sidebar.reel",
-                "name": "Sidebar",
+                "prototype": "sidebar.reel",
                 "properties": {
                     "element": {"#": "sidebar"},
                     "sandbox": {"@": "owner"}
@@ -50,8 +48,7 @@
             },
 
             "content": {
-                "module": "content.reel",
-                "name": "Content",
+                "prototype": "content.reel",
                 "properties": {
                     "element": {"#": "content"},
                     "sandbox": {"@": "owner"}

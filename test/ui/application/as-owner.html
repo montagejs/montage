@@ -11,19 +11,16 @@
     <script src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">{
         "owner": {
-            "module": "montage/ui/application",
-            "name": "Application",
+            "prototype": "montage/ui/application",
             "properties": {
                 "delegate": {"@": "test"}
             }
         },
         "test": {
-            "module": "ui/application/test",
-            "name": "Test"
+            "prototype": "ui/application/test"
         },
         "pageLoaded": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "text"},
                 "value": "Loaded"

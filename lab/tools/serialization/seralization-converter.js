@@ -45,7 +45,7 @@ function processFiles(filenames) {
     filenames.forEach(function(filename) {
         var stats = fs.statSync(filename);
 
-        if (stats.isFile() && /\.html$/.test(filename)) {
+        if (stats.isFile() && /\.(html|json)$/.test(filename)) {
             processFile(filename);
         } else if (stats.isDirectory()) {
             processDirectory(filename);
@@ -68,44 +68,28 @@ function processFile(filename) {
 }
 
 function convertSerialization(filename) {
-    var scriptRegExp = /<script\s+type="text\/montage-serialization"\s*>/ig;
-
     fs.readFile(filename, function(err, data) {
         if (err) throw err;
 
-        var newContents;
-        var serialization;
-        var matches;
-        var ix;
-
         data = data.toString();
 
-        if (matches = scriptRegExp.exec(data)) {
-            ix = scriptRegExp.lastIndex;
-            serialization = data.slice(ix);
-            serialization = serialization.slice(0, serialization.search(/<\/script>/i));
+        var newContents = convertModuleToPrototype(data);
 
-            var string = convertModuleToPrototype(serialization)
-                         .replace(/^.*\n|\n.*$/g, "") // strip first,last line
-                         .replace(/^/gm, "    "); // indent by 4 spaces
+        if (newContents === data) {
+            return;
+        }
 
-            newContents = data.slice(0, ix) + "{\n" +
-                          string +
-                          "\n    }</script>" +
-                          data.slice(ix + serialization.length + "</script>".length);
-
-            if (options.dryRun) {
-                console.log("Will rewrite " + filename + " with:");
-                console.log(newContents);
-            } else {
-                fs.writeFile(filename, newContents, function (err) {
-                    if (err) {
-                        console.log("Error writing to " + filename + ".");
-                    } else {
-                        console.log("Converted: " + filename);
-                    }
-                });
-            }
+        if (options.dryRun) {
+            console.log("Will rewrite " + filename + " with:");
+            console.log(newContents);
+        } else {
+            fs.writeFile(filename, newContents, function (err) {
+                if (err) {
+                    console.log("Error writing to " + filename + ".");
+                } else {
+                    console.log("Converted: " + filename);
+                }
+            });
         }
     });
 }

@@ -11,30 +11,26 @@
     <script type="text/montage-serialization">
     {
         "test": {
-            "module": "ui/composer/test",
-            "name": "Test",
+            "prototype": "ui/composer/test",
             "properties": {
                 "simpleTestComposer": {"@": "simpleTestComposer"}
             }
         },
         "simpleTestComposer": {
-            "module": "ui/composer/simple-test-composer",
-            "name": "SimpleTestComposer",
+            "prototype": "ui/composer/simple-test-composer",
             "properties": {
                 "component": {"@": "dynamictext1"}
             }
         },
         "dynamictext1": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "dynamictext"},
                 "value": "Test Value"
             }
         },
         "application": {
-            "module": "montage/ui/application",
-            "name": "Application",
+            "prototype": "montage/ui/application",
             "properties": {
                 "delegate" : {"@": "test"}
             }

@@ -12,23 +12,20 @@
     <script type="text/montage-serialization">{
 
     "range_input1": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "range_input1"}
         }
     },
     "range_input2": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "range_input2"},
             "value": 1
         }
     },
     "output": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "output"},
             "value": "hello"
@@ -39,23 +36,20 @@
     },
 
     "scroll": {
-        "module": "montage/ui/scroller.reel",
-        "name": "Scroller",
+        "prototype": "montage/ui/scroller.reel",
         "properties": {
             "element": {"#": "scroll"}
         }
     },
     "scroll_range": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "scroll_range"}
         }
     },
 
     "test": {
-        "module": "ui/range-input-test/range-input-test",
-        "name": "RangeInputTest",
+        "prototype": "ui/range-input-test/range-input-test",
         "properties": {
             "range_input1": {"@": "range_input1"},
             "range_input2": {"@": "range_input2"},
@@ -64,8 +58,7 @@
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

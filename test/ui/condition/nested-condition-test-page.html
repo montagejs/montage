@@ -11,12 +11,10 @@
     <script type="text/montage-serialization">{
 
         "test": {
-            "module": "ui/condition/test",
-            "name": "Test"
+            "prototype": "ui/condition/test"
         },
         "outerCondition": {
-            "module": "montage/ui/condition.reel",
-            "name": "Condition",
+            "prototype": "montage/ui/condition.reel",
             "properties": {
                 "element": {"#": "outerCondition"}
             },
@@ -25,8 +23,7 @@
             }
         },
         "innerCondition": {
-            "module": "montage/ui/condition.reel",
-            "name": "Condition",
+            "prototype": "montage/ui/condition.reel",
             "properties": {
                 "element": {"#": "innerCondition"}
             },
@@ -35,8 +32,7 @@
             }
         },
         "application": {
-            "module": "montage/ui/application",
-            "name": "Application",
+            "prototype": "montage/ui/application",
             "properties": {
                 "delegate" : {"@": "test"}
             }
