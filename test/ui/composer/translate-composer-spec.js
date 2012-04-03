@@ -105,9 +105,9 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     test.translate_composer.translateY = 0;
                     test.translate_composer.invertAxis = true;
 
-                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
-                            expect(test.translate_composer.translateX).toBeLessThan(-49);
-                            expect(test.translate_composer.translateY).toBeLessThan(-49);
+                    testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
+                            expect(test.translate_composer.translateX).toBeGreaterThan(49);
+                            expect(test.translate_composer.translateY).toBeGreaterThan(49);
                     });
                 });
             });
