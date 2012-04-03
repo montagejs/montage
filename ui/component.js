@@ -1385,12 +1385,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     clearAllComposers: {
         value: function() {
-            var length, i;
-            length = this.composerList.length;
-            for (i = 0; i < length; i++) {
-                this.composerList[i].unload();
+            var composer;
+            while (composer = this.composerList.shift()) {
+                composer.unload();
             }
-            this.composerList = [];
         }
     }
 
@@ -1597,6 +1595,12 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         }
     },
 
+    // Create a second composer list so that the lists can be swapped during a draw instead of creating a new array every time
+    composerListSwap: {
+        value: [],
+        distinct: true
+    },
+
     /*
         Flag to track if a composer is requesting a draw
         @private
@@ -1755,15 +1759,16 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 composerList = this.composerList, composer, length;
             needsDrawList.length = 0;
             this._readyToDrawListIndex = {};
-            this.composerList = [];
 
             // Process the composers first so that any components that need to be newly drawn due to composer changes
             // get added in this cycle
-            length = composerList.length;
-            for (i = 0; i < length; i++) {
-                composer = composerList[i];
-                composer.needsFrame = false;
-                composer.frame(this._frameTime);
+            if (composerList.length > 0) {
+                this.composerList = this.composerListSwap; // Swap between two arrays instead of creating a new array each draw cycle
+                while (composer = composerList.shift()) {
+                    composer.needsFrame = false;
+                    composer.frame(this._frameTime);
+                }
+                this.composerListSwap = composerList;
             }
 
             this._drawIfNeeded();
