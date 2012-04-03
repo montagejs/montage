@@ -16,16 +16,16 @@ TextInput = require("ui/text-input").TextInput;
 
 /**
  * Wraps the a &lt;textarea> element with binding support for the element's standard attributes. Uses an ArrayController instance to manage the element's contents and selection.
-   @class module:"montage/ui/textarea.reel".TextArea
+   @class module:"montage/ui/textarea.reel".Textarea
    @extends module:montage/text-input.TextInput
  */
 
-var TextArea = exports.TextArea = Montage.create(TextInput, /** @lends module:"montage/ui/textarea.reel".TextArea# */ {
+var Textarea = exports.Textarea = Montage.create(TextInput, /** @lends module:"montage/ui/textarea.reel".Textarea# */ {
 
     select: { value: function() { this._element.select(); } },
 
 /**
-    The text display by the TextArea component's element.
+    The text display by the Textarea component's element.
     @type {string}
     @default ""
 */
@@ -40,7 +40,7 @@ var TextArea = exports.TextArea = Montage.create(TextInput, /** @lends module:"m
 
 });
 
-TextArea.addAttributes( /** @lends module:"montage/ui/textarea.reel".TextArea# */ {
+Textarea.addAttributes( /** @lends module:"montage/ui/textarea.reel".Textarea# */ {
 /**
     Specifies whether the element should be focused as soon as the page is loaded.
     @type {boolean}
