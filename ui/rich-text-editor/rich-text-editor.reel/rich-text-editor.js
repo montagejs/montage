@@ -4,8 +4,10 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module "montage/ui/rich-text-editor.reel"
+    @module "montage/ui/rich-text-editor/rich-text-editor.reel"
     @requires montage/core/core
+    @requires montage/core/event/mutable-event
+    @requires montage/core/event/event-manager
 */
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
@@ -14,15 +16,17 @@ var Montage = require("montage").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
-    @class module:"montage/ui/rich-text-editor.reel".RichTextEditor
+    The RichTextEditor component is a lightweight Montage component that provides basic HTML editing capability. It wraps the HTML5 <code>contentEditable</code> property and largely relies on the browser's support of <code><a href="http://www.quirksmode.org/dom/execCommand.html" target="_blank">execCommand</a></code>.
+    @class module:"montage/ui/rich-text-edtior/rich-text-editor.reel".RichTextEditor
     @extends module:montage/ui/component.Component
 */
-exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"montage/ui/rich-text-editor.reel".RichTextEditor# */ {
+exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"montage/ui/rich-text-editor/rich-text-editor.reel".RichTextEditor# */ {
 
-    /**
-      Description TODO
-     @type {Function}
-    */
+/**
+    Returns <code>true</code> if the edtior has focus, otherwise returns <code>false</code>.
+    @type {boolean}
+    @readonly
+*/
     hasFocus: {
         enumerable: true,
         get: function() {
@@ -30,10 +34,11 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         }
     },
 
-    /**
-      Description TODO
-     @type {Function}
-    */
+/**
+    Returns the editor's inner element, which is the element that is editable.
+     @type {Element}
+    @readonly
+*/
     innerElement: {
         enumerable: true,
         get: function() {
@@ -43,8 +48,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
 
 
     /**
-      Description TODO
-      @type {Function}
+      Sets the focus on the editor's element. The editor will also become the <code>activeElement</code>.
+      @function
     */
     focus: {
         enumerable: true,
@@ -55,8 +60,11 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Returns <code>true</code> when the editor is the active element, otherwise return <code>false</code>. Normally the active element has also focus. However, in a multiple window environment it’s possible to be the active element without having focus. Typically, a toolbar item my steal the focus but not become the active element.
+
+     @type {boolean}
+    @readonly
+    @type {string|Array<string>}
     */
     isActiveElement: {
         enumerable: true,
@@ -66,8 +74,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+     Returns <code>true</code> if the content is read only, otherwise returns <code>false</code>. When the editor is set to read only, the user is not able to modify the content. However it still possible to set the content programmatically with by setting the <code>value</code> or <code>textValue</code> properties.
+     @type {boolean}
     */
     readOnly: {
         enumerable: true,
@@ -87,8 +95,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Gets or sets the editor's content as HTML. By default, the HTML content assigned to the editor's DOM element is used.
+      The new value is passed through the editor's sanitizer before being assigned.
+     @type {string}
     */
     value: {
         enumerable: true,
@@ -154,10 +163,10 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         }
     },
 
-    /**
-      Description TODO
-     @type {Function}
-    */
+/**
+    Gets or sets the editor's content as plain text. By default, the text content assigned to the editor's DOM element is used.
+    @type {string}
+*/
     textValue: {
         enumerable: true,
         get: function() {
@@ -206,8 +215,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {}
+      Gets or sets the editor's delegate object that can define one or more delegate methods that a consumer can implement. For a list of delegate methods, see [Delegate methods]{@link  http://tetsubo.org/docs/montage/using-the-rich…itor-component#Delegate_methods}.
+     @type {object}
     */
     delegate: {
         enumerable: true,
@@ -215,8 +224,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+    The role of the sanitizer is to cleanup any data before its inserted, or extracted, from the editor. The default sanitizer removes any JavaScript, and scopes any CSS before injecting any data into the editor. However, JavaScript is not removed when the initial value is set using <code>editor.value</code>.
+     @type {object}
     */
     sanitizer: {
         enumerable: false,
@@ -229,8 +238,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      An array of overlay objects available to the editor. Overlays are UI components that are displayed on top of the editor based on the context.
+     @type {array}
     */
     overlays: {
         enumerable: false,
@@ -249,8 +258,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Returns the overlay currently being displayed.
+     @type {object}
     */
     activeOverlay: {
         get: function() {
@@ -259,8 +268,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Displays the specified overlay.
+     @function
+     @param {object} overlay The overlay to display.
     */
     showOverlay: {
         value: function(overlay) {
@@ -277,8 +287,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Hides the specified overlay.
+     @function
+     @param {}
     */
     hideOverlay: {
         value: function(a) {
@@ -299,8 +310,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     // Edit Actions & Properties
 
     /**
-      Description TODO
-     @type {Function}
+      Returns <code>true</code> if the current text selection is bold. If the selected text contains some text in bold and some not, the return value depends on the browser’s implementation. When set to <code>true</code>, adds the bold attribute to the selected text; when set to <code>false</code>, removes the bold attribute from the selected text.
+     @type {boolean}
+     @example
     */
     bold: {
         enumerable: true,
@@ -309,8 +321,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Returns <code>true</code> if the current text selection is underlined. If the selected text contains some text in underline and some not, the return value depends on the browser’s implementation. When set to <code>true</code>, adds the underline attribute to the selected text; when set to <code>false</code>, removes the underline attribute from the selected text.
+    @type boolean
     */
     underline: {
         enumerable: true,
@@ -319,8 +331,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+    Returns <code>true</code> if the current text selection is italicized. If the selected text contains some text in italics and some not, the return value depends on the browser’s implementation. When set to <code>true</code>, adds the italic attribute to the selected text; when set to <code>false</code>, removes the italic attribute from the selected text.
+    @type boolean
     */
     italic: {
         enumerable: true,
@@ -329,9 +341,10 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+    Returns <code>true</code> if the current text selection has the strikethrough style applied. If the selected text contains some text with strikethrough and some not, the return value depends on the browser’s implementation. When set to <code>true</code>, adds the italic attribute to the selected text; when set to <code>false</code>, removes the italic attribute from the selected text.
+    @type boolean
     */
+
     strikeThrough: {
         enumerable: false,
         get: function() { return this._genericCommandGetter("strikeThrough", "strikethrough"); },
