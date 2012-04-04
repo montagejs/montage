@@ -35,9 +35,7 @@ describe("data/context-spec", function() {
         it("should be inserted in the context, have an Id and be registered", function() {
             var promise = context.requireStoreForBlueprintBinder(companyBinder).then(function(store) {
                 louis = Person.create();
-                return context.insert(louis).then(function(insertedObject) {
-                    return insertedObject;
-                });
+                return context.insert(louis);
             });
             waitsFor(function() {
                 return promise.isFulfilled();
@@ -59,8 +57,10 @@ describe("data/context-spec", function() {
         it("should be deleted by the context, and should not be associated with a context", function() {
             var promise = context.requireStoreForBlueprintBinder(companyBinder).then(function(store) {
                 louis = Person.create();
-                return context.insert(louis).then(function(insertedObject) {
-                    return context.delete(insertedObject).then(function(deletedObject) {
+                return context.insert(louis)
+                .then(function(insertedObject) {
+                    return context.delete(insertedObject)
+                    .then(function(deletedObject) {
                         return deletedObject;
                     });
                 })

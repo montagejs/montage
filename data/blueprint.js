@@ -267,8 +267,8 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     create: {
         configurable: true,
         value: function(aPrototype, propertyDescriptor) {
-            if ((typeof aPrototype === 'undefined') || (Blueprint.isPrototypeOf(aPrototype))) {
-                var parentCreate = Object.getPrototypeOf(Blueprint)["create"];
+            if ((typeof aPrototype === 'undefined') || Blueprint.isPrototypeOf(aPrototype)) {
+                var parentCreate = Object.getPrototypeOf(Blueprint).create;
                 return parentCreate.call(this, (typeof aPrototype === "undefined" ? this : aPrototype), propertyDescriptor);
             }
             var newPrototype = Montage.create(aPrototype, propertyDescriptor);

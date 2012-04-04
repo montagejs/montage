@@ -1,7 +1,8 @@
+// this is a script that is intended to be run as a stand alone program to
+// generate sample-seriazation.json from sample.json
 
 var binder = require("./object/binderhelper").companyBinder();
 var serialize = require("montage/core/serializer").serialize;
-var deserialize = require("montage/core/deserializer").deserialize;
 var Person = require("data/object/person").Person;
 var Company = require("data/object/company").Company;
 var Project = require("data/object/project").Project;
@@ -98,27 +99,15 @@ function concat(arrays) {
 // display serialization
 var objects = exports.load()
 .then(function (objects) {
-    window.location = 'data:text/plain;base64,'+btoa(
-        JSON.stringify(
-            JSON.parse(
-                serialize(objects, require)
-            ),
-            null,
-            4
-        )
+    var serialization = JSON.stringify(
+        JSON.parse(
+            serialize(objects, require)
+        ),
+        null,
+        4
     );
+    console.log(serialization.slice(0, 1000));
+    var dataUrl = window.location = 'data:text/plain;base64,'+btoa(serialization);
 })
 .end();
-
-/*
-// load generated serialization
-require.async("./sample-serialization.json")
-.then(function (serialization) {
-    return deserialize(serialization, require);
-})
-.then(function (objects) {
-    console.log(objects);
-})
-.end()
-*/
 
