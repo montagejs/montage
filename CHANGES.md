@@ -1,3 +1,88 @@
+# v0.8.0
+
+-   **Data binding shorthand in serializations**
+
+    This release introduces a new shorthand syntax for declaring data bindings in a serialization. The new syntax
+    includes an arrow symbol that indicates the source of the binding and whether its one-way or two-way.The symbol can
+    take one of the following forms:
+
+    `<-` – One-way data binding, data binding source on left
+
+    `->` – One-way data binding, data binding source on right
+
+    `<<->` – Two-way data binding, data binding source on left
+
+    `<->>` – Two-way data binding, data binding source on right
+
+    Example:
+
+    ```javascript
+    {
+        "inputText": {
+            "prototype": "textfield",
+            "bindings": {
+                "value": {"<-": "@slider.value"}
+            }
+        }
+    }
+    ```
+
+-   **RichTextEditor component**
+
+    RichTextEditor is a lightweight component that provides basic HTML editing capability. It is wrapper around the
+    HTML5 contentEditable attribute, and depends on the browser’s level of support of the execCommand() method. The
+    RichTextEditor lets you set, on a specific text selection range, various formatting attributes including text and
+    font styles, colors, justification, list style and paragraph indent level. It also supports drag-and-drop of images,
+    plain text, or HTML fragments between two HTML documents, or the desktop and the document. Images can also be
+    resized within the editor.
+
+-   **Flow component**
+
+    This release introduces the first drop of the Flow component. Flow is UI component that allows the design of
+    scrollable 3D-layouts. Flow is useful for creating a wide range of visual interfaces from 3D carousels to common
+    vertical and horizontal scrollable lists.
+
+-   **Extending components**
+
+    There are three options to extend a component’s template:
+
+    1.  If the extended component doesn’t wish to introduce changes in the template, the component can set its
+        templateModuleId property to point to the parent module’s template.
+    2.  Create a new template that will completely redefine the markup of the component with no relation to the original
+        template.
+    3.  Set the extends property of the template that points to the template to be imported and where. This is similar
+        to the “decorator” pattern of the proposed Web Components feature. This approach is useful when the component
+        needs to add additional CSS data, or reuse the original markup. The template object will be accessible through
+        the template label of the serialization.
+
+-   **Auto packaging**
+
+    Many applications will initially only use their own modules and those provided by the Montage package.
+    As long as that’s the case, you do not need to make a package.json; just put the data-auto-package attribute on
+    your Montage script tag.
+
+-   **Pop-up component updates**
+
+    The Popup component API has been updated to provide better support for popup positioning.
+
+    -   `anchor` The HTMLElement or Montage component below which the popup will be anchored on the page. To specify a
+        custom position for a popup, use a delegate (see below). If an anchor is not provided, the position property is
+        used, if provided. If no positioning support is provided, the Popup is displayed at the center of the screen by
+        default.
+    -   `position` An object with properties named top, left, bottom and right that specify the position of the popup.
+        This property is used to position the popup if no anchor is specified.
+    -   `delegate` An object that defines methods that are invoked by the Popup component. The only delegate method
+        currently supported is willPositionPopup(). This method must return an object with any of the following
+        properties: top, left, bottom or right. Values assigned to these properties must strings in valid
+        CSS units (“10px” or “50%”).
+    -   `content` The Montage component that will be displayed in the popup.
+    -   `modal` If set to true, the popup is rendered with a mask underneath. A non-modal popup is hidden when the user
+        presses the Esc key, or clicks outside of the popup. The developer is responsible for hiding a modal popup.
+        Default is false. Modal popups never auto-hide themselves.
+    -   `autoHide` Optional. The popup will be automatically hidden after the specified number of milliseconds. This
+        property has no effect on modal popups.
+
+
 # v0.7.0
 
 -   Adding `ownerComponent` property to the Component.
