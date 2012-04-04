@@ -6,13 +6,13 @@
     includes an arrow symbol that indicates the source of the binding and whether its one-way or two-way.The symbol can
     take one of the following forms:
 
-    `<-` – One-way data binding, data binding source on left
+    `<-` – One-way data binding, bound object on right
 
-    `->` – One-way data binding, data binding source on right
+    `->` – One-way data binding, bound object on left
 
-    `<<->` – Two-way data binding, data binding source on left
+    `<<->` – Two-way data binding, bound object on right
 
-    `<->>` – Two-way data binding, data binding source on right
+    `<->>` – Two-way data binding, bound object on left
 
     Example:
 
