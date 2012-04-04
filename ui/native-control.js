@@ -77,7 +77,6 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                     instance = Object.getPrototypeOf(instance);
                 }
             }
-
             return attributeDescriptor;
         }
     },
@@ -91,6 +90,8 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
     defineAttribute: {
         value: function(name, descriptor) {
             descriptor = descriptor || {};
+            var _name = '_' + name;
+
 
             var newDescriptor = {
                 configurable: (typeof descriptor.configurable == 'undefined') ? true: descriptor.configurable,
@@ -115,16 +116,16 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                             this.needsDraw = true;
                         }
                     };
-                }(name, '_' + name)),
+                }(name, _name)),
                 get: (function(name, attrName) {
                     return function() {
                         return this[attrName];
                     };
-                }(name, '_' + name))
+                }(name, _name))
             };
 
             // Define _ property
-            Montage.defineProperty(this, '_' + name, {value: null});
+            Montage.defineProperty(this, _name, {value: null});
             // Define property getter and setter
             Montage.defineProperty(this, name, newDescriptor);
         }
@@ -198,8 +199,9 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
             // as attributes on the element.
             for (attributeName in this._elementAttributeDescriptors) {
                 descriptor = this._elementAttributeDescriptors[attributeName];
-                if (this["_"+attributeName] === null && descriptor !== null && "value" in descriptor) {
-                    this["_"+attributeName] = this._elementAttributeDescriptors[attributeName].value;
+                var _name = "_"+attributeName;
+                if (this[_name] === null && descriptor !== null && "value" in descriptor) {
+                    this[_name] = this._elementAttributeDescriptors[attributeName].value;
                 }
             }
             this.needsDraw = true;
