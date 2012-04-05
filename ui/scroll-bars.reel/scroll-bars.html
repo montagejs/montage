@@ -10,8 +10,7 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "montage/ui/scroll-bars.reel",
-                "name": "ScrollBars",
+                "prototype": "montage/ui/scroll-bars.reel",
                 "properties": {
                     "element": {
                         "#": "montage-scroll-bars"
@@ -103,14 +102,14 @@
     </style>
 </head>
 <body>
-    <div id="montage-scroll-bars" class="montage-scroll-bars">
-        <div id="top" class="top"></div>
-        <div id="bottom-clip" class="bottom-clip">
-            <div id="bottom" class="bottom"></div>
+    <div data-montage-id="montage-scroll-bars" class="montage-scroll-bars">
+        <div data-montage-id="top" class="top"></div>
+        <div data-montage-id="bottom-clip" class="bottom-clip">
+            <div data-montage-id="bottom" class="bottom"></div>
         </div>
-        <div id="left" class="left"></div>
-        <div id="right-clip" class="right-clip">
-            <div id="right" class="right"></div>
+        <div data-montage-id="left" class="left"></div>
+        <div data-montage-id="right-clip" class="right-clip">
+            <div data-montage-id="right" class="right"></div>
         </div>
     </div>
 </body>

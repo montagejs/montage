@@ -1,5 +1,7 @@
 #!/usr/bin/env node
 /*jshint node:true */
+"use strict";
+
 var util = require("util"),
     fs = require("fs"),
     http = require("http"),
@@ -7,6 +9,7 @@ var util = require("util"),
 
 var SCREENING_HOST = "127.0.0.1",
     SCREENING_PORT = "8081",
+    BROWSER = "chrome",
     API_URL = "/screening/api/v1",
     API_KEY = 5150;
 
@@ -20,13 +23,14 @@ opts.shift();
 opts.shift();
 if (opts.length > 0) {
     if (opts[0] === "--help") {
-        console.log("Usage: " + process.argv.slice(0, 2).join(" ") + " [--debug] [host [port [test_url]]]");
+        console.log("Usage: " + process.argv.slice(0, 2).join(" ") + " [--debug] [browser [host [port [test_url]]]]");
         return;
     }
     if (opts[0] === "--debug") {
         DEBUG = true;
         opts.shift();
     }
+    BROWSER = opts.shift() || BROWSER;
     SCREENING_HOST = opts.shift() || SCREENING_HOST;
     SCREENING_PORT = opts.shift() || SCREENING_PORT;
     TEST_URL = opts.shift() || TEST_URL;
@@ -123,6 +127,7 @@ var generateJunitXml = function(result) {
 
     var filename;
     var output = "";
+    var passes = 0;
 
     // building xml by concatenating strings, woo!
     // but seriously, this is a really bad idea, but I don't want to include a
@@ -130,6 +135,10 @@ var generateJunitXml = function(result) {
     output += '<testsuite>\n';
 
     var asserts = result.asserts;
+    if (result.exception) {
+        asserts = [result.exception];
+    }
+
     for (var i = 0, len = asserts.length; i < len; i++) {
         var assert = asserts[i];
 
@@ -140,23 +149,24 @@ var generateJunitXml = function(result) {
         }
 
         if (assert.success) {
+            passes++;
             output += '  <testcase classname="'+ filename +'" name="' + escapeInvalidXmlChars(short_message) + '" />\n';
         } else {
-
-            // TODO escape string
             output += '  <testcase classname="'+ filename +'" name="' + escapeInvalidXmlChars(short_message) + '">\n';
-            output += '    <failure type="' +
-                escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">' +
-                escapeInvalidXmlChars(assert.message || "") +'</failure>\n';
+            output += '    <failure type="' + escapeInvalidXmlChars(assert.assertType+'('+assert.expectedValue+', '+assert.actualValue)+')">' +
+                escapeInvalidXmlChars("Line " + assert.lineNumber) + "\n" +
+                escapeInvalidXmlChars(assert.message || "") +
+                      '    </failure>\n';
             output += '  </testcase>\n';
         }
     }
 
     output += '</testsuite>\n';
 
+    console.log(result.status + ": " + filename + " (" + passes + "/" + asserts.length + ")");
 
     filename = "TEST-" + filename.replace(/[^a-z\\-]/g, "_") + ".xml";
-    console.log("Writing ../" + filename + " ...");
+    console.log("Writing ../" + filename);
     fs.writeFileSync("../" + filename, output, "utf8");
 };
 
@@ -168,7 +178,7 @@ var runTest = function(test, agent) {
     var done = Q.defer();
 
     // run the script on screening
-    console.log("Running " + test.name + " on " + TEST_URL + " on " + SCREENING_HOST + ":" + SCREENING_PORT + " on " + agent.id);
+    console.log("Running " + test.name + " on " + TEST_URL + " on " + SCREENING_HOST + ":" + SCREENING_PORT + " on " + agent.capabilities.browserName + " (" + agent.id + ")");
     screening_request(
         ["agents", encodeURI(agent.id), "execute_serialized_code"].join("/"),
         "POST", JSON.stringify(test)
@@ -185,6 +195,9 @@ var runTest = function(test, agent) {
                 }
             });
         }, 1000);
+    }).fail(function(data) {
+        console.error("Failed to run " + test.name);
+        console.error(data);
     });
 
     done.promise.then(generateJunitXml);
@@ -197,6 +210,7 @@ var runTest = function(test, agent) {
 
 var gotScripts = Q.defer();
 var tests;
+process.chdir(__dirname);
 walk("..", gotScripts.node());
 
 gotScripts.promise.then(function(files) {
@@ -227,7 +241,11 @@ gotScripts.promise.then(function(files) {
     // find the agent
     return screening_request("agents");
 }).then(function(data) {
-    return data[0];
+    for (var i = 0, len = data.length; i < len; i++) {
+        if (data[i].capabilities.browserName === BROWSER) {
+            return data[i];
+        }
+    }
 }).then(function(agent) {
     var promises = [];
 

@@ -909,15 +909,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         if (!templateModuleId) {
             moduleId = info.moduleId;
             // TODO: backwards compatibility for components with its controller outside the reel folder
-            //console.log(moduleId);
-            if (/([^\/]+)\.reel\/\1$/.exec(moduleId)) {
-                templateModuleId = moduleId + ".html";
-            } else if (/([^\/]+)\.reel$/.exec(moduleId)) {
-                templateModuleId = moduleId + "/" + RegExp.$1 + ".html";
-            } else {
-                templateModuleId = moduleId + ".reel/" + moduleId.split("/").pop() + ".html";
-            }
-            //console.log(moduleId + " === " + templateModuleId);
+            //if (/([^\/]+)\.reel\/\1$/.exec(moduleId)) {
+            //    templateModuleId = moduleId + ".html";
+            //} else if (/([^\/]+)\.reel$/.exec(moduleId)) {
+            //    templateModuleId = moduleId + "/" + RegExp.$1 + ".html";
+            //} else {
+                var slashIndex = moduleId.lastIndexOf("/");
+                //templateModuleId = moduleId + ".reel/" + moduleId.split("/").pop() + ".html";
+                templateModuleId = moduleId + "/" + moduleId.slice(slashIndex === -1 ? 0 : slashIndex+1, -5) + ".html";
+            //}
         }
         if (logger.isDebug) {
             logger.debug(this, "Will load " + templateModuleId);
@@ -1066,11 +1066,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this._templateElement) {
                 this._replaceElementWithTemplate();
             }
-            // TODO: removeAttribute only here for backwards compatibility
-            if (!this._element.getAttribute("data-montage-id")) {
-                this._element.removeAttribute("id");
-            }
-
             // This will schedule a second draw for any component that has children
             var childComponents = this.childComponents;
             for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {

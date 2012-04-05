@@ -11,8 +11,7 @@
     <script type="text/montage-serialization">
         {
             "overlay": {
-                "module": "montage/ui/slot.reel",
-                "name": "Slot",
+                "prototype": "montage/ui/slot.reel",
                 "properties": {
                     "element": {"#": "editor-slot"},
                     "delegate": {"@": "owner"}
@@ -20,8 +19,7 @@
             },
 
             "owner": {
-                "module": "montage/ui/rich-text-editor/rich-text-editor.reel",
-                "name": "RichTextEditor",
+                "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
                 "properties": {
                     "element": {"#": "rich-text-editor-container"},
                     "_overlaySlot": {"@": "overlay"}
@@ -32,9 +30,9 @@
 
 </head>
 <body>
-    <div id="rich-text-editor-container">
+    <div data-montage-id="rich-text-editor-container">
         <div class="montage-editor" contenteditable="false"></div>
-        <div id="editor-slot" class="montage-editor-overlay"></div>
+        <div data-montage-id="editor-slot" class="montage-editor-overlay"></div>
     </div>
 </body>
 </html>

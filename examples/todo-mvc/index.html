@@ -14,16 +14,15 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "montage/ui/loader.reel",
-                "name": "Loader"
+                "prototype": "montage/ui/loader.reel"
             }
         }
     </script>
 
 </head>
 <body>
-    <div id="splash">
-        <h1>Loading TodoMVC<span id="loadingIndicator">…</span></h1>
+    <div data-montage-id="splash" class="splash">
+        <h1>Loading TodoMVC<span data-montage-id="loadingIndicator" class="loadingIndicator">…</span></h1>
     </div>
 </body>
 </html>

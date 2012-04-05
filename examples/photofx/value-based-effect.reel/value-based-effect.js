@@ -5,6 +5,7 @@
  </copyright> */
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
+var undoManager = require("montage/core/undo-manager").defaultUndoManager;
 
 exports.ValueBasedEffect = Montage.create(Component, {
 
@@ -39,17 +40,17 @@ exports.ValueBasedEffect = Montage.create(Component, {
     handleValueSliderMontage_range_interaction_end: {
         value: function() {
             this._commitSliderValue();
-            this._originalSliderValue = null;            
+            this._originalSliderValue = null;
         }
     },
-    
+
 
     _commitSliderValue: {
         enumerable: false,
         value: function(value) {
             var undoneValue = this._originalSliderValue ? this._originalSliderValue : this.sliderValue;
             if (this.sliderValue !== this._originalSliderValue) {
-                document.application.undoManager.add(this.name.toLowerCase() + " change", this._commitSliderValue, this, undoneValue);
+                undoManager.add(this.name.toLowerCase() + " change", this._commitSliderValue, this, undoneValue);
             }
 
             if (typeof value !== "undefined") {

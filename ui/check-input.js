@@ -4,12 +4,31 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /*global require, exports */
+
+/**
+    @module montage/ui/check-input
+    @requires montage/ui/component
+    @requires montage/ui/native-control
+    @requires montage/ui/composer/press-composer
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeControl = require("ui/native-control").NativeControl,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
+/**
+    The base class for the Checkbox component. You will not typically create this class directly but instead use the Checkbox component.
+    @class module:montage/ui/text-input.CheckInput
+    @extends module:montage/ui/native-control.NativeControl
+    @see module:"montage/ui/checkbox.reel".CheckBox
+*/
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
+
+    // HTMLInputElement methods
+
+    blur: { value: function() { this._element.blur(); } },
+    focus: { value: function() { this._element.focus(); } },
+    // click() deliberately omitted, use checked = instead
 
     // Callbacks
     draw: {
@@ -41,8 +60,6 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
         }
     },
 
-
-
     /**
     Fake the checking of the element.
 
@@ -66,7 +83,7 @@ var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
     },
 
     /**
-    Stores if we need to fake checking.
+    Stores if we need to "fake" checking of the input element.
 
     When preventDefault is called on touchstart and touchend events (e.g. by
     the scroller component) the checkbox doesn't check itself, so we need

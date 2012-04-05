@@ -332,11 +332,6 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     @param {Array} properties The property names to be deserialized.
     */
     deserializePropertiesForObject: {value: function(object, properties) {
-        // TODO: ensure backward compatibility
-        if (properties && "childComponents" in properties) {
-            properties.childComponents = [];
-            console.log('Warning: "childComponents" isn\'t supported on components within the current serializaation format, this property will be reset to [].');
-        }
         for (var key in properties) {
             object[key] = properties[key];
         }
@@ -846,8 +841,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     if (id) {
                         return 'element.getElementById("' + id + '")';
                     } else {
-                        // TODO: getElemenyById only here for backwards compatibility
-                        return 'element.querySelector(\'*[' + Deserializer._MONTAGE_ID_ATTRIBUTE + '="' + value + '"]\') || element.getElementById("' + value + '")';
+                        return 'element.querySelector(\'*[' + Deserializer._MONTAGE_ID_ATTRIBUTE + '="' + value + '"]\')';
                     }
                     break;
 
@@ -859,7 +853,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     break;
 
                 case "reference":
-                    var object;
+                    var object,
+                        originalValue = value;
 
                     if (value in exports) {
                         object = exports[value];
@@ -873,6 +868,9 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 
                     if (parent) {
                         parent[key] = object;
+                    }
+                    if (typeof object === "undefined") {
+                        logger.error("Missing object in serialization: '" + originalValue + "'" + (self._origin ? " in " + self._origin : ""));
                     }
                     return value;
                     break;

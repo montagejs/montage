@@ -6,6 +6,7 @@
 /**
 	@module "montage/ui/rich-text-editor.reel"
     @requires montage/core/core
+    @requires "montage/ui/rich-text-editor.reel"
 */
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
@@ -14,15 +15,17 @@ var Montage = require("montage").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
+    The RichTextEditor component is a lightweight Montage component that provides basic HTML editing capability. It wraps the HTML5 <code>contentEditable</code> property and largely relies on the browser's support of <code><a href="http://www.quirksmode.org/dom/execCommand.html" target="_blank">execCommand</a></code>.
     @class module:"montage/ui/rich-text-editor.reel".RichTextEditor
     @extends module:montage/ui/component.Component
 */
 exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"montage/ui/rich-text-editor.reel".RichTextEditor# */ {
 
-    /**
-      Description TODO
-     @type {Function}
-    */
+/**
+    Returns <code>true</code> if the edtior has focus, otherwise returns <code>false</code>.
+    @type {boolean}
+    @readonly
+*/
     hasFocus: {
         enumerable: true,
         get: function() {
@@ -30,10 +33,11 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         }
     },
 
-    /**
-      Description TODO
-     @type {Function}
-    */
+/**
+    Returns the editor's inner element, which is the element that is editable.
+     @type {Element}
+    @readonly
+*/
     innerElement: {
         enumerable: true,
         get: function() {
@@ -43,8 +47,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
 
 
     /**
-      Description TODO
-      @type {Function}
+      Sets the focus on the editor's element. The editor will also become the <code>activeElement</code>.
+      @function
     */
     focus: {
         enumerable: true,
@@ -55,8 +59,11 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Returns <code>true</code> when the editor is the active element, otherwise return <code>false</code>. Normally the active element has also focus. However, in a multiple window environment it’s possible to be the active element without having focus. Typically, a toolbar item my steal the focus but not become the active element.
+
+     @type {boolean}
+    @readonly
+    @type {string|Array<string>}
     */
     isActiveElement: {
         enumerable: true,
@@ -66,8 +73,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+     Returns <code>true</code> if the content is read only, otherwise returns <code>false</code>. When the editor is set to read only, the user is not able to modify the content. However it still possible to set the content programmatically with by setting the <code>value</code> or <code>textValue</code> properties.
+     @type {boolean}
     */
     readOnly: {
         enumerable: true,
@@ -547,20 +554,49 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     execCommand: {
         enumerable: false,
         value: function(command, showUI, value, label) {
+            var savedActiveElement = document.activeElement,
+                editorElement = this._innerElement,
+                retValue = false;
+
+            if (!editorElement) {
+                return false;
+            }
+
+            // Make sure we are the active element before calling execCommand
+            if (editorElement != savedActiveElement) {
+                editorElement.focus();
+            }
+
+            if (value === undefined) {
+                value = false;
+            }
+
             label = label || this._execCommandLabel[command] || "Typing";
 
             this._executingCommand = true;
             if (document.execCommand(command, showUI, value)) {
                 this._executingCommand = false;
-                this._stopTyping();
-                if (this.undoManager && ["selectall"].indexOf(command) == -1 ) {
-                    this.undoManager.add(label, this._undo, this, label, this._innerElement);
+                if (["selectall"].indexOf(command) == -1) {
+                    if (this.undoManager ) {
+                        this._stopTyping();
+                        this.undoManager.add(label, this._undo, this, label, this._innerElement);
+                    }
+                } else {
+                    this.markDirty();
                 }
-                return true;
+
+                this.handleSelectionchange();
+                retValue = true;
             } else {
-                this._executingCommand = true;
-                return false
+                this._executingCommand = false;
             }
+
+            // Reset the focus
+            if (editorElement != savedActiveElement) {
+                savedActiveElement.focus();
+            }
+
+            return retValue;
         }
     },
 

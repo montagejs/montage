@@ -266,6 +266,17 @@ describe("serialization/serializer-spec", function() {
             expect(stripPP(serialization)).toBe('{"simple":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"graphA":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"simple"}}},"graphB":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{"prop1":"string","prop2":42}}}');
         });
 
+        it("should serialize an element", function() {
+            var object = objects.OneProp.create();
+            var element = document.createElement("div");
+
+            element.setAttribute("data-montage-id", "id");
+            object.prop = element;
+
+            serialization = serializer.serializeObject(object);
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"#":"id"}}}}');
+        });
+
         describe("Serialization options", function() {
             it("should serialize null values", function() {
                 serializer.serializeNullValues = true;

@@ -7,8 +7,7 @@
     <script type="text/montage-serialization">
 {
     "activationTarget": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "hasTemplate": false,
             "element": {"#": "activationTarget"}
@@ -16,15 +15,13 @@
     },
 
     "eventmanagertest1": {
-        "module": "events/eventmanagertest/eventmanagertest",
-        "name": "EventManagerTest",
+        "prototype": "events/eventmanagertest/eventmanagertest[EventManagerTest]",
         "properties": {
             "activationTarget": {"@": "activationTarget"}
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "eventmanagertest1"}
         }

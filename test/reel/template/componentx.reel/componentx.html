@@ -3,8 +3,7 @@
     <script type="text/montage-serialization">
     {
         "componentplaceholder1": {
-            "module": "montage/ui/component-placeholder.reel",
-            "name": "ComponentPlaceHolder",
+            "prototype": "montage/ui/component-placeholder.reel[ComponentPlaceHolder]",
             "properties": {
                 "ownerComponent": {"@": "owner"},
                 "name": "textfield",
@@ -12,8 +11,7 @@
             }
         },
         "owner": {
-            "module": "reel/template/componentx.reel",
-            "name": "ComponentX",
+            "prototype": "reel/template/componentx.reel[ComponentX]",
             "properties": {
                 "element": {"#": "componentx"}
             }
@@ -22,9 +20,9 @@
     </script>
 </head>
 <body>
-    <div id="componentx">
+    <div data-montage-id="componentx">
         <h3>Component X</h3>
-        <div id="textfield2" class="placeholderClassName"></div>
+        <div data-montage-id="textfield2" class="placeholderClassName"></div>
     </div>
 </body>
 </html>

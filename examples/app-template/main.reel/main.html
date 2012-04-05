@@ -22,16 +22,14 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "main.reel",
-                "name": "Main",
+                "prototype": "main.reel",
                 "properties": {
                     "element": {"#": "main"}
                 }
             },
 
             "other": {
-                "module": "other.reel",
-                "name": "Other",
+                "prototype": "other.reel",
                 "properties": {
                     "element": {"#": "other"}
                 }
@@ -42,10 +40,10 @@
 </head>
 <body>
 
-    <div id="main" class="main">
+    <div data-montage-id="main" class="main">
         <p>Main component of application</p>
 
-        <div id="other"></div>
+        <div data-montage-id="other"></div>
 
     </div>
 

@@ -10,23 +10,20 @@
         <script type="text/montage-serialization">{
 
                 "owner": {
-                    "module": "components/range-input-example.reel",
-                    "name": "RangeInputExample",
+                    "prototype": "components/range-input-example.reel",
                     "properties": {
                         "element": {"#": "range-input-example"},
                         "image": {"#": "image"}
                     }
                 },
                 "roundTo2Decimals": {
-                    "module": "montage/core/converter/number-converter",
-                    "name": "NumberConverter",
+                    "prototype": "montage/core/converter/number-converter",
                     "properties": {
                         "decimals": 2
                     }
                 },
                 "red": {
-                    "module": "montage/ui/range-input.reel",
-                    "name": "RangeInput",
+                    "prototype": "montage/ui/range-input.reel",
                     "properties": {
                         "element": {"#": "color-red"}
                     },
@@ -35,8 +32,7 @@
                     }
                 },
                 "red-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "red-value"}
                     },
@@ -45,8 +41,7 @@
                     }
                 },
                 "green": {
-                    "module": "montage/ui/range-input.reel",
-                    "name": "RangeInput",
+                    "prototype": "montage/ui/range-input.reel",
                     "properties": {
                         "element": {"#": "color-green"}
                     },
@@ -55,8 +50,7 @@
                     }
                 },
                 "green-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "green-value"}
                     },
@@ -65,8 +59,7 @@
                     }
                 },
                 "blue": {
-                    "module": "montage/ui/range-input.reel",
-                    "name": "RangeInput",
+                    "prototype": "montage/ui/range-input.reel",
                     "properties": {
                         "element": {"#": "color-blue"}
                     },
@@ -75,8 +68,7 @@
                     }
                 },
                 "blue-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "blue-value"}
                     },
@@ -86,8 +78,7 @@
                 },
 
                 "sharpness": {
-                    "module": "montage/ui/range-input.reel",
-                    "name": "RangeInput",
+                    "prototype": "montage/ui/range-input.reel",
                     "properties": {
                         "element": {"#": "sharpness-amount"}
                     },
@@ -96,8 +87,7 @@
                     }
                 },
                 "sharpness-amount-value": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "sharpness-amount-value"}
                     },
@@ -107,8 +97,7 @@
                 },
 
                 "reset": {
-                    "module": "montage/ui/button.reel",
-                    "name": "Button",
+                    "prototype": "montage/ui/button.reel",
                     "properties": {
                         "element": {"#": "reset"},
                         "identifier": "reset"
@@ -120,7 +109,7 @@
                         }
                     ]
                 }
-            
+
     }</script>
 
         <style>
@@ -145,7 +134,7 @@
         </style>
     </head>
     <body>
-        <div id="range-input-example" class="range-input-example">
+        <div data-montage-id="range-input-example" class="range-input-example">
             <div class="row">
                 <div class="span8">
                     <h3>Range Input</h3>
@@ -159,25 +148,25 @@
             <div class="demo range1">
             <div class="row">
                 <div class="span6">
-                    <img id="image" src="images/IMG_1416.jpg" style="height: 300px; width: 450px;" class="image"/>
+                    <img data-montage-id="image" id="image" src="images/IMG_1416.jpg" style="height: 300px; width: 450px;" class="image"/>
                 </div>
                 <div class="span6">
                     <h6>Color</h6>
                     <div class="control">
                         <div>
                             Red:
-                            <input id="color-red" type="range" min="-1" max="1" step="0.1" value="0"/>
-                            <span id="red-value" class="range-value">0.5</span>
+                            <input data-montage-id="color-red" type="range" min="-1" max="1" step="0.1" value="0"/>
+                            <span data-montage-id="red-value" class="range-value">0.5</span>
                         </div>
                         <div>
                             Green:
-                            <input id="color-green" type="range" min="-1" max="1" step="0.1" value="0" />
-                            <span id="green-value" class="range-value"/>
+                            <input data-montage-id="color-green" type="range" min="-1" max="1" step="0.1" value="0" />
+                            <span data-montage-id="green-value" class="range-value"/>
                         </div>
                         <div>
                             Blue:
-                            <input id="color-blue" type="range" min="-1" max="1" step="0.1" value="0" />
-                            <span id="blue-value" class="range-value" />
+                            <input data-montage-id="color-blue" type="range" min="-1" max="1" step="0.1" value="0" />
+                            <span data-montage-id="blue-value" class="range-value" />
                         </div>
 
 
@@ -188,37 +177,37 @@
                     <div class="control">
                         <div>
                             Amount:
-                            <input id="sharpness-amount" type="range" min="0" max="1" step="0.05" value="0"/>
-                            <span id="sharpness-amount-value" class="range-value">0.5</span>
+                            <input data-montage-id="sharpness-amount" type="range" min="0" max="1" step="0.05" value="0"/>
+                            <span data-montage-id="sharpness-amount-value" class="range-value">0.5</span>
                         </div>
                     </div>
 
 
-                    <button id="reset" class="btn cancel small">Reset</button>
+                    <button data-montage-id="reset" class="btn cancel small">Reset</button>
                 </div>
             </div>
                     <ul class="sourcelinks">
                         <li>
                             <a href="#" onclick="toggle_visibility('.range1 #html', event);">html</a>
-                            <div class="sourceitem" id="html">
+                            <div class="sourceitem" data-montage-id="html">
                                 <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
                             <pre class="prettyprint">
 &lt;h6&gt;Color&lt;/h6&gt;
 &lt;div class="control"&gt;
     &lt;div&gt;
         Red:
-        &lt;input id="color-red" type="range" min="-1" max="1" step="0.1" value="0"/&gt;
-        &lt;span id="red-value" class="range-value"&gt;0.5&lt;/span&gt;
+        &lt;input data-montage-id="color-red" type="range" min="-1" max="1" step="0.1" value="0"/&gt;
+        &lt;span data-montage-id="red-value" class="range-value"&gt;0.5&lt;/span&gt;
     &lt;/div&gt;
     &lt;div&gt;
         Green:
-        &lt;input id="color-green" type="range" min="-1" max="1" step="0.1" value="0" /&gt;
-        &lt;span id="green-value" class="range-value"/&gt;
+        &lt;input data-montage-id="color-green" type="range" min="-1" max="1" step="0.1" value="0" /&gt;
+        &lt;span data-montage-id="green-value" class="range-value"/&gt;
     &lt;/div&gt;
     &lt;div&gt;
         Blue:
-        &lt;input id="color-blue" type="range" min="-1" max="1" step="0.1" value="0" /&gt;
-        &lt;span id="blue-value" class="range-value" /&gt;
+        &lt;input data-montage-id="color-blue" type="range" min="-1" max="1" step="0.1" value="0" /&gt;
+        &lt;span data-montage-id="blue-value" class="range-value" /&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 
@@ -226,39 +215,36 @@
 &lt;div class="control"&gt;
     &lt;div&gt;
         Amount:
-        &lt;input id="sharpness-amount" type="range" min="0" max="1" step="0.05" value="0"/&gt;
-        &lt;span id="sharpness-amount-value" class="range-value"&gt;0.5&lt;/span&gt;
+        &lt;input data-montage-id="sharpness-amount" type="range" min="0" max="1" step="0.05" value="0"/&gt;
+        &lt;span data-montage-id="sharpness-amount-value" class="range-value"&gt;0.5&lt;/span&gt;
     &lt;/div&gt;
 &lt;/div&gt;
 
-&lt;button id="reset" class="btn cancel small"&gt;Reset&lt;/button&gt;
+&lt;button data-montage-id="reset" class="btn cancel small"&gt;Reset&lt;/button&gt;
 </pre>
                             </div><!-- / -->
                         </li>
                         <li>
                             <a href="#" onclick="toggle_visibility('.range1 #serialization', event);">serialization</a>
-                            <div class="sourceitem" id="serialization">
+                            <div class="sourceitem" data-montage-id="serialization">
                                 <!-- <p>The markup simply defines the &lt;a> and &lt;input> elements.</p> -->
                             <pre class="prettyprint">
 {
     "owner": {
-        "module": "components/range-input-example.reel",
-        "name": "RangeInputExample",
+        "prototype": "components/range-input-example.reel",
         "properties": {
             "element": {"#": "range-input-example"},
             "image": {"#": "image"}
         }
     },
     "roundTo2Decimals": {
-        "module": "montage/core/converter/number-converter",
-        "name": "NumberConverter",
+        "prototype": "montage/core/converter/number-converter",
         "properties": {
             "decimals": 2
         }
     },
     "red": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "color-red"}
         },
@@ -267,8 +253,7 @@
         }
     },
     "red-value": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "red-value"}
         },
@@ -277,8 +262,7 @@
         }
     },
     "green": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "color-green"}
         },
@@ -287,8 +271,7 @@
         }
     },
     "green-value": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "green-value"}
         },
@@ -297,8 +280,7 @@
         }
     },
     "blue": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "color-blue"}
         },
@@ -307,8 +289,7 @@
         }
     },
     "blue-value": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "blue-value"}
         },
@@ -318,8 +299,7 @@
     },
 
     "sharpness": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "sharpness-amount"}
         },
@@ -328,8 +308,7 @@
         }
     },
     "sharpness-amount-value": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "sharpness-amount-value"}
         },
@@ -339,8 +318,7 @@
     },
 
     "reset": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "reset"},
             "identifier": "reset"
@@ -360,7 +338,7 @@
             </div>
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/range-input-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/range-input-example.reel" target="_blank">View source on GitHub</a>
             </section>
 
 <!--             <section>

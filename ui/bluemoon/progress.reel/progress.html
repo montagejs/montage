@@ -11,8 +11,7 @@
     <script type="text/montage-serialization">
 {
     "owner": {
-        "module": "montage/ui/bluemoon/progress.reel",
-        "name": "Progress",
+        "prototype": "montage/ui/bluemoon/progress.reel",
         "properties": {
             "element": {"#": "progress"},
             "_barElement": {"#": "bar"}
@@ -24,8 +23,8 @@
 </head>
 <body>
 
-	<div id="progress" class="montage-progress">
-		<div id="bar" class="bar"></div>
+	<div data-montage-id="progress" class="montage-progress">
+		<div data-montage-id="bar" class="bar"></div>
 	</div>
 
 </body>

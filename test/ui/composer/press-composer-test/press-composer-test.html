@@ -27,16 +27,14 @@
     },
 
     "test": {
-        "module": "ui/composer/press-composer-test/press-composer-test",
-        "name": "PressComposerTest",
+        "prototype": "ui/composer/press-composer-test/press-composer-test",
         "properties": {
             "press_composer": {"@": "press_composer"},
             "example": {"@": "example"}
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

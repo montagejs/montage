@@ -375,8 +375,10 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
             var type = this.type,
                 self = this;
 
-            this.application.returnPopupSlot(type);
-            this.displayed = false;
+            this.application.getPopupSlot(type, this, function(slot) {
+                self.application.returnPopupSlot(type);
+                self.displayed = false;
+            });
         }
     },
 

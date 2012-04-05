@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "grid-magnifier.reel",
-                "name": "GridMagnifier",
+                "prototype": "grid-magnifier.reel",
                 "properties": {
                     "element": {"#": "GridMagnifier"},
                     "_canvas": {"#": "canvas"}
@@ -26,8 +25,8 @@
 </head>
 <body>
 
-    <div id="GridMagnifier" class="GridMagnifier">
-        <canvas id="canvas" width="200" height="200"></canvas>
+    <div data-montage-id="GridMagnifier" class="GridMagnifier">
+        <canvas data-montage-id="canvas" width="200" height="200"></canvas>
     </div>
 
 </body>
