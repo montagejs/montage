@@ -8,12 +8,24 @@
 
     // Boostrapping Browser
     if (typeof bootstrap !== "undefined") {
-        bootstrap("require/require", function (require, exports) {
-            var Promise = require("core/promise").Promise;
-            var URL = require("core/mini-url");
-            definition(exports, Promise, URL);
-            require("require/browser");
-        });
+
+        // Window
+        if (typeof window !== "undefined") {
+            bootstrap("require/require", function (require, exports) {
+                var Promise = require("core/promise").Promise;
+                var URL = require("core/mini-url");
+                definition(exports, Promise, URL);
+                require("require/browser");
+            });
+
+        // Worker
+        } else {
+            bootstrap("require/require", function (require, exports) {
+                var Promise = require("core/promise").Promise;
+                var URL = require("core/url");
+                definition(exports, Promise, URL);
+            });
+        }
 
     // Node Server
     } else if (typeof process !== "undefined") {
@@ -258,6 +270,8 @@
                 return resolve(id, viaId);
             };
 
+            require.getModule = getModule;
+
             require.load = load;
             require.deepLoad = deepLoad;
 
@@ -267,6 +281,10 @@
                 } else { // inherited environment
                     return config.loadPackage(dependency, config);
                 }
+            };
+
+            require.getPackage = function (dependency) {
+                return config.getPackage(dependency, config);
             };
 
             require.injectPackageDescription = function (location, description) {
@@ -282,6 +300,8 @@
             });
 
             require.config = config;
+
+            require.read = Require.read;
 
             return require;
         }
@@ -455,6 +475,7 @@
 
         // overlay
         var overlay = description.overlay || {};
+        var layer;
         Require.overlays.forEach(function (engine) {
             if (overlay[engine]) {
                 layer = overlay[engine];

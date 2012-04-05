@@ -85,7 +85,8 @@ if (typeof window !== "undefined") {
             Require.loadPackage(montageLocation, config)
             .then(function (montageRequire) {
                 montageRequire.inject("core/promise", Promise);
-                montageRequire.inject("core/shim/timers", {});
+                montageRequire.inject("core/next-tick", {});
+                montageRequire.inject("core/mini-url", URL);
 
                 // install the linter, which loads on the first error
                 config.lint = function (module) {
