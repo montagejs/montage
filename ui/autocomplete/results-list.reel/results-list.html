@@ -4,7 +4,7 @@
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Autocomplete Results Template</title>
     <link rel="stylesheet" type="text/css" href="results-list.css">
-    
+
     <script type="text/montage-serialization">
 {
 
@@ -28,16 +28,8 @@
             "orientation": "vertical"
         },
         "bindings": {
-            "contentController": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "contentController",
-                "oneway": true
-            },
-            "activeIndexes": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "activeIndexes",
-                "oneway": true
-            }
+            "contentController": {"<-": "@owner.contentController"},
+            "activeIndexes": {"<-": "@owner.activeIndexes"}
         }
     },
 
@@ -48,11 +40,7 @@
             "element": {"#": "result-item"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "repetition1"},
-                "boundObjectPropertyPath": "objectAtCurrentIteration",
-                "oneway": true
-            }
+            "value": {"<-": "@repetition1.objectAtCurrentIteration"}
         }
     },
 
@@ -68,9 +56,9 @@
 
 </head>
 <body>
-    <div id="results-list" class="results-list">
-        <ul class="repetition" id="repetition1">
-            <li class="result-item" id="result-item"></li>
+    <div data-montage-id="results-list" class="results-list">
+        <ul class="repetition" data-montage-id="repetition1">
+            <li class="result-item" data-montage-id="result-item"></li>
         </ul>
     </div>
 

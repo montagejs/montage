@@ -4,9 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component,
-    JSONP = require('components/autocomplete-example.reel/jsonp.js').JSONP;
-
+    Component = require("montage/ui/component").Component;
 
 // Sample data for list of US States
 var states = [
@@ -94,11 +92,6 @@ var request = function(uri, method, params) {
     return xhr;
 };
 
-var jsonp = function(uri, params, callback) {
-    JSONP.get(uri, params, callback);
-};
-
-
 
 exports.AutocompleteExample = Montage.create(Component, {
 
@@ -168,20 +161,6 @@ exports.AutocompleteExample = Montage.create(Component, {
                 console.log('xhr errored out');
                autocomplete.suggestions = [];
             };
-            
-            /*
-            JSONP.request(, null, function(data) {
-                var result = [];
-                console.log('received data', data);
-                if(data && data.length > 0) {
-                    result = data.result.places.map(function(item) {
-                        return item.FirstName;
-                    });
-                }
-                console.log('result', result);
-                autocomplete.suggestions = result;
-            });
-            */
 
         }
     },

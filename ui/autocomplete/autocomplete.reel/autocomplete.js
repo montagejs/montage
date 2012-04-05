@@ -112,7 +112,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             //return (arr ? arr.join(',') : this._value);
         },
         set: function(newValue, fromInput) {
-            this._value = newValue;
+            this._value = newValue ? newValue.trim() : '';
 
             // get the entered text after the separator
             var value = this._value;
