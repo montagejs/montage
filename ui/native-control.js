@@ -13,10 +13,6 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
-var isUndefined = function(obj) {
-   return (typeof obj === 'undefined');
-};
-
 
 /**
     Base component for all native components, such as RadioButton and Checkbox.
@@ -73,7 +69,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
         value: function(attributeName) {
             var attributeDescriptor, instance = this;
             // walk up the prototype chain from the instance to NativeControl's prototype
-            while(instance && !isUndefined(instance._elementAttributeDescriptors)) {
+            while(instance && (typeof instance._elementAttributeDescriptors !== 'undefined')) {
                 attributeDescriptor = instance._elementAttributeDescriptors[attributeName];
                 if(attributeDescriptor) {
                     break;
@@ -81,7 +77,6 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                     instance = Object.getPrototypeOf(instance);
                 }
             }
-
             return attributeDescriptor;
         }
     },
@@ -95,15 +90,15 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
     defineAttribute: {
         value: function(name, descriptor) {
             descriptor = descriptor || {};
+            var _name = '_' + name;
+
 
             var newDescriptor = {
-                configurable: isUndefined(descriptor.configurable) ? true: descriptor.configurable,
-                enumerable: isUndefined(descriptor.enumerable) ?  true: descriptor.enumerable,
-                serializable: isUndefined(descriptor.serializable) ? true: descriptor.serializable,
-                set: (function(name) {
+                configurable: (typeof descriptor.configurable == 'undefined') ? true: descriptor.configurable,
+                enumerable: (typeof descriptor.enumerable == 'undefined') ?  true: descriptor.enumerable,
+                serializable: (typeof descriptor.serializable == 'undefined') ? true: descriptor.serializable,
+                set: (function(name, attrName) {
                     return function(value) {
-                        var attrName = '_' + name;
-
                         var desc = this._getElementAttributeDescriptor(name, this);
 
                         // if requested dataType is boolean (eg: checked, readonly etc)
@@ -115,22 +110,22 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                         // If the set value is different to the current one,
                         // update it here, and set it to be updated on the
                         // element in the next draw cycle.
-                        if(!isUndefined(value) && this[attrName] !== value) {
+                        if((typeof value !== 'undefined') && this[attrName] !== value) {
                             this[attrName] = value;
                             this._elementAttributeValues[name] = value;
                             this.needsDraw = true;
                         }
                     };
-                }(name)),
-                get: (function(name) {
+                }(name, _name)),
+                get: (function(name, attrName) {
                     return function() {
-                        return this['_' + name];
+                        return this[attrName];
                     };
-                }(name))
+                }(name, _name))
             };
 
             // Define _ property
-            Montage.defineProperty(this, '_' + name, {value: null});
+            Montage.defineProperty(this, _name, {value: null});
             // Define property getter and setter
             Montage.defineProperty(this, name, newDescriptor);
         }
@@ -159,7 +154,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
 
                     // Only add the internal property, and getter and setter if
                     // they don't already exist.
-                    if(isUndefined(this[property])) {
+                    if(typeof this[property] == 'undefined') {
                         this.defineAttribute(property, descriptor);
                     }
                 }
@@ -180,9 +175,9 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                 name = attributes[i].name;
                 value = attributes[i].value;
 
-                if(isUndefined(this._elementAttributeValues[name])) {
+                if(typeof this._elementAttributeValues[name] == 'undefined') {
                     this._elementAttributeValues[name] = value;
-                    if(isUndefined(this[name]) || this[name] == null) {
+                    if( (typeof this[name] == 'undefined') || this[name] == null) {
                         this[name] = value;
                     }
                 }
@@ -192,9 +187,9 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
             textContent = this.element.textContent;
             // set textContent only if it is defined as part of element properties
             if(('textContent' in this) && textContent && ("" !== textContent)) {
-                if(isUndefined(this._elementAttributeValues['textContent'])) {
+                if(typeof this._elementAttributeValues['textContent'] == 'undefined') {
                     this._elementAttributeValues['textContent'] = textContent;
-                    if(isUndefined(this['textContent']) || this['textContent'] === null) {
+                    if( (typeof this['textContent'] == 'undefined') || this['textContent'] === null) {
                         this['textContent'] = textContent;
                     }
                 }
@@ -204,8 +199,9 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
             // as attributes on the element.
             for (attributeName in this._elementAttributeDescriptors) {
                 descriptor = this._elementAttributeDescriptors[attributeName];
-                if (this["_"+attributeName] === null && descriptor !== null && "value" in descriptor) {
-                    this["_"+attributeName] = this._elementAttributeDescriptors[attributeName].value;
+                var _name = "_"+attributeName;
+                if (this[_name] === null && descriptor !== null && "value" in descriptor) {
+                    this[_name] = this._elementAttributeDescriptors[attributeName].value;
                 }
             }
             this.needsDraw = true;
@@ -231,7 +227,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                             element.removeAttribute(attributeName);
                         }
                     } else {
-                        if(!isUndefined(value)) {
+                        if(typeof value !== 'undefined') {
                             if(attributeName === 'textContent') {
                                 element.textContent = value;
                             } else {

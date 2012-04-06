@@ -169,7 +169,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     _zIndex: {value: null},
 
     _isSystemPopup: {value: function(type) {
-        return (type === 'alert' || type === 'confirm' || type === 'loading');
+        return (type === 'alert' || type === 'confirm' || type === 'notify');
     }},
 
     _createPopupSlot: {value: function(zIndex) {
@@ -201,7 +201,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                         case "confirm":
                             zIndex = 9003;
                             break;
-                        case "loading":
+                        case "notify":
                             zIndex = 9002;
                             break;
                     }
