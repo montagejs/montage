@@ -1,81 +1,84 @@
 {
     "button": {
-        "prototype": "montage/ui/skeleton/point/button.reel",
+        "prototype": "montage/lab/skeleton/point/button.reel",
         "properties": {
             "element": {"#": "button"}
         }
     },
     
     "toggle": {
-        "prototype": "montage/ui/skeleton/point/toggle.reel",
+        "prototype": "montage/lab/skeleton/point/toggle.reel",
         "properties": {
             "element": {"#": "toggle"}
         }
     },
-    
+
     "checkbox": {
-        "prototype": "montage/ui/skeleton/point/input-checkbox.reel",
+        "prototype": "montage/lab/skeleton/point/input-checkbox.reel",
+
         "properties": {
-            "element": {"#": "input-checkbox"}
+            "element": {"#": "inputCheckbox"}
         }
     },
-    
+
     "radio1": {
-        "prototype": "montage/ui/skeleton/point/input-radio.reel",
+        "prototype": "montage/lab/skeleton/point/input-radio.reel",
         "properties": {
-            "element": {"#": "input-radio1"}
+            "element": {"#": "inputRadio1"}
         }
     },
+
     "radio2": {
-        "prototype": "montage/ui/skeleton/point/input-radio.reel",
+        "prototype": "montage/lab/skeleton/point/input-radio.reel",
         "properties": {
-            "element": {"#": "input-radio2"}
+            "element": {"#": "inputRadio2"}
         }
     },
+
     "radio3": {
-        "prototype": "montage/ui/skeleton/point/input-radio.reel",
+        "prototype": "montage/lab/skeleton/point/input-radio.reel",
         "properties": {
-            "element": {"#": "input-radio3"}
+            "element": {"#": "inputRadio3"}
         }
     },
     
     "select": {
-        "prototype": "montage/ui/skeleton/point/select.reel",
+        "prototype": "montage/lab/skeleton/point/select.reel",
         "properties": {
             "element": {"#": "select"}
         }
     },
-    
-    "input-text": {
-        "prototype": "montage/ui/skeleton/point/input-text.reel",
+
+    "inputText": {
+        "prototype": "montage/lab/skeleton/point/input-text.reel",
         "properties": {
-            "element": {"#": "input-text"}
+            "element": {"#": "inputText"}
         }
     },
     
     "textarea": {
-        "prototype": "montage/ui/skeleton/point/textarea.reel",
+        "prototype": "montage/lab/skeleton/point/textarea.reel",
         "properties": {
             "element": {"#": "textarea"}
         }
     },
-    
-    "input-number": {
-        "prototype": "montage/ui/skeleton/point/input-number.reel",
+
+    "inputNumber": {
+        "prototype": "montage/lab/skeleton/point/input-number.reel",
         "properties": {
-            "element": {"#": "input-number"}
+            "element": {"#": "inputNumber"}
         }
     },
-    
-    "input-range": {
-        "prototype": "montage/ui/skeleton/point/input-range.reel",
+
+    "inputRange": {
+        "prototype": "montage/lab/skeleton/point/input-range.reel",
         "properties": {
-            "element": {"#": "input-range"}
+            "element": {"#": "inputRange"}
         }
     },
     
     "progress": {
-        "prototype": "montage/ui/skeleton/point/progress.reel",
+        "prototype": "montage/lab/skeleton/point/progress.reel",
         "properties": {
             "element": {"#": "progress"}
         }
