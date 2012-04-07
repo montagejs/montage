@@ -16,6 +16,7 @@ var Montage = require("montage").Montage,
     Template = require("ui/template").Template,
     Gate = require("core/gate").Gate,
     logger = require("core/logger").logger("component"),
+    fpsLogger = require("core/logger").logger("fps"),
     drawLogger = require("core/logger").logger("drawing"),
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 /**
@@ -1041,7 +1042,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
                 template.setAttribute(attributeName, value);
             }
-
+if (!element.parentNode) return;
             element.parentNode.replaceChild(template, element);
 
             this.eventManager.unregisterEventHandlerForElement(element);
@@ -1708,6 +1709,8 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     Description TODO
     @function
     */
+    timestamp: {value: 0},
+    drawTreeCalled: {value: 0},
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -1716,6 +1719,27 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 }
                 var self = this, requestAnimationFrame = this.requestAnimationFrame;
                 var _drawTree = function(timestamp) {
+
+if (fpsLogger.isDebug) {
+if (!fpsLogger.fpsDiv) {
+    fpsLogger.fpsDiv = document.createElement("div");
+    fpsLogger.fpsDiv.setAttribute("style", "position: absolute; left: 5px; top: 5px; color: white; background-color: black; text-wrap: none; padding: 2px; border: 1px solid white");
+}
+if (!fpsLogger.inDocument) {
+    document.body.appendChild(fpsLogger.fpsDiv);
+    fpsLogger.inDocument = true;
+}
+var currentTime = +new Date;
+if (currentTime - self.timestamp >= 1000) {
+    fpsLogger.fpsDiv.textContent = self.drawTreeCalled + " fps";
+    self.drawTreeCalled = 0;
+    self.timestamp = currentTime;
+}
+self.drawTreeCalled++;
+} else if (fpsLogger.inDocument){
+    document.body.removeChild(fpsLogger.fpsDiv);
+    fpsLogger.inDocument = false;
+}
                     self._frameTime = (timestamp ? timestamp : Date.now());
                     if (self._clearNeedsDrawTimeOut) {
                         self._clearNeedsDrawList();
