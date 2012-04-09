@@ -6,6 +6,7 @@
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TextInput = require("ui/text-input").TextInput,
+    logger = require("core/logger").logger("autocomplete"),
     ResultsList = require("ui/autocomplete/results-list.reel/results-list").ResultsList,
     ArrayController = require("ui/controller/array-controller").ArrayController,
     Popup = require("ui/popup/popup.reel").Popup,
@@ -128,7 +129,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                     this._tokens = value.split(this.separator).map(function(item) {
                         return item.trim();
                     });
-                    //console.log('active token = ', this.activeTokenIndex);
                     if(this._tokens.length && this._tokens.length > 0) {
                         var searchTerm = this._tokens[this.activeTokenIndex];
                         searchTerm = searchTerm ? searchTerm.trim() : '';
@@ -137,7 +137,9 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                             clearTimeout(this.delayTimer);
                             this.delayTimer = setTimeout(function() {
                                 self.delayTimer = null;
-                                console.log('SEARCH for ', searchTerm);
+                                if (logger.isDebug) {
+                                    logger.debug('SEARCH for ', searchTerm);
+                                }
                                 self.performSearch(searchTerm);
                             }, this.delay);
                         } else {
@@ -200,10 +202,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             if(before == null || after == null) {
                 return 0;
             }
-
-            //console.log('before arr', before);
-            //console.log('after arr', after);
-
             var i=0, len = after.length;
             for(i=0; i< len; i++) {
                 if(i < before.length) {
@@ -288,7 +286,9 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             return this._suggestions;
         },
         set: function(value) {
-            //console.log('got suggestions: ', value);
+            if (logger.isDebug) {
+                logger.debug('got suggestions: ', value);
+            }
             this.loadingStatus = 'complete';
             this._suggestions = value;
             this.showPopup = (value && value.length > 0);
@@ -444,8 +444,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 this.element.value = this.value;
                 this._valueSyncedWithInputField = true;
             }
-
-            //console.log('DRAW called ', this.showPopup);
 
             if(this.showPopup) {
                 this.popup.show();
