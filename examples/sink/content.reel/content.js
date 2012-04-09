@@ -4,7 +4,8 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Notifier = require("montage/ui/popup/notifier.reel/notifier").Notifier;
 
 exports.Content = Montage.create(Component, {
     // the main component
@@ -14,20 +15,39 @@ exports.Content = Montage.create(Component, {
 
     contentDeck: {value: null},
 
+    _selectedItem: {value: null},
+    selectedItem: {
+        serializable: true,
+        get: function() {
+            return this._selectedItem;
+        },
+        set: function(value) {
+            this._selectedItem = value;
+            this.needsDraw = true;
+        }
+    },
+
     _hash: {value: null},
     hash: {
         get: function() {
             return this._hash;
         },
-        set: function(value) {
-            this._hash = value;
-            this.needsDraw = true;
+        set: function(hash) {
+            this._hash = hash;
+
+            if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
+                this.selectedItem = hash.substring(hash.indexOf('#')+1);
+                Notifier.show('Loading ... please wait');
+                this.needsDraw = true;
+            }
         }
     },
+
 
     slotDidSwitchContent: {
         value: function(substitution, nodeShown, componentShown, nodeHidden, componentHidden) {
             console.log('substitution did switch content');
+
             if(componentHidden && typeof componentHidden.didBecomeInactiveInSlot === 'function') {
                 componentHidden.didBecomeInactiveInSlot();
             }
@@ -39,13 +59,8 @@ exports.Content = Montage.create(Component, {
 
     draw: {
         value: function() {
-            var hash = this.hash;
-            if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
-                this.contentDeck.switchValue = hash.substring(hash.indexOf('#')+1);;
-            }
+            Notifier.hide();
         }
     }
-
-
 
 });

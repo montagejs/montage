@@ -1,7 +1,6 @@
 {
     "owner": {
-        "module": "reel/template/externalserialization.reel",
-        "name": "ExternalSerialization",
+        "prototype": "reel/template/externalserialization.reel[ExternalSerialization]",
         "properties": {
             "element": {"#": "main"}
         }

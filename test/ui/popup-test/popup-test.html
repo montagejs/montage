@@ -12,8 +12,7 @@
     <script type="text/montage-serialization">
 {
     "test": {
-        "module": "ui/popup-test/popup-test",
-        "name": "PopupTest",
+        "prototype": "ui/popup-test/popup-test",
         "properties": {            
             "popupContent": {"@": "popupContent"},
             "popupButton": {"@": "popupButton"},
@@ -21,8 +20,7 @@
         }
     },
     "popupContent": {
-        "module": "montage/ui/component",
-        "name": "Component",
+        "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "testPopup"},
             "identifier": "testPopup",
@@ -30,24 +28,21 @@
         }
     },
     "popup": {
-        "module": "montage/ui/popup/popup.reel",
-        "name": "Popup",
+        "prototype": "montage/ui/popup/popup.reel",
         "properties": {
             "content": {"@": "popupContent"},
             "anchor": {"#": "popupButton"}
         }
     },
     "popupButton": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "popupButton"},
             "identifier": "popupButton"
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

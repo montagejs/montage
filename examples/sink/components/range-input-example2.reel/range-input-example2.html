@@ -5,38 +5,33 @@
     <script type="text/montage-serialization">{
 
         "red": {
-            "module": "montage/ui/range-input.reel",
-            "name": "RangeInput",
+            "prototype": "montage/ui/range-input.reel",
             "properties": {
                 "element": {"#": "red"}
             }
         },
 
         "green": {
-            "module": "montage/ui/range-input.reel",
-            "name": "RangeInput",
+            "prototype": "montage/ui/range-input.reel",
             "properties": {
                 "element": {"#": "green"}
             }
         },
 
         "blue": {
-            "module": "montage/ui/range-input.reel",
-            "name": "RangeInput",
+            "prototype": "montage/ui/range-input.reel",
             "properties": {
                 "element": {"#": "blue"}
             }
         },
         "alpha": {
-            "module": "montage/ui/range-input.reel",
-            "name": "RangeInput",
+            "prototype": "montage/ui/range-input.reel",
             "properties": {
                 "element": {"#": "alpha"}
             }
         },
         "rangeInputAccordion1": {
-            "module": "accordion.reel",
-            "name": "Accordion",
+            "prototype": "accordion.reel",
             "properties": {
                 "element": {"#": "rangeInputAccordion1"}
             }
@@ -56,7 +51,7 @@
                 "opacity": {"<<->": "@alpha.value"}
             }
         }
-    
+
     }</script>
     <style type="text/css" media="screen">
         .chip {
@@ -114,7 +109,7 @@
     </style>
 </head>
     <body>
-        <div id="range-input-example" class="range-input-example">
+        <div data-montage-id="range-input-example" class="range-input-example">
             <div class="row">
                 <div class="span8">
                     <h3>Range Input</h3>
@@ -127,22 +122,22 @@
             <h4>Example - Color changer</h4>
             <div class="demo range1">
                 <div class="span12">
-                        <div id="chip" class="chip"></div>
-                        <div id="controls" class="controls">
+                        <div data-montage-id="chip" class="chip"></div>
+                        <div data-montage-id="controls" class="controls">
                             <div class="slider-item">
-                                <input id="red" type="range" min="0" max="255" step="1" value="255"/>
+                                <input data-montage-id="red" type="range" min="0" max="255" step="1" value="255"/>
                                 <span class="label">Red</span>
                             </div>
                             <div class="slider-item">
-                                <input id="green" type="range" min="0" max="255" step="1" value="0"/>
+                                <input data-montage-id="green" type="range" min="0" max="255" step="1" value="0"/>
                                 <span class="label">Green</span>
                             </div>
                             <div class="slider-item">
-                                <input id="blue" type="range" min="0" max="255" step="1" value="0"/>
+                                <input data-montage-id="blue" type="range" min="0" max="255" step="1" value="0"/>
                                 <span class="label">Blue</span>
                             </div>
                             <div class="slider-item">
-                                <input id="alpha" type="range" min="0" max="1" step="0.1" value="1"/>
+                                <input data-montage-id="alpha" type="range" min="0" max="1" step="0.1" value="1"/>
                                 <span class="label">Opacity</span>
                             </div>
                         </div>
@@ -154,28 +149,28 @@
 
         <section>
 
-           <ul id="rangeInputAccordion1" class="accordion">
+           <ul data-montage-id="rangeInputAccordion1" class="accordion">
                 <li class="accordion-group">
                     <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                     <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;div id="chip" class="chip"&gt;
+&lt;div data-montage-id="chip" class="chip"&gt;
 &lt;/div&gt;
-&lt;div id="controls" class="controls"&gt;
+&lt;div data-montage-id="controls" class="controls"&gt;
     &lt;div class="slider-item"&gt;
-        &lt;input id="red" type="range" min="0" max="255" step="1" value="255"/&gt;
+        &lt;input data-montage-id="red" type="range" min="0" max="255" step="1" value="255"/&gt;
         &lt;span class="label"&gt;Red&lt;/span&gt;
     &lt;/div&gt;
     &lt;div class="slider-item"&gt;
-        &lt;input id="green" type="range" min="0" max="255" step="1" value="0"/&gt;
+        &lt;input data-montage-id="green" type="range" min="0" max="255" step="1" value="0"/&gt;
         &lt;span class="label"&gt;Green&lt;/span&gt;
     &lt;/div&gt;
     &lt;div class="slider-item"&gt;
-        &lt;input id="blue" type="range" min="0" max="255" step="1" value="0"/&gt;
+        &lt;input data-montage-id="blue" type="range" min="0" max="255" step="1" value="0"/&gt;
         &lt;span class="label"&gt;Blue&lt;/span&gt;
     &lt;/div&gt;
     &lt;div class="slider-item"&gt;
-        &lt;input id="alpha" type="range" min="0" max="1" step="0.1" value="1"/&gt;
+        &lt;input data-montage-id="alpha" type="range" min="0" max="1" step="0.1" value="1"/&gt;
         &lt;span class="label"&gt;Alpha&lt;/span&gt;
     &lt;/div&gt;
 &lt;/div&gt;
@@ -188,31 +183,27 @@
                         <pre class="prettyprint" >
 {
     "red": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "red"}
         }
     },
 
     "green": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "green"}
         }
     },
 
     "blue": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "blue"}
         }
     },
     "alpha": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "alpha"}
         }
@@ -329,7 +320,7 @@ exports.RangeInputExample2 = Montage.create(Component, {
             </ul>
 
         <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/range-input-example2.reel" target="_blank">View source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/range-input-example2.reel" target="_blank">View source on GitHub</a>
         </section>
 
 

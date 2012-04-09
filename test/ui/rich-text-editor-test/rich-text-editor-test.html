@@ -14,16 +14,14 @@
 {
 
      "editor1": {
-         "module": "montage/ui/rich-text-editor/rich-text-editor.reel",
-         "name": "RichTextEditor",
+         "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
          "properties": {
              "element": {"#": "editor1"}
          }
      },
 
      "editor2": {
-         "module": "montage/ui/rich-text-editor/rich-text-editor.reel",
-         "name": "RichTextEditor",
+         "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
          "properties": {
              "element": {"#": "editor2"},
              "value": "Montage Rocks!"
@@ -31,8 +29,7 @@
      },
 
     "test": {
-        "module": "ui/rich-text-editor-test/rich-text-editor-test",
-        "name": "RichTextEditorTest",
+        "prototype": "ui/rich-text-editor-test/rich-text-editor-test",
         "properties": {
             "editor1": {"@": "editor1"},
             "editor2": {"@": "editor2"}
@@ -40,8 +37,7 @@
     },
 
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }
@@ -52,7 +48,7 @@
 </head>
 <body>
     <h1>RichText Editor test</h1>
-    <div id="editor1" width="400" height="200">Hello Montage</div>
-    <div id="editor2" width="400" height="200">Hello Montage</div>
+    <div id="editor1" style="width: 400px; height: 200px">Hello Montage</div>
+    <div id="editor2" style="width: 400px; height: 200px">Hello Montage</div>
 </body>
 </html>

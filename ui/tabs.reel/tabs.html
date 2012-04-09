@@ -23,8 +23,7 @@
     },
 
     "repetition1": {
-        "module": "montage/ui/repetition.reel",
-        "name": "Repetition",
+        "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {
                 "#": "tab-list"
@@ -35,8 +34,7 @@
     },
 
     "owner": {
-        "module": "montage/ui/tabs.reel",
-        "name": "Tabs",
+        "prototype": "montage/ui/tabs.reel",
         "properties": {
             "element": {
                 "#": "tabs-nav"
@@ -61,9 +59,9 @@
     </head>
 <body>
 
-    <div id='tabs-nav' class='montage-tabs montage-container'>
-        <div id="montage-tabs-indicator" class="montage-tabs-indicator" style="display: none;"></div>
-        <ul id="tab-list" class='montage-tabs-list montage-clearfix'>
+    <div data-montage-id='tabs-nav' class='montage-tabs montage-container'>
+        <div data-montage-id="montage-tabs-indicator" class="montage-tabs-indicator" style="display: none;"></div>
+        <ul data-montage-id="tab-list" class='montage-tabs-list montage-clearfix'>
             <li></li>
         </ul>
     </div>

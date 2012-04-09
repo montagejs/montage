@@ -6,8 +6,7 @@
     <script type="text/montage-serialization">{
 
         "red": {
-            "module": "montage/ui/bluemoon/slider.reel",
-            "name": "Slider",
+            "prototype": "montage/ui/bluemoon/slider.reel",
             "properties": {
                 "element": {"#": "red"},
                 "minValue": "0",
@@ -18,8 +17,7 @@
         },
 
         "green": {
-            "module": "montage/ui/bluemoon/slider.reel",
-            "name": "Slider",
+            "prototype": "montage/ui/bluemoon/slider.reel",
             "properties": {
                 "element": {"#": "green"},
                 "minValue": "0",
@@ -30,8 +28,7 @@
         },
 
         "blue": {
-            "module": "montage/ui/bluemoon/slider.reel",
-            "name": "Slider",
+            "prototype": "montage/ui/bluemoon/slider.reel",
             "properties": {
                 "element": {"#": "blue"},
                 "minValue": "0",
@@ -41,8 +38,7 @@
             }
         },
         "alpha": {
-            "module": "montage/ui/bluemoon/slider.reel",
-            "name": "Slider",
+            "prototype": "montage/ui/bluemoon/slider.reel",
             "properties": {
                 "element": {"#": "alpha"},
                 "minValue": "0",
@@ -51,10 +47,9 @@
                 "value": "1"
             }
         },
-        
+
         "sliderAccordion1": {
-            "module": "accordion.reel",
-            "name": "Accordion",
+            "prototype": "accordion.reel",
             "properties": {
                 "element": {"#": "sliderAccordion1"}
             }
@@ -74,11 +69,11 @@
                 "opacity": {"<<->": "@alpha.value"}
             }
         }
-    
+
     }</script>
 </head>
     <body>
-        <div id="range-input-example" class="range-input-example">
+        <div data-montage-id="range-input-example" class="range-input-example">
             <div class="row">
                 <div class="span8">
                     <h3>Range Input</h3>
@@ -91,54 +86,54 @@
             <h4>Example - Color changer</h4>
             <div class="demo range1">
                 <div class="span12">
-                        <div id="chip" class="chip">
+                        <div data-montage-id="chip" class="chip">
                         </div>
-                        <div id="controls" class="controls">
+                        <div data-montage-id="controls" class="controls">
                             <div class="slider-item">
-                                <div id="red"></div>
+                                <div data-montage-id="red"></div>
                                 <span class="label">Red</span>
                             </div>
                             <div class="slider-item">
-                                <div id="green"></div>
+                                <div data-montage-id="green"></div>
                                 <span class="label">Green</span>
                             </div>
                             <div class="slider-item">
-                                <div id="blue"></div>
+                                <div data-montage-id="blue"></div>
                                 <span class="label">Blue</span>
                             </div>
                             <div class="slider-item">
-                                <div id="alpha"></div>
+                                <div data-montage-id="alpha"></div>
                                 <span class="label">Opacity</span>
                             </div>
                         </div>
 
                 </div>
             </div>
-        
-        
+
+
         <section>
-           <ul id="sliderAccordion1" class="accordion">
+           <ul data-montage-id="sliderAccordion1" class="accordion">
                 <li class="accordion-group">
                     <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                     <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;div id="chip" class="chip"&gt;
+&lt;div data-montage-id="chip" class="chip"&gt;
 &lt;/div&gt;
-&lt;div id="controls" class="controls"&gt;
+&lt;div data-montage-id="controls" class="controls"&gt;
     &lt;div class="slider-item"&gt;
-        &lt;div id="red"&gt;&lt;/div&gt;
+        &lt;div data-montage-id="red"&gt;&lt;/div&gt;
         &lt;span class="label"&gt;Red&lt;/span&gt;
     &lt;/div&gt;
     &lt;div class="slider-item"&gt;
-        &lt;div id="green"&gt;&lt;/div&gt;
+        &lt;div data-montage-id="green"&gt;&lt;/div&gt;
         &lt;span class="label"&gt;Green&lt;/span&gt;
     &lt;/div&gt;
     &lt;div class="slider-item"&gt;
-        &lt;div id="blue"&gt;&lt;/div&gt;
+        &lt;div data-montage-id="blue"&gt;&lt;/div&gt;
         &lt;span class="label"&gt;Blue&lt;/span&gt;
     &lt;/div&gt;
     &lt;div class="slider-item"&gt;
-        &lt;div id="alpha"&gt;&lt;/div&gt;
+        &lt;div data-montage-id="alpha"&gt;&lt;/div&gt;
         &lt;span class="label"&gt;Alpha&lt;/span&gt;
     &lt;/div&gt;
 &lt;/div&gt;
@@ -151,8 +146,7 @@
                         <pre class="prettyprint" >
 {
     "red": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {"#": "red"},
             "minValue": "0",
@@ -163,8 +157,7 @@
     },
 
     "green": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {"#": "green"},
             "minValue": "0",
@@ -175,8 +168,7 @@
     },
 
     "blue": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {"#": "blue"},
             "minValue": "0",
@@ -186,8 +178,7 @@
         }
     },
     "alpha": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {"#": "alpha"},
             "minValue": "0",
@@ -293,16 +284,16 @@ exports.MontageSlider = Montage.create(Component, {
         }
     }
 
-});                    
+});
                         </pre>
                     </div>
                 </li>
             </ul>
-        
+
         </section>
-        
+
         <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/montage-slider.reel" target="_blank">View Source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/montage-slider.reel" target="_blank">View Source on GitHub</a>
         </section>
 
     </body>

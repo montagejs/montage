@@ -7,8 +7,7 @@
 {
 
     "button2": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-bookmark-menu"},
             "identifier": "showBookmarkMenu"
@@ -21,8 +20,7 @@
         ]
     },
     "button3": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-critical-error"},
             "identifier": "showCriticalError"
@@ -35,8 +33,7 @@
         ]
     },
     "button4": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-alert"},
             "identifier": "showAlert"
@@ -49,8 +46,7 @@
         ]
     },
     "button5": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-confirm"},
             "identifier": "showConfirm"
@@ -63,8 +59,7 @@
         ]
     },
     "button7": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-loading"},
             "identifier": "showLoading"
@@ -77,8 +72,7 @@
         ]
     },
     "button8": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-growl"},
             "identifier": "showNotifier"
@@ -92,52 +86,45 @@
     },
 
     "criticalerrordialog1": {
-        "module": "components/popup/critical-error-dialog.reel",
-        "name": "CriticalErrorDialog",
+        "prototype": "components/popup/critical-error-dialog.reel",
         "properties": {
             "details": "Your device has encountered a fatal error and could recover. Restart the device."
         }
     },
     "menubookmark1": {
-        "module": "components/popup/menu-bookmark.reel",
-        "name": "MenuBookmark",
+        "prototype": "components/popup/menu-bookmark.reel",
         "properties": {
             "label": "The New York Times"
         }
     },
     "menubookmark2": {
-        "module": "components/popup/menu-bookmark.reel",
-        "name": "MenuBookmark",
+        "prototype": "components/popup/menu-bookmark.reel",
         "properties": {
             "label": "The LA Times"
         }
     },
     "actionsheet1": {
-        "module": "components/popup/action-sheet.reel",
-        "name": "ActionSheet",
+        "prototype": "components/popup/action-sheet.reel",
         "properties": {
         }
     },
 
     "logger": {
-        "module": "logger.reel",
-        "name": "Logger",
+        "prototype": "logger.reel",
         "properties": {
             "element": {"#": "logger"}
         }
     },
 
     "popupAccordion1": {
-           "module": "accordion.reel",
-           "name": "Accordion",
+           "prototype": "accordion.reel",
            "properties": {
                "element": {"#": "popupAccordion1"}
            }
        },
 
        "menuPosition": {
-           "module": "montage/ui/select-input.reel",
-           "name": "SelectInput",
+           "prototype": "montage/ui/select-input.reel",
            "properties": {
                "element": {"#": "menu-position"}
            },
@@ -147,8 +134,7 @@
        },
 
     "owner": {
-        "module": "components/popup/popup-example.reel",
-        "name": "PopupExample",
+        "prototype": "components/popup/popup-example.reel",
         "properties": {
             "element": {"#": "popup-example-root"},
             "criticalError": {"@": "criticalerrordialog1"},
@@ -212,7 +198,7 @@
 </head>
 <body>
 
-    <div id="popup-example-root" class="popup-example-root">
+    <div data-montage-id="popup-example-root" class="popup-example-root">
 
         <div class="row">
             <div class="span8">
@@ -229,20 +215,20 @@
 
             <h5>System Popups</h5>
             <section>
-                <button class="btn large" id="action-show-alert">Show Alert</button>
-                <button class="btn large" id="action-show-confirm">Confirm before Delete</button>
+                <button class="btn large" data-montage-id="action-show-alert">Show Alert</button>
+                <button class="btn large" data-montage-id="action-show-confirm">Confirm before Delete</button>
             </section>
             <section>
-                <button class="btn large" id="action-show-loading">Show Loading</button>
-                <button class="btn large" id="action-show-growl">Show Notification</button>
+                <button class="btn large" data-montage-id="action-show-loading">Show Loading</button>
+                <button class="btn large" data-montage-id="action-show-growl">Show Notification</button>
             </section>
 
             <h5>Custom Popups</h5>
             <section>
                 <p>Show a Custom popup anchored to the button.</p>
-                <button class="btn large" id="action-show-bookmark-menu">Show Menu</button>
+                <button class="btn large" data-montage-id="action-show-bookmark-menu">Show Menu</button>
                 Select Menu position:
-                <select id="menu-position" class="menu-position">
+                <select data-montage-id="menu-position" class="menu-position">
                         <option value="">Default</option>
                         <option value="left">Left of Anchor</option>
                         <option value="right">Right of Anchor</option>
@@ -259,7 +245,7 @@
             </section>
             <section>
                 <p>Show a Modal popup anchored to the button</p>
-                <button class="btn large" id="action-show-critical-error">Show Critical Error</button>
+                <button class="btn large" data-montage-id="action-show-critical-error">Show Critical Error</button>
 
             </section>
 
@@ -272,30 +258,30 @@
         </div>
 
         <section>
-            <ul id="popupAccordion1" class="accordion">
+            <ul data-montage-id="popupAccordion1" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
 &lt;h5&gt;System Popups&lt;/h5&gt;
 &lt;section&gt;
-    &lt;button class="btn large" id="action-show-alert"&gt;Show Alert&lt;/button&gt;
-    &lt;button class="btn large" id="action-show-confirm"&gt;Confirm before Delete&lt;/button&gt;
+    &lt;button class="btn large" data-montage-id="action-show-alert"&gt;Show Alert&lt;/button&gt;
+    &lt;button class="btn large" data-montage-id="action-show-confirm"&gt;Confirm before Delete&lt;/button&gt;
 &lt;/section&gt;
 &lt;section&gt;
-    &lt;button class="btn large" id="action-show-loading"&gt;Show Loading&lt;/button&gt;
-    &lt;button class="btn large" id="action-show-growl"&gt;Show Notification&lt;/button&gt;
+    &lt;button class="btn large" data-montage-id="action-show-loading"&gt;Show Loading&lt;/button&gt;
+    &lt;button class="btn large" data-montage-id="action-show-growl"&gt;Show Notification&lt;/button&gt;
 &lt;/section&gt;
 
 &lt;h5&gt;Custom Popups&lt;/h5&gt;
 &lt;section&gt;
     &lt;p&gt;Show a Custom popup anchored to the button.&lt;/p&gt;
-    &lt;button class="btn large" id="action-show-bookmark-menu"&gt;Show Menu (non-modal)&lt;/button&gt;
+    &lt;button class="btn large" data-montage-id="action-show-bookmark-menu"&gt;Show Menu (non-modal)&lt;/button&gt;
 
 &lt;/section&gt;
 &lt;section&gt;
     &lt;p&gt;Show a Modal popup anchored to the button&lt;/p&gt;
-    &lt;button class="btn large" id="action-show-critical-error"&gt;Show Critical Error&lt;/button&gt;
+    &lt;button class="btn large" data-montage-id="action-show-critical-error"&gt;Show Critical Error&lt;/button&gt;
 
 &lt;/section&gt;
 
@@ -314,8 +300,7 @@
                     <pre class="prettyprint" >
 {
     "owner": {
-        "module": "components/popup/popup-example.reel",
-        "name": "PopupExample",
+        "prototype": "components/popup/popup-example.reel",
         "properties": {
             "element": {"#": "popup-example-root"},
             "criticalError": {"@": "criticalerrordialog1"},
@@ -329,8 +314,7 @@
     },
 
     "button2": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-bookmark-menu"},
             "identifier": "showBookmarkMenu"
@@ -343,8 +327,7 @@
         ]
     },
     "button3": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-critical-error"},
             "identifier": "showCriticalError"
@@ -357,8 +340,7 @@
         ]
     },
     "button4": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-alert"},
             "identifier": "showAlert"
@@ -371,8 +353,7 @@
         ]
     },
     "button5": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-confirm"},
             "identifier": "showConfirm"
@@ -385,8 +366,7 @@
         ]
     },
     "button7": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-loading"},
             "identifier": "showLoading"
@@ -399,8 +379,7 @@
         ]
     },
     "button8": {
-        "module": "montage/ui/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/button.reel",
         "properties": {
             "element": {"#": "action-show-growl"},
             "identifier": "showNotifier"
@@ -414,36 +393,31 @@
     },
 
     "criticalerrordialog1": {
-        "module": "components/popup/critical-error-dialog.reel",
-        "name": "CriticalErrorDialog",
+        "prototype": "components/popup/critical-error-dialog.reel",
         "properties": {
             "details": "Your device has encountered a fatal error and could recover. Restart the device."
         }
     },
     "menubookmark1": {
-        "module": "components/popup/menu-bookmark.reel",
-        "name": "MenuBookmark",
+        "prototype": "components/popup/menu-bookmark.reel",
         "properties": {
             "label": "The New York Times"
         }
     },
     "menubookmark2": {
-        "module": "components/popup/menu-bookmark.reel",
-        "name": "MenuBookmark",
+        "prototype": "components/popup/menu-bookmark.reel",
         "properties": {
             "label": "The LA Times"
         }
     },
     "actionsheet1": {
-        "module": "components/popup/action-sheet.reel",
-        "name": "ActionSheet",
+        "prototype": "components/popup/action-sheet.reel",
         "properties": {
         }
     },
 
     "logger": {
-        "module": "logger.reel",
-        "name": "Logger",
+        "prototype": "logger.reel",
         "properties": {
             "element": {"#": "logger"}
         }
@@ -814,7 +788,7 @@ exports.PopupExample = Montage.create(Component, {
 
 
         <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/popup/popup-example.reel" target="_blank">View source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/popup/popup-example.reel" target="_blank">View source on GitHub</a>
         </section>
 
         <section>
@@ -851,7 +825,7 @@ popup.show();
     </pre>
         </section>
 
-        <div id="logger"></div>
+        <div data-montage-id="logger"></div>
 
 
     </div>

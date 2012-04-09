@@ -11,16 +11,14 @@
     <script type="text/montage-serialization">
         {
             "link": {
-                "module": "montage/ui/anchor.reel",
-                "name": "Anchor",
+                "prototype": "montage/ui/anchor.reel",
                 "properties": {
                     "element": {"#": "link"}
                 }
             },
 
             "owner": {
-                "module": "montage/ui/rich-text-editor/overlays/rich-text-linkpopup.reel",
-                "name": "RichTextLinkPopup",
+                "prototype": "montage/ui/rich-text-editor/overlays/rich-text-linkpopup.reel[RichTextLinkPopup]",
                 "properties": {
                     "element": {"#": "linkpopup-container"},
                     "link": {"@": "link"}
@@ -30,8 +28,8 @@
     </script>
 </head>
 <body>
-    <div id="linkpopup-container" class="montage-link-popup" contentEditable="false">
-        <a id="link" target="_blank"></a>
+    <div data-montage-id="linkpopup-container" class="montage-link-popup" contentEditable="false">
+        <a data-montage-id="link" target="_blank"></a>
     </div>
 </body>
 </html>

@@ -11,23 +11,20 @@
     <script type="text/montage-serialization">
 {
     "test1": {
-        "module": "ui/drawing/test",
-        "name": "Test",
+        "prototype": "ui/drawing/test",
         "properties": {
 
         }
     },
     "dynamictext1": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "dynamictext"},
             "value": "Test Value"
         }
     },
     "repetition1": {
-        "module": "montage/ui/repetition.reel",
-        "name": "Repetition",
+        "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "list1"},
             "objects": [
@@ -38,15 +35,13 @@
         }
     },
     "custom1": {
-        "module": "ui/drawing/component/custom.reel",
-        "name": "Custom",
+        "prototype": "ui/drawing/component/custom.reel",
         "properties": {
             "element": {"#": "custom"}
         }
     },
     "repetition2": {
-        "module": "montage/ui/repetition.reel",
-        "name": "Repetition",
+        "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {"#": "list2"},
             "objects": [
@@ -57,8 +52,7 @@
         }
     },
     "owner": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test1"},
             "components": [
@@ -72,7 +66,7 @@
 
 </head>
 <body>
-<div id="list1" class="list1"><div id="dynamictext"></div></div>
-<div id="list2" class="list2"><span><div id="custom"></div></span></div>
+<div data-montage-id="list1" class="list1"><div data-montage-id="dynamictext"></div></div>
+<div data-montage-id="list2" class="list2"><span><div data-montage-id="custom"></div></span></div>
 </body>
 </html>

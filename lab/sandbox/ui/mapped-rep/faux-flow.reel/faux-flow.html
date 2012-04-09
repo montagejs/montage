@@ -12,8 +12,7 @@
     <script type="text/montage-serialization">{
 
             "owner": {
-                "module": "faux-flow.reel",
-                "name": "FauxFlow",
+                "prototype": "faux-flow.reel",
                 "properties": {
                     "element": {"#": "fauxFlow"},
                     "_repetition": {"@": "repetition"}
@@ -21,8 +20,7 @@
             },
 
             "repetition": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "repetition"}
                 },
@@ -34,13 +32,13 @@
                 }
             }
 
-        
+
     }</script>
 
 </head>
 <body>
 
-    <div id="fauxFlow" class="FauxFlow">
+    <div data-montage-id="fauxFlow" class="FauxFlow">
         <div data-montage-id="repetition"></div>
     </div>
 

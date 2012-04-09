@@ -408,7 +408,7 @@ LoggerUI = Montage.create(Montage, /** @lends module:montage/core/logger.LoggerU
                 //YUCK!! I wish I could use a reel!!!
                 var styleTest = "#_montage_logger_inspector {";
                 styleTest += "    border: 1px solid rgba(15,15,15,0.4);";
-                styleTest += "    position: absolute;";
+                styleTest += "    position: fixed;";
                 styleTest += "    right: 25px;";
                 styleTest += "    top: 25px;";
                 styleTest += "    -webkit-border-radius: 5px;";

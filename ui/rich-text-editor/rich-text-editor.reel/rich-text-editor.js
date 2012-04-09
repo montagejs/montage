@@ -562,20 +562,49 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     execCommand: {
         enumerable: false,
         value: function(command, showUI, value, label) {
+            var savedActiveElement = document.activeElement,
+                editorElement = this._innerElement,
+                retValue = false;
+
+            if (!editorElement) {
+                return false;
+            }
+
+            // Make sure we are the active element before calling execCommand
+            if (editorElement != savedActiveElement) {
+                editorElement.focus();
+            }
+
+            if (value === undefined) {
+                value = false;
+            }
+
             label = label || this._execCommandLabel[command] || "Typing";
 
             this._executingCommand = true;
             if (document.execCommand(command, showUI, value)) {
                 this._executingCommand = false;
-                this._stopTyping();
-                if (this.undoManager && ["selectall"].indexOf(command) == -1 ) {
-                    this.undoManager.add(label, this._undo, this, label, this._innerElement);
+                if (["selectall"].indexOf(command) == -1) {
+                    if (this.undoManager ) {
+                        this._stopTyping();
+                        this.undoManager.add(label, this._undo, this, label, this._innerElement);
+                    }
+                } else {
+                    this.markDirty();
                 }
-                return true;
+
+                this.handleSelectionchange();
+                retValue = true;
             } else {
-                this._executingCommand = true;
-                return false
+                this._executingCommand = false;
             }
+
+            // Reset the focus
+            if (editorElement != savedActiveElement) {
+                savedActiveElement.focus();
+            }
+
+            return retValue;
         }
     },
 

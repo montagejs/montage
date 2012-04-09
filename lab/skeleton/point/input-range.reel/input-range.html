@@ -12,8 +12,7 @@
         <script type="text/montage-serialization">{
 
     "translateComposer1": {
-        "module": "montage/ui/composer/translate-composer",
-        "name": "TranslateComposer",
+        "prototype": "montage/ui/composer/translate-composer",
         "properties": {
             "component": {"@": "owner"},
             "axis": "horizontal",
@@ -27,12 +26,11 @@
         }
     },
     "owner": {
-        "module": "montage/lab/skeleton/point/input-range.reel",
-        "name": "InputRange",
+        "prototype": "montage/lab/skeleton/point/input-range.reel",
         "properties": {
-            "element": {"#": "slider"},
-            "sliderEl": {"#": "slider"},
-            "handleEl": {"#": "slider-handle"},
+            "element": {"#": "inputRange"},
+            "sliderEl": {"#": "inputRange"},
+            "handleEl": {"#": "inputRangeThumb"},
             "translateComposer": {"@": "translateComposer1"}
         }
 
@@ -42,8 +40,8 @@
 
     </head>
     <body>
-        <span id="slider" class="montage-inputRange">
-            <span id="slider-handle" draggable="true" href="#" class="montage-inputRange-thumb"></span>
+        <span id="inputRange" class="montage-inputRange">
+            <span id="inputRangeThumb" draggable="true" href="#" class="montage-inputRange-thumb"></span>
         </span>
     </body>
 </html>

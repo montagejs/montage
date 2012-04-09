@@ -458,6 +458,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             serializedUnits = {};
             objectInfo = Montage.getInfoForObject(object);
 
+            if (!this._require) {
+                throw new Error("Cannot serialize Montage objects without a require function to identify the corresponding package.");
+            }
+
             moduleId = this._require.identify(
                 objectInfo.moduleId,
                 objectInfo.require
@@ -491,15 +495,6 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 if (!properties) {
                     properties = object;
                     propertyNames = Montage.getSerializablePropertyNames(object);
-                    // HACK: only to be able to live together with serialization v1, remover after
-                    var ix;
-                    if ((ix = propertyNames.indexOf("_bindingDescriptors")) > -1) {
-                        propertyNames.splice(ix, 1);
-                    }
-                    if ((ix = propertyNames.indexOf("_eventListenerDescriptors")) > -1) {
-                        propertyNames.splice(ix, 1);
-                    }
-                    // end HACK
                 }
                 serializedUnits.properties = this._serializeObjectLiteral(properties, propertyNames, 3);
             }
@@ -572,14 +567,13 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
      */
     _serializeElement: {value: function(element) {
         var attribute = element.getAttribute(this._MONTAGE_ID_ATTRIBUTE),
-            // TODO: element.id only here for backwards compatibility
-            id = attribute || element.id;
+            id = attribute;
 
         if (id) {
             this._externalElements.push(element);
             return '{"#":"' + id + '"}';
         } else {
-            logger.error("Error: Not possible to serialize a DOM element with no id assigned: " + element.outerHTML);
+            logger.error("Error: Not possible to serialize a DOM element with no " + this._MONTAGE_ID_ATTRIBUTE + " assigned: " + element.outerHTML);
         }
     }},
 

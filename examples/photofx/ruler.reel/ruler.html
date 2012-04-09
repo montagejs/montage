@@ -14,8 +14,7 @@
 
 
             "positionText": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "positionText"}
                 },
@@ -25,8 +24,7 @@
             },
 
             "savedPositionText": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "savedPositionText"}
                 },
@@ -36,8 +34,7 @@
             },
 
             "distanceText": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "distanceText"}
                 },
@@ -47,8 +44,7 @@
             },
 
             "owner": {
-                "module": "ruler.reel",
-                "name": "Ruler",
+                "prototype": "ruler.reel",
                 "properties": {
                     "element": {"#": "ruler"},
                     "positionText": {"@": "positionText"},
@@ -56,16 +52,16 @@
                     "distanceText": {"@": "distanceText"}
                 }
             }
-        
+
     }</script>
 
 </head>
 <body>
 
-    <div id="ruler" class="Ruler">
-        <span id="savedPositionText" class="savedPositionText"></span>
-        <span id="distanceText" class="distanceText"></span>
-        <span id="positionText" class="positionText"></span>
+    <div data-montage-id="ruler" class="Ruler">
+        <span data-montage-id="savedPositionText" class="savedPositionText"></span>
+        <span data-montage-id="distanceText" class="distanceText"></span>
+        <span data-montage-id="positionText" class="positionText"></span>
     </div>
 
 </body>

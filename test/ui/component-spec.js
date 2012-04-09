@@ -84,7 +84,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     componentDtarget.content = originalContent;
                     testPage.waitForDraw();
                     runs(function() {
-                        expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div>D1</div>\n    </h1>\n");
+                        expect(componentDtarget._element.innerHTML).toBe("\n    <h1>\n        <div data-montage-id=\"componentD1\">D1</div>\n    </h1>\n");
                     });
                 });
 

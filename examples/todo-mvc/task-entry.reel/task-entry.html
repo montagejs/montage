@@ -12,8 +12,7 @@
         <script type="text/montage-serialization">{
 
                 "owner": {
-                    "module": "task-entry.reel",
-                    "name": "TaskEntry",
+                    "prototype": "task-entry.reel",
                     "properties": {
                         "element": {"#": "taskEntry"},
                         "completedCheckbox": {"#": "completedCheckbox"}
@@ -21,8 +20,7 @@
                 },
 
                 "note": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "note"}
                     },
@@ -32,8 +30,7 @@
                 },
 
                 "completedCheckbox": {
-                    "module": "montage/ui/checkbox.reel",
-                    "name": "Checkbox",
+                    "prototype": "montage/ui/checkbox.reel",
                     "properties": {
                         "element": {"#": "completedCheckbox"}
                     },
@@ -41,16 +38,16 @@
                         "checked": {"<<->": "@owner.task.completed"}
                     }
                 }
-            
+
     }</script>
 
     </head>
     <body>
-        <div id="taskEntry" class="taskEntry">
+        <div data-montage-id="taskEntry" class="taskEntry">
             <form>
                 <div>
-                    <label class="completionField"><span class="labelText">Completed</span><input id="completedCheckbox" class="completedCheckbox" type="checkbox">
-                        <span id="note" class="text"></span>
+                    <label class="completionField"><span class="labelText">Completed</span><input data-montage-id="completedCheckbox" class="completedCheckbox" type="checkbox">
+                        <span data-montage-id="note" class="text"></span>
                     </label>
 
                 </div>

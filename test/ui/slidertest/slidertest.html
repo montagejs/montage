@@ -11,15 +11,13 @@
     <script type="text/montage-serialization">{
 
     "slider1": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {"#": "testSlider"}
         }
     },
     "textfield1": {
-        "module": "montage/ui/bluemoon/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/bluemoon/textfield.reel",
         "properties": {
             "element": {"#": "sliderValue"}
         },
@@ -28,15 +26,13 @@
         }
     },
     "slider2": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {"#": "testSlider2"}
         }
     },
     "textfield2": {
-        "module": "montage/ui/bluemoon/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/bluemoon/textfield.reel",
         "properties": {
             "element": {"#": "sliderValue2"}
         },
@@ -45,8 +41,7 @@
         }
     },
     "test": {
-        "module": "ui/slidertest/slidertest",
-        "name": "SliderTest",
+        "prototype": "ui/slidertest/slidertest[SliderTest]",
         "properties": {
             "testSlider": {"@": "slider1"},
             "sliderValue": {"@": "textfield1"},
@@ -55,8 +50,7 @@
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

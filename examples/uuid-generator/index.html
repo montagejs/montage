@@ -13,14 +13,12 @@
     <script type="text/montage-serialization">{
 
             "appdelegate1": {
-                "module": "app-delegate",
-                "name": "AppDelegate",
+                "prototype": "app-delegate",
                 "properties": {
                 }
             },
             "generateUuid": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "generateUuid"},
                     "identifier": "generateUUID"
@@ -34,8 +32,7 @@
                 ]
             },
             "textfield1": {
-                "module": "montage/ui/textfield.reel",
-                "name": "Textfield",
+                "prototype": "montage/ui/textfield.reel",
                 "properties": {
                     "element": {"#": "uuid"}
                 },
@@ -44,8 +41,7 @@
                 }
             },
             "repetition1": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "testList"}
                 },
@@ -53,19 +49,19 @@
                     "objects": {"<-": "@appdelegate1.uuids"}
                 }
             }
-        
+
     }</script>
 
 
 </head>
 <body>
 
-    <form id="generateUUIDForm">
-        <button id="generateUuid" class="" type="button">Generate UUID</button>
+    <form data-montage-id="generateUUIDForm" class="generateUUIDForm">
+        <button data-montage-id="generateUuid" class="" type="button">Generate UUID</button>
     </form>
 
-    <ul id="testList">
-        <li><input type="text" id="uuid" readonly size="48" /></li>
+    <ul data-montage-id="testList">
+        <li><input type="text" data-montage-id="uuid" readonly size="48" /></li>
     </ul>
 
 </body>

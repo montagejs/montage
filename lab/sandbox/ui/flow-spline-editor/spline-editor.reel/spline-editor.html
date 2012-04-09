@@ -11,8 +11,7 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "spline-editor.reel",
-                "name": "SplineEditor",
+                "prototype": "spline-editor.reel",
                 "properties": {
                     "element": {"#": "spline-editor"},
                     "topView": {"@": "topView"},
@@ -29,8 +28,7 @@
                 }
             },
             "topView": {
-                "module": "viewport.reel",
-                "name": "Viewport",
+                "prototype": "viewport.reel",
                 "properties": {
                     "element": {"#": "top-view"},
                     "_transformMatrix": [
@@ -84,8 +82,7 @@
                 }
             },
             "frontView": {
-                "module": "viewport.reel",
-                "name": "Viewport",
+                "prototype": "viewport.reel",
                 "properties": {
                     "element": {"#": "front-view"}
                 },
@@ -121,8 +118,7 @@
                 }
             },
             "toolbar": {
-                "module": "toolbar.reel",
-                "name": "Toolbar",
+                "prototype": "toolbar.reel",
                 "properties": {
                     "element": {"#": "toolbar"}
                 }
@@ -132,11 +128,11 @@
     <link href="spline-editor.css" rel="stylesheet">
 </head>
 <body>
-    <div id="spline-editor" class="spline-editor">
-        <div id="top-view" class="top-view view"></div>
-        <div id="front-view" class="front-view view"></div>
-        <div id="toolbar" class="toolbar"></div>
-        <textarea id="parameters-editor" class="parameters-editor"></textarea>
+    <div data-montage-id="spline-editor" class="spline-editor">
+        <div data-montage-id="top-view" class="top-view view"></div>
+        <div data-montage-id="front-view" class="front-view view"></div>
+        <div data-montage-id="toolbar" class="toolbar"></div>
+        <textarea data-montage-id="parameters-editor" class="parameters-editor"></textarea>
     </div>
 </body>
 </html>

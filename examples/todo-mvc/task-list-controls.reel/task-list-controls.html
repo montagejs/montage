@@ -11,8 +11,7 @@
         <script type="text/montage-serialization">{
 
                 "completedConditional": {
-                    "module": "montage/ui/condition.reel",
-                    "name": "Condition",
+                    "prototype": "montage/ui/condition.reel",
                     "properties": {
                         "element": {"#": "completedConditional"}
                     },
@@ -22,21 +21,20 @@
                 },
 
                 "owner": {
-                    "module": "task-list-controls.reel",
-                    "name": "TaskListControls",
+                    "prototype": "task-list-controls.reel",
                     "properties": {
                         "element": {"#": "taskListControls"},
                         "clearCompletedForm": {"#": "clearCompletedForm"}
                     }
                 }
-            
+
     }</script>
     </head>
     <body>
-        <div id="taskListControls">
+        <div data-montage-id="taskListControls">
 
-            <div id="completedConditional">
-                <form id="clearCompletedForm">
+            <div data-montage-id="completedConditional">
+                <form data-montage-id="clearCompletedForm">
                     <div>
                         <input type="submit" value="Clear Completed" />
                     </div>

@@ -13,16 +13,14 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "montage/lab/sandbox/ui/flow-frustum-culling/flow-frustum-culling6.js",
-                "name": "FlowFrustumCulling",
+                "prototype": "montage/lab/sandbox/ui/flow-frustum-culling/flow-frustum-culling6.js[FlowFrustumCulling]",
                 "properties": {
                     "flow": {"@": "flow"},
                     "view": {"#": "view"}
                 }
             },
             "flow": {
-                "module": "montage/ui/flow.reel",
-                "name": "Flow",
+                "prototype": "montage/ui/flow.reel",
                 "properties": {
                     "element": {"#": "flow"},
                     "objects": [
@@ -33,8 +31,7 @@
                 }
             },
             "slide": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "slide"}
                 }
@@ -52,10 +49,10 @@
     </style>
 </head>
 <body>
-    <div id="flow" class="flow">
-        <div id="slide" class="slide"></div>
+    <div data-montage-id="flow" class="flow">
+        <div data-montage-id="slide" class="slide"></div>
     </div>
     <h1>Spline Frustum Culling</h1>
-    <canvas id="view" class="view" width="500" height="500"></canvas>
+    <canvas data-montage-id="view" class="view" width="500" height="500"></canvas>
 </body>
 </html>

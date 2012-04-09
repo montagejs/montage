@@ -135,6 +135,7 @@ exports.RichTextLinkPopup = Montage.create(Component,/** @lends module:"montage/
             if (this._editor.activeOverlay == this) {
                 this._editor.hideOverlay();
             }
+            this.target = null;
 
             return false;
         }
