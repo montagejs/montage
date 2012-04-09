@@ -4,7 +4,8 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage/core/core").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Notifier = require("montage/ui/popup/notifier.reel/notifier").Notifier;
 
 exports.Content = Montage.create(Component, {
     // the main component
@@ -36,20 +37,29 @@ exports.Content = Montage.create(Component, {
 
             if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
                 this.selectedItem = hash.substring(hash.indexOf('#')+1);
+                Notifier.show('Loading ... please wait');
                 this.needsDraw = true;
             }
         }
     },
 
+
     slotDidSwitchContent: {
         value: function(substitution, nodeShown, componentShown, nodeHidden, componentHidden) {
             console.log('substitution did switch content');
+
             if(componentHidden && typeof componentHidden.didBecomeInactiveInSlot === 'function') {
                 componentHidden.didBecomeInactiveInSlot();
             }
             if(componentShown && typeof componentShown.didBecomeActiveInSlot === 'function') {
                 componentShown.didBecomeActiveInSlot();
             }
+        }
+    },
+
+    draw: {
+        value: function() {
+            Notifier.hide();
         }
     }
 

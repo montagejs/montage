@@ -17,6 +17,8 @@ exports.InputTextExample = Montage.create(Component, {
     url: {value: null},
     zip: {value: null},
     dob: {value: null},
+    // bound to dob Textfield.error
+    dobError: {value: null},
 
     phoneReadOnly: {value: null},
 
@@ -38,16 +40,24 @@ exports.InputTextExample = Montage.create(Component, {
 
     handleUpdateAction: {
         value: function(event) {
-            this.json = JSON.stringify({
-                firstName: this.firstName,
-                lastName: this.lastName,
-                email: this.email,
-                phone: this.phone,
-                url: this.url,
-                zip: this.zip,
-                dob: this.dob
+            var invalids = this.element.querySelectorAll(":invalid") || [];
 
-            });
+            if((invalids.length > 0) || this.dobError != null) {
+                this.json = 'Please correct the errors and try again';
+            } else {
+                this.json = JSON.stringify({
+                    firstName: this.firstName,
+                    lastName: this.lastName,
+                    email: this.email,
+                    phone: this.phone,
+                    url: this.url,
+                    zip: this.zip,
+                    dob: this.dob
+
+                });
+            }
+            // dont submit the form
+            //event.preventDefault();
         }
     },
 

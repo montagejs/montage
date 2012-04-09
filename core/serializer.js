@@ -458,6 +458,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             serializedUnits = {};
             objectInfo = Montage.getInfoForObject(object);
 
+            if (!this._require) {
+                throw new Error("Cannot serialize Montage objects without a require function to identify the corresponding package.");
+            }
+
             moduleId = this._require.identify(
                 objectInfo.moduleId,
                 objectInfo.require
