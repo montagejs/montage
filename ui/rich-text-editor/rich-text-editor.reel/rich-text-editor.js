@@ -8,6 +8,7 @@
     @requires montage/core/core
     @requires montage/core/event/mutable-event
     @requires montage/core/event/event-manager
+    @requires rich-text-sanitizer
 */
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
@@ -16,9 +17,30 @@ var Montage = require("montage").Montage,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 
 /**
-    The RichTextEditor component is a lightweight Montage component that provides basic HTML editing capability. It wraps the HTML5 <code>contentEditable</code> property and largely relies on the browser's support of <code><a href="http://www.quirksmode.org/dom/execCommand.html" target="_blank">execCommand</a></code>.
-    @class module:"montage/ui/rich-text-edtior/rich-text-editor.reel".RichTextEditor
+    @classdesc The RichTextEditor component is a lightweight Montage component that provides basic HTML editing capability. It wraps the HTML5 <code>contentEditable</code> property and largely relies on the browser's support of <code><a href="http://www.quirksmode.org/dom/execCommand.html" target="_blank">execCommand</a></code>.
+    @class module:"montage/ui/rich-text-editor/rich-text-editor.reel".RichTextEditor
     @extends module:montage/ui/component.Component
+    @summary
+The easiest way to create a RichTextEditor is with a serialization and a &lt;div> tag:<p>
+
+<em>Serialization</em>
+<pre class="sh_javascript">
+{
+"editor": {
+   "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
+   "properties": {
+      "element": {"#": "editor" }
+   }
+}
+</pre>
+<em>HTML</em>
+<pre class="sh_javascript">
+&lt;body&gt;
+&lt;div data-montage-id="editor"&gt;
+    &lt;span&gt;Hello World!&lt;/span&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+</pre>
 */
 exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"montage/ui/rich-text-editor/rich-text-editor.reel".RichTextEditor# */ {
 
@@ -287,9 +309,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Hides the specified overlay.
+     Hides the active overlay.
      @function
-     @param {}
     */
     hideOverlay: {
         value: function(a) {
@@ -312,7 +333,6 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     /**
       Returns <code>true</code> if the current text selection is bold. If the selected text contains some text in bold and some not, the return value depends on the browser’s implementation. When set to <code>true</code>, adds the bold attribute to the selected text; when set to <code>false</code>, removes the bold attribute from the selected text.
      @type {boolean}
-     @example
     */
     bold: {
         enumerable: true,
@@ -516,8 +536,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-    Description TODO
-    @function
+    Gets and sets the Montage undo manager for the editor. By default, it's assigned an instance of the default Montage UndoManager. The component also works with the native Undo Manager provided by the browser. To use the native undo manager, set this property to <code>null</code>
+    @type {object}
     */
     undoManager: {
         enumerable: true,
@@ -526,7 +546,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-    Description TODO
+    Undo the last editing operation.
     @function
     */
     undo: {
@@ -541,7 +561,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-    Description TODO
+    Redo the last editing operation that was canceled by calling <code>undo()</code>.
     @function
     */
     redo: {
@@ -556,8 +576,14 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-    Description TODO
+    Equivalent to the native <code><a href="https://developer.mozilla.org/en/Rich-Text_Editing_in_Mozilla#Executing%5FCommands" target="_blank">document.execCommand</a></code> method, it also sets the focus on the editor before executing the command, marks the editor’s content as dirty, and add the command to the Montage Undo Manager stack using the label provided.
+
+    You should only use this method if you are extending the editor’s functionality, or writing your own overlay. The typical usage would be to insert HTML via the <code>insertHTML</code> command. All other <code>execCommand</code> commands are exposed as bindable properties on the editor, like <code>bold</code> or <code>italic</code>, and those puse the editor property instead.
     @function
+    @param {string} command The command to execute.
+    @param {boolean} showUI Specifies whether the default user interface should be drawn.
+    @param {string|number} value The value to pass as an argument to the command. Possible values depend on the command.
+    @param {string} label The label to use when adding this command to the undo stack managed by the Montage UndoManager.
     */
     execCommand: {
         enumerable: false,
@@ -609,7 +635,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-    Description TODO
+    Marks the editor content as dirty, causing the editor to generate an <code>editorChange</code> event, and update the editor's <code>value</code> and <code>textValue</code> properties. This method should only be called if you are extending the editor or writing an overlay.
     @private
     @function
     */
