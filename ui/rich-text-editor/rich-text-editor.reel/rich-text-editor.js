@@ -352,8 +352,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+    Gets and sets the baseline shift for the currently selected text. Valid values are "baseline", "subscript", or "superscript".
+     @type {string}
+     @default "baseline"
     */
     baselineShift: {
         enumerable: true,
@@ -381,8 +382,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+    Indent the selected text. If the selected text is inside a list, calling this method moves the selection into a sub-list.
+    @function
     */
     indent: {
         enumerable: true,
@@ -390,8 +391,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+    Indent the selected text. If the selected text is inside a list, calling this method moves the selection either out of the list, or into the parent list.
+    @function
     */
     outdent: {
         enumerable: true,
@@ -399,7 +400,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
+      Gets and sets the list style for the selected text. Valid values are "none", "unordered", "ordered". This property can be used in combination with the [indent]{@link indent} and [outdent]{@link outdent} properties to create a list hierarchy.
      @type {Function}
     */
     listStyle: {
@@ -424,8 +425,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+        Gets and sets the justification on the selected text. Valid values are "left", "center", "right", and "full". If the current selection is across multiple lines with different justifications, the value of this property depends of the browser’s implementation.
+        @type {string}
     */
     justify: {
         enumerable: true,
@@ -442,8 +443,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Gets and sets the font name for the currently selected text as a CSS font-family. Can be set to any valid CSS font-family value, including multiple values. If the current selection is across multiple font-family elements, the specific return value depends of the browser’s implementation.
+     @type {string}
     */
     fontName: {
         enumerable: true,
@@ -455,8 +456,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Gets and sets the font size for the current text selection. Only HTML font size values 1 through 7 are supported. If the current selection is a mix of font size, the return value depends of the browser’s implementation.
+     @type {string}
     */
     fontSize: {
         enumerable: true,
@@ -465,8 +466,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Gets and sets the background color of the currently selected text. This property can be set to any valid CSS color value; however, the color is always returned as an RGB color. If the current selection spans across elements with different background colors, the return value depends on the browser’s implementation.
+     @type {string}
     */
     backColor: {
         enumerable: true,
@@ -475,8 +476,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Gets and sets the background color of the currently selected text. This property can be set to any valid CSS color value; however, the color is always returned as an RGB color. If the current selection spans across elements with different background colors, the return value depends on the browser’s implementation. To remove a background color, set it to <code>null</code>.
+     @type {string}
     */
     foreColor: {
         enumerable: true,
@@ -485,8 +486,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Selects the all the content contained by the editor. Depending on the browser's implementation, some of the outer elements without direct text nodes won't be selected. Consequently, if the user presses the delete key after all the text is selected with this method, selecting all, some markup might still be there, you will have to Select all again to get rid of it.
+      @function
     */
     selectAll: {
         enumerable: true,
@@ -494,8 +495,9 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Description TODO
-     @type {Function}
+      Selects the specified DOM element.
+     @function
+     @param {element} element The element to select.
     */
     selectElement: {
         enumerable: true,
