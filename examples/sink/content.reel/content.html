@@ -12,13 +12,6 @@
     <link rel="stylesheet" href="content.css">
 
     <script type="text/montage-serialization">{
-
-            "tbi": {
-                "prototype": "montage/ui/dynamic-text.reel",
-                "properties": {
-                    "value": "To be implemented"
-                }
-            },
             "toggleButton": {
                 "prototype": "components/toggle-button-example.reel",
                 "properties": {
@@ -139,6 +132,11 @@
                 "properties": {
                 }
             },
+            "autocomplete": {
+                "prototype": "components/autocomplete-example.reel",
+                "properties": {
+                }
+            },
 
             "translateComposer": {
                 "prototype": "components/translate-composer-example.reel",
@@ -152,7 +150,6 @@
                     "switchComponents": {
                         "toggleButton": {"@": "toggleButton"},
                         "button": {"@": "button"},
-                        "combo-box": {"@": "tbi"},
                         "checkbox": {"@": "checkbox"},
                         "radioButton": {"@": "radioButton"},
                         "image": {"@": "image"},
@@ -173,7 +170,8 @@
                         "scroller": {"@": "scroller"},
                         "montageSlider": {"@": "montageSlider"},
                         "sliderPolyfill": {"@": "sliderPolyfill"},
-                        "translateComposer": {"@": "translateComposer"}
+                        "translateComposer": {"@": "translateComposer"},
+                        "autocomplete": {"@": "autocomplete"}
                     },
                     "delegate": {"@": "owner"}
                 },
