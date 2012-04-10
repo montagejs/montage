@@ -42,7 +42,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this._content === value) {
                 return;
             }
-
             this._content = value;
 
             //TODO for right now assume that any content change invalidates the selection completely; we'll need to address this of course

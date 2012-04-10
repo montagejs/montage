@@ -175,6 +175,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
         }
     },
+    
+    focusOnShow: {
+        value: true
+    },
+    
 /**
     Description TODO
     @function
@@ -460,7 +465,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
                 this._positionPopup();
                 // focus the content to enable key events such as ENTER/ESC
-                this.content.element.focus();
+                if(this.focusOnShow === true) {
+                    this.content.element.focus();
+                }
 
             } else {
                 if(this.modal === true) {
