@@ -120,20 +120,11 @@ exports.FauxFlow = Montage.create(List, {
                 this._tileHeight = content.offsetHeight;
             }
 
-            var self = this,
-                repetitionDraw = this._repetition.draw;
-
-            this._repetition.draw = function() {
-                var args = Array.prototype.slice.call(arguments);
-                repetitionDraw.apply(self._repetition, args);
-                self.drawAfterRepetition.apply(self, args);
-            };
-
             this.contentController.addEventListener("change@organizedObjects", this, false);
         }
     },
 
-    drawAfterRepetition: {
+    draw: {
         value: function(timestamp) {
 
             if (!this.points) {

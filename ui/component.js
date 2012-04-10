@@ -414,6 +414,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     _template: {
         value: null
     },
+
+    // Tree level necessary for ordering drawing re: parent-child
+    _treeLevel: {
+        value: 0
+    },
 /**
     Description TODO
     @function
@@ -971,14 +976,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: false
     },
-/**
-  Description TODO
-  @private
-*/
-    _isDrawing: {
-        enumerable: false,
-        value: false
-    },
 
     /**
         If needsDraw property returns true this call adds the current component instance to the rootComponents draw list.<br>
@@ -989,11 +986,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      */
     _drawIfNeeded: {
         enumerable: false,
-        value: function _drawIfNeeded() {
-            var body,
-                childComponent,
+        value: function _drawIfNeeded(level) {
+            var childComponent,
                 oldDrawList;
-            if (this.needsDraw) {
+            this._treeLevel = level;
+            if (this.needsDraw && !this._addedToDrawCycle) {
                 rootComponent.addToDrawCycle(this);
             }
             if (drawLogger.isDebug) {
@@ -1011,7 +1008,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                         drawLogger.debug(this, "childComponent: " + childComponent.element + "; canDraw: " + childComponent.canDraw());
                     }
                     if (childComponent.canDraw()) { // TODO if canDraw is false when does needsDraw get reset?
-                        childComponent._drawIfNeeded();
+                        childComponent._drawIfNeeded(level+1);
                     }
                 }
             }
@@ -1148,16 +1145,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
         }
     },
-
-    /**
-        Allows draw to be called even if the children can't draw.
-        @type {Property}
-        @default {Boolean} false
-    */
-    allowsPartialDraw: {
-        value: false
-    },
-
 /**
         Description TODO
         @type {Property}
@@ -1291,10 +1278,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: function(childComponent) {
             this.__addToDrawList(childComponent);
-            // if we are not added to the parent yet we add ourselves so that we build the tree
-            if (!this._isDrawing) {
-                this._addToParentsDrawList();
-            }
+            this._addToParentsDrawList();
         }
     },
 
@@ -1406,12 +1390,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     clearAllComposers: {
         value: function() {
-            var length, i;
-            length = this.composerList.length;
-            for (i = 0; i < length; i++) {
-                this.composerList[i].unload();
+            var composer;
+            while (composer = this.composerList.shift()) {
+                composer.unload();
             }
-            this.composerList = [];
         }
     }
 
@@ -1618,6 +1600,12 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         }
     },
 
+    // Create a second composer list so that the lists can be swapped during a draw instead of creating a new array every time
+    composerListSwap: {
+        value: [],
+        distinct: true
+    },
+
     /*
         Flag to track if a composer is requesting a draw
         @private
@@ -1704,14 +1692,6 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         enumerable: false
     },
 /**
-        Description TODO
-        @type {Property}
-        @default null
-    */
-    dispatchDrawEvent: {
-        value: null
-    },
-/**
   Description TODO
   @private
 */
@@ -1780,42 +1760,59 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     */
     drawIfNeeded:{
         value: function drawIfNeeded() {
-            var needsDrawList = this._readyToDrawList, component, j, i, start = 0, firstDrawEvent,
-                composerList = this.composerList, composer, length;
+            var needsDrawList = this._readyToDrawList, component, i, j, start = 0, firstDrawEvent,
+                composerList = this.composerList, composer;
             needsDrawList.length = 0;
             this._readyToDrawListIndex = {};
-            this.composerList = [];
 
             // Process the composers first so that any components that need to be newly drawn due to composer changes
             // get added in this cycle
-            length = composerList.length;
-            for (i = 0; i < length; i++) {
-                composer = composerList[i];
-                composer.needsFrame = false;
-                composer.frame(this._frameTime);
+            if (composerList.length > 0) {
+                this.composerList = this.composerListSwap; // Swap between two arrays instead of creating a new array each draw cycle
+                while (composer = composerList.shift()) {
+                    composer.needsFrame = false;
+                    composer.frame(this._frameTime);
+                }
+                this.composerListSwap = composerList;
             }
 
-            this._drawIfNeeded();
+            this._drawIfNeeded(0);
             j = needsDrawList.length;
+
             while (start < j) {
                 for (i = start; i < j; i++) {
                     component = needsDrawList[i];
                     if (typeof component.willDraw === "function") {
                         component.willDraw(this._frameTime);
                     }
+                    if (drawLogger.isDebug) {
+                        drawLogger.debug(component._montage_metadata.objectName, " willDraw treeLevel ",component._treeLevel);
+                    }
                 }
-                this._drawIfNeeded();
+                this._drawIfNeeded(0);
                 start = j;
                 j = needsDrawList.length;
             }
 
-            this.requestedAnimationFrame = null; // Allow a needsDraw called during a draw to schedule the next draw
-            // TODO: add the posibility to display = "none" the body during development (IKXARIA-3631).
+            // Sort the needsDraw list so that any newly added items are drawn in the correct order re: parent-child
+            var sortByLevel = function(component1, component2) {
+                return component1._treeLevel - component2._treeLevel;
+            }
+            needsDrawList.sort(sortByLevel);
+
             for (i = 0; i < j; i++) {
                 component = needsDrawList[i];
                 component.needsDraw = false;
+            }
+            this.requestedAnimationFrame = null; // Allow a needsDraw called during a draw to schedule the next draw
+            // TODO: add the possibility to display = "none" the body during development (IKXARIA-3631).
+            for (i = j-1; i >= 0; i--) {
+                component = needsDrawList[i];
                 component._draw();
                 component.draw(this._frameTime);
+                if (drawLogger.isDebug) {
+                    drawLogger.debug(component._montage_metadata.objectName, " draw treeLevel ",component._treeLevel);
+                }
             }
 
             for (i = 0; i < j; i++) {
@@ -1826,6 +1823,9 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     firstDrawEvent.initCustomEvent("firstDraw", true, false, null);
                     component.dispatchEvent(firstDrawEvent);
                     component._completedFirstDraw = true;
+                }
+                if (drawLogger.isDebug) {
+                    drawLogger.debug(component._montage_metadata.objectName, " didDraw treeLevel ",component._treeLevel);
                 }
             }
             return !!needsDrawList.length;
