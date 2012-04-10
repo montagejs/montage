@@ -29,7 +29,9 @@
             "componentOwner": {"@": "componentOwner"},
             "componentLayout": {"@": "componentLayout"},
             "componentToBeCleaned": {"@": "componentToBeCleaned"},
-            "text1": {"@": "text1"}
+            "text1": {"@": "text1"},
+            "componentDrawsParent": {"@": "componentDrawsParent"},
+            "componentParent": {"@": "componentParent"}
         }
     },
     "repetition": {
@@ -157,6 +159,20 @@
             "value": "Text"
         }
     },
+    "componentDrawsParent": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "componentDrawsParent"},
+            "hasTemplate": false
+        }
+    },
+    "componentParent": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "element": {"#": "parentComponent"},
+            "hasTemplate": false
+        }
+    },
     "owner": {
         "prototype": "montage/ui/application",
         "properties": {
@@ -200,5 +216,12 @@
     To Be Clean
     <span data-montage-id="text1"></span>
 </div>
+
+<div data-montage-id="parentComponent">
+    Buzz
+    <div data-montage-id="componentDrawsParent">Fizz</div>
+</div>
+
+
 </body>
 </html>
