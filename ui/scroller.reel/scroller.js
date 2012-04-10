@@ -133,6 +133,13 @@ exports.Scroller = Montage.create(Component, {
         }
     },
 
+    canDraw: {
+        value: function() {
+            this.needsDraw = true;
+            return Component.canDraw.apply(this, arguments);
+        }
+    },
+
     willDraw: {
         enumerable: false,
         value: function () {

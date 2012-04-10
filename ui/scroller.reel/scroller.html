@@ -28,10 +28,10 @@
                 "bindings": {
                     "translateX": {"<<->": "@owner.scrollX"},
                     "translateY": {"<<->": "@owner.scrollY"},
-                    "maxTranslateY": {"<<->": "@owner._maxTranslateY"},
-                    "maxTranslateX": {"<<->": "@owner._maxTranslateX"},
-                    "axis": {"<<->": "@owner.axis"},
-                    "hasMomentum": {"<<->": "@owner.hasMomentum"}
+                    "maxTranslateY": {"<-": "@owner._maxTranslateY"},
+                    "maxTranslateX": {"<-": "@owner._maxTranslateX"},
+                    "axis": {"<-": "@owner.axis"},
+                    "hasMomentum": {"<-": "@owner.hasMomentum"}
                 },
                 "listeners": [
                     {
