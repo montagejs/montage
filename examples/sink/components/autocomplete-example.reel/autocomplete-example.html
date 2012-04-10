@@ -241,6 +241,16 @@
                                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
                                        <div class="accordion-inner montage-hidden">
                                            <pre class="prettyprint" >
+// Sample data for list of US States
+var states = [
+{name: "Alabama", code: "AL" },
+{name: "Alaska", code: "AK"},
+{name: "Arizona", code: "AZ"},
+{name: "Arkansas", code: "AR"},
+....
+{name: "Wyoming", code: "WY"}
+];
+
 exports.AutocompleteExample = Montage.create(Component, {
 
    json: {value: null},

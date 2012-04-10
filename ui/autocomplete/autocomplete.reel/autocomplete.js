@@ -54,12 +54,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         value: null
     },
 
-    /*
-    multiple: {
-        value: null
-    },
-    */
-
     separator: {
         value: ',',
         distinct: true
