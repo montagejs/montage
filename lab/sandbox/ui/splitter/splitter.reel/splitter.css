@@ -17,6 +17,7 @@
 }
 
 .montage-splitterRow {
+    -webkit-box-orient: horizontal; /* old FlexBox */
     -webkit-flex-direction: row;
 }
 
@@ -30,9 +31,8 @@
 
 .montage-splitter-child {
     -webkit-box-flex: 1; /* old FlexBox */
-    width: -webkit-flex(1 auto);
-    height: -webkit-flex(1 auto);
-        
+    -webkit-flex: 1 0 auto;
+
     box-sizing: inherit;
     border: 1px solid #b3b3b3;
     background-color: white;

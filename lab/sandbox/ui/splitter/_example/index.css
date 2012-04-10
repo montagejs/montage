@@ -13,6 +13,7 @@ body {
     color: #444;
     font: 13px/1.231 sans-serif;
 	background-color: hsl(200,0%,90%);
+	padding: 30px;
 }
 
 h1, h2 {
@@ -43,15 +44,6 @@ h1 {
 /* Splitter ----------------------------------- */
 
 /* Those styles below are not part of the splitter.reel */
-
-
-.montage-splitterRow {
-    /min-height: 80px;
-}
-
-.montage-splitterCol {
-    /min-height: 120px;
-}
 
 .montage-splitter-child {
     text-align: center;
