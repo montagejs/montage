@@ -1652,6 +1652,58 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     _frameTime: {
         value: null
     },
+
+    // oldSource and diff are used to detect DOM modifications outside of the
+    // draw loop, but only if drawLogger.isDebug is true.
+    _oldSource: {
+        value: null
+    },
+    _diff: {
+        // Written by John Resig. Used under the Creative Commons Attribution 2.5 License.
+        // http://ejohn.org/projects/javascript-diff-algorithm/
+        value: function( o, n ) {
+            var ns = {};
+            var os = {};
+
+            for ( var i = 0; i < n.length; i++ ) {
+              if ( ns[ n[i] ] == null )
+                ns[ n[i] ] = { rows: [], o: null };
+              ns[ n[i] ].rows.push( i );
+            }
+
+            for (i = 0; i < o.length; i++ ) {
+              if ( os[ o[i] ] == null )
+                os[ o[i] ] = { rows: [], n: null };
+              os[ o[i] ].rows.push( i );
+            }
+
+            for (i in ns ) {
+              if ( ns[i].rows.length == 1 && typeof(os[i]) != "undefined" && os[i].rows.length == 1 ) {
+                n[ ns[i].rows[0] ] = { text: n[ ns[i].rows[0] ], row: os[i].rows[0] };
+                o[ os[i].rows[0] ] = { text: o[ os[i].rows[0] ], row: ns[i].rows[0] };
+              }
+            }
+
+            for (i = 0; i < n.length - 1; i++ ) {
+              if ( n[i].text != null && n[i+1].text == null && n[i].row + 1 < o.length && o[ n[i].row + 1 ].text == null &&
+                   n[i+1] == o[ n[i].row + 1 ] ) {
+                n[i+1] = { text: n[i+1], row: n[i].row + 1 };
+                o[n[i].row+1] = { text: o[n[i].row+1], row: i + 1 };
+              }
+            }
+
+            for (i = n.length - 1; i > 0; i-- ) {
+              if ( n[i].text != null && n[i-1].text == null && n[i].row > 0 && o[ n[i].row - 1 ].text == null &&
+                   n[i-1] == o[ n[i].row - 1 ] ) {
+                n[i-1] = { text: n[i-1], row: n[i].row - 1 };
+                o[n[i].row-1] = { text: o[n[i].row-1], row: i - 1 };
+              }
+            }
+
+            return { o: o, n: n };
+        }
+    },
+
 /**
     Description TODO
     @function
@@ -1669,11 +1721,33 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                         self._clearNeedsDrawList();
                     }
                     if (drawLogger.isDebug) {
+                        // Detect any DOM modification since the previous draw
+                        var newSource = document.getElementsByTagName('html')[0].innerHTML;
+                        if (self._oldSource && newSource !== self._oldSource) {
+                            var warning = ["DOM modified outside of the draw loop"];
+                            var out = self._diff(self._oldSource.split("\n"), newSource.split("\n"));
+                            for (var i = 0; i < out.n.length; i++) {
+                                // == null ok. Is also checking for undefined
+                                if (out.n[i].text == null) {
+                                    warning.push('+ ' + out.n[i]);
+                                } else {
+                                    // == null ok. Is also checking for undefined
+                                    for (var n = out.n[i].row + 1; n < out.o.length && out.o[n].text == null; n++) {
+                                        warning.push('- ' + out.o[n]);
+                                    }
+                                }
+                            }
+                            console.warn(warning.join("\n"));
+                        }
+
                         console.group((timestamp ? drawLogger.toTimeString(new Date(timestamp)) + " " : "") + "Draw Fired");
                     }
+
                     self.drawIfNeeded();
+
                     if (drawLogger.isDebug) {
                         console.groupEnd();
+                        self._oldSource = document.getElementsByTagName('html')[0].innerHTML;
                     }
                     self._frameTime = null;
                     if (self._scheduleComposerRequest) {
