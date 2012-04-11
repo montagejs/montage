@@ -10,6 +10,73 @@ var Montage = require("montage").Montage,
 
 var Flow = exports.Flow = Montage.create(Component, {
 
+    _splinePaths: {
+        enumerable: false,
+        value: null
+    },
+
+    splinePaths: {
+        enumerable: false,
+        get: function () {
+            if (!this._splinePaths) {
+                this._splinePaths = [];
+            }
+            return this._splinePaths;
+        },
+        set: function (value) {
+            this._splinePaths = value;
+        }
+    },
+
+    appendPath: {
+        value: function (path) {
+            var splinePath = Object.create(FlowBezierSpline),
+                pathKnots = path.knots,
+                length = path.knots.length,
+                knots = [],
+                nextHandlers = [],
+                previousHandlers = [],
+                densities = [],
+                i;
+
+            for (i = 0; i < length; i++) {
+                knots[i] = pathKnots[i].knotPosition;
+                previousHandlers[i] = pathKnots[i].previousHandlerPosition;
+                nextHandlers[i] = pathKnots[i].nextHandlerPosition;
+                densities[i] = pathKnots[i].previousDensity; // TODO: implement previous/next density
+                // TODO: add rotations, arbitrary CSS and units
+            }
+            splinePath.knots = knots;
+            splinePath.previousHandlers = previousHandlers;
+            splinePath.nextHandlers = nextHandlers;
+            splinePath.densities = densities;
+            this.splinePaths.push(splinePath);
+            this._paths.push(path);
+        }
+    },
+
+    _paths: {
+        enumerable: false,
+        value: null
+    },
+
+    paths: { // TODO: listen for changes?
+        get: function () {
+            return this._paths;
+        },
+        set: function (value) {
+            var length = value.length,
+                i;
+
+            if (length) {
+                this._paths = [];
+                for (i = 0; i < length; i++) {
+                    this.appendPath(value[i]);
+                }
+            }
+        }
+    },
+
     _cameraPosition: {
         enumerable: false,
         value: [0, 0, 800]
@@ -76,21 +143,6 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    _splinePath: {
-        enumerable: false,
-        value: null
-    },
-
-    splinePath: {
-        get: function () {
-            return this._splinePath;
-        },
-        set: function (value) {
-            this._splinePath = value;
-            this.needsDraw = true;
-        }
-    },
-
     _scrollingTransitionDurationMiliseconds: {
         enumerable: false,
         value: 500
@@ -135,6 +187,25 @@ var Flow = exports.Flow = Montage.create(Component, {
     _scrollingTransitionTimingFunction: {
         enumerable: false,
         value: "ease"
+    },
+
+    hasSelectedIndexScrolling: {
+        enumerable: false,
+        value: false
+    },
+
+    selectedIndexScrollingOffset: {
+        enumerable: false,
+        value: 0
+    },
+
+    _handleSelectedIndexesChange: {
+        enumerable: false,
+        value: function (event) {
+            if (this.hasSelectedIndexScrolling && event._plus) {
+                this.startScrollingIndexToOffset(event._plus[0], this.selectedIndexScrollingOffset);
+            }
+        }
     },
 
     _timingFunctions: {
@@ -263,7 +334,7 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     _elementsBoundingSphereRadius: {
         enumerable: false,
-        value: 142
+        value: 150
     },
 
     elementsBoundingSphereRadius: {
@@ -359,9 +430,8 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     _computeVisibleRange: { // TODO: make it a loop, optimize
         enumerable: false,
-        value: function () {
-            var spline = this._splinePath,
-                splineLength = spline.knotsLength - 1,
+        value: function (spline) {
+            var splineLength = spline.knotsLength - 1,
                 planeOrigin = this._cameraPosition,
                 normals = this._computeFrustumNormals(),
                 mod,
@@ -456,9 +526,6 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function () {
             var self = this;
 
-            if (!this._splinePath) {
-                this.splinePath = Object.create(FlowBezierSpline);
-            }
             this._repetitionComponents = this._repetition._childComponents;
             window.addEventListener("resize", function () {
                 self._isCameraUpdated = true;
@@ -502,13 +569,49 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _updateIndexMap2: {
+        enumerable: false,
+        value: function (currentIndexMap, newIndexes) {
+            var indexMap = currentIndexMap.slice(0, currentIndexMap.length),
+                newIndexesHash = {},
+                emptySpaces = [],
+                j,
+                i;
+
+            for (i = 0; i < newIndexes.length; i++) {
+                newIndexesHash[newIndexes[i]] = i;
+            }
+            for (i = 0; i < indexMap.length; i++) {
+                if (newIndexesHash.hasOwnProperty(indexMap[i])) {
+                    newIndexes[newIndexesHash[indexMap[i]]] = null;
+                } else {
+                    emptySpaces.push(i);
+                }
+            }
+            for (i = j = 0; (j < emptySpaces.length) && (i < newIndexes.length); i++) {
+                if (newIndexes[i] !== null) {
+                    indexMap[emptySpaces[j]] = newIndexes[i];
+                    j++;
+                }
+            }
+            for (j = indexMap.length; i < newIndexes.length; i++) {
+                if (newIndexes[i] !== null) {
+                    indexMap[j] = newIndexes[i];
+                    j++;
+                }
+            }
+            return indexMap;
+        }
+    },
+
     willDraw: {
         enumerable: false,
         value: function () {
             var newIndexMap = [],
                 intersections,
                 i,
-                j;
+                j,
+                tmp;
 
             if (this._isTransitioningScroll) {
                 var time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds, // TODO: division by zero
@@ -521,15 +624,18 @@ var Flow = exports.Flow = Montage.create(Component, {
                     this._isTransitioningScroll = false;
                 }
             }
-            intersections = this._computeVisibleRange();
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
+            intersections = this._computeVisibleRange(this.splinePaths[0]);
             for (i = 0; i < intersections.length; i++) {
                 for (j = Math.ceil(intersections[i][0] + this._origin); j < intersections[i][1] + this._origin; j++) {
                     newIndexMap.push(j);
                 }
             }
-            this._repetition.indexMap = this._updateIndexMap(this._repetition.indexMap, newIndexMap);
+            tmp = this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
+            if (this._repetition.indexMap.join("-") !== tmp.join("-")) {
+                this._repetition.indexMap = tmp;
+            }
         }
     },
 
@@ -569,18 +675,18 @@ var Flow = exports.Flow = Montage.create(Component, {
                     "translate3d(" + (-this.cameraPosition[0]) + "px, " + (-this.cameraPosition[1]) + "px, " + (-this.cameraPosition[2]) + "px)";
                 this._isCameraUpdated = false;
             }
-            if (this._splinePath) {
-                this._splinePath._computeDensitySummation(); // TODO: This should not be done per frame
+            if (this.splinePaths.length) { // TODO: implement multiple paths
+                this._splinePaths[0]._computeDensitySummation(); // TODO: This should not be done per frame
                 for (i = 0; i < length; i++) {
-                    iStyle = this._repetitionComponents[i].element.style;
                     iOffset = this._offset.value(this._repetition.indexMap[i]);
                     slide.index = this._repetition.indexMap[i];
                     slide.time = iOffset.time;
                     slide.speed = iOffset.speed;
-                    pos = this._splinePath.getPositionAtTime(slide.time);
+                    pos = this._splinePaths[0].getPositionAtTime(slide.time);
                     if (pos) {
-                        if (iStyle.display !== "block") {
-                            iStyle.display = "block";
+                        iStyle = this._repetitionComponents[i].element.parentNode.style;
+                        if (iStyle.opacity == 0) {
+                            iStyle.opacity = 1;
                         }
                         transform = "translate3d(" + pos[0] + "px," + pos[1] + "px," + pos[2] + "px) ";
                         transform += (typeof pos[3].rotateZ !== "undefined") ? "rotateZ(" + pos[3].rotateZ + ") " : "";
@@ -590,14 +696,17 @@ var Flow = exports.Flow = Montage.create(Component, {
                         delete pos[3].rotateX;
                         delete pos[3].rotateY;
                         delete pos[3].rotateZ;
+                        iStyle = this._repetitionComponents[i].element.style;
                         for (j in pos[3]) {
                             if ((pos[3].hasOwnProperty(j)) && (iStyle[j] !== pos[3][j])) {
                                 iStyle[j] = pos[3][j];
                             }
                         }
                     } else {
-                        if (iStyle.display !== "none") {
-                            iStyle.display = "none";
+                        iStyle = this._repetitionComponents[i].element.parentNode.style;
+                        if (iStyle.opacity != 0) {
+                            iStyle.opacity = 0;
+                            iStyle.webkitTransform = "scale3d(0, 0, 0)";
                         }
                     }
                 }
@@ -605,11 +714,55 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    /////////////////////////////// Almost Copy/Pasted from List ///////////////////////////
+    /////////////////////////////// Repetition ///////////////////////////
 
     _orphanedChildren: {
         enumerable: false,
         value: null
+    },
+
+    _selectedIndexesForRepetition: {
+        enumerable: false,
+        value: null
+    },
+
+    selectedIndexes: {
+        get: function () {
+            if (this._repetition) {
+                return this._repetition.selectedIndexes;
+            } else {
+                return this._selectedIndexesForRepetition;
+            }
+        },
+        set: function (value) {
+            if (this._repetition) {
+                this._repetition.selectedIndexes = value;
+            } else {
+                this._selectedIndexesForRepetition = value;
+            }
+        }
+    },
+
+    _activeIndexesForRepetition: {
+        enumerable: false,
+        value: null
+    },
+
+    activeIndexes: {
+        get: function () {
+            if (this._repetition) {
+                return this._repetition.activeIndexes;
+            } else {
+                return this._activeIndexesForRepetition;
+            }
+        },
+        set: function (value) {
+            if (this._repetition) {
+                this._repetition.activeIndexes = value;
+            } else {
+                this._activeIndexesForRepetition = value;
+            }
+        }
     },
 
     _objectsForRepetition: {
@@ -618,7 +771,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     objects: {
-        enumerable: false,
         get: function() {
             if (this._repetition) {
                 return this._repetition.objects;
@@ -641,7 +793,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     contentController: {
-        enumerable: false,
         get: function() {
             if (this._repetition) {
                 return this._repetition.contentController;
@@ -664,7 +815,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     isSelectionEnabled: {
-        enumerable: false,
         get: function() {
             if (this._repetition) {
                 return this._repetition.isSelectionEnabled;
@@ -707,7 +857,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     _repetitionDraw: {
         enumerable: false,
         value: function () {
-            this.needsDraw = true;  // TODO: Review this causing continous redraw
+           // this.needsDraw = true;  // TODO: Review this causing continous redraw
         }
     },
 
@@ -716,6 +866,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             var orphanedFragment,
                 currentContentRange = this.element.ownerDocument.createRange(),
                 oldRepetitionDraw = this._repetition.draw,
+                wrapper,
                 self = this;
 
             this._repetition.draw = function () {
@@ -724,7 +875,8 @@ var Flow = exports.Flow = Montage.create(Component, {
             };
             currentContentRange.selectNodeContents(this.element);
             orphanedFragment = currentContentRange.extractContents();
-            this._repetition.element.appendChild(orphanedFragment);
+            wrapper = this._repetition.element.appendChild(document.createElement("div"));
+            wrapper.appendChild(orphanedFragment);
             this._repetition.indexMap = [];
             this._repetition.childComponents = this._orphanedChildren;
             this._repetition.needsDraw = true;
@@ -740,6 +892,17 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._repetition.isSelectionEnabled = this._isSelectionEnabledForRepetition;
                 this._isSelectionEnabledForRepetition = null;
             }
+            if (this._selectedIndexesForRepetition !== null) {
+                this._repetition.selectedIndexes = this._selectedIndexesForRepetition;
+                this._selectedIndexesForRepetition = null;
+            }
+            if (this._activeIndexesForRepetition !== null) {
+                this._repetition.activeIndexes = this._activeIndexesForRepetition;
+                this._activeIndexesForRepetition = null;
+            }
+            this._repetition.addEventListener("change@selectedIndexes", function (event) {
+                self._handleSelectedIndexesChange.call(self, event);
+            }, false);
         }
     },
 
@@ -1006,7 +1169,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 }
             }
             this._origin = value;
-            this._translateComposer.translateX = value * 300;
+            this._translateComposer.translateX = value * 300; // TODO Remove magic/spartan numbers
             this.needsDraw = true;
         }
     },

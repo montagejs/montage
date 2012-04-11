@@ -21,7 +21,8 @@
                 "prototype": "montage/ui/composer/translate-composer",
                 "properties": {
                     "component": {"@": "owner"},
-                    "maxTranslateX": 250000
+                    "maxTranslateX": 250000,
+                    "invertAxis": true
                 },
                 "bindings": {
                     "element": {"<-": "@owner._element"}
@@ -41,7 +42,11 @@
                     }
                 },
                 "bindings": {
-                    "translateX": {"<-": "@translateComposer.translateX"}
+                    "translateX": {"<-": "@translateComposer.translateX"},
+                    "isSelectionEnabled": {
+                        "boundObject": {"@": "repetition"},
+                        "boundObjectPropertyPath": "isSelectionEnabled"
+                    }
                 }
             }
         }
@@ -61,8 +66,17 @@
             -webkit-transform-style: preserve-3d;
             -webkit-transform: translateZ(0);
         }
-        .montage-flow-repetition > * {
-            position: absolute !important;
+        .montage-flow-repetition > div {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            -webkit-transform: translateZ(0);
+            -webkit-transform-style: preserve-3d;
+        }
+        .montage-flow-pointer-events-none {
+            pointer-events: none;
         }
     </style>
 </head>
