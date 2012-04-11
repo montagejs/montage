@@ -1,3 +1,28 @@
+# v0.9.0
+
+-   **Draw  cycle changes**
+
+    ...
+
+-   **Components**
+
+    Autocomplete Textfield Added
+        ...
+
+    Popup
+        Support HTMLElement and Montage Component for the anchor property
+        Change willPositionPopup(popup, anchor, anchorPosition) to willPosition(popup, defaultPosition).
+        Change autoDismiss to autoHide
+        Support autoHide only for non-modal popups
+        Support string values (eg: 20px, 30%) for position parameters. If a number is provided, default to 'px'.
+
+-   **Template**
+
+    ``instantiateWithDocument(document, callback)`` method is added to use plain html templates without an owner.
+
+    Backwards compatibility for id attribute based references in serilization is removed, you should now use the
+    data-montage-id attribute.
+
 # v0.8.0
 
 -   **Data binding shorthand in serializations**
@@ -85,13 +110,13 @@
 
 # v0.7.0
 
--   Adding `ownerComponent` property to the Component.
+-   **Adding `ownerComponent` property to the Component.**
     When the template is deserialized we populate the ownerComponent property of any component created within it's
     serialization with the owner of the template.
--   Adding `setElementWithParentComponent` function on the Component.
+-   **Adding `setElementWithParentComponent` function on the Component.**
     This formalizes the API to set a detached element to a component. The caller is responsible for appending the
     element to the DOM before prepareForDraw is called on the callee.
--   Serialization changes
+-   **Serialization changes**
     -   Specifying types and references
         1.  Changed the way we specify an object by merging the module id and the name into only one string using
             `"<module>[<name>]"` (e.g.: `"montage/ui/button.reel[Button]"`). When the name matches the last part of the module
@@ -127,7 +152,7 @@
                 ```
     -   Serialization labels are now used as the value of the identifier property by default.
 
--   Properties with a leading underscore in their name are now {enumerable: false} by default.
+-   **Properties with a leading underscore in their name are now {enumerable: false} by default.**
     i.e. defining a property as
         ```javascript
         _name: {value: null}
@@ -136,12 +161,12 @@
         ```javascript
         _name: {value: null, enumerable:false}
         ```
--   Components
+-   **Components**
     -   Repetition: Adding indexMap property to provide the necessary underpinnings for large data handling.
     -   SelectInput: Adding values and value property to be able to bind directly to the value of the selected option(s)
     -   Scroller: Replaces Scrollview. Now uses the Translate composer.
     -   Scrollview: _deprecated_
--   Browser Support
+-   **Browser Support**
     -   Better support for Firefox
     -   Better support for Opera
 
