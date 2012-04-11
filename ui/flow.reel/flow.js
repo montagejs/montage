@@ -50,6 +50,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             splinePath.previousHandlers = previousHandlers;
             splinePath.nextHandlers = nextHandlers;
             splinePath.densities = densities;
+            splinePath._computeDensitySummation();
             this.splinePaths.push(splinePath);
             this._paths.push(path);
         }
@@ -626,15 +627,17 @@ var Flow = exports.Flow = Montage.create(Component, {
             }
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
-            intersections = this._computeVisibleRange(this.splinePaths[0]);
-            for (i = 0; i < intersections.length; i++) {
-                for (j = Math.ceil(intersections[i][0] + this._origin); j < intersections[i][1] + this._origin; j++) {
-                    newIndexMap.push(j);
+            if (this.splinePaths.length) {
+                intersections = this._computeVisibleRange(this.splinePaths[0]);
+                for (i = 0; i < intersections.length; i++) {
+                    for (j = Math.ceil(intersections[i][0] + this._origin); j < intersections[i][1] + this._origin; j++) {
+                        newIndexMap.push(j);
+                    }
                 }
-            }
-            tmp = this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
-            if (this._repetition.indexMap.join("-") !== tmp.join("-")) {
-                this._repetition.indexMap = tmp;
+                tmp = this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
+                if (this._repetition.indexMap.join("-") !== tmp.join("-")) {
+                    this._repetition.indexMap = tmp;
+                }
             }
         }
     },
@@ -676,7 +679,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._isCameraUpdated = false;
             }
             if (this.splinePaths.length) { // TODO: implement multiple paths
-                this._splinePaths[0]._computeDensitySummation(); // TODO: This should not be done per frame
                 for (i = 0; i < length; i++) {
                     iOffset = this._offset.value(this._repetition.indexMap[i]);
                     slide.index = this._repetition.indexMap[i];

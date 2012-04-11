@@ -1,0 +1,44 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+.montage-google-picasa-carousel {
+    width: 100%;
+    height: 100%;
+	display: -webkit-box;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+	display: -moz-box;
+	-moz-box-pack: center;
+	-moz-box-align: center;
+	display: -ms-box;
+	-ms-box-pack: center;
+	-ms-box-align: center;
+	display: box;
+	box-pack: center;
+	box-align: center;
+
+}
+
+.montage-google-picasa-carousel .flow {
+    width: 100%;
+    height: 100%;
+/*            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+*/           
+            background: -webkit-gradient(linear, left top, left bottom, from(#666), to(#bbb));
+}
+.image {
+            position: absolute;
+/*            -top: 50%;
+*/            -webkit-box-shadow: 0 0 35px rgba(0,0,0,.5);
+}
+
+.montage-google-picasa-carousel .flow .montage-flow-repetition {
+margin: 10% 0;
+
+}
+    </style>
