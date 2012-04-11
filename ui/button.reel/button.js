@@ -316,9 +316,13 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
                 }
             }
 
-            this._element.addEventListener("keyup", this, false);
-
             this.needsDraw = true;
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            this._element.addEventListener("keyup", this, false);
         }
     },
 
