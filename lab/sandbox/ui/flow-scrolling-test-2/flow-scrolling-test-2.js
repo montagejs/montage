@@ -1,6 +1,6 @@
 var Montage = require("montage").Montage;
 
-exports.FlowScrollingTest = Montage.create(Montage, {
+exports.FlowScrollingTest2 = Montage.create(Montage, {
 
     index: {
         value: 10
