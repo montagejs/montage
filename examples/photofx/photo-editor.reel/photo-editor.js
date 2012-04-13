@@ -450,14 +450,7 @@ exports.PhotoEditor = Montage.create(Component, {
         get: function() {
             return this._isShowingPointMonitors;
         },
-        set: function(value) {
-            if (value === this._isShowingPointMonitors) {
-                return;
-            }
-
-            this._isShowingPointMonitors = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_isShowingPointMonitors")
     },
 
     willDraw: {

@@ -41,14 +41,7 @@ exports.SearchPanel = Montage.create(Component, {
         get: function() {
             return this._isSearching;
         },
-        set: function(value) {
-            if (value === this._isSearching) {
-                return;
-            }
-
-            this._isSearching = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_isSearching")
     },
 
     handleSearchFormSubmit: {

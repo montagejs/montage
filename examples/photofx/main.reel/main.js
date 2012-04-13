@@ -147,13 +147,7 @@ exports.Main = Montage.create(Component, {
         get: function() {
             return this._showControls;
         },
-        set: function(value) {
-            if (value === this._showControls) {
-                return;
-            }
-            this._showControls = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_showControls")
     },
 
     handleDragenter: {
@@ -235,13 +229,7 @@ exports.Main = Montage.create(Component, {
         get: function() {
             return this._willingToAcceptDrop;
         },
-        set: function(value) {
-            if (value === this._willingToAcceptDrop) {
-                return;
-            }
-            this._willingToAcceptDrop = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_willingToAcceptDrop")
     },
 
     handleBeforeunload: {
