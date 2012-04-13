@@ -301,6 +301,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             if (this._isComponentExpanded) {
                 this._refreshItems();
+
+                // Draw to refresh selected/active classnames that may still be on elements
+                // no longer representing what is actually selected/active
+                this.needsDraw = true;
             }
 
             //TODO react to modifications to the indexMap?
