@@ -657,20 +657,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             return this._selectedIndexes;
         },
         set: function(value) {
-
-            if (!this._selectedIndexesToDeselectOnDraw) {
-                this._selectedIndexesToDeselectOnDraw = this.selectedIndexes ? this.selectedIndexes : [];
-            }
-
-            // Accumulate the indexes that were selected since the last time we drew
-            // Note this may mean we remove and re-add a selected class when we draw, but that should be quicker
-            // than trying to keep this list as accurate as possible
-            if (this.selectedIndexes || 0 === this.selectedIndexes) {
-                this._selectedIndexesToDeselectOnDraw = this._selectedIndexesToDeselectOnDraw.concat(this.selectedIndexes);
-            }
-
             this._selectedIndexes = value;
-
 
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
@@ -994,12 +981,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             doc = repetitionElement.ownerDocument,
             firstAddedIndex,
             selectionCount,
-            deselectionCount,
             rangeToRemove,
             iterationElements,
-            deselectableElementCount,
-            deactivateCount,
-            deactivatableElementCount,
             selectableElementCount,
             activatedCount,
             activatableElementCount,
@@ -1021,40 +1004,17 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             iterationElements = repetitionElement.children;
 
-            if (this._activeIndexesToClearOnDraw &&
-                this._activeIndexesToClearOnDraw.length > 0) {
-
-                deactivateCount = this._activeIndexesToClearOnDraw.length;
-                deactivatableElementCount = Math.min(deactivateCount, iterationElements.length);
-
-                for (i = 0; i < deactivateCount; i++) {
-                    iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._activeIndexesToClearOnDraw[i]): this._activeIndexesToClearOnDraw[i]));
-                    if (iterationElement) {
-                        iterationElement.classList.remove("active");
-                    }
+            // NOTE Might be a bit excessive, but with the idea that the repetition will have a reasonable amount
+            // of elements given the indexMap support I'll start with this
+            // Wipe-out selection related classnames throughout the repetition to ensure a clean slate
+            for (i = 0; i < iterationElements.length; i++) {
+                iterationElement = iterationElements.item(i);
+                if (iterationElement) {
+                    iterationElement.classList.remove("active");
+                    iterationElement.classList.remove("selected");
                 }
-
-                this._activeIndexesToClearOnDraw = [];
             }
-
-            if (this._selectedIndexesToDeselectOnDraw &&
-                this._selectedIndexesToDeselectOnDraw.length > 0) {
-
-                deselectionCount = this._selectedIndexesToDeselectOnDraw.length;
-                deselectableElementCount = Math.min(deselectionCount, iterationElements.length);
-
-                for (i = 0; i < deselectableElementCount; i++) {
-                    iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._selectedIndexesToDeselectOnDraw[i]): this._selectedIndexesToDeselectOnDraw[i]));
-                    if (iterationElement) {
-                        iterationElement.classList.remove("selected");
-                    }
-                }
-
-                this._selectedIndexesToDeselectOnDraw = [];
-            }
-
         }
-
 
         // Remove items pending removal
         if (this._itemsToRemove.length && this._itemsToRemove.length > 0) {

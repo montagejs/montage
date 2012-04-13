@@ -704,6 +704,14 @@ var Flow = exports.Flow = Montage.create(Component, {
                                 iStyle[j] = pos[3][j];
                             }
                         }
+
+                        // TODO we should only need to do this whenever we know previously shown elements are going
+                        // to be used again and that the repetition had no need to redraw, I'm assuming
+                        // we might not end up being that precise and call this more than needed
+                        // but right now we're calling it a lot and I'm sure this is not the best place for it in
+                        // general
+                        this._repetition.needsDraw = true;
+
                     } else {
                         iStyle = this._repetitionComponents[i].element.parentNode.style;
                         if (iStyle.opacity != 0) {
@@ -912,7 +920,7 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     // TODO: rename isAnimating and animationInterval to elasticAnimation
 
-    isAnimating: { 
+    isAnimating: {
         enumerable: false,
         value: false
     },
