@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "prototype": "components/token-field-example.reel",
+                    "properties": {
+                        "element": {"#": "token-field-example"}
+                    }
+                },
+
+                "state": {
+                    "prototype": "montage/ui/token-field.reel",
+                    "properties": {
+                        "element": {"#": "state"},
+                        "identifier": "state",
+                        "delegate": {"@": "owner"},
+                        "tokens": ["California", "Nevada", "Oregon", "North Carolina", "South Carolina", "West Virginia"]
+                    },
+                    "bindings": {
+                        "value": {"<<->": "@owner.states"}
+                    }
+                },
+
+                "members": {
+                    "prototype": "montage/ui/token-field.reel",
+                    "properties": {
+                        "element": {"#": "members"},
+                        "identifier": "members",
+                        "minLength": 2,
+                        "delegate": {"@": "owner"}
+                    },
+                    "bindings": {
+                        "value": {"<<->": "@owner.members"}
+                    }
+                },
+
+                "update": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "update"},
+                        "identifier": "update"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
+                },
+                "echo": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "echo"}
+                    },
+                    "bindings": {
+                        "value": {"<-": "@owner.json"}
+                    }
+                },
+                "tokenFieldAccordion1": {
+                    "prototype": "accordion.reel",
+                    "properties": {
+                        "element": {"#": "token-field-accordion1"}
+                    }
+                }
+            }
+        </script>
+
+        <style>
+            .token-field-example div#echo {
+                border: 0;
+                width: 300px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div id="token-field-example" class="token-field-example">
+
+            <div class="row">
+                <div class="span8">
+                    <h3>Token Field</h3>
+                    <p>
+                        The Token Field component wraps an HTML <code>&lt;Token Field></code> element.
+                    </p>
+                </div>
+            </div>
+
+            <h4>Demo</h4>
+            <div class="demo">
+
+                <form class="form-stacked">
+
+                     <label for="state">State: Suggestions from in-memory data</label>
+                     <div data-montage-id="state" style="width: 400px;"></div>
+
+                     <label for="members">Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).</label>
+                     <div data-montage-id="members" style="width: 400px;"></div>
+                     
+                     <div style="margin-top: 10px;">
+                          <button class="btn" id="update" type="button">Update</button>
+                     </div>
+
+                </form>
+
+                <div id="echo"></div>
+
+            </div>
+
+            <section>
+
+                                <ul id="token-field-accordion1" class="accordion">
+                                   <li class="accordion-group">
+                                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                       <div class="accordion-inner montage-hidden" >
+                                            <pre class="prettyprint" >
+&lt;div class="demo"&gt;<br>
+<br>
+&lt;form class="form-stacked"&gt;<br>
+<br>
+&lt;label for="state"&gt;State: Suggestions from in-memory data&lt;/label&gt;<br>
+&lt;input type="text" placeholder="Select the State" id="state" style="width: 300px;" /&gt;<br>
+<br>
+&lt;label for="members"&gt;Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).&lt;/label&gt;<br>
+&lt;input type="text" placeholder="Select members" id="members" style="width: 300px;" /&gt;<br>
+<br>
+&lt;div style="margin-top: 10px;"&gt;<br>
+&lt;button class="btn" id="update" type="button"&gt;Update&lt;/button&gt;<br>
+&lt;/div&gt;<br>
+<br>
+&lt;/form&gt;<br>
+<br>
+&lt;div id="echo"&gt;&lt;/div&gt;<br>
+<br>
+&lt;/div&gt;
+
+                                            </pre>
+                                       </div>
+                                   </li>
+                                   <li class="accordion-group">
+                                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                       <div class="accordion-inner montage-hidden">
+                                        <pre class="prettyprint" >
+{
+    "owner": {
+        "prototype": "components/token-field-example.reel",
+        "name": "TokenFieldExample",
+        "properties": {
+            "element": {"#": "token-field-example"}
+        },
+        "bindings": {
+            "info": {
+                "boundObject": {"@": "info"},
+                "boundObjectPropertyPath": "value"
+            },
+            "selectedStates": {"<-": "@state[tokens]"}
+        }
+    },
+
+    "state": {
+        "prototype": "montage/ui/token-field/token-field.reel",
+        "name": "TokenField",
+        "properties": {
+            "element": {"#": "state"},
+            "identifier": "state",
+            "delay": "1000",
+            "delegate": {"@": "owner"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "state",
+                "oneway": false
+            }
+        }
+    },
+
+    "members": {
+        "prototype": "montage/ui/token-field/token-field.reel",
+        "name": "TokenField",
+        "properties": {
+            "element": {"#": "members"},
+            "identifier": "members",
+            "minLength": 2,
+            "delegate": {"@": "owner"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "members",
+                "oneway": false
+            }
+        }
+    },
+
+    "update": {
+        "prototype": "montage/ui/button.reel",
+        "name": "Button",
+        "properties": {
+            "element": {"#": "update"},
+            "identifier": "update"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "echo": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "name": "DynamicText",
+        "properties": {
+            "element": {"#": "echo"}
+        },
+        "bindings": {
+            "value": {
+                "boundObject": {"@": "owner"},
+                "boundObjectPropertyPath": "json",
+                "oneway": "true"
+            }
+        }
+    }
+}
+                                        </pre>
+
+                                       </div>
+                                   </li>
+                                   <li class="accordion-group">
+                                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                       <div class="accordion-inner montage-hidden">
+                                           <pre class="prettyprint" >
+// Sample data for list of US States
+var states = [
+{name: "Alabama", code: "AL" },
+{name: "Alaska", code: "AK"},
+{name: "Arizona", code: "AZ"},
+{name: "Arkansas", code: "AR"},
+....
+{name: "Wyoming", code: "WY"}
+];
+
+exports.TokenFieldExample = Montage.create(Component, {
+
+   json: {value: null},
+   state: {value: null},
+   selectedStates: {value: null},
+   members: {value: null},
+   info: {value: null},
+
+   _cachedStates: {value: null},
+
+   stateShouldGetSuggestions: {
+       value: function(token-field, searchTerm) {
+           var results = [];
+           if(searchTerm) {
+               var term = searchTerm.toLowerCase();
+               if(this._cachedStates && this._cachedStates[term]) {
+                   results = this._cachedStates;
+               } else {
+                   results = states.filter(function(item) {
+                       // @todo - memoize
+                       return (item.name.toLowerCase().indexOf(term) >= 0 || item.code.indexOf(term) >= 0);
+                   });
+                   this._cachedStates = results;
+               }
+           }
+           token-field.suggestions = results.map(function(item) {
+               return item.name;
+           });
+       }
+   },
+
+   membersShouldGetSuggestions: {
+       value: function(token-field, searchTerm) {
+           var results = [];
+           // The data set is based on https://www.google.com/fusiontables/DataSource?docid=1QJT7Wi2oj5zBgjxb2yvZWA42iNPUvnvE8ZOwhA
+           // Google fusion tables # 383121. However Google's API returns a CSV. So need to use this app to convert to json
+           var query = "SELECT FirstName,LastName from 383121 where FirstName like '%" + searchTerm + "%'"; //" OR LastName like '%" + searchTerm + "%'";
+           var uri = 'http://ft2json.appspot.com/q?sql=' + encodeURIComponent(query);
+
+           console.log('searching ...', uri);
+           var xhr = request(uri, 'get');
+           xhr.onload = function(e) {
+              try {
+                  var data;
+                  data = JSON.parse(this.response).data;
+                  var result = [];
+                  if(data && data.length > 0) {
+                      result = data.map(function(item) {
+                          return item.FirstName + ' ' + item.LastName;
+                      });
+                  }
+                  token-field.suggestions = result;
+
+              } catch(e) {
+                  token-field.suggestions = [];
+              }
+
+           };
+           xhr.ontimeout = function() {
+              console.log('xhr timed out');
+              token-field.suggestions = [];
+           };
+           xhr.onerror = function(e) {
+               console.log('xhr errored out');
+              token-field.suggestions = [];
+           };
+
+       }
+   },
+
+   prepareForDraw: {
+       value: function() {
+           this.state = "Bar";
+       }
+   },
+
+   handleUpdateAction: {
+       value: function(event) {
+           console.log('data: ', this);
+           this.json = JSON.stringify({
+               state: this.state,
+               members: this.members
+           });
+       }
+   }
+});
+
+                                           </pre>
+                                       </div>
+                                   </li>
+                                </ul>
+            </section>
+
+            <section>
+                <a href="m-js/examples/sink/components/token-field-example.reel" target="_blank">View Demo Source</a>
+            </section>
+
+
+
+    </body>
+</html>
