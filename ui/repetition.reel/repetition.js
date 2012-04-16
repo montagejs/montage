@@ -304,11 +304,17 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                 // Draw to refresh selected/active classnames that may still be on elements
                 // no longer representing what is actually selected/active
+                this._indexMapChanged = true;
                 this.needsDraw = true;
             }
 
             //TODO react to modifications to the indexMap?
         }
+    },
+
+    _indexMapChanged: {
+        enumerable: false,
+        value: false
     },
 
  /**
@@ -990,7 +996,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             selectableElementCount,
             activatedCount,
             activatableElementCount,
-            iterationElement;
+            iterationElement,
+            indexMapChanged = this._indexMapChanged;
 
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
@@ -1016,8 +1023,21 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 if (iterationElement) {
                     iterationElement.classList.remove("active");
                     iterationElement.classList.remove("selected");
+
+                    if (indexMapChanged) {
+                        iterationElement.classList.add("no-transition");
+                    } else {
+                        iterationElement.classList.remove("no-transition");
+                    }
                 }
             }
+        }
+
+        // We've accounted for drawing given an indexMap change, schedule the next draw to clean up from that
+        // by re-enabling transitions
+        if (indexMapChanged) {
+            this._indexMapChanged = false;
+            this.needsDraw = true;
         }
 
         // Remove items pending removal
