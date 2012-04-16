@@ -17,31 +17,29 @@ div.token-field {
 div.token-field .token-list {
     display: inline;
 }
-div.token-field .token {
-    display: inline-block;
-    background: #1DA1D8;
-    border: 1px solid #057BAC;
-    padding: 2px;
-    margin: 2px 0px;
-    color: white;
-    vertical-align: middle;
-    cursor: default;
-    border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
+
+div.token-field .token-list .active {
+    border: 1px solid #ccc;
 }
-div.token-field input[type="text"] {
+
+div.token-field .token-list .selected {
+    border: 1px solid #000;
+}
+
+div.token-field input[type="text"].token-autocomplete {
     background: none;
-    border: 0;
+    border: 0px;
     height: 20px;
-    width: 20px;
+    width: 2px;
     padding: 0;
     outline: 0;
     -box-shadow: 0;
     -webkit-box-shadow: 0;
     -moz-box-shadow: 0;
+    -webkit-appearance: none;
+    -moz-appearance: none;
 }
-div.token-field input[type="text"]:focus {
+div.token-field input[type="text"].token-autocomplete:focus {
     width: 100%;
     border: 0;
 }
@@ -50,6 +48,6 @@ div.token-field .autocomplete-wrapper {
     min-width: 40%;
     display: inline-block;
     overflow: hidden;
-    margin: 1px 4px;
+    margin: 0px;
     vertical-align: middle;
 }

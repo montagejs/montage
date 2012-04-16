@@ -1,0 +1,28 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+.token {
+    display: inline-block;
+    background: #1DA1D8;
+    border: 1px solid #057BAC;
+    padding: 2px;
+    margin: 2px 0px;
+    color: white;
+    vertical-align: middle;
+    cursor: default;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+}
+
+.token .token-delete {
+    padding-left: 5px;
+    border-left: 1px solid #ccc;
+    cursor: pointer;
+}
+.token-delete :active {
+    color: #ccc;
+   
+}

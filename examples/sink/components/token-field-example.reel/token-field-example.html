@@ -12,25 +12,25 @@
                 "owner": {
                     "prototype": "components/token-field-example.reel",
                     "properties": {
-                        "element": {"#": "token-field-example"}
+                        "element": {"#": "token-field-example"},
+                        "states": ["California", "Nevada", "Oregon", "North Carolina", "South Carolina", "West Virginia"]
                     }
                 },
 
                 "state": {
-                    "prototype": "montage/ui/token-field.reel",
+                    "prototype": "montage/ui/token-field/token-field.reel",
                     "properties": {
                         "element": {"#": "state"},
                         "identifier": "state",
-                        "delegate": {"@": "owner"},
-                        "tokens": ["California", "Nevada", "Oregon", "North Carolina", "South Carolina", "West Virginia"]
+                        "delegate": {"@": "owner"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner.states"}
+                        "tokens": {"<<->": "@owner.states"}
                     }
                 },
 
                 "members": {
-                    "prototype": "montage/ui/token-field.reel",
+                    "prototype": "montage/ui/token-field/token-field.reel",
                     "properties": {
                         "element": {"#": "members"},
                         "identifier": "members",
@@ -38,7 +38,7 @@
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner.members"}
+                        "tokens": {"<<->": "@owner.members"}
                     }
                 },
 
@@ -103,7 +103,7 @@
 
                      <label for="members">Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).</label>
                      <div data-montage-id="members" style="width: 400px;"></div>
-                     
+
                      <div style="margin-top: 10px;">
                           <button class="btn" id="update" type="button">Update</button>
                      </div>

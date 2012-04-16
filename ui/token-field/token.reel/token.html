@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Token Template</title>
+    <link rel="stylesheet" type="text/css" href="token.css">
+
+    <script type="text/montage-serialization">
+{
+
+    "tokenText": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "token-text"}            
+        },
+        "bindings": {
+            "value": {"<-": "@owner.value"}
+        }
+    },
+    "tokenDelete": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "token-delete"},
+            "value": "X"
+        }
+    },
+
+    "owner": {
+        "prototype": "montage/ui/token-field/token.reel",
+        "properties": {
+            "element": {"#": "token"},
+            "deleteEl": {"#": "token-delete"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <span class="token" data-montage-id="token" >
+        <span class="token-text" data-montage-id="token-text"></span>
+        <span class="token-delete" data-montage-id="token-delete">X</span>
+    </span>
+</body>
+</html>

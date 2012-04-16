@@ -176,7 +176,7 @@ exports.TokenFieldExample = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
-            this.states = "Bar";
+
         }
     },
 

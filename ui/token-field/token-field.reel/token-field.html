@@ -9,14 +9,16 @@
 {
 
     "owner": {
-        "prototype": "montage/ui/token-field.reel",
+        "prototype": "montage/ui/token-field/token-field.reel",
         "properties": {
             "element": {"#": "token-field"},
             "autocomplete": {"@": "autocomplete"},
-            "tokenList": {"@": "tokenList"}
+            "tokenList": {"@": "tokenList"},
+            "tokensController": {"@": "tokensController"}
         },
         "bindings": {
-            "suggestedValue": {"<-": "@autocomplete.suggestedValue"}
+            "suggestedValue": {"<-": "@autocomplete.suggestedValue"},
+            "autocompleteValue": {"<-": "@autocomplete.value"}
         }
     },
     "tokensController": {
@@ -26,28 +28,30 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {"<-": "@owner.tokens"}
+            "content": {"<<->": "@owner.tokens"}
         }
     },
-    
+
     "tokenList": {
         "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {
                 "#": "token-list"
             },
+            "isSelectionEnabled": true,
             "contentController": {"@": "tokensController"},
             "orientation": "horizontal"
-        }        
+        }
     },
 
     "token": {
-        "prototype": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/token-field/token.reel",
         "properties": {
             "element": {"#": "token"}
         },
         "bindings": {
-            "value": {"<-": "@tokenList.objectAtCurrentIteration"}
+            "value": {"<-": "@tokenList.objectAtCurrentIteration"},
+            "tokensController": {"<-": "@tokenList.contentController"}
         }
     },
     "autocomplete": {
@@ -56,9 +60,8 @@
             "element": {"#": "autocomplete"},
             "identifier": "autocomplete",
             "delay": "500",
-            "value": "",
-            "delegate": {"@": "owner.delegate"}
-        }        
+            "value": ""
+        }
     }
 }
     </script>
@@ -67,10 +70,10 @@
 <body>
     <div data-montage-id="token-field" class="token-field">
         <div class="token-list" data-montage-id="token-list">
-            <span class="token" data-montage-id="token"></span>
+            <span data-montage-id="token"></span>
         </div>
         <span class="autocomplete-wrapper">
-            <input type="text" data-montage-id="autocomplete" class="token-autocomplete" tabindex="0" />
+            <input type="text" data-montage-id="autocomplete" class="token-autocomplete" tabindex="0" style="border: 0px;"/>
         </span>
     </div>
 
