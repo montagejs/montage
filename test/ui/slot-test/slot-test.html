@@ -12,30 +12,26 @@
     <script type="text/montage-serialization">{
 
     "slot1": {
-        "module": "montage/ui/slot.reel",
-        "name": "Slot",
+        "prototype": "montage/ui/slot.reel",
         "properties": {
             "element": {"#": "slot"}
         }
     },
     "slider1": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {"#": "slider"}
         }
     },
     "dynamictext1": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "componentInPageWithElement"},
             "value": "This is a component in the page with an element"
         }
     },
     "dynamictext2": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "sliderValue"}
         },
@@ -44,15 +40,13 @@
         }
     },
     "dynamictext3": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "value": "Hey there, I'm the foo component!"
         }
     },
     "photoviewer1": {
-        "module": "ui/slot-test/photo-viewer.reel",
-        "name": "PhotoViewer",
+        "prototype": "ui/slot-test/photo-viewer.reel",
         "properties": {
 
         },
@@ -61,8 +55,7 @@
         }
     },
     "videoviewer1": {
-        "module": "ui/slot-test/video-viewer.reel",
-        "name": "VideoViewer",
+        "prototype": "ui/slot-test/video-viewer.reel",
         "properties": {
 
         },
@@ -71,79 +64,69 @@
         }
     },
     "slider2": {
-        "module": "montage/ui/bluemoon/slider.reel",
-        "name": "Slider",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "value": 20
         }
     },
     "button1": {
-        "module": "montage/ui/bluemoon/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {"#": "componentWithNoElementButton"},
             "identifier": "componentWithNoElementButton"
         }
     },
     "button2": {
-        "module": "montage/ui/bluemoon/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {"#": "componentInPageWithElementButton"},
             "identifier": "componentInPageWithElementButton"
         }
     },
     "button3": {
-        "module": "montage/ui/bluemoon/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {"#": "barButton"},
             "identifier": "barButton"
         }
     },
     "button4": {
-        "module": "montage/ui/bluemoon/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {"#": "bazButton"},
             "identifier": "bazButton"
         }
     },
     "button5": {
-        "module": "montage/ui/bluemoon/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {"#": "quxButton"},
             "identifier": "quxButton"
         }
     },
     "button6": {
-        "module": "montage/ui/bluemoon/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {"#": "emptyButton"},
             "identifier": "emptyButton"
         }
     },
     "button7": {
-        "module": "montage/ui/bluemoon/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {"#": "videoButton"},
             "identifier": "videoButton"
         }
     },
     "button8": {
-        "module": "montage/ui/bluemoon/button.reel",
-        "name": "Button",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {"#": "photoButton"},
             "identifier": "photoButton"
         }
     },
     "test": {
-        "module": "ui/slot-test/slot-test",
-        "name": "SlotTest",
+        "prototype": "ui/slot-test/slot-test",
         "properties": {
             "element": {"#": "slotChooser"},
             "componentWithNoElement": {"@": "dynamictext3"},
@@ -165,8 +148,7 @@
         }
     },
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
         }

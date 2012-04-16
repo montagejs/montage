@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">{
 
             "owner": {
-                "module": "photo-info-panel.reel",
-                "name": "PhotoInfoPanel",
+                "prototype": "photo-info-panel.reel",
                 "properties": {
                     "element": {"#": "photoInfoPanel"},
                     "_dragProxy": {"#": "dragProxy"},
@@ -22,8 +21,7 @@
                 }
             },
             "title": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "title"}
                 },
@@ -32,8 +30,7 @@
                 }
             },
             "author": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "author"}
                 },
@@ -43,8 +40,7 @@
             },
 
             "thumbnailCondition": {
-                "module": "montage/ui/condition.reel",
-                "name": "Condition",
+                "prototype": "montage/ui/condition.reel",
                 "properties": {
                     "element": {"#": "thumbnailCondition"},
                     "removalStrategy": "hide"
@@ -53,19 +49,19 @@
                     "condition": {"<<->": "@owner.photo"}
                 }
             }
-        
+
     }</script>
 
 </head>
 <body>
 
-    <div id="photoInfoPanel" class="PhotoInfoPanel">
-        <div id="thumbnailCondition" class="thumbnail">
-            <img id="dragProxy" class="dragProxy">
-            <canvas id="canvas" class="canvas"></canvas>
+    <div data-montage-id="photoInfoPanel" class="PhotoInfoPanel">
+        <div data-montage-id="thumbnailCondition" class="thumbnail">
+            <img data-montage-id="dragProxy" class="dragProxy">
+            <canvas data-montage-id="canvas" class="canvas"></canvas>
         </div>
-        <h2 id="title" class="title text"></h2>
-        <p id="author" class="author text"></p>
+        <h2 data-montage-id="title" class="title text"></h2>
+        <p data-montage-id="author" class="author text"></p>
     </div>
 
 </body>

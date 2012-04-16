@@ -12,24 +12,21 @@
      <script type="text/montage-serialization">
 {
     "num1": {
-        "module": "montage/ui/number-input.reel",
-        "name": "NumberInput",
+        "prototype": "montage/ui/number-input.reel",
         "properties": {
             "element": {"#": "num1"}
         }
     },
 
     "num2": {
-        "module": "montage/ui/number-input.reel",
-        "name": "NumberInput",
+        "prototype": "montage/ui/number-input.reel",
         "properties": {
             "element": {"#": "num2"}
         }
     },
 
     "num3": {
-        "module": "montage/ui/number-input.reel",
-        "name": "NumberInput",
+        "prototype": "montage/ui/number-input.reel",
         "properties": {
             "element": {"#": "num3"},
             "accept": "",
@@ -59,16 +56,14 @@
     },
 
     "num4": {
-        "module": "montage/ui/number-input.reel",
-        "name": "NumberInput",
+        "prototype": "montage/ui/number-input.reel",
         "properties": {
             "element": {"#": "num4"}
         }
     },
 
     "scroller": {
-        "module": "montage/ui/scroller.reel",
-        "name": "Scroller",
+        "prototype": "montage/ui/scroller.reel",
         "properties": {
             "element": {"#": "scroller"}
         }
@@ -76,8 +71,7 @@
 
 
     "test": {
-        "module": "ui/number-input-test/number-input-test",
-        "name": "NumberInputTest",
+        "prototype": "ui/number-input-test/number-input-test",
         "properties": {
             "num1": {"@": "num1"},
             "num2": {"@": "num2"},
@@ -86,8 +80,7 @@
     },
 
     "application": {
-        "module": "montage/ui/application",
-        "name": "Application",
+        "prototype": "montage/ui/application",
         "properties": {
             "delegate": {"@": "test"}
 

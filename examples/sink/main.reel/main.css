@@ -1,7 +1,6 @@
-  .main-content h4,
-.main-content h5,
-.main-content h6 {
-    line-height: 36px;
+.main-content h4, .main-content h5
+{
+    line-height: 24px;
 }
 
 .container > footer p {

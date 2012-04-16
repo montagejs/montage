@@ -9,16 +9,14 @@
     <script type="text/montage-serialization">
         {
             "textfield1": {
-                "module": "ui/repetition/textfield.reel",
-                "name": "TextField",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield1"},
                     "text": "a component Y textfield"
                 }
             },
             "owner": {
-                "module": "ui/repetition/componenty.reel",
-                "name": "ComponentY",
+                "prototype": "ui/repetition/componenty.reel[ComponentY]",
                 "properties": {
                     "element": {"#": "componenty"}
                 }
@@ -27,9 +25,9 @@
     </script>
 </head>
 <body>
-    <div id="componenty">
+    <div data-montage-id="componenty">
         <h3>Component Y</h3>
-        <div id="textfield1"></div>
+        <div data-montage-id="textfield1"></div>
     </div>
 </body>
 </html>

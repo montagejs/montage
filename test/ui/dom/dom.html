@@ -14,15 +14,13 @@
     <script src="../../../montage.js" data-package="../../"></script>
     <script type="text/montage-serialization">{
         "application": {
-            "module": "montage/ui/application",
-            "name": "Application",
+            "prototype": "montage/ui/application",
             "properties": {
                 "delegate": {"@": "test"}
             }
         },
         "test": {
-            "module": "ui/dom/test",
-            "name": "Test",
+            "prototype": "ui/dom/test",
             "properties": {
                 "convertPoint1": {"#": "convertPoint1"},
                 "convertPoint2": {"#": "convertPoint2"},
@@ -36,8 +34,7 @@
             }
         },
         "pageLoaded": {
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "element": {"#": "text"},
                 "value": "Loaded"

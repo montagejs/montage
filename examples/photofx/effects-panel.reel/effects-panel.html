@@ -13,8 +13,7 @@
     <script type="text/montage-serialization">{
 
             "invertToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "invertToggle"},
                     "pressedClass": "success",
@@ -26,8 +25,7 @@
                 }
             },
             "desaturateToggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "desaturateToggle"},
                     "pressedClass": "success",
@@ -39,8 +37,7 @@
                 }
             },
             "multiplyControl": {
-                "module": "value-based-effect.reel",
-                "name": "ValueBasedEffect",
+                "prototype": "value-based-effect.reel",
                 "properties": {
                     "element": {"#": "multiplyControl"},
                     "name": "ON",
@@ -53,8 +50,7 @@
                 }
             },
             "colorInfoPanel": {
-                "module": "color-info-panel.reel",
-                "name": "ColorInfoPanel",
+                "prototype": "color-info-panel.reel",
                 "properties": {
                     "element": {"#": "colorInfoPanel"}
                 },
@@ -65,8 +61,7 @@
             },
 
             "photoInfoPanel": {
-                "module": "photo-info-panel.reel",
-                "name": "PhotoInfoPanel",
+                "prototype": "photo-info-panel.reel",
                 "properties": {
                     "element": {"#": "photoInfoPanel"}
                 },
@@ -76,26 +71,25 @@
             },
 
             "owner": {
-                "module": "effects-panel.reel",
-                "name": "EffectsPanel",
+                "prototype": "effects-panel.reel",
                 "properties": {
                     "element": {"#": "EffectsPanel"}
                 }
             }
-        
+
     }</script>
 
 </head>
 <body>
 
-    <div id="EffectsPanel" class="EffectsPanel">
+    <div data-montage-id="EffectsPanel" class="EffectsPanel">
         <ul class="effectsList">
-            <li>Invert Colors<button id="invertToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
-            <li>Desaturate<button id="desaturateToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
-            <li>Multiply<div id="multiplyControl" class=""></div></li>
+            <li>Invert Colors<button data-montage-id="invertToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
+            <li>Desaturate<button data-montage-id="desaturateToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
+            <li>Multiply<div data-montage-id="multiplyControl" class=""></div></li>
         </ul>
-        <div id="colorInfoPanel"></div>
-        <div id="photoInfoPanel"></div>
+        <div data-montage-id="colorInfoPanel"></div>
+        <div data-montage-id="photoInfoPanel"></div>
     </div>
 
 </body>

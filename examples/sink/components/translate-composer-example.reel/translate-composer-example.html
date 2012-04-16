@@ -20,8 +20,7 @@
         },
         "bindings": {
             "axis": {"<-": "@axisSelect.value"},
-            "hasMomentum": {"<<->": "@checkboxMomentum.checked"},
-            "hasBouncing": {"<<->": "@checkboxBouncing.checked"}
+            "hasMomentum": {"<<->": "@checkboxMomentum.checked"}
         }
     },
 
@@ -61,14 +60,6 @@
         }
     },
 
-    "checkboxBouncing": {
-        "prototype": "montage/ui/checkbox.reel",
-        "properties": {
-            "element": {"#": "checkboxBouncing"},
-            "checked": true
-        }
-    },
-
     "xvalue": {
         "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
@@ -89,8 +80,7 @@
         }
     },
     "translateAccordion1": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "translateAccordion1"}
         }
@@ -127,12 +117,12 @@
 
 </head>
 <body>
-        <div id="example-div">
+        <div data-montage-id="example-div">
         <div class="row ">
             <div class="span12">
                 <h3>TranslateComposer</h3>
                 <p class="">
-                    The TranslateComposer listens for touch/mouse events on an element or component and then calculates properties based on the mouse movement, such as momentum and bounce. You can then bind these calculated properties to another element or component, such as a slider control, for example.The following example uses the TranslateComposer to drag an element around the screen.
+                    The TranslateComposer listens for touch/mouse events on an element or component and then calculates properties based on the mouse movement, such as momentum. You can then bind these calculated properties to another element or component, such as a slider control, for example.The following example uses the TranslateComposer to drag an element around the screen.
                 </p>
             </div>
         </div>
@@ -142,24 +132,21 @@
 </div>
 <div class="controls">
     Axis:
-    <select id="axis" required>
+    <select data-montage-id="axis" required>
         <option value="both" selected="true">Both</option>
         <option value="horizontal" >Horizontal</option>
         <option value="vertical">Vertical</option>
     </select>
     <div>
-        <label for="cb1"><input type="checkbox" data-montage-id="checkboxMomentum" id="cb1" /> Momentum </label>
+        <label for="cb1"><input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" /> Momentum </label>
     </div>
-    <div>
-        <label for="cb2"><input type="checkbox" data-montage-id="checkboxBouncing" id="cb2" /> Bouncing </label>
-    </div>
-    <code>translateX: <span id="x_value"></span></code>
-    <code>translateY: <span id="y_value"></span></code>
+    <code>translateX: <span data-montage-id="x_value"></span></code>
+    <code>translateY: <span data-montage-id="y_value"></span></code>
 </div><!-- / -->
             <div class="clear"></div>
             </div>
                     <section>
-                       <ul id="translateAccordion1" class="accordion">
+                       <ul data-montage-id="translateAccordion1" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
@@ -169,19 +156,16 @@
 &lt;/div&gt;
 &lt;div class="controls"&gt;
     Axis:
-    &lt;select id="axis" required&gt;
+    &lt;select data-montage-id="axis" required&gt;
         &lt;option value="both" selected="true"&gt;Both&lt;/option&gt;
         &lt;option value="horizontal" &gt;Horizontal&lt;/option&gt;
         &lt;option value="vertical"&gt;Vertical&lt;/option&gt;
     &lt;/select&gt;
     &lt;div&gt;
-        &lt;label for="cb1"&gt;&lt;input type="checkbox" data-montage-id="checkboxMomentum" id="cb1" /&gt; Momentum &lt;/label&gt;
+        &lt;label for="cb1"&gt;&lt;input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" /&gt; Momentum &lt;/label&gt;
     &lt;/div&gt;
-    &lt;div&gt;
-        &lt;label for="cb2"&gt;&lt;input type="checkbox" data-montage-id="checkboxBouncing" id="cb2" /&gt; Bouncing &lt;/label&gt;
-    &lt;/div&gt;
-    &lt;code&gt;translateX: &lt;span id="x_value"&gt;&lt;/span&gt;&lt;/code&gt;
-    &lt;code&gt;translateY: &lt;span id="y_value"&gt;&lt;/span&gt;&lt;/code&gt;
+    &lt;code&gt;translateX: &lt;span data-montage-id="x_value"&gt;&lt;/span&gt;&lt;/code&gt;
+    &lt;code&gt;translateY: &lt;span data-montage-id="y_value"&gt;&lt;/span&gt;&lt;/code&gt;
 &lt;/div&gt;
                                 </pre>
                                 </div>
@@ -192,8 +176,7 @@
                                     <pre class="prettyprint">
 {
     "translate_composer": {
-        "module": "montage/ui/composer/translate-composer",
-        "name": "TranslateComposer",
+        "prototype": "montage/ui/composer/translate-composer",
         "properties": {
             "component": {"@": "example"},
             "maxTranslateX": 350,
@@ -202,8 +185,7 @@
         },
         "bindings": {
             "axis": {"&lt;-": "@axisSelect.value"},
-            "hasMomentum": {"&lt;&lt;-&gt;": "@checkboxMomentum.checked"},
-            "hasBouncing": {"&lt;&lt;-&gt;": "@checkboxBouncing.checked"}
+            "hasMomentum": {"&lt;&lt;-&gt;": "@checkboxMomentum.checked"}
         }
     },
 
@@ -217,8 +199,7 @@
     },
 
     "owner": {
-        "module": "components/translate-composer-example.reel",
-        "name": "TranslateComposerExample",
+        "prototype": "components/translate-composer-example.reel",
         "properties": {
             "element": {"#": "example-div"},
             "translate_composer": {"@": "translate_composer"},
@@ -245,14 +226,6 @@
         }
     },
 
-    "checkboxBouncing": {
-        "prototype": "montage/ui/checkbox.reel",
-        "properties": {
-            "element": {"#": "checkboxBouncing"},
-            "checked": true
-        }
-    },
-
     "xvalue": {
         "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
@@ -273,8 +246,7 @@
         }
     },
     "translateAccordion1": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "translateAccordion1"}
         }

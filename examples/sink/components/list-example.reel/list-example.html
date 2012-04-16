@@ -24,8 +24,7 @@
     },
 
     "verticalList": {
-        "module": "montage/ui/list.reel",
-        "name": "List",
+        "prototype": "montage/ui/list.reel",
         "properties": {
             "element": {
                 "#": "v-list"
@@ -72,8 +71,7 @@
     },
 
     "vlistThumb": {
-        "module": "montage/ui/image.reel",
-        "name": "Image",
+        "prototype": "montage/ui/image.reel",
         "properties": {
             "element": {"#": "thumb"}
         },
@@ -83,8 +81,7 @@
     },
 
     "title": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "title"}
         },
@@ -94,23 +91,20 @@
     },
 
     "list_accordion1": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "list-accordion1"}
         }
     },
     "list_accordion2": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "list-accordion2"}
         }
     },
 
     "owner": {
-        "module": "components/list-example.reel",
-        "name": "ImageExample",
+        "prototype": "components/list-example.reel[ImageExample]",
         "properties": {
             "element": {"#": "example-root"}
         }
@@ -199,7 +193,7 @@
 
 </head>
 <body>
-    <div id="example-root">
+    <div data-montage-id="example-root">
 
         <div class="row">
             <div class="span8 description">
@@ -229,7 +223,7 @@
         </div>
 
         <section>
-            <ul id="list-accordion1" class="accordion">
+            <ul data-montage-id="list-accordion1" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
@@ -268,8 +262,7 @@
     },
 
     "verticalList": {
-        "module": "montage/ui/list.reel",
-        "name": "List",
+        "prototype": "montage/ui/list.reel",
         "properties": {
             "element": {
                 "#": "v-list"
@@ -281,8 +274,7 @@
     },
 
     "vlistThumb": {
-        "module": "montage/ui/image.reel",
-        "name": "Image",
+        "prototype": "montage/ui/image.reel",
         "properties": {
             "element": {"#": "thumb"}
         },
@@ -292,8 +284,7 @@
     },
 
     "title": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "title"}
         },
@@ -303,8 +294,7 @@
     },
 
     "owner": {
-        "module": "components/list-example.reel",
-        "name": "ListExample",
+        "prototype": "components/list-example.reel",
         "properties": {
             "element": {"#": "example-root"}
         }
@@ -358,21 +348,21 @@
             <!-- horizontal scrolling list -->
             <ul data-montage-id="h-list" class="h-list">
               <li>
-                    <span id="title" class="title">
+                    <span data-montage-id="title" class="title">
                     <img class="thumb" data-montage-id="thumb-h"/>
               </li>
             </ul>
         </div>
 
         <section>
-            <ul id="list-accordion2" class="accordion">
+            <ul data-montage-id="list-accordion2" class="accordion">
                <li class="accordion-group">
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                    <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
 &lt;ul data-montage-id="h-list" class="h-list"&gt;
   &lt;li&gt;
-        &lt;span id="title" class="title"&gt;
+        &lt;span data-montage-id="title" class="title"&gt;
         &lt;img class="thumb" data-montage-id="thumb-h"/&gt;
   &lt;/li&gt;
 &lt;/ul&gt;
@@ -421,8 +411,7 @@
     },
 
     "thumb": {
-        "module": "montage/ui/image.reel",
-        "name": "Image",
+        "prototype": "montage/ui/image.reel",
         "properties": {
             "element": {"#": "thumb"}
         },
@@ -432,8 +421,7 @@
     },
 
     "title": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "title"}
         },
@@ -443,8 +431,7 @@
     },
 
     "owner": {
-        "module": "components/list-example.reel",
-        "name": "ImageExample",
+        "prototype": "components/list-example.reel[ImageExample]",
         "properties": {
             "element": {"#": "example-root"}
         }
@@ -498,7 +485,7 @@
 
 
          <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/list-example.reel" target="_blank">View source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/list-example.reel" target="_blank">View source on GitHub</a>
         </section>
 
 

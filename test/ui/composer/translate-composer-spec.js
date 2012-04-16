@@ -46,8 +46,6 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
             describe("maxTranslateX", function() {
                 it ("limits translateX", function() {
                     testPage.dragElementOffsetTo(test.example.element, 500, 0, null, null, function() {
-                        // wait for the bounce to finish
-                        waits(test.translate_composer._bouncingDuration);
                         runs(function() {
                             expect(test.translate_composer.translateX).not.toBeGreaterThan(350);
                         });
@@ -57,8 +55,6 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
             describe("maxTranslateY", function() {
                 it ("limits translateY", function() {
                     testPage.dragElementOffsetTo(test.example.element, 0, 500, null, null, function() {
-                        // wait for the bounce to finish
-                        waits(test.translate_composer._bouncingDuration);
                         runs(function() {
                             expect(test.translate_composer.translateY).not.toBeGreaterThan(350);
                         });
@@ -109,9 +105,9 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     test.translate_composer.translateY = 0;
                     test.translate_composer.invertAxis = true;
 
-                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
-                            expect(test.translate_composer.translateX).toBeLessThan(-49);
-                            expect(test.translate_composer.translateY).toBeLessThan(-49);
+                    testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
+                            expect(test.translate_composer.translateX).toBeGreaterThan(49);
+                            expect(test.translate_composer.translateY).toBeGreaterThan(49);
                     });
                 });
             });

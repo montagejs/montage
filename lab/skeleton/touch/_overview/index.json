@@ -1,93 +1,77 @@
 {
     "button": {
-        "module": "montage/ui/skeleton/touch/button.reel",
-        "name": "Button",
+        "prototype": "montage/lab/skeleton/touch/button.reel",
         "properties": {
             "element": {"#": "button"}
         }
     },
     
     "toggle": {
-        "module": "montage/ui/skeleton/touch/toggle.reel",
-        "name": "Toggle",
+        "prototype": "montage/lab/skeleton/touch/toggle.reel",
         "properties": {
             "element": {"#": "toggle"}
         }
     },
-    
+
     "checkbox": {
-        "module": "montage/ui/skeleton/touch/input-checkbox.reel",
-        "name": "InputCheckbox",
+        "prototype": "montage/lab/skeleton/touch/input-checkbox.reel",
         "properties": {
-            "element": {"#": "input-checkbox"}
+            "element": {"#": "inputCheckbox"}
         }
     },
-    
     "radio1": {
-        "module": "montage/ui/skeleton/touch/input-radio.reel",
-        "name": "InputRadio",
+        "prototype": "montage/lab/skeleton/touch/input-radio.reel",
         "properties": {
-            "element": {"#": "input-radio1"}
+            "element": {"#": "inputRadio1"}
         }
     },
     "radio2": {
-        "module": "montage/ui/skeleton/touch/input-radio.reel",
-        "name": "InputRadio",
+        "prototype": "montage/lab/skeleton/touch/input-radio.reel",
         "properties": {
-            "element": {"#": "input-radio2"}
+            "element": {"#": "inputRadio2"}
         }
     },
     "radio3": {
-        "module": "montage/ui/skeleton/touch/input-radio.reel",
-        "name": "InputRadio",
+        "prototype": "montage/lab/skeleton/touch/input-radio.reel",
         "properties": {
-            "element": {"#": "input-radio3"}
+            "element": {"#": "inputRadio3"}
         }
     },
     
     "select": {
-        "module": "montage/ui/skeleton/touch/select.reel",
-        "name": "Select",
+        "prototype": "montage/lab/skeleton/touch/select.reel",
         "properties": {
             "element": {"#": "select"}
         }
     },
-    
-    "input-text": {
-        "module": "montage/ui/skeleton/touch/input-text.reel",
-        "name": "InputText",
+    "inputText": {
+        "prototype": "montage/lab/skeleton/touch/input-text.reel",
         "properties": {
-            "element": {"#": "input-text"}
+            "element": {"#": "inputText"}
         }
     },
     
     "textarea": {
-        "module": "montage/ui/skeleton/touch/textarea.reel",
-        "name": "Textarea",
+        "prototype": "montage/lab/skeleton/touch/textarea.reel",
         "properties": {
             "element": {"#": "textarea"}
         }
     },
-    
-    "input-number": {
-        "module": "montage/ui/skeleton/touch/input-number.reel",
-        "name": "InputNumber",
+    "inputNumber": {
+        "prototype": "montage/lab/skeleton/touch/input-number.reel",
         "properties": {
-            "element": {"#": "input-number"}
+            "element": {"#": "inputNumber"}
         }
     },
-    
-    "input-range": {
-        "module": "montage/ui/skeleton/touch/input-range.reel",
-        "name": "InputRange",
+    "inputRange": {
+        "prototype": "montage/lab/skeleton/touch/input-range.reel",
         "properties": {
-            "element": {"#": "input-range"}
+            "element": {"#": "inputRange"}
         }
     },
     
     "progress": {
-        "module": "montage/ui/skeleton/touch/progress.reel",
-        "name": "Progress",
+        "prototype": "montage/lab/skeleton/touch/progress.reel",
         "properties": {
             "element": {"#": "progress"}
         }

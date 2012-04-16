@@ -13,8 +13,8 @@
             "element": {"#": "link1"}
         },
         "bindings": {
-            "textContent": {"<<->": "@linkTextInput.value", "deferred": false},
-            "href": {"<<->": "@urlTextInput.value"}
+            "textContent": {"<-": "@linkTextInput.value"},
+            "href": {"<-": "@urlTextInput.value"}
         }
     },
 
@@ -47,8 +47,7 @@
     },
 
     "list1": {
-        "module": "montage/ui/repetition.reel",
-        "name": "Repetition",
+        "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {
                 "#": "table-row"
@@ -60,8 +59,7 @@
     },
 
     "link": {
-        "module": "montage/ui/anchor.reel",
-        "name": "Anchor",
+        "prototype": "montage/ui/anchor.reel",
         "properties": {
             "element": {"#": "link"}
         },
@@ -72,8 +70,7 @@
     },
 
     "desc": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "desc"}
         },
@@ -83,15 +80,13 @@
     },
 
     "anchorAccordion1": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "anchorAccordion1"}
         }
     },
     "anchorAccordion2": {
-        "module": "accordion.reel",
-        "name": "Accordion",
+        "prototype": "accordion.reel",
         "properties": {
             "element": {"#": "anchorAccordion2"}
         }
@@ -99,8 +94,7 @@
 
 
     "owner": {
-        "module": "components/image-example.reel",
-        "name": "AnchorExample",
+        "prototype": "components/image-example.reel[AnchorExample]",
         "properties": {
             "element": {"#": "example-root"},
             "data": [
@@ -138,7 +132,7 @@ a[icon="external"] {
 
 </head>
 <body>
-    <div id="example-root">
+    <div data-montage-id="example-root">
         <div class="row">
             <div class="span12">
                 <h3>Anchor</h3>
@@ -159,23 +153,23 @@ a[icon="external"] {
                             <div class="demo">
                                     <div class="app">
                                         Link text:
-                                        <input id="linkText" autofocus type="text" name="" value="">
+                                        <input data-montage-id="linkText" autofocus type="text" name="" value="">
                                         URL:
-                                        <input id="linkURL" type="text" name="" value="" placeholder="http://...">
-                                        <p><a href="http://www.motorola.com" id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
+                                        <input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://...">
+                                        <p><a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
                                      </div>
 
-                        <ul id="anchorAccordion1" class="accordion">
+                        <ul data-montage-id="anchorAccordion1" class="accordion">
                              <li class="accordion-group">
                                  <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                  <div class="accordion-inner montage-hidden" >
                                      <pre class="prettyprint" >
 
  Link text:
- &lt;input id="linkText" autofocus type="text" name="" value=""&gt;
+ &lt;input data-montage-id="linkText" autofocus type="text" name="" value=""&gt;
  URL:
- &lt;input id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
- &lt;a href="http://www.motorola.com" id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
+ &lt;input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
+ &lt;a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
                                     </pre>
                                  </div>
                              </li>
@@ -240,37 +234,37 @@ a[icon="external"] {
                                  </p>
 
                             <div class="demo">
-                                <table id="list1" class="bordered-table">
+                                <table data-montage-id="list1" class="bordered-table">
                                     <thead>
                                         <tr>
                                             <th>Name</th>
                                             <th>Description</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="table-row">
+                                    <tbody data-montage-id="table-row">
                                         <tr>
-                                            <td><a id="link" target="_blank"></a></td>
-                                            <td><span id="desc"></span></td>
+                                            <td><a data-montage-id="link" target="_blank"></a></td>
+                                            <td><span data-montage-id="desc"></span></td>
                                         </tr>
                                     </tbody>
                                 </table>
 
-                       <ul id="anchorAccordion2" class="accordion">
+                       <ul data-montage-id="anchorAccordion2" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
                                     <pre class="prettyprint" >
-&lt;table id="list1" class="bordered-table"&gt;
+&lt;table data-montage-id="list1" class="bordered-table"&gt;
     &lt;thead&gt;
         &lt;tr&gt;
             &lt;th&gt;Name&lt;/th&gt;
             &lt;th&gt;Description&lt;/th&gt;
         &lt;/tr&gt;
     &lt;/thead&gt;
-    &lt;tbody id="table-row"&gt;
+    &lt;tbody data-montage-id="table-row"&gt;
         &lt;tr&gt;
-            &lt;td&gt;&lt;a id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
-            &lt;td&gt;&lt;span id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
         &lt;/tr&gt;
     &lt;/tbody&gt;
 &lt;/table&gt;
@@ -295,8 +289,7 @@ a[icon="external"] {
     },
 
     "list1": {
-        "module": "montage/ui/repetition.reel",
-        "name": "Repetition",
+        "prototype": "montage/ui/repetition.reel",
         "properties": {
             "element": {
                 "#": "table-row"
@@ -308,8 +301,7 @@ a[icon="external"] {
     },
 
     "link": {
-        "module": "montage/ui/anchor.reel",
-        "name": "Anchor",
+        "prototype": "montage/ui/anchor.reel",
         "properties": {
             "element": {"#": "link"}
         },
@@ -320,8 +312,7 @@ a[icon="external"] {
     },
 
     "desc": {
-        "module": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "desc"}
         },
@@ -332,8 +323,7 @@ a[icon="external"] {
 
 
     "owner": {
-        "module": "components/image-example.reel",
-        "name": "AnchorExample",
+        "prototype": "components/image-example.reel[AnchorExample]",
         "properties": {
             "element": {"#": "example-root"},
             "data": [
@@ -353,7 +343,7 @@ a[icon="external"] {
                     </div>
 
                     <section>
-                        <a href="https://github.com/Motorola-Mobility/montage/tree/v0.7/examples/sink/components/anchor-example.reel" target="_blank">View source on GitHub</a>
+                        <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/anchor-example.reel" target="_blank">View source on GitHub</a>
                     </section>
 <!--
 

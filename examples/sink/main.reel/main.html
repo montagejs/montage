@@ -28,8 +28,7 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "main.reel",
-                "name": "Main",
+                "prototype": "main.reel",
                 "properties": {
                     "element": {"#": "main"},
                     "content": {"@": "content"},
@@ -38,20 +37,24 @@
             },
 
             "sidebar": {
-                "module": "sidebar.reel",
-                "name": "Sidebar",
+                "prototype": "sidebar.reel",
                 "properties": {
                     "element": {"#": "sidebar"},
                     "sandbox": {"@": "owner"}
+                },
+                "bindings": {
+                    "selectedItem": {"<<->": "@owner.selectedItem"}
                 }
             },
 
             "content": {
-                "module": "content.reel",
-                "name": "Content",
+                "prototype": "content.reel",
                 "properties": {
                     "element": {"#": "content"},
                     "sandbox": {"@": "owner"}
+                },
+                "bindings": {
+                    "selectedItem": {"<<->": "@owner.selectedItem"}
                 }
             }
         }
@@ -72,7 +75,7 @@
 </head>
 <body>
 
-    <div class="main container" id="main">
+    <div class="main container" data-montage-id="main">
 
 
       <div class="main-content">
@@ -81,11 +84,11 @@
             <h1>Montage Kitchen Sink</h1>
         </div>
         <div class="row">
-            <div class="span4 sidebar" id="sidebar">
+            <div class="span4 sidebar" data-montage-id="sidebar">
                 <h3>Secondary content</h3>
               </div>
 
-          <div class="span12 content" id="content">
+          <div class="span12 content" data-montage-id="content">
             <h2>Main content</h2>
           </div>
 

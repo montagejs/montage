@@ -1,12 +1,10 @@
 {
     "converter": {
-        "module": "temp-converter",
-        "name": "TempConverter"
+        "prototype": "temp-converter"
     },
 
     "celsiusTextfield": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "celsius"}
         },
@@ -20,8 +18,7 @@
     },
 
     "fahrenheitTextfield": {
-        "module": "montage/ui/textfield.reel",
-        "name": "Textfield",
+        "prototype": "montage/ui/textfield.reel",
         "properties": {
             "element": {"#": "fahrenheit"},
             "value": "32"
@@ -29,8 +26,7 @@
     },
     
     "barometer": {
-        "module": "montage/ui/range-input.reel",
-        "name": "RangeInput",
+        "prototype": "montage/ui/range-input.reel",
         "properties": {
             "element": {"#": "barometer"}
         },

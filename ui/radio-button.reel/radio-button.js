@@ -3,11 +3,19 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+
+/**
+    @module "montage/ui/radio-button.reel"
+    @requires montage/ui/component
+    @requires montage/ui/check-input
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     CheckInput = require("ui/check-input").CheckInput;
 /**
- * The Text input
+ * Wraps the a &lt;input type="radio"> element with binding support for the element's standard attributes.
+   @class module:"montage/ui/radio-button.reel".RadioButton
+   @extends module:montage/check-input.CheckInput
  */
 var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
     _fakeCheck: {
@@ -36,6 +44,12 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
         enumerable: false,
         value: null
     },
+
+/**
+    Specifies if the RadioButton is in its checked state or not.
+    @type {boolean}
+    @default false
+*/
     checked: {
         get: function() {
             // If we haven't synced with the input field then our value is
@@ -95,13 +109,55 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
         }
     }
 });
-RadioButton.addAttributes({
+RadioButton.addAttributes(/** @lends module:"montage/ui/radio-button.reel".RadioButton */ {
+
+/**
+    Specifies whether the radio button should be focused as soon as the page is loaded.
+    @type {boolean}
+    @default false
+*/
     autofocus: {value: false, dataType: 'boolean'},
+
+/**
+    When true, the radio button is disabled to user input and "disabled" is added to the element's CSS class list, allowing you to style the disabled control.
+    @type {boolean}
+    @default false
+*/
     disabled: {value: false, dataType: 'boolean'},
+
+/**
+    Specifies if the radio button is checked or not.
+    @type {boolean}
+    @default false
+*/
     checked: {value: false, dataType: 'boolean'},
+
+/**
+    The value of the id attribute on the form with which to associate the radio button element.
+    @type string}
+    @default null
+*/
     form: null,
+
+/**
+    The name associated with the radio button's element.
+    @type {string}
+    @default null
+*/
     name: null,
+
+/**
+    Specifies whether or not the user can edit the radio button.
+    @type {boolean}
+    @default false
+*/
     readonly: {value: false, dataType: 'boolean'},
+
+/**
+    Advisory information for the element, rendered as the element's tooltip.
+    @type {string},
+    @default null
+*/
     title: null,
     /*
     "On getting, if the element has a value attribute, it must return that
@@ -109,5 +165,10 @@ RadioButton.addAttributes({
     it must set the element's value attribute to the new value."
     http://www.w3.org/TR/html5/common-input-element-attributes.html#dom-input-value-default-on
     */
+/**
+    The value associated with the element.
+    @type {string}
+    @default "on"
+*/
     value: {value: 'on'}
 });

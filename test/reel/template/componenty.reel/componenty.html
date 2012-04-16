@@ -3,16 +3,14 @@
     <script type="text/montage-serialization">
     {
         "textfield1": {
-            "module": "reel/template/textfield.reel",
-            "name": "TextField",
+            "prototype": "reel/template/textfield.reel[TextField]",
             "properties": {
                 "element": {"#": "textfield1"},
                 "text": "a component Y textfield"
             }
         },
         "owner": {
-            "module": "reel/template/componenty.reel",
-            "name": "ComponentY",
+            "prototype": "reel/template/componenty.reel[ComponentY]",
             "properties": {
                 "element": {"#": "componenty"}
             }
@@ -21,9 +19,9 @@
     </script>
 </head>
 <body>
-    <div id="componenty">
+    <div data-montage-id="componenty">
         <h3>Component Y</h3>
-        <div id="textfield1"></div>
+        <div data-montage-id="textfield1"></div>
     </div>
 </body>
 </html>

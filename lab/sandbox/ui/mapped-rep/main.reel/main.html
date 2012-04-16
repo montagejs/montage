@@ -11,8 +11,7 @@
     <script type="text/montage-serialization">{
 
             "owner": {
-                "module": "main.reel",
-                "name": "Main",
+                "prototype": "main.reel",
                 "properties": {
                     "element": {"#": "main"},
                     "flowComponent": {"@": "listB"},
@@ -21,8 +20,7 @@
             },
 
             "selectFirstButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "selectFirstButton"},
                     "identifier": "selectFirstButton"
@@ -36,8 +34,7 @@
             },
 
             "selectLastButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "selectLastButton"},
                     "identifier": "selectLastButton"
@@ -51,8 +48,7 @@
             },
 
             "clearSelectionButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "clearSelectionButton"},
                     "identifier": "clearSelectionButton"
@@ -66,8 +62,7 @@
             },
 
             "listA": {
-                "module": "montage/ui/list.reel",
-                "name": "List",
+                "prototype": "montage/ui/list.reel",
                 "properties": {
                     "element": {"#": "listA"},
                     "isSelectionEnabled": true,
@@ -79,8 +74,7 @@
             },
 
             "labelA": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "labelA"}
                 },
@@ -90,8 +84,7 @@
             },
 
             "listB": {
-                "module": "faux-flow.reel",
-                "name": "FauxFlow",
+                "prototype": "faux-flow.reel",
                 "properties": {
                     "element": {"#": "listB"},
                     "isSelectionEnabled": true
@@ -102,8 +95,7 @@
             },
 
             "labelB": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "labelB"}
                 },
@@ -113,8 +105,7 @@
             },
 
             "shuffleFlowButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "shuffleFlowButton"},
                     "identifier": "shuffleFlowButton"
@@ -128,8 +119,7 @@
             },
 
             "listC": {
-                "module": "faux-flow.reel",
-                "name": "FauxFlow",
+                "prototype": "faux-flow.reel",
                 "properties": {
                     "element": {"#": "listC"},
                     "isSelectionEnabled": true,
@@ -141,8 +131,7 @@
             },
 
             "labelC": {
-                "module": "montage/ui/dynamic-text.reel",
-                "name": "DynamicText",
+                "prototype": "montage/ui/dynamic-text.reel",
                 "properties": {
                     "element": {"#": "labelC"}
                 },
@@ -152,8 +141,7 @@
             },
 
             "pushButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "pushButton"},
                     "identifier": "pushButton"
@@ -167,8 +155,7 @@
             },
 
             "popButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "popButton"},
                     "identifier": "popButton"
@@ -180,7 +167,7 @@
                     }
                 ]
             }
-        
+
     }</script>
 
     <style type="text/css">
@@ -211,30 +198,30 @@
 </head>
 <body>
 
-    <div id="main" class="main">
+    <div data-montage-id="main" class="main">
 
         <div>
-            <button id="selectFirstButton">Select First</button>
-            <button id="selectLastButton">Select Last</button>
-            <button id="clearSelectionButton">Clear Selection</button>
-            <button id="shuffleFlowButton">Shuffle Flow</button>
-            <button id="pushButton">Push</button>
-            <button id="popButton">Pop</button>
+            <button data-montage-id="selectFirstButton">Select First</button>
+            <button data-montage-id="selectLastButton">Select Last</button>
+            <button data-montage-id="clearSelectionButton">Clear Selection</button>
+            <button data-montage-id="shuffleFlowButton">Shuffle Flow</button>
+            <button data-montage-id="pushButton">Push</button>
+            <button data-montage-id="popButton">Pop</button>
         </div>
 
         <h2>List</h2>
-        <ul id="listA">
-            <li id="labelA"></li>
+        <ul data-montage-id="listA">
+            <li data-montage-id="labelA"></li>
         </ul>
 
         <h2>Random Flow</h2>
-        <ul id="listB" class="flow">
-            <li id="labelB" class="content"></li>
+        <ul data-montage-id="listB" class="flow">
+            <li data-montage-id="labelB" class="content"></li>
         </ul>
 
         <h2>Bookend Flow</h2>
-        <ul id="listC" class="steps">
-            <li id="labelC" class="content"></li>
+        <ul data-montage-id="listC" class="steps">
+            <li data-montage-id="labelC" class="content"></li>
         </ul>
 
     </div>

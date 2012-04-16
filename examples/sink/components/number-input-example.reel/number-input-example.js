@@ -17,14 +17,14 @@ exports.TempConverter = Montage.create(Converter, {
     // convert fahrenheit to celsius (showing our non-metric heritage here)
     convert: {
         value: function(value) {
-            return new Number((parseInt(value, 10) - 32) / 1.8).toFixed(2);
+            return ((parseInt(value, 10) - 32) / 1.8).toFixed(2);
         }
     },
 
     // revert celsius to fahrenheit
     revert: {
         value: function(value) {
-            return new Number((1.8 * parseInt(value, 10)) + 32).toFixed(2);
+            return ((1.8 * parseInt(value, 10)) + 32).toFixed(2);
         }
     }
 

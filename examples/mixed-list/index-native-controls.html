@@ -13,20 +13,17 @@
     <script type="text/montage-serialization">{
 
             "owner": {
-                "module": "mixed-list",
-                "name": "MixedList"
+                "prototype": "mixed-list"
             },
             "scroller": {
-                "module": "montage/ui/scroller.reel",
-                "name": "Scroller",
+                "prototype": "montage/ui/scroller.reel",
                 "properties": {
                     "element": {"#": "scroller"},
                     "axis": "vertical"
                  }
             },
             "list": {
-                "module": "montage/ui/repetition.reel",
-                "name": "Repetition",
+                "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "testList"}
                 },
@@ -35,12 +32,10 @@
                 }
             },
             "substitutionDelegate": {
-                "module": "mixed-list",
-                "name": "SubstitutionDelegate"
+                "prototype": "mixed-list[SubstitutionDelegate]"
             },
             "substitution": {
-                "module": "montage/ui/substitution.reel",
-                "name": "Substitution",
+                "prototype": "montage/ui/substitution.reel",
                 "properties": {
                     "element": {"#": "substitution"},
                     "delegate": {"@": "substitutionDelegate"},
@@ -56,8 +51,7 @@
                 }
             },
             "toggle": {
-                "module": "montage/ui/toggle-button.reel",
-                "name": "ToggleButton",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "pressedLabel": "ON",
                     "unpressedLabel": "OFF"
@@ -67,8 +61,7 @@
                 }
             },
             "slider": {
-                "module": "montage/ui/range-input.reel",
-                "name": "RangeInput",
+                "prototype": "montage/ui/range-input.reel",
                 "properties": {
 
                 },
@@ -77,8 +70,7 @@
                 }
             },
             "checkbox": {
-                "module": "montage/ui/checkbox.reel",
-                "name": "Checkbox",
+                "prototype": "montage/ui/checkbox.reel",
                 "properties": {
 
                 },
@@ -87,8 +79,7 @@
                 }
             },
             "addAnObjectButton": {
-                "module": "montage/ui/button.reel",
-                "name": "Button",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "button"},
                     "identifier": "addButton"
@@ -101,15 +92,15 @@
                 }
                 ]
             }
-        
+
     }</script>
 
 </head>
 <body>
-    <button id="button">Add</button>
-    <div id="scroller" class="scroller">
-        <ul id="testList">
-            <li id="substitution"></li>
+    <button data-montage-id="button">Add</button>
+    <div data-montage-id="scroller" class="scroller">
+        <ul data-montage-id="testList">
+            <li data-montage-id="substitution"></li>
         </ul>
     </div>
 </body>

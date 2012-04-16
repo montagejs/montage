@@ -11,8 +11,7 @@
     <script type="text/montage-serialization">
         {
             "owner": {
-                "module": "toolbar.reel",
-                "name": "Toolbar",
+                "prototype": "toolbar.reel",
                 "properties": {
                     "element": {"#": "toolbar"}
                 }
@@ -22,7 +21,7 @@
     <link href="toolbar.css" rel="stylesheet">
 </head>
 <body>
-    <div id="toolbar" class="toolbar">
+    <div data-montage-id="toolbar" class="toolbar">
         <div data-tool="add" class="add button selected"></div>
         <div data-tool="remove" class="remove button"></div>
         <div data-tool="moveKnot" class="move-knot button"></div>
