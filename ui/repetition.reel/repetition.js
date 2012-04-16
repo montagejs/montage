@@ -16,6 +16,7 @@ var Montage = require("montage").Montage,
     Template = require("ui/template").Template,
     logger = require("core/logger").logger("repetition"),
     Gate = require("core/gate").Gate,
+    MutableEvent = require("core/event/mutable-event").MutableEvent,
     ChangeTypeModification = require("core/event/mutable-event").ChangeTypes.MODIFICATION;
 /**
  @class module:"montage/ui/repetition.reel".Repetition
@@ -290,25 +291,59 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     indexMap: {
         get: function() {
             return this._indexMap;
-        },
-        set: function(value) {
-            if (value === this._indexMap) {
+        }
+    },
+
+    _drawnIndexMap: {
+        enumerable: false,
+        value: null
+    },
+
+    drawnIndexMap: {
+        get: function() {
+            return this._drawnIndexMap;
+        }
+    },
+
+    mapIndexToIndex: {
+        value: function(actual, apparent, update) {
+
+            if (!this._indexMap) {
+                this._indexMap = [];
+            }
+
+            if (apparent === this._indexMap[actual] || this._indexMap.indexOf(apparent) > -1) {
                 return;
             }
 
+            this._indexMap[actual] = apparent;
+
+            if (update || typeof update === "undefined") {
+                this.refreshIndexMap();
+            }
+        }
+    },
+
+    clearIndexMap: {
+        value: function() {
+            this._indexMap = null;
+
+            this.refreshIndexMap();
+        }
+    },
+
+    refreshIndexMap: {
+        value: function() {
             this._mappedObjects = null;
-            this._indexMap = value;
+
+            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("indexMap"));
+
+            this._indexMapChanged = true;
 
             if (this._isComponentExpanded) {
                 this._refreshItems();
-
-                // Draw to refresh selected/active classnames that may still be on elements
-                // no longer representing what is actually selected/active
-                this._indexMapChanged = true;
                 this.needsDraw = true;
             }
-
-            //TODO react to modifications to the indexMap?
         }
     },
 
@@ -1115,6 +1150,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 }
             }
         }
+
+        this._drawnIndexMap = this.indexMap.slice(0);
 
     }},
 /**
