@@ -326,26 +326,16 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     _addEventListeners: {
         enumerable: false,
         value: function() {
-            if (window.Touch) {
-                //this.element.ownerDocument.addEventListener('touchstart', this, false);
-            } else {
-                this.element.addEventListener("keyup", this);
-                this.element.addEventListener("keydown", this);
-                this.element.addEventListener("input", this);
-            }
+            this.element.addEventListener("keyup", this);
+            this.element.addEventListener("input", this);
         }
     },
 
     _removeEventListeners: {
         enumerable: false,
         value: function() {
-            if (window.Touch) {
-                //this.element.ownerDocument.removeEventListener('touchstart', this, false);
-            } else {
-                this.element.removeEventListener("keyup", this);
-                this.element.removeEventListener("keydown", this);
-                this.element.removeEventListener("input", this);
-            }
+            this.element.removeEventListener("keyup", this);
+            this.element.removeEventListener("input", this);
         }
     },
 
@@ -501,13 +491,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
             }
             this.element.focus();
-        }
-    },
-
-    handleKeydown: {
-        enumerable: false,
-        value: function(event) {
-            var code = event.keyCode;
         }
     }
 
