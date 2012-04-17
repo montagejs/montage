@@ -139,7 +139,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                         });
                     });
                 });
-                it("returns negative translate values when invertAxis is false", function() {
+                it("returns negative translate values when invertAxis is true", function() {
                     test.translate_composer.translateX = 0;
                     test.translate_composer.translateY = 0;
                     test.translate_composer.invertAxis = true;
