@@ -54,6 +54,15 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         value: null
     },
 
+    /**
+    * If the delegate returns Objects, this property can be used to derive the
+    * display string for an object. If this property is not provided, the results
+    * provided by the delegate are assumed to be String.
+    */
+    textPropertyPath: {
+        value: null
+    },
+
     separator: {
         value: ',',
         distinct: true
@@ -411,6 +420,11 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             Object.defineBinding(this.resultsList, "activeIndexes", {
                 boundObject: this,
                 boundObjectPropertyPath: "_activeIndexes",
+                oneway: true
+            });
+            Object.defineBinding(this.resultsList, "textPropertyPath", {
+                boundObject: this,
+                boundObjectPropertyPath: "textPropertyPath",
                 oneway: true
             });
 
