@@ -88,6 +88,20 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                 });
             });
 
+            it("returns negative translate values when invertAxis is true", function() {
+                test.translate_composer.translateX = 0;
+                test.translate_composer.translateY = 0;
+                test.translate_composer.invertAxis = true;
+
+                console.log(test.translate_composer.translateX, test.translate_composer.translateY);
+
+                testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
+                    expect(test.translate_composer.translateX).toBeGreaterThan(49);
+                    expect(test.translate_composer.translateY).toBeGreaterThan(49);
+                    test.translate_composer.invertAxis = false;
+                });
+            });
+
             describe("axis", function() {
 
                 it("limits movement to horizonal when set to 'horizontal'", function() {
@@ -124,16 +138,6 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                             expect(test.translate_composer.translateX).toBeGreaterThan(49);
                             expect(test.translate_composer.translateY).toBeGreaterThan(49);
                         });
-                    });
-                });
-                it("returns negative translate values when invertAxis is true", function() {
-                    test.translate_composer.translateX = 0;
-                    test.translate_composer.translateY = 0;
-                    test.translate_composer.invertAxis = true;
-
-                    testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
-                        expect(test.translate_composer.translateX).toBeGreaterThan(49);
-                        expect(test.translate_composer.translateY).toBeGreaterThan(49);
                     });
                 });
             });
