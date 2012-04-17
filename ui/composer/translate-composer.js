@@ -89,7 +89,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (this._axis === "vertical") {
                 this._translateX = this._minTranslateX || 0;
             } else {
-                var tmp = isNaN(value) ? 0 : value >> 0;
+                var tmp = isNaN(value) ? 0 : parseFloat(value);
 
                 if (this._minTranslateX !== null && tmp < this._minTranslateX) {
                     tmp = this._minTranslateX;
@@ -117,7 +117,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (this._axis === "horizontal") {
                 this._translateY = this._minTranslateY || 0;
             } else {
-                var tmp = isNaN(value) ? 0 : value >> 0;
+                var tmp = isNaN(value) ? 0 : parseFloat(value);
 
                 if (this._minTranslateY !== null && tmp < this._minTranslateY) {
                     tmp = this._minTranslateY;
@@ -143,7 +143,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             if (value !== null) {
-                value = value >> 0;
+                value = parseFloat(value);
             }
 
             if (this._minTranslateX != value) {
@@ -164,7 +164,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             if (value !== null) {
-                value = value >> 0;
+                value = parseFloat(value);
             }
 
             if (this._maxTranslateX != value) {
@@ -186,7 +186,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             if (value !== null) {
-                value = value >> 0;
+                value = parseFloat(value);
             }
 
             if (this._minTranslateY != value) {
@@ -207,7 +207,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             if (value !== null) {
-                value = value >> 0;
+                value = parseFloat(value);
             }
 
             if (this._maxTranslateY != value) {
