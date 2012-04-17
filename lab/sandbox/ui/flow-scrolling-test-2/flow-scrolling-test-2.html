@@ -100,11 +100,20 @@
         }
         .selected .slide {
             -webkit-transform: scale3d(1.1, 1.1, 1) rotateY(30deg) rotateZ(10deg);
+            background-color: hsl(195, 96%, 53%);
+        }
+        .active .slide {
+            background-color: hsl(125, 96%, 53%);
         }
         .next {
             margin-left: 50%;
             margin-top: 25px;
             -webkit-transform: translate3d(-50%, 0, 0);
+        }
+
+        .no-transition,
+        .no-transition * {
+            -webkit-transition: none !important;
         }
     </style>
 </head>

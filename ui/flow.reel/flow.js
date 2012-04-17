@@ -573,46 +573,46 @@ var Flow = exports.Flow = Montage.create(Component, {
     _updateIndexMap2: {
         enumerable: false,
         value: function (currentIndexMap, newIndexes) {
-            var indexMap = currentIndexMap.slice(0, currentIndexMap.length),
-                newIndexesHash = {},
+            var newIndexesHash = {},
                 emptySpaces = [],
                 j,
-                i;
+                i,
+                currentIndexCount = currentIndexMap && !isNaN(currentIndexMap.length) ? currentIndexMap.length : 0;
 
             for (i = 0; i < newIndexes.length; i++) {
                 newIndexesHash[newIndexes[i]] = i;
             }
-            for (i = 0; i < indexMap.length; i++) {
-                if (newIndexesHash.hasOwnProperty(indexMap[i])) {
-                    newIndexes[newIndexesHash[indexMap[i]]] = null;
+            for (i = 0; i < currentIndexCount; i++) {
+                if (newIndexesHash.hasOwnProperty(currentIndexMap[i])) {
+                    newIndexes[newIndexesHash[currentIndexMap[i]]] = null;
                 } else {
                     emptySpaces.push(i);
                 }
             }
             for (i = j = 0; (j < emptySpaces.length) && (i < newIndexes.length); i++) {
                 if (newIndexes[i] !== null) {
-                    indexMap[emptySpaces[j]] = newIndexes[i];
+                    this._repetition.mapIndexToIndex(emptySpaces[j], newIndexes[i], false);
                     j++;
                 }
             }
-            for (j = indexMap.length; i < newIndexes.length; i++) {
+            for (j = currentIndexCount; i < newIndexes.length; i++) {
                 if (newIndexes[i] !== null) {
-                    indexMap[j] = newIndexes[i];
+                    this._repetition.mapIndexToIndex(j,newIndexes[i], false);
                     j++;
                 }
             }
-            return indexMap;
+
+            this._repetition.refreshIndexMap();
         }
     },
 
     willDraw: {
         enumerable: false,
         value: function () {
-            var newIndexMap = [],
-                intersections,
+            var intersections,
                 i,
                 j,
-                tmp;
+                newIndexMap = [];
 
             if (this._isTransitioningScroll) {
                 var time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds, // TODO: division by zero
@@ -627,6 +627,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             }
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
+
             if (this.splinePaths.length) {
                 intersections = this._computeVisibleRange(this.splinePaths[0]);
                 for (i = 0; i < intersections.length; i++) {
@@ -634,10 +635,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                         newIndexMap.push(j);
                     }
                 }
-                tmp = this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
-                if (this._repetition.indexMap.join("-") !== tmp.join("-")) {
-                    this._repetition.indexMap = tmp;
-                }
+
+                this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
             }
         }
     },
@@ -704,6 +703,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                                 iStyle[j] = pos[3][j];
                             }
                         }
+
                     } else {
                         iStyle = this._repetitionComponents[i].element.parentNode.style;
                         if (iStyle.opacity != 0) {
@@ -912,7 +912,7 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     // TODO: rename isAnimating and animationInterval to elasticAnimation
 
-    isAnimating: { 
+    isAnimating: {
         enumerable: false,
         value: false
     },

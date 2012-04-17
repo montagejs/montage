@@ -16,6 +16,7 @@ var Montage = require("montage").Montage,
     Template = require("ui/template").Template,
     logger = require("core/logger").logger("repetition"),
     Gate = require("core/gate").Gate,
+    MutableEvent = require("core/event/mutable-event").MutableEvent,
     ChangeTypeModification = require("core/event/mutable-event").ChangeTypes.MODIFICATION;
 /**
  @class module:"montage/ui/repetition.reel".Repetition
@@ -37,7 +38,18 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         enumerable: false,
         value: function(event) {
             if(event._event.propertyChange !== ChangeTypeModification) {
-                this.selectedIndexes = null;
+
+                if (!this.contentController) {
+
+                    // if the objects collection itself was actually modified: clear the selection
+                    // TODO preserve selection if possible
+                    if (this._objects === event.plus) {
+                        this.selectedIndexes = null;
+                    }
+                    // otherwise; the change to objects was a result of a change to the indexMap
+
+                }
+
                 this._mappedObjects = null;
 
                 if (this._isComponentExpanded) {
@@ -279,21 +291,65 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     indexMap: {
         get: function() {
             return this._indexMap;
-        },
-        set: function(value) {
-            if (value === this._indexMap) {
+        }
+    },
+
+    _drawnIndexMap: {
+        enumerable: false,
+        value: null
+    },
+
+    drawnIndexMap: {
+        get: function() {
+            return this._drawnIndexMap;
+        }
+    },
+
+    mapIndexToIndex: {
+        value: function(actual, apparent, update) {
+
+            if (!this._indexMap) {
+                this._indexMap = [];
+            }
+
+            if (apparent === this._indexMap[actual] || this._indexMap.indexOf(apparent) > -1) {
                 return;
             }
 
+            this._indexMap[actual] = apparent;
+
+            if (update || typeof update === "undefined") {
+                this.refreshIndexMap();
+            }
+        }
+    },
+
+    clearIndexMap: {
+        value: function() {
+            this._indexMap = null;
+
+            this.refreshIndexMap();
+        }
+    },
+
+    refreshIndexMap: {
+        value: function() {
             this._mappedObjects = null;
-            this._indexMap = value;
+
+            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("indexMap"));
+
+            this._indexMapChanged = true;
 
             if (this._isComponentExpanded) {
                 this._refreshItems();
+                this.needsDraw = true;
             }
-
-            //TODO react to modifications to the indexMap?
         }
+    },
+
+    _indexMapChanged: {
+        enumerable: false,
+        value: false
     },
 
  /**
@@ -646,20 +702,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             return this._selectedIndexes;
         },
         set: function(value) {
-
-            if (!this._selectedIndexesToDeselectOnDraw) {
-                this._selectedIndexesToDeselectOnDraw = this.selectedIndexes ? this.selectedIndexes : [];
-            }
-
-            // Accumulate the indexes that were selected since the last time we drew
-            // Note this may mean we remove and re-add a selected class when we draw, but that should be quicker
-            // than trying to keep this list as accurate as possible
-            if (this.selectedIndexes || 0 === this.selectedIndexes) {
-                this._selectedIndexesToDeselectOnDraw = this._selectedIndexesToDeselectOnDraw.concat(this.selectedIndexes);
-            }
-
             this._selectedIndexes = value;
-
 
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
@@ -983,16 +1026,13 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             doc = repetitionElement.ownerDocument,
             firstAddedIndex,
             selectionCount,
-            deselectionCount,
             rangeToRemove,
             iterationElements,
-            deselectableElementCount,
-            deactivateCount,
-            deactivatableElementCount,
             selectableElementCount,
             activatedCount,
             activatableElementCount,
-            iterationElement;
+            iterationElement,
+            indexMapChanged = this._indexMapChanged;
 
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
@@ -1010,40 +1050,30 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             iterationElements = repetitionElement.children;
 
-            if (this._activeIndexesToClearOnDraw &&
-                this._activeIndexesToClearOnDraw.length > 0) {
+            // NOTE Might be a bit excessive, but with the idea that the repetition will have a reasonable amount
+            // of elements given the indexMap support I'll start with this
+            // Wipe-out selection related classnames throughout the repetition to ensure a clean slate
+            for (i = 0; i < iterationElements.length; i++) {
+                iterationElement = iterationElements.item(i);
+                if (iterationElement) {
+                    iterationElement.classList.remove("active");
+                    iterationElement.classList.remove("selected");
 
-                deactivateCount = this._activeIndexesToClearOnDraw.length;
-                deactivatableElementCount = Math.min(deactivateCount, iterationElements.length);
-
-                for (i = 0; i < deactivateCount; i++) {
-                    iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._activeIndexesToClearOnDraw[i]): this._activeIndexesToClearOnDraw[i]));
-                    if (iterationElement) {
-                        iterationElement.classList.remove("active");
+                    if (indexMapChanged) {
+                        iterationElement.classList.add("no-transition");
+                    } else {
+                        iterationElement.classList.remove("no-transition");
                     }
                 }
-
-                this._activeIndexesToClearOnDraw = [];
             }
-
-            if (this._selectedIndexesToDeselectOnDraw &&
-                this._selectedIndexesToDeselectOnDraw.length > 0) {
-
-                deselectionCount = this._selectedIndexesToDeselectOnDraw.length;
-                deselectableElementCount = Math.min(deselectionCount, iterationElements.length);
-
-                for (i = 0; i < deselectableElementCount; i++) {
-                    iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._selectedIndexesToDeselectOnDraw[i]): this._selectedIndexesToDeselectOnDraw[i]));
-                    if (iterationElement) {
-                        iterationElement.classList.remove("selected");
-                    }
-                }
-
-                this._selectedIndexesToDeselectOnDraw = [];
-            }
-
         }
 
+        // We've accounted for drawing given an indexMap change, schedule the next draw to clean up from that
+        // by re-enabling transitions
+        if (indexMapChanged) {
+            this._indexMapChanged = false;
+            this.needsDraw = true;
+        }
 
         // Remove items pending removal
         if (this._itemsToRemove.length && this._itemsToRemove.length > 0) {
@@ -1120,6 +1150,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 }
             }
         }
+
+        this._drawnIndexMap = this.indexMap.slice(0);
 
     }},
 /**
