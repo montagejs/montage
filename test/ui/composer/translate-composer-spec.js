@@ -65,11 +65,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
             describe("minTranslateX", function() {
                 it ("limits translateX", function() {
                     testPage.dragElementOffsetTo(test.example.element, -500, 0, null, null, function() {
-                        // wait for the bounce to finish
-                        waits(test.translate_composer._bouncingDuration + 50);
-                        runs(function() {
-                            expect(test.translate_composer.translateX).not.toBeLessThan(20);
-                        });
+                        expect(test.translate_composer.translateX).not.toBeLessThan(20);
                     });
                 });
 
@@ -77,14 +73,9 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     var old = test.translate_composer.minTranslateX;
                     test.translate_composer.minTranslateX = null;
                     test.translate_composer.translateX = 0;
-                    test.translate_composer.hasBouncing = false;
                     testPage.dragElementOffsetTo(test.example.element, -500, 0, null, null, function() {
-                        // wait for the bounce to finish
-                        waits(test.translate_composer._bouncingDuration);
-                        runs(function() {
-                            expect(test.translate_composer.translateX).toBeLessThan(-400);
-                            test.translate_composer.minTranslateX = old;
-                        });
+                        expect(test.translate_composer.translateX).toBeLessThan(-400);
+                        test.translate_composer.minTranslateX = old;
                     });
                 });
             });
@@ -92,11 +83,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
             describe("minTranslateY", function() {
                 it("limits translateY", function() {
                     testPage.dragElementOffsetTo(test.example.element, 0, -500, null, null, function() {
-                        // wait for the bounce to finish
-                        waits(test.translate_composer._bouncingDuration);
-                        runs(function() {
-                            expect(test.translate_composer.translateY).not.toBeLessThan(-40);
-                        });
+                        expect(test.translate_composer.translateY).not.toBeLessThan(-40);
                     });
                 });
             });
@@ -145,8 +132,8 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     test.translate_composer.invertAxis = true;
 
                     testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
-                            expect(test.translate_composer.translateX).toBeGreaterThan(49);
-                            expect(test.translate_composer.translateY).toBeGreaterThan(49);
+                        expect(test.translate_composer.translateX).toBeGreaterThan(49);
+                        expect(test.translate_composer.translateY).toBeGreaterThan(49);
                     });
                 });
             });
