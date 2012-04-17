@@ -13,7 +13,7 @@
                     "prototype": "components/token-field-example.reel",
                     "properties": {
                         "element": {"#": "token-field-example"},
-                        "states": ["California", "Nevada", "Oregon", "North Carolina", "South Carolina", "West Virginia"]
+                        "states": []
                     }
                 },
 
@@ -22,6 +22,7 @@
                     "properties": {
                         "element": {"#": "state"},
                         "identifier": "state",
+                        "textPropertyPath": "name",
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
@@ -34,6 +35,7 @@
                     "properties": {
                         "element": {"#": "members"},
                         "identifier": "members",
+                        "textPropertyPath": "FirstName",
                         "minLength": 2,
                         "delegate": {"@": "owner"}
                     },

@@ -12,11 +12,11 @@ KEY_BACKSPACE = 8;
 
 exports.TokenField = Montage.create(Component, {
 
-
     delegate: {value: null},
 
     tokens: {value: null},
 
+    textPropertyPath: {value: null},
 
     // private
     _hasFocus: {value: null},
@@ -86,7 +86,7 @@ exports.TokenField = Montage.create(Component, {
             this._pressComposer.addEventListener("pressCancel", this, false);
             */
             if(window.Touch) {
-                this.element.addEventListener('touchup', this);
+                this.element.addEventListener('touchend', this);
             } else {
                 this.element.addEventListener('mouseup', this);
             }
@@ -114,13 +114,20 @@ exports.TokenField = Montage.create(Component, {
     },
 
     // Event handling
-
+    handleMouseupTouchend: {
+        enumerable: false,
+        value: function(event) {
+            this.hasFocus = true;
+        }
+    },
+    handleTouchend: {
+        value:function(event) {
+            this.handleMouseupTouchend(event);
+        }
+    },
     handleMouseup: {
         value: function(event) {
-            // @todo - check if the target is a token.
-            this.hasFocus = true;
-
-
+            this.handleMouseupTouchend(event);
         }
     },
 

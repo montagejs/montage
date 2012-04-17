@@ -124,9 +124,7 @@ exports.TokenFieldExample = Montage.create(Component, {
                     this._cachedStates[term] = results;
                 }
             }
-            autocomplete.suggestions = results.map(function(item) {
-                return item.name;
-            });
+            autocomplete.suggestions = results;
         }
     },
 
@@ -146,9 +144,7 @@ exports.TokenFieldExample = Montage.create(Component, {
                    data = JSON.parse(this.response).data;
                    var result = [];
                    if(data && data.length > 0) {
-                       result = data.map(function(item) {
-                           return item.FirstName + ' ' + item.LastName;
-                       });
+                       result = data;
                    }
                    autocomplete.suggestions = result;
 
@@ -170,12 +166,6 @@ exports.TokenFieldExample = Montage.create(Component, {
                 }
                 autocomplete.suggestions = [];
             };
-
-        }
-    },
-
-    prepareForDraw: {
-        value: function() {
 
         }
     },

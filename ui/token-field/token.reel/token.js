@@ -9,7 +9,27 @@ var Montage = require("montage").Montage,
 
 exports.Token = Montage.create(Component, {
 
-    value: {value: null},
+    text: {value: null},
+
+    value: {
+        get: function() {
+            return this._value;
+        },
+        set: function(aValue) {
+            if(aValue) {
+               this._value = aValue;
+            }
+            if(this._value) {
+                if(this.textPropertyPath) {
+                    this.text = this.value[this.textPropertyPath];
+                } else {
+                    this.text = this.value;
+                }
+            }
+        }
+    },
+
+    textPropertyPath: {value: null},
 
     tokensController: {value: null},
 
@@ -53,11 +73,21 @@ exports.Token = Montage.create(Component, {
 
     // Event handling
 
+    removeSelf: {
+        value: function() {
+            this.tokensController.removeObjects(this.value);
+        }
+    },
+
    handleMouseup: {
        value: function(event) {
-           console.log('remove token', this.value);
-           this.tokensController.removeObjects(this.value);
+           this.removeSelf();
        }
-   }
+   },
+   handleTouchup: {
+       value: function(event) {
+          this.removeSelf();
+      }
+  }
 
 });

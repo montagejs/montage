@@ -51,7 +51,8 @@
         },
         "bindings": {
             "value": {"<-": "@tokenList.objectAtCurrentIteration"},
-            "tokensController": {"<-": "@tokenList.contentController"}
+            "tokensController": {"<-": "@tokenList.contentController"},
+            "textPropertyPath": {"<-": "@owner.textPropertyPath"}
         }
     },
     "autocomplete": {
@@ -61,6 +62,9 @@
             "identifier": "autocomplete",
             "delay": "500",
             "value": ""
+        },
+        "bindings": {
+            "textPropertyPath": {"<-": "@owner.textPropertyPath"}
         }
     }
 }
