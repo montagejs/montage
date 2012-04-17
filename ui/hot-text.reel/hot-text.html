@@ -17,7 +17,7 @@
                 "element": {"#": "value"}
             },
             "bindings": {
-                "value": {"<-": "@owner[convertedValue]"}
+                "value": {"<-": "@owner.convertedValue"}
             }
         },
         "units": {
@@ -26,7 +26,7 @@
                 "element": {"#": "units"}
             },
             "bindings": {
-                "value": {"<-": "@owner[unit]"}
+                "value": {"<-": "@owner.unit"}
             }
         },
 
@@ -40,10 +40,10 @@
                 "startTranslateSpeed": 1
             },
             "bindings": {
-                "minTranslateX": {"<-": "@owner[minValue]"},
-                "minTranslateY": {"<-": "@owner[minValue]"},
-                "maxTranslateX": {"<-": "@owner[maxValue]"},
-                "maxTranslateY": {"<-": "@owner[maxValue]"}
+                "minTranslateX": {"<-": "@owner.minValue"},
+                "minTranslateY": {"<-": "@owner.minValue"},
+                "maxTranslateX": {"<-": "@owner.maxValue"},
+                "maxTranslateY": {"<-": "@owner.maxValue"}
             },
             "listeners": [
                 {
