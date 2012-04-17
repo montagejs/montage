@@ -12,8 +12,6 @@
     display: -webkit-flexbox;
     
     box-sizing: border-box;
-    padding: 10px;
-    background-color: #f2f2f2;
 }
 
 .montage-splitterRow {
@@ -32,24 +30,40 @@
 .montage-splitter-child {
     -webkit-box-flex: 1; /* old FlexBox */
     -webkit-flex: 1 0 auto;
-
     box-sizing: inherit;
-    border: 1px solid #b3b3b3;
-    background-color: white;
 }
 
 
 /* Reset child that gets used as a new parent */
-
 .montage-splitter-child.montage-splitterRow,
 .montage-splitter-child.montage-splitterCol {
     padding: 0;
+}
+
+
+/* Draggable ---------------------------------- */
+
+
+.montage-splitterRow.montage-splitterDraggable,
+.montage-splitterCol.montage-splitterDraggable {
+    padding: 10px;
+    background-color: #f2f2f2;
+}
+
+.montage-splitterDraggable .montage-splitter-child {
+    border: 1px solid #b3b3b3;
+    background-color: white;
+}
+
+/* Reset child that gets used as a new parent */
+.montage-splitterDraggable .montage-splitter-child.montage-splitterRow,
+.montage-splitterDraggable .montage-splitter-child.montage-splitterCol {
     border: none;
     background: none;
 }
 
 
-/* Thumb ---------------------------------- */
+/* Thumb */
 
 .montage-splitter-thumb {
     -webkit-user-select: none;

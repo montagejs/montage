@@ -27,18 +27,85 @@
     <p class="hint">It's based on the <span class="highlight">new FlexBox</span>, please test in <span class="highlight">Chrome 19+</span></p>
     
     
-    <h2>← Row →</h2>
+    
+    <h2>Non-Draggable</h2>
+    
+
+    
+    <h3>← Row →</h3>
     
     <div class="montage-splitterRow">
+        <div class="montage-splitter-child">1</div>
+        <div class="montage-splitter-child">2</div>
+    </div>
+        
+    
+    <h3>↓ Column ↑</h3>
+    
+    <div class="montage-splitterCol">
+        <div class="montage-splitter-child">1</div>
+        <div class="montage-splitter-child">2</div>
+    </div>
+    
+    
+    
+    <h3>Nested</h3>
+    
+    <div class="montage-splitterRow">
+        <div class="montage-splitter-child">1</div>
+        <div class="montage-splitter-child montage-splitterCol">
+            <div class="montage-splitter-child">1</div>
+            <div class="montage-splitter-child">2</div>
+        </div>
+    </div>
+    
+    
+    <h3>Craaaaaazy!!!</h3>
+    
+    <div class="montage-splitterRow">
+        <div class="montage-splitter-child">1</div>
+        <div class="montage-splitter-child montage-splitterCol">
+            <div class="montage-splitter-child">1</div>
+            <div class="montage-splitter-child">2</div>
+        </div>
+        <div class="montage-splitter-child montage-splitterCol">
+            <div class="montage-splitter-child montage-splitterRow">
+                <div class="montage-splitter-child">1</div>
+                <div class="montage-splitter-child">2</div>
+            </div>
+            <div class="montage-splitter-child montage-splitterRow">
+                <div class="montage-splitter-child">1</div>
+                <div class="montage-splitter-child">2</div>
+                <div class="montage-splitter-child">3</div>
+            </div>
+            <div class="montage-splitter-child montage-splitterRow">
+                <div class="montage-splitter-child">1</div>
+                <div class="montage-splitter-child">2</div>
+                <div class="montage-splitter-child">3</div>
+                <div class="montage-splitter-child">4</div>
+            </div>
+        </div>
+        
+    </div>
+    
+    
+    
+    <h2>Draggable</h2>
+    
+    
+    
+    <h3>← Row →</h3>
+    
+    <div class="montage-splitterRow montage-splitterDraggable">
         <div class="montage-splitter-child">1</div>
         <div class="montage-splitter-thumb"></div>
         <div class="montage-splitter-child">2</div>
     </div>
         
     
-    <h2>↓ Column ↑</h2>
+    <h3>↓ Column ↑</h3>
     
-    <div class="montage-splitterCol">
+    <div class="montage-splitterCol montage-splitterDraggable">
         <div class="montage-splitter-child">1</div>
         <div class="montage-splitter-thumb"></div>
         <div class="montage-splitter-child">2</div>
@@ -46,9 +113,9 @@
     
     
     
-    <h2>Mixed</h2>
+    <h3>Nested</h3>
     
-    <div class="montage-splitterRow">
+    <div class="montage-splitterRow montage-splitterDraggable">
         <div class="montage-splitter-child">1</div>
         <div class="montage-splitter-thumb"></div>
         <div class="montage-splitter-child montage-splitterCol">
@@ -59,9 +126,9 @@
     </div>
     
     
-    <h2>Craaaaaazy!!!</h2>
+    <h3>Craaaaaazy!!!</h3>
     
-    <div class="montage-splitterRow">
+    <div class="montage-splitterRow montage-splitterDraggable">
         <div class="montage-splitter-child">1</div>
         
         <div class="montage-splitter-thumb"></div>
@@ -101,6 +168,39 @@
         </div>
         
     </div>
-        
+    
+    
+    
+    
+    <h2>Mixed</h2>
+    
+    
+    
+    <h3>jsFiddle</h3>
+    
+    <div class="montage-splitterCol">
+        <nav class="montage-splitter-child">Toolbar</nav>
+        <div class="montage-splitter-child montage-splitterRow">
+            <aside class="montage-splitter-child" style="-webkit-flex: 0 200px; -webkit-box-flex:0; width:200px;">Side bar</aside>
+            <div class="montage-splitter-child">
+                <div class="montage-splitter-child montage-splitterRow montage-splitterDraggable">
+                    <div class="montage-splitter-child montage-splitterCol">
+                        <div class="montage-splitter-child">HTML</div>
+                        <div class="montage-splitter-thumb"></div>
+                        <div class="montage-splitter-child">JavaScript</div>
+                    </div>
+                    <div class="montage-splitter-thumb"></div>
+                    <div class="montage-splitter-child montage-splitterCol">
+                        <div class="montage-splitter-child">CSS</div>
+                        <div class="montage-splitter-thumb"></div>
+                        <div class="montage-splitter-child">Result</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    
+    
 </body>
 </html>
