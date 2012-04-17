@@ -434,17 +434,22 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             // Mouse move doesn't happen instantly
             waits(10);
             runs(function() {
+                var ax = element.offsetLeft + offsetX/2,
+                ay = element.offsetTop + offsetY/2,
+                bx = element.offsetLeft + offsetX,
+                by = element.offsetTop + offsetY;
+
                 // Do two moves to be slightly realistic
                 self.mouseEvent({
                     target: element,
-                    clientX: element.offsetLeft + offsetX/2,
-                    clientY: element.offsetTop + offsetY/2
+                    clientX: ax,
+                    clientY: ay
                 }, "mousemove");
 
                 var eventInfo = self.mouseEvent({
                     target: element,
-                    clientX: element.offsetLeft + offsetX,
-                    clientY: element.offsetTop + offsetY
+                    clientX: bx,
+                    clientY: by
                 }, "mousemove");
 
                 if (moveCallback) {
