@@ -7,10 +7,8 @@ var Image = exports.Image = Montage.create(Component, {
 
     src: {
         set: function(value) {
-            if (value) { // added this line as changing indexMap was sending undefined urls
-                this._src = value;
-                this.needsDraw = true;
-            }
+            this._src = value;
+            this.needsDraw = true;
         }
     },
 
