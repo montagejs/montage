@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+    <head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="box.css">
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "module": "box.reel",
+            "name": "Box",
+            "properties": {
+                "element": {
+                    "#": "box"
+                },
+                "number": {"@": "dynamictext"}
+            }
+        },        
+
+        "dynamictext": {
+            "module": "montage/ui/dynamic-text.reel",
+            "name": "DynamicText",
+            "properties": {
+                "element": {
+                    "#": "boxNumber"
+                }
+            }
+        }
+    }
+    </script>
+
+</head>
+<body>
+    <div data-montage-id="box" class="box-view">
+    <div class="box">
+        <span data-montage-id="boxNumber"></span>
+    </div>
+    </div>
+</body>
+</html>
