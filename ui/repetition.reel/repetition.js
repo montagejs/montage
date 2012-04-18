@@ -1151,7 +1151,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             }
         }
 
-        this._drawnIndexMap = this.indexMap.slice(0);
+        this._drawnIndexMap = this._indexMap ? this.indexMap.slice(0) : null;
 
     }},
 /**
