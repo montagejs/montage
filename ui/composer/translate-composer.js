@@ -233,6 +233,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             case "vertical":
             case "horizontal":
                 this._axis = value;
+                this.translateX = this._translateX;
+                this.translateY = this._translateY;
                 break;
             default:
                 this._axis = "both";
@@ -703,18 +705,15 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             var animateMomentum=false,
                 momentumX,
                 momentumY,
-                startX=this._translateX,
-                startY,
-                posX=startX,
-                posY,
-                endX=startX,
-                endY,
+                startX = this._translateX,
+                startY = this._translateY,
+                posX = startX,
+                posY = startY,
+                endX = startX,
+                endY = startY,
                 self=this,
                 startTime=Date.now();
 
-            startY = this._translateY;
-            posY = startY;
-            endY = startY;
             if ((this._hasMomentum) && (event.velocity.speed > 40)) {
                 if (this._axis != "vertical") {
                     momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
@@ -759,7 +758,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                     this._dispatchTranslateEnd();
                 }
             };
-            this._animationInterval();
+            if (animateMomentum) {
+                this._animationInterval();
+            } else if (!this._isFirstMove) {
+                // Only dispatch a translateEnd if a translate start has occured
+                this._dispatchTranslateEnd();
+            }
             this._releaseInterest();
         }
     },
