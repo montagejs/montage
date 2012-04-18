@@ -879,7 +879,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             orphanedFragment = currentContentRange.extractContents();
             wrapper = this._repetition.element.appendChild(document.createElement("div"));
             wrapper.appendChild(orphanedFragment);
-            this._repetition.indexMap = [];
+            this._repetition.indexMapEnabled = true;
             this._repetition.childComponents = this._orphanedChildren;
             this._repetition.needsDraw = true;
             if (this._objectsForRepetition !== null) {

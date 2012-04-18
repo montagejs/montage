@@ -194,10 +194,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         @default null
     */
     objects: {
-        dependencies: ["indexMap"],
+        dependencies: ["indexMap", "indexMapEnabled"],
         enumerable: false,
         get: function() {
-            if (!this.indexMap) {
+            if (!this.indexMap || !this.indexMapEnabled) {
                 return this._objects;
             } else {
                 if (this._objects && !this._mappedObjects) {
@@ -294,6 +294,30 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     },
 
+    _indexMapEnabled: {
+        enumerable: false,
+        value: false
+    },
+
+    indexMapEnabled: {
+        get: function() {
+            return this._indexMapEnabled;
+        },
+        set: function(value) {
+            if (value === this._indexMapEnabled) {
+                return;
+            }
+
+            if (!this._indexMap && value) {
+                this._indexMap = [];
+            }
+
+            this._indexMapEnabled = value;
+
+            this.refreshIndexMap();
+        }
+    },
+
     _drawnIndexMap: {
         enumerable: false,
         value: null
@@ -335,9 +359,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     clearIndexMap: {
         value: function() {
-            this._indexMap = null;
-
-            this.refreshIndexMap();
+            this._indexMap.length = 0;
+            this.indexMapEnabled = false;
         }
     },
 
