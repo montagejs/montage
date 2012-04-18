@@ -652,7 +652,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                 j,
                 iOffset,
                 iStyle,
-                pos;
+                pos,
+                pos3;
 
             if (this._isTransitioningScroll) {
                 this.needsDraw = true;
@@ -689,18 +690,21 @@ var Flow = exports.Flow = Montage.create(Component, {
                         if (iStyle.opacity == 0) {
                             iStyle.opacity = 1;
                         }
+
+                        pos3 = pos[3];
+
                         transform = "translate3d(" + pos[0] + "px," + pos[1] + "px," + pos[2] + "px) ";
-                        transform += (typeof pos[3].rotateZ !== "undefined") ? "rotateZ(" + pos[3].rotateZ + ") " : "";
-                        transform += (typeof pos[3].rotateY !== "undefined") ? "rotateY(" + pos[3].rotateY + ") " : "";
-                        transform += (typeof pos[3].rotateX !== "undefined") ? "rotateX(" + pos[3].rotateX + ") " : "";
+                        transform += (typeof pos3.rotateZ !== "undefined") ? "rotateZ(" + pos3.rotateZ + ") " : "";
+                        transform += (typeof pos3.rotateY !== "undefined") ? "rotateY(" + pos3.rotateY + ") " : "";
+                        transform += (typeof pos3.rotateX !== "undefined") ? "rotateX(" + pos3.rotateX + ") " : "";
                         iStyle.webkitTransform = transform;
-                        delete pos[3].rotateX;
-                        delete pos[3].rotateY;
-                        delete pos[3].rotateZ;
+                        delete pos3.rotateX;
+                        delete pos3.rotateY;
+                        delete pos3.rotateZ;
                         iStyle = this._repetitionComponents[i].element.style;
-                        for (j in pos[3]) {
-                            if ((pos[3].hasOwnProperty(j)) && (iStyle[j] !== pos[3][j])) {
-                                iStyle[j] = pos[3][j];
+                        for (j in pos3) {
+                            if ((pos3.hasOwnProperty(j)) && (iStyle[j] !== pos3[j])) {
+                                iStyle[j] = pos3[j];
                             }
                         }
 
