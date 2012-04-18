@@ -70,7 +70,13 @@ var Flow = exports.Flow = Montage.create(Component, {
                 i;
 
             if (length) {
-                this._paths = [];
+
+                if (!this._paths) {
+                    this._paths = [];
+                } else {
+                    this._paths.wipe();
+                }
+
                 for (i = 0; i < length; i++) {
                     this.appendPath(value[i]);
                 }
@@ -351,7 +357,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _computeFrustumNormals: {
-        value: function() {
+        value: function(out) {
             var angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
                 y = Math.sin(angle),
                 z = Math.cos(angle),
@@ -367,7 +373,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 invLength,
                 vectors = [[z, 0, x], [-z, 0, x], [0, z, y], [0, -z, y]],
                 iVector,
-                out = [],
                 i;
 
             for (i = 0; i < 4; i++) {
@@ -381,7 +386,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 invLength = 1 / Math.sqrt(rX2 * rX2 + rY2 * rY2 + rZ2 * rZ2);
                 out.push([rX2 * invLength, rY2 * invLength, rZ2 * invLength]);
             }
-            return out;
         }
     },
 
@@ -429,15 +433,26 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _frustrumNormals: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
     _computeVisibleRange: { // TODO: make it a loop, optimize
         enumerable: false,
-        value: function (spline) {
+        value: function (spline, out) {
+
+            this._frustrumNormals.wipe();
+
             var splineLength = spline.knotsLength - 1,
                 planeOrigin = this._cameraPosition,
-                normals = this._computeFrustumNormals(),
+                normals = this._frustrumNormals,
                 mod,
-                r, r2, r3 = [], out = [], tmp,
+                r, r2, r3 = [], tmp,
                 i, j;
+
+            this._computeFrustumNormals(normals);
 
             for (i = 0; i < splineLength; i++) {
                 mod = normals[0];
@@ -518,7 +533,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
                 out.push([t1, t2]);
             }
-            return out;
         }
     },
 
@@ -606,13 +620,28 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _tmpIndexMap: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
+    _intersections: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
     willDraw: {
         enumerable: false,
         value: function () {
             var intersections,
                 i,
                 j,
-                newIndexMap = [];
+                newIndexMap;
+
+            newIndexMap = this._tmpIndexMap.wipe();
+            intersections = this._intersections.wipe();
 
             if (this._isTransitioningScroll) {
                 var time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds, // TODO: division by zero
@@ -629,7 +658,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             this._height = this._element.offsetHeight;
 
             if (this.splinePaths.length) {
-                intersections = this._computeVisibleRange(this.splinePaths[0]);
+                this._computeVisibleRange(this.splinePaths[0], intersections);
                 for (i = 0; i < intersections.length; i++) {
                     for (j = Math.ceil(intersections[i][0] + this._scroll); j < intersections[i][1] + this._scroll; j++) {
                         newIndexMap.push(j);
@@ -641,21 +670,36 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _cachedPos: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
+    _cachedSlide: {
+        enumerable: false,
+        distinct: true,
+        value: {}
+    },
+
     draw: {
         enumerable: false,
         value: function () {
             var i,
                 length = this._repetitionComponents.length,
-                slide = {},
+                slide,
                 transform,
                 j,
                 iOffset,
                 iStyle,
-                pos = [],
+                pos,
                 pos3,
                 positionKeys,
                 positionKeyCount,
                 jPositionKey;
+
+            slide = this._cachedSlide.wipe();
+            pos = this._cachedPos.wipe();
 
             if (this._isTransitioningScroll) {
                 this.needsDraw = true;
@@ -987,8 +1031,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._animating = [];
             }
             return this._animating;
-        },
-        set: function () {
         }
     },
 
@@ -1004,8 +1046,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._animatingHash = {};
             }
             return this._animatingHash;
-        },
-        set: function () {
         }
     },
 
@@ -1021,8 +1061,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._slide = {};
             }
             return this._slide;
-        },
-        set: function () {
         }
     },
 
