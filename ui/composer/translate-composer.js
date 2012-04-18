@@ -593,8 +593,9 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             var self = this;
 
             var oldTranslateY = this._translateY;
-            this.translateY = this._translateY - (event.wheelDeltaY * 20) / 120;
             this._dispatchTranslateStart();
+            this.translateY = this._translateY - ((event.wheelDeltaY * 20) / 120);
+            this._dispatchTranslate();
             window.clearTimeout(this._translateEndTimeout);
             this._translateEndTimeout = window.setTimeout(function() {
                 self._dispatchTranslateEnd();
