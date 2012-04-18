@@ -1087,6 +1087,12 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
 
             if (key.length > 1) {
                 keyCode = KEYNAMES_TO_KEYCODES[key];
+
+                // If the key append to be a modifier, we need adjust modifiers accordingly
+                key = MODIFIERS[KEYNAMES_ALIASES[key] || key];
+                if (key) {
+                    modifiers |= key.value;
+                }
             } else {
                 keyCode = key.toUpperCase().charCodeAt(0);
             }
