@@ -8,19 +8,19 @@
  
 .montage-splitterRow,
 .montage-splitterCol {
-    display: -webkit-box; /* old FlexBox */
+    /display: -webkit-box; /* old FlexBox */
     display: -webkit-flexbox;
     
     box-sizing: border-box;
 }
 
 .montage-splitterRow {
-    -webkit-box-orient: horizontal; /* old FlexBox */
+    /-webkit-box-orient: horizontal; /* old FlexBox */
     -webkit-flex-direction: row;
 }
 
 .montage-splitterCol {
-    -webkit-box-orient: vertical; /* old FlexBox */
+    /-webkit-box-orient: vertical; /* old FlexBox */
     -webkit-flex-direction: column;
 }
 
@@ -28,7 +28,7 @@
 /* Children */
 
 .montage-splitter-child {
-    -webkit-box-flex: 1; /* old FlexBox */
+    /-webkit-box-flex: 1; /* old FlexBox */
     -webkit-flex: 1 0 auto;
     box-sizing: inherit;
 }
