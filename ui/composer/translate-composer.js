@@ -614,8 +614,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: function(x, y) {
             var pointerDelta;
+
+            if (this._isFirstMove) {
+                this._dispatchTranslateStart(this._translateX, this._translateY);
+                this._isFirstMove = false;
+            }
+
             this._isSelfUpdate = true;
-            var oldX = this._translateX, oldY = this._translateY;
             if (this._axis != "vertical") {
                 pointerDelta = this._invertXAxis ? (this._pointerX - x) : (x - this._pointerX);
                 this.translateX += pointerDelta * this._pointerSpeedMultiplier;
@@ -625,12 +630,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this.translateY += pointerDelta * this._pointerSpeedMultiplier;
             }
             this._isSelfUpdate = false;
+
             this._pointerX = x;
             this._pointerY = y;
-            if (this._isFirstMove) {
-                this._dispatchTranslateStart(oldX, oldY);
-                this._isFirstMove = false;
-            }
+
             if (this._shouldDispatchTranslate) {
                 this._dispatchTranslate();
             }
