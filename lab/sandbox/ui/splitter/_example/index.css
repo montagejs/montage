@@ -62,18 +62,17 @@ h3 {
     border-left: 1px solid hsla(0,0%,0%,.3);
 }
 
-body > .montage-splitterRow,
-body > .montage-splitterCol {
+body > .montage-splitterRow:not(.montage-splitterDraggable),
+body > .montage-splitterCol:not(.montage-splitterDraggable) {
     border-right: 1px solid hsla(0,0%,0%,.3);
     border-bottom: 1px solid hsla(0,0%,0%,.3);
 }
 
 
-
-
 /* Reset for draggable */
-body > .montage-splitterRow.montage-splitterDraggable,
-body > .montage-splitterCol.montage-splitterDraggable {
-    border-right: none;
-    border-bottom: none;
+.montage-splitterDraggable > .montage-splitter-child.montage-splitterRow,
+.montage-splitterDraggable > .montage-splitter-child.montage-splitterCol {
+    border-top: none;
+    border-left: none;
 }
+
