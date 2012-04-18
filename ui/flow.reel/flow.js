@@ -652,7 +652,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 j,
                 iOffset,
                 iStyle,
-                pos,
+                pos = [],
                 pos3,
                 positionKeys,
                 positionKeyCount,
@@ -687,8 +687,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                     slide.index = this._repetition.indexMap[i];
                     slide.time = iOffset.time;
                     slide.speed = iOffset.speed;
-                    pos = this._splinePaths[0].getPositionAtTime(slide.time);
-                    if (pos) {
+                    pos = this._splinePaths[0].getPositionAtTime(slide.time, pos);
+                    if (pos.length > 0) {
                         iStyle = this._repetitionComponents[i].element.parentNode.style;
                         if (iStyle.opacity == 0) {
                             iStyle.opacity = 1;
