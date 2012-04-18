@@ -304,7 +304,7 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     startScrollingIndexToOffset: { // TODO: Fire scrollingTransitionStart event
         value: function (index, offset) {
-            this._scrollingOrigin = this.origin;
+            this._scrollingOrigin = this.scroll;
             this._scrollingDestination = index - offset;
             this._isScrolling = true;
             this._scrollingStartTime = Date.now();
@@ -619,9 +619,9 @@ var Flow = exports.Flow = Montage.create(Component, {
                     interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
 
                 if (time < 1) {
-                    this.origin = this._scrollingOrigin + (this._scrollingDestination - this._scrollingOrigin) * interpolant;
+                    this.scroll = this._scrollingOrigin + (this._scrollingDestination - this._scrollingOrigin) * interpolant;
                 } else {
-                    this.origin = this._scrollingDestination;
+                    this.scroll = this._scrollingDestination;
                     this._isTransitioningScroll = false;
                 }
             }
@@ -631,7 +631,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (this.splinePaths.length) {
                 intersections = this._computeVisibleRange(this.splinePaths[0]);
                 for (i = 0; i < intersections.length; i++) {
-                    for (j = Math.ceil(intersections[i][0] + this._origin); j < intersections[i][1] + this._origin; j++) {
+                    for (j = Math.ceil(intersections[i][0] + this._scroll); j < intersections[i][1] + this._scroll; j++) {
                         newIndexMap.push(j);
                     }
                 }
@@ -648,7 +648,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 length = this._repetitionComponents.length,
                 slide = {},
                 transform,
-                origin,
                 j,
                 iOffset,
                 iStyle,
@@ -971,7 +970,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (typeof this.animatingHash[this._selectedSlideIndex] !== "undefined") {
                 var tmp = this.slide[this._selectedSlideIndex].x;
 
-                this.origin += this._selectedSlideIndex - tmp;
+                this.scroll += this._selectedSlideIndex - tmp;
             }
         }
     },
@@ -1066,14 +1065,14 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: null
     },
 
-    _origin: {
+    _scroll: {
         enumerable: false,
         value: 0
     },
 
-    origin: {
+    scroll: {
         get: function () {
-            return this._origin;
+            return this._scroll;
         },
         set: function (value) {
             if ((this._hasElasticScrolling)&&(this._selectedSlideIndex !== null)) {
@@ -1086,7 +1085,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     x,
                     self = this;
 
-                tmp = value - this._origin;
+                tmp = value - this._scroll;
                 if (min < 0) {
                     min = 0;
                 }
@@ -1179,7 +1178,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     this._animationInterval();
                 }
             }
-            this._origin = value;
+            this._scroll = value;
             this._translateComposer.translateX = value * 300; // TODO Remove magic/spartan numbers
             this.needsDraw = true;
         }
@@ -1199,6 +1198,24 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._length = 0;
             } else {
                 this._length = value;
+            }
+        }
+    },
+
+    _isScrollLocked: {
+        enumerable: false,
+        value: false
+    },
+
+    isScrollLocked: {
+        get: function () {
+            return this._isScrollLocked;
+        },
+        set: function (value) {
+            if (value) {
+                this._isScrollLocked = true;
+            } else {
+                this._isScrollLocked = false;
             }
         }
     },
@@ -1223,18 +1240,37 @@ var Flow = exports.Flow = Montage.create(Component, {
                 value: function (nodeNumber) {
                     if (typeof self.animatingHash[nodeNumber] === "undefined") {
                         return {
-                            time: nodeNumber - self._origin,
+                            time: nodeNumber - self._scroll,
                             speed: 0
                         }
                     } else {
                         return {
-                            time: self.slide[nodeNumber].x - self.origin,
+                            time: self.slide[nodeNumber].x - self.scroll,
                             speed: self.slide[nodeNumber].speed
                         }
                     }
                     this.needsDraw = true;
                 }
             };
+        }
+    },
+
+    _isInputEnabled: {
+        enumerable: false,
+        value: true
+    },
+
+    isInputEnabled: {
+        get: function () {
+            return this._isInputEnabled;
+        },
+        set: function (value) {
+            if (value) {
+                this._isInputEnabled = true;
+                this.needsDraw = true;
+            } else {
+                this._isInputEnabled = false;
+            }
         }
     },
 
@@ -1248,8 +1284,10 @@ var Flow = exports.Flow = Montage.create(Component, {
             return this._translateX;
         },
         set: function (value) {
-            this._translateX = value;
-            this.origin = this._translateX / 300;
+            if (this._isInputEnabled) {
+                this._translateX = value;
+                this.scroll = this._translateX / 300;
+            }
         }
     }
 });
