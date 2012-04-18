@@ -744,7 +744,14 @@ Object.defineProperty(Object.prototype, "getProperty", {
     value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
         var dotIndex,
             result,
-            currentPathComponent;
+            currentPathComponent,
+            nextDotIndex,
+            remainingPath;
+        
+        if (aPropertyPath == null) {
+            return;
+        }
+            
         dotIndex = aPropertyPath.indexOf(".", currentIndex);
         currentIndex = currentIndex || 0;
         currentPathComponent = aPropertyPath.substring(currentIndex, (dotIndex === -1 ? aPropertyPath.length : dotIndex));
@@ -756,13 +763,17 @@ Object.defineProperty(Object.prototype, "getProperty", {
         }
 
         if (visitedComponentCallback) {
-            visitedComponentCallback(this, currentPathComponent, result);
+            nextDotIndex = aPropertyPath.indexOf(".", currentIndex);
+            if (nextDotIndex != -1) {
+                remainingPath = aPropertyPath.substr(nextDotIndex+1);
+            }
+            visitedComponentCallback(this, currentPathComponent, result, undefined, remainingPath);
         }
 
         if (visitedComponentCallback && result && -1 === dotIndex) {
 
             // We resolved the last object on the propertyPath, be sure to give the visitor a chance to handle this one
-            visitedComponentCallback(result);
+            visitedComponentCallback(result, undefined, undefined, undefined);
 
         } else if (result && dotIndex !== -1) {
             // We resolved that component of the path, but there's more path components; go to the next
@@ -892,13 +903,18 @@ Description
 @param {Function} visitedComponentCallback
 @param {Array} currentIndex
 */
+var _index_array_regexp = /^[0-9]+$/;
 Object.defineProperty(Array.prototype, "getProperty", {
     value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
 
-        currentIndex = currentIndex || 0;
+        if (aPropertyPath == null) {
+            return;
+        }
 
+        currentIndex = currentIndex || 0;
+        
         var result,
-            propertyIsNumber = !isNaN(aPropertyPath),
+            propertyIsNumber = _index_array_regexp.test(aPropertyPath),//!isNaN(aPropertyPath),
             parenthesisStartIndex = propertyIsNumber ? -1 : aPropertyPath.indexOf("(", currentIndex),
             parenthesisEndIndex = propertyIsNumber ? -1 : aPropertyPath.lastIndexOf(")"),
             currentPathComponentEndIndex = propertyIsNumber ? -1 : aPropertyPath.indexOf(".", currentIndex),
@@ -960,7 +976,9 @@ Object.defineProperty(Array.prototype, "getProperty", {
             if (isNaN(currentPathComponent)) {
 
                 if (visitedComponentCallback) {
-                    visitedComponentCallback(this, null, this[currentPathComponent]);
+                    //console.log("....",  currentPathComponent, aPropertyPath , currentPathComponentEndIndex != -1 ? aPropertyPath.slice(currentPathComponentEndIndex + 1) : null);
+                    //console.log(aPropertyPath.slice(currentIndex));
+                    visitedComponentCallback(this, null, this[currentPathComponent], null, aPropertyPath.slice(currentIndex));
                 }
 
                 // The currentPathComponent is some property not directly on this array, and not an index in the array
@@ -969,11 +987,11 @@ Object.defineProperty(Array.prototype, "getProperty", {
 
                     result = this.map(function(value, index) {
 
-                        itemResult = value.getProperty(aPropertyPath, unique, preserve, null, currentIndex);
+                        itemResult = value.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex);
 
-                        if (visitedComponentCallback) {
-                            visitedComponentCallback(value, currentPathComponent, itemResult, index);
-                        }
+                        //if (visitedComponentCallback) {
+                        //    visitedComponentCallback(value, currentPathComponent, itemResult, index);
+                        //}
 
                         return itemResult;
                     });
@@ -981,11 +999,11 @@ Object.defineProperty(Array.prototype, "getProperty", {
                     result = new Array(this.length);
                     index = 0;
                     while((itemResult = this[index])) {
-                        result[index] = itemResult.getProperty(aPropertyPath, unique, preserve, null, currentIndex);
+                        result[index] = itemResult.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex);
 
-                        if (visitedComponentCallback) {
-                            visitedComponentCallback(itemResult, currentPathComponent, result[index], index);
-                        }
+                        //if (visitedComponentCallback) {
+                        //    visitedComponentCallback(itemResult, currentPathComponent, result[index], index);
+                        //}
 
                         index++;
                     }
@@ -998,14 +1016,14 @@ Object.defineProperty(Array.prototype, "getProperty", {
 
 
                 if (visitedComponentCallback) {
-                    visitedComponentCallback(this, currentPathComponent, result);
+                    visitedComponentCallback(this, currentPathComponent, result, null, currentPathComponentEndIndex != -1 ? aPropertyPath.slice(currentPathComponentEndIndex + 1) : null);
                 }
 
                 if (currentPathComponentEndIndex > 0) {
                     result = result ? result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentPathComponentEndIndex + 1) : undefined;
                 } else if (visitedComponentCallback && currentPathComponentEndIndex === -1 && result) {
                     // If we're at the end of the path, but have a result, visit it
-                    visitedComponentCallback(result);
+                    //visitedComponentCallback(result, null, null, null, null);
                 }
             }
         }
