@@ -8,23 +8,6 @@ var args = process.argv.slice(3);
 var options = {};
 options.templateName = process.argv[2];
 
-do {
-    var arg = args[0],
-        argumentConsumed = false;
-
-    switch (arg) {
-        case "--dry-run":
-        argumentConsumed = true;
-        options.dryRun = true;
-        break;
-    }
-
-    if (argumentConsumed) {
-        args.shift();
-    }
-} while (argumentConsumed);
-
-
 if (args.length === 0) {
     usage();
     process.exit();
@@ -36,7 +19,7 @@ var fs = require("fs");
 
 function usage() {
     console.log("Missing arguments.");
-    console.log("Usage: " + process.argv[1] + " [--dry-run] <filename.html> | <directory>");
+    console.log("Usage: " + process.argv[1] + " template_name name [<variables>]");
 }
 var templatePath = options.minitHome + "templates/" + options.templateName
 var Template = require(templatePath).Template;

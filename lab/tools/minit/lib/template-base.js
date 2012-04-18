@@ -75,6 +75,13 @@ exports.TemplateBase = Object.create(Object.prototype, {
         }
     },
 
+    _finish: {
+        value: function() {
+            this.finish();
+            childProcess.exec("rm -rf " + this.buildDir);
+        }
+    },
+
     processArguments: {
         value: function(args) {
             this.variables.name = args[0];
@@ -99,11 +106,13 @@ exports.TemplateBase = Object.create(Object.prototype, {
 
     processDirectory: {
         value: function processDirectory(dirname) {
+            this.processingNewFile(dirname);
             this.rename(dirname, function(dirname) {
                 fs.readdir(dirname, function(err, filenames) {
                     if (err) throw err;
                     filenames = filenames.map(function(value){return dirname+"/"+value}); // grunf..
                     this.processFiles(filenames);
+                    this.doneProcessingFile(dirname);
                 }.bind(this));
             }.bind(this))
         }
@@ -123,7 +132,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
         value: function(filename) {
             this._filesProcessed--;
             if (this._filesProcessed === 0) {
-                this.finish();
+                this._finish();
             }
         }
     },
@@ -138,21 +147,15 @@ exports.TemplateBase = Object.create(Object.prototype, {
 
                 var newContents = this.applyTransform(data, this.variables);
 
-                if (this.options.dryRun) {
-                    console.log("Will rewrite " + filename + " with:");
-                    console.log(newContents);
-                    this.doneProcessingFile(filename);
-                } else {
-                    fs.writeFile(filename, newContents, function (err) {
-                        if (err) {
-                            console.log("Error writing to " + filename + ".");
-                        }
-                        this.rename(filename, function(filename) {
-                            this.doneProcessingFile(filename);
-                            //console.log("Converted: " + filename);
-                        });
-                    }.bind(this));
-                }
+                 fs.writeFile(filename, newContents, function (err) {
+                    if (err) {
+                        console.log("Error writing to " + filename + ".");
+                    }
+                    this.rename(filename, function(filename) {
+                        this.doneProcessingFile(filename);
+                        //console.log("Converted: " + filename);
+                    });
+                }.bind(this));
             }.bind(this));
         }
     },
