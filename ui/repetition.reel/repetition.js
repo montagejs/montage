@@ -318,6 +318,15 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             this._indexMap[actual] = apparent;
 
+            // Track that the indexMap changed what is appearing at the given index
+            // so that we can force it to not transition
+            if (!this._indexMapAffectedIndexes) {
+                this._indexMapAffectedIndexes = [];
+            }
+            this._indexMapAffectedIndexes.push(actual);
+
+            // Don't update if the end-user forced no update, they might be doing a bunch of modifications
+            // and want to manually refresh the indexMap when they're done.
             if (update || typeof update === "undefined") {
                 this.refreshIndexMap();
             }
@@ -338,8 +347,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("indexMap"));
 
-            this._indexMapChanged = true;
-
             if (this._isComponentExpanded) {
                 this._refreshItems();
                 this.needsDraw = true;
@@ -347,9 +354,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     },
 
-    _indexMapChanged: {
+    _indexMapAffectedIndexes: {
         enumerable: false,
-        value: false
+        value: null
     },
 
  /**
@@ -732,15 +739,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     },
 
-
-/**
-  Description TODO
-  @private
-*/
-    _activeIndexesToClearOnDraw: {
-        enumerable: false,
-        value: null
-    },
 /**
   Description TODO
   @private
@@ -1032,7 +1030,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             activatedCount,
             activatableElementCount,
             iterationElement,
-            indexMapChanged = this._indexMapChanged;
+            indexMapChanged = this._indexMapAffectedIndexes;
 
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
@@ -1059,10 +1057,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                     iterationElement.classList.remove("active");
                     iterationElement.classList.remove("selected");
 
-                    if (indexMapChanged) {
-                        iterationElement.classList.add("no-transition");
-                    } else {
+                    if (!indexMapChanged) {
                         iterationElement.classList.remove("no-transition");
+                    } else if (this._indexMapAffectedIndexes.indexOf(i) > -1) {
+                        iterationElement.classList.add("no-transition");
                     }
                 }
             }
@@ -1071,7 +1069,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // We've accounted for drawing given an indexMap change, schedule the next draw to clean up from that
         // by re-enabling transitions
         if (indexMapChanged) {
-            this._indexMapChanged = false;
+            this._indexMapAffectedIndexes = null;
             this.needsDraw = true;
         }
 
