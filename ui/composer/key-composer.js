@@ -25,7 +25,7 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
 
 /**
  @class module:montage/ui/composer/key-composer.KeyComposer
- @classdesc Create a virtual key composed of one or several keys.
+ @classdesc Create a virtual key composed of none or several key modifiers (shift, control, alt and meta) and one native key.
  @extends module:montage/ui/composer/composer.Composer
  */
 var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends module:montage/ui/composer/key-composer.KeyComposer# */ {
@@ -59,7 +59,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     },
 
     /**
-      The key sequence.
+      The sequence of keys to compose.
       @type {string}
       @default null
     */
@@ -84,7 +84,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     _identifier: { value: null },
 
     /**
-      The identifier.
+      The keyComposer's identifier.
       @type {string}
       @default null
     */
@@ -98,15 +98,15 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     },
 
     /**
-      Create a composerKey attached to the specified component with the specified keys and identifier.
-      The composerKey will only dispatch events when the component's element is in the target path.
+      Create a ComposerKey.
+      The key will only dispatch events when the component's element is in the native key event target path.
       If no identifier is provided, the keys and component's identifier will be used to generate an identifier.
-      Note: You do not have to call KeyComposer.create() before calling this method
+      Note: You do not have to call KeyComposer.create() before calling this method.
       @function
       @param {Object} component. The component to attach the keyComposer to.
-      @param {Object} keys. The key sequence defining the composer key.
+      @param {Object} keys. The key sequence.
       @param {Object} identifier. The identifier.
-      @returns {Object} a KeyComposer Object
+      @returns {Object} the newly created KeyComposer Object
     */
     createKey: {
         value: function(component, keys, identifier) {
@@ -136,15 +136,15 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     },
 
     /**
-      Create a global composerKey attached to the specified component with the specified keys and identifier.
-      A global key will dispatch events event when the component's element is not in the target patch
+      Create a global composerKey.
+      A global key will dispatch events without requiring the component's element be in the native key event target path
       If no identifier is provided, the keys and component's identifier will be used to generate an identifier.
-      Note: You do not have to call KeyComposer.create() before calling this method
+      Note: You do not have to call KeyComposer.create() before calling this method.
       @function
       @param {Object} component. The component to attach the keyComposer to.
-      @param {Object} keys. The key sequence defining the composer key.
+      @param {Object} keys. The key sequence.
       @param {Object} identifier. The identifier.
-      @returns {Object} a KeyComposer Object
+      @returns {Object} the newly created KeyComposer Object
     */
     createGlobalKey: {
         value: function(component, keys, identifier) {
@@ -194,11 +194,11 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     },
 
     /**
-      Add an event listener to the composerKey for specified event type. Supported types are keyPress, keyLongPress and keyRelease
+      Add an event listener to the composerKey.
       @function
-      @param {string} type. The component to attach the keyComposer to.
+      @param {string} type. Any of the following types: keyPress, keyLongPress and keyRelease.
       @param {Object|function} listener. The listener object or function to call when dispatching the event.
-      @param {boolean} listene during the capture or bubble phase.
+      @param {boolean} useCapture. Specify if the listener want to be called during the capture phase of the event.
     */
     addEventListener: {
         value: function(type, listener, useCapture) {

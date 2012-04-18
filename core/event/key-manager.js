@@ -192,8 +192,9 @@ var KEYPRESS_EVENT_TYPE = "keyPress",
 
 /**
  @class module:montage/core/event/key-manager.KeyManager
- @classdesc Provide a KeyManager to handle composerKey. listen to native key events and dispatch keyComposer event.
- @extends module:montage
+ @classdesc The KeyManager dispatches KeyComposer events when it detects a keyComposer has been pressed or released.
+ Do not create a KeyManager directly but instead require for the defaultKeyManager: require("core/event/key-manager").defaultKeyManager
+ @extends module:montage/core/core.Montage
 */
 var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:montage/core/event/key-manager.KeyManager# */ {
 
@@ -247,7 +248,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
     },
 
     /**
-      Specify the duration of a longPress in milliseconds
+      The number of milliseconds a key must be pressed in order to dispatch a keyLongPress event.
       @type {number}
       @default 1000
     */
@@ -267,11 +268,10 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
         }
     },
 
-
     /**
-      Register a composerKey. A key must be registered in order for the KeyManager to start listening for native key events for that key.
+      Register a composerKey.
       @function
-      @param {Object} keyComposer. A key composer object.
+      @param {Object} keyComposer. The key to register.
     */
     registerKey: {
         value: function(keyComposer) {
@@ -319,9 +319,9 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
     },
 
     /**
-      Unregister a composerKey. Unregister must be call the same amount of time a key has been registered in order for KeyManager to stop handling that key.
+      Unregister a composerKey. if a key has been registered multiple time, unregister must be called the same amount of time before the key is actually unregistered.
       @function
-      @param {Object} keyComposer. A key composer object.
+      @param {Object} keyComposer. The key to unregister.
     */
     unregisterKey: {
         value: function(keyComposer) {
@@ -452,10 +452,10 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 identifierCode,
                 submap;
 
-            //console.log("  captureKeydown:", event.keyCode, event.charCode, event.keyIdentifier);
+            // console.log("  captureKeydown:", event.keyCode, event.charCode, event.keyIdentifier);
 
             this._preprocessKeyEvent(event);
-            //console.log("KEYDOWN MODIFIERS:", this._modifiers, "KEYCODE:", this._keyCode);
+            // console.log("KEYDOWN MODIFIERS:", this._modifiers, "KEYCODE:", this._keyCode);
 
             submap = this._submap;
             if (submap) {
@@ -492,11 +492,11 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 identifierCode,
                 submap;
 
-            //console.log("***  captureKeypress:", keyCode, event.charCode, event.keyIdentifier, event);
+            // console.log("***  captureKeypress:", keyCode, event.charCode, event.keyIdentifier, event);
             this._preprocessKeyEvent(event);
 
             submap = this._submap;
-            //console.log("KEYPRESS MODIFIERS:", this._modifiers, this._keyCode, event.charCode);
+            // console.log("KEYPRESS MODIFIERS:", this._modifiers, this._keyCode, event.charCode);
 
             if (submap) {
                 keyCode = this._keyCode;
