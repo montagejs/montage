@@ -653,7 +653,10 @@ var Flow = exports.Flow = Montage.create(Component, {
                 iOffset,
                 iStyle,
                 pos,
-                pos3;
+                pos3,
+                positionKeys,
+                positionKeyCount,
+                jPositionKey;
 
             if (this._isTransitioningScroll) {
                 this.needsDraw = true;
@@ -698,13 +701,15 @@ var Flow = exports.Flow = Montage.create(Component, {
                         transform += (typeof pos3.rotateY !== "undefined") ? "rotateY(" + pos3.rotateY + ") " : "";
                         transform += (typeof pos3.rotateX !== "undefined") ? "rotateX(" + pos3.rotateX + ") " : "";
                         iStyle.webkitTransform = transform;
-                        delete pos3.rotateX;
-                        delete pos3.rotateY;
-                        delete pos3.rotateZ;
                         iStyle = this._repetitionComponents[i].element.style;
-                        for (j in pos3) {
-                            if ((pos3.hasOwnProperty(j)) && (iStyle[j] !== pos3[j])) {
-                                iStyle[j] = pos3[j];
+
+                        positionKeys = Object.keys(pos3);
+                        positionKeyCount = positionKeys.length;
+
+                        for (j = 0; j < positionKeyCount; j++) {
+                            jPositionKey = positionKeys[j];
+                            if (!(jPositionKey === "rotateX" || jPositionKey === "rotateY" || jPositionKey === "rotateZ") && iStyle[jPositionKey] !== pos3[jPositionKey]) {
+                                iStyle[jPositionKey] = pos3[jPositionKey];
                             }
                         }
 
