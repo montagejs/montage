@@ -1194,6 +1194,24 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _isScrollLocked: {
+        enumerable: false,
+        value: false
+    },
+
+    isScrollLocked: {
+        get: function () {
+            return this._isScrollLocked;
+        },
+        set: function (value) {
+            if (value) {
+                this._isScrollLocked = true;
+            } else {
+                this._isScrollLocked = false;
+            }
+        }
+    },
+
     _offset: {
         enumerable: false,
         value: {
@@ -1229,6 +1247,25 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _isInputEnabled: {
+        enumerable: false,
+        value: true
+    },
+
+    isInputEnabled: {
+        get: function () {
+            return this._isInputEnabled;
+        },
+        set: function (value) {
+            if (value) {
+                this._isInputEnabled = true;
+                this.needsDraw = true;
+            } else {
+                this._isInputEnabled = false;
+            }
+        }
+    },
+
     _translateX: {
         enumerable: false,
         value: 0
@@ -1239,8 +1276,10 @@ var Flow = exports.Flow = Montage.create(Component, {
             return this._translateX;
         },
         set: function (value) {
-            this._translateX = value;
-            this.origin = this._translateX / 300;
+            if (this._isInputEnabled) {
+                this._translateX = value;
+                this.origin = this._translateX / 300;
+            }
         }
     }
 });
