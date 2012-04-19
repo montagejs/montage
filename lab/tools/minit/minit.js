@@ -5,24 +5,21 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
+var fs = require("fs");
+var path = require("path");
+
 var args = process.argv.slice(3);
 var options = {};
 options.templateName = process.argv[2];
+
+options.minitHome = process.argv[1].split("/").slice(0, -1).join("/") + "/";
 
 if (args.length === 0) {
     usage();
     process.exit();
 }
 
-options.minitHome = process.argv[1].split("/").slice(0, -1).join("/") + "/";
-
-var fs = require("fs");
-
-function usage() {
-    console.log("Missing arguments.");
-    console.log("Usage: " + process.argv[1] + " template_name name [<variables>]");
-}
-var templatePath = options.minitHome + "templates/" + options.templateName
+var templatePath = path.join(options.minitHome, "templates", options.templateName);
 var Template = require(templatePath).Template;
 var templateStats = fs.statSync(templatePath);
 if (templateStats.isDirectory()) {
@@ -31,4 +28,15 @@ if (templateStats.isDirectory()) {
 } else {
     console.log("Invalid arguments.");
     console.log("Missing template directory: " + templatePath);
+}
+
+function usage() {
+    console.log("Missing arguments.");
+    var fileNames = fs.readdirSync(path.join(options.minitHome,"templates"));
+    fileNames.forEach(function(filename) {
+        var stats = fs.statSync(path.join(options.minitHome,"templates",filename));
+        if (stats.isDirectory()) {
+            console.log("Usage: ./minit.js " + filename + " " + require("./templates/" + filename).Template.usage());
+        }
+    });
 }

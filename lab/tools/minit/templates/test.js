@@ -9,6 +9,14 @@ var childProcess = require('child_process');
 
 exports.Template = Object.create(TemplateBase, {
 
+
+    usage: {
+        value: function() {
+            return TemplateBase.usage.apply(this, arguments) + " title";
+        }
+    },
+
+
     processArguments: {
         value: function(args) {
             TemplateBase.processArguments.apply(this, arguments);

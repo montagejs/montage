@@ -5,11 +5,18 @@
  </copyright> */
 
 var fs = require("fs");
+var Path = require("path");
 var Mustache = require("./mustache");
 var childProcess = require('child_process');
 
 
 exports.TemplateBase = Object.create(Object.prototype, {
+
+    usage: {
+        value: function() {
+            return "name";
+        }
+    },
 
     newWithNameAndOptions: {
         value: function(directory, options) {
@@ -41,7 +48,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
     process: {
         value: function(arguments) {
             this.processArguments(arguments);
-            this.buildDir = this.options.minitHome + "build/" + this.options.templateName;
+            this.buildDir = Path.join(this.options.minitHome, "build", this.options.templateName);
             var path;
             childProcess.exec("rm -rf " + this.buildDir, function (error, stdout, stderr) {
                 path = "cp -R " + this.directory + " " + this.buildDir;
@@ -60,7 +67,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
 
     finish: {
         value: function() {
-            var path = "cp -R " + this.buildDir + "/ " + this.options.minitHome + "/" + this.destination;
+            var path = "cp -R " + this.buildDir + "/ " + Path.join(this.options.minitHome, this.destination);
             //console.log(path);
             if (! this.options.dryRun) {
                 childProcess.exec(path, function (error, stdout, stderr) {
@@ -110,7 +117,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
             this.rename(dirname, function(dirname) {
                 fs.readdir(dirname, function(err, filenames) {
                     if (err) throw err;
-                    filenames = filenames.map(function(value){return dirname+"/"+value}); // grunf..
+                    filenames = filenames.map(function(value){return Path.join(dirname, value)}); // grunf..
                     this.processFiles(filenames);
                     this.doneProcessingFile(dirname);
                 }.bind(this));
