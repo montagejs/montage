@@ -471,15 +471,16 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                     && 'addEventListener' in window.HTMLElement.prototype
                     && window.Components
                     && window.Components.interfaces) {
-                    var candidate;
+                    var candidate, candidatePrototype;
                     for(candidate in Components.interfaces) {
                         if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
                             candidate = candidate.replace(/^nsIDOM/, '');
                             if(candidate = window[candidate]) {
-                                candidate.prototype.nativeAddEventListener = candidate.prototype.addEventListener;
-                                candidate.prototype.addEventListener = Element.prototype.addEventListener;
-                                candidate.prototype.nativeRemoveEventListener = candidate.prototype.removeEventListener;
-                                candidate.prototype.removeEventListener = Element.prototype.removeEventListener;
+                                candidatePrototype = candidate.prototype;
+                                candidatePrototype.nativeAddEventListener = candidatePrototype.addEventListener;
+                                candidatePrototype.addEventListener = Element.prototype.addEventListener;
+                                candidatePrototype.nativeRemoveEventListener = candidatePrototype.removeEventListener;
+                                candidatePrototype.removeEventListener = Element.prototype.removeEventListener;
                             }
                         }
                     }
