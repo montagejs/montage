@@ -496,7 +496,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             index,
             componentStartIndex,
             componentEndIndex,
-            canDrawGate = self.canDrawGate;
+            canDrawGate = self.canDrawGate,
+            i;
 
         // TODO simply pop from deletedItems if we have any in that pool
         this._currentItem = {};
@@ -518,7 +519,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 childComponents = self.childComponents;
                 componentStartIndex = index * self._iterationChildComponentsCount;
                 componentEndIndex = componentStartIndex + componentsCount;
-                for (var i = componentStartIndex; i < componentEndIndex; i++) {
+                for (i = componentStartIndex; i < componentEndIndex; i++) {
                     childComponent = childComponents[i];
                     childComponent.needsDraw = true;
                     childComponent.loadComponentTree(function() {
@@ -537,7 +538,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     _deleteItem: {value: function() {
 
         var deletedItem, itemIndex, removedComponents, childComponents = this.childComponents, childComponentsCount = this._iterationChildComponentsCount,
-            itemsToAppendCount = this._itemsToAppend.length;
+            itemsToAppendCount = this._itemsToAppend.length,
+            i,
+            removedComponentCount;
+
         if (itemsToAppendCount > 0) {
             // We caught the need to remove these items before they got inserted
             // just don't bother appending them
@@ -557,7 +561,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             removedComponents = childComponents.splice(childComponents.length - childComponentsCount, childComponentsCount);
             this._childLoadedCount -= childComponentsCount;
             this._expectedChildComponentsCount -= childComponentsCount;
-            for (var i = 0, l = removedComponents.length; i < l; i++) {
+            for (i = 0, removedComponentCount = removedComponents.length; i < removedComponentCount; i++) {
                 removedComponents[i].cleanupDeletedComponentTree();
             }
         } else {
@@ -673,9 +677,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             // this is setup just for the flattening of the template iteration, the iteration needs to be serialized once it's completely flatten.
             this.setupIterationSerialization();
         }
-        var controllerBindingDescriptorsToInstall = this._controllerBindingsToInstall;
+        var controllerBindingDescriptorsToInstall = this._controllerBindingsToInstall,
+            key;
+
         if (controllerBindingDescriptorsToInstall) {
-            for (var key in controllerBindingDescriptorsToInstall) {
+            for (key in controllerBindingDescriptorsToInstall) {
                 Object.defineBinding(this, key, controllerBindingDescriptorsToInstall[key]);
             }
             delete this._controllerBindingsToInstall;
@@ -897,14 +903,16 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         value: function(event) {
             // TODO only grab new touches that are in target touches as well maybe?
 
-            var i = 0;
+            var i = 0,
+                selectedIndex;
+
             while (i < event.changedTouches.length && event.changedTouches[i].identifier !== this._selectionPointer) {
                 i++;
             }
 
             if (i < event.changedTouches.length) {
                 if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
-                    var selectedIndex = this._itemIndexOfElement(event.target);
+                    selectedIndex = this._itemIndexOfElement(event.target);
 
                     if (null !== selectedIndex) {
                         this.selectedIndexes = [selectedIndex];
@@ -1216,50 +1224,53 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     */
     propertyChangeBindingListener: {value: function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
 
-        var usefulBindingDescriptor = bindingDescriptor;
-        var usefulType = type;
-        var currentIndex;
+        var usefulBindingDescriptor = bindingDescriptor,
+            usefulType = type,
+            currentIndex,
+            descriptorKeys,
+            descriptorKeyCount,
+            iDescriptorKey,
+            i,
+            modifiedBoundObjectPropertyPath;
 
         if (bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
             if (this._currentItem) {
                 currentIndex = this._items.length + this._nextDeserializedItemIx - 1;
                 usefulBindingDescriptor = {};
-                var descriptorKeys = Object.keys(bindingDescriptor);
-                var descriptorKeyCount = descriptorKeys.length;
-                var iDescriptorKey;
-                for (var i = 0; i < descriptorKeyCount; i++) {
+                descriptorKeys = Object.keys(bindingDescriptor);
+                descriptorKeyCount = descriptorKeys.length;
+                for (i = 0; i < descriptorKeyCount; i++) {
                     iDescriptorKey = descriptorKeys[i];
                     usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
                 }
 
                 //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/objectAtCurrentIteration/, 'objects.' + currentIndex);
+                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/objectAtCurrentIteration/, 'objects.' + currentIndex);
                 usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
 
                 usefulType = type.replace(/objectAtCurrentIteration/, 'objects.' + currentIndex);
-            }   else {
+            } else {
                 return null;
             }
         } else if(bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/selectionAtCurrentIteration/)) {
             if (this._currentItem) {
                 currentIndex = this._items.length + this._nextDeserializedItemIx - 1;
                 usefulBindingDescriptor = {};
-                var descriptorKeys = Object.keys(bindingDescriptor);
-                var descriptorKeyCount = descriptorKeys.length;
-                var iDescriptorKey;
-                for (var i = 0; i < descriptorKeyCount; i++) {
+                descriptorKeys = Object.keys(bindingDescriptor);
+                descriptorKeyCount = descriptorKeys.length;
+                for (i = 0; i < descriptorKeyCount; i++) {
                     iDescriptorKey = descriptorKeys[i];
                     usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
                 }
 
                 //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
 
-                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'selections.' + currentIndex);
+                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'selections.' + currentIndex);
                 usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
 
                 usefulType = type.replace(/selectionAtCurrentIteration/, 'selections.' + currentIndex);
 
-            }   else {
+            } else {
                 return null;
             }
         }
@@ -1274,8 +1285,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     serializeIteration: {value: function(serializer) {
         serializer.setProperty("element", this.element);
         var childComponents = this.childComponents,
-            addObject = serializer.addObject;
-        for (var i = 0, l = childComponents.length; i < l; i++) {
+            addObject = serializer.addObject,
+            i,
+            childComponentCount = childComponents.length;
+
+        for (i = 0; i < childComponentCount; i++) {
             addObject.call(serializer, childComponents[i]);
         }
         // iterations are already expanded
