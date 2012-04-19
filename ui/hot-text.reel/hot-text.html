@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title>HotText</title>
+    <link rel="stylesheet" href="hot-text.css" />
+
+    <script type="text/montage-serialization">
+    {
+        "value": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "value"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.convertedValue"}
+            }
+        },
+        "units": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "units"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.unit"}
+            }
+        },
+
+        "translateComposer": {
+            "prototype": "montage/ui/composer/translate-composer",
+            "properties": {
+                "component": {"@": "owner"},
+                "hasMomentum": false,
+                "hasBouncing": false,
+                "invertYAxis": true,
+                "startTranslateSpeed": 1
+            },
+            "bindings": {
+                "minTranslateX": {"<-": "@owner.minValue"},
+                "minTranslateY": {"<-": "@owner.minValue"},
+                "maxTranslateX": {"<-": "@owner.maxValue"},
+                "maxTranslateY": {"<-": "@owner.maxValue"}
+            },
+            "listeners": [
+                {
+                    "type": "translateStart",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "translate",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "translateEnd",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "pressComposer": {
+            "prototype": "montage/ui/composer/press-composer",
+            "properties": {
+                "component": {"@": "owner"},
+                "delegate": {"@": "owner"}
+            },
+            "listeners": [
+                {
+                    "type": "press",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "numberConverter": {
+            "prototype": "montage/core/converter/number-converter"
+        },
+
+        "owner": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "hot-text"},
+
+                "_inputElement": {"#": "input"},
+                "_unitsLabel": {"@": "units"},
+                "_valueLabel": {"@": "value"},
+                "_pressComposer": {"@": "pressComposer"},
+                "_translateComposer": {"@": "translateComposer"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <span data-montage-id="hot-text" class="montage-hot-text">
+        <input type="text" data-montage-id="input" class="montage-hot-text-input"/>
+        <span data-montage-id="value" class="montage-hot-text-value"></span>
+        <span data-montage-id="units" class="montage-hot-text-label"></span>
+    </span>
+</body>
+</html>

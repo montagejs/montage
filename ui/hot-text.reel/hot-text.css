@@ -1,0 +1,21 @@
+.montage-hot-text {
+    display: inline-block;
+}
+
+.montage-hot-text-input {
+    display: none;
+    width: 100%;
+}
+
+.montage-hot-text-editing .montage-hot-text-input {
+    display: inherit;
+}
+
+.montage-hot-text-value {
+    border-bottom: 1px dotted #000;
+    cursor: all-scroll;
+}
+
+.montage-hot-text-editing .montage-hot-text-value, .montage-hot-text-editing .montage-hot-text-label {
+    display: none;
+}

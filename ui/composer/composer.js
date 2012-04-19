@@ -107,10 +107,8 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
      */
     _resolveDefaults: {
         value: function() {
-            if (this.element == null) {
-                if (this.component != null) {
-                    this.element = this.component.element;
-                }
+            if (this.element == null && this.component != null) {
+                this.element = this.component.element;
             }
         }
     },
