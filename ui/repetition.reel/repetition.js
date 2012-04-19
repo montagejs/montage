@@ -440,10 +440,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             var objectCount = this._objects ? this._objects.length : 0,
                 itemCount = this._items.length + this._itemsToAppend.length,
                 neededItemCount,
-                i;
+                i,
+                addItem = this._addItem,
+                deleteItem = this._deleteItem;
 
-
-            if (this._objects && this.indexMap) {
             if (this._objects && this.indexMap && this._indexMapEnabled) {
                 objectCount = this.indexMap.length;
             }
@@ -469,12 +469,12 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 this.canDrawGate.setField("iterationLoaded", false);
                 // Need to add more items
                 for (i = 0; i < neededItemCount; i++) {
-                    this._addItem();
+                    addItem.call(this);
                 }
             } else if (neededItemCount < 0) {
                 // Need to remove extra items
                 for (i = neededItemCount; i < 0; i++) {
-                    this._deleteItem();
+                    deleteItem.call(this);
                 }
             }
 
@@ -1054,6 +1054,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             activatedCount,
             activatableElementCount,
             iterationElement,
+            iterationElementClassList,
             indexMapChanged = this._indexMapAffectedIndexes;
 
         if (this._removeOriginalContent) {
@@ -1078,13 +1079,16 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             for (i = 0; i < iterationElements.length; i++) {
                 iterationElement = iterationElements.item(i);
                 if (iterationElement) {
-                    iterationElement.classList.remove("active");
-                    iterationElement.classList.remove("selected");
+
+                    iterationElementClassList = iterationElement.classList;
+
+                    iterationElementClassList.remove("active");
+                    iterationElementClassList.remove("selected");
 
                     if (!indexMapChanged) {
-                        iterationElement.classList.remove("no-transition");
+                        iterationElementClassList.remove("no-transition");
                     } else if (this._indexMapAffectedIndexes.indexOf(i) > -1) {
-                        iterationElement.classList.add("no-transition");
+                        iterationElementClassList.add("no-transition");
                     }
                 }
             }
@@ -1269,9 +1273,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     */
     serializeIteration: {value: function(serializer) {
         serializer.setProperty("element", this.element);
-        var childComponents = this.childComponents;
+        var childComponents = this.childComponents,
+            addObject = serializer.addObject;
         for (var i = 0, l = childComponents.length; i < l; i++) {
-            serializer.addObject(childComponents[i]);
+            addObject.call(serializer, childComponents[i]);
         }
         // iterations are already expanded
         serializer.setProperty("_isComponentExpanded", true);
