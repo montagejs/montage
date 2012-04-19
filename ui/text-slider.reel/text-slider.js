@@ -4,11 +4,37 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /*global require,exports */
+
+/**
+    @module "montage/ui/text-slider.reel"
+    @requires montage/core/core
+    @requires montage/ui/component
+    @requires montage/ui/composer/press-composer
+ */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
-var TextSlider = exports.TextSlider = Montage.create(Component, {
+/**
+    <p>Provides a way for users to quickly and easily manipulate numeric values.
+    It takes the form of a numeric value with a dotted underline, optionally
+    followed by a unit.
+
+    <p>When the user clicks and drags on the numeric value
+    it increases when dragged up or right, and decreases when dragged down or
+    left. If the user holds Control or Shift while dragging the value will
+    change by a smaller or larger amount respectively.</p>
+
+    <p>If the user clicks without dragging then the component enters "edit mode"
+    and turns into a textfield where the user can directly edit the value. If
+    user presses the Up or Down arrows in edit mode the value will increase or
+    decrease respectively. If the user holds Control or Shift while pressing an
+    arrow the value will change by a smaller or larger amount respectively.</p>
+
+    @class module:"montage/ui/text-slider.reel".TextSlider
+    @extends module:montage/ui/component.Component
+ */
+var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends module:"montage/ui/text-slider.reel".TextSlider# */ {
 
     // Properties
 
@@ -16,6 +42,14 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         enumerable: false,
         value: null
     },
+    /**
+    A converter that converts from a numeric value to the display value, for
+    example to convert to hexadecimal. You may also want to use a converter
+    that returns <code>value.toFixed(<i>n</i>)</code> to prevent precision errors from
+    being displayed to the user.
+    @type {object}
+    @default null
+    */
     converter: {
         get: function() {
             return this._converter;
@@ -32,6 +66,11 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         enumerable: false,
         value: 0
     },
+    /**
+    The value of the TextSlider.
+    @type {number}
+    @default 0
+    */
     value: {
         get: function() {
             return this._value;
@@ -54,6 +93,13 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         }
     },
 
+    /**
+    The value of the TextSlider converted using {@link converter} for display.
+    Setting this will call <code>revert</code> on the converter and set
+    {@link value}.
+    @type {string}
+    @default "0"
+    */
     convertedValue: {
         dependencies: ["value", "converter"],
         get: function() {
@@ -73,6 +119,12 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         enumerable: false,
         value: null
     },
+    /**
+    The minimum value the TextSlider can take. If set to <code>null</code> there
+    is no minimum.
+    @type {number|null}
+    @default null
+    */
     minValue: {
         get: function() {
             return this._minValue;
@@ -91,6 +143,12 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         enumerable: false,
         value: null
     },
+    /**
+    The maximum value the TextSlider can take. If set to <code>null</code> there
+    is no maximum.
+    @type {number|null}
+    @default null
+    */
     maxValue: {
         get: function() {
             return this._maxValue;
@@ -106,14 +164,32 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         }
     },
 
+    /**
+    The small amount to increase/decrease the value by. Used when the user
+    holds the Control key and drags or presses the Up arrow in input mode.
+    @type {number}
+    @default 0.1
+    */
     smallStepSize: {
         enumerable: false,
         value: 0.1
     },
+    /**
+    The amount to increase/decrease the value by. Used per pixel when the user
+    drags the TextSlider or presses the Up arrow in input mode.
+    @type {number}
+    @default 1
+    */
     stepSize: {
         enumerable: false,
         value: 1
     },
+    /**
+    The large amount to increase/decrease the value by. Used when the user
+    holds the Shift key and drags or presses the Up arrow in input mode.
+    @type {number}
+    @default 10
+    */
     largeStepSize: {
         enumerable: false,
         value: 10
@@ -123,6 +199,12 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         enumerable: false,
         value: null
     },
+    /**
+    The unit the value is in. This will be appended to the {@link convertedValue}
+    for display.
+    @type {string|null}
+    @default null
+    */
     unit: {
         get: function() {
             return this._unit;
