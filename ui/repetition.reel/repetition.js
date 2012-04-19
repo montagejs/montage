@@ -659,11 +659,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     reset: {
         value: function() {
-            this._items = [];
-            this._itemsToAppend = [];
+            this._items.wipe();
+            this._itemsToAppend.wipe();
             this._nextDeserializedItemIx = 0;
-            this._itemsToRemove = [];
-            this._deletedItems = [];
+            this._itemsToRemove.wipe();
+            this._deletedItems.wipe();
         }
     },
 
@@ -1107,7 +1107,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                 rangeToRemove.extractContents();
             }
-            this._itemsToRemove = [];
+            this._itemsToRemove.wipe();
         }
 
         if (this._itemsToAppend.length && this._itemsToAppend.length > 0) {
@@ -1136,7 +1136,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             itemCount = this._items.length;
 
-            this._itemsToAppend = [];
+            this._itemsToAppend.wipe();
             this._nextDeserializedItemIx = 0;
         }
 
