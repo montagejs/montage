@@ -91,7 +91,7 @@ describe("event/change-notification-spec", function() {
                                 expect(notification.minus).toBe(3);
                                 expect(notification.plus).toBe(4);
                                 break;
-                                
+
                                 case 2:
                                 expect(object2.x).toBe(4);
                                 expect(notification.target).toBe(object2);
@@ -243,7 +243,7 @@ describe("event/change-notification-spec", function() {
                 expect(listener.handleChange.callCount).toBe(1);
                 expect(listener.handleIdentifierChange.callCount).toBe(1);
             });
-        
+
             it("should not trigger function listener on same value changes", function() {
                 var object = {x: 3},
                     listeners = {
@@ -279,7 +279,7 @@ describe("event/change-notification-spec", function() {
                 object.x.y.z = 4;
                 expect(listeners.listener.callCount).toBe(1);
             });
-            
+
             it("should not trigger function listener on same value changes", function() {
                 var object = {x: {y: {z: 3}}},
                     listeners = {
@@ -294,7 +294,7 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener.callCount).toBe(0);
             });
         });
-        
+
         describe("on overlapping paths", function() {
             it("should still listen using a function if the bigger path is removed", function() {
                 var object = {x: {y: {z: 3}}},
@@ -310,10 +310,10 @@ describe("event/change-notification-spec", function() {
                             expect(notification.plus.z).toBe(4);
                         }
                     };
-                
+
                 spyOn(listeners, "listener1").andCallThrough();
                 spyOn(listeners, "listener2").andCallThrough();
-                
+
                 object.addPropertyChangeListener("x.y.z", listeners.listener1);
                 object.x.addPropertyChangeListener("y", listeners.listener2)
                 object.removePropertyChangeListener("x.y.z", listeners.listener1);
@@ -321,7 +321,7 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener1.callCount).toBe(0);
                 expect(listeners.listener2.callCount).toBe(1);
             });
-            
+
             it("should still listen using a function if the smaller path is removed", function() {
                 var object = {x: {y: {z: 3}}},
                     listeners = {
@@ -336,10 +336,10 @@ describe("event/change-notification-spec", function() {
                         listener2: function(notification) {
                         }
                     };
-                
+
                 spyOn(listeners, "listener1").andCallThrough();
                 spyOn(listeners, "listener2").andCallThrough();
-                
+
                 object.addPropertyChangeListener("x.y.z", listeners.listener1);
                 object.x.addPropertyChangeListener("y", listeners.listener2)
                 object.x.removePropertyChangeListener("y", listeners.listener2);
@@ -348,7 +348,7 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener2.callCount).toBe(0);
             });
         });
-    
+
     });
 
     describe("calling the listener before the change", function() {
@@ -419,7 +419,7 @@ describe("event/change-notification-spec", function() {
                                 expect(notification.propertyPath).toBe("x");
                                 expect(notification.minus).toBe(3);
                                 break;
-                                
+
                                 case 2:
                                 expect(object2.x).toBe(3);
                                 expect(notification.target).toBe(object2);
@@ -564,7 +564,7 @@ describe("event/change-notification-spec", function() {
                 expect(listener.handleWillChange.callCount).toBe(1);
                 expect(listener.handleIdentifierWillChange.callCount).toBe(1);
             });
-        
+
             it("should not trigger function listener on same value changes", function() {
                 var object = {x: 3},
                     listeners = {
@@ -600,7 +600,7 @@ describe("event/change-notification-spec", function() {
                 object.x.y.z = 4;
                 expect(listeners.listener.callCount).toBe(1);
             });
-            
+
             it("should not trigger function listener on same value changes", function() {
                 var object = {x: {y: {z: 3}}},
                     listeners = {
@@ -625,7 +625,7 @@ describe("event/change-notification-spec", function() {
                 listeners = {
                     listener: function(notification) {
                         callCount++;
-                        
+
                         if (calledBefore) {
                             expect(object.x).toBe(4);
                         } else {
@@ -696,7 +696,7 @@ describe("event/change-notification-spec", function() {
                             expect(notification.target).toBe(object1);
                             expect(notification.currentTarget).toBe(object1);
                             break;
-                            
+
                             case 3:
                             case 4:
                             expect(notification.target).toBe(object2);
@@ -924,7 +924,7 @@ describe("event/change-notification-spec", function() {
                         listener: function(notification) {
                             if (calledBefore) {
                                 expect(object.x.y.z).toBe(4);
-                                
+
                             } else {
                                 expect(object.x.y.z).toBe(3);
                                 calledBefore = true;
@@ -1054,7 +1054,7 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener.callCount).toBe(0);
             });
         });
-        
+
         describe("before changes", function() {
             it("should listen to mutations of an array", function() {
                 var array = [1, 2, 3],
@@ -1152,7 +1152,7 @@ describe("event/change-notification-spec", function() {
             });
         })
     });
-    
+
     describe("removing listeners", function() {
         describe("on single property path", function() {
             it("should remove a function listener", function() {
@@ -1197,7 +1197,7 @@ describe("event/change-notification-spec", function() {
 
                 expect(listeners.listener.callCount).toBe(1);
             });
-            
+
             it("should remove a function listener only from beforeChanges", function() {
                 var object = {x: 3},
                     listeners = {
@@ -1219,7 +1219,7 @@ describe("event/change-notification-spec", function() {
 
                 expect(listeners.listener.callCount).toBe(1);
             });
-            
+
             it("should remove a function listener only from afterChanges", function() {
                 var object = {x: 3},
                     listeners = {
@@ -1279,7 +1279,7 @@ describe("event/change-notification-spec", function() {
 
                 expect(listeners.listener.callCount).toBe(1);
             });
-        
+
             it("should remove a function listener only from beforeChanges", function() {
                 var object = {x: {y: {z: 3}}},
                     listeners = {
@@ -1292,7 +1292,7 @@ describe("event/change-notification-spec", function() {
                             expect(notification.plus).toBe(4);
                         }
                     };
- 
+
                 spyOn(listeners, "listener").andCallThrough();
                 object.addPropertyChangeListener("x.y.z", listeners.listener);
                 object.addPropertyChangeListener("x.y.z", listeners.listener, true);
@@ -1301,7 +1301,7 @@ describe("event/change-notification-spec", function() {
 
                 expect(listeners.listener.callCount).toBe(1);
             });
-            
+
             it("should remove a function listener only from afterChanges", function() {
                 var object = {x: {y: {z: 3}}},
                     listeners = {
@@ -1347,7 +1347,7 @@ describe("event/change-notification-spec", function() {
                             expect(notification.plus).toBe(5);
                             break;
                         }
-                        
+
                         expect(notification.currentTarget).toBe(object);
                     }
                 };
@@ -1465,12 +1465,12 @@ describe("event/change-notification-spec", function() {
                             expect(notification.minus).toBe(null);
                             expect(notification.plus).toBe("bar");
                             break;
-                            
+
                             case 2:
                             expect(notification.minus).toBe("bar");
                             expect(notification.plus).toBe(null);
                             break;
-                            
+
                             case 3:
                             expect(notification.minus).toBe(null);
                             expect(notification.plus).toBe("baz");
@@ -1507,21 +1507,21 @@ describe("event/change-notification-spec", function() {
                             expect(notification.minus).toBe(null);
                             expect(notification.plus).toBe(object.foo);
                             break;
-                            
+
                             case 2:
                             expect(notification.target).toBe(object.foo);
                             expect(notification.propertyPath).toBe("bar");
                             expect(notification.minus).toBeUndefined();
                             expect(notification.plus).toBe(object.foo.bar);
                             break;
-                            
+
                             case 3:
                             expect(notification.target).toBe(object.foo.bar);
                             expect(notification.propertyPath).toBe("baz");
                             expect(notification.minus).toBeUndefined();
                             expect(notification.plus).toBe("baz");
                             break;
-                            
+
                             case 4:
                             expect(notification.target).toBe(object.foo.bar);
                             expect(notification.propertyPath).toBe("baz");
@@ -1647,7 +1647,7 @@ describe("event/change-notification-spec", function() {
                         object.x = object.x + 1;
                     }
                 };
-                
+
             object.addPropertyChangeListener("x", listeners.listener);
             try {
                 object.x = 1;
@@ -1655,7 +1655,7 @@ describe("event/change-notification-spec", function() {
                 expect(true).toBe(false);
             }
         });
-        
+
         it("should not create an infinite loop on a two state cycle", function() {
             var object = {x: 0, y: 0},
                 listeners = {
@@ -1666,7 +1666,7 @@ describe("event/change-notification-spec", function() {
                         object.x = object.y + 1;
                     }
                 };
-                
+
             object.addPropertyChangeListener("x", listeners.listenerX);
             object.addPropertyChangeListener("y", listeners.listenerY);
             try {
@@ -1675,7 +1675,7 @@ describe("event/change-notification-spec", function() {
                 expect(true).toBe(false);
             }
         });
-        
+
         it("should not create an infinite loop on a cycle involving dependencies", function() {
             var object = {x: {y: {z: 0}}},
                 callCount = 0,
@@ -1688,7 +1688,7 @@ describe("event/change-notification-spec", function() {
                         }
                     }
                 };
-                
+
             object.addPropertyChangeListener("x.y.z", listeners.listener);
             try {
                 object.x.y.z = 1;
@@ -1696,7 +1696,7 @@ describe("event/change-notification-spec", function() {
                 expect(true).toBe(false);
             }
         });
-        
+
         it("should not create an infinite loop on a cycle with user setters involving dependencies", function() {
             var MeaningfulObject = Montage.create(Montage, {
                 _foo: {
@@ -1721,7 +1721,7 @@ describe("event/change-notification-spec", function() {
                         object.foo = object.foo + 1;
                     }
                 };
-                
+
             object.addPropertyChangeListener("foo", listeners.listener);
             try {
                 object.foo = 1;
@@ -1729,7 +1729,7 @@ describe("event/change-notification-spec", function() {
                 expect(true).toBe(false);
             }
         });
-        
+
         it("should throw a stack error on a cycle created by user setters", function() {
             var MeaningfulObject = Montage.create(Montage, {
                 _foo: {
@@ -1753,7 +1753,7 @@ describe("event/change-notification-spec", function() {
                     listener: function(notification) {
                     }
                 };
-                
+
             object.addPropertyChangeListener("foo", listeners.listener);
             try {
                 object.foo = 1;
@@ -1903,7 +1903,7 @@ describe("event/change-notification-spec", function() {
                 array.pop();
                 expect(listeners.listener.callCount).toBe(1);
             });
-        
+
             it("should not trigger index listener on same value changes", function() {
                 var array = [1, 2, 3],
                     listeners = {
@@ -2510,7 +2510,7 @@ describe("event/change-notification-spec", function() {
                             expect(notification.minus).toBe(22);
                             expect(notification.plus).toBe(221);
                             break;
-                            
+
                             case 2:
                             expect(notification.target).toBe(object.array[2].foo);
                             expect(notification.isMutation).toBeTruthy();
@@ -2518,7 +2518,7 @@ describe("event/change-notification-spec", function() {
                             expect(notification.plus.length).toBe(1);
                             expect(notification.plus[0].bar).toBe(34);
                             break;
-                            
+
                             case 3:
                             expect(notification.target).toBe(object.array);
                             expect(notification.isMutation).toBeTruthy();
@@ -2527,26 +2527,26 @@ describe("event/change-notification-spec", function() {
                             expect(notification.plus[0].foo.length).toBe(3);
                             break;
                         }
-                        
+
                         expect(notification.currentTarget).toBe(object);
                     }
                 };
-            
+
             spyOn(listeners, "listener").andCallThrough();
             object.addPropertyChangeListener("array.foo.bar", listeners.listener);
-            
+
             object.array[1].foo[1].bar = 221;
             expect(listeners.listener.callCount).toBe(1);
-            
+
             object.array[2].foo.push({bar: 34});
             expect(listeners.listener.callCount).toBe(2);
-            
+
             object.array.push({foo: [
                 {bar: 41}, {bar: 42}, {bar: 43}
             ]});
             expect(listeners.listener.callCount).toBe(3);
         });
-        
+
         describe("indexing by property name", function() {
             it("should observe all existing members of an array for changes at the property path beyond the array itself", function() {
                 var first = {foo: "hello"},
@@ -2609,7 +2609,7 @@ describe("event/change-notification-spec", function() {
                                 expect(notification.minus.length).toBe(1);
                                 expect(notification.plus.length).toBe(0);
                                 break;
-                                
+
                                 case 2:
                                 expect(notification.target).toBe(first);
                                 expect(notification.currentTarget).toBe(object);
@@ -2644,7 +2644,7 @@ describe("event/change-notification-spec", function() {
                                 expect(notification.minus.length).toBe(0);
                                 expect(notification.plus.length).toBe(1);
                                 break;
-                                
+
                                 case 2:
                                 expect(notification.target).toBe(first);
                                 expect(notification.currentTarget).toBe(object);
@@ -2685,7 +2685,7 @@ describe("event/change-notification-spec", function() {
                                 expect(notification.minus.length).toBe(0);
                                 expect(notification.plus.length).toBe(1);
                                 break;
-                                
+
                                 case 2:
                                 expect(notification.target).toBe(third);
                                 expect(notification.currentTarget).toBe(object);
@@ -2726,7 +2726,7 @@ describe("event/change-notification-spec", function() {
                                 expect(notification.minus.length).toBe(0);
                                 expect(notification.plus.length).toBe(1);
                                 break;
-                                
+
                                 case 2:
                                 expect(notification.target).toBe(third);
                                 expect(notification.currentTarget).toBe(object);
@@ -2776,7 +2776,7 @@ describe("event/change-notification-spec", function() {
                                 expect(notification.minus.length).toBe(0);
                                 expect(notification.plus.length).toBe(1);
                                 break;
-                                
+
                                 case 2:
                                 expect(notification.target).toBe(third);
                                 expect(notification.currentTarget).toBe(object);
@@ -2817,6 +2817,133 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener.callCount).toBe(2);
                 expect(typeof Object.getPropertyDescriptor(third, "foo").set).not.toBe(fooSetter);
             });
+        });
+
+        it("should listen to changes made by reverse", function() {
+            var array = [1, 2, 3],
+                listeners = {
+                    listener1: function(notification) {
+                        expect(notification.target).toBe(array);
+                        expect(notification.currentTarget).toBe(array);
+                        expect(notification.propertyPath).toBe(null);
+                        expect(notification.isMutation).toBeTruthy();
+                        expect(notification.minus.length).toBe(0);
+                        expect(notification.plus.length).toBe(0);
+                    },
+
+                    listener2: function(notification) {
+                        expect(notification.target).toBe(array);
+                        expect(notification.currentTarget).toBe(array);
+                        expect(notification.propertyPath).toBe("2");
+                        expect(notification.index).toBe(2);
+                        expect(notification.minus).toBe(3);
+                        expect(notification.plus).toBe(1);
+                    },
+
+                    listener3: function(notification) {
+                    }
+                };
+
+            spyOn(listeners, "listener1").andCallThrough();
+            spyOn(listeners, "listener2").andCallThrough();
+            spyOn(listeners, "listener3").andCallThrough();
+
+            array.addPropertyChangeListener(null, listeners.listener1);
+            array.addPropertyChangeListener("2", listeners.listener2);
+            array.addPropertyChangeListener("1", listeners.listener3);
+
+            array.reverse();
+
+            expect(listeners.listener1.callCount).toBe(1);
+            expect(listeners.listener2.callCount).toBe(1);
+            expect(listeners.listener3.callCount).toBe(0);
+        });
+
+        it("should listen to changes made by user defined sort", function() {
+            var array = [4, 6, 3, 2, 5, 1],
+                listeners = {
+                    listener1: function(notification) {
+                        expect(notification.target).toBe(array);
+                        expect(notification.currentTarget).toBe(array);
+                        expect(notification.propertyPath).toBe(null);
+                        expect(notification.isMutation).toBeTruthy();
+                        expect(notification.minus.length).toBe(0);
+                        expect(notification.plus.length).toBe(0);
+                    },
+
+                    listener2: function(notification) {
+                        expect(notification.target).toBe(array);
+                        expect(notification.currentTarget).toBe(array);
+                        expect(notification.propertyPath).toBe("0");
+                        expect(notification.index).toBe(0);
+                        expect(notification.minus).toBe(4);
+                        expect(notification.plus).toBe(1);
+                    },
+
+                    listener3: function(notification) {
+                    }
+                };
+
+            spyOn(listeners, "listener1").andCallThrough();
+            spyOn(listeners, "listener2").andCallThrough();
+            spyOn(listeners, "listener3").andCallThrough();
+
+            array.addPropertyChangeListener(null, listeners.listener1);
+            array.addPropertyChangeListener("0", listeners.listener2);
+            array.addPropertyChangeListener("2", listeners.listener3);
+
+            array.sort(function(e1, e2) {
+                return e1 - e2;
+            });
+
+            expect(array).toEqual([1, 2, 3, 4, 5, 6]);
+            expect(listeners.listener1.callCount).toBe(1);
+            expect(listeners.listener2.callCount).toBe(1);
+            expect(listeners.listener3.callCount).toBe(0);
+        });
+
+        it("should listen to changes made by sort", function() {
+            var array = ["françois", "afonso", "heather", "stuart", "mike"],
+                sortedArray = array.slice(0),
+                listeners = {
+                    listener1: function(notification) {
+                        expect(notification.target).toBe(array);
+                        expect(notification.currentTarget).toBe(array);
+                        expect(notification.propertyPath).toBe(null);
+                        expect(notification.isMutation).toBeTruthy();
+                        expect(notification.minus.length).toBe(0);
+                        expect(notification.plus.length).toBe(0);
+                    },
+
+                    listener2: function(notification) {
+                        expect(notification.target).toBe(array);
+                        expect(notification.currentTarget).toBe(array);
+                        expect(notification.propertyPath).toBe("0");
+                        expect(notification.index).toBe(0);
+                        expect(notification.minus).toBe("françois");
+                        expect(notification.plus).toBe("afonso");
+                    },
+
+                    listener3: function(notification) {
+                    }
+                };
+
+            sortedArray.sort();
+
+            spyOn(listeners, "listener1").andCallThrough();
+            spyOn(listeners, "listener2").andCallThrough();
+            spyOn(listeners, "listener3").andCallThrough();
+
+            array.addPropertyChangeListener(null, listeners.listener1);
+            array.addPropertyChangeListener("0", listeners.listener2);
+            array.addPropertyChangeListener("2", listeners.listener3);
+
+            array.sort();
+
+            expect(array).toEqual(sortedArray);
+            expect(listeners.listener1.callCount).toBe(1);
+            expect(listeners.listener2.callCount).toBe(1);
+            expect(listeners.listener3.callCount).toBe(0);
         });
     });
 });

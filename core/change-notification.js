@@ -423,7 +423,7 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
             if (this.mutationDependencyIndex != null) {
                 var target = this.dependencies[this.mutationDependencyIndex];
             }
-            
+
             if (target === newTarget) {
                 return;
             }
@@ -652,7 +652,7 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
                     // Nothing to do here
                     return;
                 }
-                
+
                 if (descriptor.isActive &&
                     target === descriptor.target &&
                     propertyName === descriptor.propertyPath &&
@@ -798,7 +798,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayChangeN
             oldValues = this.slice(index, index+howManyToRemove);
 
         indexNotification.target = this;
-        
+
         // can't remove more than the available elements.
         if (index + howManyToRemove > currentLength) {
             howManyToRemove = currentLength - index;
@@ -847,7 +847,6 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayBulkWil
                     notification.index = index;
                     notification.propertyPath = String(index);
                     notification.minus = oldValue;
-                    //notification.plus = newValue;
                     descriptor.handleWillChange(notification);
                 }
             }
@@ -863,7 +862,6 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayBulkWil
                         notification.index = index;
                         notification.propertyPath = String(index);
                         notification.minus = oldValue;
-                        //notification.plus = newValue;
                         descriptor.handleWillChange(notification);
                     }
                 }
@@ -904,8 +902,8 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayBulkCha
                     if (oldValue !== newValue) {
                         notification.index = index;
                         notification.propertyPath = String(index);
-                        notification.minus = this[index+delta];
-                        notification.plus = this[index];
+                        notification.minus = oldValue;
+                        notification.plus = newValue;
                         descriptor.handleChange(notification);
                     }
                 }
@@ -1005,5 +1003,181 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "pop", {
     configurable: true,
     value: function() {
         return this._dispatchArrayChangeNotification("_pop", arguments, this.length-1, 1, []);
+    }
+});
+
+Object.defineProperty(ChangeNotificationDispatchingArray, "_reverse", {
+    enumerable: false,
+    configurable: true,
+    value: Array.prototype.reverse
+});
+Object.defineProperty(ChangeNotificationDispatchingArray, "reverse", {
+    enumerable: false,
+    configurable: true,
+    value: function() {
+        var length = this.length;
+        if (length === 0) {
+            return;
+        }
+
+        var descriptor = ChangeNotification.getPropertyChangeDescriptor(this, null),
+            indexDescriptor,
+            notification,
+            indexNotification = Object.create(PropertyChangeNotification),
+            oldValue,
+            newValue;
+
+        indexNotification.target = this;
+
+        if (descriptor) {
+            notification = Object.create(PropertyChangeNotification);
+            notification.target = this;
+            notification.isMutation = true;
+            descriptor.handleWillChange(notification);
+        }
+
+        for (var i = 0; i < length; i++) {
+            indexDescriptor = ChangeNotification.getPropertyChangeDescriptor(this, i);
+            if (indexDescriptor) {
+                oldValue = this[i];
+                if (oldValue !== this[length-i-1]) {
+                    indexNotification.index = i;
+                    indexNotification.propertyPath = String(i);
+                    indexNotification.minus = oldValue;
+                    indexDescriptor.handleWillChange(indexNotification);
+                }
+            }
+        }
+
+        this._reverse();
+
+        if (descriptor) {
+            // nothing was really added or removed...
+            notification.minus = notification.plus = [];
+            descriptor.handleChange(notification);
+        }
+
+        for (var i = 0; i < length; i++) {
+            indexDescriptor = ChangeNotification.getPropertyChangeDescriptor(this, i);
+            if (indexDescriptor) {
+                oldValue = this[length-i-1];
+                newValue = this[i];
+                if (oldValue !== newValue) {
+                    indexNotification.index = i;
+                    indexNotification.propertyPath = String(i);
+                    indexNotification.minus = oldValue;
+                    indexNotification.plus = newValue;
+                    indexDescriptor.handleChange(indexNotification);
+                }
+            }
+        }
+    }
+});
+
+Object.defineProperty(ChangeNotificationDispatchingArray, "_sortIndexArray", {
+    enumerable: false,
+    configurable: true,
+    value: []
+});
+Object.defineProperty(ChangeNotificationDispatchingArray, "_sortDefaultCompareFunction", {
+    enumerable: false,
+    configurable: true,
+    value: function(a, b) {
+        return String(a).localeCompare(String(b));
+    }
+});
+Object.defineProperty(ChangeNotificationDispatchingArray, "_sort", {
+    enumerable: false,
+    configurable: true,
+    value: Array.prototype.sort
+});
+Object.defineProperty(ChangeNotificationDispatchingArray, "sort", {
+    enumerable: false,
+    configurable: true,
+    value: function(compareFunction) {
+        var self,
+            length = this.length,
+            descriptor,
+            indexDescriptor,
+            notification,
+            indexNotification,
+            oldValue,
+            newValue,
+            _sortIndexArray,
+            _sortIndexArrayLength;
+
+        if (length === 0) {
+            return;
+        }
+
+        if (!compareFunction) {
+            compareFunction = this._sortDefaultCompareFunction;
+        }
+
+        self = this;
+        _sortIndexArray = ChangeNotificationDispatchingArray._sortIndexArray;
+        _sortIndexArrayLength = _sortIndexArray.length;
+
+        if (_sortIndexArrayLength < length) {
+            _sortIndexArray[length] = length-1;
+            for (var i = _sortIndexArrayLength; i < length; i++) {
+                _sortIndexArray[i] = i;
+            }
+        }
+        // http://jsperf.com/array-of-indexes/4
+        indexArray = _sortIndexArray.slice(0, length);
+        // sort the indexes only
+        this._sort.call(indexArray, function(e1, e2) {
+            return compareFunction(self[e1], self[e2]);
+        });
+
+        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, null);
+        indexNotification = Object.create(PropertyChangeNotification);
+        indexNotification.target = this;
+
+        if (descriptor) {
+            notification = Object.create(PropertyChangeNotification);
+            notification.target = this;
+            notification.isMutation = true;
+            descriptor.handleWillChange(notification);
+        }
+
+        for (var i = 0; i < length; i++) {
+            indexArray[i] = this[indexArray[i]];
+            indexDescriptor = ChangeNotification.getPropertyChangeDescriptor(this, i);
+            if (indexDescriptor) {
+                oldValue = this[i];
+                if (oldValue !== indexArray[i]) {
+                    indexNotification.index = i;
+                    indexNotification.propertyPath = String(i);
+                    indexNotification.minus = oldValue;
+                    indexDescriptor.handleWillChange(indexNotification);
+                }
+            }
+        }
+
+        for (var i = 0; i < length; i++) {
+            indexDescriptor = ChangeNotification.getPropertyChangeDescriptor(this, i);
+            if (indexDescriptor) {
+                oldValue = this[i];
+                newValue = indexArray[i];
+                this[i] = indexArray[i];
+                if (oldValue !== newValue) {
+                    indexNotification.index = i;
+                    indexNotification.propertyPath = String(i);
+                    indexNotification.minus = oldValue;
+                    indexNotification.plus = newValue;
+                    indexDescriptor.handleChange(indexNotification);
+                }
+            } else {
+                this[i] = indexArray[i];
+            }
+        }
+
+        if (descriptor) {
+            // nothing was really added or removed...
+            notification.minus = notification.plus = [];
+            descriptor.handleChange(notification);
+        }
     }
 });
