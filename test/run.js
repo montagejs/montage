@@ -55,6 +55,7 @@ if (spec) {
 
         "events/eventmanager-spec",
         "events/object-hierarchy-spec",
+        "events/change-notification-spec",
 
         "geometry/cubicbezier-spec",
         "geometry/point-spec",
