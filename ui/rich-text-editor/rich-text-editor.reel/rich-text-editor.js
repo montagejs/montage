@@ -86,7 +86,6 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
 
      @type {boolean}
     @readonly
-    @type {string|Array<string>}
     */
     isActiveElement: {
         enumerable: true,
@@ -420,8 +419,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     },
 
     /**
-      Gets and sets the list style for the selected text. Valid values are "none", "unordered", "ordered". This property can be used in combination with the [indent]{@link indent} and [outdent]{@link outdent} properties to create a list hierarchy.
-     @type {Function}
+      Gets and sets the list style for the selected text. Valid values are "none", "unordered", "ordered". This property can be used in combination with the [indent]{@link indent} and [outdent]{@link outdent} methods to create a list hierarchy.
+     @type {string}
     */
     listStyle: {
         enumerable: true,
