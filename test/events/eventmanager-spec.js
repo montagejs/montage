@@ -1280,31 +1280,31 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
         });
 
-        it("should call a change listener targgeting an array position, that was created before that position existed, when the target is created", function() {
-            // This tests makes sure that not only the change listeners targetting  existing elements are called.
-            // Change listeners targetting non-existant elements should apply when the element (target) is created.
-            var array = [];
-            var change0 = 0;
-            var change1 = 0;
-
-            array.push([1, 2]);
-
-            array.addEventListener("change@0", function() {
-                change0++;
-                //console.log("array.0 has changed");
-            });
-            array.addEventListener("change@1", function() {
-                change1++;
-                //console.log("array.1 has changed");
-            });
-
-            array.push([3, 4]);
-            array[0].pop();
-            array[1].pop();
-
-            expect(change0).toBe(1); // called on array[0].pop()
-            expect(change1).toBe(2); // called on array.push(...) and array[1].pop()
-        });
+        //it("should call a change listener targgeting an array position, that was created before that position existed, when the target is created", function() {
+        //    // This tests makes sure that not only the change listeners targetting  existing elements are called.
+        //    // Change listeners targetting non-existant elements should apply when the element (target) is created.
+        //    var array = [];
+        //    var change0 = 0;
+        //    var change1 = 0;
+        //
+        //    array.push([1, 2]);
+        //
+        //    array.addEventListener("change@0", function() {
+        //        change0++;
+        //        //console.log("array.0 has changed");
+        //    });
+        //    array.addEventListener("change@1", function() {
+        //        change1++;
+        //        //console.log("array.1 has changed");
+        //    });
+        //
+        //    array.push([3, 4]);
+        //    array[0].pop();
+        //    array[1].pop();
+        //
+        //    expect(change0).toBe(1); // called on array[0].pop()
+        //    expect(change1).toBe(2); // called on array.push(...) and array[1].pop()
+        //});
 
         it("should call a change event listener on an array position when that position is changed via setProperty", function() {
             var array = [
