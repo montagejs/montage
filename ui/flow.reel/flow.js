@@ -306,6 +306,13 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function (index, offset) {
             this._scrollingOrigin = this.scroll;
             this._scrollingDestination = index - offset;
+            if (this._scrollingDestination > this._maxScroll) {
+                this._scrollingDestination = this._maxScroll;
+            } else {
+                if (this._scrollingDestination < this._minScroll) {
+                    this._scrollingDestination = this._minScroll;
+                }
+            }
             this._isScrolling = true;
             this._scrollingStartTime = Date.now();
             this._isTransitioningScroll = true;
@@ -683,7 +690,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     slide.time = iOffset.time;
                     slide.speed = iOffset.speed;
                     pos = this._splinePaths[0].getPositionAtTime(slide.time);
-                    if (pos) {
+                    if (pos && (slide.index >= 0)) {
                         iStyle = this._repetitionComponents[i].element.parentNode.style;
                         if (iStyle.opacity == 0) {
                             iStyle.opacity = 1;
@@ -702,10 +709,9 @@ var Flow = exports.Flow = Montage.create(Component, {
                                 iStyle[j] = pos[3][j];
                             }
                         }
-
                     } else {
                         iStyle = this._repetitionComponents[i].element.parentNode.style;
-                        if (iStyle.opacity != 0) {
+                        if (iStyle.opacity !== 0) {
                             iStyle.opacity = 0;
                             iStyle.webkitTransform = "scale3d(0, 0, 0)";
                         }
@@ -1056,6 +1062,66 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: null
     },
 
+    _minScroll: {
+        enumerable: false,
+        value: 0
+    },
+
+    minScroll: {
+        get: function () {
+            return this._minScroll;
+        },
+        set: function (value) {
+            this._minScroll = value;
+            if (value > this._maxScroll) {
+                this.maxScroll = value;
+            }
+            if (value > this._scroll) {
+                this.scroll = value;
+            }
+            this.length = this._maxScroll - this._minScroll;
+        }
+    },
+
+    _maxScroll: {
+        enumerable: false,
+        value: 0
+    },
+
+    maxScroll: {
+        get: function () {
+            return this._maxScroll;
+        },
+        set: function (value) {
+            this._maxScroll = value;
+            if (value < this._minScroll) {
+                this.minScroll = value;
+            }
+            if (value < this._scroll) {
+                this.scroll = value;
+            }
+            this.length = this.maxScroll - this.minScroll;
+        }
+    },
+
+    _length: {
+        enumerable: false,
+        value: 0
+    },
+
+    length: {
+        get: function () {
+            return this._length;
+        },
+        set: function (value) {
+            if (value < 0) {
+                this._length = 0;
+            } else {
+                this._length = value * 300;
+            }
+        }
+    },
+
     _scroll: {
         enumerable: false,
         value: 0
@@ -1066,7 +1132,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             return this._scroll;
         },
         set: function (value) {
-            if ((this._hasElasticScrolling)&&(this._selectedSlideIndex !== null)) {
+            /*if ((this._hasElasticScrolling)&&(this._selectedSlideIndex !== null)) {
                 var i,
                     n,
                     min = this._selectedSlideIndex - this._range,
@@ -1168,28 +1234,12 @@ var Flow = exports.Flow = Montage.create(Component, {
                 if (!this.isAnimating) {
                     this._animationInterval();
                 }
-            }
+            }*/
             this._scroll = value;
-            this._translateComposer.translateX = value * 300; // TODO Remove magic/spartan numbers
-            this.needsDraw = true;
-        }
-    },
-
-    _length: {
-        enumerable: false,
-        value: 0
-    },
-
-    length: {
-        get: function () {
-            return this._length;
-        },
-        set: function (value) {
-            if (value < 0) {
-                this._length = 0;
-            } else {
-                this._length = value;
+            if (this._translateComposer) {
+                this._translateComposer.translateX = (value - this._minScroll) * 300; // TODO Remove magic/spartan numbers
             }
+            this.needsDraw = true;
         }
     },
 
@@ -1277,7 +1327,7 @@ var Flow = exports.Flow = Montage.create(Component, {
         set: function (value) {
             if (this._isInputEnabled) {
                 this._translateX = value;
-                this.scroll = this._translateX / 300;
+                this.scroll = this._translateX / 300 + this._minScroll;
             }
         }
     }

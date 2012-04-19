@@ -21,11 +21,12 @@
                 "prototype": "montage/ui/composer/translate-composer",
                 "properties": {
                     "component": {"@": "owner"},
-                    "maxTranslateX": 250000,
                     "invertAxis": true
                 },
                 "bindings": {
-                    "element": {"<-": "@owner._element"}
+                    "element": {"<-": "@owner._element"},
+                    "maxTranslateX": {"<-": "@owner.length"},
+                    "translateX": {"->": "@owner.translateX"}
                 }
             },
             "owner": {
@@ -42,7 +43,6 @@
                     }
                 },
                 "bindings": {
-                    "translateX": {"<-": "@translateComposer.translateX"},
                     "isSelectionEnabled": {
                         "boundObject": {"@": "repetition"},
                         "boundObjectPropertyPath": "isSelectionEnabled"
