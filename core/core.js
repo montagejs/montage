@@ -746,7 +746,7 @@ Object.defineProperty(Object.prototype, "getProperty", {
             result,
             currentPathComponent,
             nextDotIndex,
-            remainingPath;
+            remainingPath = null;
         
         if (aPropertyPath == null) {
             return;
@@ -767,13 +767,13 @@ Object.defineProperty(Object.prototype, "getProperty", {
             if (nextDotIndex != -1) {
                 remainingPath = aPropertyPath.substr(nextDotIndex+1);
             }
-            visitedComponentCallback(this, currentPathComponent, result, undefined, remainingPath);
+            visitedComponentCallback(this, currentPathComponent, result, null, remainingPath);
         }
 
         if (visitedComponentCallback && result && -1 === dotIndex) {
 
             // We resolved the last object on the propertyPath, be sure to give the visitor a chance to handle this one
-            visitedComponentCallback(result, undefined, undefined, undefined);
+            visitedComponentCallback(result, null, null, null, null);
 
         } else if (result && dotIndex !== -1) {
             // We resolved that component of the path, but there's more path components; go to the next
@@ -960,7 +960,7 @@ Object.defineProperty(Array.prototype, "getProperty", {
             // TODO do we call this before or after finding the result (probably before to maintain the chain
             // of one invocation's discovered value being the context of the next invocation
             if (visitedComponentCallback) {
-                visitedComponentCallback(this, functionName + "()");
+                visitedComponentCallback(this, functionName + "()", null, null, null);
             }
 
             functionArgPropertyPath = aPropertyPath.substring(parenthesisStartIndex + 1, parenthesisEndIndex);
@@ -1020,7 +1020,7 @@ Object.defineProperty(Array.prototype, "getProperty", {
                 }
 
                 if (currentPathComponentEndIndex > 0) {
-                    result = result ? result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentPathComponentEndIndex + 1) : undefined;
+                    result = result ? result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentPathComponentEndIndex + 1) : null;
                 } else if (visitedComponentCallback && currentPathComponentEndIndex === -1 && result) {
                     // If we're at the end of the path, but have a result, visit it
                     //visitedComponentCallback(result, null, null, null, null);
