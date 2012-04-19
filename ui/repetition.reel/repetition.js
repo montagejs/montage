@@ -444,6 +444,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
 
             if (this._objects && this.indexMap) {
+            if (this._objects && this.indexMap && this._indexMapEnabled) {
                 objectCount = this.indexMap.length;
             }
 
