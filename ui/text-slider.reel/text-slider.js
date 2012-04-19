@@ -106,9 +106,17 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         }
     },
 
+    smallStepSize: {
+        enumerable: false,
+        value: 0.1
+    },
     stepSize: {
         enumerable: false,
         value: 1
+    },
+    largeStepSize: {
+        enumerable: false,
+        value: 10
     },
 
     _unit: {
@@ -225,17 +233,12 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         }
     },
 
-    handlePressStart: {
-        value: function(event) {
-            // reset translate composer ready for more translation
-            this._translateComposer.translateX = this._value;
-            this._translateComposer.translateY = this._value;
-        }
-    },
     handlePress: {
         value: function(event) {
-            this._isEditing = true;
-            this.needsDraw = true;
+            if (!this._isEditing) {
+                this._isEditing = true;
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -250,23 +253,43 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
     },
     handleKeydown: {
         value: function(event) {
-            if (event.keyCode === 38) {
-                // up
-                this.value += this.stepSize;
-                this.needsDraw = true;
-            } else if (event.keyCode === 40) {
-                // down
-                this.value -= this.stepSize;
-                this.needsDraw = true;
-            } else if (event.keyCode === 13) {
-                // enter
-                this._isEditing = false;
-                this.convertedValue = this._inputElement.value;
-                this.needsDraw = true;
-            } else if (event.keyCode === 27) {
-                // esc
-                this._isEditing = false;
-                this.needsDraw = true;
+            if (event.target === this._inputElement) {
+                if (event.keyCode === 38) {
+                    // up
+                    this.convertedValue = this._inputElement.value;
+                    var value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
+                    this.value += value;
+                    this.needsDraw = true;
+                } else if (event.keyCode === 40) {
+                    // down
+                    this.convertedValue = this._inputElement.value;
+                    this.value -= (event.shiftKey) ? this.largeStepSize : (event.shiftKey) ? this.smallStepSize : this.stepSize;
+                    this.needsDraw = true;
+                } else if (event.keyCode === 13) {
+                    // enter
+                    this._isEditing = false;
+                    this.convertedValue = this._inputElement.value;
+                    this.needsDraw = true;
+                } else if (event.keyCode === 27) {
+                    // esc
+                    this._isEditing = false;
+                    this.needsDraw = true;
+                }
+            } else {
+                if (event.shiftKey || event.keyCode === 16) {
+                    this._translateComposer.pointerSpeedMultiplier = this.largeStepSize / this.stepSize;
+                } else if (event.ctrlKey || event.keyCode === 17) {
+                    this._translateComposer.pointerSpeedMultiplier = this.smallStepSize / this.stepSize;
+                }
+            }
+        }
+    },
+    handleKeyup: {
+        value: function(event) {
+            if (event.shiftKey || event.keyCode === 16) {
+                this._translateComposer.pointerSpeedMultiplier = this.stepSize;
+            } else if (event.ctrlKey || event.keyCode === 17) {
+                this._translateComposer.pointerSpeedMultiplier = this.stepSize;
             }
         }
     },
@@ -274,8 +297,16 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
     handleTranslateStart: {
         value: function(event) {
             this._direction = null;
+
             this._startX = this._value;
             this._startY = this._value;
+
+            // reset translate composer ready for more translation
+            this._translateComposer.translateX = this._value;
+            this._translateComposer.translateY = this._value;
+
+            document.addEventListener("keydown", this, false);
+            document.addEventListener("keyup", this, false);
         }
     },
     handleTranslate: {
@@ -308,6 +339,8 @@ var TextSlider = exports.TextSlider = Montage.create(Component, {
         value: function(event) {
             this._direction = null;
             this.needsDraw = true;
+            document.removeEventListener("keydown", this, false);
+            document.removeEventListener("keyup", this, false);
         }
     }
 
