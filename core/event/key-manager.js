@@ -631,7 +631,8 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             var thisRef = this,
                 eventType = event.type,
                 keyCode = event.keyCode,
-                modifiers;
+                modifiers,
+                value;
 
             if (this._opera) {
                 if (this._operaModifierTimeout) {
@@ -643,22 +644,23 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             if (eventType == "keydown" || eventType == "keyup") {
                 if (this._opera) {
                     // Opera is not very good at keeping track of which modifiers are pressed!
+                    value = (eventType == "keydown");
                     if (keyCode == KEYNAMES_TO_KEYCODES.shift) {
-                        this._shiftKey = true;
+                        this._shiftKey = value;
                     } else if (keyCode == KEYNAMES_TO_KEYCODES.alt) {
-                        this._altKey = true;
+                        this._altKey = value;
                     } else if (keyCode == KEYNAMES_TO_KEYCODES.meta) {
                         if (this._mac) {
-                            this._metaKey = true;
+                            this._metaKey = value;
                         } else {
-                            this._ctrlKey = true;           // TODO: Needs to be tested on Unix and Windows
+                            this._ctrlKey = value;           // TODO: Needs to be tested on Unix and Windows
                         }
                     } else if (keyCode == KEYNAMES_TO_KEYCODES.control) {
-                        this._ctrlKey = true;
+                        this._ctrlKey = value;
                     }
 
                     if (eventType == "keyup") {
-                        // Setup a timeout to force reset the modifier state 5 seconds after the last key up
+                        // Setup a timeout to force reset the modifier state ~3 seconds after the last key up
                         // This is to recover when we miss a keyup event which seems to occurs once in a while with Opera
                         this._operaModifierTimeout = setTimeout(function(){
                             thisRef._shiftKey = false;
@@ -666,7 +668,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                             thisRef._metaKey = false;
                             thisRef._ctrlKey = false;
                             thisRef._operaModifierTimeout = null;
-                        }, 5000);
+                        }, this._cleanupDuration + 1000);
                     }
                 } else {
                     this._shiftKey = event.shiftKey;
@@ -739,7 +741,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             var thisRef = this,
                 stopped = false,
                 keyUp = event.type == "keyup",
-                longPress = event.type == "keyup",
                 eventType = keyUp ? KEYRELEASE_EVENT_TYPE : KEYPRESS_EVENT_TYPE,
                 nbrMatches = matches.length,
                 keyComposer,
@@ -854,6 +855,11 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             }
             mutableEvent.target = target;
             mutableEvent.eventPhase = CAPTURING_PHASE;
+            if (event.type == "keypress") {
+                // Fix for Opera who think KeyPress is a typo and therefore change it on its own to keypress.
+                mutableEvent.type = KEYPRESS_EVENT_TYPE;
+                eventType = KEYPRESS_EVENT_TYPE;
+            }
 
             // Figure out who to distribute the event to
             currentEventHandlers = this._eventListenersForComposerKeyEvent(keyComposer, mutableEvent);
@@ -956,7 +962,8 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 return;
             }
             // console.log("--- DISCOVERY: ", eventType, "---")
-            keyComposerListenersForEventType = defaultEventManager.registeredEventListeners[eventType][composerKey.uuid];
+            keyComposerListenersForEventType = defaultEventManager.registeredEventListeners[eventType];
+            keyComposerListenersForEventType = keyComposerListenersForEventType ? keyComposerListenersForEventType[composerKey.uuid] : null;
             if (keyComposerListenersForEventType) {
                 do {
                     if (keyComposerListenersForEventType.target.element === bubblingTarget) {
