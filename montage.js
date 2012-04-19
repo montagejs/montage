@@ -55,7 +55,7 @@ if (typeof window !== "undefined") {
         var platform = exports.getPlatform();
 
         // Platform dependent
-        platform.bootstrap(function (Require, Promise, URL) {
+        platform.bootstrap(function (Require, Promise, URL, Clock) {
             var params = platform.getParams();
             var config = platform.getConfig();
 
@@ -85,7 +85,8 @@ if (typeof window !== "undefined") {
             Require.loadPackage(montageLocation, config)
             .then(function (montageRequire) {
                 montageRequire.inject("core/promise", Promise);
-                montageRequire.inject("core/shim/timers", {});
+                montageRequire.inject("core/next-tick", Clock);
+                montageRequire.inject("core/mini-url", URL);
 
                 // install the linter, which loads on the first error
                 config.lint = function (module) {
@@ -311,7 +312,7 @@ if (typeof window !== "undefined") {
         },
 
         bootstrap: function (callback) {
-            var base, Require, DOM, Promise, URL;
+            var base, Require, DOM, Promise, URL, Clock;
 
             var params = this.getParams();
 
@@ -382,6 +383,7 @@ if (typeof window !== "undefined") {
 
             // execute bootstrap scripts
             function allModulesLoaded() {
+                Clock = bootRequire("core/next-tick");
                 Promise = bootRequire("core/promise");
                 URL = bootRequire("core/mini-url");
                 Require = bootRequire("require/require");
@@ -391,7 +393,7 @@ if (typeof window !== "undefined") {
 
             function callbackIfReady() {
                 if (DOM && Require) {
-                    callback(Require, Promise, URL);
+                    callback(Require, Promise, URL, Clock);
                 }
             }
 
