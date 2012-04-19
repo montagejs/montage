@@ -121,6 +121,40 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         expect(test.translate_composer.translateX).toBeGreaterThan(149);
                         expect(test.translate_composer.translateY).toBeGreaterThan(149);
+                        test.translate_composer.pointerSpeedMultiplier = 1;
+
+                    });
+                });
+            });
+            describe("hasMomentum", function() {
+                it("keeps translating after mouse is released", function() {
+                    test.translate_composer.hasMomentum = true;
+                    test.translate_composer.translateX = 0;
+                    test.translate_composer.translateY = 0;
+
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                        waits(100);
+                        runs(function(){
+                            expect(test.translate_composer.translateX).toBeGreaterThan(55);
+                            expect(test.translate_composer.translateY).toBeGreaterThan(55);
+                            test.translate_composer.hasMomentum = false;
+                        });
+                    });
+                });
+                it("keeps translating after mouse is released when inverted", function() {
+                    test.translate_composer.hasMomentum = true;
+                    test.translate_composer.invertAxis = true;
+                    test.translate_composer.translateX = 0;
+                    test.translate_composer.translateY = 0;
+
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                        waits(100);
+                        runs(function(){
+                            expect(test.translate_composer.translateX).toBeLessThan(45);
+                            expect(test.translate_composer.translateY).toBeLessThan(45);
+                            test.translate_composer.hasMomentum = false;
+                            test.translate_composer.invertAxis = false;
+                        });
                     });
                 });
             });
