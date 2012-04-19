@@ -70,25 +70,72 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         enumerable: false
     },
 
+    /**
+     @private
+     */
+    _dirty: {
+        value: true
+    },
+
     prepareForDraw: {
         value: function() {
-            this._element.innerHTML = "";
-            if (!this._element.firstChild) {
-                this._element.appendChild(document.createTextNode(""));
-            }
-            this._valueNode = this._element.firstChild;
         }
     },
 
+    __range: {
+        value: null
+    },
+
+    _range: {
+        get: function() {
+            if (this.__range === null) {
+                var range = document.createRange();
+                range.selectNodeContents(this.element);
+                this.__range = range;
+            }
+            return this.__range;
+        }
+    },
+
+    allowedElements: {
+        value: null
+    },
 
     draw: {
         value: function() {
-            var displayValue = (this.value || 0 === this.value ) ? this._value : this.defaultValue;
+            // get correct value
+            var displayValue = (this.value || 0 === this.value ) ? this._value : this.defaultValue,
+                allowedElements, documentFragment, range = this._range, valueNode = this._valueNode;
 
             if (this.converter) {
                 displayValue = this.converter.convert(displayValue);
             }
-            this._valueNode.data = displayValue;
+
+            //push to DOM
+            if(this.allowedElements) {
+                allowedElements = this.allowedElements;
+                if(this._dirty) {
+                    range.deleteContents();
+                    // dereference textnode for non html content
+                    valueNode = null;
+                }
+                documentFragment = this.__range.createContextualFragment( displayValue );
+                if (allowedElements !== null) {
+                    var elements = documentFragment.querySelectorAll("*:not(" + allowedElements.join(",") + ")");
+                    if (elements.length=== 0) {
+                        range.insertNode(documentFragment);
+                    } else {
+                        console.log("Some Elements Not Allowed " , elements);
+                    }
+                }
+            } else {
+                if(this._dirty) {
+                    range.deleteContents();
+                    this._valueNode = valueNode = document.createTextNode("");
+                    range.insertNode(valueNode);
+                }
+                valueNode.data = displayValue;
+            }
         }
     }
 
