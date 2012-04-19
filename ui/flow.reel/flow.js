@@ -231,15 +231,16 @@ var Flow = exports.Flow = Montage.create(Component, {
             return this._scrollingTransitionTimingFunction;
         },
         set: function (timingFunction) {
-            var string = timingFunction + "";
+            var string = timingFunction + "",
+                bezier,
+                i;
 
             if (this._timingFunctions.hasOwnProperty(string)) {
                 this._scrollingTransitionTimingFunction = string;
                 this._scrollingTransitionTimingFunctionBezier = this._timingFunctions[string];
             } else {
                 if ((string.substr(0, 13) === "cubic-bezier(") && (string.substr(string.length - 1, 1) === ")")) {
-                    var bezier = string.substr(13, string.length - 14).split(","),
-                        i;
+                    bezier = string.substr(13, string.length - 14).split(",");
 
                     if (bezier.length === 4) {
                         for (i = 0; i < 4; i++) {
@@ -638,14 +639,16 @@ var Flow = exports.Flow = Montage.create(Component, {
             var intersections,
                 i,
                 j,
-                newIndexMap;
+                newIndexMap,
+                time,
+                interpolant;
 
             newIndexMap = this._tmpIndexMap.wipe();
             intersections = this._intersections.wipe();
 
             if (this._isTransitioningScroll) {
-                var time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds, // TODO: division by zero
-                    interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
+                time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds; // TODO: division by zero
+                interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
 
                 if (time < 1) {
                     this.scroll = this._scrollingOrigin + (this._scrollingDestination - this._scrollingOrigin) * interpolant;
