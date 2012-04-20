@@ -47,7 +47,7 @@ function usage() {
     fileNames.forEach(function(filename) {
         var stats = fs.statSync(path.join(options.minitHome,"templates",filename));
         if (stats.isDirectory()) {
-            console.log("Usage: ./minit.js " + filename + " " + require("./templates/" + filename).Template.usage());
+            console.log("Usage: minit " + filename + " " + require("./templates/" + filename).Template.usage());
         }
     });
 }
