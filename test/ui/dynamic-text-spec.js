@@ -43,44 +43,4 @@ var testPage = TestPageLoader.queueTest("dynamic-text-test", function() {
 
     });
 
-    describe("DynamicText using html", function() {
-        it("can be created", function() {
-            expect(test.htmlText).toBeDefined();
-        });
-        it("wipes out it's content in initialization", function() {
-            expect(testPage.getElementById("bar2")).toBeNull();
-        });
-        it("plain text value can be set", function() {
-            test.htmlText.value = "foo";
-            testPage.waitForDraw();
-            runs(function() {
-                expect(test.htmlText.element.textContent).toEqual("foo");
-            })
-        });
-        it("plain text value can be set when allowedElements is set to null", function() {
-            test.htmlText.allowedElements = null;
-            test.htmlText.value = "bar";
-            testPage.waitForDraw();
-            runs(function() {
-                expect(test.htmlText.element.textContent).toEqual("bar");
-            })
-        });
-        it("html value can be set", function() {
-            test.htmlText.allowedElements = ["span"];
-            test.htmlText.value = "<span>bar</span>";
-            testPage.waitForDraw();
-            runs(function() {
-                expect(test.htmlText.element.innerHTML).toEqual("<span>bar</span>");
-            })
-        });
-        it("html value cannot be set if an element isn't allowed", function() {
-            test.htmlText.allowedElements = ["span"];
-            test.htmlText.value = '<span><a href="#out">bar</a></span>';
-            testPage.waitForDraw();
-            runs(function() {
-                expect(test.htmlText.element.innerHTML).toEqual('');
-            })
-        });
-    });
-
 });

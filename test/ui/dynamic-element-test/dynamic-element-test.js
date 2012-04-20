@@ -8,13 +8,8 @@ var Montage = require("montage").Montage,
 
 var Test = exports.TestController = Montage.create(TestController, {
 
-    dynamictext: {
-        value: null
-    },
-
-    plainText: {
+    dynamicElement: {
         value: null
     }
-
 });
 exports.theTest = Test.create();

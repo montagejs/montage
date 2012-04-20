@@ -20,15 +20,17 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
     hasTemplate: {
         value: false
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+      Description TODO
+      @private
+    */
     _value: {
         enumerable: false,
         value: null
     },
-/**
+
+    /**
         Description TODO
         @type {Function}
         @default null
@@ -45,7 +47,8 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         },
         serializable: true
     },
-/**
+
+    /**
         The Montage converted used to convert or format values displayed by this DynamicText instance.
         @type {Property}
         @default null
@@ -53,7 +56,8 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
     converter: {
         value: null
     },
-/**
+
+    /**
         The default string value assigned to the DynamicText instance.
         @type {Property}
         @default {String} ""
@@ -70,72 +74,32 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         enumerable: false
     },
 
-    /**
-     @private
-     */
-    _dirty: {
-        value: true
+    _range: {
+        value: null
     },
 
     prepareForDraw: {
         value: function() {
+            var range = this._range = document.createRange();
+            range.selectNodeContents(this.element);
+            range.deleteContents();
+            this._valueNode = document.createTextNode("");
+            range.insertNode(this._valueNode);
         }
-    },
-
-    __range: {
-        value: null
-    },
-
-    _range: {
-        get: function() {
-            if (this.__range === null) {
-                var range = document.createRange();
-                range.selectNodeContents(this.element);
-                this.__range = range;
-            }
-            return this.__range;
-        }
-    },
-
-    allowedElements: {
-        value: null
     },
 
     draw: {
         value: function() {
             // get correct value
             var displayValue = (this.value || 0 === this.value ) ? this._value : this.defaultValue,
-                allowedElements, documentFragment, range = this._range, valueNode = this._valueNode;
+                valueNode = this._valueNode;
 
             if (this.converter) {
                 displayValue = this.converter.convert(displayValue);
             }
 
             //push to DOM
-            if(this.allowedElements) {
-                allowedElements = this.allowedElements;
-                if(this._dirty) {
-                    range.deleteContents();
-                    // dereference textnode for non html content
-                    valueNode = null;
-                }
-                documentFragment = this.__range.createContextualFragment( displayValue );
-                if (allowedElements !== null) {
-                    var elements = documentFragment.querySelectorAll("*:not(" + allowedElements.join(",") + ")");
-                    if (elements.length=== 0) {
-                        range.insertNode(documentFragment);
-                    } else {
-                        console.log("Some Elements Not Allowed " , elements);
-                    }
-                }
-            } else {
-                if(this._dirty) {
-                    range.deleteContents();
-                    this._valueNode = valueNode = document.createTextNode("");
-                    range.insertNode(valueNode);
-                }
-                valueNode.data = displayValue;
-            }
+            valueNode.data = displayValue;
         }
     }
 
