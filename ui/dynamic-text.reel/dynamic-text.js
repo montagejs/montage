@@ -21,18 +21,13 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         value: false
     },
 
-    /**
-      Description TODO
-      @private
-    */
     _value: {
-        enumerable: false,
         value: null
     },
 
     /**
         Description TODO
-        @type {Function}
+        @type {Property}
         @default null
     */
     value: {
@@ -41,9 +36,9 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         },
         set: function(value) {
             if (this._value !== value) {
+                this._value = value;
                 this.needsDraw = true;
             }
-            this._value = value;
         },
         serializable: true
     },
@@ -66,21 +61,17 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         value: ""
     },
 
-    /**
-     @private
-     */
     _valueNode: {
-        value: null,
-        enumerable: false
+        value: null
     },
 
-    _range: {
-        value: null
+    _RANGE: {
+        value: document.createRange()
     },
 
     prepareForDraw: {
         value: function() {
-            var range = this._range = document.createRange();
+            var range = this._RANGE;
             range.selectNodeContents(this.element);
             range.deleteContents();
             this._valueNode = document.createTextNode("");
@@ -91,15 +82,14 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
     draw: {
         value: function() {
             // get correct value
-            var displayValue = (this.value || 0 === this.value ) ? this._value : this.defaultValue,
-                valueNode = this._valueNode;
+            var value = this._value, displayValue = (value || 0 === value ) ? value : this.defaultValue;
 
             if (this.converter) {
                 displayValue = this.converter.convert(displayValue);
             }
 
             //push to DOM
-            valueNode.data = displayValue;
+            this._valueNode.data = displayValue;
         }
     }
 
