@@ -2,12 +2,19 @@
 
 -   **Draw  cycle changes**
 
-    ...
+    After the willDraw phase all the components needing draw are sorted by their level in the
+    component hierarchy. They are then processed in reverse order. This ensures that all the
+    childComponents needing draw have drawn by the time the parent's draw is called. The didDraw 
+    uses the same list but processes the componets in top down order (the reverse of draw)
 
 -   **Components**
 
     Autocomplete Textfield Added
-        ...
+        An Autocomplete Textfield extends the Textfield component to support suggestions for the user to pick values.
+        The HTML markup for the Autocomplete is the same as the standard HTML5 markup (<input>).
+        Wrapping the <input> HTMLElement as a Montage Autocomplete component adds Data Binding support for all
+        writable attributes of this element and allows the Developer to provide suggestions to the user based
+        on the entered value.
 
     Popup
         Support HTMLElement and Montage Component for the anchor property
