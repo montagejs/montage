@@ -14,6 +14,7 @@
 */
 
 var Montage = require("montage").Montage,
+    ChangeNotification = require("core/change-notification").ChangeNotification,
     ChangeEventConstructor = require("core/event/mutable-event")._Change,
     ChangeTypes = require("core/event/mutable-event").ChangeTypes,
     Serializer = require("core/serializer").Serializer,
