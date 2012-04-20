@@ -312,7 +312,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 keyComposer._keyCode = modifiersAndKey.keyCode;
 
                 // console.log("KEY REGISTERED:", keyComposer.identifier, normalizedKeys ,map);
-
                 this._registerListeners();
             }
         }
@@ -450,7 +449,8 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
         value: function(event) {
             var keyCode,
                 identifierCode,
-                submap;
+                submap,
+                stopped = false;
 
             // console.log("  captureKeydown:", event.keyCode, event.charCode, event.keyIdentifier);
 
@@ -463,11 +463,11 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
 
                 // Check the keyCode for a match...
                 if (keyCode && submap[keyCode]) {
-                    this._dispatchComposerKeyMatches(submap[keyCode], event);
+                    stopped = this._dispatchComposerKeyMatches(submap[keyCode], event);
                 }
 
                 // Check the keyIdentifier for a match
-                if (event.keyIdentifier) {
+                if (!stopped && event.keyIdentifier) {
                     identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
                         this._decodeKeyIdentifier(event.keyIdentifier);
                     if (identifierCode && submap[identifierCode]) {
@@ -490,7 +490,8 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             var charCode = event.charCode,
                 keyCode,
                 identifierCode,
-                submap;
+                submap,
+                stopped = false;
 
             // console.log("***  captureKeypress:", keyCode, event.charCode, event.keyIdentifier, event);
             this._preprocessKeyEvent(event);
@@ -503,16 +504,16 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
 
                 // Check the keyCode for a match...
                 if (keyCode && submap[keyCode]) {
-                    this._dispatchComposerKeyMatches(submap[keyCode], event);
+                    stopped = this._dispatchComposerKeyMatches(submap[keyCode], event);
                 }
 
                 // Check the charCode for a match...
-                if (charCode && submap[charCode]) {
-                    this._dispatchComposerKeyMatches(submap[charCode], event);
+                if (!stopped && charCode && submap[charCode]) {
+                    stopped = this._dispatchComposerKeyMatches(submap[charCode], event);
                 }
 
                 // Check the keyIdentifier for a match
-                if (event.keyIdentifier) {
+                if (!stopped && event.keyIdentifier) {
                     identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
                         this._decodeKeyIdentifier(event.keyIdentifier);
                     if (identifierCode && submap[identifierCode]) {
@@ -537,7 +538,8 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 submap,
                 dispatchedKeyCode = 0,
                 triggeredKey,
-                uuid;
+                uuid,
+                stopped = false;
 
             // Dispatch a keyup event for all composerKey triggered during the keydown/keypress phase
             // and for the current match
@@ -552,25 +554,27 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
 
                 // Check the keyCode for a match...
                 if (keyCode && submap[keyCode]) {
-                    this._dispatchComposerKeyMatches(submap[keyCode], event);
+                    stopped = this._dispatchComposerKeyMatches(submap[keyCode], event);
                     dispatchedKeyCode = keyCode;
                 }
 
                 // Check the keyIdentifier for a match
-                if (event.keyIdentifier) {
+                if (stopped && event.keyIdentifier) {
                     identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
                         this._decodeKeyIdentifier(event.keyIdentifier);
                     if (identifierCode && identifierCode !== dispatchedKeyCode && submap[identifierCode]) {
-                        this._dispatchComposerKeyMatches(submap[identifierCode], event);
+                        stopped = this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
                 }
             }
 
             // In case the user release the modifier key before releasing the main key, we still need to fire a keyup event
-            for (uuid in this._triggeredKeys) {
-                triggeredKey = this._triggeredKeys[uuid];
-                if (triggeredKey._keyCode == keyCode || triggeredKey._keyCode == identifierCode) {
-                    this._dispatchComposerKeyMatches([triggeredKey], event);
+            if (!stopped) {
+                for (uuid in this._triggeredKeys) {
+                    triggeredKey = this._triggeredKeys[uuid];
+                    if (triggeredKey._keyCode == keyCode || triggeredKey._keyCode == identifierCode) {
+                        this._dispatchComposerKeyMatches([triggeredKey], event);
+                    }
                 }
             }
 
@@ -746,7 +750,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 keyComposer,
                 target = event.target,
                 keyComposerEvent,
-                triggeredKeys = Object.keys(this._triggeredKeys),
+                triggeredKeys,
                 i;
 
             // matches could be either an array of matches or an array of keyComposers
@@ -754,6 +758,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 keyComposer = matches[i].object || matches[i];
 
                 if (keyUp) {
+                    triggeredKeys = Object.keys(this._triggeredKeys);
                     if (triggeredKeys.indexOf(keyComposer.uuid) == -1) {
                         // Do not generate a keyup event if the composerKey has not been triggered on keydow or keypress
                         continue;
@@ -824,6 +829,8 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                     }
                 }
             }
+
+            return stopped;
         }
     },
 
