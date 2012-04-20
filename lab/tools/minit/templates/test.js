@@ -12,7 +12,7 @@ exports.Template = Object.create(TemplateBase, {
 
     usage: {
         value: function() {
-            return TemplateBase.usage.apply(this, arguments) + " title";
+            return TemplateBase.usage.apply(this, arguments) + " <title>";
         }
     },
 
