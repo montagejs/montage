@@ -344,10 +344,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             // Track that the indexMap changed what is appearing at the given index
             // so that we can force it to not transition
-            if (!this._indexMapAffectedIndexes) {
-                this._indexMapAffectedIndexes = [];
-            }
-            this._indexMapAffectedIndexes.push(actual);
+            this._indexMapAffectedIndexes[actual] = true;
+            this._indexMapChanged = true;
 
             // Don't update if the end-user forced no update, they might be doing a bunch of modifications
             // and want to manually refresh the indexMap when they're done.
@@ -377,9 +375,21 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     },
 
+    _indexMapChanged: {
+        enumerable: false,
+        value: false
+    },
+
     _indexMapAffectedIndexes: {
         enumerable: false,
-        value: null
+        distinct: true,
+        value: {}
+    },
+
+    _dirtyIndexes: {
+        enumerable: false,
+        distinct: true,
+        value: {}
     },
 
  /**
@@ -741,6 +751,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         set: function(value) {
             this._selectedIndexes = value;
 
+            this._markIndexesDirty(value);
+
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
@@ -789,21 +801,28 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         },
         set: function(value) {
 
-            if (!this._activeIndexesToClearOnDraw) {
-                this._activeIndexesToClearOnDraw = this._activeIndexes ? this.activeIndexes : [];
-            }
-
-            if (this._activeIndexes || 0 === this._activeIndexes) {
-                this._activeIndexesToClearOnDraw = this._activeIndexesToClearOnDraw.concat(this._activeIndexes);
-            }
-
             this._activeIndexes = value;
+
+            this._markIndexesDirty(value);
 
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
         }
     },
+
+    _markIndexesDirty: {
+        value: function(indexes) {
+
+            if (indexes) {
+                for (var i = 0, indexCount = indexes.length; i < indexCount; i++) {
+                    this._dirtyIndexes[this._indexMap ? this._indexMap.indexOf(indexes[i]) : indexes[i]] = true;
+                }
+            }
+
+        }
+    },
+
 /**
   Description TODO
   @private
@@ -1063,7 +1082,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             activatableElementCount,
             iterationElement,
             iterationElementClassList,
-            indexMapChanged = this._indexMapAffectedIndexes;
+            indexMapChanged = this._indexMapChanged,
+            activeIndex,
+            selectedIndex;
 
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
@@ -1088,15 +1109,18 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 iterationElement = iterationElements.item(i);
                 if (iterationElement) {
 
-                    iterationElementClassList = iterationElement.classList;
+                    if (this._dirtyIndexes[i]) {
+                        iterationElementClassList = iterationElement.classList;
 
-                    iterationElementClassList.remove("active");
-                    iterationElementClassList.remove("selected");
-
-                    if (!indexMapChanged) {
+                        iterationElementClassList.remove("active");
+                        iterationElementClassList.remove("selected");
                         iterationElementClassList.remove("no-transition");
-                    } else if (this._indexMapAffectedIndexes.indexOf(i) > -1) {
-                        iterationElementClassList.add("no-transition");
+
+                        if (indexMapChanged && this._indexMapAffectedIndexes[i]) {
+                            iterationElementClassList.add("no-transition");
+                            this._dirtyIndexes[i] = false;
+                        }
+
                     }
                 }
             }
@@ -1105,7 +1129,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         // We've accounted for drawing given an indexMap change, schedule the next draw to clean up from that
         // by re-enabling transitions
         if (indexMapChanged) {
-            this._indexMapAffectedIndexes = null;
+            this._indexMapAffectedIndexes.wipe();
+            this._indexMapChanged = false;
             this.needsDraw = true;
         }
 
@@ -1162,9 +1187,12 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             selectableElementCount = Math.min(selectionCount, iterationElements.length);
 
             for (i = 0; i < selectableElementCount; i++) {
-                iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this.selectedIndexes[i]): this.selectedIndexes[i]));
+                selectedIndex = this.indexMap ? this.indexMap.indexOf(this.selectedIndexes[i]): this.selectedIndexes[i];
+                iterationElement = iterationElements.item(selectedIndex);
                 if (iterationElement) {
                     iterationElement.classList.add("selected");
+                    //Mark the rediscovered selected index as dirty
+                    this._dirtyIndexes[selectedIndex] = true;
                 }
             }
         }
@@ -1178,9 +1206,12 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             activatableElementCount = Math.min(activatedCount, iterationElements.length);
 
             for (i = 0; i < activatableElementCount; i++) {
-                iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._activeIndexes[i]): this._activeIndexes[i]));
+                activeIndex = this.indexMap ? this.indexMap.indexOf(this._activeIndexes[i]): this._activeIndexes[i];
+                iterationElement = iterationElements.item(activeIndex);
                 if (iterationElement) {
                     iterationElement.classList.add("active");
+                    //Mark the rediscovered active index as dirty
+                    this._dirtyIndexes[activeIndex] = true;
                 }
             }
         }
