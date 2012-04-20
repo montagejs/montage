@@ -502,6 +502,7 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
     },
     handleWillChange: {
         value: function(notification) {
+            notification.phase = "before";
             this.handleChange(notification, this.willChangeListeners);
         }
     },
@@ -514,18 +515,20 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
             // TODO: maybe I should replicate this
             if (arguments.length < 2) {
                 listeners = this.changeListeners;
+                notification.phase = "after";
                 this.updateDependencies(notification);
             }
 
             // TODO: I need to know the index of dependency, should this be in the notification?
             if (listeners) {
                 notification._dependenciesIndex = null;
+                notification.currentTarget = this.target;
+                notification.currentPropertyPath = this.propertyPath;
                 for (var key in listeners) {
                     listener = listeners[key];
                     if (dependentDescriptorsIndex) {
                         notification._dependenciesIndex = dependentDescriptorsIndex[key];
                     }
-                    notification.currentTarget = this.target;
                     listener.listenerFunction.call(listener.listenerTarget, notification);
                 }
                 notification._dependenciesIndex = dependenciesIndex;
@@ -736,11 +739,13 @@ var PrefixedPropertyDescriptor = {
 };
 
 var PropertyChangeNotification = Object.create(null, {
+    phase: {writable: true, value: null},
     target: {writable: true, value: null},
     propertyPath: {writable: true, value: null},
     minus: {writable: true, value: null},
     plus: {writable: true, value: null},
     currentTarget: {writable: true, value: null},
+    currentPropertyPath: {writable: true, value: null},
     isMutation: {writable: true, value: false}
 });
 
