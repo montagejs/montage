@@ -1001,7 +1001,9 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "pop", {
     enumerable: false,
     configurable: true,
     value: function() {
-        return this._dispatchArrayChangeNotification("_pop", arguments, this.length-1, 1, []);
+        if (this.length > 0) {
+            return this._dispatchArrayChangeNotification("_pop", arguments, this.length-1, 1, []);
+        }
     }
 });
 
