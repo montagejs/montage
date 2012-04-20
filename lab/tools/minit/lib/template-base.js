@@ -14,7 +14,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
 
     usage: {
         value: function() {
-            return "name";
+            return "<name>";
         }
     },
 
