@@ -12,7 +12,7 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
 /**
-    Description TODO
+    The DynamicElement is a general purpose component that aims to expose all the properties of the element as a component.
     @class module:"montage/ui/dynamic-element.reel".DynamicElement
     @extends module:montage/ui/component.Component
 */
@@ -100,6 +100,7 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
             //push to DOM
             if (allowedTagNames !== null) {
                 //cleanup
+                this._contentNode = null;
                 range.deleteContents();
                 //test for tag white list
                 content = range.createContextualFragment( displayValue );

@@ -38,6 +38,15 @@ var testPage = TestPageLoader.queueTest("dynamic-element-test", function() {
                     expect(test.dynamicElement.element.textContent).toEqual("bar");
                 })
             });
+            it("plain text value can be set when allowedElements is set to ['b']", function() {
+                test.dynamicElement.allowedTagNames = ["b"];
+                test.dynamicElement.innerHTML = "bar";
+                testPage.waitForDraw();
+                runs(function() {
+                    expect(test.dynamicElement.element.textContent).toEqual("bar");
+                    expect(test.dynamicElement._contentNode).toBeNull();
+                })
+            });
             it("html value can be set", function() {
                 test.dynamicElement.allowedTagNames = ["span"];
                 test.dynamicElement.innerHTML = "<span>bar</span>";
