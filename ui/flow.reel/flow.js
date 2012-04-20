@@ -842,6 +842,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             } else {
                 this._objectsForRepetition = value;
             }
+            this.needsDraw = true;
         }
     },
 
