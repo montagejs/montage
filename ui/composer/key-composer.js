@@ -204,6 +204,8 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
         value: function(type, listener, useCapture) {
             // Optimisation so that we don't dispatch an event if we do not need to
             // console.log("--- addEventListener", this.identifier);
+            var component = this.component;
+
             Composer.addEventListener.call(this, type, listener, useCapture);
 
             if (type == KEYPRESS_EVENT_TYPE || type == KEYLONGPRESS_EVENT_TYPE || type == KEYRELEASE_EVENT_TYPE) {
@@ -212,9 +214,18 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
                     this._shouldDispatchLongPress = true;
                 }
 
-                if (this._isLoaded && !this._keyRegistered) {
-                    KeyManagerProxy.defaultKeyManager.registerKey(this);
-                    this._keyRegistered = true;
+                if (this._isLoaded) {
+                    if (!this._keyRegistered) {
+                        KeyManagerProxy.defaultKeyManager.registerKey(this);
+                        this._keyRegistered = true;
+                    }
+                } else if (component && typeof component.addComposer !== "function") {
+                    // this keyComposer is associated with an element, let's make it a global key
+                    if (!this.element) {
+                        this.element = window;
+                    }
+                    // this keyComposer is not attached to a UI Component, let's load it manually
+                    this.load();
                 }
             }
         }
@@ -227,6 +238,32 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     didCreate: {
         value: function() {
             // console.log("KEY CREATED")
+        }
+    },
+
+    /**
+      Called when a composer is part of a template serialization.  It's responsible for calling addComposer on
+      the component or call load on the composer.
+      @private
+    */
+    deserializedFromTemplate: {
+        value: function() {
+            console.log("--- deserializedFromTemplate");
+            var thisRef = this,
+                component = this.component;
+
+            if (component) {
+                if (typeof component.addComposer == "function") {
+                    component.addComposer(this);
+                } else if (!this._isLoaded) {
+                    // this keyComposer is associated with an element, let's make it a global key
+                    if (!this.element) {
+                        this.element = window;
+                    }
+                    // this keyComposer is not attached to a UI Component, let's load it manually
+                    this.load();
+                }
+            }
         }
     }
 });
