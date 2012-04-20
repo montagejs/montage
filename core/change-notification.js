@@ -291,18 +291,16 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                 }
             } else {
                 target.getProperty(path, null, null, function(target, propertyName, result, index, remainingPath) {
-                    if (typeof propertyName !== "undefined") {
-                        ignoreMutation = mutation ? remainingPath != null : true;
-                        if (beforeChange) {
-                            target.addPropertyChangeListener(propertyName, self, true, ignoreMutation);
-                        }
-                        // we always need to listen to the "afterChange" notification because
-                        // we only have access to the plus object at that time.
-                        // we need that object in order to install the new listeners
-                        // on the remainingPath.
-                        target.addPropertyChangeListener(propertyName, self, false, ignoreMutation);
-                        self.registerDependency(target, propertyName, remainingPath);
+                    ignoreMutation = mutation ? remainingPath != null : true;
+                    if (beforeChange) {
+                        target.addPropertyChangeListener(propertyName, self, true, ignoreMutation);
                     }
+                    // we always need to listen to the "afterChange" notification because
+                    // we only have access to the plus object at that time.
+                    // we need that object in order to install the new listeners
+                    // on the remainingPath.
+                    target.addPropertyChangeListener(propertyName, self, false, ignoreMutation);
+                    self.registerDependency(target, propertyName, remainingPath);
                 });
             }
 
@@ -354,30 +352,26 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
             // remove listeners from the old value
             if (oldValue != null) {
                 oldValue.getProperty(remainingPath, null, null, function(target, propertyName, result, index, remainingPath) {
-                    if (typeof propertyName !== "undefined") {
-                        if (self.hasWillChangeDependencies) {
-                            target.removePropertyChangeListener(propertyName, self, true);
-                        }
-                        if (self.hasChangeDependencies) {
-                            target.removePropertyChangeListener(propertyName, self);
-                        }
-                        self.unregisterDependency(target, propertyName, remainingPath);
+                    if (self.hasWillChangeDependencies) {
+                        target.removePropertyChangeListener(propertyName, self, true);
                     }
+                    if (self.hasChangeDependencies) {
+                        target.removePropertyChangeListener(propertyName, self);
+                    }
+                    self.unregisterDependency(target, propertyName, remainingPath);
                 });
             }
 
             // add listeners to the new value
             if (newValue != null) {
                 newValue.getProperty(remainingPath, null, null, function(target, propertyName, result, index, remainingPath) {
-                    if (typeof propertyName !== "undefined") {
-                        if (self.hasWillChangeDependencies) {
-                            target.addPropertyChangeListener(propertyName, self, true, remainingPath != null);
-                        }
-                        if (self.hasChangeDependencies) {
-                            target.addPropertyChangeListener(propertyName, self, false, remainingPath != null);
-                        }
-                        self.registerDependency(target, propertyName, remainingPath);
+                    if (self.hasWillChangeDependencies) {
+                        target.addPropertyChangeListener(propertyName, self, true, remainingPath != null);
                     }
+                    if (self.hasChangeDependencies) {
+                        target.addPropertyChangeListener(propertyName, self, false, remainingPath != null);
+                    }
+                    self.registerDependency(target, propertyName, remainingPath);
                 });
             }
         }

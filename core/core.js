@@ -773,7 +773,7 @@ Object.defineProperty(Object.prototype, "getProperty", {
         if (visitedComponentCallback && result && -1 === dotIndex) {
 
             // We resolved the last object on the propertyPath, be sure to give the visitor a chance to handle this one
-            visitedComponentCallback(result, null, null, null, null);
+            //visitedComponentCallback(result, null, null, null, null);
 
         } else if (result && dotIndex !== -1) {
             // We resolved that component of the path, but there's more path components; go to the next
@@ -978,7 +978,7 @@ Object.defineProperty(Array.prototype, "getProperty", {
                 if (visitedComponentCallback) {
                     //console.log("....",  currentPathComponent, aPropertyPath , currentPathComponentEndIndex != -1 ? aPropertyPath.slice(currentPathComponentEndIndex + 1) : null);
                     //console.log(aPropertyPath.slice(currentIndex));
-                    visitedComponentCallback(this, null, this[currentPathComponent], null, aPropertyPath.slice(currentIndex));
+                    visitedComponentCallback(this, null, undefined, null, aPropertyPath.slice(currentIndex));
                 }
 
                 // The currentPathComponent is some property not directly on this array, and not an index in the array
@@ -1020,7 +1020,7 @@ Object.defineProperty(Array.prototype, "getProperty", {
                 }
 
                 if (currentPathComponentEndIndex > 0) {
-                    result = result ? result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentPathComponentEndIndex + 1) : null;
+                    result = result ? result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentPathComponentEndIndex + 1) : undefined;
                 } else if (visitedComponentCallback && currentPathComponentEndIndex === -1 && result) {
                     // If we're at the end of the path, but have a result, visit it
                     //visitedComponentCallback(result, null, null, null, null);

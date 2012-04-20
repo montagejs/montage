@@ -288,15 +288,13 @@ describe("getset-spec", function() {
                     // accessing any key on this array, so we explicitly pass null along as an indication
                     {context: myArray, key: null, index: null},
                     {context: first, key: "foo", value: "first here", index: null},
-                    {context: first.foo, key: null, value: null, index: null},
                     {context: second, key: "foo", value: "second here", index: null},
-                    {context: second.foo, key: null, value: null, index: null}
                 ];
 
                 owner.getProperty("array.foo", false, false, visitor.visit);
 
                 expect(visitor.visit).toHaveBeenCalled();
-                expect(visitIndex).toBe(6);
+                expect(visitIndex).toBe(4);
             });
 
         });
