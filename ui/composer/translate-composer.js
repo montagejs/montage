@@ -665,158 +665,167 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+	animateBouncingX: {value: false, enumerable: false},
+	startTimeBounceX: {value: false, enumerable: false},
+	animateBouncingY: {value: false, enumerable: false},
+	startTimeBounceY: {value: false, enumerable: false},
+	animateMomentum: {value: false, enumerable: false},
+	startTime: {value: null, enumerable: false},
+	startX: {value: null, enumerable: false},
+	posX: {value: null, enumerable: false},
+	endX: {value: null, enumerable: false},
+	startY: {value: null, enumerable: false},
+	posY: {value: null, enumerable: false},
+	endY: {value: null, enumerable: false},
+	
+	_animationInterval: {
+		value: function () {
+        var time=Date.now(), t, tmpX, tmpY;
+
+        if (this.animateMomentum) {
+            t=time-this.startTime;
+            if (t<this.__momentumDuration) {
+                this.posX=this.startX-((this.momentumX+this.momentumX*(this.__momentumDuration-t)/this.__momentumDuration)*t/1000)/2;
+                this.posY=this.startY-((this.momentumY+this.momentumY*(this.__momentumDuration-t)/this.__momentumDuration)*t/1000)/2;
+            } else {
+                this.animateMomentum=false;
+            }
+        }
+
+        tmpX=this.posX;
+        tmpY=this.posY;
+
+        if (this._hasBouncing) {
+            if (this.endX<0) {
+                if (tmpX<0) {
+                    if (!this.startTimeBounceX) {
+                        this.animateBouncingX=true;
+                        this.startTimeBounceX=time;
+                    }
+                    t=time-this.startTimeBounceX;
+                    if ((t<this.__bouncingDuration)||(this.animateMomentum)) {
+                        if (t>this.__bouncingDuration) {
+                            t=this.__bouncingDuration;
+                        }
+                        tmpX=tmpX*(1-this._bezierTValue(t/this.__bouncingDuration, .17, .93, .19, 1));
+                    } else {
+                        tmpX=0;
+                        this.animateBouncingX=false;
+                    }
+                } else {
+                    this.animateBouncingX=false;
+                }
+            }
+
+            if (this.endY<0) {
+                if (tmpY<0) {
+                    if (!this.startTimeBounceY) {
+                        this.animateBouncingY=true;
+                        this.startTimeBounceY=time;
+                    }
+                    t=time-this.startTimeBounceY;
+                    if ((t<this.__bouncingDuration)||(this.animateMomentum)) {
+                        if (t>this.__bouncingDuration) {
+                            t=this.__bouncingDuration;
+                        }
+                        tmpY=tmpY*(1-this._bezierTValue(t/this.__bouncingDuration, .17, .93, .19, 1));
+                    } else {
+                        tmpY=0;
+                        this.animateBouncingY=false;
+                    }
+                } else {
+                    this.animateBouncingY=false;
+                }
+            }
+
+            if (this.endX>this._maxTranslateX) {
+                if (tmpX>this._maxTranslateX) {
+                    if (!this.startTimeBounceX) {
+                        this.animateBouncingX=true;
+                        this.startTimeBounceX=time;
+                    }
+                    t=time-this.startTimeBounceX;
+                    if ((t<this.__bouncingDuration)||(this.animateMomentum)) {
+                        if (t>this.__bouncingDuration) {
+                            t=this.__bouncingDuration;
+                        }
+                        tmpX=this._maxTranslateX+(tmpX-this._maxTranslateX)*(1-this._bezierTValue(t/this.__bouncingDuration, .17, .93, .19, 1));
+                    } else {
+                        tmpX=this._maxTranslateX;
+                        this.animateBouncingX=false;
+                    }
+                } else {
+                    this.animateBouncingX=false;
+                }
+            }
+
+            if (this.endY>this._maxTranslateY) {
+                if (tmpY>this._maxTranslateY) {
+                    if (!this.startTimeBounceY) {
+                        this.animateBouncingY=true;
+                        this.startTimeBounceY=time;
+                    }
+                    t=time-this.startTimeBounceY;
+                    if ((t<this.__bouncingDuration)||(this.animateMomentum)) {
+                        if (t>this.__bouncingDuration) {
+                            t=this.__bouncingDuration;
+                        }
+                        tmpY=this._maxTranslateY+(tmpY-this._maxTranslateY)*(1-this._bezierTValue(t/this.__bouncingDuration, .17, .93, .19, 1));
+                    } else {
+                        tmpY=this._maxTranslateY;
+                        this.animateBouncingY=false;
+                    }
+                } else {
+                    this.animateBouncingY=false;
+                }
+            }
+        }
+        this._isSelfUpdate=true;
+        this.translateX=tmpX;
+        this.translateY=tmpY;
+        this._isSelfUpdate=false;
+        this.isAnimating = this.animateMomentum||this.animateBouncingX||this.animateBouncingY;
+        if (this.isAnimating) {
+            this.needsFrame=true;
+        } else {
+            this._dispatchTranslateEnd();
+        }
+    }, 
+	enumerable: false
+},
+    
 
     _end: {
         enumerable: false,
         value: function (event) {
 
-            var animateBouncingX=false,
-                animateBouncingY=false,
-                animateMomentum=false,
-                momentumX,
-                momentumY,
-                startX=this._translateX,
-                startY,
-                posX=startX,
-                posY,
-                endX=startX,
-                endY,
-                self=this,
-                startTimeBounceX=false,
-                startTimeBounceY=false,
-                startTime=Date.now();
+            this.animateBouncingX=false;
+            this.animateBouncingY=false;
+            this.animateMomentum=false;
+            this.startTimeBounceX=false;
+            this.startTimeBounceY=false;
 
-            startY=this._translateY;
-            posY=startY;
-            endY=startY;
+            this.startTime=Date.now();
+
+			this.endX = this.posX = this.startX=this._translateX;
+            this.endY=this.posY=this.startY=this._translateY;
+
             if ((this._hasMomentum)&&(event.velocity.speed>40)) {
                 if (this._axis!="vertical") {
-                    momentumX=event.velocity.x*this._pointerSpeedMultiplier;
+                    this.momentumX=event.velocity.x*this._pointerSpeedMultiplier;
                 } else {
-                    momentumX=0;
+                    this.momentumX=0;
                 }
                 if (this._axis!="horizontal") {
-                    momentumY=event.velocity.y*this._pointerSpeedMultiplier;
+                    this.momentumY=event.velocity.y*this._pointerSpeedMultiplier;
                 } else {
-                    momentumY=0;
+                    this.momentumY=0;
                 }
-                endX=startX-(momentumX*this.__momentumDuration/2000);
-                endY=startY-(momentumY*this.__momentumDuration/2000);
-                animateMomentum=true;
+                this.endX=this.startX-(this.momentumX*this.__momentumDuration/2000);
+                this.endY=this.startY-(this.momentumY*this.__momentumDuration/2000);
+                this.animateMomentum=true;
             }
 
-            this._animationInterval=function () {
-                var time=Date.now(), t, tmpX, tmpY;
-
-                if (animateMomentum) {
-                    t=time-startTime;
-                    if (t<self.__momentumDuration) {
-                        posX=startX-((momentumX+momentumX*(self.__momentumDuration-t)/self.__momentumDuration)*t/1000)/2;
-                        posY=startY-((momentumY+momentumY*(self.__momentumDuration-t)/self.__momentumDuration)*t/1000)/2;
-                    } else {
-                        animateMomentum=false;
-                    }
-                }
-
-                tmpX=posX;
-                tmpY=posY;
-
-                if (self._hasBouncing) {
-                    if (endX<0) {
-                        if (tmpX<0) {
-                            if (!startTimeBounceX) {
-                                animateBouncingX=true;
-                                startTimeBounceX=time;
-                            }
-                            t=time-startTimeBounceX;
-                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
-                                if (t>self.__bouncingDuration) {
-                                    t=self.__bouncingDuration;
-                                }
-                                tmpX=tmpX*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
-                            } else {
-                                tmpX=0;
-                                animateBouncingX=false;
-                            }
-                        } else {
-                            animateBouncingX=false;
-                        }
-                    }
-
-                    if (endY<0) {
-                        if (tmpY<0) {
-                            if (!startTimeBounceY) {
-                                animateBouncingY=true;
-                                startTimeBounceY=time;
-                            }
-                            t=time-startTimeBounceY;
-                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
-                                if (t>self.__bouncingDuration) {
-                                    t=self.__bouncingDuration;
-                                }
-                                tmpY=tmpY*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
-                            } else {
-                                tmpY=0;
-                                animateBouncingY=false;
-                            }
-                        } else {
-                            animateBouncingY=false;
-                        }
-                    }
-
-                    if (endX>self._maxTranslateX) {
-                        if (tmpX>self._maxTranslateX) {
-                            if (!startTimeBounceX) {
-                                animateBouncingX=true;
-                                startTimeBounceX=time;
-                            }
-                            t=time-startTimeBounceX;
-                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
-                                if (t>self.__bouncingDuration) {
-                                    t=self.__bouncingDuration;
-                                }
-                                tmpX=self._maxTranslateX+(tmpX-self._maxTranslateX)*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
-                            } else {
-                                tmpX=self._maxTranslateX;
-                                animateBouncingX=false;
-                            }
-                        } else {
-                            animateBouncingX=false;
-                        }
-                    }
-
-                    if (endY>self._maxTranslateY) {
-                        if (tmpY>self._maxTranslateY) {
-                            if (!startTimeBounceY) {
-                                animateBouncingY=true;
-                                startTimeBounceY=time;
-                            }
-                            t=time-startTimeBounceY;
-                            if ((t<self.__bouncingDuration)||(animateMomentum)) {
-                                if (t>self.__bouncingDuration) {
-                                    t=self.__bouncingDuration;
-                                }
-                                tmpY=self._maxTranslateY+(tmpY-self._maxTranslateY)*(1-self._bezierTValue(t/self.__bouncingDuration, .17, .93, .19, 1));
-                            } else {
-                                tmpY=self._maxTranslateY;
-                                animateBouncingY=false;
-                            }
-                        } else {
-                            animateBouncingY=false;
-                        }
-                    }
-                }
-                self._isSelfUpdate=true;
-                self.translateX=tmpX;
-                self.translateY=tmpY;
-                self._isSelfUpdate=false;
-                self.isAnimating = animateMomentum||animateBouncingX||animateBouncingY;
-                if (self.isAnimating) {
-                    self.needsFrame=true;
-                } else {
-                    this._dispatchTranslateEnd();
-                }
-            };
             this._animationInterval();
             this._releaseInterest();
         }

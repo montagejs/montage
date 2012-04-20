@@ -587,18 +587,17 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     _updateIndexMap2: {
         enumerable: false,
-        value: function (currentIndexMap, newIndexes) {
-            var newIndexesHash = {},
+        value: function (currentIndexMap, newIndexes, newIndexesHash) {
+            var 
                 emptySpaces = [],
                 j,
                 i,
                 currentIndexCount = currentIndexMap && !isNaN(currentIndexMap.length) ? currentIndexMap.length : 0;
 
-            for (i = 0; i < newIndexes.length; i++) {
-                newIndexesHash[newIndexes[i]] = i;
-            }
             for (i = 0; i < currentIndexCount; i++) {
-                if (newIndexesHash.hasOwnProperty(currentIndexMap[i])) {
+				//The likelyhood that newIndexesHash had a number-turned-to-string property that wasn't his own is pretty slim as it's provided internally.
+                //if (newIndexesHash.hasOwnProperty(currentIndexMap[i])) {
+	            if (typeof newIndexesHash[currentIndexMap[i]] === "number") {
                     newIndexes[newIndexesHash[currentIndexMap[i]]] = null;
                 } else {
                     emptySpaces.push(i);
@@ -641,7 +640,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                 j,
                 newIndexMap,
                 time,
-                interpolant;
+                interpolant,
+				newIndexesHash = {};
 
             newIndexMap = this._tmpIndexMap.wipe();
             intersections = this._intersections.wipe();
@@ -664,11 +664,12 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._computeVisibleRange(this.splinePaths[0], intersections);
                 for (i = 0; i < intersections.length; i++) {
                     for (j = Math.ceil(intersections[i][0] + this._scroll); j < intersections[i][1] + this._scroll; j++) {
+						newIndexesHash[j] = newIndexMap.length;
                         newIndexMap.push(j);
                     }
                 }
 
-                this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
+                this._updateIndexMap2(this._repetition.indexMap, newIndexMap,newIndexesHash);
             }
         }
     },
@@ -1111,6 +1112,69 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: 0
     },
 
+	_animationInterval: {
+        enumerable: false,
+        value: function () {
+            var animatingLength = this.animating.length,
+                n, j, i, _iterations = 8,
+                time = Date.now(),
+                interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * 0.015 * this._elasticScrollingSpeed : 0,
+                interval = interval1 / _iterations,
+                x,
+                epsilon = .5;
+
+            for (n = 0; n < _iterations; n++) {
+                for (j = 0; j < animatingLength; j++) {
+                    i = this.animating[j];
+                    if (i < this._selectedSlideIndex) {
+                        if (typeof this.animatingHash[i + 1] === "undefined") {
+                            x = i + 1;
+                        } else {
+                            x = this.slide[i + 1].x;
+                        }
+                        this.slide[i].speed = x - this.slide[i].x - 1;
+                    } else {
+                        if (typeof this.animatingHash[i - 1] === "undefined") {
+                            x = i - 1;
+                        } else {
+                            x = this.slide[i - 1].x;
+                        }
+                        this.slide[i].speed = x - this.slide[i].x + 1;
+                    }
+                    this.slide[i].x += (this.slide[i].speed) * interval;
+                }
+            }
+            j = 0;
+            while (j < animatingLength) {
+                i = this.animating[j];
+                if (i < this._selectedSlideIndex) {
+                    if (this.slide[i].x > i - epsilon) {
+                        this.stopAnimating(i);
+                        animatingLength--;
+                    } else {
+                        j++;
+                    }
+                } else {
+                    if (this.slide[i].x < i + epsilon) {
+                        this.stopAnimating(i);
+                        animatingLength--;
+                    } else {
+                        j++;
+                    }
+                }
+            }
+            this.lastDrawTime = time;
+            if (!animatingLength) {
+                this.isAnimating = false;
+            } else {
+                this.needsDraw = true;
+                if (!this.isAnimating) {
+                    this.isAnimating = true;
+                }
+            }
+        }
+    },
+
     scroll: {
         get: function () {
             return this._scroll;
@@ -1123,8 +1187,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     max = this._selectedSlideIndex + this._range + 1,
                     tmp,
                     j,
-                    x,
-                    self = this;
+                    x;
 
                 tmp = value - this._scroll;
                 if (min < 0) {
@@ -1154,67 +1217,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                     }
                 }
                 this.stopAnimating(this._selectedSlideIndex);
-                if (!this.isAnimating) {
-                    this._animationInterval = function () {
-                        var animatingLength = self.animating.length,
-                            n, j, i, _iterations = 8,
-                            time = Date.now(),
-                            interval1 = self.lastDrawTime ? (time - self.lastDrawTime) * 0.015 * this._elasticScrollingSpeed : 0,
-                            interval = interval1 / _iterations,
-                            x,
-                            epsilon = .5;
-
-                        for (n = 0; n < _iterations; n++) {
-                            for (j = 0; j < animatingLength; j++) {
-                                i = self.animating[j];
-                                if (i < self._selectedSlideIndex) {
-                                    if (typeof self.animatingHash[i + 1] === "undefined") {
-                                        x = i + 1;
-                                    } else {
-                                        x = self.slide[i + 1].x;
-                                    }
-                                    self.slide[i].speed = x - self.slide[i].x - 1;
-                                } else {
-                                    if (typeof self.animatingHash[i - 1] === "undefined") {
-                                        x = i - 1;
-                                    } else {
-                                        x = self.slide[i - 1].x;
-                                    }
-                                    self.slide[i].speed = x - self.slide[i].x + 1;
-                                }
-                                self.slide[i].x += (self.slide[i].speed) * interval;
-                            }
-                        }
-                        j = 0;
-                        while (j < animatingLength) {
-                            i = self.animating[j];
-                            if (i < self._selectedSlideIndex) {
-                                if (self.slide[i].x > i - epsilon) {
-                                    self.stopAnimating(i);
-                                    animatingLength--;
-                                } else {
-                                    j++;
-                                }
-                            } else {
-                                if (self.slide[i].x < i + epsilon) {
-                                    self.stopAnimating(i);
-                                    animatingLength--;
-                                } else {
-                                    j++;
-                                }
-                            }
-                        }
-                        self.lastDrawTime = time;
-                        if (!animatingLength) {
-                            self.isAnimating = false;
-                        } else {
-                            self.needsDraw = true;
-                            if (!self.isAnimating) {
-                                self.isAnimating = true;
-                            }
-                        }
-                    }
-                }
                 if (!this.isAnimating) {
                     this._animationInterval();
                 }
