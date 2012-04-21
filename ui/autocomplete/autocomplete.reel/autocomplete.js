@@ -99,8 +99,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         },
         set: function(value) {
             this._tokens = value;
-            this._valueSyncedWithInputField = false;
-            this.needsDraw = true;
+            //this._valueSyncedWithInputField = false;
+            //this.needsDraw = true;
         },
         modify: function(v) {
             this._tokens = v;
@@ -121,42 +121,40 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             // get the entered text after the separator
             var value = this._value;
 
+            if(value) {
+                var arr = value.split(this.separator).map(function(item) {
+                    return item.trim();
+                });
+                this.activeTokenIndex = this._findActiveTokenIndex(this.tokens, arr);
+                this.tokens = value.split(this.separator).map(function(item) {
+                    return item.trim();
+                });
+            } else {
+                this.activeTokenIndex = 0;
+                this.tokens = [];
+            }
 
             if(fromInput) {
                 this._valueSyncedWithInputField = true;
-                if(value) {
-                    var arr = value.split(this.separator).map(function(item) {
-                        return item.trim();
-                    });
-                    this.activeTokenIndex = this._findActiveTokenIndex(this.tokens, arr);
-                    this._tokens = value.split(this.separator).map(function(item) {
-                        return item.trim();
-                    });
-                    if(this._tokens.length && this._tokens.length > 0) {
-                        var searchTerm = this._tokens[this.activeTokenIndex];
-                        searchTerm = searchTerm ? searchTerm.trim() : '';
-                        if(searchTerm.length >= this.minLength) {
-                            var self = this;
-                            clearTimeout(this.delayTimer);
-                            this.delayTimer = setTimeout(function() {
-                                self.delayTimer = null;
-                                if (logger.isDebug) {
-                                    logger.debug('SEARCH for ', searchTerm);
-                                }
-                                self.performSearch(searchTerm);
-                            }, this.delay);
-                        } else {
-                            this.showPopup = false;
-                        }
-                    } else {
-                        this.showPopup = false;
+                this.showPopup = false;
+                if(this._tokens.length && this._tokens.length > 0) {
+                    var searchTerm = this._tokens[this.activeTokenIndex];
+                    searchTerm = searchTerm ? searchTerm.trim() : '';
+                    if(searchTerm.length >= this.minLength) {
+                        var self = this;
+                        clearTimeout(this.delayTimer);
+                        this.delayTimer = setTimeout(function() {
+                            self.delayTimer = null;
+                            if (logger.isDebug) {
+                                logger.debug('SEARCH for ', searchTerm);
+                            }
+                            self.performSearch(searchTerm);
+                        }, this.delay);
                     }
                 }
-            } else {
-                this.activeTokenIndex = 0;
-                this._tokens = [];
-                this.showPopup = false;
 
+            } else {
+                this.showPopup = false;
                 this._valueSyncedWithInputField = false;
                 this.needsDraw = true;
             }
@@ -248,12 +246,17 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         get: function() {
             return this._suggestedValue;
         },
-        set: function(value) {
-            if(value) {
-                this._suggestedValue = value;
+        set: function(aValue) {
+            if(aValue) {
+                this._suggestedValue = aValue;
                 var arr = this.tokens;
                 arr[this.activeTokenIndex] = this._suggestedValue;
                 this.tokens = arr;
+
+                this.value = this.tokens.join(",");
+                if(this.value && this.value.charAt(this.value.length-1) != this.separator) {
+                    this.value += this.separator;
+                }
                 this.showPopup = false;
             }
         }
@@ -336,7 +339,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         enumerable: false,
         value: function() {
             this.element.addEventListener("keyup", this);
-            this.element.addEventListener("keydown", this);
             this.element.addEventListener("input", this);
         }
     },
@@ -345,7 +347,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         enumerable: false,
         value: function() {
             this.element.removeEventListener("keyup", this);
-            this.element.removeEventListener("keydown", this);
             this.element.removeEventListener("input", this);
         }
     },
@@ -503,20 +504,13 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                     //this.selectSuggestedValue();
                     // select the currently active item in the results list
                 } else {
-                    this.suggestedValue = this.value;
+                    this.suggestedValue = this.tokens[this.tokens.length-1];
                 }
 
                 break;
 
             }
             this.element.focus();
-        }
-    },
-
-    handleKeydown: {
-        enumerable: false,
-        value: function(event) {
-            var code = event.keyCode;
         }
     }
 
