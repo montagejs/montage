@@ -11,6 +11,8 @@ exports.Token = Montage.create(Component, {
 
     text: {value: null},
 
+    allowAdHocValues: {value: null},
+
     value: {
         get: function() {
             return this._value;
@@ -18,13 +20,15 @@ exports.Token = Montage.create(Component, {
         set: function(aValue) {
             if(aValue) {
                this._value = aValue;
-            }
-            if(this._value) {
-                if(this.textPropertyPath) {
-                    this.text = this.value[this.textPropertyPath];
-                } else {
-                    this.text = this.value;
-                }
+               if(this.textPropertyPath) {
+                   if(typeof aValue[this.textPropertyPath] == 'undefined' && this.allowAdHocValues) {
+                       this.text = aValue;
+                   } else {
+                       this.text = this.value[this.textPropertyPath];
+                   }
+               } else {
+                   this.text = this.value;
+               }
             }
         }
     },

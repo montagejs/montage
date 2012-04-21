@@ -37,6 +37,7 @@
                         "identifier": "members",
                         "textPropertyPath": "FirstName",
                         "minLength": 2,
+                        "allowAdHocValues": true,
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
@@ -100,10 +101,10 @@
 
                 <form class="form-stacked">
 
-                     <label for="state">State: Suggestions from in-memory data</label>
+                     <label for="state">State: Suggestions from in-memory data. Does not allow ad-hoc values</label>
                      <div data-montage-id="state" style="width: 400px;"></div>
 
-                     <label for="members">Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).</label>
+                     <label for="members">Members: Fetching data from remote data source (type "Ar" or "Ma" to see results). Ad-hoc values are allowed</label>
                      <div data-montage-id="members" style="width: 400px;"></div>
 
                      <div style="margin-top: 10px;">

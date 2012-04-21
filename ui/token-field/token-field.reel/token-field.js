@@ -7,7 +7,7 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
-var KEY_DELETE = 8,
+var KEY_DELETE = 46,
 KEY_BACKSPACE = 8;
 
 exports.TokenField = Montage.create(Component, {
@@ -16,9 +16,19 @@ exports.TokenField = Montage.create(Component, {
 
     tokens: {value: null},
 
+    /**
+    * Path to a String within an Object that is representative of the Object
+    */
     textPropertyPath: {value: null},
 
+    /**
+    * Allow ad-hoc strings (strings that do not have corresponding represented object) to be entered.
+    */
+    allowAdHocValues: {value: null},
+
+
     // private
+
     _hasFocus: {value: null},
     hasFocus: {
         get: function() {
@@ -57,12 +67,24 @@ exports.TokenField = Montage.create(Component, {
             return this._suggestedValue;
         },
         set: function(newValue) {
-            if(this._suggestedValue !== newValue) {
-                this._suggestedValue = newValue;
-                if(!this.tokens) {
-                    this.tokens = [];
+            if(newValue) {
+                var representedObject;
+                if(!this.allowAdHocValues && String.isString(newValue)) {
+                    // since ad-hoc values are not allowed, check with the delegate
+                    // if a representedObject can be found for this string
+                    representedObject = this.callDelegateMethod('getRepresentedObject', newValue);
+                } else {
+                    representedObject = newValue;
                 }
-                this.tokens.push(this._suggestedValue);
+
+                if(representedObject) {
+                    this._suggestedValue = representedObject;
+                    // able to find a representedObject
+                    if(!this.tokens) {
+                        this.tokens = [];
+                    }
+                    this.tokens.push(this._suggestedValue);
+                }
                 this.autocomplete.value = '';
             }
         }
@@ -74,7 +96,6 @@ exports.TokenField = Montage.create(Component, {
             this._pressComposer = PressComposer.create();
             this.addComposer(this._pressComposer);
             */
-
         }
     },
 
@@ -98,7 +119,9 @@ exports.TokenField = Montage.create(Component, {
             this.autocomplete.delegate = this.delegate;
             if(this.identifier) {
                 this.autocomplete.identifier = this.identifier;
-                this.identifier = 'token-field-' + this.identifier;
+                // @todo : this might be a problem. Since delegate methods are prefixed with
+                // the identifier
+                //this.identifier = 'token-field-' + this.identifier;
             }
             this.autocomplete.element.addEventListener("keyup", this);
         }

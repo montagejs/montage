@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage/core/core").Montage,
-    logger = require("montage/core/logger").logger("autocomplete-example"),
+    logger = require("montage/core/logger").logger("tokenField-example"),
     Component = require("montage/ui/component").Component;
 
 // Sample data for list of US States
@@ -106,8 +106,14 @@ exports.TokenFieldExample = Montage.create(Component, {
 
     _cachedStates: {value: null},
 
+    prepareForDraw: {
+        value: function() {
+            this.states = [states[0], states[3], states[5]];
+        }
+    },
+
     stateShouldGetSuggestions: {
-        value: function(autocomplete, searchTerm) {
+        value: function(tokenField, searchTerm) {
             var results = [];
             if(searchTerm) {
                 var term = searchTerm.toLowerCase();
@@ -124,12 +130,27 @@ exports.TokenFieldExample = Montage.create(Component, {
                     this._cachedStates[term] = results;
                 }
             }
-            autocomplete.suggestions = results;
+            tokenField.suggestions = results;
+        }
+    },
+    
+    stateGetRepresentedObject: {
+        value: function(stringValue) {
+            if(stringValue) {
+                stringValue = stringValue.trim().toLowerCase();
+                var i, len = states.length;
+                for(i=0; i<len; i++) {
+                    if(states[i].name.toLowerCase() === stringValue) {
+                        return states[i];
+                    }
+                }                
+            }
+            return null;
         }
     },
 
     membersShouldGetSuggestions: {
-        value: function(autocomplete, searchTerm) {
+        value: function(tokenField, searchTerm) {
             var results = [];
             // The data set is based on https://www.google.com/fusiontables/DataSource?docid=1QJT7Wi2oj5zBgjxb2yvZWA42iNPUvnvE8ZOwhA
             // Google fusion tables # 383121. However Google's API returns a CSV. So need to use this app to convert to json
@@ -146,10 +167,10 @@ exports.TokenFieldExample = Montage.create(Component, {
                    if(data && data.length > 0) {
                        result = data;
                    }
-                   autocomplete.suggestions = result;
+                   tokenField.suggestions = result;
 
                } catch(e) {
-                   autocomplete.suggestions = [];
+                   tokenField.suggestions = [];
                }
 
             };
@@ -158,13 +179,13 @@ exports.TokenFieldExample = Montage.create(Component, {
                     logger.debug('xhr timed out');
                 }
 
-               autocomplete.suggestions = [];
+               tokenField.suggestions = [];
             };
             xhr.onerror = function(e) {
                 if (logger.isDebug) {
                     logger.debug('xhr errored out', e);
                 }
-                autocomplete.suggestions = [];
+                tokenField.suggestions = [];
             };
 
         }
