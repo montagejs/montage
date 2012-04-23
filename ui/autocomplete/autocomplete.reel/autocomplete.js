@@ -295,6 +295,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             if (logger.isDebug) {
                 logger.debug('got suggestions: ', value);
             }
+
             this.loadingStatus = 'complete';
             this._suggestions = value;
             this.showPopup = (value && value.length > 0);
@@ -320,16 +321,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 // index on the popup
                 this.activeItemIndex = 0;
                 this.loadingStatus = 'loading';
-                //this.showPopup = true;
-                // delegate must set the results on the AutoComplete
-                var fn = this.identifier + 'ShouldGetSuggestions';
-                if(typeof this.delegate[fn] === 'function') {
-                    this.delegate[fn](this, searchTerm);
-                } else if(typeof this.delegate.shouldGetSuggestions === 'function') {
-                    this.delegate.shouldGetSuggestions(this, searchTerm);
-                } else {
-                    // error - d
-                }
+                var delegateFn = this.callDelegateMethod('ShouldGetSuggestions', this, searchTerm);
+
             }
         }
     },
@@ -445,8 +438,12 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 this.element.value = this.value;
                 this._valueSyncedWithInputField = true;
             }
+            var showPopup = this.showPopup;
+            if(this.value === '') {
+                showPopup = false;
+            }
 
-            if(this.showPopup) {
+            if(showPopup) {
                 this.popup.show();
                 // reset active index
                 this.activeItemIndex = 0;
