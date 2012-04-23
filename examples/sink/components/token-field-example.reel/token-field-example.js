@@ -62,6 +62,13 @@ var states = [
     {name: "Wyoming", code: "WY"}
 ];
 
+var tags = [
+'science', 'programming', 'javascript', 'java', 'user experience', 'UX', 'UI', 'user interface design',
+'travel', 'arts', 'design', 'education', 'entertainment', 'fasion', 'movies', 'tv shows', 'gadgets',
+'apple', 'social', 'network', 'technology', 'tools', 'home', 'interiors', 'search', 'politics', 'news',
+'business', 'companies', 'startups', 'silicon valley', 'bay area', 'biking', 'tennis', 'united states', 'USA'
+];
+
 var toQueryString = function(obj) {
    if(obj) {
        var arr = [], key, value;
@@ -102,6 +109,7 @@ exports.TokenFieldExample = Montage.create(Component, {
     json: {value: null},
     states: {value: null},
     members: {value: null},
+    tags: {value: null},
     info: {value: null},
 
     _cachedStates: {value: null},
@@ -133,7 +141,8 @@ exports.TokenFieldExample = Montage.create(Component, {
             tokenField.suggestions = results;
         }
     },
-    
+
+    // Return the represented object for the specified stringValue
     stateGetRepresentedObject: {
         value: function(stringValue) {
             if(stringValue) {
@@ -143,7 +152,7 @@ exports.TokenFieldExample = Montage.create(Component, {
                     if(states[i].name.toLowerCase() === stringValue) {
                         return states[i];
                     }
-                }                
+                }
             }
             return null;
         }
@@ -191,6 +200,19 @@ exports.TokenFieldExample = Montage.create(Component, {
         }
     },
 
+    tagsShouldGetSuggestions: {
+        value: function(tokenField, searchTerm) {
+            var results = [];
+            if(searchTerm) {
+                var term = searchTerm.toLowerCase();
+                results = tags.filter(function(item) {
+                    return (item.toLowerCase().indexOf(term) >= 0);
+                });
+            }
+            tokenField.suggestions = results;
+        }
+    },
+
     handleUpdateAction: {
         value: function(event) {
             if (logger.isDebug) {
@@ -198,7 +220,8 @@ exports.TokenFieldExample = Montage.create(Component, {
             }
             this.json = JSON.stringify({
                 state: this.states,
-                members: this.members
+                members: this.members,
+                tags: this.tags
             });
         }
     }

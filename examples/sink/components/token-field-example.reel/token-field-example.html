@@ -13,7 +13,7 @@
                     "prototype": "components/token-field-example.reel",
                     "properties": {
                         "element": {"#": "token-field-example"},
-                        "states": []
+                        "tags" : ["technology", "travel"]
                     }
                 },
 
@@ -36,12 +36,24 @@
                         "element": {"#": "members"},
                         "identifier": "members",
                         "textPropertyPath": "FirstName",
-                        "minLength": 2,
                         "allowAdHocValues": true,
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
                         "tokens": {"<<->": "@owner.members"}
+                    }
+                },
+
+                "tags": {
+                    "prototype": "montage/ui/token-field/token-field.reel",
+                    "properties": {
+                        "element": {"#": "tags"},
+                        "identifier": "tags",
+                        "allowAdHocValues": true,
+                        "delegate": {"@": "owner"}
+                    },
+                    "bindings": {
+                        "tokens": {"<<->": "@owner.tags"}
                     }
                 },
 
@@ -91,7 +103,7 @@
                 <div class="span8">
                     <h3>Token Field</h3>
                     <p>
-                        The Token Field component wraps an HTML <code>&lt;Token Field></code> element.
+                        A TokenField is a text field with tokens as its content.
                     </p>
                 </div>
             </div>
@@ -104,8 +116,13 @@
                      <label for="state">State: Suggestions from in-memory data. Does not allow ad-hoc values</label>
                      <div data-montage-id="state" style="width: 400px;"></div>
 
-                     <label for="members">Members: Fetching data from remote data source (type "Ar" or "Ma" to see results). Ad-hoc values are allowed</label>
+                     <label for="members">Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).
+                         Ad-hoc values are allowed
+                    </label>
                      <div data-montage-id="members" style="width: 400px;"></div>
+
+                     <label for="tags">Tags: Suggests existing tags. Ad-hoc values are allowed</label>
+                     <div data-montage-id="tags" style="width: 400px;"></div>
 
                      <div style="margin-top: 10px;">
                           <button class="btn" id="update" type="button">Update</button>
@@ -128,11 +145,16 @@
 <br>
 &lt;form class="form-stacked"&gt;<br>
 <br>
-&lt;label for="state"&gt;State: Suggestions from in-memory data&lt;/label&gt;<br>
-&lt;input type="text" placeholder="Select the State" id="state" style="width: 300px;" /&gt;<br>
+&lt;label for="state"&gt;State: Suggestions from in-memory data. Does not allow ad-hoc values&lt;/label&gt;<br>
+&lt;div data-montage-id="state" style="width: 400px;"&gt;&lt;/div&gt;<br>
 <br>
-&lt;label for="members"&gt;Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).&lt;/label&gt;<br>
-&lt;input type="text" placeholder="Select members" id="members" style="width: 300px;" /&gt;<br>
+&lt;label for="members"&gt;Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).<br>
+Ad-hoc values are allowed<br>
+&lt;/label&gt;<br>
+&lt;div data-montage-id="members" style="width: 400px;"&gt;&lt;/div&gt;<br>
+<br>
+&lt;label for="tags"&gt;Tags: Suggests existing tags. Ad-hoc values are allowed&lt;/label&gt;<br>
+&lt;div data-montage-id="tags" style="width: 400px;"&gt;&lt;/div&gt;<br>
 <br>
 &lt;div style="margin-top: 10px;"&gt;<br>
 &lt;button class="btn" id="update" type="button"&gt;Update&lt;/button&gt;<br>
@@ -154,58 +176,54 @@
 {
     "owner": {
         "prototype": "components/token-field-example.reel",
-        "name": "TokenFieldExample",
         "properties": {
-            "element": {"#": "token-field-example"}
-        },
-        "bindings": {
-            "info": {
-                "boundObject": {"@": "info"},
-                "boundObjectPropertyPath": "value"
-            },
-            "selectedStates": {"<-": "@state[tokens]"}
+            "element": {"#": "token-field-example"},
+            "states": []
         }
     },
 
     "state": {
         "prototype": "montage/ui/token-field/token-field.reel",
-        "name": "TokenField",
         "properties": {
             "element": {"#": "state"},
             "identifier": "state",
-            "delay": "1000",
+            "textPropertyPath": "name",
             "delegate": {"@": "owner"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "state",
-                "oneway": false
-            }
+            "tokens": {"<<->": "@owner.states"}
         }
     },
 
     "members": {
         "prototype": "montage/ui/token-field/token-field.reel",
-        "name": "TokenField",
         "properties": {
             "element": {"#": "members"},
             "identifier": "members",
+            "textPropertyPath": "FirstName",
             "minLength": 2,
+            "allowAdHocValues": true,
             "delegate": {"@": "owner"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "members",
-                "oneway": false
-            }
+            "tokens": {"<<->": "@owner.members"}
+        }
+    },
+    "tags": {
+        "prototype": "montage/ui/token-field/token-field.reel",
+        "properties": {
+            "element": {"#": "tags"},
+            "identifier": "tags",
+            "allowAdHocValues": true,
+            "delegate": {"@": "owner"}
+        },
+        "bindings": {
+            "tokens": {"<<->": "@owner.tags"}
         }
     },
 
     "update": {
         "prototype": "montage/ui/button.reel",
-        "name": "Button",
         "properties": {
             "element": {"#": "update"},
             "identifier": "update"
@@ -219,16 +237,17 @@
     },
     "echo": {
         "prototype": "montage/ui/dynamic-text.reel",
-        "name": "DynamicText",
         "properties": {
             "element": {"#": "echo"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "json",
-                "oneway": "true"
-            }
+            "value": {"<-": "@owner.json"}
+        }
+    },
+    "tokenFieldAccordion1": {
+        "prototype": "accordion.reel",
+        "properties": {
+            "element": {"#": "token-field-accordion1"}
         }
     }
 }
@@ -249,92 +268,130 @@ var states = [
 ....
 {name: "Wyoming", code: "WY"}
 ];
+var tags = [
+'science', 'programming', 'javascript', 'java', 'user experience', 'UX', 'UI', 'user interface design',
+'travel', 'arts', 'design', 'education', 'entertainment', 'fasion', 'movies', 'tv shows', 'gadgets',
+'apple', 'social', 'network', 'technology', 'tools', 'home', 'interiors', 'search', 'politics', 'news',
+'business', 'companies', 'startups', 'silicon valley', 'bay area', 'biking', 'tennis', 'united states', 'USA'
+];
 
 exports.TokenFieldExample = Montage.create(Component, {
 
-   json: {value: null},
-   state: {value: null},
-   selectedStates: {value: null},
-   members: {value: null},
-   info: {value: null},
+    json: {value: null},
+    states: {value: null},
+    members: {value: null},
+    info: {value: null},
 
-   _cachedStates: {value: null},
+    _cachedStates: {value: null},
 
-   stateShouldGetSuggestions: {
-       value: function(token-field, searchTerm) {
-           var results = [];
-           if(searchTerm) {
-               var term = searchTerm.toLowerCase();
-               if(this._cachedStates && this._cachedStates[term]) {
-                   results = this._cachedStates;
-               } else {
-                   results = states.filter(function(item) {
-                       // @todo - memoize
-                       return (item.name.toLowerCase().indexOf(term) >= 0 || item.code.indexOf(term) >= 0);
-                   });
-                   this._cachedStates = results;
+    prepareForDraw: {
+        value: function() {
+            this.states = [states[0], states[3], states[5]];
+        }
+    },
+
+    stateShouldGetSuggestions: {
+        value: function(tokenField, searchTerm) {
+            var results = [];
+            if(searchTerm) {
+                var term = searchTerm.toLowerCase();
+                if(this._cachedStates && this._cachedStates[term]) {
+                    results = this._cachedStates[term];
+                } else {
+                    results = states.filter(function(item) {
+                        // @todo - memoize
+                        return (item.name.toLowerCase().indexOf(term) >= 0 || item.code.indexOf(term) >= 0);
+                    });
+                    if(this._cachedStates == null) {
+                        this._cachedStates = {};
+                    }
+                    this._cachedStates[term] = results;
+                }
+            }
+            tokenField.suggestions = results;
+        }
+    },
+
+    // Return the represented object for the specified stringValue
+    stateGetRepresentedObject: {
+        value: function(stringValue) {
+            if(stringValue) {
+                stringValue = stringValue.trim().toLowerCase();
+                var i, len = states.length;
+                for(i=0; i<len; i++) {
+                    if(states[i].name.toLowerCase() === stringValue) {
+                        return states[i];
+                    }
+                }
+            }
+            return null;
+        }
+    },
+    membersShouldGetSuggestions: {
+        value: function(tokenField, searchTerm) {
+            var results = [];
+            // The data set is based on https://www.google.com/fusiontables/DataSource?docid=1QJT7Wi2oj5zBgjxb2yvZWA42iNPUvnvE8ZOwhA
+            // Google fusion tables # 383121. However Googles API returns a CSV. So need to use this app to convert to json
+            var query = "SELECT FirstName,LastName from 383121 where FirstName like '%" + searchTerm + "%'"; //" OR LastName like '%" + searchTerm + "%'";
+            var uri = "http://ft2json.appspot.com/q?sql=" + encodeURIComponent(query);
+
+            //console.log('searching ...', uri);
+            var xhr = request(uri, 'get');
+            xhr.onload = function(e) {
+               try {
+                   var data;
+                   data = JSON.parse(this.response).data;
+                   var result = [];
+                   if(data && data.length > 0) {
+                       result = data;
+                   }
+                   tokenField.suggestions = result;
+
+               } catch(e) {
+                   tokenField.suggestions = [];
                }
-           }
-           token-field.suggestions = results.map(function(item) {
-               return item.name;
-           });
-       }
-   },
 
-   membersShouldGetSuggestions: {
-       value: function(token-field, searchTerm) {
-           var results = [];
-           // The data set is based on https://www.google.com/fusiontables/DataSource?docid=1QJT7Wi2oj5zBgjxb2yvZWA42iNPUvnvE8ZOwhA
-           // Google fusion tables # 383121. However Google's API returns a CSV. So need to use this app to convert to json
-           var query = "SELECT FirstName,LastName from 383121 where FirstName like '%" + searchTerm + "%'"; //" OR LastName like '%" + searchTerm + "%'";
-           var uri = 'http://ft2json.appspot.com/q?sql=' + encodeURIComponent(query);
+            };
+            xhr.ontimeout = function() {
+                if (logger.isDebug) {
+                    logger.debug('xhr timed out');
+                }
 
-           console.log('searching ...', uri);
-           var xhr = request(uri, 'get');
-           xhr.onload = function(e) {
-              try {
-                  var data;
-                  data = JSON.parse(this.response).data;
-                  var result = [];
-                  if(data && data.length > 0) {
-                      result = data.map(function(item) {
-                          return item.FirstName + ' ' + item.LastName;
-                      });
-                  }
-                  token-field.suggestions = result;
+               tokenField.suggestions = [];
+            };
+            xhr.onerror = function(e) {
+                if (logger.isDebug) {
+                    logger.debug('xhr errored out', e);
+                }
+                tokenField.suggestions = [];
+            };
 
-              } catch(e) {
-                  token-field.suggestions = [];
-              }
+        }
+    },
+    tagsShouldGetSuggestions: {
+        value: function(tokenField, searchTerm) {
+            var results = [];
+            if(searchTerm) {
+                var term = searchTerm.toLowerCase();
+                results = tags.filter(function(item) {
+                    return (item.toLowerCase().indexOf(term) >= 0);
+                });
+            }
+            tokenField.suggestions = results;
+        }
+    },
 
-           };
-           xhr.ontimeout = function() {
-              console.log('xhr timed out');
-              token-field.suggestions = [];
-           };
-           xhr.onerror = function(e) {
-               console.log('xhr errored out');
-              token-field.suggestions = [];
-           };
-
-       }
-   },
-
-   prepareForDraw: {
-       value: function() {
-           this.state = "Bar";
-       }
-   },
-
-   handleUpdateAction: {
-       value: function(event) {
-           console.log('data: ', this);
-           this.json = JSON.stringify({
-               state: this.state,
-               members: this.members
-           });
-       }
-   }
+    handleUpdateAction: {
+        value: function(event) {
+            if (logger.isDebug) {
+                logger.debug('data: ', this);
+            }
+            this.json = JSON.stringify({
+                state: this.states,
+                members: this.members
+            });
+        }
+    }
 });
 
                                            </pre>
