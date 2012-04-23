@@ -16,7 +16,7 @@ script.setOption("sync.mode", "auto");
 //Verify initial state of the app - no items in the list
 agent.setWindowSize(927, 989);
 
-var input = agent.element("//*[@id='taskForm']/DIV/LABEL/INPUT");
+var input = agent.element("//*[@data-montage-id='taskForm']/DIV/LABEL/INPUT");
 var itemText = agent.element("/HTML/BODY/DIV/DIV");
 
 
@@ -28,12 +28,12 @@ assertEqual("0 items left", itemText.getText());
 input.sendKeys("Task1")
     .sendKeys(Key.ENTER);
 
-var btn_Complete = agent.element("//*[@id='markAllCompleteButton']");
-var firstCheckBox = agent.element("//*[@id='completedCheckbox']");
+var btn_Complete = agent.element("//*[@data-montage-id='markAllCompleteButton']");
+var firstCheckBox = agent.element("//*[@data-montage-id='completedCheckbox']");
 var firstItem = agent.element("/HTML/BODY/DIV/UL/LI/DIV/FORM/DIV/LABEL/SPAN[2]");
 
 assertEqual("Mark all as complete", btn_Complete.getText());
-assertTrue (agent.doesElementExist("//*[@id='completedCheckbox']"));
+assertTrue (agent.doesElementExist("//*[@data-montage-id='completedCheckbox']"));
 assertEqual("Task1", firstItem.getText());
 assertEqual("1 item left", itemText.getText());
 
@@ -52,9 +52,9 @@ assertEqual("3 items left", itemText.getText());
 //Mark 2nd Task as completed, verify the task has strike-through, and total count of tasks == 2
 secondCheckBox.click();
 
-var btn_Clear = agent.element("//*[@id='clearCompletedForm']/DIV/INPUT");
+var btn_Clear = agent.element("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT");
 
-assertTrue (agent.doesElementExist("//*[@id='clearCompletedForm']/DIV/INPUT"));
+assertTrue (agent.doesElementExist("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT"));
 assertEqual("Clear Completed", btn_Clear.getText());
 
 assertEqual("Task2", secondItem.getText());
@@ -66,7 +66,7 @@ assertEqual("2 items left", itemText.getText());
 btn_Clear.click();
 
 assertEqual("Task3", secondItem.getText());
-assertFalse (agent.doesElementExist("//*[@id='clearCompletedForm']/DIV/INPUT"));
+assertFalse (agent.doesElementExist("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT"));
 
 //Mark all tasks as "Completed"
 //Verify  all check-boxes have check-marks, all tasks are crossed, and tasks count ==0
@@ -82,7 +82,7 @@ assertEqual("Task3", secondItem.getText());
 assertEqual("line-through", secondItem.getComputedStyle("text-decoration"));
 
 assertEqual("0 items left", itemText.getText());
-assertTrue (agent.doesElementExist("//*[@id='clearCompletedForm']/DIV/INPUT"));
+assertTrue (agent.doesElementExist("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT"));
 
 //Uncheck check-box next to Task3
 //Verify only Task1 is marked as "Completed"
@@ -99,12 +99,12 @@ assertEqual("1 item left", itemText.getText());
 agent.refresh();
 
 firstItem = agent.element("/HTML/BODY/DIV/UL/LI/DIV/FORM/DIV/LABEL/SPAN[2]");
-btn_Complete = agent.element("//*[@id='markAllCompleteButton']");
-firstCheckBox = agent.element("//*[@id='completedCheckbox']");
+btn_Complete = agent.element("//*[@data-montage-id='markAllCompleteButton']");
+firstCheckBox = agent.element("//*[@data-montage-id='completedCheckbox']");
 secondCheckBox = agent.element("/HTML/BODY/DIV/UL/LI[2]/DIV/FORM/DIV/LABEL/INPUT");
 secondItem = agent.element("/HTML/BODY/DIV/UL/LI[2]/DIV/FORM/DIV/LABEL/SPAN[2]");
-btn_Clear = agent.element("//*[@id='clearCompletedForm']/DIV/INPUT");
-input = agent.element("//*[@id='taskForm']/DIV/LABEL/INPUT");
+btn_Clear = agent.element("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT");
+input = agent.element("//*[@data-montage-id='taskForm']/DIV/LABEL/INPUT");
 itemText = agent.element("/HTML/BODY/DIV/DIV");
 
 assertEqual("Task1", firstItem.getText());
@@ -125,7 +125,7 @@ assertEqual("Task3", secondItem.getText());
 assertEqual("line-through", secondItem.getComputedStyle("text-decoration"));
 
 assertEqual("0 items left", itemText.getText());
-assertTrue (agent.doesElementExist("//*[@id='clearCompletedForm']/DIV/INPUT"));
+assertTrue (agent.doesElementExist("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT"));
 
 //Mark all tasks as "Incomplete"
 btn_Complete.click();
@@ -137,7 +137,7 @@ assertEqual("none", firstItem.getComputedStyle("text-decoration"));
 assertEqual("Task3", secondItem.getText());
 assertEqual("none", secondItem.getComputedStyle("text-decoration"));
 assertEqual("2 items left", itemText.getText());
-assertFalse(agent.doesElementExist("//*[@id='clearCompletedForm']/DIV/INPUT"));
+assertFalse(agent.doesElementExist("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT"));
 
 
 //Mark all tasks as "Complete" and clear the list
@@ -153,7 +153,7 @@ assertEqual("Task3", secondItem.getText());
 assertEqual("line-through", secondItem.getComputedStyle("text-decoration"));
 
 assertEqual("0 items left", itemText.getText());
-assertTrue (agent.doesElementExist("//*[@id='clearCompletedForm']/DIV/INPUT"));
+assertTrue (agent.doesElementExist("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT"));
 
 
 btn_Clear.click();
@@ -161,11 +161,11 @@ assertEqual("0 items left", itemText.getText());
 assertFalse (agent.doesElementExist("/HTML/BODY/DIV/UL/LI/DIV/FORM/DIV/LABEL/SPAN[2]"));
 assertFalse (agent.doesElementExist("/HTML/BODY/DIV/UL/LI[2]/DIV/FORM/DIV/LABEL/SPAN[2]"));
 
-assertFalse (agent.doesElementExist("//*[@id='completedCheckbox']"));
+assertFalse (agent.doesElementExist("//*[@data-montage-id='completedCheckbox']"));
 assertFalse (agent.doesElementExist("/HTML/BODY/DIV/UL/LI[2]/DIV/FORM/DIV/LABEL/INPUT"));
 
-assertFalse (agent.doesElementExist("//*[@id='markAllCompleteButton']"));
-assertFalse (agent.doesElementExist("//*[@id='clearCompletedForm']/DIV/INPUT"));
+assertFalse (agent.doesElementExist("//*[@data-montage-id='markAllCompleteButton']"));
+assertFalse (agent.doesElementExist("//*[@data-montage-id='clearCompletedForm']/DIV/INPUT"));
 
 assertEqual("0 items left", itemText.getText());
 
