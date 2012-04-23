@@ -147,12 +147,12 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         @type {number}
         @default 1000
     */
-    holdTimeout: {
+    holdThreshold: {
         get: function() {
-            return this._pressComposer.longPressTimeout;
+            return this._pressComposer.longPressThreshold;
         },
         set: function(value) {
-            this._pressComposer.longPressTimeout = value;
+            this._pressComposer.longPressThreshold = value;
         }
     },
 
@@ -372,7 +372,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
  @param {Event} event
 
  Dispatched when the button is pressed for a period of time, set by
- {@link holdTimeout}.
+ {@link holdThreshold}.
  */
 
 Button.addAttributes( /** @lends module:"montage/ui/button.reel".Button# */{
