@@ -7,8 +7,8 @@ agent.gotoUrl(config.montage_url+"/examples/temp-converter/index.html");
 //var celsius = agent.element("/HTML/BODY/DIV/LABEL[1]/INPUT");
 //var fahrenheit = agent.element("/HTML/BODY/DIV/LABEL[2]/INPUT");
 
-var celsius = agent.element("//input[@id='celsius']");
-var fahrenheit = agent.element("//input[@id='fahrenheit']");
+var celsius = agent.element("//input[@data-montage-id='celsius']");
+var fahrenheit = agent.element("//input[@data-montage-id='fahrenheit']");
 
 
 agent.setWindowSize(927, 965);
@@ -77,14 +77,14 @@ assertEqual("", celsius.getText());
 assertEqual("", fahrenheit.getText());
 
 
-agent.element("//*[@id='barometer']").mouseDown(5,95);
-agent.element("//*[@id='barometer']").mouseUp(5,95);
+agent.element("//*[@data-montage-id='barometer']").mouseDown(5,95);
+agent.element("//*[@data-montage-id='barometer']").mouseUp(5,95);
 
 
 assertEqual("-25", celsius.getText());
 assertEqual("-13", fahrenheit.getText());
 
-agent.element("//*[@id='barometer']").click(Mouse.LEFT,8,1);
+agent.element("//*[@data-montage-id='barometer']").click(Mouse.LEFT,8,1);
 assertEqual("50", celsius.getText());
 assertEqual("122", fahrenheit.getText());
 
