@@ -829,6 +829,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
 
     /**
       @private
+     modified version of EventManager.handleEvent to suit the needs of KeyComposer Event dispatch
     */
     _keyComposerDispatch: {
         value: function(keyComposer, target, event) {
@@ -941,6 +942,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
 
     /**
       @private
+     modified version of EventManager._eventListenersForEvent_ to suit the needs of KeyComposer Event dispatch
     */
     _eventListenersForComposerKeyEvent: {
         enumerable: false,
