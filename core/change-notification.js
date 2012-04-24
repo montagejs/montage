@@ -272,11 +272,10 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                    this.changeListenersCount > 0;
         }
     },
+
     setupDependencies: {
         value: function(target, path, beforeChange, mutation) {
-            var self = this,
-                dependencies = this.dependencies,
-                ignoreMutation;
+            var dependencies = this.dependencies;
 
             if (this.hasChangeDependencies) {
                 // if we're at this point it means that the only dependencies to install is
@@ -290,22 +289,11 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                     dependencies[i].addPropertyChangeListener(dependencies[i+1], this, true, dependencies[i+2] != null);
                 }
             } else {
-                target.getProperty(path, null, null, function(target, propertyName, result, index, remainingPath) {
-                    ignoreMutation = mutation ? remainingPath != null : true;
-                    if (beforeChange) {
-                        target.addPropertyChangeListener(propertyName, self, true, ignoreMutation);
-                    }
-                    // we always need to listen to the "afterChange" notification because
-                    // we only have access to the plus object at that time.
-                    // we need that object in order to install the new listeners
-                    // on the remainingPath.
-                    target.addPropertyChangeListener(propertyName, self, false, ignoreMutation);
-                    self.registerDependency(target, propertyName, remainingPath);
-                });
+                this.addDependency(target, path, beforeChange, mutation);
             }
 
             if (!this.hasChangeDependencies) {
-                // At this point change dependencies were definentely installed
+                // At this point change dependencies were definitely installed
                 // because we always need them to get the "plus" value.
                 if (beforeChange) {
                     this.hasWillChangeDependencies = true;
@@ -318,6 +306,29 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
             }
         }
     },
+
+    addDependency: {
+        value: function (target, path, beforeChange, mutation) {
+            var self = this,
+                ignoreMutation;
+
+            target.getProperty(path, null, null, function (target, propertyName, result, index, remainingPath) {
+
+                ignoreMutation = mutation ? remainingPath != null : true;
+                if (beforeChange) {
+                    target.addPropertyChangeListener(propertyName, self, true, ignoreMutation);
+                }
+                // we always need to listen to the "afterChange" notification because
+                // we only have access to the plus object at that time.
+                // we need that object in order to install the new listeners
+                // on the remainingPath.
+
+                target.addPropertyChangeListener(propertyName, self, false, ignoreMutation);
+                self.registerDependency(target, propertyName, remainingPath);
+            });
+        }
+    },
+
     removeDependencies: {
         value: function() {
             var dependencies = this.dependencies,
@@ -691,7 +702,10 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
 
 Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
     value: function(path, listener, beforeChange, ignoreMutation) {
-        var descriptor;
+        var descriptor,
+            dependentPropertyPaths,
+            i,
+            iPath;
 
         // If the uuid isn't consistent, the target isn't observable without leaking memory
         // as we'll never be able to unregister it
@@ -705,14 +719,29 @@ Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
         // asks not to with automaticallyDispatchPropertyChangeListener.
         if (path.indexOf(".") !== -1) {
             descriptor.setupDependencies(this, path, beforeChange, !ignoreMutation);
-        } else if (typeof this.automaticallyDispatchPropertyChangeListener !== "function" ||
-            this.automaticallyDispatchPropertyChangeListener(path)) {
-            ObjectPropertyChangeDispatcherManager.installDispatcherOnTargetProperty(this, path);
-            // give an oportunity for the actual value of the path to have something
-            // to say when it comes to property change listeners, this is usuful,
-            // for instance, for arrays, that can start listen on mutation.
-            if (!ignoreMutation && descriptor.mutationListenersCount == 1) {
-                descriptor.updateMutationDependency(this[path]);
+        } else {
+            if (typeof this.automaticallyDispatchPropertyChangeListener !== "function" ||
+                    this.automaticallyDispatchPropertyChangeListener(path)) {
+                ObjectPropertyChangeDispatcherManager.installDispatcherOnTargetProperty(this, path);
+                // give an oportunity for the actual value of the path to have something
+                // to say when it comes to property change listeners, this is usuful,
+                // for instance, for arrays, that can start listen on mutation.
+                if (!ignoreMutation && descriptor.mutationListenersCount == 1) {
+                    descriptor.updateMutationDependency(this[path]);
+                }
+            }
+
+            // Observe any paths this property is dependent upon, as found in the dependencies attribute of
+            // this property's descriptor
+            dependentPropertyPaths = this._dependenciesForProperty ? this._dependenciesForProperty[path] : null;
+
+            // TODO should adding a dispatcher on a dependent property also be subjected to checking for
+            // automaticDispatchPropertyChangeListener, probably
+            if (dependentPropertyPaths) {
+                for (i = 0; (iPath = dependentPropertyPaths[i]); i++) {
+                        descriptor.addDependency(this, iPath, false, true);
+
+                }
             }
         }
     }
