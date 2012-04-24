@@ -105,7 +105,7 @@ var KEYNAMES_TO_KEYCODES = {
 
 KEYCODES_TO_KEYNAMES = null,    // Will be build from the KEYNAMES_TO_KEYCODES dictionary
 
-OPERA_KEYNAMES_TO_KEYCODES = {
+OPERAMAC_KEYNAMES_TO_KEYCODES = {
     meta:                   17,
     control:                57392,
     f17:                    63252,
@@ -186,7 +186,7 @@ NORMALIZED_CHARS = null;    // Will generate from the NORMALIZED_KEYS
 
 /* Event type dispatched by KeyComposer */
 var KEYPRESS_EVENT_TYPE = "keyPress",
-    KEYLONGPRESS_EVENT_TYPE = "keyLongPress",
+    LONGKEYPRESS_EVENT_TYPE = "longKeyPress",
     KEYRELEASE_EVENT_TYPE = "keyRelease";
 
 
@@ -236,33 +236,33 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
     /**
       @private
     */
-    _cleanupDuration: {
+    _cleanupThreshold: {
         value: 2000
     },
 
     /**
       @private
     */
-    _longPressDuration: {
+    _longPressThreshold: {
         value: 1000
     },
 
     /**
-      The number of milliseconds a key must be pressed in order to dispatch a keyLongPress event.
+      The number of milliseconds a key must be pressed in order to dispatch a longKeyPress event.
       @type {number}
       @default 1000
     */
-    longPressDuration: {
+    longPressThreshold: {
         get: function() {
-            return this._longPressDuration;
+            return this._longPressThreshold;
         },
         set: function(value) {
-            if (value > 0 && value !== this._longPressDuration) {
-                this._longPressDuration = value;
-                if (this._longPressDuration > this._cleanupDuration - 100) {
-                    this._cleanupDuration = this._longPressDuration + 100;
+            if (value > 0 && value !== this._longPressThreshold) {
+                this._longPressThreshold = value;
+                if (this._longPressThreshold > this._cleanupThreshold - 100) {
+                    this._cleanupThreshold = this._longPressThreshold + 100;
                 } else {
-                    this._cleanupDuration = 2000;
+                    this._cleanupThreshold = 2000;
                 }
             }
         }
@@ -377,8 +377,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 this._firefox = true;
             } else if (userAgent.match(/ chrome\//i)) {
                 this._chrome = true;
-            } else if (userAgent.match(/ safari\//i)) {
-                this._safari = true;
             } else if (userAgent.match(/^opera\//i)) {
                 this._opera = true;
             }
@@ -386,12 +384,9 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             // Platform Detection
             if (userAgent.match(/macintosh/i)) {
                 this._mac = true;
-            } else if (userAgent.match(/windows\//i)) {
-                this._windows = true;
-            } else if (userAgent.match(/android\//i)) {
-                this._android = true;
-            } else if (userAgent.match(/unix\//i)) {
-                this._unix = true;
+                if (this._opera) {
+                    this._operaMac = true;
+                }
             }
 
             // Handle the platform specific COMMAND modifier
@@ -402,9 +397,9 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             }
 
             // Patch the KeyCode dictionary for Opera or Firefox
-            if (this._opera) {
-                for (code in OPERA_KEYNAMES_TO_KEYCODES) {
-                    KEYNAMES_TO_KEYCODES[code] = OPERA_KEYNAMES_TO_KEYCODES[code];
+            if (this._operaMac) {
+                for (code in OPERAMAC_KEYNAMES_TO_KEYCODES) {
+                    KEYNAMES_TO_KEYCODES[code] = OPERAMAC_KEYNAMES_TO_KEYCODES[code];
                 }
             }
             if (this._firefox) {
@@ -638,7 +633,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 modifiers,
                 value;
 
-            if (this._opera) {
+            if (this._operaMac) {
                 if (this._operaModifierTimeout) {
                     clearTimeout(this._operaModifierTimeout);
                     this._operaModifierTimeout = null;
@@ -646,8 +641,8 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             }
 
             if (eventType == "keydown" || eventType == "keyup") {
-                if (this._opera) {
-                    // Opera is not very good at keeping track of which modifiers are pressed!
+                if (this._operaMac) {
+                    // Opera Mac is not very good at keeping track of which modifiers are pressed or not!
                     value = (eventType == "keydown");
                     if (keyCode == KEYNAMES_TO_KEYCODES.shift) {
                         this._shiftKey = value;
@@ -656,8 +651,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                     } else if (keyCode == KEYNAMES_TO_KEYCODES.meta) {
                         if (this._mac) {
                             this._metaKey = value;
-                        } else {
-                            this._ctrlKey = value;           // TODO: Needs to be tested on Unix and Windows
                         }
                     } else if (keyCode == KEYNAMES_TO_KEYCODES.control) {
                         this._ctrlKey = value;
@@ -672,7 +665,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                             thisRef._metaKey = false;
                             thisRef._ctrlKey = false;
                             thisRef._operaModifierTimeout = null;
-                        }, this._cleanupDuration + 1000);
+                        }, this._cleanupThreshold + 1000);
                     }
                 } else {
                     this._shiftKey = event.shiftKey;
@@ -784,10 +777,10 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                             keyComposer._longPressTimeout = null;
 
                             longPressEvent = document.createEvent("CustomEvent");
-                            longPressEvent.initCustomEvent(KEYLONGPRESS_EVENT_TYPE, true, true, keyComposer);
+                            longPressEvent.initCustomEvent(LONGKEYPRESS_EVENT_TYPE, true, true, keyComposer);
                             thisRef._keyComposerDispatch(keyComposer, target, longPressEvent);
                             delete thisRef._longPressKeys[keyComposer.uuid];
-                        }, this._longPressDuration);
+                        }, this._longPressThreshold);
 
                         // Let's remember any longKeyPress key waiting for timeout
                         this._longPressKeys[keyComposer.uuid] = keyComposer;
@@ -1060,7 +1053,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 }
 
                 thisRef._cleanupTimeout = null;
-            }, this._cleanupDuration);
+            }, this._cleanupThreshold);
         }
     },
 

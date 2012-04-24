@@ -19,7 +19,7 @@ var Montage = require("montage").Montage,
 
 /* Event type dispatched by KeyComposer */
 var KEYPRESS_EVENT_TYPE = "keyPress",
-    KEYLONGPRESS_EVENT_TYPE = "keyLongPress",
+    LONGKEYPRESS_EVENT_TYPE = "longKeyPress",
     KEYRELEASE_EVENT_TYPE = "keyRelease";
 
 
@@ -42,6 +42,20 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     */
     _shouldDispatchEvent: {
         value: false
+    },
+
+    /**
+    * @private
+    */
+    shouldDispatchLongPress: {
+        value: false
+    },
+
+    /**
+      @private
+    */
+    _longPressTimeout: {
+        value: null
     },
 
     /**
@@ -196,7 +210,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     /**
       Add an event listener to the composerKey.
       @function
-      @param {string} type. Any of the following types: keyPress, keyLongPress and keyRelease.
+      @param {string} type. Any of the following types: keyPress, longKeyPress and keyRelease.
       @param {Object|function} listener. The listener object or function to call when dispatching the event.
       @param {boolean} useCapture. Specify if the listener want to be called during the capture phase of the event.
     */
@@ -208,9 +222,9 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
 
             Composer.addEventListener.call(this, type, listener, useCapture);
 
-            if (type == KEYPRESS_EVENT_TYPE || type == KEYLONGPRESS_EVENT_TYPE || type == KEYRELEASE_EVENT_TYPE) {
+            if (type == KEYPRESS_EVENT_TYPE || type == LONGKEYPRESS_EVENT_TYPE || type == KEYRELEASE_EVENT_TYPE) {
                 this._shouldDispatchEvent = true;
-                if (type == KEYLONGPRESS_EVENT_TYPE) {
+                if (type == LONGKEYPRESS_EVENT_TYPE) {
                     this._shouldDispatchLongPress = true;
                 }
 
@@ -248,9 +262,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
     */
     deserializedFromTemplate: {
         value: function() {
-            console.log("--- deserializedFromTemplate");
-            var thisRef = this,
-                component = this.component;
+            var component = this.component;
 
             if (component) {
                 if (typeof component.addComposer == "function") {
