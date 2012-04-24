@@ -1,12 +1,9 @@
-/* @override http://localhost:8082/montage/ui/token-field/token.reel/token.css */
-
-
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.token {
+.montage-token {
     display: inline-block;
     margin: 3px 1px;
     border: 1px solid hsl(0,0%,85%);
@@ -17,11 +14,11 @@
     border-radius: 3px;
 }
 
-.token > .token-text {
+.montage-token > .montage-token-text {
     padding: 0px 1px 0px 5px;
 }
 
-.token > .token-delete {
+.montage-token > .montage-token-delete {
     display: inline-block;
     padding: 3px 6px;
     border-left: inherit;
@@ -29,25 +26,25 @@
     color: hsl(0,0%,60%);    
     cursor: pointer;
 }
-.token > .token-delete:hover {
+.montage-token > .montage-token-delete:hover {
     color: hsl(0,0%,30%);
     background-color: hsl(0,0%,90%);
 }
-.token > .token-delete:active {
+.montage-token > .montage-token-delete:active {
     color: hsl(0,0%,60%);
     background-color: hsl(0,0%,85%);
 }
 
 /* selected */
-.token.selected {
+.montage-token.selected {
     border-color: hsl(0,0%,60%);
 }
 
-.token.selected > .token-delete {
+.montage-token.selected > .montage-token-delete {
     color: hsl(0,0%,100%);
     background-color: hsl(0,0%,60%);
 }
 
-.token.active {
+.montage-token.active {
     border: 1px solid #ccc;
 }
