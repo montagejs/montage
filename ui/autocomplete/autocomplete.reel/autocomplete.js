@@ -99,8 +99,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         },
         set: function(value) {
             this._tokens = value;
-            //this._valueSyncedWithInputField = false;
-            //this.needsDraw = true;
+            this._valueSyncedWithInputField = false;
+            this.needsDraw = true;
         },
         modify: function(v) {
             this._tokens = v;
@@ -126,12 +126,12 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                     return item.trim();
                 });
                 this.activeTokenIndex = this._findActiveTokenIndex(this.tokens, arr);
-                this.tokens = value.split(this.separator).map(function(item) {
+                this._tokens = value.split(this.separator).map(function(item) {
                     return item.trim();
                 });
             } else {
                 this.activeTokenIndex = 0;
-                this.tokens = [];
+                this._tokens = [];
             }
 
             if(fromInput) {
@@ -252,11 +252,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 var arr = this.tokens;
                 arr[this.activeTokenIndex] = this._suggestedValue;
                 this.tokens = arr;
-
-                this.value = this.tokens.join(",");
-                if(this.value && this.value.charAt(this.value.length-1) != this.separator) {
-                    this.value += this.separator;
-                }
                 this.showPopup = false;
             }
         }
@@ -434,7 +429,12 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             fn.call(this);
 
             if (!this._valueSyncedWithInputField) {
-                this.value = this.tokens.join(this.separator);
+                //this.value = this._value;
+                this.value = this.tokens.join(",");
+                if(this.value && this.value.charAt(this.value.length-1) != this.separator) {
+                    this.value += this.separator;
+                }
+
                 this.element.value = this.value;
                 this._valueSyncedWithInputField = true;
             }
@@ -498,7 +498,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 if(popup.displayed == true) {
                     this.resultsController.selectedIndexes = [this.activeItemIndex];
                     event.preventDefault();
-                    //this.selectSuggestedValue();
                     // select the currently active item in the results list
                 } else {
                     this.suggestedValue = this.tokens[this.tokens.length-1];
