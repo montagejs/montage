@@ -189,7 +189,7 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
     isActive: {value: false},
     // list of all objects that this listener needed to start listening to.
     // these are the objects in the target.getProperty(path).
-    // format [(dependencyDescriptor, remainingPath)*]
+    // format [(target, propertyName, remainingPath)*]
     dependencies: {value: null},
     hasWillChangeDependencies: {value: false},
     hasChangeDependencies: {value: false},
@@ -352,13 +352,15 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
             // remove listeners from the old value
             if (oldValue != null) {
                 oldValue.getProperty(remainingPath, null, null, function(target, propertyName, result, index, remainingPath) {
+
+                    self.unregisterDependency(target, propertyName, remainingPath);
+
                     if (self.hasWillChangeDependencies) {
                         target.removePropertyChangeListener(propertyName, self, true);
                     }
                     if (self.hasChangeDependencies) {
                         target.removePropertyChangeListener(propertyName, self);
                     }
-                    self.unregisterDependency(target, propertyName, remainingPath);
                 });
             }
 
@@ -427,9 +429,9 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                                         typeof newTarget === "object";
 
             if (target) {
+                this.unregisterDependency(target, null, null);
                 target.removePropertyChangeListener(null, this, true);
                 target.removePropertyChangeListener(null, this, false);
-                this.unregisterDependency(target, null, null);
                 this.mutationDependencyIndex = null;
             }
             if (installMutationDependency) {
@@ -478,24 +480,21 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                 dependencies = this.dependencies,
                 targetIx;
 
-            do {
-                targetIx = dependencies.indexOf(target);
-                if (dependencies[targetIx+1] === propertyName &&
-                    dependencies[targetIx+2] === remainingPath) {
-                    dependencies.splice(targetIx, 3);
-                    break;
-                } else {
-                    targetIx = dependencies.indexOf(target, targetIx+1);
-                }
-            } while (targetIx != -1);
-            if (targetIx == -1) {
-                console.log("getProperty target not found in dependencies", target, propertyName, remainingPath);
-                throw "getProperty target not found in dependencies";
-            }
-
-            // the descriptor might not exist anymore, if no more listeners are
-            // setup in the (target, propertyName)
             if (dependencyDescriptor) {
+                do {
+                    targetIx = dependencies.indexOf(target);
+                    if (dependencies[targetIx+1] === propertyName &&
+                        dependencies[targetIx+2] === remainingPath) {
+                        dependencies.splice(targetIx, 3);
+                        break;
+                    } else {
+                        targetIx = dependencies.indexOf(target, targetIx+1);
+                    }
+                } while (targetIx != -1);
+                if (targetIx == -1) {
+                    throw "getProperty target not found in dependencies";
+                }
+
                 delete dependencyDescriptor.dependentDescriptorsIndex[this.uuid];
             }
         }
@@ -553,15 +552,18 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
 
             prototypeAndDescriptor = Object.getPrototypeAndDescriptorDefiningProperty(target, propertyName);
             currentPropertyDescriptor = prototypeAndDescriptor.propertyDescriptor;
+
             if (currentPropertyDescriptor) {
                 currentSetter = currentPropertyDescriptor.set;
                 prototypeDefiningProperty = prototypeAndDescriptor.prototype;
-            }
 
-            if (!currentSetter) {
-                this.addDispatcherToTargetProperty(target, propertyName, currentPropertyDescriptor ? currentPropertyDescriptor.enumerable : true);
-            } else if (!currentSetter.isDispatchingSetter) {
-                this.addDispatcherToTargetPropertyWithDescriptor(target, propertyName, currentPropertyDescriptor);
+                if ("value" in currentPropertyDescriptor) {
+                    this.addDispatcherToTargetProperty(target, propertyName, currentPropertyDescriptor.enumerable);
+                } else if (currentSetter && !currentSetter.isDispatchingSetter) {
+                    this.addDispatcherToTargetPropertyWithDescriptor(target, propertyName, currentPropertyDescriptor);
+                }
+            } else {
+                this.addDispatcherToTargetProperty(target, propertyName, true);
             }
         }
     },
@@ -689,10 +691,11 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
 
 Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
     value: function(path, listener, beforeChange, ignoreMutation) {
-        var descriptor,
-            value;
+        var descriptor;
 
-        if (!listener || !path) {
+        // If the uuid isn't consistent, the target isn't observable without leaking memory
+        // as we'll never be able to unregister it
+        if (!listener || !path || this.uuid !== this.uuid) {
             return;
         }
 
@@ -716,8 +719,7 @@ Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
 });
 Object.defineProperty(Object.prototype, "removePropertyChangeListener", {
     value: function removePropertyChangeListener(path, listener, beforeChange) {
-        var descriptor = ChangeNotification.getPropertyChangeDescriptor(this, path),
-            value;
+        var descriptor = ChangeNotification.getPropertyChangeDescriptor(this, path);
 
         if (!descriptor) {
             return;
@@ -725,6 +727,18 @@ Object.defineProperty(Object.prototype, "removePropertyChangeListener", {
 
         ChangeNotification.unregisterPropertyChangeListener(this, path, listener, beforeChange);
         descriptor.updateMutationDependency();
+    }
+});
+
+var _unobservable_string_property_regexp = /^length$/;
+Object.defineProperty(String.prototype, "addPropertyChangeListener", {
+    value: function(path, listener, beforeChange, ignoreMutation) {
+
+        if (path != null && _unobservable_string_property_regexp.test(path)) {
+            return;
+        }
+
+        Object.prototype.addPropertyChangeListener.call(this, path, listener, beforeChange, ignoreMutation);
     }
 });
 
@@ -751,6 +765,7 @@ var PropertyChangeNotification = Object.create(null, {
 
 var ChangeNotificationDispatchingArray = exports.ChangeNotificationDispatchingArray = [];
 var _index_array_regexp = /^[0-9]+$/;
+var _unobservable_array_property_regexp = /^length$/;
 Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
     value: function(path, listener, beforeChange, ignoreMutation) {
         var listenChange, listenIndexChange,
@@ -761,6 +776,11 @@ Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
         }
 
         if (path == null || path.indexOf(".") == -1) {
+
+            if (_unobservable_array_property_regexp.test(path)) {
+                return;
+            }
+
             listenChange = (path == null);
             listenIndexChange = _index_array_regexp.test(path);
         }
@@ -771,8 +791,8 @@ Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
             }
             descriptor = ChangeNotification.registerPropertyChangeListener(this, path, listener, beforeChange, !ignoreMutation);
 
-            // give an oportunity for the actual value of the path to have something
-            // to say when it comes to property change listeners, this is usuful,
+            // give an opportunity for the actual value of the path to have something
+            // to say when it comes to property change listeners, this is useful,
             // for instance, for arrays, that can start listen on mutation.
             if (listenIndexChange && !ignoreMutation && descriptor.mutationListenersCount == 1) {
                 descriptor.updateMutationDependency(this[path]);

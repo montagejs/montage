@@ -466,8 +466,8 @@ describe("binding/dependent-properties-spec", function() {
                 spyOn(personObserver, "handleEvent").andCallThrough();
                 spyOn(childObserver, "handleEvent");
 
-                person.addEventListener("change@name", personObserver, false);
-                child.addEventListener("change@name", childObserver, false);
+                person.addPropertyChangeListener("name", personObserver, false);
+                child.addPropertyChangeListener("name", childObserver, false);
 
                 window.hey = true;
                 child.firstName = "Robert";

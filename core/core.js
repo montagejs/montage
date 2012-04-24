@@ -870,8 +870,9 @@ Object.defineProperty(Object.prototype, "setProperty", {
                 var changeEvent = this.setProperty.changeEvent, modify;
 
                 // For these mutation/addition/removal events, use the 'modify' attribute of this property's descriptor
-                if (changeEvent && (changeEvent.currentTarget === lastObjectAtPath) &&
-                    (modify = M.getPropertyAttribute(setObject, aPropertyPath, MODIFY))) {
+                if (changeEvent && changeEvent.isMutation &&
+                        (modify = M.getPropertyAttribute(setObject, aPropertyPath, MODIFY))) {
+
                     modify.call(setObject, changeEvent.type, changeEvent.newValue, changeEvent.prevValue);
                 }
             }

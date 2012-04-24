@@ -840,8 +840,8 @@ describe("binding/definebinding-spec", function() {
             spyOn(changeListener, "sourceObjectListener").andCallThrough();
             spyOn(changeListener, "boundObjectListener").andCallThrough();
 
-            sourceObject.foo.addEventListener("change", changeListener.sourceObjectListener);
-            boundObject.bar.addEventListener("change", changeListener.boundObjectListener);
+            sourceObject.foo.addPropertyChangeListener(null, changeListener.sourceObjectListener, false);
+            boundObject.bar.addPropertyChangeListener(null, changeListener.boundObjectListener, false);
 
             myArray.push("d");
 

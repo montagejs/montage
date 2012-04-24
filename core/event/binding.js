@@ -59,382 +59,6 @@ Object.defineProperty(Array.prototype, "addContentEventListener", {
 });
 
 
-Object.defineProperty(ChangeEventDispatchingArray, "_splice", {
-    value: Array.prototype.splice,
-    enumerable: false,
-    configurable: true
-});
-
-/**
-    @function module:montage/core/event/binding.ChangeEventDispatchingArray#splice
-    @param {string} type Event type
-    @param {object|function} listener Event listener.
-    @param {boolean} useCapture Specifies whether to listen for the event during the capture phase.
-*/
-Object.defineProperty(ChangeEventDispatchingArray, "splice", {
-    value: function(index, howMany/*[, element1[, ...[, elementN]]]*/) {
-
-        var originalCount = this.length,
-            addedCount = arguments.length - 2, /* elements to add less the index and howMany parameters*/
-            removedCount,
-            netChange,
-            i, changeType, changeEvent, affectedIndexCount, startIndex, changeIndex,
-            removedMembers,
-            addedMembers = [];
-
-        if (addedCount > 0) {
-            addedMembers = this.slice.call(arguments, 2);
-        }
-
-        // Index may be positive (from the front) or negative (from the back) figure out the positive one
-        // now in anticipation of needing it when dispatching events
-        startIndex = index >= 0 ? index : this.length + index;
-        removedMembers = this._splice.apply(this, arguments);
-        removedCount = removedMembers.length;
-
-        netChange = addedCount - removedCount;
-
-        // Find the most accurate propertyChange type for this splice,
-        // For the most part it's considered a modification unless the length of the array was modified
-        // if only to not bother notifying listeners for changes of the length of this array
-        changeType = ChangeTypes.MODIFICATION;
-
-        if (netChange > 0) {
-            changeType = ChangeTypes.ADDITION;
-        } else if (netChange < 0) {
-            changeType = ChangeTypes.REMOVAL;
-        }
-
-        if (this.dispatchChangeEvent) {
-            changeEvent = new ChangeEventConstructor();
-            changeEvent.minus = removedMembers;
-            changeEvent.plus = addedMembers;
-            changeEvent.changeIndex = index;
-            changeEvent.propertyChange = changeType;
-            this.dispatchEvent(changeEvent);
-        }
-
-        if (this.dispatchChangeAtIndexEvent) {
-
-            if (typeof howMany === "undefined") {
-                // no howMany argument given: remove all elements after index?
-                // TODO this may only be in some implementations
-                affectedIndexCount = originalCount + addedCount;
-            } else if (0 === netChange) {
-                // No net change; affects only how many expected
-                affectedIndexCount = addedCount;
-            } else if (netChange > 0) {
-                // Net gain; affects from start to end of original array + net gain
-                affectedIndexCount = (originalCount - startIndex) + (netChange);
-            } else {
-                // Net loss; affects from start to end of original array
-                affectedIndexCount = originalCount - startIndex;
-            }
-
-            for (i = 0; i < affectedIndexCount; i++) {
-                changeIndex = startIndex + i;
-
-                changeEvent = new ChangeEventConstructor();
-                changeEvent.type = "change@" + changeIndex;
-
-                // old value at changeIndex was either:
-                // - removed outright, or replaced
-                // - moved somewhere in the array due to a gain or loss
-                changeEvent.minus = (i < removedCount) ? removedMembers[i] : this[changeIndex + netChange];
-
-                changeEvent.plus = this[changeIndex];
-                changeEvent.changeIndex = changeIndex;
-                changeEvent.propertyChange = changeType;
-                this.dispatchEvent(changeEvent);
-            }
-        }
-
-        return removedMembers;
-    },
-    enumerable: false,
-    configurable: true
-});
-//Removes the first element from an array and returns that element. This method changes the length of the array.
-Object.defineProperty(ChangeEventDispatchingArray, "_shift", {
-    value: Array.prototype.shift,
-    enumerable: false,
-    configurable: true
-});
-
-/**
-    @function module:montage/core/event/binding.ChangeEventDispatchingArray#shift
-*/
-Object.defineProperty(ChangeEventDispatchingArray, "shift", {
-    value: function() {
-
-        if (0 === this.length) {
-            return;
-        }
-
-        var result, i, countI, changeEvent;
-
-        result = this._shift.call(this);
-
-        if (this.dispatchChangeEvent) {
-            changeEvent = new ChangeEventConstructor();
-            changeEvent.minus = result;
-            changeEvent.plus = this[0];
-            changeEvent.changeIndex = 0;
-            changeEvent.propertyChange = ChangeTypes.REMOVAL;
-            this.dispatchEvent(changeEvent);
-        }
-
-        if (this.dispatchChangeAtIndexEvent) {
-            // A single item was just removed form the front; notify all index listeners
-            // (including listeners for the index that is now undefined at the end)
-            for (i = 0,countI = this.length + 1; i < countI; i++) {
-                changeEvent = new ChangeEventConstructor();
-                changeEvent.type = "change@" + i;
-                changeEvent.minus = i === 0 ? result : this[i - 1];
-                changeEvent.plus = this[i];
-                changeEvent.changeIndex = i;
-                changeEvent.propertyChange = ChangeTypes.REMOVAL;
-                this.dispatchEvent(changeEvent);
-            }
-        }
-        return result;
-    },
-    enumerable: false,
-    configurable: true
-});
-
-//Adds one or more elements to the beginning of an array and returns the new length of the array.
-Object.defineProperty(ChangeEventDispatchingArray, "_unshift", {
-    value: Array.prototype.unshift,
-    enumerable: false,
-    configurable: true
-});
-
-/**
-    @function module:montage/core/event/binding.ChangeEventDispatchingArray#unshift
-*/
-Object.defineProperty(ChangeEventDispatchingArray, "unshift", {
-    value: function() {
-
-        var addedCount = arguments.length, i, countI, changeEvent;
-
-        countI = this._unshift.apply(this, arguments);
-
-        if (this.dispatchChangeEvent) {
-            changeEvent = new ChangeEventConstructor();
-            changeEvent.minus = undefined;
-            changeEvent.plus = Array.prototype.slice.call(arguments, 0);
-            changeEvent.changeIndex = 0;
-            changeEvent.propertyChange = ChangeTypes.ADDITION;
-            this.dispatchEvent(changeEvent);
-        }
-
-        if (this.dispatchChangeAtIndexEvent) {
-            for (i = 0; i < countI; i++) {
-                changeEvent = new ChangeEventConstructor();
-                changeEvent.type = "change@" + (i);
-                changeEvent.minus = this[addedCount + i];
-                changeEvent.plus = this[i];
-                changeEvent.changeIndex = i;
-                changeEvent.propertyChange = ChangeTypes.ADDITION;
-                this.dispatchEvent(changeEvent);
-            }
-        }
-
-    },
-    enumerable: false,
-    configurable: true
-});
-
-Object.defineProperty(ChangeEventDispatchingArray, "_reverse", {
-    value: Array.prototype.reverse,
-    enumerable: false,
-    configurable: true
-});
-
-/**
-    @function module:montage/core/event/binding.ChangeEventDispatchingArray#reverse
-*/
-Object.defineProperty(ChangeEventDispatchingArray, "reverse", {
-    value: function() {
-
-        // There's really no point in reversing an empty array or an array of a single member
-        if (this.length <= 1) {
-            return this;
-        }
-
-        var i, countI = this.length, changeEvent;
-
-        this._reverse.apply(this, arguments);
-
-        if (this.dispatchChangeEvent) {
-            changeEvent = new ChangeEventConstructor();
-            changeEvent.minus = null;
-            changeEvent.plus = this;
-            changeEvent.changeIndex = 0;
-            changeEvent.propertyChange = ChangeTypes.MODIFICATION;
-            this.dispatchEvent(changeEvent);
-        }
-
-        if (this.dispatchChangeAtIndexEvent) {
-            for (i = 0; i < countI; i++) {
-                changeEvent = new ChangeEventConstructor();
-                changeEvent.type = "change@" + i;
-                changeEvent.minus = this[(this.length - 1) - i];
-                changeEvent.plus = this[i];
-                changeEvent.changeIndex = i;
-                changeEvent.propertyChange = ChangeTypes.MODIFICATION;
-                this.dispatchEvent(changeEvent);
-            }
-        }
-
-        return this;
-    },
-    enumerable: false,
-    configurable: true
-});
-
-Object.defineProperty(ChangeEventDispatchingArray, "_push", {
-    value: Array.prototype.push,
-    enumerable: false,
-    configurable: true
-});
-
-/**
-    @function module:montage/core/event/binding.ChangeEventDispatchingArray#push
-*/
-Object.defineProperty(ChangeEventDispatchingArray, "push", {
-    value: function() {
-
-        var mutationStartIndex = this.length,
-            addedCount = arguments.length,
-            i,
-            changeEvent;
-
-        this._push.apply(this, arguments);
-
-        if (this.dispatchChangeEvent) {
-            changeEvent = new ChangeEventConstructor();
-            changeEvent.plus = Array.prototype.slice.call(arguments, 0);
-            changeEvent.minus = undefined;
-            changeEvent.changeIndex = mutationStartIndex;
-            changeEvent.propertyChange = ChangeTypes.ADDITION;
-            this.dispatchEvent(changeEvent);
-        }
-
-        if (this.dispatchChangeAtIndexEvent) {
-            //Tell what happened
-            for (i = 0; i < addedCount; i++) {
-                changeEvent = new ChangeEventConstructor();
-                changeEvent.type = "change@" + (mutationStartIndex + i);
-                changeEvent.minus = undefined;
-                changeEvent.plus = arguments[i];
-                changeEvent.changeIndex = i;
-                changeEvent.propertyChange = ChangeTypes.ADDITION;
-                this.dispatchEvent(changeEvent);
-            }
-        }
-
-    },
-    enumerable: false,
-    configurable: true
-});
-
-Object.defineProperty(ChangeEventDispatchingArray, "_pop", {
-    value: Array.prototype.pop,
-    enumerable: false,
-    configurable: true
-});
-
-/**
-    @function module:montage/core/event/binding.ChangeEventDispatchingArray#pop
-*/
-Object.defineProperty(ChangeEventDispatchingArray, "pop", {
-    value: function() {
-
-        if (this.length === 0) {
-            return;
-        }
-
-        var result,
-            changeEvent,
-            changeIndex = this.length - 1;
-
-        result = this._pop.call(this);
-
-        if (this.dispatchChangeEvent) {
-            changeEvent = new ChangeEventConstructor();
-            changeEvent.minus = result;
-            changeEvent.plus = undefined;
-            changeEvent.changeIndex = changeIndex;
-            changeEvent.propertyChange = ChangeTypes.REMOVAL;
-            this.dispatchEvent(changeEvent);
-        }
-
-        if (this.dispatchChangeAtIndexEvent) {
-            //Tell what happened on that specific index
-            changeEvent = new ChangeEventConstructor();
-            changeEvent.type = "change@" + changeIndex;
-            changeEvent.minus = result;
-            changeEvent.plus = undefined;
-            changeEvent.changeIndex = changeIndex;
-            changeEvent.propertyChange = ChangeTypes.REMOVAL;
-            this.dispatchEvent(changeEvent);
-        }
-        return result;
-    },
-    enumerable: false,
-    configurable: true
-});
-
-Object.defineProperty(ChangeEventDispatchingArray, "_sort", {
-    value: Array.prototype.sort,
-    enumerable: false,
-    configurable: true
-});
-
-/**
-    @function module:montage/core/event/binding.ChangeEventDispatchingArray#sort
-*/
-Object.defineProperty(ChangeEventDispatchingArray, "sort", {
-    value: function() {
-        var i, countI = this.length, copy = this.slice(), changeEvent;
-
-        this._sort.apply(this, arguments);
-
-        if (this.dispatchChangeEvent) {
-            changeEvent = new ChangeEventConstructor();
-            changeEvent.minus = null;
-            changeEvent.plus = this;
-            changeEvent.changeIndex = 0;
-            changeEvent.propertyChange = ChangeTypes.MODIFICATION;
-            this.dispatchEvent(changeEvent);
-        }
-
-        if (this.dispatchChangeAtIndexEvent) {
-            for (i = 0; i < countI; i++) {
-
-                // Don't emit an event for an index that was not affected by the sort
-                if (copy[i] === this[i]) {
-                    continue;
-                }
-
-                changeEvent = new ChangeEventConstructor();
-                changeEvent.type = "change@" + i;
-                changeEvent.minus = copy[i];
-                changeEvent.plus = this[i];
-                changeEvent.changeIndex = i;
-                changeEvent.propertyChange = ChangeTypes.MODIFICATION;
-                this.dispatchEvent(changeEvent);
-            }
-        }
-
-        return this;
-    },
-    enumerable: false,
-    configurable: true
-});
-
 /**
     @function external:Object#automaticallyDispatchEvent
     @param {string} eventType
@@ -502,7 +126,10 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             this.deferredValueTarget = "";
         }
     },
-    handleEvent: {value: function(event) {
+    handleChange: {value: function(event) {
+
+        if (window.debug) debugger
+
         var targetPropertyPath = this.targetPropertyPath,
             target = this.target,
             localNewValue = event.plus,
@@ -584,10 +211,10 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 event.target = this;
             }
 
-            baseType = event.baseType ? event.baseType : ((atSignIndex = type.indexOf("@")) > 0 ? (targetPropertyPath ? type.substring(0, atSignIndex) : type) : type);
+            baseType = event.baseType ? event.baseType : type;
             // The binding listener detected some change along the property path it cared about
             // make sure the event we "dispatch" has the full change@propertyPath eventType
-            event.type = "change@" + this.targetPropertyPath;
+            event.type = this.targetPropertyPath;
 
             //For bindings, start the right-to-left value push
             if (event.target === this.target && this.bindingPropertyPath && bindingOrigin) {
@@ -659,16 +286,13 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 // NOTE this check works around Safari not having a removeEventListener on its CanvasPixelArray
                 // TODO investigate if this is an appropriate fix or not
                 if (typeof localPrevValue.removeEventListener === "function") {
-                    localPrevValue.removeEventListener(baseType + "@" + remainingPath, this, this.useCapture);
+                    localPrevValue.removePropertyChangeListener(remainingPath, this, this.useCapture);
                 }
             }
 
             if (localNewValue) {
                 // Reinstall listeners along the entire propertyPath from the target
-                this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
-            } else if (event._event.plus) {
-                // TODO removing this causes no spec failures; looks suspicious
-                this.target.addEventListener(baseType + "@" + this.targetPropertyPath, this, this.useCapture);
+                this.target.addPropertyChangeListener(this.targetPropertyPath, this, this.useCapture);
             }
 
         }
@@ -704,28 +328,24 @@ Object.defineProperty(Object.prototype, "propertyChangeBindingListener", {
         var targetPropertyPath, targetPropertyPathCurrentIndex, /*dotIndex,*/
             functionListener = PropertyChangeBindingListener.create();
 
-        if (typeof atSignIndex !== "number") {
-            atSignIndex = type.indexOf("@");
-        }
-
         functionListener.useCapture = useCapture;
         functionListener.target = this;
         functionListener.originalListener = listener;
         functionListener.originalListenerIsFunction = (typeof listener === "function");
-        if (atSignIndex > -1) {
-            functionListener.targetPropertyPath = targetPropertyPath = type.substring(atSignIndex + 1);
-            //This is storing the future prevValue
-            functionListener.previousTargetPropertyPathValue = this.getProperty(targetPropertyPath);
-            functionListener.targetPropertyPathCurrentIndex = targetPropertyPathCurrentIndex = 0;
-            if (bindingOrigin) {
-                // dotIndex = functionListener.targetPropertyPath.indexOf(".", functionListener.targetPropertyPathCurrentIndex);
-                // functionListener.currentPropertyComponent = targetPropertyPath.substring(targetPropertyPathCurrentIndex, (dotIndex === -1 ? targetPropertyPath.length: dotIndex));
-                functionListener.bindingOrigin = bindingOrigin;
-                functionListener.bindingPropertyPath = bindingPropertyPath;
-                functionListener.bindingDescriptor = bindingDescriptor;
-                functionListener.bindingOriginValueDeferred = bindingDescriptor.deferred ? true : false;
-            }
+
+
+        functionListener.targetPropertyPath = targetPropertyPath = type;
+        //This is storing the future prevValue
+        functionListener.previousTargetPropertyPathValue = this.getProperty(targetPropertyPath);
+        functionListener.targetPropertyPathCurrentIndex = targetPropertyPathCurrentIndex = 0;
+        if (bindingOrigin) {
+
+            functionListener.bindingOrigin = bindingOrigin;
+            functionListener.bindingPropertyPath = bindingPropertyPath;
+            functionListener.bindingDescriptor = bindingDescriptor;
+            functionListener.bindingOriginValueDeferred = bindingDescriptor.deferred ? true : false;
         }
+
         return functionListener;
     },
     writable: true
@@ -843,7 +463,7 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         boundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath,
         boundObjectValue,
         currentBindingDescriptor,
-        comboEventType = "change@" + boundObjectPropertyPath ,
+        comboEventType = boundObjectPropertyPath,
         bindingListener;
 
     if (!boundObject || !boundObjectPropertyPath) {
@@ -892,7 +512,7 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         boundObject = bindingDescriptor.boundObject;
         boundObjectPropertyPath = bindingListener.targetPropertyPath;
         oneway = typeof bindingDescriptor.oneway === "undefined" ? false : bindingDescriptor.oneway;
-        comboEventType = "change@" + boundObjectPropertyPath;
+        comboEventType = boundObjectPropertyPath;
 
         bindingDescriptor.boundObjectPropertyPath = boundObjectPropertyPath;
         bindingDescriptor.bindingListener = bindingListener;
@@ -901,12 +521,12 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         bindingListener.listener = bindingListener;
 
         //1) the boundObjectPropertyPath need to be observed on boundObject
-        boundObject.addEventListener(comboEventType, bindingListener, true);
+        boundObject.addPropertyChangeListener(comboEventType, bindingListener, false);
 
         //2) the sourceObjectPropertyBindingPath needs to be observed on sourceObject, only if sourceObjectPropertyBindingPath is expected to change
         //as specified by oneway
         if (!oneway) {
-            sourceObject.addEventListener("change@" + sourceObjectPropertyBindingPath, bindingListener, true);
+            sourceObject.addPropertyChangeListener(sourceObjectPropertyBindingPath, bindingListener, false);
         }
 
         //3) Convert the value if needed prior to deferring the value or setting it on the source
