@@ -61,7 +61,7 @@ exports.Token = Montage.create(Component, {
             this._pressComposer.addEventListener("pressCancel", this, false);
             */
             if(window.Touch) {
-                this.deleteEl.addEventListener('touchup', this);
+                this.deleteEl.addEventListener('touchend', this);
             } else {
                 this.deleteEl.addEventListener('mouseup', this);
             }
@@ -88,7 +88,7 @@ exports.Token = Montage.create(Component, {
            this.removeSelf();
        }
    },
-   handleTouchup: {
+   handleTouchend: {
        value: function(event) {
           this.removeSelf();
       }

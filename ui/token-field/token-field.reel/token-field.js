@@ -26,6 +26,8 @@ exports.TokenField = Montage.create(Component, {
     */
     allowAdHocValues: {value: null},
 
+    placeholder: {value: null},
+
 
     // private
 
@@ -107,7 +109,7 @@ exports.TokenField = Montage.create(Component, {
             this._pressComposer.addEventListener("pressCancel", this, false);
             */
             if(window.Touch) {
-                this.element.addEventListener('touchend', this);
+                //this.element.addEventListener('touchend', this);
             } else {
                 this.element.addEventListener('mouseup', this);
             }
