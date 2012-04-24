@@ -646,12 +646,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             endY=startY;
             if ((this._hasMomentum)&&(event.velocity.speed>40)) {
                 if (this._axis!="vertical") {
-                    momentumX=event.velocity.x*this._pointerSpeedMultiplier;
+                    momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertAxis ? 1 : -1);
                 } else {
                     momentumX=0;
                 }
                 if (this._axis!="horizontal") {
-                    momentumY=event.velocity.y*this._pointerSpeedMultiplier;
+                    momentumY= event.velocity.y * this._pointerSpeedMultiplier * (this._invertAxis ? 1 : -1);
                 } else {
                     momentumY=0;
                 }

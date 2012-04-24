@@ -1,0 +1,9 @@
+{
+    "splitter": {
+        "prototype": "montage/lab/sandbox/ui/splitter/splitter.reel",
+        "properties": {
+            "element": {"#": "splitter"}
+        }
+    }
+    
+}
