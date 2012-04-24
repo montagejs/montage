@@ -15,8 +15,6 @@
 
 var Montage = require("montage").Montage,
     ChangeNotification = require("core/change-notification").ChangeNotification,
-    ChangeEventConstructor = require("core/event/mutable-event")._Change,
-    ChangeTypes = require("core/event/mutable-event").ChangeTypes,
     Serializer = require("core/serializer").Serializer,
     Deserializer = require("core/deserializer").Deserializer,
     logger = require("core/logger").logger("binding");
@@ -24,52 +22,10 @@ var Montage = require("montage").Montage,
     AT_TARGET = 2,
     UNDERSCORE = "_";
 
-
-/**
-    @member external:Array#dispatchChangeEvent
-*/
-Object.defineProperty(Array.prototype, "dispatchChangeEvent", {value: false, enumerable: false, writable: true});
-
-/**
-    @member external:Array#dispatchChangeAtIndexEvent
-*/
-Object.defineProperty(Array.prototype, "dispatchChangeAtIndexEvent", {value: false, enumerable: false, writable: true});
-
-/**
-    @member external:Array#dispatchChangeAtLengthEvent
-*/
-Object.defineProperty(Array.prototype, "dispatchChangeAtLengthEvent", {value: false, enumerable: false, writable: true});
-
 /**
     @class module:montage/core/event/binding.ChangeEventDispatchingArray
 */
 var ChangeEventDispatchingArray = exports.ChangeEventDispatchingArray = [];
-
-/**
-    @function external:Array#addContentEventListener
-    @param {string} type Event type
-    @param {object|function} listener Event listener.
-    @param {boolean} useCapture Specifies whether to listen for the event during the capture phase.
-*/
-Object.defineProperty(Array.prototype, "addContentEventListener", {
-    value: function(type, listener, useCapture) {
-    },
-    enumerable: false,
-    configurable: true
-});
-
-
-/**
-    @function external:Object#automaticallyDispatchEvent
-    @param {string} eventType
-*/
-Object.defineProperty(Object.prototype, "automaticallyDispatchEvent", {
-    value: function(eventType) {
-        return eventType.indexOf("change") === 0;
-    },
-    enumerable: false,
-    configurable: true
-});
 
 /**
     @class module:montage/core/event/binding.PropertyChangeBindingListener
@@ -127,9 +83,6 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
         }
     },
     handleChange: {value: function(event) {
-
-        if (window.debug) debugger
-
         var targetPropertyPath = this.targetPropertyPath,
             target = this.target,
             localNewValue = event.plus,
@@ -325,7 +278,7 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
 Object.defineProperty(Object.prototype, "propertyChangeBindingListener", {
     value: function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
 
-        var targetPropertyPath, targetPropertyPathCurrentIndex, /*dotIndex,*/
+        var targetPropertyPath,
             functionListener = PropertyChangeBindingListener.create();
 
         functionListener.useCapture = useCapture;
@@ -337,9 +290,9 @@ Object.defineProperty(Object.prototype, "propertyChangeBindingListener", {
         functionListener.targetPropertyPath = targetPropertyPath = type;
         //This is storing the future prevValue
         functionListener.previousTargetPropertyPathValue = this.getProperty(targetPropertyPath);
-        functionListener.targetPropertyPathCurrentIndex = targetPropertyPathCurrentIndex = 0;
-        if (bindingOrigin) {
+        functionListener.targetPropertyPathCurrentIndex = 0;
 
+        if (bindingOrigin) {
             functionListener.bindingOrigin = bindingOrigin;
             functionListener.bindingPropertyPath = bindingPropertyPath;
             functionListener.bindingDescriptor = bindingDescriptor;
@@ -463,7 +416,6 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         boundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath,
         boundObjectValue,
         currentBindingDescriptor,
-        comboEventType = boundObjectPropertyPath,
         bindingListener;
 
     if (!boundObject || !boundObjectPropertyPath) {
@@ -497,7 +449,7 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         _bindingDescriptors[sourceObjectPropertyBindingPath] = bindingDescriptor;
 
         //Asking the boundObject to give me a propertyChangeBindingListener. - need to rename that -
-        bindingListener = boundObject.propertyChangeBindingListener(comboEventType, null, true/*useCapture*/, null, sourceObject, sourceObjectPropertyBindingPath, bindingDescriptor);
+        bindingListener = boundObject.propertyChangeBindingListener(boundObjectPropertyPath, null, true/*useCapture*/, null, sourceObject, sourceObjectPropertyBindingPath, bindingDescriptor);
 
         if (!bindingListener) {
             // The bound object decided it didn't want to install a listener for this binding, for whatever reason
@@ -512,26 +464,24 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         boundObject = bindingDescriptor.boundObject;
         boundObjectPropertyPath = bindingListener.targetPropertyPath;
         oneway = typeof bindingDescriptor.oneway === "undefined" ? false : bindingDescriptor.oneway;
-        comboEventType = boundObjectPropertyPath;
 
         bindingDescriptor.boundObjectPropertyPath = boundObjectPropertyPath;
         bindingDescriptor.bindingListener = bindingListener;
 
-        //I'm setting the listener to be itself
         bindingListener.listener = bindingListener;
 
-        //1) the boundObjectPropertyPath need to be observed on boundObject
-        boundObject.addPropertyChangeListener(comboEventType, bindingListener, false);
+        //1) the boundObjectPropertyPath needs to be observed on boundObject for all bindings
+        boundObject.addPropertyChangeListener(boundObjectPropertyPath, bindingListener, false);
 
-        //2) the sourceObjectPropertyBindingPath needs to be observed on sourceObject, only if sourceObjectPropertyBindingPath is expected to change
-        //as specified by oneway
+        //2) the sourceObjectPropertyBindingPath needs to be observed on sourceObject if this is a two-way binding
         if (!oneway) {
             sourceObject.addPropertyChangeListener(sourceObjectPropertyBindingPath, bindingListener, false);
         }
 
-        //3) Convert the value if needed prior to deferring the value or setting it on the source
+        //3) Get the value to set on the source (and convert if necessary)
         boundObjectValue = boundObject.getProperty(boundObjectPropertyPath);
 
+        // Though somewhat deprecated, give the boundValueMutator function precedence over a converter object
         if (bindingDescriptor.boundValueMutator) {
             boundObjectValue = bindingDescriptor.boundValueMutator(boundObjectValue);
         } else if (bindingDescriptor.converter) {
