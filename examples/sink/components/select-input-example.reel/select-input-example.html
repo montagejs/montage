@@ -57,8 +57,7 @@
 
 
                 "statesController": {
-                    "name": "ArrayController",
-                    "module": "montage/ui/controller/array-controller",
+                    "prototype": "montage/ui/controller/array-controller",
                     "properties": {
                         "selectObjectsOnAddition": true,
                         "automaticallyOrganizeObjects": true,
@@ -357,8 +356,7 @@
 
 
  "statesController": {
-     "name": "ArrayController",
-     "module": "montage/ui/controller/array-controller",
+     "prototype": "montage/ui/controller/array-controller",
      "properties": {
          "selectObjectsOnAddition": true,
          "automaticallyOrganizeObjects": true,
@@ -563,25 +561,22 @@ exports.SelectInputExample = Montage.create(Component, {
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
-&lt;div class="demo"&gt;<br>
-&lt;div style="height: 40px;"&gt;<br>
-&lt;button data-montage-id="justify-none" class="btn justify"&gt;-&lt;/button&gt;<br>
-&lt;button data-montage-id="justifyLeft" class="btn justify"&gt;L&lt;/button&gt;<br>
-&lt;button data-montage-id="justifyCenter" class="btn justify"&gt;C&lt;/button&gt;<br>
-&lt;button data-montage-id="justifyRight" class="btn justify"&gt;R&lt;/button&gt;<br>
-&lt;/div&gt;<br>
-&lt;div&gt;<br>
-&lt;select data-montage-id="justifySelect" class="justifySelect"&gt;<br>
-&lt;option value=""&gt;&lt;/option&gt;<br>
-&lt;option value="left"&gt;Left&lt;/option&gt;<br>
-&lt;option value="center"&gt;Center&lt;/option&gt;<br>
-&lt;option value="right"&gt;Right&lt;/option&gt;<br>
-&lt;/select&gt;<br>
-<br>
-&lt;p&gt;<br>
-Justify selection: &lt;span data-montage-id="justifyResult"&gt;&lt;/span&gt;<br>
-&lt;/p&gt;<br>
-&lt;/div&gt;<br>
+&lt;div class="demo"&gt;
+    &lt;div style="height: 40px;"&gt;
+        &lt;button data-montage-id="justify-none" class="btn justify"&gt;-&lt;/button&gt;
+        &lt;button data-montage-id="justifyLeft" class="btn justify"&gt;L&lt;/button&gt;
+        &lt;button data-montage-id="justifyCenter" class="btn justify"&gt;C&lt;/button&gt;
+        &lt;button data-montage-id="justifyRight" class="btn justify"&gt;R&lt;/button&gt;
+    &lt;/div&gt;
+    &lt;div&gt;
+        &lt;select data-montage-id="justifySelect" class="justifySelect"&gt;
+            &lt;option value=""&gt;&lt;/option&gt;
+            &lt;option value="left"&gt;Left&lt;/option&gt;
+            &lt;option value="center"&gt;Center&lt;/option&gt;
+            &lt;option value="right"&gt;Right&lt;/option&gt;
+        &lt;/select&gt;
+        &lt;p&gt;Justify selection: &lt;span data-montage-id="justifyResult"&gt;&lt;/span&gt;&lt;/p&gt;
+    &lt;/div&gt;
 &lt;/div&gt;
                             </pre>
                        </div>
@@ -689,7 +684,7 @@ exports.JustifyConverter = Montage.create(Converter, {
             <section>
                 <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
             </section>
-
+    </div>
 <!--
             <section>
                 <h4>Component Properties</h4>
