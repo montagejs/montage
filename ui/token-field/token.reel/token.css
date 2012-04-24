@@ -1,3 +1,6 @@
+/* @override http://localhost:8082/montage/ui/token-field/token.reel/token.css */
+
+
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
@@ -5,24 +8,46 @@
  </copyright> */
 .token {
     display: inline-block;
-    background: #1DA1D8;
-    border: 1px solid #057BAC;
-    padding: 2px;
-    margin: 2px 0px;
-    color: white;
+    margin: 3px 1px;
+    border: 1px solid hsl(0,0%,85%);
+    background-color: hsl(0,0%,95%);
+    color: #333;
     vertical-align: middle;
     cursor: default;
     border-radius: 3px;
-    -webkit-border-radius: 3px;
-    -moz-border-radius: 3px;
 }
 
-.token .token-delete {
-    padding-left: 5px;
-    border-left: 1px solid #ccc;
+.token > .token-text {
+    padding: 0px 1px 0px 5px;
+}
+
+.token > .token-delete {
+    display: inline-block;
+    padding: 3px 6px;
+    border-left: inherit;
+    border-radius: 0 2px 2px 0;
+    color: hsl(0,0%,60%);    
     cursor: pointer;
 }
-.token-delete :active {
-    color: #ccc;
-   
+.token > .token-delete:hover {
+    color: hsl(0,0%,30%);
+    background-color: hsl(0,0%,90%);
+}
+.token > .token-delete:active {
+    color: hsl(0,0%,60%);
+    background-color: hsl(0,0%,85%);
+}
+
+/* selected */
+.token.selected {
+    border-color: hsl(0,0%,60%);
+}
+
+.token.selected > .token-delete {
+    color: hsl(0,0%,100%);
+    background-color: hsl(0,0%,60%);
+}
+
+.token.active {
+    border: 1px solid #ccc;
 }
