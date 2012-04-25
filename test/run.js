@@ -68,6 +68,7 @@ if (spec) {
 
         "ui/application-spec",
         "ui/anchor-spec",
+        "ui/autocomplete-spec",
         "ui/button-spec",
         "ui/check-spec",
         "ui/condition-spec",
