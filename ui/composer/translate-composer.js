@@ -6,17 +6,21 @@
  /*global require,exports */
 /**
     @module montage/ui/composer/translate-composer
-    @requires montage
+    @requires montage/core/core
     @requires montage/ui/composer/composer
 */
 var Montage = require("montage").Montage,
     Composer = require("ui/composer/composer").Composer,
     defaultEventManager = require("core/event/event-manager").defaultEventManager;
 /**
+    Provides translateX and translateY properties that are updated when the
+    user clicks/touches and drags on the given element. Should be used wherever
+    a user interacts with an element by dragging it.
+
     @class module:montage/ui/composer/translate-composer.TranslateComposer
     @extends module:montage/ui/composer/composer.Composer
 */
-var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui/event/composer/translate-composer.TranslateComposer# */ {
+var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** @lends module:montage/ui/composer/translate-composer.TranslateComposer# */ {
 
     /**
     These elements perform some native action when clicked/touched and so we
@@ -54,6 +58,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: 1
     },
 
+    /**
+        How many pixels to translate by for each pixel of cursor movement.
+        @type {Number}
+        @default 1
+    */
     pointerSpeedMultiplier: {
         get: function() {
             return this._pointerSpeedMultiplier;
@@ -81,6 +90,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: 0
     },
+    /**
+        Amount of translation in the X (left/right) direction. Can be inverted with
+        {@link invertXAxis}, and restricted to a range with
+        {@link minTranslateX} and {@link maxTranslateX}.
+        @type {Number}
+        @default 0
+    */
     translateX: {
         get: function() {
             return this._translateX;
@@ -109,6 +125,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: 0
     },
+    /**
+        Amount of translation in the Y (up/down) direction. Can be inverted with
+        {@link invertYAxis}, and restricted to a range with
+        {@link minTranslateY} and {@link maxTranslateY}.
+        @type {Number}
+        @default 0
+    */
     translateY: {
         get: function() {
             return this._translateY;
@@ -137,6 +160,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: null
     },
+    /**
+        The minimum value {@link translateX} can take. If set to null then
+        there is no minimum.
+        @type {number|null}
+        @default null
+    */
     minTranslateX: {
         get: function() {
             return this._minTranslateX;
@@ -158,6 +187,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: null
     },
+    /**
+        The maximum value {@link translateX} can take. If set to null then
+        there is no maximum.
+        @type {number|null}
+        @default null
+    */
     maxTranslateX: {
         get: function() {
             return this._maxTranslateX;
@@ -180,6 +215,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: null
     },
+    /**
+        The minimum value {@link translateY} can take. If set to null then
+        there is no minimum.
+        @type {number|null}
+        @default null
+    */
     minTranslateY: {
         get: function() {
             return this._minTranslateY;
@@ -201,6 +242,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: null
     },
+    /**
+        The maximum value {@link translateY} can take. If set to null then
+        there is no maximum.
+        @type {number|null}
+        @default null
+    */
     maxTranslateY: {
         get: function() {
             return this._maxTranslateY;
@@ -223,7 +270,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         enumerable: false,
         value: "both"
     },
+    /**
+        Which axis translation is restricted to.
 
+        Can be "vertical", "horizontal" or "both".
+        @type {String}
+        @default "both"
+    */
     axis: {
         get: function() {
             return this._axis;
@@ -243,6 +296,17 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    /**
+        Invert direction of translation on both axes.
+
+        This inverts the effect of cursor motion on both axes. For example
+        if set to true moving the mouse up will increase the value of
+        translateY instead of decreasing it.
+
+        Depends on invertXAxis and invertYAxis.
+        @type {Boolean}
+        @default false
+    */
     invertAxis: {
         depends: ["invertXAxis", "invertYAxis"],
         get: function() {
@@ -257,6 +321,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: false,
         enumerable: false
     },
+    /**
+        Invert direction of translation along the X axis.
+
+        This inverts the effect of left/right cursor motion on translateX.
+        @type {Boolean}
+        @default false
+    */
     invertXAxis: {
         get: function() {
             return this._invertXAxis;
@@ -269,6 +340,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: false,
         enumerable: false
     },
+    /**
+        Invert direction of translation along the Y axis.
+
+        This inverts the effect of up/down cursor motion on translateX.
+        @type {Boolean}
+        @default false
+    */
     invertYAxis: {
         get: function() {
             return this._invertYAxis;
@@ -278,11 +356,26 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    /**
+        How fast the cursor has to be moving before translating starts. Only
+        applied when another component has claimed the pointer.
+        @type {Number}
+        @default 500
+    */
+    startTranslateSpeed: {
+        value: 500
+    },
+
     _hasMomentum: {
         enumerable: false,
         value: true
     },
 
+    /**
+        Whether to keep translating after the user has releases the cursor.
+        @type {Boolean}
+        @default true
+    */
     hasMomentum: {
         get: function() {
             return this._hasMomentum;
@@ -369,11 +462,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    /**
-    Description TODO
-    @function
-    @param {Event} event TODO
-    */
     captureMousedown: {
         enumerable: false,
         value: function(event) {
@@ -398,6 +486,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     If nobody else claimed this pointer, we should handle it now
     @function
     @param {Event} event TODO
+    @private
     */
     handleMousedown: {
         enumerable: false,
@@ -516,14 +605,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this._end(event.changedTouches[i]);
             }
         }
-    },
-
-    /**
-    How fast the cursor has to be moving before translating starts. Only
-    applied when another component has claimed the pointer.
-    */
-    startTranslateSpeed: {
-        value: 500
     },
 
     _analyzeMovement: {
