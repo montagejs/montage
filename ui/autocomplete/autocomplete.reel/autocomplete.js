@@ -497,7 +497,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 case KEY_ENTER:
                 if(popup.displayed == true) {
                     this.resultsController.selectedIndexes = [this.activeItemIndex];
-                    event.preventDefault();
+                    e.preventDefault();
                     // select the currently active item in the results list
                 } else {
                     this.suggestedValue = this.tokens[this.tokens.length-1];
