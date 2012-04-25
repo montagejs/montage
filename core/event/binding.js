@@ -239,13 +239,13 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 // NOTE this check works around Safari not having a removeEventListener on its CanvasPixelArray
                 // TODO investigate if this is an appropriate fix or not
                 if (typeof localPrevValue.removeEventListener === "function") {
-                    localPrevValue.removePropertyChangeListener(remainingPath, this, this.useCapture);
+                    localPrevValue.removePropertyChangeListener(remainingPath, this, false);
                 }
             }
 
             if (localNewValue) {
                 // Reinstall listeners along the entire propertyPath from the target
-                this.target.addPropertyChangeListener(this.targetPropertyPath, this, this.useCapture);
+                this.target.addPropertyChangeListener(this.targetPropertyPath, this, false);
             }
 
         }
@@ -531,18 +531,20 @@ Object.defineProperty(Object.prototype, "_deserializeProperty_bindingDescriptors
     @param {string} sourceObjectPropertyBindingPath The key path to the bound object's bound property.
 */
 Object.defineProperty(Object, "deleteBinding", {value: function(sourceObject, sourceObjectPropertyBindingPath) {
-    var _bindingDescriptors = sourceObject._bindingDescriptors, bindingDescriptor,oneway;
+    var _bindingDescriptors = sourceObject._bindingDescriptors,
+        bindingDescriptor,
+        oneway;
+
     if (sourceObjectPropertyBindingPath in _bindingDescriptors) {
         bindingDescriptor = _bindingDescriptors[sourceObjectPropertyBindingPath];
         oneway = typeof bindingDescriptor.oneway === "undefined" ? true : bindingDescriptor.oneway;
 
-        //1) the boundObjectPropertyPath need to be removed as a listener on boundObject
-        bindingDescriptor.boundObject.removeEventListener("change@" + bindingDescriptor.boundObjectPropertyPath, bindingDescriptor.bindingListener, true);
+        //1) Stop observing the boundObjectPropertyPath on the boundObject
+        bindingDescriptor.boundObject.removePropertyChangeListener(bindingDescriptor.boundObjectPropertyPath, bindingDescriptor.bindingListener, false);
 
-        //2) the sourceObjectPropertyBindingPath needs to be removed as a listener on sourceObject, only if sourceObjectPropertyBindingPath is expected to change
-        //as specified by oneway
+        //2) Stop observing the sourceObjectPropertyBindingPath on the sourceObject this was not a oneway binding
         if (!oneway) {
-            sourceObject.removeEventListener("change@" + sourceObjectPropertyBindingPath, bindingDescriptor.bindingListener, true);
+            sourceObject.removePropertyChangeListener(sourceObjectPropertyBindingPath, bindingDescriptor.bindingListener, false);
         }
 
         delete _bindingDescriptors[sourceObjectPropertyBindingPath];
