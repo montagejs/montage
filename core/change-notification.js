@@ -93,6 +93,11 @@ var ChangeNotification = exports.ChangeNotification = Object.create(Montage, {
                 }
             }
 
+            if (!functionDescriptor.listenerFunction) {
+                console.log("Could not find valid listener when installing", target, listener);
+                throw "Could not find valid listener when installing";
+            }
+
             functionDescriptor.listensToMutation = mutation;
             return functionDescriptor;
         }
