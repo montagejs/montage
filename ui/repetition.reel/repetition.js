@@ -202,7 +202,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             } else {
                 if (this._objects && !this._mappedObjects) {
                     this._mappedObjects = this.indexMap.map(function(value) {
-                        return value ? this._objects.getProperty(value) : undefined;
+                        return !isNaN(value) ? this._objects.getProperty(value) : undefined;
                     }, this);
                 }
                 return this._mappedObjects;
