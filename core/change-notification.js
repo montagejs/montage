@@ -776,7 +776,7 @@ var DispatcherPropertyDescriptor = {
 };
 
 var PrefixedPropertyDescriptor = {
-    enumrable: false,
+    enumerable: false,
     writable: true,
     configurable: true
 };
