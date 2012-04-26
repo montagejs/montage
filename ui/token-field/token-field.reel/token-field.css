@@ -25,10 +25,14 @@
     -webkit-box-shadow: none;
     -moz-box-shadow: none;
     box-shadow: none;
+    width: 2px;
+}
+
+.montage-token-field input[type="text"].montage-token-autocomplete:focus {
+    width: 80%;
 }
 
 .montage-token-field .montage-autocomplete-wrapper {
-    min-width: 40%;
     display: inline-block;
     overflow: hidden;
     margin: 0px;

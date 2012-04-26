@@ -7,14 +7,19 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
+
 var KEY_DELETE = 46,
-KEY_BACKSPACE = 8;
+KEY_BACKSPACE = 8,
+KEY_LEFT = 37,
+KEY_UP = 38,
+KEY_RIGHT = 39,
+KEY_DOWN = 40;
 
 exports.TokenField = Montage.create(Component, {
 
     delegate: {value: null},
 
-    tokens: {value: null},
+    values: {value: null},
 
     /**
     * Path to a String within an Object that is representative of the Object
@@ -78,41 +83,23 @@ exports.TokenField = Montage.create(Component, {
                 } else {
                     representedObject = newValue;
                 }
-
                 if(representedObject) {
                     this._suggestedValue = representedObject;
                     // able to find a representedObject
-                    if(!this.tokens) {
-                        this.tokens = [];
+                    if(!this.values) {
+                        this.values = [];
                     }
-                    this.tokens.push(this._suggestedValue);
+                    this.values.push(this._suggestedValue);
+                    this.autocomplete.value = '';
                 }
-                this.autocomplete.value = '';
-            }
-        }
-    },
 
-    didCreate: {
-        value: function() {
-            /*
-            this._pressComposer = PressComposer.create();
-            this.addComposer(this._pressComposer);
-            */
+            }
         }
     },
 
     prepareForActivationEvents: {
         value: function() {
-            /*
-            this._pressComposer.addEventListener("pressStart", this, false);
-            this._pressComposer.addEventListener("press", this, false);
-            this._pressComposer.addEventListener("pressCancel", this, false);
-            */
-            if(window.Touch) {
-                //this.element.addEventListener('touchend', this);
-            } else {
-                this.element.addEventListener('mouseup', this);
-            }
+            this.element.addEventListener('mouseup', this);
         }
     },
 
@@ -139,20 +126,9 @@ exports.TokenField = Montage.create(Component, {
     },
 
     // Event handling
-    handleMouseupTouchend: {
-        enumerable: false,
-        value: function(event) {
-            this.hasFocus = true;
-        }
-    },
-    handleTouchend: {
-        value:function(event) {
-            this.handleMouseupTouchend(event);
-        }
-    },
     handleMouseup: {
         value: function(event) {
-            this.handleMouseupTouchend(event);
+            this.hasFocus = true;
         }
     },
 
@@ -161,29 +137,74 @@ exports.TokenField = Montage.create(Component, {
         value: function(e) {
             var code = e.keyCode;
             //console.log('keyCode', code);
+            if(this.values && this.values.length > 0) {
+                var selectedIndexes = this.tokensController.selectedIndexes;
+                var selectedIndex = (selectedIndexes && selectedIndexes.length > 0 ? selectedIndexes[0] : null);
+                var lastIndex = this.values.length - 1, len = this.values.length;
 
-            switch(code) {
-                // @todo - check Keycode in Windows/Linux/Mobile browsers
-                case KEY_BACKSPACE:
-                case KEY_DELETE:
+                switch(code) {
+                    // @todo - check Keycode in Windows/Linux/Mobile browsers
+                    case KEY_BACKSPACE:
+                    case KEY_DELETE:
+                    // Only remove the token if the token has already been selected
+                    // So the behavior is to select the last token if it is not selected already.
+                    // If selected already, then remove it
 
-                // Only remove the token if the token has already been selected
-                // So the behavior is to select the last token if it is not selected already.
-                // If selected already, then remove it
-
-                if((!this.autocompleteValue) && this.tokens && this.tokens.length > 0) {
-                    var selectedIndexes = this.tokensController.selectedIndexes;
-                    // check if the selected token is the last one
-                    if(selectedIndexes && selectedIndexes.length > 0 && selectedIndexes[0] === (this.tokens.length-1)) {
-                        // removes the selected one
-                        this.tokensController.remove();
-                    } else {
-                        this.tokensController.selectedIndexes = [this.tokens.length-1];
+                    if(!this.autocompleteValue) {
+                        // check if the selected token is the last one
+                        if(selectedIndexes && selectedIndexes.length > 0) {
+                            // removes the selected one
+                            this.tokensController.remove();
+                        } else {
+                            this.tokensController.selectedIndexes = [this.values.length-1];
+                        }
                     }
+
+                    break;
+
+                    case KEY_LEFT:
+                        if(!this.autocompleteValue) {
+                            if(selectedIndex != null) {
+                                selectedIndex = selectedIndex - 1;
+                                if(selectedIndex < 0) {
+                                    selectedIndex = lastIndex;
+                                }
+                            } else {
+                                selectedIndex = lastIndex;
+                            }
+                            this.tokensController.selectedIndexes = [selectedIndex];
+                        }
+
+                    break;
+
+                    case KEY_RIGHT:
+                    if(!this.autocompleteValue) {
+                        if(selectedIndex != null) {
+                            selectedIndex = selectedIndex + 1;
+                            if(selectedIndex > lastIndex) {
+                                selectedIndex = 0;
+                            }
+                        } else {
+                            selectedIndex = 0;
+                        }
+                        this.tokensController.selectedIndexes = [selectedIndex];
+                    }
+
+                    break;
+
+                    case KEY_UP:
+                        this.tokensController.selectedIndexes = [0];
+                    break;
+
+                    case KEY_DOWN:
+                        this.tokensController.selectedIndexes = [lastIndex];
+                    break;
+
+                    default:
+                        this.tokensController.selectedIndexes = [];
+                    break;
+
                 }
-
-                break;
-
             }
 
         }
