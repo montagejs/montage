@@ -48,3 +48,7 @@
 .montage-token.active {
     border: 1px solid #ccc;
 }
+
+.montage-token.montage-token-adhoc {
+    border: 1px dashed #ccc;
+}
