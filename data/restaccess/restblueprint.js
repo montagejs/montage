@@ -13,9 +13,8 @@
 var Montage = require("montage").Montage;
 var Blueprint = require("data/blueprint").Blueprint;
 var BlueprintBinder = require("data/blueprint").BlueprintBinder;
-var ToOneAttribute = require("data/blueprint").ToOneAttribute;
-var ToManyAttribute = require("data/blueprint").ToManyAttribute;
-var ToOneAssociation = require("data/blueprint").ToOneAssociation;
+var Attribute = require("data/blueprint").Attribute;
+var Association = require("data/blueprint").Association;
 var ToManyAssociation = require("data/blueprint").ToManyAssociation;
 var RestSelectorEvaluator = require("data/restaccess/restselectorevaluator").RestSelectorEvaluator; // registering the evaluators
 var logger = require("core/logger").logger("restblueprint");
@@ -79,11 +78,11 @@ var RestBlueprint = exports.RestBlueprint = Montage.create(Blueprint, /** @lends
      Conventional method to crete new attribute.<br>
      This can be overwritten by specific stores.
      @function
-     @returns {Function} RestToManyAttribute.create()
+     @returns {Function} RestAttribute.create()
      */
-    createToManyAttribute:{
+    createAttribute:{
         value:function () {
-            return RestToManyAttribute.create();
+            return RestAttribute.create();
         }
     },
 
@@ -115,19 +114,19 @@ var RestBlueprint = exports.RestBlueprint = Montage.create(Blueprint, /** @lends
 /**
  @class module:montage/data/restaccess/restblueprint.RestToOneAttribute
  */
-var RestToOneAttribute = exports.RestToOneAttribute = Montage.create(ToOneAttribute, /** @lends module:montage/data/restaccess/restblueprint.RestToOneAttribute# */ {
+var RestToOneAttribute = exports.RestToOneAttribute = Montage.create(Attribute, /** @lends module:montage/data/restaccess/restblueprint.RestToOneAttribute# */ {
 
 });
 /**
  @class module:montage/data/restaccess/restblueprint.RestToOneAssociation
  */
-var RestToOneAssociation = exports.RestToOneAssociation = Montage.create(ToOneAssociation, /** @lends module:montage/data/restaccess/restblueprint.RestToOneAssociation# */ {
+var RestToOneAssociation = exports.RestToOneAssociation = Montage.create(Association, /** @lends module:montage/data/restaccess/restblueprint.RestToOneAssociation# */ {
 
 });
 /**
- @class module:montage/data/restaccess/restblueprint.RestToManyAttribute
+ @class module:montage/data/restaccess/restblueprint.RestAttribute
  */
-var RestToManyAttribute = exports.RestToManyAttribute = Montage.create(ToManyAttribute, /** @lends module:montage/data/restaccess/restblueprint.RestToManyAttribute# */ {
+var RestAttribute = exports.RestAttribute = Montage.create(Attribute, /** @lends module:montage/data/restaccess/restblueprint.RestAttribute# */ {
 
 });
 /**

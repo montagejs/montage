@@ -16,107 +16,107 @@ var Deserializer = require("montage/core/deserializer").Deserializer;
 var Promise = require("montage/core/promise").Promise;
 var logger = require("montage/core/logger").logger("store-spec");
 
-describe("data/store-spec", function() {
-describe("Store Manager", function() {
+describe("data/store-spec", function () {
+    describe("Store Manager", function () {
 
-    describe("creation", function() {
+        describe("creation", function () {
+            StoreManager.defaultManager = null;
+            var store1 = Store.create().init();
+            var store1meta = Montage.getInfoForObject(store1);
+            var store2 = Store.create().init();
+            var store3 = Store.create().initWithParent(StoreManager.create().init());
+            it("the default manager should be unique", function () {
+                expect(store1.parent).toBe(store2.parent);
+            });
+            it("it should be inserted in the default manager", function () {
+                expect(store1.parent.stores.indexOf(store1)).toBe(0);
+                expect(store1.parent.stores.indexOf(store2)).toBe(1);
+            });
+            it("it can be in an independent manager", function () {
+                expect(store1.parent).not.toBe(store3.parent);
+                expect(store3.parent.stores.indexOf(store3)).toBe(0);
+            });
+        });
+
+    });
+
+    describe("Store", function () {
         StoreManager.defaultManager = null;
-        var store1 = Store.create().init();
-        var store1meta = Montage.getInfoForObject(store1);
-        var store2 = Store.create().init();
-        var store3 = Store.create().initWithParent(StoreManager.create().init());
-        it("the default manager should be unique", function() {
-            expect(store1.parent).toBe(store2.parent);
-        });
-        it("it should be inserted in the default manager", function() {
-            expect(store1.parent.stores.indexOf(store1)).toBe(0);
-            expect(store1.parent.stores.indexOf(store2)).toBe(1);
-        });
-        it("it can be in an independent manager", function() {
-            expect(store1.parent).not.toBe(store3.parent);
-            expect(store3.parent.stores.indexOf(store3)).toBe(0);
-        });
-    });
+        var companyBinder = BlueprintBinder.create().initWithName("CompanyBinder");
+        var personBlueprint = companyBinder.addBlueprintNamed("Person", "data/object/person");
+        personBlueprint.addToOneAttributeNamed("name");
+        personBlueprint.addAttributeNamed("phoneNumbers");
 
-});
+        var companyBlueprint = companyBinder.addBlueprintNamed("Company", "data/object/company");
+        companyBlueprint.addToOneAttributeNamed("name");
 
-describe("Store", function() {
-    StoreManager.defaultManager = null;
-    var companyBinder = BlueprintBinder.create().initWithName("CompanyBinder");
-    var personBlueprint = companyBinder.addBlueprintNamed("Person", "data/object/person");
-    personBlueprint.addToOneAttributeNamed("name");
-    personBlueprint.addToManyAttributeNamed("phoneNumbers");
+        companyBlueprint.addToManyAssociationNamed("employees", personBlueprint.addToOneAssociationNamed("employer"));
 
-    var companyBlueprint = companyBinder.addBlueprintNamed("Company", "data/object/company");
-    companyBlueprint.addToOneAttributeNamed("name");
+        var projectBlueprint = companyBinder.addBlueprintNamed("Project", "data/object/project");
+        projectBlueprint.addToOneAttributeNamed("name");
+        projectBlueprint.addToOneAttributeNamed("startDate");
+        projectBlueprint.addToOneAttributeNamed("endDate");
 
-    companyBlueprint.addToManyAssociationNamed("employees", personBlueprint.addToOneAssociationNamed("employer"));
+        companyBlueprint.addToManyAssociationNamed("projects", personBlueprint.addToOneAssociationNamed("company"));
 
-    var projectBlueprint = companyBinder.addBlueprintNamed("Project", "data/object/project");
-    projectBlueprint.addToOneAttributeNamed("name");
-    projectBlueprint.addToOneAttributeNamed("startDate");
-    projectBlueprint.addToOneAttributeNamed("endDate");
+        personBlueprint.addToManyAssociationNamed("projects", projectBlueprint.addToManyAssociationNamed("employees"));
 
-    companyBlueprint.addToManyAssociationNamed("projects", personBlueprint.addToOneAssociationNamed("company"));
+        describe("creation", function () {
+            var promise = StoreManager.create().init().findStoreForBlueprintBinder(companyBinder);
 
-    personBlueprint.addToManyAssociationNamed("projects", projectBlueprint.addToManyAssociationNamed("employees"));
-
-    describe("creation", function() {
-        var promise = StoreManager.create().init().findStoreForBlueprintBinder(companyBinder);
-
-        it("should be created for the blueprint", function() {
-            waitsFor(function() {
-                return promise.isFulfilled();
-            }, "promise", 500);
-            runs(function() {
-                var result = promise.valueOf();
-                expect(result).not.toBeNull();
+            it("should be created for the blueprint", function () {
+                waitsFor(function () {
+                    return promise.isFulfilled();
+                }, "promise", 500);
+                runs(function () {
+                    var result = promise.valueOf();
+                    expect(result).not.toBeNull();
+                });
             });
         });
+
     });
 
-});
+    describe("SQLStore", function () {
+        StoreManager.defaultManager = null;
+        var companyBinder = SqlBlueprintBinder.create().initWithName("CompanyBinder");
+        var personBlueprint = companyBinder.addBlueprintNamed("Person", "data/object/person");
+        personBlueprint.addToOneAttributeNamed("name");
+        personBlueprint.addAttributeNamed("phoneNumbers");
 
-describe("SQLStore", function() {
-    StoreManager.defaultManager = null;
-    var companyBinder = SqlBlueprintBinder.create().initWithName("CompanyBinder");
-    var personBlueprint = companyBinder.addBlueprintNamed("Person", "data/object/person");
-    personBlueprint.addToOneAttributeNamed("name");
-    personBlueprint.addToManyAttributeNamed("phoneNumbers");
+        var companyBlueprint = companyBinder.addBlueprintNamed("Company", "data/object/company");
+        companyBlueprint.addToOneAttributeNamed("name");
 
-    var companyBlueprint = companyBinder.addBlueprintNamed("Company", "data/object/company");
-    companyBlueprint.addToOneAttributeNamed("name");
+        companyBlueprint.addToManyAssociationNamed("employees", personBlueprint.addToOneAssociationNamed("employer"));
 
-    companyBlueprint.addToManyAssociationNamed("employees", personBlueprint.addToOneAssociationNamed("employer"));
+        var projectBlueprint = companyBinder.addBlueprintNamed("Project", "data/object/project");
+        projectBlueprint.addToOneAttributeNamed("name");
+        projectBlueprint.addToOneAttributeNamed("startDate");
+        projectBlueprint.addToOneAttributeNamed("endDate");
 
-    var projectBlueprint = companyBinder.addBlueprintNamed("Project", "data/object/project");
-    projectBlueprint.addToOneAttributeNamed("name");
-    projectBlueprint.addToOneAttributeNamed("startDate");
-    projectBlueprint.addToOneAttributeNamed("endDate");
+        companyBlueprint.addToManyAssociationNamed("projects", personBlueprint.addToOneAssociationNamed("company"));
 
-    companyBlueprint.addToManyAssociationNamed("projects", personBlueprint.addToOneAssociationNamed("company"));
+        personBlueprint.addToManyAssociationNamed("projects", projectBlueprint.addToManyAssociationNamed("employees"));
 
-    personBlueprint.addToManyAssociationNamed("projects", projectBlueprint.addToManyAssociationNamed("employees"));
-
-    describe("creation", function() {
-        var promise = StoreManager.create().init().findStoreForBlueprintBinder(companyBinder);
+        describe("creation", function () {
+            var promise = StoreManager.create().init().findStoreForBlueprintBinder(companyBinder);
 
 
-        it("should be created for the SQL blueprint", function() {
-            waitsFor(function() {
-                return promise.isFulfilled();
-            }, "promise", 500);
-            runs(function() {
-                var result = promise.valueOf();
-                expect(result).not.toBe(null);
-                var metadata = Montage.getInfoForObject(result);
+            it("should be created for the SQL blueprint", function () {
+                waitsFor(function () {
+                    return promise.isFulfilled();
+                }, "promise", 500);
+                runs(function () {
+                    var result = promise.valueOf();
+                    expect(result).not.toBe(null);
+                    var metadata = Montage.getInfoForObject(result);
 
-                expect(metadata.objectName).toBe("SqlStore");
-                expect(metadata.moduleId).toBe("data/sqlaccess/sqlstore");
+                    expect(metadata.objectName).toBe("SqlStore");
+                    expect(metadata.moduleId).toBe("data/sqlaccess/sqlstore");
+                });
             });
         });
-    });
 
-});
+    });
 });
 

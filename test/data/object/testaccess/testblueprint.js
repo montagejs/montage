@@ -6,10 +6,8 @@
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
-var ToOneAttribute = require("montage/data/blueprint").ToOneAttribute;
-var ToManyAttribute = require("montage/data/blueprint").ToManyAttribute;
-var ToOneAssociation = require("montage/data/blueprint").ToOneAssociation;
-var ToManyAssociation = require("montage/data/blueprint").ToManyAssociation;
+var Attribute = require("montage/data/blueprint").Attribute;
+var Association = require("montage/data/blueprint").Association;
 var TestSelectorEvaluator = require("data/object/testaccess/testselectorevaluator").TestSelectorEvaluator; // registering the evaluators
 var logger = require("montage/core/logger").logger("testblueprint");
 
@@ -35,57 +33,5 @@ var TestBlueprintBinder = exports.SqlBlueprintBinder = Montage.create(BlueprintB
 })
 
 var TestBlueprint = exports.TestBlueprint = Montage.create(Blueprint, {
-
-    /*
-     * Conventional method to crete new attribute. This can be overwritten by specific stores.
-     */
-    createToOneAttribute: {
-        value: function() {
-            return TestToOneAttribute.create();
-        }
-    },
-
-    /*
-     * Conventional method to crete new attribute. This can be overwritten by specific stores.
-     */
-    createToManyAttribute: {
-        value: function() {
-            return TestToManyAttribute.create();
-        }
-    },
-
-    /*
-     * Conventional method to crete new attribute. This can be overwritten by specific stores.
-     */
-    createToOneAssociation: {
-        value: function() {
-            return TestToOneAssociation.create();
-        }
-    },
-
-    /*
-     * Conventional method to crete new attribute. This can be overwritten by specific stores.
-     */
-    createToManyAssociation: {
-        value: function() {
-            return TestToManyAssociation.create();
-        }
-    }
-
-});
-
-var TestToOneAttribute = exports.TestToOneAttribute = Montage.create(ToOneAttribute, {
-
-});
-
-var TestToOneAssociation = exports.TestToOneAssociation = Montage.create(ToOneAssociation, {
-
-});
-
-var TestToManyAttribute = exports.TestToManyAttribute = Montage.create(ToManyAttribute, {
-
-});
-
-var TestToManyAssociation = exports.TestToManyAssociation = Montage.create(ToManyAssociation, {
 
 });

@@ -13,17 +13,14 @@ var Montage = require("montage").Montage;
 var Uuid = require("core/uuid").Uuid;
 var logger = require("core/logger").logger("transactionid");
 /**
- Description TODO
  @private
  */
 var _lastTimestamp = Date.now();
 /**
- Description TODO
  @private
  */
 var _lastNanos = 1;
 /**
- Description TODO
  @private
  */
 var _transactionManagerInstance = null;
@@ -32,6 +29,7 @@ var _transactionManagerInstance = null;
  @extends module:montage/core/core.Montage
  */
 var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends module:montage/data/transactionid.TransactionId# */ {
+
     /**
      This is used to guarantee unicity.
      @private
@@ -41,6 +39,7 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
         enumerable: false,
         value: null
     },
+
     /**
      This is used to order transactions.
      @private
@@ -50,6 +49,7 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
         enumerable: false,
         value: null
     },
+
     /**
      This is used to order transactions.
      @private
@@ -59,6 +59,7 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
         enumerable: false,
         value: null
     },
+
     /**
      Description TODO
      @function

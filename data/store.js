@@ -40,24 +40,26 @@ var _defaultStoreManager = null;
  @extends module:montage/core/core.Montage
  */
 var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/data/store.Store# */ {
+
     /**
      Description TODO
      @type {Property} Function
      @default {Array} new Array(10)
      */
-    blueprintBinders: {
-        serializable: true,
-        writable: false,
-        distinct: true,
-        value: new Array(10)
+    blueprintBinders:{
+        serializable:true,
+        writable:false,
+        distinct:true,
+        value:new Array(10)
     },
+
     /**
      Description TODO
      @function
      @param {Property} binder TODO
      */
-    addBlueprintBinder: {
-        value: function(binder) {
+    addBlueprintBinder:{
+        value:function (binder) {
             if (binder !== null) {
                 var index = this.blueprintBinders.indexOf(binder);
                 if (index < 0) {
@@ -66,13 +68,14 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
             }
         }
     },
+
     /**
      Description TODO
      @function
      @param {Property} binder TODO
      */
-    removeBlueprintBinder: {
-        value: function(binder) {
+    removeBlueprintBinder:{
+        value:function (binder) {
             if (binder !== null) {
                 var index = this.blueprintBinders.indexOf(binder);
                 if (index >= 0) {
@@ -81,14 +84,15 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
             }
         }
     },
+
     /**
      Description TODO
      @function
      @param {Property} name TODO
      @returns null
      */
-    blueprintBinderForName: {
-        value: function(name) {
+    blueprintBinderForName:{
+        value:function (name) {
             var binder, index;
             for (index = 0; typeof (binder = this.blueprintBinders[index]) !== "undefined"; index++) {
                 if (binder.name === name) {
@@ -98,25 +102,27 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
             return null;
         }
     },
+
     /**
      Description TODO
      @type {Property}
      @default {Array} new Array(10)
      */
-    restrictions: {
-        serializable: true,
-        writable: false,
-        distinct: true,
-        value: new Array(10)
+    restrictions:{
+        serializable:true,
+        writable:false,
+        distinct:true,
+        value:new Array(10)
     },
+
     /**
      Description TODO
      @private
      */
-    _parent: {
-        serializable: true,
-        enumerable: false,
-        value: null
+    _parent:{
+        serializable:true,
+        enumerable:false,
+        value:null
     },
 
     /**
@@ -124,8 +130,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @function
      @returns this._parent
      */
-    parent: {
-        get: function() {
+    parent:{
+        get:function () {
             return this._parent;
         }
     },
@@ -136,38 +142,40 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @function
      @returns _defaultStoreManager
      */
-    defaultManager: {
-        get: function() {
+    defaultManager:{
+        get:function () {
             if (_defaultStoreManager === null) {
                 _defaultStoreManager = StoreManager.create().init();
             }
             return _defaultStoreManager;
         },
         // This is used only for testing.
-        set: function(storeManager) {
+        set:function (storeManager) {
             _defaultStoreManager = storeManager;
         }
     },
+
     /**
      @function
      @returns this.initWithParentAndRestrictions(null, null)
      */
-    init: {
-        serializable: false,
-        enumerable: false,
-        value: function() {
+    init:{
+        serializable:false,
+        enumerable:false,
+        value:function () {
             return this.initWithParentAndRestrictions(null, null);
         }
     },
+
     /**
      @function
      @param {Property} parent TODO
      @returns this.initWithParentAndRestrictions(parent, null)
      */
-    initWithParent: {
-        serializable: false,
-        enumerable: false,
-        value: function(parent) {
+    initWithParent:{
+        serializable:false,
+        enumerable:false,
+        value:function (parent) {
             return this.initWithParentAndRestrictions(parent, null);
         }
     },
@@ -178,9 +186,9 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} restrictions TODO
      @returns itself
      */
-    initWithParentAndRestrictions: {
-        serializable: false,
-        value: function(parent, restrictions) {
+    initWithParentAndRestrictions:{
+        serializable:false,
+        value:function (parent, restrictions) {
             if (this.parent !== null) {
                 this.parent.remove(this);
             }
@@ -196,6 +204,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
             return this;
         }
     },
+
     /**
      Description TODO
      @function
@@ -203,28 +212,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} moduleId TODO
      @returns null
      */
-    blueprintForPrototype$Implementation: {
-        serializable: false,
-        value: function(prototypeName, moduleId) {
-            var binder, blueprint, index;
-            for (index = 0; typeof (binder = this.blueprintBinders[index]) !== "undefined"; index++) {
-                blueprint = binder.blueprintForPrototype(prototypeName, moduleId);
-                if (blueprint !== null) {
-                    return blueprint;
-                }
-            }
-            return null;
-        }
-    },
-    /**
-     Description TODO
-     @function
-     @param {Prototyoe} prototypeName TODO
-     @param {Id} moduleId TODO
-     @returns null
-     */
-    blueprintForPrototype: {
-        value: function(prototypeName, moduleId) {
+    blueprintForPrototype:{
+        value:function (prototypeName, moduleId) {
             if (this.parent !== null) {
                 return this.parent.blueprintForPrototype(prototypeName, moduleId);
             }
@@ -238,8 +227,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} store TODO
      @returns store
      */
-    addStore: {
-        value: function(store) {
+    addStore:{
+        value:function (store) {
             if (this.parent !== null) {
                 return this.parent.addStore(store);
             }
@@ -253,8 +242,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} store TODO
      @returns store
      */
-    removeStore: {
-        value: function(store) {
+    removeStore:{
+        value:function (store) {
             if (this.parent !== null) {
                 return this.parent.removeStore(store);
             }
@@ -268,8 +257,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} objectId TODO
      @returns {Boolean} false
      */
-    ownsObject: {
-        value: function(objectId) {
+    ownsObject:{
+        value:function (objectId) {
             if ((objectId !== null) && (typeof (objectId.blueprint) === "object")) {
                 return this.blueprintBinders.indexOf(objectId.blueprint.binder) >= 0;
             }
@@ -283,8 +272,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} blueprint TODO
      @returns {Boolean} false
      */
-    ownsBlueprint: {
-        value: function(blueprint) {
+    ownsBlueprint:{
+        value:function (blueprint) {
             var binder, index;
             for (index = 0; typeof (binder = this.blueprintBinders[index]) !== "undefined"; index++) {
                 if (binder.blueprints.indexOf(blueprint) >= 0) {
@@ -302,8 +291,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} binder Either a binder object or a serialized representation of a binder object.
      @returns this.parent.requireStoreForBlueprintBinder(binder)
      */
-    requireStoreForBlueprintBinder: {
-        value : function(binder) {
+    requireStoreForBlueprintBinder:{
+        value:function (binder) {
             if (this.parent !== null) {
                 return this.parent.requireStoreForBlueprintBinder(binder);
             }
@@ -316,8 +305,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} binder TODO
      @returns (binder.storeModuleId === metadata.moduleId) && (binder.storePrototypeName === metadata.objectName)
      */
-    canServiceBlueprintBinder: {
-        value: function(binder) {
+    canServiceBlueprintBinder:{
+        value:function (binder) {
             // TODO [PJYF May 10 2011] This unsufficient for most stores we should actually check the connection info
             var metadata = Montage.getInfoForObject(this);
             return (binder.storeModuleId === metadata.moduleId) && (binder.storePrototypeName === metadata.objectName);
@@ -330,8 +319,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} query TODO
      @returns {Boolean} false
      */
-    canServiceQuery: {
-        value: function(query) {
+    canServiceQuery:{
+        value:function (query) {
             if (query != null) {
                 return this.ownsBlueprint(query.blueprint);
             }
@@ -346,8 +335,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.permanentIdForObjectId$Implementation(objectId, context, aTransactionId)
      */
-    permanentIdForObjectId: {
-        value: function(object, context, transactionId) {
+    permanentIdForObjectId:{
+        value:function (object, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -375,8 +364,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns Promise.ref(null)
      */
-    permanentIdForObjectId$Implementation: {
-        value: function(object, context, transactionId) {
+    permanentIdForObjectId$Implementation:{
+        value:function (object, context, transactionId) {
             if (typeof object.objectId !== "undefined") {
                 return Promise.ref(object.objectId);
             }
@@ -391,8 +380,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.pledgeForObjectId$Implementation(objectId, context, aTransactionId)
      */
-    pledgeForObjectId: {
-        value: function(objectId, context, transactionId) {
+    pledgeForObjectId:{
+        value:function (objectId, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -420,8 +409,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns Promise.ref(null)
      */
-    pledgeForObjectId$Implementation: {
-        value: function(objectId, context, transactionId) {
+    pledgeForObjectId$Implementation:{
+        value:function (objectId, context, transactionId) {
             // TODO [PJYF May 17 2011] This needs to be reimplemented
             return Promise.ref(null);
         }
@@ -435,8 +424,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.pledgeForSourceObjectAssociationNamed$Implementation(sourceObject, relationshipName, context, aTransactionId)
      */
-    pledgeForSourceObjectAssociationNamed: {
-        value: function(sourceObject, relationshipName, context, transactionId) {
+    pledgeForSourceObjectAssociationNamed:{
+        value:function (sourceObject, relationshipName, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -465,8 +454,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns Promise.ref(null)
      */
-    pledgeForSourceObjectAssociationNamed$Implementation: {
-        value: function(sourceObject, relationshipName, context, transactionId) {
+    pledgeForSourceObjectAssociationNamed$Implementation:{
+        value:function (sourceObject, relationshipName, context, transactionId) {
             if (this.parent !== null) {
                 return this.parent.pledgeForSourceObjectAssociationNamed$Implementation(sourceObject, relationshipName, context, transactionId);
             }
@@ -485,8 +474,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, aTransactionId)
      */
-    pledgeForSourceObjectAssociation: {
-        value: function(sourceObject, relationship, context, transactionId) {
+    pledgeForSourceObjectAssociation:{
+        value:function (sourceObject, relationship, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -516,8 +505,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.parent.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, transactionId)
      */
-    pledgeForSourceObjectAssociation$Implementation: {
-        value: function(sourceObject, relationship, context, transactionId) {
+    pledgeForSourceObjectAssociation$Implementation:{
+        value:function (sourceObject, relationship, context, transactionId) {
             if (this.parent !== null) {
                 return this.parent.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, transactionId);
             }
@@ -532,8 +521,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.initializeObject$Implementation(object, context, aTransactionId)
      */
-    initializeObject: {
-        value: function(object, context, transactionId) {
+    initializeObject:{
+        value:function (object, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -562,8 +551,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns Promise.ref(object)
      */
-    initializeObject$Implementation: {
-        value: function(object, context, transactionId) {
+    initializeObject$Implementation:{
+        value:function (object, context, transactionId) {
             if (typeof object.objectId === "undefined") {
                 // TODO [PJYF June 17 2011] This will need to be revisited.
                 object.objectId = TemporaryObjectId.create().init();
@@ -580,8 +569,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.repledgeObject$Implementation(target, context, aTransactionId)
      */
-    repledgeObject: {
-        value: function(target, context, transactionId) {
+    repledgeObject:{
+        value:function (target, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -620,8 +609,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns Promise.ref(object)
      */
-    repledgeObject$Implementation: {
-        value: function(object, context, transactionId) {
+    repledgeObject$Implementation:{
+        value:function (object, context, transactionId) {
             if (typeof object.objectId !== "undefined") {
                 return this.pledgeForObjectId(object.objectId, context, transactionId);
             }
@@ -636,8 +625,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} context TODO
      @param {Id} transactionId TODO
      */
-    saveChangesInContext: {
-        value: function(context, transactionId) {
+    saveChangesInContext:{
+        value:function (context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -665,8 +654,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.parent.saveChangesInContext$Implementation(context, transactionId)
      */
-    saveChangesInContext$Implementation: {
-        value: function(context, transactionId) {
+    saveChangesInContext$Implementation:{
+        value:function (context, transactionId) {
             if (this.parent !== null) {
                 return this.parent.saveChangesInContext$Implementation(context, transactionId);
             }
@@ -682,8 +671,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns {Boolean} Promise.ref(true)
      */
-    prepareToSaveChangesInContext$Implementation: {
-        value: function(context, transactionId) {
+    prepareToSaveChangesInContext$Implementation:{
+        value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
             return Promise.ref(true);
         }
@@ -697,8 +686,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns {Boolean} Promise.ref(true)
      */
-    cancelSaveChangesInContext$Implementation: {
-        value: function(context, transactionId) {
+    cancelSaveChangesInContext$Implementation:{
+        value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
             return Promise.ref(true);
         }
@@ -712,8 +701,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns {Boolean} Promise.ref(true)
      */
-    commitChangesInContext$Implementation: {
-        value: function(context, transactionId) {
+    commitChangesInContext$Implementation:{
+        value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
             return Promise.ref(true);
         }
@@ -727,8 +716,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns this.queryInContext$Implementation(query, context, aTransactionId)
      */
-    queryInContext: {
-        value: function(query, context, transactionId) {
+    queryInContext:{
+        value:function (query, context, transactionId) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -757,8 +746,8 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Id} transactionId TODO
      @returns {Array} Promise.ref([])
      */
-    queryInContext$Implementation: {
-        value: function(query, context, transactionID) {
+    queryInContext$Implementation:{
+        value:function (query, context, transactionID) {
             // TODO [PJYF Sept 4 2011] This needs to be implemented
             return Promise.ref([]);
         }
@@ -776,19 +765,19 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @type {Property}
      @default {Array} new Array(10)
      */
-    stores: {
-        serializable: true,
-        writable: false,
-        distinct: true,
-        value: new Array(10)
+    stores:{
+        serializable:true,
+        writable:false,
+        distinct:true,
+        value:new Array(10)
     },
     /**
      Description TODO
      @function
      @returns itself
      */
-    parent: {
-        get: function() {
+    parent:{
+        get:function () {
             return this;
         }
     },
@@ -797,10 +786,10 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @function
      @returns itself
      */
-    init: {
-        serializable: false,
-        enumerable: false,
-        value: function() {
+    init:{
+        serializable:false,
+        enumerable:false,
+        value:function () {
             return this;
         }
     },
@@ -810,8 +799,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} store Store to be added.
      @returns store
      */
-    addStore: {
-        value: function(store) {
+    addStore:{
+        value:function (store) {
             if ((store !== null) && (store !== this)) {
                 var index = this.stores.indexOf(store);
                 if (index < 0) {
@@ -827,8 +816,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} store Store to be removed.
      @returns store
      */
-    removeStore: {
-        value: function(store) {
+    removeStore:{
+        value:function (store) {
             if (store !== null) {
                 var index = this.stores.indexOf(store);
                 if (index >= 0) {
@@ -846,16 +835,9 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} moduleId TODO
      @returns The requested blueprint or null if this prototype is not managed.
      */
-    blueprintForPrototype: {
-        value: function(prototypeName, moduleId) {
-            var store, blueprint, index;
-            for (index = 0; typeof (store = this.stores[index]) !== "undefined"; index++) {
-                blueprint = store.blueprintForPrototype$Implementation(prototypeName, moduleId);
-                if (blueprint !== null) {
-                    return blueprint;
-                }
-            }
-            return null;
+    blueprintForPrototype:{
+        value:function (prototypeName, moduleId) {
+            return BlueprintBinder.manager.blueprintForPrototype$Implementation(prototypeName, moduleId);
         }
     },
 
@@ -865,8 +847,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Object} blueprint The blueprint object.
      @returns store or null
      */
-    storeForBlueprint: {
-        value: function(blueprint) {
+    storeForBlueprint:{
+        value:function (blueprint) {
             var store, index;
             for (index = 0; typeof (store = this.stores[index]) !== "undefined"; index++) {
                 if (store.ownsBlueprint(blueprint)) {
@@ -883,8 +865,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} binder The blueprint binder to test for.
      @returns Promise.ref(store) A store that can service that blueprint binder or null if none was found.
      */
-    findStoreForBlueprintBinder: {
-        value: function(binder) {
+    findStoreForBlueprintBinder:{
+        value:function (binder) {
             var store = this._findStoreForBlueprintBinder(binder);
             if (store == null) {
                 store = this.requireStoreForBlueprintBinder(binder);
@@ -897,8 +879,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      Description TODO
      @private
      */
-    _findStoreForBlueprintBinder: {
-        value: function(binder) {
+    _findStoreForBlueprintBinder:{
+        value:function (binder) {
             var store, index;
             for (index = 0; typeof (store = this.stores[index]) !== "undefined"; index++) {
                 if (store.canServiceBlueprintBinder(binder)) {
@@ -916,13 +898,13 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} binder The blueprint binder to test for.
      @returns Promise.ref(null) or Deserializer.create().initWithString(binder).deserialize(function(binder) or this._requireStoreForBlueprintBinder(binder) or this._requireStoreForBlueprintBinder(binder)
      */
-    requireStoreForBlueprintBinder: {
-        value: function(binder) {
+    requireStoreForBlueprintBinder:{
+        value:function (binder) {
             if ((binder === null) || (typeof binder === "undefined")) {
                 return Promise.ref(null);
             }
             if (typeof binder === "string") {
-                return Deserializer.create().initWithString(binder).deserializeObject(function(binder) {
+                return Deserializer.create().initWithString(binder).deserializeObject(function (binder) {
                     return this._requireStoreForBlueprintBinder(binder);
                 }, require);
             }
@@ -934,8 +916,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      Description TODO
      @private
      */
-    _requireStoreForBlueprintBinder: {
-        value: function(binder) {
+    _requireStoreForBlueprintBinder:{
+        value:function (binder) {
             if ((binder === null) || (typeof binder === "undefined")) {
                 return Promise.ref(null);
             }
@@ -950,11 +932,11 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
             if (store == null) {
                 var results = Promise.defer();
                 require.async(binder.storeModuleId,
-                    function(exports) {
+                    function (exports) {
                         results.resolve(exports);
                     });
                 var self = this;
-                return results.promise.then(function(exports) {
+                return results.promise.then(function (exports) {
                         var storePrototype = exports[binder.storePrototypeName], store;
                         if ((typeof storePrototype !== "undefined") && (storePrototype !== null)) {
                             store = storePrototype.create().initWithParent(self);
@@ -977,8 +959,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {object} objectId TODO
      @returns store or null
      */
-    storeForObjectId: {
-        value: function(objectId) {
+    storeForObjectId:{
+        value:function (objectId) {
             var store, index;
             for (index = 0; typeof (store = this.stores[index]) !== "undefined"; index++) {
                 if (store.ownsObject(objectId)) {
@@ -998,8 +980,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns store.pledgeForSourceObjectAssociation(sourceObject, relationship, context, transactionId) or Promise.ref(null)
      */
-    pledgeForSourceObjectAssociationNamed$Implementation: {
-        value: function(sourceObject, relationshipName, context, transactionId) {
+    pledgeForSourceObjectAssociationNamed$Implementation:{
+        value:function (sourceObject, relationshipName, context, transactionId) {
             var store = null;
             var relationship = null;
             var metadata = Montage.getInfoForObject(sourceObject);
@@ -1027,8 +1009,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns store.pledgeForObjectId$Implementation(objectId, context, transactionId) or Promise.ref(null)
      */
-    pledgeForObjectId$Implementation: {
-        value: function(objectId, context, transactionId) {
+    pledgeForObjectId$Implementation:{
+        value:function (objectId, context, transactionId) {
             var store = this.storeForObjectId(objectId);
             if (store !== null) {
                 return store.pledgeForObjectId$Implementation(objectId, context, transactionId);
@@ -1046,8 +1028,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns Promise.ref(null)
      */
-    pledgeForSourceObjectAssociation$Implementation: {
-        value: function(sourceObject, relationship, context, transactionId) {
+    pledgeForSourceObjectAssociation$Implementation:{
+        value:function (sourceObject, relationship, context, transactionId) {
             return Promise.ref(null);
         }
     },
@@ -1060,8 +1042,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns Promise.ref(object)
      */
-    initializeObject$Implementation: {
-        value: function(object, context, transactionId) {
+    initializeObject$Implementation:{
+        value:function (object, context, transactionId) {
             if (typeof object.objectId === "undefined") {
                 // TODO [PJYF June 17 2011] This will need to be revisited.
                 object.objectId = TemporaryObjectId.create().init();
@@ -1078,8 +1060,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns this.pledgeForObjectId(object.objectId, context, transactionId) or Promise.ref(object)
      */
-    repledgeObject$Implementation: {
-        value: function(object, context, transactionId) {
+    repledgeObject$Implementation:{
+        value:function (object, context, transactionId) {
             if (typeof object.objectId !== "undefined") {
                 return this.pledgeForObjectId(object.objectId, context, transactionId);
             }
@@ -1100,8 +1082,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns Promise.when(Promise.all(secondStep), function() or Promise.ref(true) or Promise.when(Promise.all(secondStep), function() or return Promise.reject("Could not save the transaction: " + transactionId)
      */
-    saveChangesInContext$Implementation: {
-        value: function(context, transactionId) {
+    saveChangesInContext$Implementation:{
+        value:function (context, transactionId) {
             // TODO [PJYF Sept 27 2011] We need to post notification to the observing context.
             // We do a 2 step commit. We need to prepare all stores for commit. If nothing raises than we can commit for real and hopefully we don't raise then.
             var aStore, index;
@@ -1110,23 +1092,23 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
             for (index = 0; typeof (aStore = this.stores[index]) !== "undefined"; index++) {
                 firstStep[index] = aStore.prepareToSaveChangesInContext$Implementation(context, transactionId);
             }
-            Promise.when(Promise.all(firstStep), function() {
+            Promise.when(Promise.all(firstStep), function () {
                 for (index = 0; typeof (aStore = this.stores[index]) !== "undefined"; index++) {
                     secondStep[index] = aStore.commitChangesInContext$Implementation(context, transactionId);
                 }
-                return Promise.when(Promise.all(secondStep), function() {
+                return Promise.when(Promise.all(secondStep), function () {
                         return Promise.ref(true);
-                    }, function() {
+                    }, function () {
                         throw Exception.create().initWithMessageTargetAndMethod('Failed to revert prepare for save transaction: ' + transactionId, this, "saveChangesInContext");
                     }
                 );
-            }, function() {
+            }, function () {
                 for (index = 0; typeof (aStore = this.stores[index]) !== "undefined"; index++) {
                     secondStep[index] = aStore.cancelSaveChangesInContext$Implementation(context, transactionId);
                 }
-                return Promise.when(Promise.all(secondStep), function() {
+                return Promise.when(Promise.all(secondStep), function () {
                         return Promise.reject("Could not save the transaction: " + transactionId);
-                    }, function() {
+                    }, function () {
                         throw Exception.create().initWithMessageTargetAndMethod('Commit failed for transaction: ' + transactionId, this, "saveChangesInContext");
                     }
                 );
@@ -1143,8 +1125,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns Promise.ref(true)
      */
-    prepareToSaveChangesInContext$Implementation: {
-        value: function(context, transactionId) {
+    prepareToSaveChangesInContext$Implementation:{
+        value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
             return Promise.ref(true);
         }
@@ -1158,8 +1140,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns Promise.ref(true)
      */
-    cancelSaveChangesInContext$Implementation: {
-        value: function(context, transactionId) {
+    cancelSaveChangesInContext$Implementation:{
+        value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
             return Promise.ref(true);
         }
@@ -1173,8 +1155,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns Promise.ref(true)
      */
-    commitChangesInContext$Implementation: {
-        value: function(context, transactionId) {
+    commitChangesInContext$Implementation:{
+        value:function (context, transactionId) {
             // TODO [PJYF Sep 27 2011] This needs to be reimplemented
             return Promise.ref(true);
         }
@@ -1188,8 +1170,8 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      @param {Property} transactionId TODO
      @returns {Array} Promise.ref([]) or store.queryInContext$Implementation(query, context, transactionId)
      */
-    queryInContext$Implementation: {
-        value: function(query, context, transactionId) {
+    queryInContext$Implementation:{
+        value:function (query, context, transactionId) {
             if ((query == null) || (context == null)) {
                 return Promise.ref([]);
             }

@@ -4,10 +4,8 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage;
-var ToOneAttribute = require("montage/data/blueprint").ToOneAttribute;
-var ToManyAttribute = require("montage/data/blueprint").ToManyAttribute;
-var ToOneAssociation = require("montage/data/blueprint").ToOneAssociation;
-var ToManyAssociation = require("montage/data/blueprint").ToManyAssociation;
+var Attribute = require("montage/data/blueprint").Attribute;
+var Association = require("montage/data/blueprint").Association;
 var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
 var ChangeContext = require("montage/data/changecontext").ChangeContext;
@@ -45,7 +43,7 @@ describe("Binder", function() {
 describe("Blueprint", function() {
     describe("attributes", function() {
         var blueprint = Blueprint.create().initWithName("Person");
-        var attribute = ToOneAttribute.create().initWithName("foo");
+        var attribute = Attribute.create().initWithName("foo");
         it("should be able to add", function() {
             blueprint.addAttribute(attribute);
             expect(attribute.blueprint).toBe(blueprint);
@@ -58,14 +56,14 @@ describe("Blueprint", function() {
             expect(blueprint.attributeForName("foo")).toBeNull();
         });
     });
-    describe("relationships", function() {
+    describe("associations", function() {
 
         var personBlueprint = Blueprint.create().initWithName("Person");
         var companyBlueprint = Blueprint.create().initWithName("Company");
 
-        var employerAssociation = ToOneAssociation.create().initWithName("employer");
+        var employerAssociation = Association.create().initWithName("employer");
         employerAssociation.targetBlueprint = companyBlueprint;
-        var employeesAssociation = ToManyAssociation.create().initWithName("employees");
+        var employeesAssociation = Association.create().initWithNameAndCardinality("employees", Infinity);
         employeesAssociation.targetBlueprint = personBlueprint;
 
         personBlueprint.addAttribute(employerAssociation);
@@ -78,7 +76,7 @@ describe("Blueprint", function() {
             expect(companyBlueprint.attributeForName("employees").targetBlueprint).toBe(personBlueprint);
         });
     });
-    describe("blueprint to instance relationship", function() {
+    describe("blueprint to instance association", function() {
         var binder = BlueprintBinder.create().initWithName("Binder");
         var personBlueprint = Blueprint.create().initWithName("Person");
         var companyBlueprint = Blueprint.create().initWithName("Company");
@@ -98,8 +96,8 @@ describe("Blueprint", function() {
             var binder = BlueprintBinder.create().initWithName("Binder");
             personBlueprint = Blueprint.create().initWithName("Person");
             personBlueprint.moduleId = "mymodule";
-            personBlueprint.addAttribute(ToOneAttribute.create().initWithName("name"));
-            personBlueprint.addAttribute(ToManyAttribute.create().initWithName("keywords"));
+            personBlueprint.addAttribute(Attribute.create().initWithName("name"));
+            personBlueprint.addAttribute(Attribute.create().initWithName("keywords"));
 
             binder.addBlueprint(personBlueprint);
 
@@ -130,7 +128,7 @@ describe("Blueprint", function() {
         });
     });
 
-    describe("adding a ToOneAttribute", function() {
+    describe("adding a Attribute", function() {
         var circle, context, personBlueprint;
         beforeEach(function() {
             var binder = BlueprintBinder.create().initWithName("Binder");
@@ -143,15 +141,15 @@ describe("Blueprint", function() {
             //temporary
             context.addBlueprintBinder(binder);
             circle = Shape.create();
-            var attribute = ToOneAttribute.create().initWithName("size");
+            var attribute = Attribute.create().initWithName("size");
             personBlueprint.addAttribute(attribute);
-            attribute = ToOneAttribute.create().initWithName("readOnlyAttribute");
+            attribute = Attribute.create().initWithName("readOnlyAttribute");
             attribute.readOnly = true;
             personBlueprint.addAttribute(attribute);
-            attribute = ToOneAttribute.create().initWithName("mandatoryAttribute");
+            attribute = Attribute.create().initWithName("mandatoryAttribute");
             attribute.mandatory = true;
             personBlueprint.addAttribute(attribute);
-            attribute = ToOneAttribute.create().initWithName("denyDelete");
+            attribute = Attribute.create().initWithName("denyDelete");
             attribute.denyDelete = true;
             personBlueprint.addAttribute(attribute);
             context.insert(circle);

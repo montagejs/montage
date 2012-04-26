@@ -13,10 +13,8 @@
 var Montage = require("montage").Montage;
 var Blueprint = require("data/blueprint").Blueprint;
 var BlueprintBinder = require("data/blueprint").BlueprintBinder;
-var ToOneAttribute = require("data/blueprint").ToOneAttribute;
-var ToManyAttribute = require("data/blueprint").ToManyAttribute;
-var ToOneAssociation = require("data/blueprint").ToOneAssociation;
-var ToManyAssociation = require("data/blueprint").ToManyAssociation;
+var Attribute = require("data/blueprint").Attribute;
+var Association = require("data/blueprint").Association;
 var LdapSelectorEvaluator = require("data/ldapaccess/ldapselectorevaluator").LdapSelectorEvaluator; // registering the evaluators
 var logger = require("core/logger").logger("ldapblueprint");
 
@@ -76,11 +74,11 @@ var LdapBlueprint = exports.LdapBlueprint = Montage.create(Blueprint, /** @lends
      Conventional method to create a new attribute.<br>
      This can be overwritten by specific stores.
      @function
-     @returns {Function} LdapToManyAttribute.create()
+     @returns {Function} LdapAttribute.create()
      */
-    createToManyAttribute:{
+    createAttribute:{
         value:function () {
-            return LdapToManyAttribute.create();
+            return LdapAttribute.create();
         }
     },
 
@@ -112,19 +110,19 @@ var LdapBlueprint = exports.LdapBlueprint = Montage.create(Blueprint, /** @lends
 /**
  @class module:montage/data/ldapaccess/ldapblueprint.LdapToOneAttribute
  */
-var LdapToOneAttribute = exports.LdapToOneAttribute = Montage.create(ToOneAttribute, /** @lends module:montage/data/ldapaccess/ldapblueprint.LdapToOneAttribute# */ {
+var LdapToOneAttribute = exports.LdapToOneAttribute = Montage.create(Attribute, /** @lends module:montage/data/ldapaccess/ldapblueprint.LdapToOneAttribute# */ {
 
 });
 /**
  @class module:montage/data/ldapaccess/ldapblueprint.LdapToOneAssociation
  */
-var LdapToOneAssociation = exports.LdapToOneAssociation = Montage.create(ToOneAssociation, /** @lends module:montage/data/ldapaccess/ldapblueprint.LdapToOneAssociation# */ {
+var LdapToOneAssociation = exports.LdapToOneAssociation = Montage.create(Association, /** @lends module:montage/data/ldapaccess/ldapblueprint.LdapToOneAssociation# */ {
 
 });
 /**
- @class module:montage/data/ldapaccess/ldapblueprint.LdapToManyAttribute
+ @class module:montage/data/ldapaccess/ldapblueprint.LdapAttribute
  */
-var LdapToManyAttribute = exports.LdapToManyAttribute = Montage.create(ToManyAttribute, /** @lends module:montage/data/ldapaccess/ldapblueprint.LdapToManyAttribute# */ {
+var LdapAttribute = exports.LdapAttribute = Montage.create(Attribute, /** @lends module:montage/data/ldapaccess/ldapblueprint.LdapAttribute# */ {
 
 });
 /**
