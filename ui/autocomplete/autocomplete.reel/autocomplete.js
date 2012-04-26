@@ -247,10 +247,23 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             return this._suggestedValue;
         },
         set: function(aValue) {
+            this._suggestedValue = aValue;
             if(aValue) {
-                this._suggestedValue = aValue;
-                var arr = this.tokens;
-                arr[this.activeTokenIndex] = this._suggestedValue;
+
+                var arr = this.tokens || [];
+                var token;
+
+                if(String.isString(aValue)) {
+                    token = aValue;
+                } else {
+                    if(this.textPropertyPath) {
+                        token = aValue[this.textPropertyPath];
+                    } else {
+                        token = '';
+                    }
+                }
+
+                arr[this.activeTokenIndex] = token;
                 this.tokens = arr;
                 this.showPopup = false;
             }
@@ -313,6 +326,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         enumerable: false,
         value: function(searchTerm) {
             if(this.delegate) {
+                this.resultsController.selectedIndexes = [];
                 // index on the popup
                 this.activeItemIndex = 0;
                 this.loadingStatus = 'loading';
@@ -429,12 +443,10 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             fn.call(this);
 
             if (!this._valueSyncedWithInputField) {
-                //this.value = this._value;
-                this.value = this.tokens.join(",");
+                this.value = this.tokens.join(this.separator);
                 if(this.value && this.value.charAt(this.value.length-1) != this.separator) {
                     this.value += this.separator;
                 }
-
                 this.element.value = this.value;
                 this._valueSyncedWithInputField = true;
             }
