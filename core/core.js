@@ -747,11 +747,11 @@ Object.defineProperty(Object.prototype, "getProperty", {
             currentPathComponent,
             nextDotIndex,
             remainingPath = null;
-        
+
         if (aPropertyPath == null) {
             return;
         }
-            
+
         dotIndex = aPropertyPath.indexOf(".", currentIndex);
         currentIndex = currentIndex || 0;
         currentPathComponent = aPropertyPath.substring(currentIndex, (dotIndex === -1 ? aPropertyPath.length : dotIndex));
@@ -913,7 +913,7 @@ Object.defineProperty(Array.prototype, "getProperty", {
         }
 
         currentIndex = currentIndex || 0;
-        
+
         var result,
             propertyIsNumber = _index_array_regexp.test(aPropertyPath),//!isNaN(aPropertyPath),
             parenthesisStartIndex = propertyIsNumber ? -1 : aPropertyPath.indexOf("(", currentIndex),
@@ -924,7 +924,9 @@ Object.defineProperty(Array.prototype, "getProperty", {
             index,
             currentPathComponent,
             functionName,
-            functionArgPropertyPath;
+            functionArgPropertyPath,
+            tmpResult,
+            uniques;
 
         // PARSE: Determine the indices of the currentPathComponent we're concerned with
 
@@ -982,32 +984,42 @@ Object.defineProperty(Array.prototype, "getProperty", {
                     visitedComponentCallback(this, null, undefined, null, aPropertyPath.slice(currentIndex));
                 }
 
+                result = [];
+                index = 0;
+
                 // The currentPathComponent is some property not directly on this array, and not an index in the array
                 // so we'll be getting an array of resolving this currentPathComponent on each member in the array
-                if (!preserve) {
+                if (preserve) {
 
-                    result = this.map(function(value, index) {
-
-                        itemResult = value.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex);
-
-                        //if (visitedComponentCallback) {
-                        //    visitedComponentCallback(value, currentPathComponent, itemResult, index);
-                        //}
-
-                        return itemResult;
-                    });
-                } else {
-                    result = new Array(this.length);
-                    index = 0;
-                    while((itemResult = this[index])) {
+                    while((itemResult = this[index]) != null) {
                         result[index] = itemResult.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex);
-
-                        //if (visitedComponentCallback) {
-                        //    visitedComponentCallback(itemResult, currentPathComponent, result[index], index);
-                        //}
-
                         index++;
                     }
+
+                } else {
+
+                    // TODO in either case, why do we stop if we encounter null|undefined? there could be useful
+                    // values after that in the collection. I already had to fix an issue here where a zero
+                    // would short-circuit the loop
+                    while((itemResult = this[index]) != null) {
+                        tmpResult = itemResult.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex);
+
+                        if (Array.isArray(tmpResult)) {
+                            result = result.concat(tmpResult);
+                        } else {
+                            result[index] = tmpResult;
+                        }
+                        index++;
+                    }
+
+                    if (unique) {
+                        var uniques = {}; // TODO reuse this object if possible
+                        // TODO don't recreate this filter function each time
+                        result = result.filter(function(element) {
+                            return uniques[element] ? false : (uniques[element] = true);
+                        });
+                    }
+
                 }
 
             } else {
