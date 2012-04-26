@@ -545,15 +545,20 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     // called on iteration instantiation
     templateDidLoad: {value: function() {
         var item = this._deserializedItem,
-            children = item.element.childNodes;
+            children;
 
-        item.fragment = document.createDocumentFragment();
-        while (children.length > 0) {
-            // As the nodes are appended to item.fragment they are removed
-            // from item.element, so always use index 0.
-            item.fragment.appendChild(children[0]);
+        // if this iteration was removed in the meanwhile there's no
+        // _deserializedItem so we need to ignore this.
+        if (item) {
+            children = item.element.childNodes;
+            item.fragment = document.createDocumentFragment();
+            while (children.length > 0) {
+                // As the nodes are appended to item.fragment they are removed
+                // from item.element, so always use index 0.
+                item.fragment.appendChild(children[0]);
+            }
+            delete item.element;
         }
-        delete item.element;
     }},
 
     contentWillChange: {
@@ -1230,12 +1235,16 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     deserializeIteration: {value: function(deserializer) {
         var item = this._itemsToAppend[this._nextDeserializedItemIx++];
 
-        this._deserializedItem = item;
-        item.element = deserializer.get("element");
+        if (item) {
+            this._deserializedItem = item;
+            item.element = deserializer.get("element");
 
-        this.eventManager.registerEventHandlerForElement(this, item.element);
-        if (logger.debug) {
-            logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " , item.element);
+            this.eventManager.registerEventHandlerForElement(this, item.element);
+            if (logger.debug) {
+                logger.debug(this._montage_metadata.objectName + ":deserializeIteration", "childNodes: " , item.element);
+            }
+        } else {
+            this._deserializedItem = null;
         }
     }}
 });
