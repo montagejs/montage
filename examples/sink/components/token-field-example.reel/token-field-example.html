@@ -115,18 +115,18 @@
                 <form class="form-stacked">
 
                      <label for="state">State: Suggestions from in-memory data. Does not allow ad-hoc values</label>
-                     <div data-montage-id="state" style="width: 400px;"></div>
+                     <div data-montage-id="state" id="state" style="width: 400px;"></div>
 
                      <label for="members">Members: Fetching data from remote data source (type "Ar" or "Ma" to see results).
                          Ad-hoc values are allowed
                     </label>
-                     <div data-montage-id="members" style="width: 400px;"></div>
+                     <div data-montage-id="members"  id="members" style="width: 400px;"></div>
 
                      <label for="tags">Tags: Suggests existing tags. Ad-hoc values are allowed</label>
-                     <div data-montage-id="tags" style="width: 400px;"></div>
+                     <div data-montage-id="tags" id="tags" style="width: 400px;"></div>
 
                      <div style="margin-top: 10px;">
-                          <button class="btn" id="update" type="button">Update</button>
+                          <button class="btn" data-montage-id="update" type="button">Update</button>
                      </div>
 
                 </form>
@@ -275,12 +275,12 @@ var tags = [
 'apple', 'social', 'network', 'technology', 'tools', 'home', 'interiors', 'search', 'politics', 'news',
 'business', 'companies', 'startups', 'silicon valley', 'bay area', 'biking', 'tennis', 'united states', 'USA'
 ];
-
 exports.TokenFieldExample = Montage.create(Component, {
 
     json: {value: null},
     states: {value: null},
     members: {value: null},
+    tags: {value: null},
     info: {value: null},
 
     _cachedStates: {value: null},
@@ -290,7 +290,6 @@ exports.TokenFieldExample = Montage.create(Component, {
             this.states = [states[0], states[3], states[5]];
         }
     },
-
     stateShouldGetSuggestions: {
         value: function(tokenField, searchTerm) {
             var results = [];
@@ -312,14 +311,13 @@ exports.TokenFieldExample = Montage.create(Component, {
             tokenField.suggestions = results;
         }
     },
-
-    // Return the represented object for the specified stringValue
     stateGetRepresentedObject: {
         value: function(stringValue) {
             if(stringValue) {
                 stringValue = stringValue.trim().toLowerCase();
-                var i, len = states.length;
-                for(i=0; i<len; i++) {
+                var i; 
+                var len = states.length;
+                for(i=0; i < len; i++) {
                     if(states[i].name.toLowerCase() === stringValue) {
                         return states[i];
                     }
@@ -331,12 +329,9 @@ exports.TokenFieldExample = Montage.create(Component, {
     membersShouldGetSuggestions: {
         value: function(tokenField, searchTerm) {
             var results = [];
-            // The data set is based on https://www.google.com/fusiontables/DataSource?docid=1QJT7Wi2oj5zBgjxb2yvZWA42iNPUvnvE8ZOwhA
-            // Google fusion tables # 383121. However Googles API returns a CSV. So need to use this app to convert to json
             var query = "SELECT FirstName,LastName from 383121 where FirstName like '%" + searchTerm + "%'"; //" OR LastName like '%" + searchTerm + "%'";
-            var uri = "http://ft2json.appspot.com/q?sql=" + encodeURIComponent(query);
+            var uri = 'http://ft2json.appspot.com/q?sql=' + encodeURIComponent(query);
 
-            //console.log('searching ...', uri);
             var xhr = request(uri, 'get');
             xhr.onload = function(e) {
                try {
@@ -369,6 +364,7 @@ exports.TokenFieldExample = Montage.create(Component, {
 
         }
     },
+
     tagsShouldGetSuggestions: {
         value: function(tokenField, searchTerm) {
             var results = [];
@@ -389,12 +385,12 @@ exports.TokenFieldExample = Montage.create(Component, {
             }
             this.json = JSON.stringify({
                 state: this.states,
-                members: this.members
+                members: this.members,
+                tags: this.tags
             });
         }
     }
 });
-
                                            </pre>
                                        </div>
                                    </li>
