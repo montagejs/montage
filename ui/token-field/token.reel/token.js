@@ -4,8 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    PressComposer = require("ui/composer/press-composer").PressComposer;
+    Component = require("ui/component").Component;
 
 exports.Token = Montage.create(Component, {
 
@@ -57,26 +56,12 @@ exports.Token = Montage.create(Component, {
 
     deleteEl: {value: null},
 
-    didCreate: {
-        value: function() {
-            /*
-            this._pressComposer = PressComposer.create();
-            this.addComposer(this._pressComposer);
-            */
-        }
-    },
-
     prepareForActivationEvents: {
         value: function() {
-            /*
-            this._pressComposer.addEventListener("pressStart", this, false);
-            this._pressComposer.addEventListener("press", this, false);
-            this._pressComposer.addEventListener("pressCancel", this, false);
-            */
             if(window.Touch) {
                 this.deleteEl.addEventListener('touchend', this);
             } else {
-                this.deleteEl.addEventListener('mouseup', this);
+                this.deleteEl.addEventListener('click', this);
             }
 
         }
@@ -96,7 +81,7 @@ exports.Token = Montage.create(Component, {
         }
     },
 
-   handleMouseup: {
+   handleClick: {
        value: function(event) {
            this.removeSelf();
        }

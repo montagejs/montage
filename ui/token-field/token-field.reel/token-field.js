@@ -4,9 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component,
-    PressComposer = require("ui/composer/press-composer").PressComposer;
-
+    Component = require("ui/component").Component;
 
 var KEY_DELETE = 46,
 KEY_BACKSPACE = 8,
@@ -52,12 +50,6 @@ exports.TokenField = Montage.create(Component, {
     tokensController: {value: null},
     tokenList: {value: null, enumerable: false},
     autocomplete: {value: null, enumerable: false},
-
-    _pressComposer: {
-        enumberable: false,
-        value: null
-    },
-
     autocompleteValue: {value: null},
     autocompleteValue: {
         get: function() {
