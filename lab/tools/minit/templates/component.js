@@ -12,7 +12,7 @@ exports.Template = Object.create(TemplateBase, {
 
     usage: {
         value: function() {
-            return TemplateBase.usage.apply(this, arguments) + " <title>";
+            return TemplateBase.usage.apply(this, arguments) + " <exportedName>";
         }
     },
 
@@ -20,23 +20,21 @@ exports.Template = Object.create(TemplateBase, {
     processArguments: {
         value: function(args) {
             TemplateBase.processArguments.apply(this, arguments);
-            this.variables.title = args[1];
-            if (!this.variables.title) {
-                this.variables.title = this.variables.name.replace(/(?:^|-)([^-])/g, function(_, g1) { return g1.toUpperCase() });
+            this.variables.exportedName = args[1];
+            if (!this.variables.exportedName) {
+                this.variables.exportedName = this.variables.name.replace(/(?:^|-)([^-])/g, function(_, g1) { return g1.toUpperCase() });
             }
         }
     },
 
     destination: {
-        value: "../../../test/ui/"
+        value: "../../../ui/"
     },
 
     finish: {
         value: function() {
             TemplateBase.finish.apply(this, arguments);
-            console.log("Direct Link:");
-            console.log("http://localhost:8081/m-js/test/run.html?spec=ui%2F" + this.variables.name + "-spec");
-            childProcess.exec("open http://localhost:8081/m-js/test/run.html?spec=ui%2F" + this.variables.name + "-spec");
+            console.log(this.variables.name + ".reel created.");
         }
     }
 

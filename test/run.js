@@ -75,6 +75,8 @@ if (spec) {
         "ui/composer-spec",
         "ui/composer/translate-composer-spec",
         "ui/dom-spec",
+        "ui/dynamic-element-spec",
+        "ui/dynamic-text-spec",
         "ui/firstdraw-spec",
         "ui/scroller-spec",
         "ui/list-spec",
