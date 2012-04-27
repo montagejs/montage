@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>HotText Test</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+{
+    "number": {
+        "prototype": "montage/ui/hot-text.reel",
+        "properties": {
+            "element": {"#": "number"}
+        }
+    },
+    "percent": {
+        "prototype": "montage/ui/hot-text.reel",
+        "properties": {
+            "element": {"#": "percent"},
+            "minValue": 0,
+            "maxValue": 100,
+            "unit": "%"
+        }
+    },
+    "multiple": {
+        "prototype": "montage/ui/hot-text.reel",
+        "properties": {
+            "element": {"#": "multiple"}
+        }
+    },
+
+    "hex": {
+        "prototype": "montage/ui/hot-text.reel",
+        "properties": {
+            "element": {"#": "hex"},
+            "minValue": 0,
+            "maxValue": 255,
+            "smallStepSize": 1,
+            "converter": {"@": "hexConverter"}
+        }
+    },
+
+    "hexConverter": {
+        "prototype": "montage/core/converter/converter",
+        "properties": {
+            "convert": {"->": {"arguments": ["value"], "body": "return value.toString(16).toUpperCase()"}},
+            "revert": {"->": {"arguments": ["value"], "body": "return parseInt(value, 16)"}}
+        }
+    },
+
+    "test": {
+        "module": "ui/hot-text-test/hot-text-test",
+        "name": "HotTextTest",
+        "properties": {
+            "number": {"@": "number"},
+            "percent": {"@": "percent"},
+            "multiple": {"@": "multiple"}
+        }
+    },
+    "application": {
+        "module": "montage/ui/application",
+        "name": "Application",
+        "properties": {
+            "delegate": {"@": "test"}
+        }
+    }
+}
+    </script>
+    <style type="text/css">
+    html, body { height: 100%; }
+    </style>
+</head>
+<body>
+    <h1>HotText test</h1>
+
+    Infinite: <span data-montage-id="number"></span><br/>
+    Percent: <span data-montage-id="percent" style="width: 50px;"></span><br/>
+    <span data-montage-id="multiple"></span><br/>
+    Hex: <span data-montage-id="hex"></span>
+
+</body>
+</html>
