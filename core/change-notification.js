@@ -781,8 +781,8 @@ Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
             if (typeof this.automaticallyDispatchPropertyChangeListener !== "function" ||
                     this.automaticallyDispatchPropertyChangeListener(path)) {
                 ObjectPropertyChangeDispatcherManager.installDispatcherOnTargetProperty(this, path);
-                // give an oportunity for the actual value of the path to have something
-                // to say when it comes to property change listeners, this is usuful,
+                // give an opportunity for the actual value of the path to have something
+                // to say when it comes to property change listeners, this is useful,
                 // for instance, for arrays, that can start listen on mutation.
                 if (!ignoreMutation && descriptor.mutationListenersCount == 1) {
                     descriptor.updateMutationDependency(this[path]);
@@ -855,7 +855,7 @@ var _index_array_regexp = /^[0-9]+$/;
 var _unobservable_array_property_regexp = /^length$/;
 Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
     value: function(path, listener, beforeChange, ignoreMutation) {
-        var listenChange, listenIndexChange,
+        var listenChange, listenIndexChange, listenFunctionChange,
             descriptor;
 
         if (!listener) {
@@ -868,15 +868,16 @@ Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
                 return;
             }
 
+            listenFunctionChange = path ? /\(.*\)/.test(path) : false; //TODO extract this regex
             listenChange = (path == null);
             listenIndexChange = _index_array_regexp.test(path);
         }
 
-        if (listenChange || listenIndexChange) {
+        if (listenChange || listenIndexChange || listenFunctionChange) {
             if (!this.isDispatchingArray) {
                 this.__proto__ = ChangeNotificationDispatchingArray;
             }
-            descriptor = ChangeNotification.registerPropertyChangeListener(this, path, listener, beforeChange, !ignoreMutation);
+            descriptor = ChangeNotification.registerPropertyChangeListener(this, (listenFunctionChange ? null : path), listener, beforeChange, !ignoreMutation);
 
             // give an opportunity for the actual value of the path to have something
             // to say when it comes to property change listeners, this is useful,
