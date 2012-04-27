@@ -95,7 +95,7 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
         value: function() {
             // get correct value
             var displayValue = (this.innerHTML || 0 === this.innerHTML ) ? this.innerHTML : this.defaultHTML,
-                content, allowedTagNames = this.allowedTagNames, range = this._range;
+                content, allowedTagNames = this.allowedTagNames, range = this._range, elements;
 
             //push to DOM
             if (allowedTagNames !== null) {
@@ -104,8 +104,12 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
                 range.deleteContents();
                 //test for tag white list
                 content = range.createContextualFragment( displayValue );
-                var elements = content.querySelectorAll("*:not(" + allowedTagNames.join(",") + ")");
-                if (elements.length=== 0) {
+                if(allowedTagNames.length !== 0) {
+                    elements = content.querySelectorAll("*:not(" + allowedTagNames.join("):not(") + ")");
+                } else {
+                    elements = content.childNodes;
+                }
+                if (elements.length === 0) {
                     range.insertNode(content);
                     if(range.endOffset === 0) {
                         // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
