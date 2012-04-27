@@ -705,6 +705,59 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
     }
 });
 
+Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
+    value: function(/*affected paths,..., callback*/) {
+
+        var argumentCount = arguments.length,
+            callbackArgumentIndex = argumentCount - 1,
+            callback,
+            i,
+            iProperty,
+            descriptor,
+            observedProperties,
+            observedPropertyCount,
+            notification;
+
+        if (argumentCount < 2) {
+            throw "Affected property (or properties) and callback to effect change are required to dispatchPropertyChange";
+        }
+
+        callback = arguments[callbackArgumentIndex];
+
+        if (!(callback && typeof callback == "function")) {
+            throw "Callback to effect actual change is required to dispatchPropertyChange";
+        }
+
+        // Storing observedProperties as [propertyA, descriptorA, notificationA, propertyB, descriptorB, notificationB...]
+        observedProperties = [];
+
+        for (i = 0; i < callbackArgumentIndex; i++) {
+            iProperty = arguments[i];
+            descriptor = ChangeNotification.getPropertyChangeDescriptor(this, iProperty);
+            if (descriptor) {
+                notification = Object.create(PropertyChangeNotification);
+                observedProperties.push(iProperty, descriptor, notification);
+
+                notification.target = this;
+                notification.minus = this[iProperty];
+                descriptor.handleWillChange(notification);
+            }
+        }
+
+        callback.call(this);
+
+        for (i = 0, observedPropertyCount = observedProperties.length; i < observedPropertyCount; i+=3) {
+            iProperty = observedProperties[i];
+            descriptor = observedProperties[i+1];
+            notification = observedProperties[i+2];
+
+            notification.plus = this[iProperty];
+            descriptor.handleChange(notification);
+        }
+
+    }
+});
+
 Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
     value: function(path, listener, beforeChange, ignoreMutation) {
         var descriptor,
