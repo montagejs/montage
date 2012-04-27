@@ -112,7 +112,11 @@ exports.TokenField = Montage.create(Component, {
         value: function() {
             if(this.hasFocus) {
                 this.autocomplete.element.focus();
-                this.hasFocus = false;
+                this._hasFocus = false;
+            } else {
+                if(this.placeholder) {
+                    this.autocomplete.element.style.width = 'auto';
+                }
             }
         }
     },
