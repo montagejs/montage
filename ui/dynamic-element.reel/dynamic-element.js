@@ -107,6 +107,12 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
                 var elements = content.querySelectorAll("*:not(" + allowedTagNames.join(",") + ")");
                 if (elements.length=== 0) {
                     range.insertNode(content);
+                    if(range.endOffset === 0) {
+                        // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
+                        // range collapsed after insertNode
+                        range.selectNodeContents(this.element);
+                    }
+
                 } else {
                     console.warn("Some Elements Not Allowed " , elements);
                 }
@@ -117,6 +123,12 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
                     range.deleteContents();
                     this._contentNode = content = document.createTextNode(displayValue);
                     range.insertNode(content);
+                    if(range.endOffset === 0) {
+                        // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
+                        // range collapsed after insert
+                        range.selectNodeContents(this.element);
+                    }
+
                 } else {
                     content.data = displayValue;
                 }
