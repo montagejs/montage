@@ -91,7 +91,9 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: false
     },
     /**
-
+        Allow (@link translateX} and {@link translateY} to be floats.
+        @type {Boolean}
+        @default false
     */
     allowFloats: {
         get: function() {
