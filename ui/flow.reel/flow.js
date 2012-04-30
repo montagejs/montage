@@ -669,7 +669,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                         }
                     }
                 }
-
                 this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
             }
         }
@@ -712,7 +711,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     "translate3d(" + (-this.cameraPosition[0]) + "px, " + (-this.cameraPosition[1]) + "px, " + (-this.cameraPosition[2]) + "px)";
                 this._isCameraUpdated = false;
             }
-            if (this.splinePaths.length) { // TODO: implement multiple paths
+            if (this.splinePaths.length) {
                 for (i = 0; i < length; i++) {
                     pathIndex = this._repetition.indexMap[i] % pathsLength;
                     iOffset = this.offset(Math.floor(this._repetition.indexMap[i] / pathsLength));
