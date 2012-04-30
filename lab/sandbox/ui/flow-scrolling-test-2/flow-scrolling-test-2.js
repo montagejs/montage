@@ -10,7 +10,7 @@ exports.FlowScrollingTest2 = Montage.create(Montage, {
         enumerable: false,
         value: function () {
             this.index++;
-            this.flow.startScrollingIndexToOffset(this.index, 12);
+            this.flow.startScrollingIndexToOffset(this.index, 0);
         }
     }
 });

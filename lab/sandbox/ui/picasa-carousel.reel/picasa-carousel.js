@@ -45,7 +45,7 @@ var PicasaCarousel = exports.PicasaCarousel = Montage.create(Component, /** @len
 
         resultCount: {
             enumerable: false,
-            value: 1000
+            value: 500
         },
 
         prepareForDraw: {
