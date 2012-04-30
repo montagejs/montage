@@ -88,15 +88,34 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                 });
             });
 
-            it("returns negative translate values when invertAxis is true", function() {
-                test.translate_composer.translateX = 0;
-                test.translate_composer.translateY = 0;
-                test.translate_composer.invertAxis = true;
+            describe("allowFloats", function() {
+                it('only allows translate{X|Y} to be ints when false', function() {
+                    test.translate_composer.translateX = 100.543;
+                    test.translate_composer.translateY = -20.4;
+                    expect(test.translate_composer.translateX).toBe(100);
+                    expect(test.translate_composer.translateY).toBe(-20);
+                });
+                it('allows translate{X|Y} to be floats when true', function() {
+                    test.translate_composer.allowFloats = true;
+                    test.translate_composer.translateX = 100.543;
+                    test.translate_composer.translateY = -20.4;
+                    expect(test.translate_composer.translateX).toBe(100.543);
+                    expect(test.translate_composer.translateY).toBe(-20.4);
+                    test.translate_composer.allowFloats = false;
+                });
+            });
 
-                testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
-                    expect(test.translate_composer.translateX).toBeGreaterThan(49);
-                    expect(test.translate_composer.translateY).toBeGreaterThan(49);
-                    test.translate_composer.invertAxis = false;
+            describe("invertAxis", function() {
+                it("causes translation in the opposite direction to pointer movement when true", function() {
+                    test.translate_composer.translateX = 0;
+                    test.translate_composer.translateY = 0;
+                    test.translate_composer.invertAxis = true;
+
+                    testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
+                        expect(test.translate_composer.translateX).toBeGreaterThan(49);
+                        expect(test.translate_composer.translateY).toBeGreaterThan(49);
+                        test.translate_composer.invertAxis = false;
+                    });
                 });
             });
 

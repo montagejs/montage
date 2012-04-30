@@ -86,6 +86,26 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: false
     },
 
+    _allowFloats: {
+        enumerable: false,
+        value: false
+    },
+    /**
+
+    */
+    allowFloats: {
+        get: function() {
+            return this._allowFloats;
+        },
+        set: function(value) {
+            if (this._allowFloats !== value) {
+                this._allowFloats = value;
+                this.translateX = this._translateX;
+                this.translateY = this._translateY;
+            }
+        }
+    },
+
     _translateX: {
         enumerable: false,
         value: 0
@@ -105,7 +125,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (this._axis === "vertical") {
                 this._translateX = this._minTranslateX || 0;
             } else {
-                var tmp = isNaN(value) ? 0 : parseFloat(value);
+                var tmp = isNaN(value) ? 0 : this._allowFloats ? parseFloat(value) : value >> 0;
 
                 if (this._minTranslateX !== null && tmp < this._minTranslateX) {
                     tmp = this._minTranslateX;
@@ -140,7 +160,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (this._axis === "horizontal") {
                 this._translateY = this._minTranslateY || 0;
             } else {
-                var tmp = isNaN(value) ? 0 : parseFloat(value);
+                var tmp = isNaN(value) ? 0 : this._allowFloats ? parseFloat(value) : value >> 0;
 
                 if (this._minTranslateY !== null && tmp < this._minTranslateY) {
                     tmp = this._minTranslateY;
