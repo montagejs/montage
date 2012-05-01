@@ -465,7 +465,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 if (!stopped && event.keyIdentifier) {
                     identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
                         this._decodeKeyIdentifier(event.keyIdentifier);
-                    if (identifierCode && submap[identifierCode]) {
+                    if (identifierCode && identifierCode !== keyCode && submap[identifierCode]) {
                         this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
                 }
@@ -503,7 +503,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 }
 
                 // Check the charCode for a match...
-                if (!stopped && charCode && submap[charCode]) {
+                if (!stopped && charCode && charCode !== keyCode && submap[charCode]) {
                     stopped = this._dispatchComposerKeyMatches(submap[charCode], event);
                 }
 
@@ -511,7 +511,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 if (!stopped && event.keyIdentifier) {
                     identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
                         this._decodeKeyIdentifier(event.keyIdentifier);
-                    if (identifierCode && submap[identifierCode]) {
+                    if (identifierCode && identifierCode !== keyCode && submap[identifierCode]) {
                         this._dispatchComposerKeyMatches(submap[identifierCode], event);
                     }
                 }
@@ -741,7 +741,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 eventType = keyUp ? KEYRELEASE_EVENT_TYPE : KEYPRESS_EVENT_TYPE,
                 nbrMatches = matches.length,
                 keyComposer,
-                target = event.target,
                 keyComposerEvent,
                 triggeredKeys,
                 i;
@@ -749,6 +748,28 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             // matches could be either an array of matches or an array of keyComposers
             for (i = 0; i < nbrMatches && !stopped; i ++) {
                 keyComposer = matches[i].object || matches[i];
+
+                // Make sure keyboard event's target is a descendant of the keyComposer's element
+                var target = event.target,
+                    element = keyComposer.element,
+                    onTarget = (keyComposer.element === window);
+
+                while (!onTarget) {
+                    onTarget = (target === element);
+
+                    if (target == document) {
+                        break;
+                    } else {
+                        target = target.parentElement;
+                        if (!target) {
+                            target = document;
+                        }
+                    }
+                }
+
+                if (!onTarget) {
+                    continue;
+                }
 
                 if (keyUp) {
                     triggeredKeys = Object.keys(this._triggeredKeys);
@@ -777,8 +798,10 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                             keyComposer._longPressTimeout = null;
 
                             longPressEvent = document.createEvent("CustomEvent");
-                            longPressEvent.initCustomEvent(LONGKEYPRESS_EVENT_TYPE, true, true, keyComposer);
-                            thisRef._keyComposerDispatch(keyComposer, target, longPressEvent);
+                            longPressEvent.initCustomEvent(LONGKEYPRESS_EVENT_TYPE, true, true, null);
+                            longPressEvent.activeElement = event.target;
+                            longPressEvent = MutableEvent.fromEvent(longPressEvent);
+                            keyComposer.dispatchEvent(longPressEvent);
                             delete thisRef._longPressKeys[keyComposer.uuid];
                         }, this._longPressThreshold);
 
@@ -788,8 +811,10 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 }
 
                 keyComposerEvent = document.createEvent("CustomEvent");
-                keyComposerEvent.initCustomEvent(eventType, true, true, keyComposer);
-                keyComposerEvent = this._keyComposerDispatch(keyComposer, target, keyComposerEvent);
+                keyComposerEvent.initCustomEvent(eventType, true, true, null);
+                keyComposerEvent.activeElement = event.target;
+                keyComposerEvent = MutableEvent.fromEvent(keyComposerEvent);
+                keyComposer.dispatchEvent(keyComposerEvent);
 
                 // console.log("keyComposer Event DISPATCHED:", keyComposerEvent, event.target, keyComposer);
                 if (keyComposerEvent.defaultPrevented) {
@@ -824,201 +849,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             }
 
             return stopped;
-        }
-    },
-
-    /**
-      @private
-     modified version of EventManager.handleEvent to suit the needs of KeyComposer Event dispatch
-    */
-    _keyComposerDispatch: {
-        value: function(keyComposer, target, event) {
-            var mutableEvent,
-                eventType = event.type,
-                currentEventHandlers,
-                identifierSpecificCaptureMethodName,
-                identifierSpecificBubbleMethodName,
-                captureMethodName,
-                bubbleMethodName,
-                iEventHandlerEntry,
-                iEventHandler,
-                functionType = "function",
-                i;
-
-            var CAPTURING_PHASE = 1,
-                AT_TARGET = 2,
-                BUBBLING_PHASE = 3;
-
-            if (typeof event.propagationStopped !== "boolean") {
-                mutableEvent = MutableEvent.fromEvent(event);
-            } else {
-                mutableEvent = event;
-            }
-            mutableEvent.target = target;
-            mutableEvent.eventPhase = CAPTURING_PHASE;
-            if (event.type == "keypress") {
-                // Fix for Opera who think KeyPress is a typo and therefore change it on its own to keypress.
-                mutableEvent.type = KEYPRESS_EVENT_TYPE;
-                eventType = KEYPRESS_EVENT_TYPE;
-            }
-
-            // Figure out who to distribute the event to
-            currentEventHandlers = this._eventListenersForComposerKeyEvent(keyComposer, mutableEvent);
-
-            // console.log("--- keyComposer Event DISTRIBUTION: ", mutableEvent.type, "from:", mutableEvent.target, "to: ", currentEventHandlers, "---")
-            if (!currentEventHandlers) {
-                return mutableEvent;
-            }
-
-            // use most specific handler method available, possibly based upon the identifier of the composerKey
-            if (keyComposer.identifier) {
-                identifierSpecificCaptureMethodName = defaultEventManager.methodNameForCapturePhaseOfEventType_(eventType, keyComposer.identifier);
-            } else {
-                identifierSpecificCaptureMethodName = null;
-            }
-
-            if (keyComposer.identifier) {
-                identifierSpecificBubbleMethodName = defaultEventManager.methodNameForBubblePhaseOfEventType_(eventType, keyComposer.identifier);
-            } else {
-                identifierSpecificBubbleMethodName = null;
-            }
-
-            captureMethodName = defaultEventManager.methodNameForCapturePhaseOfEventType_(eventType);
-            bubbleMethodName = defaultEventManager.methodNameForBubblePhaseOfEventType_(eventType);
-
-            // Let the event manager delegate handle the event first
-            // TODO do we care about phase at all?
-            if (defaultEventManager.delegate && defaultEventManager.delegate.willDistributeEvent) {
-                defaultEventManager.delegate.willDistributeEvent(mutableEvent);
-            }
-
-            // Capture Phase Distribution
-            for (i = currentEventHandlers.capture.length - 1; !mutableEvent.propagationStopped && (iEventHandlerEntry = currentEventHandlers.capture[i]); i--) {
-                mutableEvent.currentTarget = iEventHandlerEntry.currentTarget;
-
-                if (mutableEvent.currentTarget === mutableEvent.target) {
-                    mutableEvent.eventPhase = AT_TARGET;
-                }
-
-                iEventHandler = iEventHandlerEntry.listener;
-
-                if (identifierSpecificCaptureMethodName && typeof iEventHandler[identifierSpecificCaptureMethodName] === functionType) {
-                    iEventHandler[identifierSpecificCaptureMethodName](mutableEvent);
-                } else if (typeof iEventHandler[captureMethodName] === functionType) {
-                    iEventHandler[captureMethodName](mutableEvent);
-                } else if (typeof iEventHandler.handleEvent === functionType) {
-                    iEventHandler.handleEvent(mutableEvent);
-                } else if (typeof iEventHandler === functionType) {
-                    iEventHandler.call(event.target, mutableEvent);
-                }
-            }
-
-            mutableEvent.eventPhase = AT_TARGET;
-
-            // Bubble Phase Distribution
-            for (i = 0; !mutableEvent.propagationStopped && (iEventHandlerEntry = currentEventHandlers.bubble[i]); i++) {
-                mutableEvent.currentTarget = iEventHandlerEntry.currentTarget;
-
-                if (AT_TARGET === mutableEvent.eventPhase && mutableEvent.currentTarget !== mutableEvent.target) {
-                    mutableEvent.eventPhase = BUBBLING_PHASE;
-                }
-
-                iEventHandler = iEventHandlerEntry.listener;
-
-                if (identifierSpecificBubbleMethodName && typeof iEventHandler[identifierSpecificBubbleMethodName] === functionType) {
-                    iEventHandler[identifierSpecificBubbleMethodName](mutableEvent);
-                } else if (typeof iEventHandler[bubbleMethodName] === functionType) {
-                    iEventHandler[bubbleMethodName](mutableEvent);
-                } else if (typeof iEventHandler.handleEvent === functionType) {
-                    iEventHandler.handleEvent(mutableEvent);
-                } else if (typeof iEventHandler === functionType) {
-                    iEventHandler.call(event.target, mutableEvent);
-                }
-            }
-
-            return mutableEvent;
-        }
-    },
-
-    /**
-      @private
-     modified version of EventManager._eventListenersForEvent_ to suit the needs of KeyComposer Event dispatch
-    */
-    _eventListenersForComposerKeyEvent: {
-        enumerable: false,
-        value: function(composerKey, event) {
-            var eventType = event.type,
-                bubblingTarget = event.target,
-                targetView = bubblingTarget && bubblingTarget.defaultView ? bubblingTarget.defaultView : window,
-                targetDocument = targetView.document ? targetView.document : document,
-                previousBubblingTarget,
-                currentEventListener,
-                currentEventListenerEntry,
-                currentEventListenerHash,
-                listenersForEventType,
-                keyComposerListenersForEventType,
-                affectedListeners = {capture: [], bubble: []};
-
-            if (!bubblingTarget) {
-                // TODO complain about events with no target? in debug?
-                return;
-            }
-            // console.log("--- DISCOVERY: ", eventType, "---")
-            keyComposerListenersForEventType = defaultEventManager.registeredEventListeners[eventType];
-            keyComposerListenersForEventType = keyComposerListenersForEventType ? keyComposerListenersForEventType[composerKey.uuid] : null;
-            if (keyComposerListenersForEventType) {
-                do {
-                    if (keyComposerListenersForEventType.target.element === bubblingTarget) {
-                        listenersForEventType = keyComposerListenersForEventType.listeners;
-                        for (currentEventListenerHash in listenersForEventType) {
-                            currentEventListenerEntry = listenersForEventType[currentEventListenerHash];
-                            currentEventListener = currentEventListenerEntry.listener;
-
-                            // TODO pass along the entry here maybe? we may already have a perfectly good object to use here
-                            if (currentEventListenerEntry.capture) {
-                                affectedListeners.capture.push({listener: currentEventListener, currentTarget: bubblingTarget});
-                            }
-
-                            if (currentEventListenerEntry.bubble) {
-                                affectedListeners.bubble.push({listener: currentEventListener, currentTarget: bubblingTarget});
-                            }
-                        }
-
-                        // No need to go farther as a composerKey has only one target
-                        break;
-                    }
-
-                    previousBubblingTarget = bubblingTarget;
-
-                    // use the structural DOM hierarchy until we run out of that and need
-                    // to give listeners on document, window, and application a chance to respond
-                    switch (bubblingTarget) {
-                        case defaultEventManager.application:
-                            bubblingTarget = null;
-                            break;
-                        case targetView:
-                            bubblingTarget = defaultEventManager.application;
-                            break;
-                        case targetDocument:
-                            bubblingTarget = targetView;
-                            break;
-                        case targetDocument.documentElement:
-                            bubblingTarget = targetDocument;
-                            break;
-                        default:
-                            bubblingTarget = bubblingTarget.parentProperty ? bubblingTarget[bubblingTarget.parentProperty] : bubblingTarget.parentNode;
-                            break;
-                    }
-                } while (bubblingTarget && previousBubblingTarget !== bubblingTarget);
-            }
-
-            //Add Application as the first capture handler (and the last bubble handler)
-            if (defaultEventManager.application) {
-                affectedListeners.capture.push({listener: defaultEventManager.application, currentTarget: defaultEventManager.application});
-                affectedListeners.bubble.push({listener: defaultEventManager.application, currentTarget: defaultEventManager.application});
-            }
-
-            return affectedListeners;
         }
     },
 
