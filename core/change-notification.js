@@ -112,6 +112,7 @@ var ChangeNotification = exports.ChangeNotification = Object.create(Montage, {
 
             if (path == null) {
                 path = "*";
+                mutation = true;
             }
 
             if (!targetEntry) {
@@ -527,7 +528,8 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
         value: function(notification, listeners) {
             var listener,
                 dependentDescriptorsIndex = this.dependentDescriptorsIndex,
-                dependenciesIndex = notification._dependenciesIndex;
+                dependenciesIndex = notification._dependenciesIndex,
+                isMutationNotification;
 
             // TODO: maybe I should replicate this
             if (arguments.length < 2) {
@@ -541,12 +543,15 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                 notification._dependenciesIndex = null;
                 notification.currentTarget = this.target;
                 notification.currentPropertyPath = this.propertyPath;
+                isMutationNotification = notification.isMutation;
                 for (var key in listeners) {
                     listener = listeners[key];
-                    if (dependentDescriptorsIndex) {
-                        notification._dependenciesIndex = dependentDescriptorsIndex[key];
+                    if (!isMutationNotification || listener.listensToMutation) {
+                        if (dependentDescriptorsIndex) {
+                            notification._dependenciesIndex = dependentDescriptorsIndex[key];
+                        }
+                        listener.listenerFunction.call(listener.listenerTarget, notification);
                     }
-                    listener.listenerFunction.call(listener.listenerTarget, notification);
                 }
                 notification._dependenciesIndex = dependenciesIndex;
             }

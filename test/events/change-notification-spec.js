@@ -1053,6 +1053,24 @@ describe("event/change-notification-spec", function() {
                 object.x.y.array.push(4);
                 expect(listeners.listener.callCount).toBe(0);
             });
+
+            it("should not trigger a mutation notification to listeners that don't listen to mutations", function() {
+                var object = {array: [{foo: 1}]},
+                    listeners = {
+                        listener1: function(notification) {
+                        },
+                        listener2: function(notification) {
+                        }
+                    };
+
+                spyOn(listeners, "listener1").andCallThrough();
+                spyOn(listeners, "listener2").andCallThrough();
+                object.addPropertyChangeListener("array.0.foo", listeners.listener1);
+                object.addPropertyChangeListener("array", listeners.listener2);
+                object.array.push({foo: 2});
+                expect(listeners.listener1.callCount).toBe(0);
+                expect(listeners.listener2.callCount).toBe(1);
+            });
         });
 
         describe("before changes", function() {
