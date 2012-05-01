@@ -223,6 +223,9 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                 if (!(listenerKey in listeners)) {
                     listeners[listenerKey] = ChangeNotification._createFunctionDescriptor(this.target, listener, beforeChange, mutation);
                     this.willChangeListenersCount++;
+                    if (mutation) {
+                        this.mutationListenersCount++;
+                    }
                 }
             } else {
                 listeners = this.changeListeners;
@@ -232,11 +235,10 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                 if (!(listenerKey in listeners)) {
                     listeners[listenerKey] = ChangeNotification._createFunctionDescriptor(this.target, listener, beforeChange, mutation);
                     this.changeListenersCount++;
+                    if (mutation) {
+                        this.mutationListenersCount++;
+                    }
                 }
-            }
-
-            if (mutation) {
-                this.mutationListenersCount++;
             }
         }
     },
