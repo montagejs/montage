@@ -9,12 +9,12 @@
  @requires montage/core/logger
  @requires montage/data/mapping
  */
-var Montage = require("montage/core").Montage;
-var BinderMapping = require("montage/data/mapping").BinderMapping;
-var BlueprintMapping = require("montage/data/mapping").BlueprintMapping;
-var AttributeMapping = require("montage/data/mapping").AttributeMapping;
-var AssociationMapping = require("montage/data/mapping").AssociationMapping;
-var logger = require("montage/logger").logger("restmapping");
+var Montage = require("montage").Montage;
+var BinderMapping = require("data/mapping").BinderMapping;
+var BlueprintMapping = require("data/mapping").BlueprintMapping;
+var AttributeMapping = require("data/mapping").AttributeMapping;
+var AssociationMapping = require("data/mapping").AssociationMapping;
+var logger = require("core/logger").logger("restmapping");
 
 /**
  * TODO

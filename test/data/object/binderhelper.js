@@ -19,7 +19,7 @@ exports.BinderHelper = Montage.create(Montage, {
 
             var personBlueprint = companyBinder.addBlueprintNamed("Person", "data/object/person");
             personBlueprint.addToOneAttributeNamed("name");
-            personBlueprint.addAttributeNamed("phoneNumbers");
+            personBlueprint.addToManyAttributeNamed("phoneNumbers");
 
             var companyBlueprint = companyBinder.addBlueprintNamed("Company", "data/object/company");
             companyBlueprint.addToOneAttributeNamed("name");
@@ -34,6 +34,8 @@ exports.BinderHelper = Montage.create(Montage, {
             companyBlueprint.addToManyAssociationNamed("projects", personBlueprint.addToOneAssociationNamed("company"));
 
             personBlueprint.addToManyAssociationNamed("projects", projectBlueprint.addToManyAssociationNamed("contributors"));
+
+            BlueprintBinder.manager.addBlueprintBinder(companyBinder);
 
             return companyBinder;
         }

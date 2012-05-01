@@ -15,11 +15,12 @@
  @requires core/logger
  */
 var Montage = require("montage").Montage;
+var MappingFolder = require("data/mapping").MappingFolder;
 var TemporaryObjectId = require("data/objectid").TemporaryObjectId;
 var Query = require("data/query").Query;
-var Exception = require("core/exception").Exception;
 var ObjectProperty = require("data/objectproperty").ObjectProperty;
 var Promise = require("core/promise").Promise;
+var Exception = require("core/exception").Exception;
 var logger = require("core/logger").logger("blueprint");
 
 /**
@@ -102,19 +103,156 @@ var BlueprintBinderManager = exports.BlueprintBinderManager = Montage.create(Mon
         value: function(prototypeName, moduleId) {
             var binder, blueprint, index;
             for (index = 0; typeof (binder = this.blueprintBinders[index]) !== "undefined"; index++) {
-                blueprint = binder.blueprintForPrototype$Implementation(prototypeName, moduleId);
+                blueprint = binder.blueprintForPrototype(prototypeName, moduleId);
                 if (blueprint !== null) {
                     return blueprint;
                 }
             }
             return null;
         }
-    },
+    }
 
 });
 
-var MappedObject = exports.MappedObject = Montage.create(Montage, /** @lends module:montage/data/blueprint.BlueprintBinder# */ {
+var BlueprintObject = exports.BlueprintObject = Montage.create(Montage, /** @lends module:montage/data/blueprint.BlueprintObject# */ {
 
+    /**
+     @private
+     */
+    _name:{
+        serializable:true,
+        enumerable:false,
+        value:null
+    },
+
+    /**
+     Name of the object. The name is used to define the property on the object.
+     @function
+     @returns {String} this._name
+     */
+    name:{
+        get:function () {
+            return this._name;
+        }
+    },
+
+    /**
+     @private
+     */
+    _mappings:{
+        serializable:true,
+        enumerable:false,
+        distinct:true,
+        value: new Array(5)
+    },
+
+    /**
+     @private
+     */
+    _mappingForName:{
+        value:{},
+        serializable:false,
+        distinct:true,
+        enumerable:false,
+        writable:false
+    },
+
+    deserializedFromSerialization:{
+        value:function () {
+            var aMapping, index;
+            for (index = 0; typeof (aMapping = this._mappings[index]) !== "undefined"; index++) {
+                this._mappingForName[aMapping.name] = aMapping;
+            }
+        }
+    },
+
+    /**
+     List of mappings attached to this object.
+     @function
+     @returns mappings
+     */
+    mappings:{
+        get:function () {
+            return this._mappings;
+        }
+    },
+
+    /**
+     Add a mapping to the list of mappings.
+     @function
+     @param {mapping} mapping to add.
+     @returns mapping
+     */
+    addMapping:{
+        value:function (mapping) {
+            if (mapping !== null) {
+                var index = this.mappings.indexOf(mapping);
+                if (index < 0) {
+                    if (mapping.owner !== this) {
+                        throw new Error(
+                            "Mapping already owned: " + JSON.stringify(mapping));
+                    }
+                    this.mappings.push(mapping);
+                    //
+                    this._addMappingForName(mapping);
+                }
+            }
+            return mapping;
+        }
+    },
+
+    /**
+     Remove a mapping to the list of mappings.
+     @function
+     @param {mapping} mapping to remove.
+     @returns mapping
+     */
+    removeMapping:{
+        value:function (mapping) {
+            if (mapping !== null) {
+                var index = this.mappings.indexOf(mapping);
+                if (index >= 0) {
+                    this.mappings.splice(index, 1);
+                    // Remove the cached entry
+                    this._removeMappingForName(mapping);
+                }
+            }
+            return mapping;
+        }
+    },
+
+    /*
+     * @private
+     */
+    _addMappingForName:{
+        value:function (mapping) {
+            this._mappingForName[mapping.name] = mapping;
+            return mapping;
+        }
+    },
+
+    /*
+     * @private
+     */
+    _removeMappingForName:{
+        value:function (mapping) {
+            delete this._mappingForName[mapping.name];
+            return mapping;
+        }
+    },
+
+    /**
+     Retrieve a mapping from the list of mappings.<br/>
+     <b>Note:<b/> For Binder objects this function will return an array of mapping: One for each of the store used by the mapping name.
+     @function
+     @param {name} name of the mapping to retrieve.
+     @returns mapping
+     */
+    mappingForName:{
+        value:function (name) {
+            return this._mappingForName[name];
+        }
+    }
 
 
 });
@@ -124,7 +262,7 @@ var MappedObject = exports.MappedObject = Montage.create(Montage, /** @lends mod
  @classdesc A blueprint binder is a collection of of blueprints for a specific access type. It also includes the connection information.
  @extends module:montage/core/core.Montage
  */
-var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @lends module:montage/data/blueprint.BlueprintBinder# */ {
+var BlueprintBinder = exports.BlueprintBinder = Montage.create(BlueprintObject, /** @lends module:montage/data/blueprint.BlueprintBinder# */ {
 
     /**
      Returns the blueprint binder manager.
@@ -167,16 +305,6 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
 
     /**
      Description TODO
-     @type {Property}
-     @default {String} null
-     */
-    name:{
-        value:null,
-        serializable:true
-    },
-
-    /**
-     Description TODO
      @function
      @param {String} name TODO
      @returns itself
@@ -199,6 +327,7 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
         writable:false,
         value:new Array(30)
     },
+
     /**
      Description TODO
      @function
@@ -343,13 +472,101 @@ var BlueprintBinder = exports.BlueprintBinder = Montage.create(Montage, /** @len
             }
             return blueprint;
         }
+    },
+
+    /**
+     Create a new mapping.
+     @function
+     @param {store} store to create the mapping for.
+     @param {name} identifier for the new mapping.
+     @param {recursive} create mapping for all blueprints in this binder.
+     @returns binderMapping
+     */
+    createMappingForStore:{
+        value:function (store, name, recursive) {
+            var folder = this.mappingForName(name);
+            if (!folder) {
+                folder = MappingFolder.create().initWithBinderAndName(this, name);
+                this.addMapping(folder);
+                if (this._defaultMappingFolderName.length == 0) {
+                    this._defaultMappingFolderName = folder.name;
+                }
+            }
+            var metadata = Montage.getInfoForObject(store);
+            var aMapping = folder.mappingForStoreId(metadata.objectName, metadata.moduleId);
+            if (!aMapping) {
+                aMapping = store.createBinderMapping.initWithOwnerAndParent(this, folder);
+                folder.addMapping(aMapping);
+            }
+            if (recursive || (typeof recursive === "undefined")) {
+                var aBlueprint, index;
+                for (index = 0; typeof (aBlueprint = this.blueprints[index]) !== "undefined"; index++) {
+                    aBlueprint.createMappingForStore(store, aMapping, name);
+                }
+            }
+            return aMapping;
+        }
+    },
+
+    /**
+     Delete a mapping for a given store.
+     @function
+     @param {store} store to delete the mapping for.
+     @param {name} identifier for the mapping.
+     @returns binderMapping
+     */
+    deleteMappingForStore:{
+        value:function (store, name) {
+            var folder = this.mappingForName(name);
+            if (folder) {
+                var metadata = Montage.getInfoForObject(store);
+                var aMapping = folder.mappingForStoreId(metadata.objectName, metadata.moduleId);
+                folder.removeMapping(aMapping);
+                var aBlueprint, index;
+                for (index = 0; typeof (aBlueprint = this.blueprints[index]) !== "undefined"; index++) {
+                    aBlueprint.deleteMappingForStore(store, aMapping, name);
+                }
+                if (folder.mappings.length == 0) {
+                    this.removeMapping(folder);
+                    if ((this._defaultMappingFolderName.length > 0) && (this._defaultMappingFolderName === folder.name)) {
+                        if (this.mappings.length > 0) {
+                            this._defaultMappingFolderName = this.mappings[0].name;
+                        } else {
+                            this._defaultMappingFolderName = "";
+                        }
+                    }
+                }
+            }
+        }
+    },
+
+    _defaultMappingFolderName:{
+        serializable:true,
+        enumerable:false,
+        value:""
+    },
+
+    defaultMappingFolderName:{
+        get:function () {
+            if (this._defaultMappingFolderName.length == 0) {
+                if (this.mappings.length > 0) {
+                    this._defaultMappingFolderName = this.mappings[0].name;
+                }
+            }
+            return this._defaultMappingFolderName;
+        },
+        set:function (name) {
+            this._defaultMappingFolderName = name;
+        }
     }
 
 });
+
 /**
  @class module:montage/data/bluprint.Blueprint
  */
-var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:montage/data/bluprint.Blueprint# */ {
+var Blueprint = exports.Blueprint = Montage.create(BlueprintObject, /** @lends module:montage/data/bluprint.Blueprint# */ {
+
     /**
      This is the canonical way of creating managed objects prototypes.<br>
      Newly created prototype will be blessed with all the required properties to be well behaved.
@@ -361,7 +578,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
     create:{
         configurable:true,
         value:function (aPrototype, propertyDescriptor) {
-            if ((typeof aPrototype === 'undefined') || (Blueprint.isPrototypeOf(aPrototype))) {
+            if ((typeof aPrototype === "undefined") || (Blueprint.isPrototypeOf(aPrototype))) {
                 var parentCreate = Object.getPrototypeOf(Blueprint)["create"];
                 return parentCreate.call(this, (typeof aPrototype === "undefined" ? this : aPrototype), propertyDescriptor);
             }
@@ -372,6 +589,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             return newPrototype;
         }
     },
+
     /**
      Create a new instance of the target prototype for the blueprint.
      @function
@@ -383,6 +601,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
             return (prototype ? prototype.create() : null);
         }
     },
+
     /**
      Returns the target prototype for this blueprint.<br>
      <b>Note:</b> This method uses the <code>customPrototype</code> property to determine if it needs to require a custom prototype or create a default prototype.
@@ -391,23 +610,28 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      */
     newInstancePrototype:{
         value:function () {
+            var self = this;
             if (this.customPrototype) {
                 var results = Promise.defer();
                 require.async(this.moduleId,
                     function (exports) {
                         results.resolve(exports);
                     });
-                var self = this;
                 return results.promise.then(function (exports) {
                         var prototype = exports[self.prototypeName];
                         return (prototype ? prototype : null)
                     }
                 )
             } else {
-                if (exports[self.prototypeName]) {
+                if (typeof exports[self.prototypeName] === "undefined") {
                     var parentInstancePrototype = (this.parent ? this.parent.newInstancePrototype() : Montage );
                     var newPrototype = Montage.create(parentInstancePrototype, {
                         // Token class
+                        init:{
+                            value:function () {
+                                return this;
+                            }
+                        }
                     });
                     ObjectProperty.manager.applyWithBlueprint(newPrototype, this);
                     exports[self.prototypeName] = newPrototype;
@@ -416,15 +640,6 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
                 return (prototype ? prototype : null)
             }
         }
-    },
-    /**
-     Description TODO
-     @type {Property}
-     @default {String} null
-     */
-    name:{
-        value:null,
-        serializable:true
     },
     /**
      The identifier is the same as the name and is used to make the
@@ -458,7 +673,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      */
     initWithNameAndModuleId:{
         value:function (name, moduleId) {
-            this.name = (name !== null ? name : "default");
+            this._name = (name !== null ? name : "default");
             // The default is that the prototype name is the name
             this.prototypeName = this.name;
             this.moduleId = moduleId;
@@ -631,7 +846,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      @param {String} name Add to many attributes
      @returns names
      */
-    addAttributeNamed:{
+    addToManyAttributeNamed:{
         value:function (name) {
             return this.addAttribute(Attribute.create().initWithNameAndCardinality(name, Infinity));
         }
@@ -664,7 +879,7 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      */
     addToManyAssociationNamed:{
         value:function (name, inverse) {
-            var relationship = this.addAttribute(Association.create().initWithNameAndCardinality(name.Infinity));
+            var relationship = this.addAttribute(Association.create().initWithNameAndCardinality(name, Infinity));
             if ((inverse != null) && (typeof inverse.targetBlueprint === "object")) {
                 relationship.targetBlueprint = inverse.blueprint;
                 inverse.targetBlueprint = this;
@@ -700,6 +915,51 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
         }
 
     },
+
+    /**
+     Create a new mapping.
+     @function
+     @param {store} store to create the mapping for.
+     @param {mapping} parent mapping.
+     @param {name} identifier for the new mapping.
+     @returns binderMapping
+     */
+    createMappingForStore:{
+        value:function (store, mapping, name) {
+            var aMapping = this.mappingForName(name);
+            if (!aMapping) {
+                aMapping = store.createBlueprintMapping.initWithOwnerAndParent(this, mapping);
+                this.addMapping(aMapping);
+                var anAttribute, index;
+                for (index = 0; typeof (anAttribute = this.attributes[index]) !== "undefined"; index++) {
+                    anAttribute.createMappingForStore(store, aMapping, name);
+                }
+            }
+            return aMapping;
+        }
+    },
+
+    /**
+     Delete a mapping for a given store.
+     @function
+     @param {store} store to delete the mapping for.
+     @param {mapping} parent mapping.
+     @param {name} identifier for the mapping.
+     @returns binderMapping
+     */
+    deleteMappingForStore:{
+        value:function (store, mapping, name) {
+            var aMapping = this.mappingForName(name);
+            if (aMapping && (aMapping.parent === mapping)) {
+                this.removeMapping(aMapping);
+                var anAttribute, index;
+                for (index = 0; typeof (anAttribute = this.attributes[index]) !== "undefined"; index++) {
+                    anAttribute.deleteMappingForStore(store, aMapping, name);
+                }
+            }
+        }
+    },
+
     /**
      Description TODO
      @function
@@ -869,11 +1129,11 @@ var Blueprint = exports.Blueprint = Montage.create(Montage, /** @lends module:mo
      Returns tne new value for the temporary object ID.<br>
      This can be overwritten by subclass.
      @function
-     @returns TemporaryObjectId.create().init()
+     @returns TemporaryObjectId
      */
     objectId$Implementation:{
         get:function () {
-            return TemporaryObjectId.create().init();
+            return TemporaryObjectId.create().initWithBlueprint(this);
         }
     },
     /**
@@ -894,7 +1154,7 @@ var UnknownQuery = Object.freeze(Query.create().initWithBlueprint(null));
 /**
  @class module:montage/data/blueprint.Attribute
  */
-var Attribute = Montage.create(Montage, /** @lends module:montage/data/blueprint.Attribute# */ {
+var Attribute = exports.Attribute = Montage.create(BlueprintObject, /** @lends module:montage/data/blueprint.Attribute# */ {
 
     /**
      Initialize a newly allocated attribute.
@@ -904,8 +1164,7 @@ var Attribute = Montage.create(Montage, /** @lends module:montage/data/blueprint
      */
     initWithName:{
         value:function (name) {
-            this._name = (name !== null ? name : "default");
-            return this;
+            return this.initWithNameAndCardinality(name, 1);
         }
     },
 
@@ -921,26 +1180,6 @@ var Attribute = Montage.create(Montage, /** @lends module:montage/data/blueprint
             this._name = (name !== null ? name : "default");
             this._cardinality = (cardinality > 0 ? cardinality : 1);
             return this;
-        }
-    },
-
-    /**
-     Description TODO
-     @private
-     */
-    _name:{
-        serializable:true,
-        enumerable:false,
-        value:null
-    },
-    /**
-     Name of the attribute. The name is used to define the property on the object.
-     @function
-     @returns {String} this._name
-     */
-    name:{
-        get:function () {
-            return this._name;
         }
     },
 
@@ -1085,6 +1324,42 @@ var Attribute = Montage.create(Montage, /** @lends module:montage/data/blueprint
     valueObjectModuleId:{
         value:null,
         serializable:true
+    },
+
+    /**
+     Create a new mapping.
+     @function
+     @param {store} store to create the mapping for.
+     @param {mapping} parent mapping.
+     @param {name} identifier for the new mapping.
+     @returns binderMapping
+     */
+    createMappingForStore:{
+        value:function (store, mapping, name) {
+            var aMapping = this.mappingForName(name);
+            if (!aMapping) {
+                aMapping = store.createAttributeMapping.initWithOwnerAndParent(this, mapping);
+                this.addMapping(aMapping);
+            }
+            return aMapping;
+        }
+    },
+
+    /**
+     Delete a mapping for a given store.
+     @function
+     @param {store} store to delete the mapping for.
+     @param {mapping} parent mapping.
+     @param {name} identifier for the mapping.
+     @returns binderMapping
+     */
+    deleteMappingForStore:{
+        value:function (store, mapping, name) {
+            var aMapping = this.mappingForName(name);
+            if (aMapping) {
+                this.removeMapping(aMapping);
+            }
+        }
     }
 
 });
@@ -1113,7 +1388,44 @@ var Association = exports.Association = Montage.create(Attribute, /** @lends mod
             return true;
         },
         serializable:false
+    },
+
+    /**
+     Create a new mapping.
+     @function
+     @param {store} store to create the mapping for.
+     @param {mapping} parent mapping.
+     @param {name} identifier for the new mapping.
+     @returns binderMapping
+     */
+    createMappingForStore:{
+        value:function (store, mapping, name) {
+            var aMapping = this.mappingForName(name);
+            if (!aMapping) {
+                aMapping = store.createAssociationMapping.initWithOwnerAndParent(this, mapping);
+                this.addMapping(aMapping);
+            }
+            return aMapping;
+        }
+    },
+
+    /**
+     Delete a mapping for a given store.
+     @function
+     @param {store} store to delete the mapping for.
+     @param {mapping} parent mapping.
+     @param {name} identifier for the mapping.
+     @returns binderMapping
+     */
+    deleteMappingForStore:{
+        value:function (store, mapping, name) {
+            var aMapping = this.mappingForName(name);
+            if (aMapping) {
+                this.removeMapping(aMapping);
+            }
+        }
     }
+
 });
 
 /**

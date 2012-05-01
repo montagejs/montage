@@ -8,9 +8,14 @@
  @requires montage/core/core
  @requires montage/data/store
  @requires montage/core/logger
+ @requires data/sqlaccess/sqlmapping
  */
 var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
+var SqlBinderMapping = require("data/sqlaccess/sqlmapping").SqlBinderMapping;
+var SqlBlueprintMapping = require("data/sqlaccess/sqlmapping").SqlBlueprintMapping;
+var SqlAttributeMapping = require("data/sqlaccess/sqlmapping").SqlAttributeMapping;
+var SqlAssociationMapping = require("data/sqlaccess/sqlmapping").SqlAssociationMapping;
 var logger = require("core/logger").logger("sqlstore");
 
 /**
@@ -18,22 +23,6 @@ var logger = require("core/logger").logger("sqlstore");
  @extends module:montage/data/store.Store
  */
 var SqlStore = exports.SqlStore = Montage.create(Store, /** @lends module:montage/data/sqlaccess/sqlstore.SqlStore# */ {
-
-    /**
-     Description TODO
-     @function
-     @param {Property} binder TODO
-     @returns {Boolean} true or false
-     */
-    canServiceBlueprintBinder:{
-        value:function (binder) {
-            if ((binder !== null) && (binder.storePrototypeName === "SqlStore")) {
-                // TODO [PJYF Apr 19 2011] We need to check that the connection url points to the same DB
-                return true;
-            }
-            return false;
-        }
-    },
 
     /**
      Description TODO
@@ -64,6 +53,51 @@ var SqlStore = exports.SqlStore = Montage.create(Store, /** @lends module:montag
             // TODO [PJYF Apr 28 2011] We need to implement it.
             return null;
         }
+    },
+
+    /**
+     Create a new binder mapping.
+     @function
+     @returns binder mapping
+     */
+    createBinderMapping:{
+        get:function () {
+            return SqlBinderMapping.create();
+        }
+    },
+
+    /**
+     Create a new blueprint mapping.
+     @function
+     @returns blueprint mapping
+     */
+    createBlueprintMapping:{
+        get:function () {
+            return SqlBlueprintMapping.create();
+        }
+    },
+
+    /**
+     Create a new attribute mapping.
+     @function
+     @returns attribute mapping
+     */
+    createAttributeMapping:{
+        get:function () {
+            return SqlAttributeMapping.create();
+        }
+    },
+
+    /**
+     Create a new association mapping.
+     @function
+     @returns association mapping
+     */
+    createAssociationMapping:{
+        get:function () {
+            return SqlAssociationMapping.create();
+        }
     }
+
 
 });

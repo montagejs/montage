@@ -7,6 +7,7 @@
  @module montage/data/store
  @requires montage/core/core
  @requires montage/data/blueprint
+ @requires montage/data/mapping
  @requires montage/data/query
  @requires montage/data/restriction
  @requires montage/data/transactionid
@@ -20,12 +21,16 @@
 var Montage = require("montage").Montage;
 var Blueprint = require("data/blueprint").Blueprint;
 var BlueprintBinder = require("data/blueprint").BlueprintBinder;
+var BinderMapping = require("data/mapping").BinderMapping;
+var BlueprintMapping = require("data/mapping").BlueprintMapping;
+var AttributeMapping = require("data/mapping").AttributeMapping;
+var AssociationMapping = require("data/mapping").AssociationMapping;
+var StoreConnectionInformation = require("data/storeconnectioninformation").StoreConnectionInformation;
 var Query = require("data/query").Query;
 var Restriction = require("data/restriction").Restriction;
 var TransactionId = require("data/transactionid").TransactionId;
 var ObjectId = require("data/objectid").ObjectId;
 var TemporaryObjectId = require("data/objectid").TemporaryObjectId;
-var ControlListener = require("data/controllistener").ControlListener;
 var Serializer = require("core/serializer").Serializer;
 var Deserializer = require("core/deserializer").Deserializer;
 var Promise = require("core/promise").Promise;
@@ -41,65 +46,25 @@ var _defaultStoreManager = null;
  */
 var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/data/store.Store# */ {
 
-    /**
-     Description TODO
-     @type {Property} Function
-     @default {Array} new Array(10)
+    /*
+     * @private
      */
-    blueprintBinders:{
+    _connectionInfo:{
         serializable:true,
-        writable:false,
-        distinct:true,
-        value:new Array(10)
+        enumerable:false,
+        value:null
     },
 
-    /**
-     Description TODO
-     @function
-     @param {Property} binder TODO
+    /*
+     * Connection information for the store
      */
-    addBlueprintBinder:{
-        value:function (binder) {
-            if (binder !== null) {
-                var index = this.blueprintBinders.indexOf(binder);
-                if (index < 0) {
-                    this.blueprintBinders.push(binder);
-                }
-            }
-        }
-    },
-
-    /**
-     Description TODO
-     @function
-     @param {Property} binder TODO
-     */
-    removeBlueprintBinder:{
-        value:function (binder) {
-            if (binder !== null) {
-                var index = this.blueprintBinders.indexOf(binder);
-                if (index >= 0) {
-                    this.blueprintBinders.splice(index, 1);
-                }
-            }
-        }
-    },
-
-    /**
-     Description TODO
-     @function
-     @param {Property} name TODO
-     @returns null
-     */
-    blueprintBinderForName:{
-        value:function (name) {
-            var binder, index;
-            for (index = 0; typeof (binder = this.blueprintBinders[index]) !== "undefined"; index++) {
-                if (binder.name === name) {
-                    return binder;
-                }
-            }
-            return null;
+    connectionInfo:{
+        get:function () {
+            return this._connectionInfo;
+        },
+        set:function (info) {
+            // TODO [PJYF May 15 2012] We need to check that the connection info is valid for this store.
+            this._connectionInfo = info;
         }
     },
 
@@ -116,7 +81,6 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
     },
 
     /**
-     Description TODO
      @private
      */
     _parent:{
@@ -222,6 +186,50 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
     },
 
     /**
+     Create a new binder mapping.<br/>This is intended to be subclassed by concrete store to create the right mapping for their store.
+     @function
+     @returns binder mapping
+     */
+    createBinderMapping:{
+        get:function () {
+            return BinderMapping.create();
+        }
+    },
+
+    /**
+     Create a new blueprint mapping.<br/>This is intended to be subclassed by concrete store to create the right mapping for their store.
+     @function
+     @returns blueprint mapping
+     */
+    createBlueprintMapping:{
+        get:function () {
+            return BlueprintMapping.create();
+        }
+    },
+
+    /**
+     Create a new attribute mapping.<br/>This is intended to be subclassed by concrete store to create the right mapping for their store.
+     @function
+     @returns attribute mapping
+     */
+    createAttributeMapping:{
+        get:function () {
+            return AttributeMapping.create();
+        }
+    },
+
+    /**
+     Create a new association mapping.<br/>This is intended to be subclassed by concrete store to create the right mapping for their store.
+     @function
+     @returns association mapping
+     */
+    createAssociationMapping:{
+        get:function () {
+            return AssociationMapping.create();
+        }
+    },
+
+    /**
      Add a store to the cooperating objects stores.
      @function
      @param {Property} store TODO
@@ -252,64 +260,48 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
     },
 
     /**
-     Description TODO
-     @function
-     @param {Id} objectId TODO
-     @returns {Boolean} false
-     */
-    ownsObject:{
-        value:function (objectId) {
-            if ((objectId !== null) && (typeof (objectId.blueprint) === "object")) {
-                return this.blueprintBinders.indexOf(objectId.blueprint.binder) >= 0;
-            }
-            return false;
-        }
-    },
-
-    /**
-     Description TODO
-     @function
-     @param {Property} blueprint TODO
-     @returns {Boolean} false
-     */
-    ownsBlueprint:{
-        value:function (blueprint) {
-            var binder, index;
-            for (index = 0; typeof (binder = this.blueprintBinders[index]) !== "undefined"; index++) {
-                if (binder.blueprints.indexOf(blueprint) >= 0) {
-                    return true;
-                }
-            }
-            return false;
-        }
-    },
-
-    /**
-     Load a binder in the store manager.<br>
+     Load a blueprint in the store manager.<br>
      This will force the loading of the corresponding store if not already in memory.
      @function
-     @param {Property} binder Either a binder object or a serialized representation of a binder object.
-     @returns this.parent.requireStoreForBlueprintBinder(binder)
+     @param {Property} blueprint Either a binder object or a serialized representation of a binder object.
+     @param {Property} transactionId current transaction identifier
+     @returns this.parent.requireStoreForBlueprint(binder)
      */
-    requireStoreForBlueprintBinder:{
-        value:function (binder) {
+    requireStoreForBlueprint:{
+        value:function (blueprint, transactionId) {
             if (this.parent !== null) {
-                return this.parent.requireStoreForBlueprintBinder(binder);
+                return this.parent.requireStoreForBlueprint(blueprint, transactionId);
             }
         }
     },
 
     /**
-     Check if the referenced binder can be serviced by the target store.
+     Check if the referenced blueprint can be serviced by the target store.
      @function
-     @param {Property} binder TODO
-     @returns (binder.storeModuleId === metadata.moduleId) && (binder.storePrototypeName === metadata.objectName)
+     @param {Property} blueprint TODO
+     @param {Property} transactionId current transaction identifier
+     @returns true if the current store can service that binder.
      */
-    canServiceBlueprintBinder:{
-        value:function (binder) {
-            // TODO [PJYF May 10 2011] This unsufficient for most stores we should actually check the connection info
+    canServiceBlueprint:{
+        value:function (blueprint, transactionId) {
+            var blueprintMapping = blueprint.mappingForName(transactionId.mappingFolderName);
+            if (!blueprintMapping) {
+                return false;
+            }
+            var binderMapping = blueprintMapping.parent;
+            if (!binderMapping) {
+                return false;
+            }
             var metadata = Montage.getInfoForObject(this);
-            return (binder.storeModuleId === metadata.moduleId) && (binder.storePrototypeName === metadata.objectName);
+            if ((binderMapping.storePrototypeName === metadata.objectName) && (binderMapping.storeModuleId === metadata.moduleId)) {
+                if (this.connectionInfo) {
+                    var connectionInfo = binderMapping.connectionInformationForName(this.connectionInfo.name);
+                    return this.connectionInfo.equals(connectionInfo);
+                }
+                // TODO [PJYF May 15 2012] I am not sure this is correct it may be a bit bizarre.
+                return true;
+            }
+            return false;
         }
     },
 
@@ -317,12 +309,13 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      Check if the query blueprint can be serviced by this store.
      @function
      @param {Property} query TODO
-     @returns {Boolean} false
+     @param {Property} transactionId TODO
+     @returns {Boolean} true if the current store can service the query
      */
     canServiceQuery:{
-        value:function (query) {
+        value:function (query, transactionId) {
             if (query != null) {
-                return this.ownsBlueprint(query.blueprint);
+                return this.canServiceBlueprint(query.blueprint, transactionId);
             }
             return false;
         }
@@ -333,10 +326,11 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Object} object  TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
+     @param {name} Mapping folder name used for this transaction
      @returns this.permanentIdForObjectId$Implementation(objectId, context, aTransactionId)
      */
     permanentIdForObjectId:{
-        value:function (object, context, transactionId) {
+        value:function (object, context, transactionId, name) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -345,7 +339,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                     if (hadOpenTransaction) {
                         aTransactionId = TransactionId.manager.currentTransaction();
                     } else {
-                        aTransactionId = TransactionId.manager.startTransaction();
+                        aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
                 return this.permanentIdForObjectId$Implementation(objectId, context, aTransactionId);
@@ -378,10 +372,11 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Object} objectId  TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
+     @param {name} Mapping folder name used for this transaction
      @returns this.pledgeForObjectId$Implementation(objectId, context, aTransactionId)
      */
     pledgeForObjectId:{
-        value:function (objectId, context, transactionId) {
+        value:function (objectId, context, transactionId, name) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -390,7 +385,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                     if (hadOpenTransaction) {
                         aTransactionId = TransactionId.manager.currentTransaction();
                     } else {
-                        aTransactionId = TransactionId.manager.startTransaction();
+                        aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
                 return this.pledgeForObjectId$Implementation(objectId, context, aTransactionId);
@@ -422,10 +417,11 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} relationshipName TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
+     @param {name} Mapping folder name used for this transaction
      @returns this.pledgeForSourceObjectAssociationNamed$Implementation(sourceObject, relationshipName, context, aTransactionId)
      */
     pledgeForSourceObjectAssociationNamed:{
-        value:function (sourceObject, relationshipName, context, transactionId) {
+        value:function (sourceObject, relationshipName, context, transactionId, name) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -434,7 +430,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                     if (hadOpenTransaction) {
                         aTransactionId = TransactionId.manager.currentTransaction();
                     } else {
-                        aTransactionId = TransactionId.manager.startTransaction();
+                        aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
                 return this.pledgeForSourceObjectAssociationNamed$Implementation(sourceObject, relationshipName, context, aTransactionId);
@@ -472,10 +468,11 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} relationship TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
+     @param {name} Mapping folder name used for this transaction
      @returns this.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, aTransactionId)
      */
     pledgeForSourceObjectAssociation:{
-        value:function (sourceObject, relationship, context, transactionId) {
+        value:function (sourceObject, relationship, context, transactionId, name) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -484,7 +481,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                     if (hadOpenTransaction) {
                         aTransactionId = TransactionId.manager.currentTransaction();
                     } else {
-                        aTransactionId = TransactionId.manager.startTransaction();
+                        aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
                 return this.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, aTransactionId);
@@ -519,10 +516,11 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Object} object TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
+     @param {name} Mapping folder name used for this transaction
      @returns this.initializeObject$Implementation(object, context, aTransactionId)
      */
     initializeObject:{
-        value:function (object, context, transactionId) {
+        value:function (object, context, transactionId, name) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -531,7 +529,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                     if (hadOpenTransaction) {
                         aTransactionId = TransactionId.manager.currentTransaction();
                     } else {
-                        aTransactionId = TransactionId.manager.startTransaction();
+                        aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
                 return this.initializeObject$Implementation(object, context, aTransactionId);
@@ -554,7 +552,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
     initializeObject$Implementation:{
         value:function (object, context, transactionId) {
             if (typeof object.objectId === "undefined") {
-                // TODO [PJYF June 17 2011] This will need to be revisited.
+                // TODO [PJYF June 17 2011] This will need to be revisited.p
                 object.objectId = TemporaryObjectId.create().init();
             }
             return Promise.ref(object);
@@ -567,10 +565,11 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Object} target TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
+     @param {name} Mapping folder name used for this transaction
      @returns this.repledgeObject$Implementation(target, context, aTransactionId)
      */
     repledgeObject:{
-        value:function (target, context, transactionId) {
+        value:function (target, context, transactionId, name) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -579,7 +578,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                     if (hadOpenTransaction) {
                         aTransactionId = TransactionId.manager.currentTransaction();
                     } else {
-                        aTransactionId = TransactionId.manager.startTransaction();
+                        aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
                 if (Array.isArray(target)) {
@@ -624,9 +623,10 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @function
      @param {Property} context TODO
      @param {Id} transactionId TODO
+     @param {name} Mapping folder name used for this transaction
      */
     saveChangesInContext:{
-        value:function (context, transactionId) {
+        value:function (context, transactionId, name) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -635,7 +635,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                     if (hadOpenTransaction) {
                         aTransactionId = TransactionId.manager.currentTransaction();
                     } else {
-                        aTransactionId = TransactionId.manager.startTransaction();
+                        aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
                 this.saveChangesInContext$Implementation(context, aTransactionId);
@@ -714,10 +714,11 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} query TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
+     @param {name} Mapping folder name used for this transaction
      @returns this.queryInContext$Implementation(query, context, aTransactionId)
      */
     queryInContext:{
-        value:function (query, context, transactionId) {
+        value:function (query, context, transactionId, name) {
             var aTransactionId = transactionId;
             var hadOpenTransaction = false;
             try {
@@ -726,7 +727,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                     if (hadOpenTransaction) {
                         aTransactionId = TransactionId.manager.currentTransaction();
                     } else {
-                        aTransactionId = TransactionId.manager.startTransaction();
+                        aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
                 return this.queryInContext$Implementation(query, context, aTransactionId);
@@ -829,7 +830,7 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
     },
 
     /**
-     Search through the stores for a blueprint that extends that prototype.
+     Search through the binders for a blueprint that extends that prototype.
      @function
      @param {Property} prototypeName TODO
      @param {Property} moduleId TODO
@@ -837,7 +838,7 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      */
     blueprintForPrototype:{
         value:function (prototypeName, moduleId) {
-            return BlueprintBinder.manager.blueprintForPrototype$Implementation(prototypeName, moduleId);
+            return BlueprintBinder.manager.blueprintForPrototype(prototypeName, moduleId);
         }
     },
 
@@ -845,13 +846,14 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      Description TODO
      @function
      @param {Object} blueprint The blueprint object.
+     @param {Property} transactionId TODO
      @returns store or null
      */
     storeForBlueprint:{
-        value:function (blueprint) {
+        value:function (blueprint, transactionId) {
             var store, index;
             for (index = 0; typeof (store = this.stores[index]) !== "undefined"; index++) {
-                if (store.ownsBlueprint(blueprint)) {
+                if (store.canServiceBlueprint(blueprint, transactionId)) {
                     return store;
                 }
             }
@@ -860,16 +862,17 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
     },
 
     /**
-     Search for existing store that can service this blueprint binder.
+     Search for existing store that can service this blueprint.
      @function
-     @param {Property} binder The blueprint binder to test for.
-     @returns Promise.ref(store) A store that can service that blueprint binder or null if none was found.
+     @param {Property} blueprint The blueprint to test for.
+     @param {Property} transactionId TODO
+     @returns Promise.ref(store) A store that can service that blueprint or null if none was found.
      */
-    findStoreForBlueprintBinder:{
-        value:function (binder) {
-            var store = this._findStoreForBlueprintBinder(binder);
+    findStoreForBlueprint:{
+        value:function (blueprint, transactionId) {
+            var store = this._findStoreForBlueprint(blueprint, transactionId);
             if (store == null) {
-                store = this.requireStoreForBlueprintBinder(binder);
+                store = this.requireStoreForBlueprint(blueprint, transactionId);
             }
             return Promise.ref(store);
         }
@@ -879,12 +882,11 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      Description TODO
      @private
      */
-    _findStoreForBlueprintBinder:{
-        value:function (binder) {
+    _findStoreForBlueprint:{
+        value:function (blueprint, transactionId) {
             var store, index;
             for (index = 0; typeof (store = this.stores[index]) !== "undefined"; index++) {
-                if (store.canServiceBlueprintBinder(binder)) {
-                    store.addBlueprintBinder(binder);
+                if (store.canServiceBlueprint(blueprint, transactionId)) {
                     return store;
                 }
             }
@@ -893,22 +895,24 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
     },
 
     /**
-     Search for existing store that can service this blueprint binder.
+     Search for existing store that can service this blueprint.
      @function
-     @param {Property} binder The blueprint binder to test for.
-     @returns Promise.ref(null) or Deserializer.create().initWithString(binder).deserialize(function(binder) or this._requireStoreForBlueprintBinder(binder) or this._requireStoreForBlueprintBinder(binder)
+     @param {Property} blueprint The blueprint to test for.
+     @param {Property} transactionId TODO
+     @returns Promise for the store
      */
-    requireStoreForBlueprintBinder:{
-        value:function (binder) {
-            if ((binder === null) || (typeof binder === "undefined")) {
+    requireStoreForBlueprint:{
+        value:function (blueprint, transactionId) {
+            if ((blueprint === null) || (typeof blueprint === "undefined")) {
                 return Promise.ref(null);
             }
-            if (typeof binder === "string") {
-                return Deserializer.create().initWithString(binder).deserializeObject(function (binder) {
-                    return this._requireStoreForBlueprintBinder(binder);
-                }, require);
-            }
-            return this._requireStoreForBlueprintBinder(binder);
+            //            if (typeof blueprint === "string") {
+            //                var self = this;
+            //                return Deserializer.create().initWithString(blueprint).deserializeObject(function (binder) {
+            //                    return self._requireStoreForBlueprint(binder, transactionId);
+            //                }, require);
+            //            }
+            return this._requireStoreForBlueprint(blueprint, transactionId);
         }
     },
 
@@ -916,37 +920,45 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      Description TODO
      @private
      */
-    _requireStoreForBlueprintBinder:{
-        value:function (binder) {
-            if ((binder === null) || (typeof binder === "undefined")) {
+    _requireStoreForBlueprint:{
+        value:function (blueprint, transactionId) {
+            if ((blueprint === null) || (typeof blueprint === "undefined")) {
                 return Promise.ref(null);
             }
 
             var store = null;
             var aStore, index;
             for (index = 0; typeof (aStore = this.stores[index]) !== "undefined"; index++) {
-                if (aStore.blueprintBinders.indexOf(binder) >= 0) {
+                if (aStore.canServiceBlueprint(blueprint, transactionId)) {
                     store = aStore;
                 }
             }
+
             if (store == null) {
-                var results = Promise.defer();
-                require.async(binder.storeModuleId,
-                    function (exports) {
-                        results.resolve(exports);
-                    });
-                var self = this;
-                return results.promise.then(function (exports) {
-                        var storePrototype = exports[binder.storePrototypeName], store;
-                        if ((typeof storePrototype !== "undefined") && (storePrototype !== null)) {
-                            store = storePrototype.create().initWithParent(self);
-                            store.addBlueprintBinder(binder);
-                        } else {
-                            return Promise.reject("No Store found " + binder.storePrototypeName);
+                var blueprintMapping = blueprint.mappingForName(transactionId.mappingFolderName);
+                var binderMapping = (blueprintMapping ? blueprintMapping.parent : null);
+                if (binderMapping) {
+                    var results = Promise.defer();
+                    require.async(binderMapping.storeModuleId,
+                        function (exports) {
+                            results.resolve(exports);
+                        });
+                    var self = this;
+                    return results.promise.then(function (exports) {
+                            var storePrototype = exports[binderMapping.storePrototypeName], store;
+                            if ((typeof storePrototype !== "undefined") && (storePrototype !== null)) {
+                                store = storePrototype.create().initWithParent(self);
+                                // We need to set the connection information
+                                store.connectionInfo = binderMapping.defaultConnectionInformation;
+                            } else {
+                                return Promise.reject("No Store found " + binderMapping.storePrototypeName);
+                            }
+                            return store;
                         }
-                        return store;
-                    }
-                );
+                    );
+                } else {
+                    return Promise.ref(store);
+                }
             } else {
                 return Promise.ref(store);
             }
@@ -957,13 +969,14 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      Description TODO
      @function
      @param {object} objectId TODO
+     @param {Property} transactionId TODO
      @returns store or null
      */
     storeForObjectId:{
-        value:function (objectId) {
+        value:function (objectId, transactionId) {
             var store, index;
             for (index = 0; typeof (store = this.stores[index]) !== "undefined"; index++) {
-                if (store.ownsObject(objectId)) {
+                if (store.canServiceBlueprint(objectId.blueprint, transactionId)) {
                     return store;
                 }
             }
@@ -989,7 +1002,7 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
             if (sourceBlueprint !== null) {
                 relationship = sourceBlueprint.attributeForName(relationshipName);
                 if ((relationship !== null) && (relationship.targetBlueprint !== null)) {
-                    store = this.storeForBlueprint(relationship.targetBlueprint);
+                    store = this.storeForBlueprint(relationship.targetBlueprint, transactionId);
                 } else {
                     logger.error("No relationship named " + relationshipName + " for " + sourceObject);
                 }
@@ -1011,7 +1024,7 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
      */
     pledgeForObjectId$Implementation:{
         value:function (objectId, context, transactionId) {
-            var store = this.storeForObjectId(objectId);
+            var store = this.storeForObjectId(objectId, transactionId);
             if (store !== null) {
                 return store.pledgeForObjectId$Implementation(objectId, context, transactionId);
             }
@@ -1175,7 +1188,7 @@ var StoreManager = exports.StoreManager = Montage.create(Store, /** @lends modul
             if ((query == null) || (context == null)) {
                 return Promise.ref([]);
             }
-            var store = this.storeForBlueprint(query.blueprint);
+            var store = this.storeForBlueprint(query.blueprint, transactionId);
             if (store == null) {
                 // TODO [PJYF Sept 27 2011] Should we raise if we don't have a store?
                 return Promise.ref([]);
