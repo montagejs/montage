@@ -77,7 +77,13 @@ var Flow = exports.Flow = Montage.create(Component, {
                 i;
 
             if (length) {
-                this._paths = [];
+
+                if (!this._paths) {
+                    this._paths = [];
+                } else {
+                    this._paths.wipe();
+                }
+
                 for (i = 0; i < length; i++) {
                     this.appendPath(value[i]);
                 }
@@ -232,15 +238,16 @@ var Flow = exports.Flow = Montage.create(Component, {
             return this._scrollingTransitionTimingFunction;
         },
         set: function (timingFunction) {
-            var string = timingFunction + "";
+            var string = timingFunction + "",
+                bezier,
+                i;
 
             if (this._timingFunctions.hasOwnProperty(string)) {
                 this._scrollingTransitionTimingFunction = string;
                 this._scrollingTransitionTimingFunctionBezier = this._timingFunctions[string];
             } else {
                 if ((string.substr(0, 13) === "cubic-bezier(") && (string.substr(string.length - 1, 1) === ")")) {
-                    var bezier = string.substr(13, string.length - 14).split(","),
-                        i;
+                    bezier = string.substr(13, string.length - 14).split(",");
 
                     if (bezier.length === 4) {
                         for (i = 0; i < 4; i++) {
@@ -365,7 +372,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     _computeFrustumNormals: {
-        value: function() {
+        value: function(out) {
             var angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
                 y = Math.sin(angle),
                 z = Math.cos(angle),
@@ -381,7 +388,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 invLength,
                 vectors = [[z, 0, x], [-z, 0, x], [0, z, y], [0, -z, y]],
                 iVector,
-                out = [],
                 i;
 
             for (i = 0; i < 4; i++) {
@@ -395,7 +401,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 invLength = 1 / Math.sqrt(rX2 * rX2 + rY2 * rY2 + rZ2 * rZ2);
                 out.push([rX2 * invLength, rY2 * invLength, rZ2 * invLength]);
             }
-            return out;
         }
     },
 
@@ -443,15 +448,26 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _frustrumNormals: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
     _computeVisibleRange: { // TODO: make it a loop, optimize
         enumerable: false,
-        value: function (spline) {
+        value: function (spline, out) {
+
+            this._frustrumNormals.wipe();
+
             var splineLength = spline.knotsLength - 1,
                 planeOrigin = this._cameraPosition,
-                normals = this._computeFrustumNormals(),
+                normals = this._frustrumNormals,
                 mod,
-                r, r2, r3 = [], out = [], tmp,
+                r, r2, r3 = [], tmp,
                 i, j;
+
+            this._computeFrustumNormals(normals);
 
             for (i = 0; i < splineLength; i++) {
                 mod = normals[0];
@@ -532,7 +548,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
                 out.push([t1, t2]);
             }
-            return out;
         }
     },
 
@@ -586,18 +601,16 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     _updateIndexMap2: {
         enumerable: false,
-        value: function (currentIndexMap, newIndexes) {
-            var newIndexesHash = {},
-                emptySpaces = [],
+        value: function (currentIndexMap, newIndexes, newIndexesHash) {
+            var emptySpaces = [],
                 j,
                 i,
                 currentIndexCount = currentIndexMap && !isNaN(currentIndexMap.length) ? currentIndexMap.length : 0;
 
-            for (i = 0; i < newIndexes.length; i++) {
-                newIndexesHash[newIndexes[i]] = i;
-            }
             for (i = 0; i < currentIndexCount; i++) {
-                if (newIndexesHash.hasOwnProperty(currentIndexMap[i])) {
+                //The likelyhood that newIndexesHash had a number-turned-to-string property that wasn't his own is pretty slim as it's provided internally.
+                //if (newIndexesHash.hasOwnProperty(currentIndexMap[i])) {
+                if (typeof newIndexesHash[currentIndexMap[i]] === "number") {
                     newIndexes[newIndexesHash[currentIndexMap[i]]] = null;
                 } else {
                     emptySpaces.push(i);
@@ -615,29 +628,45 @@ var Flow = exports.Flow = Montage.create(Component, {
                     j++;
                 }
             }
-
             this._repetition.refreshIndexMap();
         }
+    },
+
+    _tmpIndexMap: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
+    _intersections: {
+        enumerable: false,
+        distinct: true,
+        value: []
     },
 
     willDraw: {
         enumerable: false,
         value: function () {
             var intersections,
+                index,
                 i,
                 j,
                 k,
-                newIndexMap = [],
                 offset,
                 startIndex,
                 endIndex,
                 mod,
                 div,
-                iterations;
+                iterations,
+                newIndexMap,
+                time,
+                interpolant,
+                newIndexesHash = {};
 
+            newIndexMap = this._tmpIndexMap.wipe();
             if (this._isTransitioningScroll) {
-                var time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds, // TODO: division by zero
-                    interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
+                time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds; // TODO: division by zero
+                interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
 
                 if (time < 1) {
                     this.scroll = this._scrollingOrigin + (this._scrollingDestination - this._scrollingOrigin) * interpolant;
@@ -649,11 +678,14 @@ var Flow = exports.Flow = Montage.create(Component, {
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
             if (this.splinePaths.length) {
+//<<<<<<< HEAD
                 mod = this._numberOfIterations % this._paths.length;
                 div = (this._numberOfIterations - mod) / this._paths.length;
                 for (k = 0; k < this._paths.length; k++) {
                     iterations = div + ((k < mod) ? 1 : 0);
-                    intersections = this._computeVisibleRange(this.splinePaths[k]);
+                    //intersections = this._computeVisibleRange(this.splinePaths[k]);
+                    intersections = this._intersections.wipe();
+                    this._computeVisibleRange(this.splinePaths[k], intersections);
                     offset =  this._scroll - this._paths[k].headOffset;
                     for (i = 0; i < intersections.length; i++) {
                         startIndex = Math.ceil(intersections[i][0] + offset);
@@ -665,13 +697,40 @@ var Flow = exports.Flow = Montage.create(Component, {
                             endIndex = iterations;
                         }
                         for (j = startIndex; j < endIndex; j++) {
-                            newIndexMap.push(j * this._paths.length + k);
+                            index = j * this._paths.length + k;
+                            newIndexesHash[index] = newIndexMap.length;
+                            newIndexMap.push(index);
                         }
                     }
                 }
-                this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
+                //this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
+                this._updateIndexMap2(this._repetition.indexMap, newIndexMap, newIndexesHash);
+                //console.log(""+newIndexMap);
+/*=======
+                
+                for (i = 0; i < intersections.length; i++) {
+                    for (j = Math.ceil(intersections[i][0] + this._scroll); j < intersections[i][1] + this._scroll; j++) {
+                        
+                        newIndexMap.push(j);
+                    }
+                }
+
+                
+>>>>>>> mike/flow*/
             }
         }
+    },
+
+    _cachedPos: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
+    _cachedSlide: {
+        enumerable: false,
+        distinct: true,
+        value: {}
     },
 
     draw: {
@@ -679,15 +738,21 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function () {
             var i,
                 length = this._repetitionComponents.length,
-                slide = {},
+                slide,
                 transform,
                 j,
                 iOffset,
                 iStyle,
                 pathsLength = this._paths.length,
                 pathIndex,
-                pos;
+                pos,
+                pos3,
+                positionKeys,
+                positionKeyCount,
+                jPositionKey;
 
+            slide = this._cachedSlide.wipe();
+            pos = this._cachedPos.wipe();
             if (this._isTransitioningScroll) {
                 this.needsDraw = true;
             }
@@ -718,24 +783,25 @@ var Flow = exports.Flow = Montage.create(Component, {
                     slide.index = this._repetition.indexMap[i];
                     slide.time = iOffset.time + this._paths[pathIndex].headOffset;
                     slide.speed = iOffset.speed;
-                    pos = this._splinePaths[pathIndex].getPositionAtTime(slide.time);
-                    if (pos && (slide.index < this._numberOfIterations)) {
+                    pos = this._splinePaths[pathIndex].getPositionAtTime(slide.time, pos);
+                    if ((pos.length > 0) && (slide.index < this._numberOfIterations)) {
                         iStyle = this._repetitionComponents[i].element.parentNode.style;
                         if (iStyle.opacity == 0) {
                             iStyle.opacity = 1;
                         }
+                        pos3 = pos[3];
                         transform = "translate3d(" + pos[0] + "px," + pos[1] + "px," + pos[2] + "px) ";
-                        transform += (typeof pos[3].rotateZ !== "undefined") ? "rotateZ(" + pos[3].rotateZ + ") " : "";
-                        transform += (typeof pos[3].rotateY !== "undefined") ? "rotateY(" + pos[3].rotateY + ") " : "";
-                        transform += (typeof pos[3].rotateX !== "undefined") ? "rotateX(" + pos[3].rotateX + ") " : "";
+                        transform += (typeof pos3.rotateZ !== "undefined") ? "rotateZ(" + pos3.rotateZ + ") " : "";
+                        transform += (typeof pos3.rotateY !== "undefined") ? "rotateY(" + pos3.rotateY + ") " : "";
+                        transform += (typeof pos3.rotateX !== "undefined") ? "rotateX(" + pos3.rotateX + ") " : "";
                         iStyle.webkitTransform = transform;
-                        delete pos[3].rotateX;
-                        delete pos[3].rotateY;
-                        delete pos[3].rotateZ;
                         iStyle = this._repetitionComponents[i].element.style;
-                        for (j in pos[3]) {
-                            if ((pos[3].hasOwnProperty(j)) && (iStyle[j] !== pos[3][j])) {
-                                iStyle[j] = pos[3][j];
+                        positionKeys = Object.keys(pos3);
+                        positionKeyCount = positionKeys.length;
+                        for (j = 0; j < positionKeyCount; j++) {
+                            jPositionKey = positionKeys[j];
+                            if (!(jPositionKey === "rotateX" || jPositionKey === "rotateY" || jPositionKey === "rotateZ") && iStyle[jPositionKey] !== pos3[jPositionKey]) {
+                                iStyle[jPositionKey] = pos3[jPositionKey];
                             }
                         }
                     } else {
@@ -1049,8 +1115,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._animating = [];
             }
             return this._animating;
-        },
-        set: function () {
         }
     },
 
@@ -1066,8 +1130,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._animatingHash = {};
             }
             return this._animatingHash;
-        },
-        set: function () {
         }
     },
 
@@ -1083,8 +1145,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._slide = {};
             }
             return this._slide;
-        },
-        set: function () {
         }
     },
 
@@ -1165,6 +1225,69 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: 0
     },
 
+    _animationInterval: {
+        enumerable: false,
+        value: function () {
+            var animatingLength = this.animating.length,
+                n, j, i, _iterations = 8,
+                time = Date.now(),
+                interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * 0.015 * this._elasticScrollingSpeed : 0,
+                interval = interval1 / _iterations,
+                x,
+                epsilon = .5;
+
+            for (n = 0; n < _iterations; n++) {
+                for (j = 0; j < animatingLength; j++) {
+                    i = this.animating[j];
+                    if (i < this._selectedSlideIndex) {
+                        if (typeof this.animatingHash[i + 1] === "undefined") {
+                            x = i + 1;
+                        } else {
+                            x = this.slide[i + 1].x;
+                        }
+                        this.slide[i].speed = x - this.slide[i].x - 1;
+                    } else {
+                        if (typeof this.animatingHash[i - 1] === "undefined") {
+                            x = i - 1;
+                        } else {
+                            x = this.slide[i - 1].x;
+                        }
+                        this.slide[i].speed = x - this.slide[i].x + 1;
+                    }
+                    this.slide[i].x += (this.slide[i].speed) * interval;
+                }
+            }
+            j = 0;
+            while (j < animatingLength) {
+                i = this.animating[j];
+                if (i < this._selectedSlideIndex) {
+                    if (this.slide[i].x > i - epsilon) {
+                        this.stopAnimating(i);
+                        animatingLength--;
+                    } else {
+                        j++;
+                    }
+                } else {
+                    if (this.slide[i].x < i + epsilon) {
+                        this.stopAnimating(i);
+                        animatingLength--;
+                    } else {
+                        j++;
+                    }
+                }
+            }
+            this.lastDrawTime = time;
+            if (!animatingLength) {
+                this.isAnimating = false;
+            } else {
+                this.needsDraw = true;
+                if (!this.isAnimating) {
+                    this.isAnimating = true;
+                }
+            }
+        }
+    },
+
     scroll: {
         get: function () {
             return this._scroll;
@@ -1177,8 +1300,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     max = this._selectedSlideIndex + this._range + 1,
                     tmp,
                     j,
-                    x,
-                    self = this;
+                    x;
 
                 tmp = value - this._scroll;
                 if (min < 0) {
@@ -1208,67 +1330,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                     }
                 }
                 this.stopAnimating(this._selectedSlideIndex);
-                if (!this.isAnimating) {
-                    this._animationInterval = function () {
-                        var animatingLength = self.animating.length,
-                            n, j, i, _iterations = 8,
-                            time = Date.now(),
-                            interval1 = self.lastDrawTime ? (time - self.lastDrawTime) * 0.015 * this._elasticScrollingSpeed : 0,
-                            interval = interval1 / _iterations,
-                            x,
-                            epsilon = .5;
-
-                        for (n = 0; n < _iterations; n++) {
-                            for (j = 0; j < animatingLength; j++) {
-                                i = self.animating[j];
-                                if (i < self._selectedSlideIndex) {
-                                    if (typeof self.animatingHash[i + 1] === "undefined") {
-                                        x = i + 1;
-                                    } else {
-                                        x = self.slide[i + 1].x;
-                                    }
-                                    self.slide[i].speed = x - self.slide[i].x - 1;
-                                } else {
-                                    if (typeof self.animatingHash[i - 1] === "undefined") {
-                                        x = i - 1;
-                                    } else {
-                                        x = self.slide[i - 1].x;
-                                    }
-                                    self.slide[i].speed = x - self.slide[i].x + 1;
-                                }
-                                self.slide[i].x += (self.slide[i].speed) * interval;
-                            }
-                        }
-                        j = 0;
-                        while (j < animatingLength) {
-                            i = self.animating[j];
-                            if (i < self._selectedSlideIndex) {
-                                if (self.slide[i].x > i - epsilon) {
-                                    self.stopAnimating(i);
-                                    animatingLength--;
-                                } else {
-                                    j++;
-                                }
-                            } else {
-                                if (self.slide[i].x < i + epsilon) {
-                                    self.stopAnimating(i);
-                                    animatingLength--;
-                                } else {
-                                    j++;
-                                }
-                            }
-                        }
-                        self.lastDrawTime = time;
-                        if (!animatingLength) {
-                            self.isAnimating = false;
-                        } else {
-                            self.needsDraw = true;
-                            if (!self.isAnimating) {
-                                self.isAnimating = true;
-                            }
-                        }
-                    }
-                }
                 if (!this.isAnimating) {
                     this._animationInterval();
                 }

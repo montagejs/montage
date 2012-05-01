@@ -148,13 +148,19 @@ var Montage = require("montage").Montage,
     },
 
     getPositionAtTime: {
-        value: function (time) {
+        value: function (time, position) {
             var p0, p1, p2, p3,
                 a, b, c,
                 t, y,
                 start,
                 parameters = {},
-                i, j;
+                i, j,
+                parameterKeys,
+                parameterKeyCount,
+                jParameter,
+                jParameterData;
+
+            position.length = 0;
 
             if ((time >= 0) && (time < this.maxTime)) {
                 if (this._previousIndex && (time >= this._densitySummation[this._previousIndex - 1])) {
@@ -181,24 +187,30 @@ var Montage = require("montage").Montage,
                 }
                 y = 1 - t;
                 // TODO: Redo this and create getParametersAtTime or getPositionAndParametersAtTime
-                for (j in this._parameters) {
-                    if (this._parameters.hasOwnProperty(j)) {
-                        if ((typeof this._parameters[j].data[i] !== "undefined") && (typeof this._parameters[j].data[i + 1] !== "undefined")) {
-                            parameters[j] = (this._parameters[j].data[i] * y + this._parameters[j].data[i + 1] * t) + this._parameters[j].units;
-                        } else {                        
-                            parameters[j] = this._parameters[j].data[this._parameters[j].data.length - 1] + this._parameters[j].units;
-                        }
+
+                parameterKeys = Object.keys(this._parameters);
+                parameterKeyCount = parameterKeys.length;
+
+                for (j = 0; j < parameterKeyCount; j++) {
+                    jParameter = this._parameters[parameterKeys[j]];
+                    jParameterData = jParameter.data;
+
+                    if ((typeof jParameterData[i] !== "undefined") && (typeof jParameterData[i + 1] !== "undefined")) {
+                        parameters[j] = (jParameterData[i] * y + jParameterData[i + 1] * t) + jParameter.units;
+                    } else {
+                        parameters[j] = jParameterData[jParameterData.length - 1] + jParameter.units;
                     }
+
                 }
-                return [
-                    p0[0]*(y*y*y)+p1[0]*(y*y*t*3)+p2[0]*(y*t*t*3)+p3[0]*(t*t*t),
-                    p0[1]*(y*y*y)+p1[1]*(y*y*t*3)+p2[1]*(y*t*t*3)+p3[1]*(t*t*t),
-                    p0[2]*(y*y*y)+p1[2]*(y*y*t*3)+p2[2]*(y*t*t*3)+p3[2]*(t*t*t),
-                    parameters
-                ];
-            } else {
-                return null;
+
+                position.push(p0[0]*(y*y*y)+p1[0]*(y*y*t*3)+p2[0]*(y*t*t*3)+p3[0]*(t*t*t));
+                position.push(p0[1]*(y*y*y)+p1[1]*(y*y*t*3)+p2[1]*(y*t*t*3)+p3[1]*(t*t*t));
+                position.push(p0[2]*(y*y*y)+p1[2]*(y*y*t*3)+p2[2]*(y*t*t*3)+p3[2]*(t*t*t));
+                position.push(parameters);
+
             }
+
+            return position;
         }
     },
 
@@ -279,7 +291,7 @@ var Montage = require("montage").Montage,
 
                 if (D > epsilon) {
                     var sqD = Math.sqrt(D);
-                    
+
                     return [this.cubeRoot(R + sqD) + this.cubeRoot(R - sqD) + A * (-1 / 3)];
                 } else {
                     if (D > -epsilon) {
@@ -287,7 +299,7 @@ var Montage = require("montage").Montage,
                             var S = this.cubeRoot(R),
                                 r1 = S * 2 + A * (-1 / 3),
                                 r2 = A * (-1 / 3) - S;
-                            
+
                             if (r1 < r2) {
                                 return [r1, r2];
                             } else {
