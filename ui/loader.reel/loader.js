@@ -438,9 +438,31 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
         }
     },
 
+/**
+    Boolean that specifies whether to remove the loading content when load is completed
+*/
+    removeContentOnLoad: {
+        value: true
+    },
+
+    _forceContentRemoval: {
+        enumerable: false,
+        value: false
+    },
+
     _contentToRemove: {
         enumerable: false,
         value: null
+    },
+
+/**
+    Forces a manual removal of loading content
+*/
+    removeContent: {
+        value: function() {
+            this._forceContentRemoval = true;
+            this.needsDraw = true;
+        }
     },
 
     draw: {
@@ -464,9 +486,11 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 this.element.classList.remove(BOOTSTRAPPING_CLASS_NAME);
                 this.element.classList.remove(LOADING_CLASS_NAME);
 
-                this._contentToRemove.extractContents();
-                this._contentToRemove.detach();
-                this._contentToRemove = null;
+                if(this.removeContentOnLoad || this._forceContentRemoval) {
+                    this._contentToRemove.extractContents();
+                    this._contentToRemove.detach();
+                    this._contentToRemove = null;
+                }
 
                 this.element.classList.add(LOADED_CLASS_NAME);
             }
