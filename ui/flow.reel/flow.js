@@ -667,7 +667,6 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (this._isTransitioningScroll) {
                 time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds; // TODO: division by zero
                 interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
-
                 if (time < 1) {
                     this.scroll = this._scrollingOrigin + (this._scrollingDestination - this._scrollingOrigin) * interpolant;
                 } else {
@@ -678,12 +677,10 @@ var Flow = exports.Flow = Montage.create(Component, {
             this._width = this._element.offsetWidth;
             this._height = this._element.offsetHeight;
             if (this.splinePaths.length) {
-//<<<<<<< HEAD
                 mod = this._numberOfIterations % this._paths.length;
                 div = (this._numberOfIterations - mod) / this._paths.length;
                 for (k = 0; k < this._paths.length; k++) {
                     iterations = div + ((k < mod) ? 1 : 0);
-                    //intersections = this._computeVisibleRange(this.splinePaths[k]);
                     intersections = this._intersections.wipe();
                     this._computeVisibleRange(this.splinePaths[k], intersections);
                     offset =  this._scroll - this._paths[k].headOffset;
@@ -703,20 +700,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                         }
                     }
                 }
-                //this._updateIndexMap2(this._repetition.indexMap, newIndexMap);
                 this._updateIndexMap2(this._repetition.indexMap, newIndexMap, newIndexesHash);
-                //console.log(""+newIndexMap);
-/*=======
-                
-                for (i = 0; i < intersections.length; i++) {
-                    for (j = Math.ceil(intersections[i][0] + this._scroll); j < intersections[i][1] + this._scroll; j++) {
-                        
-                        newIndexMap.push(j);
-                    }
-                }
-
-                
->>>>>>> mike/flow*/
             }
         }
     },

@@ -1700,6 +1700,8 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 if (requestAnimationFrame) {
                     this.requestedAnimationFrame = requestAnimationFrame.call(window, _drawTree);
                 } else {
+                    // Shim based in Erik Möller's code at
+                    // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
                     var currentDate = Date.now(),
                         miliseconds = 16 - currentDate + this._previousDrawDate;
                     
