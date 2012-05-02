@@ -356,7 +356,9 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                     if (this.hasChangeDependencies) {
                         target.removePropertyChangeListener(propertyName, this);
                     }
-                    delete descriptor.dependentDescriptorsIndex[this.uuid];
+                    if (descriptor) {
+                        delete descriptor.dependentDescriptorsIndex[this.uuid];
+                    }
                 }
                 dependencies.length = 0;
             }
