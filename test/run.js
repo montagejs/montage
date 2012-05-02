@@ -43,6 +43,7 @@ if (spec) {
         "core/promise-queue-spec",
         "core/promise-connection-spec",
         "core/next-tick-spec",
+        "core/selector-spec",
 
         "data/blueprint-spec",
         "data/context-spec",
@@ -76,6 +77,8 @@ if (spec) {
         "ui/composer-spec",
         "ui/composer/translate-composer-spec",
         "ui/dom-spec",
+        "ui/dynamic-element-spec",
+        "ui/dynamic-text-spec",
         "ui/firstdraw-spec",
         "ui/scroller-spec",
         "ui/list-spec",

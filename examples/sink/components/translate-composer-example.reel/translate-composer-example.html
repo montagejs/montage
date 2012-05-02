@@ -137,7 +137,7 @@
         <option value="vertical">Vertical</option>
     </select>
     <div>
-        <label for="cb1"><input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" /> Momentum </label>
+        <label for="cb1"><input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" id="cb1" /> Momentum </label>
     </div>
     <code>translateX: <span data-montage-id="x_value"></span></code>
     <code>translateY: <span data-montage-id="y_value"></span></code>
@@ -161,7 +161,7 @@
         &lt;option value="vertical"&gt;Vertical&lt;/option&gt;
     &lt;/select&gt;
     &lt;div&gt;
-        &lt;label for="cb1"&gt;&lt;input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" /&gt; Momentum &lt;/label&gt;
+        &lt;label for="cb1"&gt;&lt;input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" id="cb1" /&gt; Momentum &lt;/label&gt;
     &lt;/div&gt;
     &lt;code&gt;translateX: &lt;span data-montage-id="x_value"&gt;&lt;/span&gt;&lt;/code&gt;
     &lt;code&gt;translateY: &lt;span data-montage-id="y_value"&gt;&lt;/span&gt;&lt;/code&gt;
@@ -189,8 +189,7 @@
     },
 
     "example": {
-        "name": "DynamicText",
-        "module": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {"#": "example"},
             "value": "Drag me"
@@ -279,6 +278,9 @@
                             </li>
                         </ul>
                     </section>
-</body>
+            <section>
+               <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/translate-composer-example.reel" target="_blank">View source on GitHub</a>
+           </section>
         </div>
+</body>
 </html>
