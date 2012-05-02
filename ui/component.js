@@ -1668,6 +1668,11 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     Description TODO
     @function
     */
+    _previousDrawDate: {
+        enumerable: false,
+        value: 0
+    },
+    
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -1695,8 +1700,14 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 if (requestAnimationFrame) {
                     this.requestedAnimationFrame = requestAnimationFrame.call(window, _drawTree);
                 } else {
-                    //1000/17 = 60fps
-                    this.requestedAnimationFrame = setTimeout(_drawTree, 16);
+                    var currentDate = Date.now(),
+                        miliseconds = 16 - currentDate + this._previousDrawDate;
+                    
+                    if (miliseconds < 0) {
+                        miliseconds = 0;
+                    }
+                    this.requestedAnimationFrame = setTimeout(_drawTree, miliseconds);
+                    this._previousDrawDate = currentDate + miliseconds;
                 }
                 this._scheduleComposerRequest = false;
             }
