@@ -18,7 +18,7 @@ var KEY_KEY = "_",
     DEFAULT_MESSAGE_KEY = "_default";
 
 // TODO create with the correct locale
-var messageFormatter = new MessageFormat("en");
+var messageFormat = exports.messageFormat = new MessageFormat("en");
 
 /**
     @class module:montage/core/localization.Localization
@@ -38,6 +38,13 @@ var Localization = exports.Localization = Montage.create(Montage, /** @lends mod
     @extends module:montage/core/core.Montage
 */
 var MessageVariables = Montage.create(Montage, /** @lends module:montage/core/localization.MessageVariables# */{
+    /**
+        Initialize the object.
+
+        @function
+        @param {MessageLocalizer} messageLocalizer
+        @returns {MessageVariables} The MessageVariables object it was called on
+    */
     init: {
         value: function(messageLocalizer) {
             this._localizer = messageLocalizer;
@@ -71,22 +78,30 @@ var MessageVariables = Montage.create(Montage, /** @lends module:montage/core/lo
         }
     }
 });
-var MessageLocalizer = Montage.create(Montage, {
+/**
+    <p>Provides an easy way to use bindings to localize a message.</p>
+
+    <p></p>
+
+    @class module:montage/core/localization.MessageLocalizer
+    @extends module:montage/core/core.Montage
+*/
+var MessageLocalizer = Montage.create(Montage, /** @lends module:montage/core/localization.MessageLocalizer# */ {
     /**
         Initialize the object.
 
         @function
-        @param messageFormat {MessageFormat} The message format object to use
+        @param {MessageFormat} messageFormat  The message format object to use
         for compiling and localizing the message.
-        @param message {String} The ICU formated message to localize.
-        @param variables {Array[String]} Array of variable names that are
+        @param {String} message The ICU formated message to localize.
+        @param {Array[String]} variables  Array of variable names that are
         needed for the message. These properties must then be bound to.
         @returns {MessageLocalizer} the MessageLocalizer it was called on
     */
     init: {
         value: function(messageFormat, message, variables) {
             this._messageFormat = messageFormat;
-            if (variables) {
+            if (variables && variables.length !== 0) {
                 this.variables = MessageVariables.create().init(this);
                 for (var i = 0, len = variables.length; i < len; i++) {
                     this.variables[variables[i]] = null;
@@ -98,7 +113,7 @@ var MessageLocalizer = Montage.create(Montage, {
     },
 
     /**
-        The localized message.
+        The message localized with all variables replaced.
         @type {String}
         @default null
     */
@@ -134,7 +149,7 @@ var MessageLocalizer = Montage.create(Montage, {
     },
 
     /**
-        Stores all the variables needed for the {@link message}. When any of
+        The variables needed for the {@link message}. When any of
         the properties in this object are set using setProperty (and hence
         through a binding) {@link render} will be called
 
@@ -157,6 +172,7 @@ var MessageLocalizer = Montage.create(Montage, {
     render: {
         value: function() {
             try {
+                // TODO maybe optimise this if there are no variables
                 this.value = this._messageFn(this.variables);
             } catch(e) {
                 console.error(e.message, this._message);
@@ -190,7 +206,7 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
 
         // only set variables here once KEY_KEY and DEFAULT_MESSAGE_KEY have been removed
         variables = Object.keys(desc);
-        var messageLocalizer = MessageLocalizer.create().init(messageFormatter, message, variables);
+        var messageLocalizer = MessageLocalizer.create().init(messageFormat, message, variables);
 
         for (var i = 0, len = variables.length; i < len; i++) {
             var variable = variables[i];
