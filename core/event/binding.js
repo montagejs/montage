@@ -102,7 +102,8 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             exploredPath,
             remainingPath,
             i,
-            localPrevValueCount;
+            localPrevValueCount,
+            valueChanged;
 
         if (target !== bindingOrigin) {
             //the left and the right are different objects; easy enough
@@ -181,15 +182,21 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                     boundObjectValue = this.bindingDescriptor.converter.convert(boundObjectValue);
                 }
 
-                if (this.bindingOriginValueDeferred === true || bindingOrigin._bindingsDisabled) {
-                    this.deferredValue = boundObjectValue;
-                    this.deferredValueTarget = "bound";
-                } else {
-                    // Make the original event available to the setter
-                    this.bindingOrigin.setProperty.changeEvent = event;
-                    // Set the value on the LEFT side now
-                    this.bindingOrigin.setProperty(this.bindingPropertyPath, boundObjectValue);
-                    this.bindingOrigin.setProperty.changeEvent = null;
+                // If the the value about to be pushed over to the bindingOrigin is already there don't call the setter
+                valueChanged = boundObjectValue !== event.plus ?
+                    (this.bindingOrigin.getProperty(this.bindingPropertyPath) !== boundObjectValue) : true;
+
+                if (valueChanged) {
+                    if (this.bindingOriginValueDeferred === true || bindingOrigin._bindingsDisabled) {
+                        this.deferredValue = boundObjectValue;
+                        this.deferredValueTarget = "bound";
+                    } else {
+                        // Make the original event available to the setter
+                        this.bindingOrigin.setProperty.changeEvent = event;
+                        // Set the value on the LEFT side now
+                        this.bindingOrigin.setProperty(this.bindingPropertyPath, boundObjectValue);
+                        this.bindingOrigin.setProperty.changeEvent = null;
+                    }
                 }
             }
             // Otherwise, there was probably a listener for a change at this path that was not a part of some binding
