@@ -1,0 +1,403 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+var PropertyLanguage = require('montage/core/selector/property-language').PropertyLanguage;
+var Selector = require('montage/core/selector').Selector;
+
+describe('core/selector/property-spec', function () {
+
+    function describeParsing(expectSyntax) {
+
+        describe('properties', function() {
+
+            it('makes syntax tree for "a"', function () {
+                expectSyntax('a').toEqual({
+                    type: 'get',
+                    args: [
+                        {type: 'value'},
+                        {type: 'literal', value: 'a'}
+                    ]
+                });
+            });
+
+            it('makes syntax tree for "a.b"', function () {
+                expectSyntax('a.b').toEqual({
+                    type: 'get',
+                    args: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'a'}
+                            ]
+                        },
+                        {type: 'literal', value: 'b'}
+                    ]
+                })
+            });
+
+        });
+
+        describe('indicies', function() {
+
+            it('makes syntax tree for "array.0"', function () {
+                expectSyntax('array.0').toEqual({
+                    type: 'get',
+                    args: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'array'}
+                            ]
+                        },
+                        {type: 'literal', value: 0}
+                    ]
+                })
+            });
+
+        });
+
+        describe('mapped properties', function () {
+
+            it('parses *', function () {
+                expectSyntax('*').toEqual({
+                    type: 'map',
+                    args: [
+                        {type: 'value'},
+                        {type: 'value'}
+                    ]
+                });
+            });
+
+            it('parses array.*', function () {
+                expectSyntax('array.*').toEqual({
+                    type: 'map',
+                    args: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'array'}
+                            ]
+                        },
+                        {type: 'value'}
+                    ]
+                });
+            });
+
+            it('parses array.*.foo', function () {
+                expectSyntax('array.*.foo').toEqual({
+                    type: 'map',
+                    args: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'array'}
+                            ]
+                        },
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'foo'}
+                            ]
+                        }
+                    ]
+                });
+            });
+
+        });
+
+        describe('functions', function () {
+
+            it('parses sorted()', function () {
+                expectSyntax('sorted()').toEqual({
+                    type: 'sorted',
+                    args: [
+                        {type: 'value'},
+                        {type: 'value'},
+                        {type: 'literal', value: false}
+                    ]
+                });
+            });
+
+            it('parses array.sorted() from the array property', function () {
+                expectSyntax('array.sorted()').toEqual({
+                    type: 'sorted',
+                    args: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'array'}
+                            ]
+                        },
+                        {type: 'value'},
+                        {type: 'literal', value: false}
+                    ]
+                });
+            });
+
+            it('parses unique(foo) with a property to map', function () {
+                expectSyntax('array.unique(foo)').toEqual({
+                    type: 'unique',
+                    args: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'array'}
+                            ]
+                        },
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'foo'}
+                            ]
+                        }
+                    ]
+                });
+            });
+
+        });
+
+        describe('arrays', function () {
+
+            it('parses duple with properties', function () {
+                expectSyntax('(a,b)').toEqual({
+                    type: 'array',
+                    terms: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'a'}
+                            ]
+                        },
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 'b'}
+                            ]
+                        }
+                    ]
+                })
+            });
+
+            it('parses triple of indicies', function () {
+                expectSyntax('10,20,30').toEqual({
+                    type: 'array',
+                    terms: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 10}
+                            ]
+                        },
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 20}
+                            ]
+                        },
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 30}
+                            ]
+                        }
+                    ]
+                })
+            });
+
+            it('parses a 1-uple', function () {
+                expectSyntax('(10,)').toEqual({
+                    type: 'array',
+                    terms: [
+                        {
+                            type: 'get',
+                            args: [
+                                {type: 'value'},
+                                {type: 'literal', value: 10}
+                            ]
+                        }
+                    ]
+                })
+            });
+
+            it('parses a 0-uple', function () {
+                expectSyntax('()').toEqual({
+                    type: 'array',
+                    terms: []
+                })
+            });
+
+        });
+
+    }
+
+    function describeEvaluation(expectEvaluation) {
+
+        describe('properties', function() {
+
+            it('evaluates a property of an object', function () {
+                expectEvaluation('a', {a: 10}).toEqual(10);
+            });
+
+            it('traverses a property path', function () {
+                expectEvaluation('a.b', {a: {b: 10}}).toEqual(10);
+            });
+
+            it('handles null properties', function () {
+                expectEvaluation('a.b', {a: 10}).toEqual(undefined);
+            });
+
+        });
+
+        describe('indicies', function() {
+            it('evaluates a zero index of an array', function () {
+                expectEvaluation('0', ['a']).toEqual('a');
+            });
+        });
+
+        describe('functions', function () {
+
+            describe('count()', function () {
+                it('is accurate', function () {
+                    expectEvaluation("count()", [
+                        'a', 'b', 'c'
+                    ]).toEqual(3);
+                });
+            });
+
+            describe('average()', function () {
+                it('is accurate', function () {
+                    expectEvaluation("average()", [
+                        2, 2, 4, 4
+                    ]).toEqual(3);
+                });
+            });
+
+            describe('unique()', function () {
+                it('is accurate', function () {
+                    expectEvaluation("unique()", [
+                        2, 2, 4, 4
+                    ]).toEqual([2, 4]);
+                });
+            });
+
+        });
+
+        describe('arrays', function () {
+
+            it('evaluates a duple of properties', function () {
+                expectEvaluation('(a,b)', {
+                    a: 10,
+                    b: 20
+                }).toEqual([
+                    10,
+                    20
+                ]);
+            });
+
+        });
+
+    }
+
+    describe('PropertyLanguage', function () {
+
+        describe('tokenize', function () {
+
+            it('returns tokens of "a.b"', function () {
+                expect(PropertyLanguage.tokenize('a.b')).toEqual([
+                    {type: 'literal', value: 'a'},
+                    {type: 'literal', value: 'b'},
+                ]);
+            });
+
+            it('emits tokens of "a.b"', function () {
+                var tokens = [];
+                PropertyLanguage.tokenize('a.b', function (token) {
+                    tokens.push(token);
+                });
+                expect(tokens).toEqual([
+                    {type: 'literal', value: 'a'},
+                    {type: 'literal', value: 'b'},
+                ]);
+            });
+
+        });
+
+        describe('parse', function () {
+            describeParsing(function (input) {
+                return expect(PropertyLanguage.parse(input));
+            });
+        });
+
+        describe('evaluate', function () {
+            describeEvaluation(function (expression, value) {
+                return expect(PropertyLanguage.evaluate(expression, value));
+            });
+        });
+
+    });
+
+    describe('Selector.property', function () {
+
+        describe('tokens', function () {
+
+            it('merges property tokens with surrounding syntax', function () {
+                expect(Selector.property('a.b').equals('c').tokens).toEqual([
+                    {type: 'get'},
+                    {type: 'literal', value: 'a'},
+                    {type: 'get'},
+                    {type: 'literal', value: 'b'},
+                    {type: 'equals'},
+                    {type: 'literal', value: 'c'},
+                ]);
+            });
+
+            it('produces tokens of sorted()', function () {
+                expect(Selector.property('sorted()').tokens).toEqual([
+                    {type: 'begin'},
+                    {type: 'sorted'},
+                    {type: 'by'},
+                    {type: 'end'}
+                ]);
+            });
+
+
+        });
+
+        describe('parse', function () {
+            describeParsing(function (input) {
+                return expect(Selector.property(input).syntax);
+            });
+        });
+
+        describe('compile', function () {
+            describeEvaluation(function (expression, value, parameters) {
+                return expect(Selector.property(expression).compile()(value, parameters));
+            });
+        });
+
+        describe('evaluate', function () {
+            describeEvaluation(function (expression, value, parameters) {
+                return expect(Selector.property(expression).evaluate(value, parameters));
+            });
+        });
+
+    });
+
+});
+
