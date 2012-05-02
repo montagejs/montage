@@ -5,10 +5,10 @@
  </copyright> */
 /*global require,exports,describe,it,expect,waitsFor,runs */
 var Montage = require("montage").Montage,
-    Localization = require("montage/core/localization"),
+    Localizer = require("montage/core/localizer"),
     Deserializer = require("montage/core/deserializer").Deserializer;
 
-describe("core/localization-spec", function() {
+describe("core/localizer-spec", function() {
 
     function testDeserializer(object, callback) {
         var deserializer = Deserializer.create(),
@@ -98,6 +98,6 @@ describe("core/localization-spec", function() {
         });
     });
 
-    describe("Localization", function(){
+    describe("Localizer", function(){
     });
 });

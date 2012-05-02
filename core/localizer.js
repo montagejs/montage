@@ -5,13 +5,13 @@
  </copyright> */
 /*global require,exports */
 /**
-    @module montage/core/localization
+    @module montage/core/localizer
     @requires montage/core/core
     TODO
 */
 var Montage = require("montage").Montage,
     MessageFormat = require("core/messageformat"),
-    logger = require("core/logger").logger("localization"),
+    logger = require("core/logger").logger("localizer"),
     Deserializer = require("core/deserializer").Deserializer;
 
 var KEY_KEY = "_",
@@ -21,10 +21,10 @@ var KEY_KEY = "_",
 var messageFormat = exports.messageFormat = new MessageFormat("en");
 
 /**
-    @class module:montage/core/localization.Localization
+    @class module:montage/core/localizer.Localizer
     @extends module:montage/core/core.Montage
 */
-var Localization = exports.Localization = Montage.create(Montage, /** @lends module:montage/core/localization.Localization# */ {
+var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:montage/core/localizer.Localizer# */ {
 
 });
 
@@ -34,10 +34,10 @@ var Localization = exports.Localization = Montage.create(Montage, /** @lends mod
     When any of the properties in this object are set using setProperty (and
     hence through a binding) {@link render} will be called.
 
-    @class module:montage/core/localization.MessageVariables
+    @class module:montage/core/localizer.MessageVariables
     @extends module:montage/core/core.Montage
 */
-var MessageVariables = Montage.create(Montage, /** @lends module:montage/core/localization.MessageVariables# */{
+var MessageVariables = Montage.create(Montage, /** @lends module:montage/core/localizer.MessageVariables# */{
     /**
         Initialize the object.
 
@@ -83,10 +83,10 @@ var MessageVariables = Montage.create(Montage, /** @lends module:montage/core/lo
 
     <p></p>
 
-    @class module:montage/core/localization.MessageLocalizer
+    @class module:montage/core/localizer.MessageLocalizer
     @extends module:montage/core/core.Montage
 */
-var MessageLocalizer = Montage.create(Montage, /** @lends module:montage/core/localization.MessageLocalizer# */ {
+var MessageLocalizer = Montage.create(Montage, /** @lends module:montage/core/localizer.MessageLocalizer# */ {
     /**
         Initialize the object.
 
