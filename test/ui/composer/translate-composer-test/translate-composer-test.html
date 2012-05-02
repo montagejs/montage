@@ -17,6 +17,8 @@
             "component": {"@": "example"},
             "maxTranslateX": 350,
             "maxTranslateY": 350,
+            "minTranslateX": 20,
+            "minTranslateY": -40,
             "hasMomentum": false
         }
     },
@@ -68,6 +70,11 @@
 </head>
 <body>
     <h1>Translate Composer test</h1>
+
+    <p>
+    The box can be taken 40px off the top, and must stay 20px from the right
+    hand side.
+    </p>
 
     <div class="wrap">
         <div class="mover" data-montage-id="example">something</div>

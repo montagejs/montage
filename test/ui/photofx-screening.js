@@ -32,36 +32,36 @@ agent.wait(2000);
 assertEqual(0, scrollerComponent.getProperty("scrollX"));
 
 //Verify initial toggle settings
-assertEqual("OFF",agent.element("//*[@id='invertToggle']").getText());
-assertEqual("OFF",agent.element("//*[@id='desaturateToggle']").getText());
-assertEqual("OFF",agent.element("//*[@id='toggle']").getText());
+assertEqual("OFF",agent.element("//*[@data-montage-id='invertToggle']").getText());
+assertEqual("OFF",agent.element("//*[@data-montage-id='desaturateToggle']").getText());
+assertEqual("OFF",agent.element("//*[@data-montage-id='toggle']").getText());
 assertEqual("1",agent.element("/HTML/BODY/DIV/DIV[3]/UL/LI[3]/DIV/DIV[1]/DIV").getText());
 
 //Remove an image
-agent.element("//*[@id='content']/DIV/DIV[4]/IMG").click();
-agent.element("//*[@id='removePhotoButton']").click(Mouse.LEFT,84,13);
-assertFalse (agent.doesElementExist("//*[@id='content']/DIV/DIV[4]/IMG"));
+agent.element("//*[@data-montage-id='content']/DIV/DIV[4]/IMG").click();
+agent.element("//*[@data-montage-id='removePhotoButton']").click(Mouse.LEFT,84,13);
+assertFalse (agent.doesElementExist("//*[@data-montage-id='content']/DIV/DIV[4]/IMG"));
 
-agent.element("//*[@id='undoButton']").click();
+agent.element("//*[@data-montage-id='undoButton']").click();
 agent.wait(2000);
-assertTrue (agent.doesElementExist("//*[@id='content']/DIV/DIV[4]/IMG"));
+assertTrue (agent.doesElementExist("//*[@data-montage-id='content']/DIV/DIV[4]/IMG"));
 
-agent.element("//*[@id='redoButton']").click(Mouse.LEFT,144,16);
+agent.element("//*[@data-montage-id='redoButton']").click(Mouse.LEFT,144,16);
 agent.wait(2000);
 
-assertFalse (agent.doesElementExist("//*[@id='content']/DIV/DIV[4]/IMG"));
+assertFalse (agent.doesElementExist("//*[@data-montage-id='content']/DIV/DIV[4]/IMG"));
 
 agent.refresh();
 agent.wait(2000);
 
 //Declare variables (after refresh)
 
-var invertToggle = agent.element("//*[@id='invertToggle']");
-var desaturateToggle = agent.element("//*[@id='desaturateToggle']");
-var toggle = agent.element("//*[@id='toggle']");
-var toggleControlsButton = agent.element("//*[@id='toggleControlsButton']");
-var UndoButton = agent.element("//*[@id='undoButton']");
-var redoButton = agent.element("//*[@id='redoButton']");
+var invertToggle = agent.element("//*[@data-montage-id='invertToggle']");
+var desaturateToggle = agent.element("//*[@data-montage-id='desaturateToggle']");
+var toggle = agent.element("//*[@data-montage-id='toggle']");
+var toggleControlsButton = agent.element("//*[@data-montage-id='toggleControlsButton']");
+var UndoButton = agent.element("//*[@data-montage-id='undoButton']");
+var redoButton = agent.element("//*[@data-montage-id='redoButton']");
 var multValue = agent.element("/HTML/BODY/DIV/DIV[3]/UL/LI[3]/DIV/DIV[1]/DIV");
 
 var R1_el = agent.element("/html/body/div/div[3]/div[1]/div/div[1]/div[2]/div/div/dl/dd[1]");
@@ -89,16 +89,16 @@ var X4_el = agent.element("/html/body/div/div[3]/div[1]/div/div[4]/div[3]/div/di
 var Y4_el = agent.element("/html/body/div/div[3]/div[1]/div/div[4]/div[3]/div/div/dl/dd[2]");
 
 
-assertFalse (agent.doesElementExist("//*[@id='content']/DIV/DIV[4]/IMG"));
+assertFalse (agent.doesElementExist("//*[@data-montage-id='content']/DIV/DIV[4]/IMG"));
 
 
 //Add an image
-agent.element("//*[@id='addPhotosButton']").click();
+agent.element("//*[@data-montage-id='addPhotosButton']").click();
 agent.wait(2000);
-agent.element("//*[@id='searchButton']").click();
+agent.element("//*[@data-montage-id='searchButton']").click();
 agent.wait(2000);
 
-var imgListComponent = agent.component("//*[@id='popup-wrapper']/DIV/DIV/DIV/DIV[2]/DIV");
+var imgListComponent = agent.component("//*[@data-montage-id='popup-wrapper']/DIV/DIV/DIV/DIV[2]/DIV");
 assertEqual(0, imgListComponent.getProperty("scrollY"));
 
 agent.mouseDown(519,429);
@@ -110,13 +110,13 @@ agent.wait(2000);
 assertEqual(0, imgListComponent.getProperty("scrollY"));
 
 
-agent.element("//*[@id='addPhotoButton']").click(Mouse.LEFT,25,16);
+agent.element("//*[@data-montage-id='addPhotoButton']").click(Mouse.LEFT,25,16);
 agent.wait(2000);
 
-assertTrue (agent.doesElementExist("//*[@id='alreadyAddedNotice']"));
+assertTrue (agent.doesElementExist("//*[@data-montage-id='alreadyAddedNotice']"));
 agent.wait (2000);
 
-assertTrue (agent.doesElementExist("//*[@id='content']/DIV/DIV[4]/IMG"));
+assertTrue (agent.doesElementExist("//*[@data-montage-id='content']/DIV/DIV[4]/IMG"));
 
 //Test 'pencil' icon
 assertEqual ("PhotoFX main showControls", agent.element("/html/body/div").getAttribute("class"));
@@ -142,20 +142,20 @@ assertEqual("1",multValue.getText());
 assertEqual ("btn RedoButton", redoButton.getAttribute("class"));
 assertEqual ("btn UndoButton disabled", UndoButton.getAttribute("class"));
 
-agent.element("//*[@id='redoButton']").click();
+agent.element("//*[@data-montage-id='redoButton']").click();
 assertEqual("20",multValue.getText());
 assertEqual ("btn RedoButton disabled", redoButton.getAttribute("class"));
 assertEqual ("btn UndoButton", UndoButton.getAttribute("class"));
 
-agent.element("//*[@id='undoButton']").click();
+agent.element("//*[@data-montage-id='undoButton']").click();
 assertEqual("1",multValue.getText());
 assertEqual ("btn RedoButton", redoButton.getAttribute("class"));
 assertEqual ("btn UndoButton disabled", UndoButton.getAttribute("class"));
 
 //Select an image
-agent.element("//*[@id='content']/div/div[2]/img").click();
-var img = agent.element("//*[@id='content']/div/div[2]/img").getAttribute("src");
-assertEqual (img, agent.element("//*[@id='image']").getAttribute("src"));
+agent.element("//*[@data-montage-id='content']/div/div[2]/img").click();
+var img = agent.element("//*[@data-montage-id='content']/div/div[2]/img").getAttribute("src");
+assertEqual (img, agent.element("//*[@data-montage-id='image']").getAttribute("src"));
 
 agent.setWindowSize(1356, 981);
 
@@ -1478,9 +1478,9 @@ assertEqual(Y4_invOFF_desON, Y4_el.getText());
 
 
 //Select different image
-agent.element("//*[@id='content']/div/div[1]/img").click();
-var img2 = agent.element("//*[@id='content']/div/div[1]/img").getAttribute("src");
-assertEqual (img2, agent.element("//*[@id='image']").getAttribute("src"));
+agent.element("//*[@data-montage-id='content']/div/div[1]/img").click();
+var img2 = agent.element("//*[@data-montage-id='content']/div/div[1]/img").getAttribute("src");
+assertEqual (img2, agent.element("//*[@data-montage-id='image']").getAttribute("src"));
 
 assertEqual("ON",desaturateToggle.getText());
 
@@ -1489,9 +1489,9 @@ assertEqual("ON",desaturateToggle.getText());
 agent.refresh();
 agent.wait(2000);
 
-assertEqual("OFF",agent.element("//*[@id='invertToggle']").getText());
-assertEqual("OFF",agent.element("//*[@id='desaturateToggle']").getText());
-assertEqual("OFF",agent.element("//*[@id='toggle']").getText());
+assertEqual("OFF",agent.element("//*[@data-montage-id='invertToggle']").getText());
+assertEqual("OFF",agent.element("//*[@data-montage-id='desaturateToggle']").getText());
+assertEqual("OFF",agent.element("//*[@data-montage-id='toggle']").getText());
 assertEqual("1",agent.element("/HTML/BODY/DIV/DIV[3]/UL/LI[3]/DIV/DIV[1]/DIV").getText());
 
 assertEqual("", agent.element("/html/body/div/div[3]/div[1]/div/div[1]/div[2]/div/div/dl/dd[1]").getText());
@@ -1518,4 +1518,4 @@ assertEqual("", agent.element("/html/body/div/div[3]/div[1]/div/div[4]/div[2]/di
 assertEqual("", agent.element("/html/body/div/div[3]/div[1]/div/div[4]/div[3]/div/div/dl/dd[1]").getText());
 assertEqual("", agent.element("/html/body/div/div[3]/div[1]/div/div[4]/div[3]/div/div/dl/dd[2]").getText());
 
-assertEqual (null, agent.element("//*[@id='image']").getAttribute("src"));
+assertEqual (null, agent.element("//*[@data-montage-id='image']").getAttribute("src"));

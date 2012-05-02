@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Autocomplete Results Template</title>
+    <link rel="stylesheet" type="text/css" href="results-list.css">
+
+    <script type="text/montage-serialization">
+{
+
+    "results": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        }
+    },
+    "repetition1": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "repetition1"
+            },
+            "contentController": {"@": "results"},
+            "isSelectionEnabled": true,
+            "orientation": "vertical"
+        },
+        "bindings": {
+            "contentController": {"<-": "@owner.contentController"},
+            "activeIndexes": {"<-": "@owner.activeIndexes"}
+        }
+    },
+
+    "resultItem": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "result-item"}
+        },
+        "bindings": {
+            "value": {"<-": "@repetition1.objectAtCurrentIteration"}
+        }
+    },
+
+    "owner": {
+        "prototype": "montage/ui/autocomplete/results-list.reel",
+        "properties": {
+            "element": {"#": "results-list"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <div data-montage-id="results-list" class="results-list">
+        <ul class="repetition" data-montage-id="repetition1">
+            <li class="result-item" data-montage-id="result-item"></li>
+        </ul>
+    </div>
+
+</body>
+</html>

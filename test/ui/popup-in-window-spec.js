@@ -27,6 +27,7 @@ var testPage = TestPageLoader.queueTest("popup-in-window-test", {newWindow: true
                     testPage.waitForDraw(2);
                     runs(function() {
                         var popupPosition = EventInfo.positionOfElement(test.testPopup.popup.element);
+                        //console.log('popupPosition with 800,600', popupPosition);
                         expect(popupPosition.y).toBe(10);
                     });
                 });
@@ -36,8 +37,9 @@ var testPage = TestPageLoader.queueTest("popup-in-window-test", {newWindow: true
                     runs(function() {
                         var element = test.testPopup.popup.element;
                         popupPosition = EventInfo.positionOfElement(element);
-                        expect(element.offsetHeight).toBe(122);
-                        expect(popupPosition.y).toBe(218);
+                        //console.log('popupPosition with 800,400', popupPosition);
+                        expect(element.offsetHeight).toBe(118);
+                        expect(popupPosition.y).toBe(222);
                     });
                 });
             });

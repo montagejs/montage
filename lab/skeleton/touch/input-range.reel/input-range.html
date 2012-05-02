@@ -16,7 +16,6 @@
         "properties": {
             "component": {"@": "owner"},
             "axis": "horizontal",
-            "hasBouncing": false,
             "hasMomentum": false
         },
         "bindings": {
@@ -37,11 +36,11 @@
         }
     },
     "owner": {
-        "prototype": "montage/ui/skeleton/touch/input-range.reel",
+        "prototype": "montage/lab/skeleton/touch/input-range.reel",
         "properties": {
-            "element": {"#": "slider"},
-            "sliderEl": {"#": "slider"},
-            "handleEl": {"#": "slider-handle"},
+            "element": {"#": "inputRange"},
+            "sliderEl": {"#": "inputRange"},
+            "handleEl": {"#": "inputRangeThumb"},
             "translateComposer": {"@": "translateComposer1"}
         }
 
@@ -51,8 +50,8 @@
 
     </head>
     <body>
-        <span id="slider" class="montage-inputRange">
-            <span id="slider-handle" draggable="true" href="#" class="montage-inputRange-thumb"></span>
+        <span id="inputRange" class="montage-inputRange">
+            <span id="inputRangeThumb" draggable="true" href="#" class="montage-inputRange-thumb"></span>
         </span>
     </body>
 </html>

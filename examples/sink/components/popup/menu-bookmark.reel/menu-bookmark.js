@@ -16,6 +16,16 @@ exports.MenuBookmark = Montage.create(Component, {
         value: 'Information'
     },
 
+    popup: {value: null},
+
+    close: {
+        value: function() {
+            if(this.popup) {
+                this.popup.hide();
+            }
+        }
+    },
+
 
     draw: {
         value: function() {
@@ -62,6 +72,7 @@ exports.MenuBookmark = Montage.create(Component, {
                 this._actionSheetPopup = popup;
             }
             this._actionSheetPopup.show();
+            this.close();
         }
     },
 

@@ -97,7 +97,7 @@
                 "dateConverter": {
                     "prototype": "montage/core/converter/date-converter",
                     "properties": {
-                        "pattern": "MM-dd-yyyy"
+                        "pattern": "yyyy-MM-dd"
                     }
                 },
 
@@ -108,7 +108,8 @@
                         "converter": {"@": "dateConverter"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner.dob"}
+                        "value": {"<<->": "@owner.dob"},
+                        "error": {"->": "@owner.dobError"}
                     }
                 },
                 "dobError": {
@@ -117,11 +118,7 @@
                         "element": {"#": "dobError"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "dob"},
-                            "boundObjectPropertyPath": "errorMessage",
-                            "oneway": "true"
-                        }
+                        "value": {"<-": "@dob.errorMessage"}
                     }
                 },
 
@@ -220,7 +217,7 @@
                           <input type="text" data-montage-id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
 
                          <label for="date1">Date of Birth</label>
-                         <input type="date" data-montage-id="dob" value="" name="dob" pattern=""/>
+                         <input type="date" data-montage-id="dob" value="" name="dob"  />
                          <div data-montage-id="dobError" class="error"></div>
 
                          <div style="margin-top: 10px;">
@@ -502,7 +499,7 @@ exports.InputTextExample = Montage.create(Component, {
 
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/input-text-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/input-text-example.reel" target="_blank">View source on GitHub</a>
             </section>
 
 <!--             <section>

@@ -175,6 +175,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
         }
     },
+    
+    focusOnShow: {
+        value: true
+    },
+    
 /**
     Description TODO
     @function
@@ -365,13 +370,12 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     hide: {
         value: function() {
             //console.log('popup hide', this.element);
-            this._removeEventListeners();
-
             var type = this.type,
                 self = this;
 
             this.application.getPopupSlot(type, this, function(slot) {
-                self.application.returnPopupSlot(type);
+                self._removeEventListeners();
+                //self.application.returnPopupSlot(type);
                 self.displayed = false;
             });
         }
@@ -395,7 +399,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 // look to see if any content is a modal
                 var i, len = activePopups.length;
                 for(i=0; i< len; i++) {
-                    if(activePopups[i].content && activePopups[i].content.modal === true) {
+                    if(activePopups[i].content && activePopups[i].content.modal === true && activePopups[i].content.displayed === true) {
                         count++;
                     }
                 }
@@ -461,7 +465,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
                 this._positionPopup();
                 // focus the content to enable key events such as ENTER/ESC
-                this.content.element.focus();
+                if(this.focusOnShow === true) {
+                    this.content.element.focus();
+                }
 
             } else {
                 if(this.modal === true) {

@@ -21,16 +21,17 @@
                 "prototype": "montage/ui/composer/translate-composer",
                 "properties": {
                     "component": {"@": "owner"},
+                    "minTranslateX": 0,
+                    "minTranslateY": 0,
                     "invertAxis": true
                 },
                 "bindings": {
                     "translateX": {"<<->": "@owner.scrollX"},
                     "translateY": {"<<->": "@owner.scrollY"},
-                    "maxTranslateY": {"<<->": "@owner._maxTranslateY"},
-                    "maxTranslateX": {"<<->": "@owner._maxTranslateX"},
-                    "axis": {"<<->": "@owner.axis"},
-                    "hasBouncing": {"<<->": "@owner.hasBouncing"},
-                    "hasMomentum": {"<<->": "@owner.hasMomentum"}
+                    "maxTranslateX": {"<-": "@owner._maxTranslateX"},
+                    "maxTranslateY": {"<-": "@owner._maxTranslateY"},
+                    "axis": {"<-": "@owner.axis"},
+                    "hasMomentum": {"<-": "@owner.hasMomentum"}
                 },
                 "listeners": [
                     {
