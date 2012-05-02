@@ -29,13 +29,14 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     didCreate: {
         value: function() {
-            this.addPropertyChangeListener("objects", this._onObjectsChange, false);
+            this.addPropertyChangeListener("objects", this);
         }
     },
 
-    _onObjectsChange: {
+    handleChange: {
         enumerable: false,
-        value: function(event) {
+        value: function(notification) {
+            if (notification.isMutation && notification.plus.length != notification.minus.length) {
                 this.selectedIndexes = null;
                 this._mappedObjects = null;
 
@@ -43,6 +44,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                     this._refreshItems();
                 }
             }
+        }
     },
 
 /**
