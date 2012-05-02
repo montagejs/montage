@@ -174,6 +174,25 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                         });
                     });
                 });
+                it("should draw children before parents even if the parents are added during willDraw", function() {
+                    // Draw the components once so that they are fully loaded, then run the test
+                    testPage.test.componentDrawsParent.needsDraw = true;
+                    testPage.test.componentParent.parentHasDrawn = false;
+
+                    spyOn(testPage.test.componentDrawsParent, 'willDraw').andCallFake(function() {
+                        testPage.test.componentDrawsParent.parentComponent.needsDraw = true;
+                    });
+
+                    spyOn(testPage.test.componentParent, 'draw').andCallFake(function() {
+                        testPage.test.componentParent.parentHasDrawn = true;
+                    });
+
+                    spyOn(testPage.test.componentDrawsParent, 'draw').andCallFake(function() {
+                        expect(testPage.test.componentParent.parentHasDrawn).toBeFalsy();
+                    });
+
+                    testPage.waitForDraw();
+                });
             });
 
             describe("component drawing", function() {
@@ -329,7 +348,6 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                     spyOn(testPage.test.componentB2, 'draw').andCallThrough();
                     spyOn(testPage.test.componentB2, 'didDraw').andCallThrough();
                     // trigger test
-                    testPage.test.componentB.allowsPartialDraw = true;
                     testPage.test.componentB.needsDraw = true;
                     testPage.test.componentB1.needsDraw = true;
                     testPage.test.componentB2.needsDraw = true;

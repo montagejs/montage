@@ -101,20 +101,6 @@ exports.Scroller = Montage.create(Component, {
         }
     },
 
-    _hasBouncing: {
-        enumerable: false,
-        value: true
-    },
-
-    hasBouncing: {
-        get: function () {
-            return this._hasBouncing;
-        },
-        set: function (value) {
-            this._hasBouncing = value;
-        }
-    },
-
     _content: {
         enumerable: false,
         value: null
@@ -144,6 +130,13 @@ exports.Scroller = Montage.create(Component, {
     handleTranslateEnd: {
         value: function(event) {
             this._scrollBars.opacity = 0;
+        }
+    },
+
+    canDraw: {
+        value: function() {
+            this.needsDraw = true;
+            return Component.canDraw.apply(this, arguments);
         }
     },
 

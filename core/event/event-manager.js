@@ -332,29 +332,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             this._application = application;
         }
     },
-/**
-    @function
-    @param {String} composer Event composer.
-    @param {Array} eventType Event type array.
-    */
-    registerComposer_forEventType_: {
-        enumerable: false,
-        value: function(composer, eventType) {
-
-            if (!!this._registeredEventComposers[eventType]) {
-                throw "Cannot register composer for eventType:" + eventType + ". Already have one registered.";
-            }
-
-            this._registeredEventComposers[eventType] = composer;
-        }
-    },
-/**
-  @private
-*/
-    _registeredEventComposers: {
-        value: {},
-        enumerable: false
-    },
 
     // Dictionary keyed by event types with the collection of handlers per event type
     // This dictates why the event manager observes events of a particular type
@@ -719,12 +696,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             }
 
-            // Inform any composers about this request if we need to synthesize this eventType
             if (isNewTarget && typeof target.nativeAddEventListener === "function") {
-                if (this._registeredEventComposers[eventType]) {
-                    this._registeredEventComposers[eventType].startObservingTarget_forEventType_(target, eventType);
-                }
-
                 this._observeTarget_forEventType_(target, eventType);
             }
 

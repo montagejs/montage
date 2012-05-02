@@ -8,13 +8,13 @@ agent.gotoUrl(config.montage_url+"/examples/uuid-generator/");
 agent.setWindowSize(927, 974);
 
 //Gererate 4 UUIDs, verify all are unique
-agent.element("//*[@id='generateUuid']").click(Mouse.LEFT,76,29);
+agent.element("//*[@data-montage-id='generateUuid']").click(Mouse.LEFT,76,29);
 agent.wait(1608);
-agent.element("//*[@id='generateUuid']").click(Mouse.LEFT,76,28);
+agent.element("//*[@data-montage-id='generateUuid']").click(Mouse.LEFT,76,28);
 agent.wait(1728);
-agent.element("//*[@id='generateUuid']").click(Mouse.LEFT,76,28);
+agent.element("//*[@data-montage-id='generateUuid']").click(Mouse.LEFT,76,28);
 agent.wait(1448);
-agent.element("//*[@id='generateUuid']").click(Mouse.LEFT,76,28);
+agent.element("//*[@data-montage-id='generateUuid']").click(Mouse.LEFT,76,28);
 
 
 var uuid1 = agent.element("/HTML/BODY/UL/LI[1]/INPUT").getText();

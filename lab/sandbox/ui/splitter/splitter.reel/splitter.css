@@ -1,0 +1,97 @@
+/* @override http://localhost:8082/montage/lab/sandbox/ui/splitter/splitter.reel/splitter.css */
+
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+.montage-splitterRow,
+.montage-splitterCol {
+    /display: -webkit-box; /* old FlexBox */
+    display: -webkit-flexbox;
+    
+    box-sizing: border-box;
+}
+
+.montage-splitterRow {
+    /-webkit-box-orient: horizontal; /* old FlexBox */
+    -webkit-flex-direction: row;
+}
+
+.montage-splitterCol {
+    /-webkit-box-orient: vertical; /* old FlexBox */
+    -webkit-flex-direction: column;
+}
+
+
+/* Children */
+
+.montage-splitter-child {
+    /-webkit-box-flex: 1; /* old FlexBox */
+    -webkit-flex: 1 0 auto;
+    box-sizing: inherit;
+}
+
+
+
+
+
+/* Draggable ---------------------------------- */
+
+
+.montage-splitterRow.montage-splitterDraggable,
+.montage-splitterCol.montage-splitterDraggable {
+    padding: 10px;
+    background-color: #f2f2f2;
+}
+
+/* Reset child that gets used as a new draggable parent */
+.montage-splitterDraggable > .montage-splitter-child.montage-splitterDraggable,
+.montage-splitterDraggable > .montage-splitter-child.montage-splitterDraggable {
+    padding: 0;
+}
+
+.montage-splitterDraggable > .montage-splitter-child {
+    border: 1px solid #b3b3b3;
+    background-color: white;
+}
+
+/* Reset child that gets used as a new parent */
+.montage-splitterDraggable > .montage-splitterDraggable {
+    border: none;
+    background: none;
+}
+
+
+/* Thumb */
+
+.montage-splitter-thumb {
+    -webkit-user-select: none;
+    -webkit-user-drag: element;
+    opacity: .15;
+    background: url(splitter.svg) no-repeat;
+}
+
+.montage-splitter-thumb:hover {
+    opacity: .3;
+    background-color: hsl(0,0%,70%);
+}
+
+.montage-splitter-thumb:active,
+.montage-splitter-thumb:-webkit-drag {
+    opacity: 1;
+    background-color: hsl(0,0%,90%);
+}
+
+.montage-splitterRow > .montage-splitter-thumb {
+    width: 10px;
+    cursor: col-resize;
+    background-position: -45px center;
+}
+
+.montage-splitterCol > .montage-splitter-thumb {
+    height: 10px;
+    cursor: row-resize;
+    background-position: center -15px;
+}
