@@ -1583,7 +1583,88 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
             composerList.splice(0, length);
         }
+    },
+
+    /**
+        The localizer for this component
+        @type {module:montage/core/localizer.Localizer}
+        @default null
+    */
+    localizer: {
+        value: null
+    },
+
+    _waitForLocalizerMessages: {
+        value: false
+    },
+    /**
+        Whether to wait for the localizer to load messages before drawing.
+        Make sure to set the localizer before setting to <code>true</code>.
+        @type Boolean
+        @default false
+        @example
+// require localizer
+var defaultLocalizer = localizer.defaultLocalizer,
+    _ = localizer.localize;
+
+exports.Main = Montage.create(Component, {
+
+    didCreate: {
+        value: function() {
+            this.localizer = defaultLocalizer;
+            this.waitForLocalizerMessages = true;
+        }
+    },
+
+    // ...
+
+    // no draw happens until the localizer's messages have been loaded
+    prepareForDraw: {
+        value: function() {
+            this._greeting = _("hello", "Hello {name}!");
+        }
+    },
+    draw: {
+        value: function() {
+            // this is for illustration only. This example is simple enough that
+            // you should use a localizations binding
+            this._element.textContent = this._greeting({name: this.name});
+        }
     }
+
+}
+    */
+    waitForLocalizerMessages: {
+        enumerable: false,
+        get: function() {
+            return this._waitForLocalizerMessages;
+        },
+        set: function(value) {
+            if (this._waitForLocalizerMessages !== value) {
+                if (value === true && !this.localizer.messages) {
+                    if (!this.localizer) {
+                        throw "Cannot wait for messages on localizer if it is not set";
+                    }
+
+                    this._waitForLocalizerMessages = true;
+
+                    var self = this;
+                    logger.debug(this, "waiting for messages from localizer");
+                    this.canDrawGate.setField("messages", false);
+
+                    this.localizer.messagesPromise.then(function(messages) {
+                        if (logger.isDebug) {
+                            logger.debug(self, "got messages from localizer");
+                        }
+                        self.canDrawGate.setField("messages", true);
+                    });
+                } else {
+                    this._waitForLocalizerMessages = false;
+                    this.canDrawGate.setField("messages", true);
+                }
+            }
+        }
+    },
 
 });
 
