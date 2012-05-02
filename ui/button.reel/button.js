@@ -242,7 +242,6 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
 
     handleKeyup: {
         value: function(event) {
-            console.log(event.keyCode);
             // action event on spacebar
             if (event.keyCode === 32) {
                 this.active = false;
@@ -317,9 +316,13 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
                 }
             }
 
-            this._element.addEventListener("keyup", this, false);
-
             this.needsDraw = true;
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            this._element.addEventListener("keyup", this, false);
         }
     },
 
