@@ -388,6 +388,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: 500
     },
 
+    startTranslateRadius: {
+        value: 8
+    },
+
     _hasMomentum: {
         enumerable: false,
         value: true
@@ -529,7 +533,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 event.preventDefault();
                 this._move(event.clientX, event.clientY);
             } else {
-                this._analyzeMovement(event.velocity);
+                if (this.axis !== "both") {
+                    this._analyzeMovement(event);
+                } else {
+                    this._stealPointer();
+                    event.preventDefault();
+                    this._move(event.clientX, event.clientY);
+                }
             }
 
         }
@@ -609,7 +619,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                     event.preventDefault();
                     this._move(event.changedTouches[i].clientX, event.changedTouches[i].clientY);
                 } else {
-                    this._analyzeMovement(event.changedTouches[i].velocity);
+                    this._analyzeMovement(event.changedTouches[i]);
                 }
 
             }
@@ -630,7 +640,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _analyzeMovement: {
-        value: function(velocity) {
+        value: function(event) {
+            var velocity = event.velocity;
 
             if (!velocity) {
                 return;
@@ -642,7 +653,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 upperRight = -0.7853981633974483, // 7pi/4
                 isUp, isDown, isRight, isLeft,
                 angle,
-                speed;
+                speed,
+                dX, dY;
 
             speed = velocity.speed;
 
@@ -674,6 +686,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
             } else if (speed >= this.startTranslateSpeed) {
                 this._stealPointer();
+            } else {
+                dX = this.pointerStartEventPosition.pageX - event.pageX;
+                dY = this.pointerStartEventPosition.pageY - event.pageY;
+                if (dX * dX + dY * dY > this.startTranslateRadius * this.startTranslateRadius) {
+                    this._stealPointer();
+                }
             }
 
         }
@@ -867,6 +885,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this.endX = this.startX - (this.momentumX * this.__momentumDuration / 2000);
                 this.endY = this.startY - (this.momentumY * this.__momentumDuration / 2000);
                 this.animateMomentum = true;
+            } else {
+                this.animateMomentum = false;
             }
 
             if (this.animateMomentum) {
