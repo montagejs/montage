@@ -157,6 +157,23 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _stride: {
+        enumerable: false,
+        value: 0
+    },
+
+    stride: {
+        get: function () {
+            return this._stride;
+        },
+        set: function (value) {
+            this._stride = value;
+            if (this._translateComposer) {
+                this._translateComposer.translateStrideX = value * 300;
+            }
+        }
+    },
+
     _scrollingTransitionDurationMiliseconds: {
         enumerable: false,
         value: 500
@@ -561,6 +578,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 self._isCameraUpdated = true;
                 self.needsDraw = true;
             }, false);
+            this._translateComposer.translateStrideX = this._stride * 300;
         }
     },
 

@@ -21,7 +21,9 @@
                 "prototype": "montage/ui/composer/translate-composer",
                 "properties": {
                     "component": {"@": "owner"},
-                    "invertAxis": true
+                    "minTranslateX": 0,
+                    "invertAxis": true,
+                    "allowFloats": true
                 },
                 "bindings": {
                     "element": {"<-": "@owner._element"},
