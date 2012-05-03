@@ -188,13 +188,21 @@ exports.TokenField = Montage.create(Component, {
 
                     break;
 
+
                     case KEY_UP:
-                        this._tokensController.selectedIndexes = [0];
+                        if(selectedIndex != null) {
+                            this._tokensController.selectedIndexes = [0];
+                        }
+
                     break;
 
                     case KEY_DOWN:
-                        this._tokensController.selectedIndexes = [lastIndex];
+                        if(selectedIndex != null) {
+                            this._tokensController.selectedIndexes = [lastIndex];
+                        }
+
                     break;
+
 
                     default:
                         this._tokensController.selectedIndexes = [];
