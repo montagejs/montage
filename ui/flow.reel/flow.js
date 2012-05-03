@@ -37,14 +37,23 @@ var Flow = exports.Flow = Montage.create(Component, {
                 nextHandlers = [],
                 previousHandlers = [],
                 densities = [],
-                i;
+                i, j;
 
+            splinePath.parameters = {};
+            for (i in path.units) {
+                splinePath.parameters[i] = {
+                    data: [],
+                    units: path.units[i]
+                };
+            }
             for (i = 0; i < length; i++) {
                 knots[i] = pathKnots[i].knotPosition;
                 previousHandlers[i] = pathKnots[i].previousHandlerPosition;
                 nextHandlers[i] = pathKnots[i].nextHandlerPosition;
                 densities[i] = pathKnots[i].previousDensity; // TODO: implement previous/next density
-                // TODO: add rotations, arbitrary CSS and units
+                for (j in path.units) {
+                    splinePath.parameters[j].data.push(pathKnots[i][j]);
+                }
             }
             splinePath.knots = knots;
             splinePath.previousHandlers = previousHandlers;

@@ -53,7 +53,7 @@ var Montage = require("montage").Montage,
 
     _parameters: {
         value: {
-            rotateX: {
+/*            rotateX: {
                 data: [0],
                 units: "rad"
             },
@@ -68,14 +68,14 @@ var Montage = require("montage").Montage,
             opacity: {
                 data: [1],
                 units: ""
-            }
+            }*/
         }
     },
 
     parameters: {
         get: function () {
             if (!this._parameters) {
-                this._parameters = [];
+                this._parameters = {};
             }
             return this._parameters;
         },
@@ -194,11 +194,10 @@ var Montage = require("montage").Montage,
                 for (j = 0; j < parameterKeyCount; j++) {
                     jParameter = this._parameters[parameterKeys[j]];
                     jParameterData = jParameter.data;
-
                     if ((typeof jParameterData[i] !== "undefined") && (typeof jParameterData[i + 1] !== "undefined")) {
-                        parameters[j] = (jParameterData[i] * y + jParameterData[i + 1] * t) + jParameter.units;
+                        parameters[parameterKeys[j]] = (jParameterData[i] * y + jParameterData[i + 1] * t) + jParameter.units;
                     } else {
-                        parameters[j] = jParameterData[jParameterData.length - 1] + jParameter.units;
+                        parameters[parameterKeys[j]] = jParameterData[jParameterData.length - 1] + jParameter.units;
                     }
 
                 }
