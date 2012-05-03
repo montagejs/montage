@@ -910,6 +910,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             var activeIndex = this._itemIndexOfElement(event.target);
             if (null !== activeIndex) {
                 this.activeIndexes = [activeIndex];
+            } else {
+                this._ignoreSelectionPointer();
             }
         }
     },
@@ -964,6 +966,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             var activeIndex = this._itemIndexOfElement(event.target);
             if (null !== activeIndex) {
                 this.activeIndexes = [activeIndex];
+            } else {
+                this._ignoreSelectionPointer();
             }
         }
     },
