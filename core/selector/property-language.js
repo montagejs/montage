@@ -111,6 +111,7 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                             return self.primary(function (expression) {
                                 return self.expect(END, function () {
                                     return consequent({
+                                        call: true,
                                         type: token.value,
                                         arg: expression
                                     });
@@ -144,13 +145,34 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
             var self = this;
             var parseSelf = self.precedence(function (parsePrevious) {
                 return function (callback, previous) {
+                    previous = previous || {type: VALUE};
                     return self.parseTerm(function (term) {
-                        var syntax = {
-                            type: term.type,
-                            args: [
-                                previous || {type: VALUE},
-                                term.arg
-                            ]
+                        var syntax;
+                        if (term.call) {
+                            if (term.arg.type !== VALUE) {
+                                previous = {
+                                    type: 'map',
+                                    args: [
+                                        previous,
+                                        term.arg
+                                    ]
+                                };
+                            }
+                            syntax = {
+                                type: term.type,
+                                args: [
+                                    previous,
+                                    {type: 'value'}
+                                ]
+                            }
+                        } else {
+                            syntax = {
+                                type: term.type,
+                                args: [
+                                    previous,
+                                    term.arg
+                                ]
+                            }
                         }
                         if (syntax.type === SORTED) {
                             // ascending
@@ -160,7 +182,10 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                                 value: false
                             })
                         }
-                        if (syntax.type === IT && syntax.args[0].type === VALUE) {
+                        if (
+                            syntax.type === IT &&
+                            syntax.args[0].type === VALUE
+                        ) {
                             syntax = syntax.args[1];
                         }
                         return parseSelf(callback, syntax);
