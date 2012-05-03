@@ -36,6 +36,18 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
         }
     },
 
+    tokenRe: {
+        value: /\(|\)|\d+|\w[\w\d]*|,|\*|\.|./g
+    },
+
+    termStartRe: {
+        value: /[\(\w\d\*]/
+    },
+
+    separatorsRe: {
+        value: /[\(\)\.,]/
+    },
+
     tokenize: {
         value: function (string, emit) {
             var tokens;
@@ -46,24 +58,52 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                 }
             }
             var self = this;
-            string.replace(/{|}|\(|\)|\d+|\w[\w\d]*|,|\*|\.|./g, function (token) {
+            var expectSeparator = false;
+            var expectTermStart = true;
+            var soFar = '';
+            string.replace(self.tokenRe, function (token) {
+                if (expectSeparator) {
+                    if (!self.separatorsRe.test(token)) {
+                        throw new Error(
+                            'Expected punctuation after: ' +
+                            JSON.stringify(soFar) + ", got: " +
+                            JSON.stringify(string.slice(soFar.length))
+                        );
+                    }
+                    expectSeparator = false;
+                }
+                if (expectTermStart) {
+                    if (!self.termStartRe.test(token)) {
+                        throw new Error(
+                            'Expected term after: ' + JSON.stringify(soFar) + ", got: " +
+                            JSON.stringify(string.slice(soFar.length))
+                        );
+                    }
+                }
                 if (token === DOT) {
                     // ignore, used only for delimiting tokens, like a space
+                    expectTermStart = true;
                 } else if (self.stringToToken[token]) {
                     emit(self.stringToToken[token]);
+                    expectTermStart = false;
                 } else if (/^\d+$/.test(token)) {
                     emit({
                         type: LITERAL,
                         value: +token
                     });
+                    expectSeparator = true;
+                    expectTermStart = false;
                 } else if (/^\w[\w\d]*$/.test(token)) {
                     emit({
                         type: LITERAL,
                         value: token
                     });
+                    expectSeparator = true;
+                    expectTermStart = false;
                 } else {
                     throw new Error('Unexpected character: ' + JSON.stringify(token));
                 }
+                soFar += token;
             })
             return tokens;
         }

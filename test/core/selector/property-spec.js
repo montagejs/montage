@@ -430,9 +430,33 @@ describe('core/selector/property-spec', function () {
         });
 
         describe('parse', function () {
+
             describeParsing(function (input) {
                 return expect(Selector.property(input).syntax);
             });
+
+            describe('errors', function () {
+
+                it('should fail to parse "10a"', function () {
+                    expect(function () {
+                        Selector.property('10a');
+                    }).toThrow();
+                });
+
+                it('should fail to parse ".*"', function () {
+                    expect(function () {
+                        console.log(Selector.property('.*').syntax);
+                    }).toThrow();
+                });
+
+                it('should fail to parse "..."', function () {
+                    expect(function () {
+                        console.log(Selector.property('...').syntax);
+                    }).toThrow();
+                });
+
+            });
+
         });
 
         describe('compile', function () {
