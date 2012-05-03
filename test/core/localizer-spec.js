@@ -27,73 +27,119 @@ describe("core/localizer-spec", function() {
     }
 
     describe("serialization", function() {
-        it("requires a key", function() {
-            testDeserializer({
-                test: {
-                    prototype: "montage/ui/dynamic-text.reel",
-                    properties: {
-                        defaultValue: "fail"
-                    },
-                    localizations: {
-                        value: {
-                            "_default": "Hello"
+        describe("localization unit", function() {
+            it("requires a key", function() {
+                testDeserializer({
+                    test: {
+                        prototype: "montage/ui/dynamic-text.reel",
+                        properties: {
+                            defaultValue: "fail"
+                        },
+                        localizations: {
+                            value: {
+                                "_default": "Hello"
+                            }
                         }
                     }
-                }
-            }, function(objects) {
-                var test = objects.test;
-                expect(test.value).not.toBe("Hello");
+                }, function(objects) {
+                    var test = objects.test;
+                    expect(test.value).not.toBe("Hello");
+                });
+            });
+
+            it("creates a binding from the localizer to the object", function() {
+                testDeserializer({
+                    test: {
+                        prototype: "montage/ui/dynamic-text.reel",
+                        properties: {
+                            defaultValue: "fail"
+                        },
+                        localizations: {
+                            value: {
+                                "_": "hello",
+                                "_default": "Hello"
+                            }
+                        }
+                    }
+                }, function(objects) {
+                    var test = objects.test;
+                    expect(test.value).toBe("Hello");
+                    expect(test._bindingDescriptors.value).toBeDefined();
+                });
+            });
+
+            it("accepts variables for the localization", function() {
+                testDeserializer({
+                    input: {
+                        prototype: "montage",
+                        properties: {
+                            "thing": "World"
+                        }
+                    },
+
+                    test: {
+                        prototype: "montage/ui/dynamic-text.reel",
+                        properties: {
+                            defaultValue: "fail"
+                        },
+                        localizations: {
+                            value: {
+                                "_": "hello_thing",
+                                "_default": "Hello {thing}",
+                                "thing": "@input.thing"
+                            }
+                        }
+                    }
+                }, function(objects) {
+                    var test = objects.test;
+                    expect(test.value).toBe("Hello World");
+                    objects.input.thing = "Earth";
+                    expect(test.value).toBe("Hello Earth");
+                });
             });
         });
 
-        it("creates a binding from the localizer to the object", function() {
-            testDeserializer({
-                test: {
-                    prototype: "montage/ui/dynamic-text.reel",
-                    properties: {
-                        defaultValue: "fail"
+        describe("localizer localizeObjects", function() {
+            it("only works on the localizer", function() {
+                testDeserializer({
+                    other: {
+                        value: {x: "pass"}
                     },
-                    localizations: {
-                        value: {
-                            "_": "hello",
-                            "_default": "Hello"
-                        }
+                    localizer: {
+                        prototype: "montage/core/converter/converter",
+                        localizeObjects: [
+                            {
+                                object: {"@": "other"},
+                                "properties": {
+                                    x: "fail"
+                                }
+                            }
+                        ]
                     }
-                }
-            }, function(objects) {
-                var test = objects.test;
-                expect(test.value).toBe("Hello");
-                expect(test._bindingDescriptors.value).toBeDefined();
+                }, function(objects) {
+                    expect(objects.other.x).toBe("pass");
+                });
             });
-        });
 
-        it("accepts variables for the localization", function() {
-            testDeserializer({
-                input: {
-                    prototype: "montage",
-                    properties: {
-                        "thing": "World"
-                    }
-                },
-
-                test: {
-                    prototype: "montage/ui/dynamic-text.reel",
-                    properties: {
-                        defaultValue: "fail"
+            it("can set properties on DOM elements", function() {
+                testDeserializer({
+                    other: {
+                        value: {x: "fail"}
                     },
-                    localizations: {
-                        value: {
-                            "_": "hello_thing",
-                            "_default": "Hello {thing}",
-                            "thing": "@input.thing"
-                        }
+                    localizer: {
+                        object: "montage/core/localizer",
+                        localizeObjects: [
+                            {
+                                object: {"@": "other"},
+                                "properties": {
+                                    x: "pass"
+                                }
+                            }
+                        ]
                     }
-                }
-            }, function(objects) {
-                var test = objects.test;
-                expect(test.value).toBe("Hello World");
-                objects.input.thing = "Earth";
-                expect(test.value).toBe("Hello Earth");
+                }, function(objects) {
+                    expect(objects.other.x).toBe("pass");
+                });
             });
         });
     });

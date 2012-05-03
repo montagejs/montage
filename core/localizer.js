@@ -202,7 +202,7 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
         delete desc[DEFAULT_MESSAGE_KEY];
 
         // TODO look up key
-        var message = defaultMessage;
+        var message = defaultMessage || key;
 
         // only set variables here once KEY_KEY and DEFAULT_MESSAGE_KEY have been removed
         variables = Object.keys(desc);
@@ -225,5 +225,31 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
             boundObjectPropertyPath: "value",
             oneway: true
         });
+    }
+});
+
+Deserializer.defineDeserializationUnit("localizeObjects", function(object, descriptors, deserializer) {
+    var info = Montage.getInfoForObject(object);
+    if (info.module !== "core/localizer" || info.property !== "Localizer") {
+        return;
+    }
+
+    for (var i = 0, len = descriptors.length; i < len; i++) {
+        var obj = descriptors[i].object;
+        var props = descriptors[i].properties;
+
+        for (var prop in props) {
+            var key = props[prop];
+
+            // setting the property true means we use the property's current
+            // value as the key
+            if (key === true) {
+                key = obj[prop];
+            }
+
+            // TODO look up key
+            var message = key;
+            obj[prop] = message;
+        }
     }
 });
