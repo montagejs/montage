@@ -94,8 +94,6 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
 
             var parseTuple = self.parseTuple();
 
-            self.parseLeftToRight(['map']);
-
             self.parseExpression = self.precedence();
 
         }
@@ -124,6 +122,24 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                             });
                         }
                     });
+                } else if (token.type === MAP) {
+                    return self.parseTerm(function (map) {
+                        return consequent({
+                            type: MAP,
+                            arg: {
+                                type: map.type,
+                                args: [
+                                    {type: VALUE},
+                                    map.arg
+                                ]
+                            }
+                        })
+                    }, function () {
+                        return consequent({
+                            type: IT,
+                            arg: {type: VALUE}
+                        })
+                    });
                 } else if (token.type === BEGIN) {
                     return self.parseExpression(function (expression) {
                         return self.expect(END, function () {
@@ -151,7 +167,7 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                         if (term.call) {
                             if (term.arg.type !== VALUE) {
                                 previous = {
-                                    type: 'map',
+                                    type: MAP,
                                     args: [
                                         previous,
                                         term.arg

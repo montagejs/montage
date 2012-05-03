@@ -65,27 +65,7 @@ describe('core/selector/property-spec', function () {
 
             it('parses *', function () {
                 expectSyntax('*').toEqual({
-                    type: 'map',
-                    args: [
-                        {type: 'value'},
-                        {type: 'value'}
-                    ]
-                });
-            });
-
-            it('parses array.*', function () {
-                expectSyntax('array.*').toEqual({
-                    type: 'map',
-                    args: [
-                        {
-                            type: 'get',
-                            args: [
-                                {type: 'value'},
-                                {type: 'literal', value: 'array'}
-                            ]
-                        },
-                        {type: 'value'}
-                    ]
+                    type: 'value'
                 });
             });
 
@@ -320,12 +300,44 @@ describe('core/selector/property-spec', function () {
 
         });
 
-        describe('sum of array', function () {
+        describe('sum', function () {
             it('evaluates', function () {
                 expectEvaluation('sum(foo)', [
                     {foo: 10},
                     {foo: 20}
                 ]).toEqual(30)
+            });
+        });
+
+        describe('sum of array', function () {
+            it('evaluates', function () {
+                expectEvaluation('*.foo.sum()', [
+                    {foo: 10},
+                    {foo: 20}
+                ]).toEqual(30)
+            });
+        });
+
+        describe('sum of array property', function () {
+            it('evaluates', function () {
+                expectEvaluation('array.*.foo.sum()', {
+                    array: [
+                        {foo: 10},
+                        {foo: 20}
+                    ]
+                }).toEqual(30)
+            });
+        });
+
+        describe('map of array with asterisk', function () {
+            it('evaluates', function () {
+                expectEvaluation('*.foo', [
+                    {foo: 10},
+                    {foo: 20}
+                ]).toEqual([
+                    10,
+                    20
+                ])
             });
         });
 
@@ -338,6 +350,15 @@ describe('core/selector/property-spec', function () {
                     10,
                     20
                 ])
+            });
+        });
+
+        describe('map multi-property relation, then sum', function () {
+            it('evaluates', function () {
+                expectEvaluation('*.(foo.bar).sum()', [
+                    {foo: {bar: 10}},
+                    {foo: {bar: 20}}
+                ]).toEqual(30)
             });
         });
 
