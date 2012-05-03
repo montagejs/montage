@@ -148,18 +148,26 @@ describe('core/selector/property-spec', function () {
                     type: 'unique',
                     args: [
                         {
-                            type: 'get',
+                            type: 'map',
                             args: [
-                                {type: 'value'},
-                                {type: 'literal', value: 'array'}
+                                {
+                                    type: 'get',
+                                    args: [
+                                        {type: 'value'},
+                                        {type: 'literal', value: 'array'}
+                                    ]
+                                },
+                                {
+                                    type: 'get',
+                                    args: [
+                                        {type: 'value'},
+                                        {type: 'literal', value: 'foo'}
+                                    ]
+                                }
                             ]
                         },
                         {
-                            type: 'get',
-                            args: [
-                                {type: 'value'},
-                                {type: 'literal', value: 'foo'}
-                            ]
+                            type: 'value'
                         }
                     ]
                 });
@@ -310,6 +318,27 @@ describe('core/selector/property-spec', function () {
                 ]);
             });
 
+        });
+
+        describe('sum of array', function () {
+            it('evaluates', function () {
+                expectEvaluation('sum(foo)', [
+                    {foo: 10},
+                    {foo: 20}
+                ]).toEqual(30)
+            });
+        });
+
+        describe('map of array', function () {
+            it('evaluates', function () {
+                expectEvaluation('map(foo)', [
+                    {foo: 10},
+                    {foo: 20}
+                ]).toEqual([
+                    10,
+                    20
+                ])
+            });
         });
 
     }
