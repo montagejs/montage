@@ -480,7 +480,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
             switch(code) {
                 case KEY_DOWN:
-                if(popup.displayed == false) {
+                if(!popup.displayed) {
                     popup.show();
                     this.activeItemIndex = 0;
                 } else {
@@ -496,7 +496,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 break;
 
                 case KEY_UP:
-                if(popup.displayed == true) {
+                if(popup.displayed === true) {
                     if(this.activeItemIndex > 0) {
                         this.activeItemIndex --;
                     } else {
@@ -507,7 +507,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 break;
 
                 case KEY_ENTER:
-                if(popup.displayed == true) {
+                if(popup.displayed === true) {
                     this.resultsController.selectedIndexes = [this.activeItemIndex];
                     e.preventDefault();
                     // select the currently active item in the results list
