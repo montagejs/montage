@@ -38,6 +38,8 @@ exports.Token = Montage.create(Component, {
 
     tokensController: {value: null},
 
+    // private
+
     __adHoc: {value: null},
     _adHoc: {
         get: function() {
@@ -49,21 +51,15 @@ exports.Token = Montage.create(Component, {
         }
     },
 
-    _pressComposer: {
-        enumberable: false,
-        value: null
-    },
+    _deleteEl: {value: null},
 
-    deleteEl: {value: null},
-
-    prepareForActivationEvents: {
+    prepareForDraw: {
         value: function() {
             if(window.Touch) {
-                this.deleteEl.addEventListener('touchend', this);
+                this._deleteEl.addEventListener('touchend', this);
             } else {
-                this.deleteEl.addEventListener('click', this);
+                this._deleteEl.addEventListener('click', this);
             }
-
         }
     },
 

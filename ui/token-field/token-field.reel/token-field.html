@@ -12,13 +12,13 @@
         "prototype": "montage/ui/token-field/token-field.reel",
         "properties": {
             "element": {"#": "token-field"},
-            "autocomplete": {"@": "autocomplete"},
-            "tokenList": {"@": "tokenList"},
-            "tokensController": {"@": "tokensController"}
+            "_autocomplete": {"@": "autocomplete"},
+            "_tokenList": {"@": "tokenList"},
+            "_tokensController": {"@": "tokensController"}
         },
         "bindings": {
-            "suggestedValue": {"<-": "@autocomplete.suggestedValue"},
-            "autocompleteValue": {"<-": "@autocomplete.value"}
+            "_suggestedValue": {"<-": "@autocomplete.suggestedValue"},
+            "_autocompleteValue": {"<-": "@autocomplete.value"}
         }
     },
     "tokensController": {

@@ -34,36 +34,36 @@ exports.TokenField = Montage.create(Component, {
 
     // private
 
-    _hasFocus: {value: null},
-    hasFocus: {
+    __hasFocus: {value: null},
+    _hasFocus: {
         get: function() {
-            return this._hasFocus;
+            return this.__hasFocus;
         },
         set: function(value) {
-            if(value != this._hasFocus) {
-                this._hasFocus = value;
+            if(value != this.__hasFocus) {
+                this.__hasFocus = value;
                 this.needsDraw = true;
             }
         }
     },
 
-    tokensController: {value: null},
-    tokenList: {value: null, enumerable: false},
-    autocomplete: {value: null, enumerable: false},
-    autocompleteValue: {value: null},
-    autocompleteValue: {
+    _tokensController: {value: null},
+    _tokenList: {value: null, enumerable: false},
+    _autocomplete: {value: null, enumerable: false},
+    __autocompleteValue: {value: null},
+    _autocompleteValue: {
         get: function() {
-            return this._autocompleteValue;
+            return this.__autocompleteValue;
         },
         set: function(value) {
-            this._autocompleteValue = value;
+            this.__autocompleteValue = value;
         }
     },
 
-    _suggestedValue: {value: null},
-    suggestedValue: {
+    __suggestedValue: {value: null},
+    _suggestedValue: {
         get: function() {
-            return this._suggestedValue;
+            return this.__suggestedValue;
         },
         set: function(newValue) {
             if(newValue) {
@@ -76,13 +76,13 @@ exports.TokenField = Montage.create(Component, {
                     representedObject = newValue;
                 }
                 if(representedObject) {
-                    this._suggestedValue = representedObject;
+                    this.__suggestedValue = representedObject;
                     // able to find a representedObject
                     if(!this.values) {
                         this.values = [];
                     }
-                    this.values.push(this._suggestedValue);
-                    this.autocomplete.value = '';
+                    this.values.push(this.__suggestedValue);
+                    this._autocomplete.value = '';
                 }
 
             }
@@ -97,25 +97,25 @@ exports.TokenField = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
-            this.autocomplete.delegate = this.delegate;
+            this._autocomplete.delegate = this.delegate;
             if(this.identifier) {
-                this.autocomplete.identifier = this.identifier;
+                this._autocomplete.identifier = this.identifier;
                 // @todo : this might be a problem. Since delegate methods are prefixed with
                 // the identifier
                 //this.identifier = 'token-field-' + this.identifier;
             }
-            this.autocomplete.element.addEventListener("keyup", this);
+            this._autocomplete.element.addEventListener("keyup", this);
         }
     },
 
     draw: {
         value: function() {
-            if(this.hasFocus) {
-                this.autocomplete.element.focus();
-                this._hasFocus = false;
+            if(this._hasFocus) {
+                this._autocomplete.element.focus();
+                this.__hasFocus = false;
             } else {
                 if(this.placeholder) {
-                    this.autocomplete.element.style.width = 'auto';
+                    this._autocomplete.element.style.width = 'auto';
                 }
             }
         }
@@ -124,7 +124,7 @@ exports.TokenField = Montage.create(Component, {
     // Event handling
     handleMouseup: {
         value: function(event) {
-            this.hasFocus = true;
+            this._hasFocus = true;
         }
     },
 
@@ -134,7 +134,7 @@ exports.TokenField = Montage.create(Component, {
             var code = e.keyCode;
             //console.log('keyCode', code);
             if(this.values && this.values.length > 0) {
-                var selectedIndexes = this.tokensController.selectedIndexes;
+                var selectedIndexes = this._tokensController.selectedIndexes;
                 var selectedIndex = (selectedIndexes && selectedIndexes.length > 0 ? selectedIndexes[0] : null);
                 var lastIndex = this.values.length - 1, len = this.values.length;
 
@@ -146,20 +146,20 @@ exports.TokenField = Montage.create(Component, {
                     // So the behavior is to select the last token if it is not selected already.
                     // If selected already, then remove it
 
-                    if(!this.autocompleteValue) {
+                    if(!this._autocompleteValue) {
                         // check if the selected token is the last one
                         if(selectedIndexes && selectedIndexes.length > 0) {
                             // removes the selected one
-                            this.tokensController.remove();
+                            this._tokensController.remove();
                         } else {
-                            this.tokensController.selectedIndexes = [this.values.length-1];
+                            this._tokensController.selectedIndexes = [this.values.length-1];
                         }
                     }
 
                     break;
 
                     case KEY_LEFT:
-                        if(!this.autocompleteValue) {
+                        if(!this._autocompleteValue) {
                             if(selectedIndex != null) {
                                 selectedIndex = selectedIndex - 1;
                                 if(selectedIndex < 0) {
@@ -168,13 +168,13 @@ exports.TokenField = Montage.create(Component, {
                             } else {
                                 selectedIndex = lastIndex;
                             }
-                            this.tokensController.selectedIndexes = [selectedIndex];
+                            this._tokensController.selectedIndexes = [selectedIndex];
                         }
 
                     break;
 
                     case KEY_RIGHT:
-                    if(!this.autocompleteValue) {
+                    if(!this._autocompleteValue) {
                         if(selectedIndex != null) {
                             selectedIndex = selectedIndex + 1;
                             if(selectedIndex > lastIndex) {
@@ -183,21 +183,21 @@ exports.TokenField = Montage.create(Component, {
                         } else {
                             selectedIndex = 0;
                         }
-                        this.tokensController.selectedIndexes = [selectedIndex];
+                        this._tokensController.selectedIndexes = [selectedIndex];
                     }
 
                     break;
 
                     case KEY_UP:
-                        this.tokensController.selectedIndexes = [0];
+                        this._tokensController.selectedIndexes = [0];
                     break;
 
                     case KEY_DOWN:
-                        this.tokensController.selectedIndexes = [lastIndex];
+                        this._tokensController.selectedIndexes = [lastIndex];
                     break;
 
                     default:
-                        this.tokensController.selectedIndexes = [];
+                        this._tokensController.selectedIndexes = [];
                     break;
 
                 }
