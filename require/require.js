@@ -372,17 +372,9 @@
     function normalizeDependency(dependency, config, name) {
         config = config || {};
         if (typeof dependency === "string") {
-            if (dependency.indexOf("@") >= 0) {
-                var parts = dependency.split("@");
-                dependency = {
-                    name: parts[0] || name,
-                    version: parts[1]
-                };
-            } else {
-                dependency = {
-                    location: dependency
-                };
-            }
+            dependency = {
+                location: dependency
+            };
         }
         // if the named dependency has already been found at another
         // location, refer to the same eventual instance
