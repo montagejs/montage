@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Key Composer Test</title>
+    <script type="text/javascript" src="../../../../montage.js" data-package="../../../"></script>
+    <script type="text/montage-serialization">
+{
+    "key_composer1": {
+        "prototype": "montage/ui/composer/key-composer",
+        "properties": {
+            "keys": "command+j",
+            "identifier": "j",
+            "component": {"@": "example"}
+        }
+    },
+    "key_composer2": {
+        "prototype": "montage/ui/composer/key-composer",
+        "properties": {
+            "keys": "shift+control+k",
+            "identifier": "k",
+            "component": {"@": "application"}
+        },
+        "listeners": [
+            {
+                "type": "keyPress",
+                "listener": {"@": "test"}
+            },
+            {
+                "type": "keyRelease",
+                "listener": {"@": "test"}
+            }
+        ]
+    },
+    "example": {
+        "name": "DynamicText",
+        "module": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "example"},
+            "value": "hi"
+        }
+    },
+
+    "test": {
+        "prototype": "ui/composer/key-composer-test/key-composer-test",
+        "properties": {
+            "key_composer1": {"@": "key_composer1"},
+            "key_composer2": {"@": "key_composer2"},
+            "example": {"@": "example"}
+        }
+    },
+    "application": {
+        "prototype": "montage/ui/application",
+        "properties": {
+            "delegate": {"@": "test"}
+        }
+    }
+}
+    </script>
+
+<style type="text/css">
+    .example {
+        background: #C00;
+        position: absolute;
+        width: 50px;
+        height: 50px;
+    }
+</style>
+
+</head>
+<body>
+    <h1>Key Composer test</h1>
+
+    <div data-montage-id="example" class="example" tabIndex=-1></div>
+</body>
+</html>
