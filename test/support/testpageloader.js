@@ -268,6 +268,33 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
         }
     },
 
+    waitForComponentDraw: {
+        value: function(component, numDraws, forceDraw) {
+            if (!numDraws) {
+                numDraws = 1;
+            }
+
+            var currentDraw = component.draw;
+
+            if (!currentDraw.oldDraw) {
+                component.draw = function draw() {
+                    draw.drawHappened++;
+                    return draw.oldDraw.apply(this, arguments);
+                }
+                component.draw.oldDraw = currentDraw;
+            }
+            component.draw.drawHappened = 0;
+
+            waitsFor(function() {
+                return component.draw.drawHappened == numDraws;
+            }, "component drawing",1000);
+            if(forceDraw) {
+                var root = COMPONENT.__root__;
+                root['drawTree']();
+            }
+        }
+    },
+
     getElementById: {
         enumerable: false,
         value: function(elementId) {
