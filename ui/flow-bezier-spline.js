@@ -53,7 +53,7 @@ var Montage = require("montage").Montage,
 
     _parameters: {
         value: {
-/*            rotateX: {
+            rotateX: {
                 data: [0],
                 units: "rad"
             },
@@ -68,7 +68,7 @@ var Montage = require("montage").Montage,
             opacity: {
                 data: [1],
                 units: ""
-            }*/
+            }
         }
     },
 

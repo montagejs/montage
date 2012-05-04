@@ -710,6 +710,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     iterations = div + ((k < mod) ? 1 : 0);
                     intersections = this._intersections.wipe();
                     this._computeVisibleRange(this.splinePaths[k], intersections);
+                    this.splinePaths[k]._computeDensitySummation();
                     offset =  this._scroll - this._paths[k].headOffset;
                     for (i = 0; i < intersections.length; i++) {
                         startIndex = Math.ceil(intersections[i][0] + offset);
@@ -722,8 +723,10 @@ var Flow = exports.Flow = Montage.create(Component, {
                         }
                         for (j = startIndex; j < endIndex; j++) {
                             index = j * this._paths.length + k;
-                            newIndexesHash[index] = newIndexMap.length;
-                            newIndexMap.push(index);
+                            if (typeof newIndexesHash[index] === "undefined") {
+                                newIndexesHash[index] = newIndexMap.length;
+                                newIndexMap.push(index);
+                            }
                         }
                     }
                 }
