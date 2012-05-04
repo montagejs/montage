@@ -7,8 +7,7 @@
 
 
     "link1" : {
-        "name": "Anchor",
-        "module": "montage/ui/anchor.reel",
+        "prototype": "montage/ui/anchor.reel",
         "properties": {
             "element": {"#": "link1"}
         },
@@ -35,8 +34,7 @@
     },
 
     "data": {
-        "name": "ArrayController",
-        "module": "montage/ui/controller/array-controller",
+        "prototype": "montage/ui/controller/array-controller",
         "properties": {
             "selectObjectsOnAddition": true,
             "automaticallyOrganizeObjects": true
@@ -121,12 +119,11 @@
             height: 480px;
         }
 
-a[icon="external"] {
-   padding-right: 20px;
-   background: transparent url(../sink/images/external.gif) no-repeat center right;
-   color: red;
-}
-
+        a[icon="external"] {
+           padding-right: 20px;
+           background: transparent url(../sink/images/external.gif) no-repeat center right;
+           color: red;
+        }
     </style>
 
 
@@ -178,32 +175,32 @@ a[icon="external"] {
                                  <div class="accordion-inner montage-hidden">
                                      <pre class="prettyprint" >
 {
-"link1" : {
-   "prototype": "montage/ui/anchor.reel",
-   "properties": {
-       "element": {"#": "link1"}
-   },
-   "bindings": {
-       "textContent": {"&lt;&lt;-&gt;": "@linkTextInput.value"},
-       "href": {"&lt;&lt;-&gt;": "@urlTextInput.value"}
-   }
-},
+    "link1" : {
+        "prototype": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "link1"}
+        },
+        "bindings": {
+            "textContent": {"&lt;&lt;-&gt;": "@linkTextInput.value"},
+            "href": {"&lt;&lt;-&gt;": "@urlTextInput.value"}
+        }
+    },
 
-"linkTextInput": {
-   "prototype": "montage/ui/textfield.reel",
-   "properties": {
-       "element": {"#": "linkText"},
-       "value": "Motorola"
-   }
-},
+    "linkTextInput": {
+        "prototype": "montage/ui/textfield.reel",
+        "properties": {
+           "element": {"#": "linkText"},
+           "value": "Motorola"
+        }
+    },
 
-"urlTextInput": {
-   "prototype": "montage/ui/textfield.reel",
-   "properties": {
-       "element": {"#": "linkURL"},
-       "value": "http://www.motorola.com"
-   }
-}
+    "urlTextInput": {
+        "prototype": "montage/ui/textfield.reel",
+        "properties": {
+            "element": {"#": "linkURL"},
+            "value": "http://www.motorola.com"
+        }
+    }
 }
               </pre>
 
@@ -277,8 +274,7 @@ a[icon="external"] {
                                     <pre class="prettyprint" >
 {
     "data": {
-        "name": "ArrayController",
-        "module": "montage/ui/controller/array-controller",
+        "prototype": "montage/ui/controller/array-controller",
         "properties": {
             "selectObjectsOnAddition": true,
             "automaticallyOrganizeObjects": true

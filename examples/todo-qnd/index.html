@@ -20,11 +20,7 @@
                 "element": {"#": "todo-list"}
             },
             "bindings": {
-                "objects": {
-                    "boundObject": {"@": "owner"},
-                    "boundObjectPropertyPath": "todos",
-                    "oneway": true
-                }
+                "objects": {"<-": "@owner.todos"}
             }
         },
 

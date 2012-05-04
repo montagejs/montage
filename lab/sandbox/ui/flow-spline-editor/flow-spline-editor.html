@@ -13,16 +13,8 @@
             "nearest": {
                 "prototype": "montage/ui/nearest-neighbor-component-search",
                 "bindings": {
-                    "componentList": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "_repetitionComponents",
-                        "oneway": true
-                    },
-                    "pointerPosition": {
-                        "boundObject": {"@": "scroll"},
-                        "boundObjectPropertyPath": "pointerStartEventPosition",
-                        "oneway": true
-                    }
+                    "componentList": {"<-": "@flow._repetitionComponents"}
+                    "pointerPosition": {"<-": "@scroll.pointerStartEventPosition"}
                 }
             },
     -->
@@ -38,22 +30,10 @@
                     "flow": {"@": "flow"}
                 },
                 "bindings": {
-                    "cameraPosition": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "cameraPosition"
-                    },
-                    "cameraTargetPoint": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "cameraTargetPoint"
-                    },
-                    "cameraFov": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "cameraFov"
-                    },
-                    "cameraRoll": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "cameraRoll"
-                    }
+                    "cameraPosition": {"<<->": "@flow.cameraPosition"},
+                    "cameraTargetPoint": {"<<->": "@flow.cameraTargetPoint"},
+                    "cameraFov": {"<<->": "@flow.cameraFov"},
+                    "cameraRoll": {"<<->": "@flow.cameraRoll"}
                 }
             },
             "flow": {
@@ -64,14 +44,8 @@
                     "scale": 300
                 },
                 "bindings": {
-                    "splinePath": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "spline"
-                    },
-                    "needsDraw": {
-                        "boundObject": {"@": "editor"},
-                        "boundObjectPropertyPath": "hasSplineUpdated"
-                    }
+                    "splinePath": {"<<->": "@editor.spline"},
+                    "needsDraw": {"<<->": "@editor.hasSplineUpdated"}
                 }
             },
             "scroll": {
@@ -82,15 +56,8 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "element": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "_element",
-                        "oneway": true
-                    },
-                    "translateX": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "origin"
-                    }
+                    "element": {"<-": "@flow._element"},
+                    "translateX": {"<<->": "@flow.origin"}
                 }
             },
             "slide": {
@@ -99,11 +66,7 @@
                     "element": {"#": "slide"}
                 },
                 "bindings": {
-                    "value": {
-                        "boundObject": {"@": "flow"},
-                        "boundObjectPropertyPath": "objectAtCurrentIteration",
-                        "oneway": true
-                    }
+                    "value": {"<-": "@flow.objectAtCurrentIteration"}
                 }
             }
         }
