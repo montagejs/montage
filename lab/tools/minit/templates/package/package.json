@@ -1,0 +1,11 @@
+{
+    "name": "{{name}}",
+    "description": "TODO",
+    "version": "0.0.0",
+    "author": "{{author}}",
+
+    "mappings": {
+        "montage": "{{montagePath}}"
+    }
+}
+
