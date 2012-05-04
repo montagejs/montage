@@ -4,7 +4,8 @@
 var Montage = require("montage").Montage,
     dom = require("montage/ui/dom"),
     URL = require("montage/core/url"),
-    ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener;
+    ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
+    MutableEvent = require("montage/core/event/mutable-event").MutableEvent;
 
 
 var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
@@ -331,6 +332,63 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             return buttonSpy.doSomething;
         }
     },
+
+    keyEvent: {
+        enumerable: false,
+        value: function(eventInfo, eventName, callback) {
+            if (!eventName) {
+                eventName = "keypress";
+            }
+            eventInfo.modifiers = eventInfo.modifiers || "";
+            eventInfo.keyCode = eventInfo.keyCode || 0;
+            eventInfo.charCode = eventInfo.charCode || 0;
+
+            var doc = this.iframe.contentDocument,
+                mofifiers = eventInfo.modifiers.split(" "),
+                    event = {
+                    altGraphKey: false,
+                    altKey: mofifiers.indexOf("alt") !== -1,
+                    bubbles: true,
+                    cancelBubble: false,
+                    cancelable: true,
+                    charCode: eventInfo.charCode,
+                    clipboardData: undefined,
+                    ctrlKey: mofifiers.indexOf("control") !== -1,
+                    currentTarget: null,
+                    defaultPrevented: false,
+                    detail: 0,
+                    eventPhase: 0,
+                    keyCode: eventInfo.keyCode,
+                    layerX: 0,
+                    layerY: 0,
+                    metaKey: mofifiers.indexOf("meta") !== -1,
+                    pageX: 0,
+                    pageY: 0,
+                    returnValue: true,
+                    shiftKey: mofifiers.indexOf("shift") !== -1,
+                    srcElement: eventInfo.target,
+                    target: eventInfo.target,
+                    timeStamp: new Date().getTime(),
+                    type: eventName,
+                    view: doc.defaultView,
+                    which: eventInfo.charCode || eventInfo.keyCode
+                    },
+                targettedEvent = MutableEvent.fromEvent(event);
+
+            doc.defaultView.defaultEventManager.handleEvent(targettedEvent);
+
+            if (typeof callback === "function") {
+                if(this.willNeedToDraw) {
+                    this.waitForDraw();
+                    runs(callback);
+                } else {
+                    callback();
+                }
+            }
+            return eventInfo;
+        }
+    },
+
 
     mouseEvent: {
         enumerable: false,
