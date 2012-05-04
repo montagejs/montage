@@ -1,5 +1,5 @@
 var test = require("test");
-module.exports = require.loadPackage("a@0.0.0")
+module.exports = require.loadPackage({name: "a"})
 .then(function (a) {
     return a.async("");
 })
