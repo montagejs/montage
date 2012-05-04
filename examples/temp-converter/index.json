@@ -9,11 +9,7 @@
             "element": {"#": "celsius"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "fahrenheitTextfield"},
-                "boundObjectPropertyPath": "value",
-                "converter": {"@": "converter"}
-            }
+            "value": {"<<->": "@fahrenheitTextfield.value", "converter": {"@": "converter"}}
         }
     },
 
@@ -31,10 +27,7 @@
             "element": {"#": "barometer"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "fahrenheitTextfield"},
-                "boundObjectPropertyPath": "value"
-            }
+            "value": {"<<->": "@fahrenheitTextfield.value"}
         }
     }
 }
