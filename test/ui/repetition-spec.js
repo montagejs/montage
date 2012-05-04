@@ -51,7 +51,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
         describe("The static repetition", function() {
             it("should add one iteration on the static repetition", function() {
                 delegate.list1Objects.push(1);
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition1);
 
                 runs(function() {
                     var lis = querySelectorAll(".list1 > li");
@@ -62,7 +62,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should remove one iteration on the static repetition", function() {
                 delegate.list1Objects.pop();
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition1);
 
                 runs(function() {
                     var lis = querySelectorAll(".list1 > li");
@@ -72,7 +72,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should add five iterations on the static repetition", function() {
                 delegate.list1Objects.push(1, 2, 3, 4, 5);
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition1);
 
                 runs(function() {
                     var lis = querySelectorAll(".list1 > li");
@@ -83,7 +83,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should remove five iteration on the static repetition", function() {
                 delegate.list1Objects.splice(0, 5);
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition1);
 
                 runs(function() {
                     var lis = querySelectorAll(".list1 > li");
@@ -93,7 +93,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should change the repetition to three iterations on the static repetition", function() {
                 delegate.list1Objects = [1, 2, 3];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition1);
 
                 runs(function() {
                     var lis = querySelectorAll(".list1 > li");
@@ -103,7 +103,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should change the repetition after a batch of operations", function() {
                 delegate.list1Objects = [];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition1);
 
                 runs(function() {
                     // sanity test
@@ -117,7 +117,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     delegate.list1Objects.push(3);
                     delegate.list1Objects.push(4);
 
-                    testPage.waitForDraw();
+                    testPage.waitForComponentDraw(delegate.repetition1);
                     runs(function() {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(4);
@@ -127,7 +127,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should replace an item of the repetition", function() {
                 delegate.list1Objects = [1];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition1);
 
                 runs(function() {
                     // sanity test
@@ -137,7 +137,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     delegate.list1Objects.pop();
                     delegate.list1Objects.push(2);
 
-                    testPage.waitForDraw();
+                    testPage.waitForComponentDraw(delegate.repetition1);
                     runs(function() {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(1);
@@ -153,7 +153,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 repetition.objects = [1, 2, 3];
                 repetition.needsDraw = true;
 
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(repetition);
 
                 runs(function() {
                     // sanity test
@@ -166,7 +166,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
         describe("The component repetition", function() {
             it("should add one iteration on the component repetition", function() {
                 delegate.list2Objects.push({text: "is"});
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition2);
 
                 runs(function() {
                     expect(querySelectorAll(".list2 > li").length).toBe(2);
@@ -178,7 +178,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should remove one iteration on the component repetition", function() {
                 delegate.list2Objects.pop();
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition2);
 
                 runs(function() {
                     expect(querySelectorAll(".list2 > li").length).toBe(1);
@@ -190,7 +190,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should replace one iteration on the component repetition", function() {
                 delegate.list2Objects = [{text: "This"}, {text: "is"}, {text: "Sparta"}];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition2);
 
                 runs(function() {
                     // sonity check
@@ -209,7 +209,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should change the component repetition after a batch of operations", function() {
                 delegate.list2Objects = [];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition2);
 
                 runs(function() {
                     // sanity test
@@ -223,7 +223,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     delegate.list2Objects.push({text: "item 3"});
                     delegate.list2Objects.push({text: "item 4"});
 
-                    testPage.waitForDraw();
+                    testPage.waitForComponentDraw(delegate.repetition2);
                     runs(function() {
                         var inputs = querySelectorAll(".list2 > li > input.textfield1");
                         for (var i = 0, input; i < 4; i++) {
@@ -236,7 +236,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should replace an item of the repetition", function() {
                 delegate.list2Objects = [{text: "item 1"}];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition2);
 
                 runs(function() {
                     // sanity test
@@ -246,7 +246,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     delegate.list2Objects.pop();
                     delegate.list2Objects.push({text: "item 2"});
 
-                    testPage.waitForDraw();
+                    testPage.waitForComponentDraw(delegate.repetition2);
                     runs(function() {
                         var lis = querySelectorAll(".list2 > li");
                         expect(lis.length).toBe(1);
@@ -261,7 +261,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
         describe("The nested repetition w/ component", function() {
             it("should draw one>one iteration on the nested repetition w/ component", function() {
                 delegate.list3Objects = [[{text: "iteration 1"}]];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition4);
 
                 runs(function() {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
@@ -274,7 +274,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should draw one>three iteration on the nested repetition w/ component", function() {
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}]];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition4);
 
                 runs(function() {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
@@ -287,7 +287,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should draw one>five iterations on the nested repetition w/ component", function() {
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}], [{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}, {text: "iteration 4"}, {text: "iteration 5"}]];
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition4);
 
                 runs(function() {
                     expect(querySelectorAll(".list3 > li").length).toBe(2);
@@ -307,7 +307,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should remove one iteration on the nested repetition w/ component", function() {
                 delegate.list3Objects.shift();
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition4);
 
                 runs(function() {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
@@ -337,7 +337,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
         describe("The nested repetition w/ Static Component Composition (SCC)", function() {
             it("should draw one>one iteration on the nested repetition w/ SCC", function() {
                 delegate.list4Objects.push([1]);
-                testPage.waitForDraw(2);
+                testPage.waitForComponentDraw(delegate.repetition5);
 
                 runs(function() {
                     expect(querySelectorAll(".list4 > li").length).toBe(1);
@@ -349,7 +349,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should draw one>five iterations on the nested repetition w/ SCC", function() {
                 delegate.list4Objects.push([1, 2, 3, 4, 5]);
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition5);
 
                 runs(function() {
                     expect(querySelectorAll(".list4 > li").length).toBe(2);
@@ -368,7 +368,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should remove one iteration on the nested repetition w/ SCC", function() {
                 delegate.list4Objects.shift();
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition5);
 
                 runs(function() {
                     expect(querySelectorAll(".list4 > li").length).toBe(1);
@@ -398,7 +398,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
         describe("The nested repetition w/ Dynamic Component Composition (DCC)", function() {
             it("should draw one>one iteration on the nested repetition w/ DCC", function() {
                 delegate.list5Objects.push([1]);
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition7);
 
                 runs(function() {
                     expect(querySelectorAll(".list5 > li").length).toBe(1);
@@ -410,7 +410,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should draw one>five iterations on the nested repetition w/ DCC", function() {
                 delegate.list5Objects.push([1, 2, 3, 4, 5]);
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition7);
 
                 runs(function() {
                     expect(querySelectorAll(".list5 > li").length).toBe(2);
@@ -429,7 +429,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should remove one iteration on the nested repetition w/ DCC", function() {
                 delegate.list5Objects.shift();
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition7);
 
                 runs(function() {
                     expect(querySelectorAll(".list5 > li").length).toBe(1);
@@ -485,13 +485,13 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             it("should be able to remove the iteration correctly", function() {
                 delegate.list9Objects = [1];
 
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition12);
 
                 runs(function() {
                     expect(querySelectorAll(".list9 input").length).toBe(1);
 
                     delegate.list9Objects.pop();
-                    testPage.waitForDraw();
+                    testPage.waitForComponentDraw(delegate.repetition12);
 
                     runs(function() {
                         expect(querySelectorAll(".list9 > input").length).toBe(0);
@@ -518,7 +518,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             it("it should increment the number of iterations", function() {
                 delegate.simpleArrayControllerContent.push("four");
 
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetitionController);
 
                 runs(function() {
                     expect(delegate.simpleArrayController.organizedObjects.length).toBe(4);
@@ -537,7 +537,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 componentit1.listObjects = [{text: "rep1-0"}, {text: "rep1-1"}];
                 componentit2.listObjects = [{text: "rep2-0"}, {text: "rep2-1"}];;
 
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(querySelector(".componentrep2 > ul").controller);
 
                 runs(function() {
                     var inputs;
@@ -557,7 +557,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             it("should draw the repetition of the 'component repetition'", function() {
                 delegate.list6Objects = [{elements1: [{text: "rep0-comp1-0"}, {text: "rep0-comp1-1"}], elements2: [{text: "rep0-comp2-0"}, {text: "rep0-comp2-1"}]}, {elements1: [{text: "rep1-comp1-0"}, {text: "rep1-comp1-1"}], elements2: [{text: "rep1-comp2-0"}, {text: "rep1-comp2-1"}]}]
 
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition9);
 
                 runs(function() {
                     var inputs;
@@ -628,7 +628,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should add an iteration when an object is pushed", function() {
                 list13.objects.push(4);
-                testPage.waitForDraw();
+                testPage.waitForComponentDraw(delegate.repetition15);
                 runs(function() {
                     expect(querySelectorAll(".list13 > li").length).toBe(4);
                 });
