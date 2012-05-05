@@ -354,6 +354,12 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
                 this._element.classList.remove("disabled");
             }
 
+            if (this._active) {
+                this._element.classList.add("active");
+            } else {
+                this._element.classList.remove("active");
+            }
+
             this._drawLabel(this.label);
         }
     }
