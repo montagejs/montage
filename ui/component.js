@@ -270,7 +270,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 aParentNode,
                 eventManager = this.eventManager;
             if (anElement) {
-                while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
+                while ((aParentNode = anElement.parentNode) != null && eventManager.eventHandlerForElement(aParentNode) == null) {
                     anElement = aParentNode;
                 }
                 return aParentNode ? eventManager.eventHandlerForElement(aParentNode) : this._alternateParentComponent;
