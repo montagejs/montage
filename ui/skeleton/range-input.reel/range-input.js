@@ -59,7 +59,7 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
          },
          set: function(value) {
              this._width =  String.isString(value) ? parseFloat(value) : value;
-             //this.needsDraw = true;
+             this.needsDraw = true;
          }
      },
 
