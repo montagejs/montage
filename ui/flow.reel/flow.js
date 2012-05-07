@@ -922,6 +922,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (this._numberOfIterations !== value) {
                 this._numberOfIterations = value;
                 this._updateLength();
+                console.log(value);
             }
         }
     },
@@ -945,11 +946,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this.needsDraw = true;
             } else {
                 this._objectsForRepetition = value;
-            }
-            if (value && value.length) {
-                this.numberOfIterations = value.length;
-            }else {
-                this.numberOfIterations = 0;
             }
         }
     },
@@ -1057,6 +1053,11 @@ var Flow = exports.Flow = Montage.create(Component, {
             this._repetition.addEventListener("change@selectedIndexes", function (event) {
                 self._handleSelectedIndexesChange.call(self, event);
             }, false);
+            Object.defineBinding(this, "numberOfIterations", {
+                boundObject: this._repetition,
+                boundObjectPropertyPath: "_objects.count()",
+                oneway: "true"
+            });
         }
     },
 
