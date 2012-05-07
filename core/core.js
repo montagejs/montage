@@ -10,7 +10,11 @@
  @requires montage/core/event/binding
  @requires montage/core/event/event-manager
  */
-require("core/shim");
+require("core/shim/object");
+require("core/shim/array");
+require("core/extras/object");
+require("core/extras/array");
+require("core/extras/string");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
@@ -20,32 +24,20 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     SERIALIZABLE = "serializable",
     MODIFY = "modify";
 
-
+/**
+ @private
+ */
+var Array_prototype = Array.prototype;
 
 /**
- @external Object
+ @private
  */
-
-/* Ecmascript 5 Methods. Should be external as WebKit doesn't need it, and loaded automatically */
-if (!Object.create) {
-    Object._creator = function _ObjectCreator() {
-        this.__proto__ = _ObjectCreator.prototype;
-    };
-    Object.create = function(o, properties) {
-        this._creator.prototype = o || Object.prototype;
-        //Still needs to add properties....
-        return new this._creator;
-    };
-
-    Object.getPrototypeOf = function(o) {
-        return o.__proto__;
-    };
-}
+var Object_prototype = Object.prototype;
 
 /**
  @class module:montage/core/core.Montage
  */
-var M = exports.Montage = Object.create(Object.prototype);
+var Montage = exports.Montage = {};
 
 /**
      Creates a new Montage object.
@@ -64,7 +56,7 @@ var M = exports.Montage = Object.create(Object.prototype);
         }
      });
      */
-Object.defineProperty(M, "create", {
+Object.defineProperty(Montage, "create", {
     configurable: true,
     value: function(aPrototype, propertyDescriptor) {
         if (!propertyDescriptor) {
@@ -82,7 +74,7 @@ Object.defineProperty(M, "create", {
             return newObject;
         } else {
             var result = Object.create(aPrototype);
-            M.defineProperties(result, propertyDescriptor);
+            Montage.defineProperties(result, propertyDescriptor);
             return result;
         }
     }
@@ -117,7 +109,7 @@ extendedPropertyAttributes.forEach(function(name) {
      writable: true
      });
      */
-Object.defineProperty(M, "defineProperty", {
+Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
         var dependencies = descriptor.dependencies;
@@ -151,7 +143,7 @@ Object.defineProperty(M, "defineProperty", {
                 independentProperty;
 
             for (; (independentProperty = dependencies[i]); i++) {
-                M.addDependencyToProperty(obj, independentProperty, prop);
+                Montage.addDependencyToProperty(obj, independentProperty, prop);
             }
 
         }
@@ -174,7 +166,7 @@ Object.defineProperty(M, "defineProperty", {
                     writable: true,
                     value: null
                 });
-                if (value.constructor === Object && Object.getPrototypeOf(value) === Object.prototype) {
+                if (value.constructor === Object && Object.getPrototypeOf(value) === Object_prototype) {
                     // we have an object literal {...}
                     if (Object.keys(value).length !== 0) {
                         Object.defineProperty(obj, prop, {
@@ -208,7 +200,7 @@ Object.defineProperty(M, "defineProperty", {
                         });
                     }
 
-                } else if ((value.__proto__ || Object.getPrototypeOf(value)) === __cached__arrayProto) {
+                } else if ((value.__proto__ || Object.getPrototypeOf(value)) === Array_prototype) {
                     // we have an array literal [...]
                     if (value.length !== 0) {
                         Object.defineProperty(obj, prop, {
@@ -236,7 +228,7 @@ Object.defineProperty(M, "defineProperty", {
                             configurable: true,
                             get: function() {
                                 //Special case for array as isArray fails
-                                //Object.prototype.toString.call(Object.create([].__proto)) !== "[object Array]"
+                                //Object_prototype.toString.call(Object.create([].__proto)) !== "[object Array]"
                                 return this[internalProperty] || (this[internalProperty] = []);
                             },
                             set: function(value) {
@@ -291,11 +283,10 @@ Object.defineProperty(M, "defineProperty", {
      @param {Object} obj The object to which the properties are added.
      @param {Object} properties An object that contains one or more property descriptor objects.
      */
-Object.defineProperty(M, "defineProperties", {value: function(obj, properties) {
-
-    for (var p in properties) {
-        if ("_bindingDescriptors" !== p) {
-            this.defineProperty(obj, p, properties[p]);
+Object.defineProperty(Montage, "defineProperties", {value: function(obj, properties) {
+    for (var property in properties) {
+        if ("_bindingDescriptors" !== property) {
+            this.defineProperty(obj, property, properties[property]);
         }
     }
     return obj;
@@ -327,34 +318,6 @@ var _defaultFunctionValueProperty = {
 };
 
 /**
- @private
- */
-var __cached__arrayProto = Array.prototype;
-
-/**
-     Private collection of dependencies for all dependent keys. The collection here is keyed by the dependent propertyName
-     The array for each dependent property has all the independent property names that when changed, need to signal a change in the dependent property.
-     @private
-     */
-Object.defineProperty(Object.prototype, "_dependenciesForProperty", {
-    enumerable: false,
-    writable: true,
-    value: null
-});
-
- /**
-     Private collection of listener functions that are for dependent properties to observe their dependency properties for changes.
-     The collection here is keyed by the dependent propertyName.
-     @private
-     */
-Object.defineProperty(Object.prototype, "_dependencyListeners", /** @lends external:Object# */ {
-    enumerable: false,
-    writable: true,
-    value: null
-});
-
-
-/**
      Adds a dependent property to another property's collection of dependencies.
      When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
      @function module:montage/core/core.Montage.addDependencyToProperty
@@ -362,7 +325,7 @@ Object.defineProperty(Object.prototype, "_dependencyListeners", /** @lends exter
      @param {String} independentProperty The name of the object's independent property.
      @param {String} dependentProperty The name of the object's dependent property.
      */
-M.defineProperty(M, "addDependencyToProperty", { value: function(obj, independentProperty, dependentProperty) {
+Montage.defineProperty(Montage, "addDependencyToProperty", { value: function(obj, independentProperty, dependentProperty) {
 
     // TODO optimize this so we don't keep checking over and over again
     if (!obj._dependenciesForProperty) {
@@ -385,7 +348,7 @@ M.defineProperty(M, "addDependencyToProperty", { value: function(obj, independen
      @param {String} independentProperty The name of the object's independent property.
      @param {String} dependentProperty The name of the object's dependent property that you want to remove.
      */
-M.defineProperty(M, "removeDependencyFromProperty", {value: function(obj, independentProperty, dependentProperty) {
+Montage.defineProperty(Montage, "removeDependencyFromProperty", {value: function(obj, independentProperty, dependentProperty) {
     if (!obj._dependenciesForProperty) {
         return;
     }
@@ -413,52 +376,12 @@ function getAttributeProperties(proto, attributeName) {
 }
 
 /**
- Returns the descriptor object for an object's property.
- @function external:Object#getPropertyDescriptor
- @param {Object} anObject The object containing the property.
- @param {String} propertyName The name of the property.
- @returns {Object} The object's property descriptor.
- */
-Object.getPropertyDescriptor = function(anObject, propertyName) {
-    var current = anObject,
-        currentDescriptor;
-
-    do {
-        currentDescriptor = Object.getOwnPropertyDescriptor(current, propertyName);
-    } while (!currentDescriptor && (current = current.__proto__ || Object.getPrototypeOf(current)));
-
-    return currentDescriptor;
-};
-
-/**
- Returns the prototype object and property descriptor for a property belonging to an object.
- @function external:Object#getPrototypeAndDescriptorDefiningProperty
- @param {Object} anObject The object to return the prototype for.
- @param {String} propertyName The name of the property.
- @returns {Object} An object containing two properties named <code>prototype</code> and <code>propertyDescriptor</code> that contain the object's prototype object and property descriptor, respectively.
- */
-Object.getPrototypeAndDescriptorDefiningProperty = function(anObject, propertyName) {
-    var current = anObject,
-        currentDescriptor;
-    if (propertyName) {
-
-        do {
-            currentDescriptor = Object.getOwnPropertyDescriptor(current, propertyName);
-        } while (!currentDescriptor && (current = current.__proto__ || Object.getPrototypeOf(current)));
-
-        return {
-            prototype: current,
-            propertyDescriptor: currentDescriptor
-        };
-    }
-};
-/**
      Returns the names of serializable properties belonging to Montage object.
      @function module:montage/core/core.Montage.getSerializablePropertyNames
      @param {Object} anObject A Montage object.
      @returns {Array} An array containing the names of the serializable properties belonging to <code>anObject</code>.
      */
-M.defineProperty(M, "getSerializablePropertyNames", {value: function(anObject) {
+Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function(anObject) {
 
     var propertyNames = [],
         attributes = anObject._serializableAttributeProperties;
@@ -482,7 +405,7 @@ M.defineProperty(M, "getSerializablePropertyNames", {value: function(anObject) {
      @param {String} attributeName The name of a property's attribute.
      @returns attributes array
      */
-M.defineProperty(M, "getPropertyAttribute", {value: function(anObject, propertyName, attributeName) {
+Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObject, propertyName, attributeName) {
 
     var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
         attributes = anObject[attributePropertyName];
@@ -492,14 +415,13 @@ M.defineProperty(M, "getPropertyAttribute", {value: function(anObject, propertyN
     }
 }});
 
-
  /**
      @function module:montage/core/core.Montage.getPropertyAttributes
      @param {Object} anObject An object.
      @param {String} attributeName The attribute name.
      @returns {Object} TODO getPropertyAttributes returns description
      */
-M.defineProperty(M, "getPropertyAttributes", {value: function(anObject, attributeName) {
+Montage.defineProperty(Montage, "getPropertyAttributes", {value: function(anObject, attributeName) {
     var attributeValues = {},
         attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
         attributes = anObject[attributePropertyName];
@@ -529,7 +451,7 @@ var _functionInstanceMetadataDescriptor = {
      @param {Object} object An object.
      @returns {Object} object._montage_metadata
      */
-M.defineProperty(M, "getInfoForObject", {
+Montage.defineProperty(Montage, "getInfoForObject", {
     value: function(object) {
         var metadata;
         var instanceMetadataDescriptor;
@@ -563,7 +485,7 @@ M.defineProperty(M, "getInfoForObject", {
     @default function
     */
 
-Object.defineProperty(M, "doNothing", {
+Object.defineProperty(Montage, "doNothing", {
     value: function() {
     }
 });
@@ -573,7 +495,7 @@ Object.defineProperty(M, "doNothing", {
     @default function
     @returns itself
     */
-Object.defineProperty(M, "self", {
+Object.defineProperty(Montage, "self", {
     value: function() {
         return this;
     }
@@ -582,32 +504,22 @@ Object.defineProperty(M, "self", {
 /**
     @private
     */
-Object.defineProperty(M, "__OBJECT_COUNT", {
+Object.defineProperty(Montage, "__OBJECT_COUNT", {
     value: 0,
     writable: true
 });
 
 
-var Uuid = require("core/uuid").Uuid;
-/**
-     Generates and returns a unique identifier.
-     @function module:montage/core/core.Montage.generateUID
-     @returns {String} A unique ID.
-     @example
-     <caption>Generates a new unique ID and assigns to a variable.</caption>
-     var id = document.application.generateUID();
-     console.log(id); // "249C2AE9-37BA-4E2F-8B31-A534E757B957"
-     */
-Object.defineProperty(M, "generateUID", {
-    value: function() {
-        return Uuid.generate();
-    }
-});
+// TODO figure out why this code only works in this module.  Attempts to move
+// it to core/extras/object resulted in _uuid becoming enumerable and tests
+// breaking.
+
+var UUID = require("core/uuid");
 
 var uuidGetGenerator = function() {
 
-    var uuid = Uuid.generate(),
-        info = M.getInfoForObject(this);
+    var uuid = UUID.generate(),
+        info = Montage.getInfoForObject(this);
     try {
         if (info !== null && info.isInstance === false) {
             this._uuid = uuid;
@@ -679,27 +591,11 @@ Object.defineProperty(Object.prototype, "uuid", {
      @param {Object} anObject The object to compare for equality.
      @returns {Boolean} Returns <code>true</code> if the calling object and <code>anObject</code> are identical and their <code>uuid</code> properties are also equal. Otherwise, returns <code>false</code>.
      */
-Object.defineProperty(M, "equals", {
+Object.defineProperty(Montage, "equals", {
     value: function(anObject) {
         return this === anObject || this.uuid === anObject.uuid;
     }
 });
-
-if (!Object.isSealed) {
-    Object.defineProperty(Object, "isSealed", {
-        value: function() {
-            return false;
-        }
-    });
-}
-
-if (!Object.seal) {
-    Object.defineProperty(Object, "seal", {
-        value: function(object) {
-            return object;
-        }
-    });
-}
 
 /*
  * If it exists this method calls the method named with the identifier prefix.
@@ -711,424 +607,24 @@ if (!Object.seal) {
  * @function module:montage/core/core.Montage#callDelegateMethod
  * @param {string} name
  */
-Object.defineProperty(M, "callDelegateMethod", {
+Object.defineProperty(Montage, "callDelegateMethod", {
     value: function(name) {
         var delegate = this.delegate, delegateFunctionName, delegateFunction;
         if (typeof this.identifier === "string") {
             delegateFunctionName = this.identifier + name.toCapitalized();
             if (delegate && typeof (delegateFunction = delegate[delegateFunctionName]) === "function") {
                 // remove first argument
-                Array.prototype.shift.call(arguments);
+                Array_prototype.shift.call(arguments);
                 return delegateFunction.apply(delegate, arguments);
             }
         }
 
         if (delegate && typeof (delegateFunction = delegate[name]) === "function") {
             // remove first argument
-            Array.prototype.shift.call(arguments);
+            Array_prototype.shift.call(arguments);
             return delegateFunction.apply(delegate, arguments);
         }
     }
-});
-
-/**
-@function external:Object#getProperty
-@param {Object} aPropertyPath
-@param {Property} unique
-@param {Property} preserve
-@param {Function} visitedComponentCallback
-@param {Array} currentIndex
-@returns result
-*/
-Object.defineProperty(Object.prototype, "getProperty", {
-    value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
-        var dotIndex,
-            result,
-            currentPathComponent;
-        dotIndex = aPropertyPath.indexOf(".", currentIndex);
-        currentIndex = currentIndex || 0;
-        currentPathComponent = aPropertyPath.substring(currentIndex, (dotIndex === -1 ? aPropertyPath.length : dotIndex));
-
-        if (currentPathComponent in this) {
-            result = this[currentPathComponent];
-        } else {
-            result = typeof this.undefinedGet === "function" ? this.undefinedGet(currentPathComponent) : undefined;
-        }
-
-        if (visitedComponentCallback) {
-            visitedComponentCallback(this, currentPathComponent, result);
-        }
-
-        if (visitedComponentCallback && result && -1 === dotIndex) {
-
-            // We resolved the last object on the propertyPath, be sure to give the visitor a chance to handle this one
-            visitedComponentCallback(result);
-
-        } else if (result && dotIndex !== -1) {
-            // We resolved that component of the path, but there's more path components; go to the next
-
-            if (result.getProperty) {
-                result = result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, dotIndex + 1);
-            } else {
-                // TODO track when this happens, right now it's only happening with CanvasPixelArray in WebKit
-                result = Object.prototype.getProperty.call(result, aPropertyPath, unique, preserve, visitedComponentCallback, dotIndex + 1);
-            }
-        }
-        // Otherwise, we reached the end of the propertyPath, or at least as far as we could; stop
-        return result;
-    },
-    enumerable: false
-});
-/**
-  @private
-*/
-Object.defineProperty(M, "_propertySetterNamesByName", {
-    value: {}
-});
-/**
-  @private
-*/
-Object.defineProperty(M, "_propertySetterByName", {
-    value: {}
-});
-
-/**
-Description
-@member external:Object#setProperty
-@function
-@param {Object} aPropertyPath
-@param {Object} value
-@returns itself
-*/
-Object.defineProperty(Object.prototype, "setProperty", {
-    value: function(aPropertyPath, value) {
-        var propertyIsNumber = !isNaN(aPropertyPath),
-            lastDotIndex = propertyIsNumber ? -1 : aPropertyPath.lastIndexOf("."),
-            setObject,
-            lastObjectAtPath,
-            propertyToSetOnArray;
-
-        if (lastDotIndex !== -1) {
-            //The propertyPath describes a property that is deeper inside this object
-            setObject = this.getProperty(aPropertyPath.substring(0, lastDotIndex));
-
-            if (!setObject) {
-                this.undefinedSet(aPropertyPath);
-                return;
-            }
-
-            aPropertyPath = aPropertyPath.substring(lastDotIndex + 1);
-        } else {
-            // The property path describes a property on this object
-            setObject = this;
-        }
-
-        lastObjectAtPath = setObject.getProperty(aPropertyPath);
-
-        // TODO clean up some of the duplicated code here
-
-        if (lastObjectAtPath && Array.isArray(lastObjectAtPath)) {
-            if (lastObjectAtPath !== value) {
-                // if the value does not match the object described by this propertyPath; set it as the new value
-
-                if (Array.isArray(setObject)) {
-                    // If the setObject is an array itself; splice (typically called by set) to trigger bindings, do it here to save time
-                    propertyToSetOnArray = parseInt(aPropertyPath, 10);
-                    if (!isNaN(propertyToSetOnArray)) {
-                        if (setObject.length < propertyToSetOnArray) {
-                            // TODO while I could set the value here I'm setting null and letting the splice,
-                            // which we need to do anyway to trigger bindings, do the actual setting
-                            setObject[propertyToSetOnArray] = null;
-                        }
-
-                        setObject.splice(propertyToSetOnArray, 1, value);
-
-                    } else {
-                        setObject[aPropertyPath] = value;
-                    }
-
-                } else {
-                    setObject[aPropertyPath] = value;
-                }
-
-            } else {
-                // Otherwise, they are the same object, a mutation event probably happened
-
-                // If the object at the property we're "setting" is itself an array, see if there was an event passed along
-                // as part of a change and whether we need to call the setObject's changeProperty method
-                var changeEvent = this.setProperty.changeEvent, modify;
-
-                // For these mutation/addition/removal events, use the 'modify' attribute of this property's descriptor
-                if (changeEvent && (changeEvent.currentTarget === lastObjectAtPath) &&
-                    (modify = M.getPropertyAttribute(setObject, aPropertyPath, MODIFY))) {
-                    modify.call(setObject, changeEvent.type, changeEvent.newValue, changeEvent.prevValue);
-                }
-            }
-        } else if (Array.isArray(setObject)) {
-            // If the setObject is an array itself; splice (typically called by set) to trigger bindings, do it here to save time
-            propertyToSetOnArray = parseInt(aPropertyPath, 10);
-            if (!isNaN(propertyToSetOnArray)) {
-                if (setObject.length < propertyToSetOnArray) {
-                    // TODO while I could set the value here I'm setting null and letting the splice,
-                    // which we need to do anyway to trigger bindings, do the actual setting
-                    setObject[propertyToSetOnArray] = null;
-                }
-            }
-            setObject.splice(propertyToSetOnArray, 1, value);
-        } else {
-            setObject[aPropertyPath] = value;
-        }
-    },
-    enumerable: false
-});
-
-/**
-Description
-@member external:Array#getProperty
-@function
-@param {Object} aPropertyPath
-@param {Property} unique
-@param {Property} preserve
-@param {Function} visitedComponentCallback
-@param {Array} currentIndex
-*/
-Object.defineProperty(Array.prototype, "getProperty", {
-    value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
-
-        currentIndex = currentIndex || 0;
-
-        var result,
-            propertyIsNumber = !isNaN(aPropertyPath),
-            parenthesisStartIndex = propertyIsNumber ? -1 : aPropertyPath.indexOf("(", currentIndex),
-            parenthesisEndIndex = propertyIsNumber ? -1 : aPropertyPath.lastIndexOf(")"),
-            currentPathComponentEndIndex = propertyIsNumber ? -1 : aPropertyPath.indexOf(".", currentIndex),
-            nextDelimiterIndex = -1,
-            itemResult,
-            index,
-            currentPathComponent,
-            functionName,
-            functionArgPropertyPath;
-
-        // PARSE: Determine the indices of the currentPathComponent we're concerned with
-
-        if (currentPathComponentEndIndex > -1 && parenthesisStartIndex > -1) {
-            // We have both a dot and an open parenthesis somewhere in the path, figure out the next path component
-            if (currentPathComponentEndIndex > parenthesisStartIndex) {
-                // The next dot was actually inside the function call; use the entire function call: foo.bar(a.b.c) -> bar(a.b.c)
-                nextDelimiterIndex = parenthesisEndIndex + 1;
-                functionName = aPropertyPath.substring(currentIndex, parenthesisStartIndex);
-            } else {
-                // The next dot comes before the start of the function parenthesis; use the dot: foo.bar(a.b.c) -> foo
-                nextDelimiterIndex = currentPathComponentEndIndex;
-            }
-        } else {
-            // We have either a dot, parenthesis, or neither
-            if (parenthesisStartIndex > -1) {
-                // we had a starting parenthesis; use the END parenthesis to include the entire function call
-                nextDelimiterIndex = parenthesisEndIndex + 1;
-                functionName = aPropertyPath.substring(currentIndex, parenthesisStartIndex);
-            } else {
-                nextDelimiterIndex = currentPathComponentEndIndex;
-            }
-        }
-
-        // Find the component of the propertyPath we want to deal with during this particular invocation of this function
-        currentPathComponent = propertyIsNumber ? aPropertyPath : aPropertyPath.substring(currentIndex, (nextDelimiterIndex === -1 ? aPropertyPath.length : nextDelimiterIndex));
-
-        // EVALUATE: Determine the value of the currentPathComponent
-
-        if (functionName) {
-            // We have a function to execute as part of this propertyPath; execute it assuming that it will know
-            // how to handle the property path being passed along
-
-            // TODO do we call this before or after finding the result (probably before to maintain the chain
-            // of one invocation's discovered value being the context of the next invocation
-            if (visitedComponentCallback) {
-                visitedComponentCallback(this, functionName + "()");
-            }
-
-            functionArgPropertyPath = aPropertyPath.substring(parenthesisStartIndex + 1, parenthesisEndIndex);
-            result = this[functionName](functionArgPropertyPath, visitedComponentCallback);
-
-
-        } else {
-
-            // TODO we don't provide any way to access properties that are actually accessible on the array itself
-            // we assume that by default, any property in a propertyPath after an array refers to a property
-            // you are interested in getting on each member of the array
-
-            if (isNaN(currentPathComponent)) {
-
-                if (visitedComponentCallback) {
-                    visitedComponentCallback(this, null, this[currentPathComponent]);
-                }
-
-                // The currentPathComponent is some property not directly on this array, and not an index in the array
-                // so we'll be getting an array of resolving this currentPathComponent on each member in the array
-                if (!preserve) {
-
-                    result = this.map(function(value, index) {
-
-                        itemResult = value.getProperty(aPropertyPath, unique, preserve, null, currentIndex);
-
-                        if (visitedComponentCallback) {
-                            visitedComponentCallback(value, currentPathComponent, itemResult, index);
-                        }
-
-                        return itemResult;
-                    });
-                } else {
-                    result = new Array(this.length);
-                    index = 0;
-                    while((itemResult = this[index])) {
-                        result[index] = itemResult.getProperty(aPropertyPath, unique, preserve, null, currentIndex);
-
-                        if (visitedComponentCallback) {
-                            visitedComponentCallback(itemResult, currentPathComponent, result[index], index);
-                        }
-
-                        index++;
-                    }
-                }
-
-            } else {
-
-                // The currentPathComponent is an index into this array
-                result = this[currentPathComponent];
-
-
-                if (visitedComponentCallback) {
-                    visitedComponentCallback(this, currentPathComponent, result);
-                }
-
-                if (currentPathComponentEndIndex > 0) {
-                    result = result ? result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, currentPathComponentEndIndex + 1) : undefined;
-                } else if (visitedComponentCallback && currentPathComponentEndIndex === -1 && result) {
-                    // If we're at the end of the path, but have a result, visit it
-                    visitedComponentCallback(result);
-                }
-            }
-        }
-
-        return result;
-    },
-    enumerable: false
-});
-
-/**
-Description
-@function external:Array#sum
-@param {Object} propertyPath
-@param {Function} visitedCallback
-@returns sum
-*/
-Object.defineProperty(Array.prototype, "sum", {
-    value: function(propertyPath, visitedCallBack) {
-        var sum = 0, result, resultSum;
-        if (propertyPath) {
-            this.map(function(value) {
-                result = value.getProperty(propertyPath, null, null, visitedCallBack);
-                if (Array.isArray(result)) {
-                    resultSum = 0;
-                    result.map(function(value) {
-                        return (resultSum += Number(value));
-                    });
-                    result = resultSum;
-                }
-                return (sum += Number(result));
-            });
-        }
-        else {
-            this.map(function(value) {
-                return (sum += Number(value));
-            });
-        }
-        return sum;
-    }
-});
-
-/**
-Description
-@member external:Array#any
-@function
-@param {Object} propertyPath
-@param {Function} visitedCallback
-@returns result
-*/
-Object.defineProperty(Array.prototype, "any", {
-    value: function(propertyPath, visitedCallback) {
-        var result;
-        if (propertyPath) {
-            result = this.some(function(value) {
-                return !!value.getProperty(propertyPath, null, null, visitedCallback);
-            });
-        } else {
-            result = this.some(function(value) {
-                return !!value;
-            });
-        }
-        return result;
-    }
-});
-
-/**
-@member external:Array#count
-@function
-@returns this.length
-*/
-Object.defineProperty(Array.prototype, "count", {
-    value: function() {
-        return this.length;
-    }
-});
-/**
-
- @function module:montage/core/core.Montage#undefinedGet
- @param {Object} aPropertyName The object property name.
- */
-Object.defineProperty(M, "undefinedGet", {
-    value: function(aPropertyName) {
-        console.warn("get undefined property -" + aPropertyName + "-");
-    },
-    writable: true
-});
-
-/**
-@member external:Array#undefinedGet
-*/
-Object.defineProperty(Array.prototype, "undefinedGet", {
-    value: M.undefinedGet,
-    writable: true
-});
-
-/**
-
- @function module:montage/core/core.Montage#undefinedSet
- @param {Object} aPropertyName The object property name.
- */
-Object.defineProperty(M, "undefinedSet", {
-    value: function(aPropertyName) {
-        console.warn("set undefined property -" + aPropertyName + "-");
-    },
-    writable: true
-});
-
-/**
-@member external:Array#undefinedSet
-*/
-Object.defineProperty(Array.prototype, "undefinedSet", {
-    value: M.undefinedSet,
-    writable: true
-});
-
-/**
-@member external:Object#parentProperty
-@default null
-*/
-Object.defineProperty(Object.prototype, "parentProperty", {
-    enumerable: false,
-    value: null,
-    writable: true
 });
 
 // XXX Does not presently function server-side
