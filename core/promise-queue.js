@@ -42,7 +42,7 @@ exports.PromiseQueue = Montage.create(Montage, {
     close: {
         value: function (reason, error, rejection) {
             var end = {
-                head: rejections || Promise.reject(reason, error)
+                head: rejection || Promise.reject(reason, error)
             };
             end.tail = end;
             this._ends.resolve(end);

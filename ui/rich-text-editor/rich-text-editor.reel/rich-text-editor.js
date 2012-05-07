@@ -318,7 +318,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
 
             if (slotElem) {
                 if (slotElem.parentNode) {
-                    slotElem.parentNode.removeChild(slotElem)
+                    slotElem.parentNode.removeChild(slotElem);
                 }
                 this._activeOverlay = null;
                 slot.content = null;
@@ -643,7 +643,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         value: function() {
             var thisRef = this,
                 prevValue;
-                updateValues = function() {
+                var updateValues = function() {
                     clearTimeout(thisRef._forceUpdateValuesTimeout);
                     delete thisRef._forceUpdateValuesTimeout;
                     clearTimeout(thisRef._updateValuesTimeout);
