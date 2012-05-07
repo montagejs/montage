@@ -449,7 +449,7 @@
         var overlay = description.overlay || {};
         Require.overlays.forEach(function (engine) {
             if (overlay[engine]) {
-                layer = overlay[engine];
+                var layer = overlay[engine];
                 for (var name in layer) {
                     description[name] = layer[name];
                 }
@@ -460,9 +460,7 @@
         // directories
         description.directories = description.directories || {};
         description.directories.lib =
-            description.directories.lib === void 0
-            ? "."
-            : description.directories.lib;
+            description.directories.lib === void 0 ? "." : description.directories.lib;
         var lib = description.directories.lib;
         // lib
         config.lib = URL.resolve(location, "./" + lib);

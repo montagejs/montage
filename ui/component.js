@@ -1814,7 +1814,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
 
                 // Load any non lazyLoad composers that have been added
                 length = component.composerList.length;
-                for (i = 0; i < length; i++) {
+                for (var i = 0; i < length; i++) {
                     composer = component.composerList[i];
                     if (!composer.lazyLoad) {
                         composer._load();

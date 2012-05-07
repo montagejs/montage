@@ -124,11 +124,11 @@ exports.TemplateBase = Object.create(Object.prototype, {
             this.rename(dirname, function(dirname) {
                 fs.readdir(dirname, function(err, filenames) {
                     if (err) throw err;
-                    filenames = filenames.map(function(value){return Path.join(dirname, value)}); // grunf..
+                    filenames = filenames.map(function(value){return Path.join(dirname, value);}); // grunf..
                     this.processFiles(filenames);
                     this.doneProcessingFile(dirname);
                 }.bind(this));
-            }.bind(this))
+            }.bind(this));
         }
     },
 
@@ -182,7 +182,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
 
     rename: {
         value: function(filename, callback) {
-            var newName = filename.replace("__name__", this.variables.name);
+            var newName = filename.replace("__name__", this.variables.name),
                 path = "mv " + filename + " " + newName;
             childProcess.exec(path, function (error, stdout, stderr) {
                 //console.log(path);
