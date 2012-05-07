@@ -5,13 +5,13 @@
  </copyright> */
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;    
+    Component = require("ui/component").Component;
 
 /**
  * The input type="range" field
  */
 var RangeInput = exports.RangeInput = Montage.create(Component, {
-    
+
     DEFAULT_WIDTH: {value: 300},
     HANDLE_ADJUST: {value: 5},
 
@@ -50,7 +50,7 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
            this.needsDraw = true;
        }
    },
-   
+
    /** Width of the slider in px. Default = 300 */
    _width: {value: null},
    width: {
@@ -59,13 +59,13 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
          },
          set: function(value) {
              this._width =  String.isString(value) ? parseFloat(value) : value;
-             this.needsDraw = true;
+             //this.needsDraw = true;
          }
      },
-   
+
 
    _sliding: {value: false},
-   
+
    percent: {value: null},
    _valueSyncedWithPosition: {value: null},
    _value: {value: null},
@@ -101,16 +101,16 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
             return this._positionX;
         },
         set: function(value, fromValue) {
-            
+
             if(value !== null && !isNaN(value)) {
                 this._positionX = value;
                 if(!fromValue) {
                     this._calculateValueFromPosition();
                     this._valueSyncedWithPosition = true;
-                }  
-                this.needsDraw = true;                
+                }
+                this.needsDraw = true;
             }
-           
+
         }
     },
 
@@ -118,52 +118,52 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
         value: function() {
             if(this.sliderWidth > 0) {
                 var percent = this.percent = (this.positionX / this.sliderWidth) * 100;
-                var value = (this.min + ((percent/100) * (this.max - this.min)));               
-                Object.getPropertyDescriptor(this, "value").set.call(this, value, true);    
+                var value = (this.min + ((percent/100) * (this.max - this.min)));
+                Object.getPropertyDescriptor(this, "value").set.call(this, value, true);
             }
 
         }
     },
-    
+
     _calculatePositionFromValue: {
         value: function() {
             // unless the element is ready, we cannot position the handle
             if(this.sliderWidth) {
                 var percent, value = this.value;
                 var range = (this.max - this.min);
-                percent = ((this.value-this.min)/range) * 100;                                    
+                percent = ((this.value-this.min)/range) * 100;
                 var positionX = (percent/100)*this.sliderWidth;
-                Object.getPropertyDescriptor(this, "positionX").set.call(this, positionX, true);   
+                Object.getPropertyDescriptor(this, "positionX").set.call(this, positionX, true);
                 this.percent = percent;
-                this._valueSyncedWithPosition = true;             
+                this._valueSyncedWithPosition = true;
             } else {
                 this._valueSyncedWithPosition = false;
-            }            
+            }
         }
     },
 
     deserializedFromTemplate: {
         value: function() {
-            
-            // read initial values from the input type=range                      
-            
+
+            // read initial values from the input type=range
+
             this.min = this.min || this.element.getAttribute('min') || 0;
-            this.max = this.max || this.element.getAttribute('max') || 100;            
+            this.max = this.max || this.element.getAttribute('max') || 100;
             this.step = this.step || this.element.getAttribute('step') || 1;
             this.value = this.value || this.element.getAttribute('value') || 0;
-            
-                        
+
+
         }
     },
 
     prepareForDraw: {
         value: function() {
             this.minX = this.sliderLeft = this.element.offsetLeft;
-            this.sliderWidth =  (this.width || RangeInput.DEFAULT_WIDTH); //this.element.offsetWidth || 300;            
+            this.sliderWidth =  (this.width || RangeInput.DEFAULT_WIDTH); //this.element.offsetWidth || 300;
             this.element.style.width = (this.sliderWidth + RangeInput.HANDLE_ADJUST) + 'px';
-            
+
             this.maxX = this.sliderLeft + this.sliderWidth;
-            
+
             if(!this._valueSyncedWithPosition) {
                 this._calculatePositionFromValue();
             }
@@ -175,9 +175,15 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
         value: function() {
             this.translateComposer.addEventListener('translateStart', this, false);
             this.translateComposer.addEventListener('translateEnd', this, false);
+            if(window.Touch) {
+                this.element.addEventListener('touchend', this, false);
+            } else {
+                this.element.addEventListener('mouseup', this, false);
+            }
+
         }
     },
-    
+
     handleTranslateStart: {
         value: function(e) {
             this._valueSyncedWithPosition = false;
@@ -187,20 +193,33 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
 
     handleTranslateEnd: {
         value: function(e) {
-            
-            if(this._sliding === true) {
-                this._sliding = false;
-            } else {
-                // do this only when the user clicks the slider directly instead of
-                // sliding the handle
-                var position = this.translateComposer._pointerX;
-                var positionX = ((position)- this.sliderLeft);
-                if(positionX > 0 && (positionX <= this.sliderWidth)) {
-                    this.positionX = positionX;                
+            this._sliding = false;
+        }
+    },
+
+    // handle user clicking the slider scale directly instead of moving the knob
+    _handleClick: {
+        value: function(e) {
+            var position = this.translateComposer._pointerX;
+            var relativePosition = (position - this.sliderLeft);
+            if(relativePosition > 0) {
+                var positionX = (position - (this.sliderLeft + 2*RangeInput.HANDLE_ADJUST));
+                if(positionX < 0) {
+                    positionX = 0;
                 }
-                
+                this.positionX = positionX;
             }
-                        
+        }
+    },
+
+    handleMouseup: {
+        value: function(e) {
+            this._handleClick(e);
+        }
+    },
+    handleTouchend: {
+        value: function(e) {
+            this._handleClick(e);
         }
     },
 
@@ -216,8 +235,8 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
 
     draw: {
         value: function() {
-            var el = this.handleEl;            
-            
+            var el = this.handleEl;
+
             if(el.style.webkitTransform != null) {
                 // detection for webkitTransform to use Hardware acceleration where available
                 el.style.webkitTransform = 'translate(' + this.positionX + 'px)';
@@ -227,7 +246,7 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
                 el.style.transform = 'translate(' + this.positionX + 'px)';
             } else {
                 // fallback
-                el.style['left'] = this.positionX + 'px';                
+                el.style['left'] = this.positionX + 'px';
             }
         }
     }
