@@ -18,6 +18,7 @@
  */
 
 var Montage = require("montage").Montage,
+    UUID = require("core/uuid"),
     MutableEvent = require("core/event/mutable-event").MutableEvent,
     Serializer = require("core/serializer").Serializer,
     Deserializer = require("core/deserializer").Deserializer,
@@ -393,7 +394,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             }
 
             if (!aWindow.uuid || aWindow.uuid.length === 0) {
-                aWindow.uuid = Montage.generateUID();
+                aWindow.uuid = UUID.generate();
             }
 
             if (this._windowsAwaitingFinalRegistration[aWindow.uuid] === aWindow) {
