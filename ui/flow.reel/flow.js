@@ -922,7 +922,6 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (this._numberOfIterations !== value) {
                 this._numberOfIterations = value;
                 this._updateLength();
-                console.log(value);
             }
         }
     },
