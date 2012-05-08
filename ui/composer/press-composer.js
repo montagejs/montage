@@ -40,7 +40,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     @name longPress
     @param {Event} event
 
-    Dispatched when a press lasts for longer than (@link longPressTimeout}
+    Dispatched when a press lasts for longer than (@link longPressThreshold}
     */
 
     /**
@@ -129,25 +129,25 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         value: false
     },
 
-    _longPressTimeout: {
+    _longPressThreshold: {
         enumerable: false,
         value: 1000
     },
     /**
     How long a press has to last for a longPress event to be dispatched
     */
-    longPressTimeout: {
+    longPressThreshold: {
         get: function() {
-            return this._longPressTimeout;
+            return this._longPressThreshold;
         },
         set: function(value) {
-            if (this._longPressTimeout !== value) {
-                this._longPressTimeout = value;
+            if (this._longPressThreshold !== value) {
+                this._longPressThreshold = value;
             }
         }
     },
 
-    _longPressTimer: {
+    _longPressTimeout: {
         enumberable: false,
         value: null
     },
@@ -407,9 +407,9 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
 
             if (this._shouldDispatchLongPress) {
                 var self = this;
-                this._longPressTimer = setTimeout(function () {
+                this._longPressTimeout = setTimeout(function () {
                     self._dispatchLongPress();
-                }, this._longPressTimeout);
+                }, this._longPressThreshold);
             }
         }
     },
@@ -422,8 +422,8 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         enumerable: false,
         value: function (event) {
             if (this._shouldDispatchLongPress) {
-                clearTimeout(this._longPressTimer);
-                this._longPressTimer = null;
+                clearTimeout(this._longPressTimeout);
+                this._longPressTimeout = null;
             }
 
             this.dispatchEvent(this._createPressEvent("press", event));
@@ -440,7 +440,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         value: function (event) {
             if (this._shouldDispatchLongPress) {
                 this.dispatchEvent(this._createPressEvent("longPress", event));
-                this._longPressTimer = null;
+                this._longPressTimeout = null;
             }
         }
     },
@@ -453,8 +453,8 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         enumerable: false,
         value: function (event) {
             if (this._shouldDispatchLongPress) {
-                clearTimeout(this._longPressTimer);
-                this._longPressTimer = null;
+                clearTimeout(this._longPressTimeout);
+                this._longPressTimeout = null;
             }
 
             this._state = PressComposer.CANCELLED;

@@ -25,23 +25,23 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
     },
 
     _pointerPosition: {
-   	    enumerable: false,
+        enumerable: false,
         value: null
     },
 
-	pointerPosition: {
-	    get: function () {
-	        return this._pointerPosition;
-	    },
-	    set: function (value) {
-	        var nearest = null;
+    pointerPosition: {
+        get: function () {
+            return this._pointerPosition;
+        },
+        set: function (value) {
+            var nearest = null;
 
             this._pointerPosition=value;
             if ((this._componentList)&&(this._componentList.length)) {
                 var target = value.target,
                     nearest;
 
-                for (i=0; i<this._componentList.length; i++) {
+                for (var i=0; i<this._componentList.length; i++) {
                     this._componentList[i]._element.setAttribute("data-nn-index", i);
                 }
                 while ((target.tagName !== "BODY")&&!(nearest = target.getAttribute("data-nn-index"))) {
@@ -64,8 +64,8 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
                     this.nearestNeighborComponent=null;
                 }
             }
-	    }
-	},
+        }
+    },
 
     _hasNearestNeighborComponentSearch: {
         enumerable: false,
@@ -94,7 +94,7 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
         get: function () {
             return this._nearestNeighborComponentSearchMethod;
         },
-        set: function (vale) {
+        set: function (value) {
             if (value==="midpoint") {
                 this._nearestNeighborComponentSearchMethod=value;
             } else {
@@ -106,43 +106,43 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
     _pointToQuadSquaredDistance: {
         enumerable: false,
         value: function (pX, pY, q) {
-			var dist, iDist,
-				i, j, u, x, y, div,
-				dist=1e20, a, b;
+            var iDist,
+                i, j, u, x, y, div,
+                dist=1e20, a, b;
 
-			q[0]-=pX; q[1]-=pY;	q[2]-=pX; q[3]-=pY;
-			q[4]-=pX; q[5]-=pY;	q[6]-=pX; q[7]-=pY;
-			for (i=0; i<8; i+=2) {
-				j=(i+2)%8;
-				a=q[i+1]-q[j+1];
-				b=q[j]-q[i];
-				div=a*a+b*b;
-				if (div>1e-10) {
-					u=q[i+1]*a-q[i]*b;
-					if (u<0) {
-						x=q[i];
-						y=q[i+1];
-					} else if (u>div) {
-						x=q[i]+b;
-						y=q[i+1]-a;
-					} else {
-						u/=div;
-						x=q[i]+u*b;
-						y=q[i+1]-u*a;
-					}
-					iDist=x*x+y*y;
-					if (iDist<dist) {
-						dist=iDist;
-					}
-				}
-			}
-			return dist;
-		}
-	},
+            q[0]-=pX; q[1]-=pY;    q[2]-=pX; q[3]-=pY;
+            q[4]-=pX; q[5]-=pY;    q[6]-=pX; q[7]-=pY;
+            for (i=0; i<8; i+=2) {
+                j=(i+2)%8;
+                a=q[i+1]-q[j+1];
+                b=q[j]-q[i];
+                div=a*a+b*b;
+                if (div>1e-10) {
+                    u=q[i+1]*a-q[i]*b;
+                    if (u<0) {
+                        x=q[i];
+                        y=q[i+1];
+                    } else if (u>div) {
+                        x=q[i]+b;
+                        y=q[i+1]-a;
+                    } else {
+                        u/=div;
+                        x=q[i]+u*b;
+                        y=q[i+1]-u*a;
+                    }
+                    iDist=x*x+y*y;
+                    if (iDist<dist) {
+                        dist=iDist;
+                    }
+                }
+            }
+            return dist;
+        }
+    },
 
-	_searchPreciseNearestNeighborComponent: {
-	    enumerable: false,
-	    value: function () {
+    _searchPreciseNearestNeighborComponent: {
+        enumerable: false,
+        value: function () {
             var length=this._componentList.length,
                 point=new WebKitPoint(0, 0),
                 v0, v1, v2, v3, i,
@@ -182,12 +182,12 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
                 }
             }
             return nearest;
-	    }
-	},
+        }
+    },
 
-	_searchMidpointNearestNeighborComponent: {
-	    enumerable: false,
-	    value: function () {
+    _searchMidpointNearestNeighborComponent: {
+        enumerable: false,
+        value: function () {
             var length=this._componentList.length,
                 point=new WebKitPoint(0, 0),
                 element,
@@ -213,20 +213,20 @@ var NearestNeighborComponentSearch = exports.NearestNeighborComponentSearch = Mo
                 }
             }
             return nearest;
-	    }
-	},
+        }
+    },
 
     _nearestNeighborComponent: {
-	    enumerable: false,
+        enumerable: false,
         value: null
     },
 
     nearestNeighborComponent: {
         get: function () {
-	        return this._nearestNeighborComponent;
-	    },
-	    set: function (value) {
-	        this._nearestNeighborComponent=value;
-	    }
+            return this._nearestNeighborComponent;
+        },
+        set: function (value) {
+            this._nearestNeighborComponent=value;
+        }
     }
 });

@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Flow Scrolling Test 2</title>
+    <script src="../../../../montage.js" data-package="."></script>
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "prototype": "flow-scrolling-test-2",
+                "properties": {
+                    "flow": {"@": "flow"}
+                }
+            },
+            "flow": {
+                "prototype": "montage/ui/flow.reel",
+                "properties": {
+                    "element": {"#": "flow"},
+                    "objects": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+                    "scrollingTransitionDuration": ".4s",
+                    "isSelectionEnabled": true,
+                    "paths": [
+                        {
+                            "knots": [
+                                {
+                                    "knotPosition": [-600, 0, -1000],
+                                    "nextHandlerPosition": [-600, 0, 0],
+                                    "previousDensity": 20,
+                                    "nextDensity": 20
+                                },
+                                {
+                                    "knotPosition": [600, 0, 300],
+                                    "previousHandlerPosition": [0, 0, 0],
+                                    "previousDensity": 5,
+                                    "nextDensity": 5
+                                }
+                            ],
+                            "headOffset": 12,
+                            "tailOffset": 12,
+                            "units": {}
+                        }
+                    ]
+                }
+            },
+            "slide": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "slide"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "flow"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    }
+                }
+            },
+            "next": {
+                "prototype": "montage/ui/bluemoon/button.reel",
+                "properties": {
+                    "element": {"#": "next"},
+                    "identifier": "next"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            }
+        }
+    </script>
+    <style>
+        html {
+            background: #555;
+        }
+        .flow {
+            position: absolute;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+        }
+        .slide {
+            width: 512px;
+            height: 268px;
+            margin-left: -256px;
+            margin-top: -134px;
+            line-height: 200px;
+            text-align: center;
+            background: #888;
+            font-family: sans-serif;
+            font-size: 90px;
+            color: #fff;
+            -webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .3);
+            -webkit-transition: .3s all;
+        }
+        .selected .slide {
+            -webkit-transform: scale3d(1.1, 1.1, 1) rotateY(30deg) rotateZ(10deg);
+            background-color: hsl(195, 96%, 53%);
+        }
+        .active .slide {
+            background-color: hsl(125, 96%, 53%);
+        }
+        .next {
+            margin-left: 50%;
+            margin-top: 25px;
+            -webkit-transform: translate3d(-50%, 0, 0);
+        }
+
+        .no-transition,
+        .no-transition * {
+            -webkit-transition: none !important;
+        }
+    </style>
+</head>
+<body>
+    <div data-montage-id="flow" class="flow">
+        <div data-montage-id="slide" class="slide"></div>
+    </div>
+    <div data-montage-id="next" class="next text dark">Next</div>
+</body>
+</html>

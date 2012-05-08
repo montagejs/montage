@@ -9,7 +9,8 @@ var Montage = require("montage").Montage,
     Deserializer = require("montage/core/deserializer").Deserializer,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
     EventInfo = require("support/testpageloader").EventInfo,
-    ChangeTypes = require("montage/core/event/mutable-event").ChangeTypes;
+    ChangeTypes = require("montage/core/event/mutable-event").ChangeTypes,
+    UUID = require("montage/core/uuid");
 
 var global = typeof global !== "undefined" ? global : window;
 
@@ -126,7 +127,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
             it("should add a native event listener when the first listener for an eventType is added for a target", function() {
                 var listener = {},
-                        eventType = Montage.generateUID();
+                    eventType = UUID.generate();
 
                 testDocument.addEventListener(eventType, listener, false);
 
@@ -274,7 +275,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
             it("should remove a registered eventType when the last listener is removed", function() {
                 var listener = {},
-                        eventType = Montage.generateUID();
+                    eventType = UUID.generate();
 
                 testDocument.addEventListener(eventType, listener, false);
                 testDocument.removeEventListener(eventType, listener, false);
@@ -285,7 +286,7 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
             it("should remove the native event listener when the last listener for an eventType is removed", function() {
                 var listener = {},
-                        eventType = Montage.generateUID();
+                    eventType = UUID.generate();
 
                 testDocument.addEventListener(eventType, listener, false);
                 testDocument.removeEventListener(eventType, listener, false);
@@ -306,9 +307,9 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
             it("should remove all registered listeners after being reset", function() {
                 var listener = {},
-                        listener2 = {},
-                        eventType = Montage.generateUID(),
-                        eventType2 = Montage.generateUID();
+                    listener2 = {},
+                    eventType = UUID.generate(),
+                    eventType2 = UUID.generate();
 
                 testDocument.addEventListener(eventType, listener, false);
                 testDocument.addEventListener(eventType, listener, true);

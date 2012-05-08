@@ -372,17 +372,9 @@
     function normalizeDependency(dependency, config, name) {
         config = config || {};
         if (typeof dependency === "string") {
-            if (dependency.indexOf("@") >= 0) {
-                var parts = dependency.split("@");
-                dependency = {
-                    name: parts[0] || name,
-                    version: parts[1]
-                };
-            } else {
-                dependency = {
-                    location: dependency
-                };
-            }
+            dependency = {
+                location: dependency
+            };
         }
         // if the named dependency has already been found at another
         // location, refer to the same eventual instance
@@ -457,7 +449,7 @@
         var overlay = description.overlay || {};
         Require.overlays.forEach(function (engine) {
             if (overlay[engine]) {
-                layer = overlay[engine];
+                var layer = overlay[engine];
                 for (var name in layer) {
                     description[name] = layer[name];
                 }
@@ -468,9 +460,7 @@
         // directories
         description.directories = description.directories || {};
         description.directories.lib =
-            description.directories.lib === void 0
-            ? "."
-            : description.directories.lib;
+            description.directories.lib === void 0 ? "." : description.directories.lib;
         var lib = description.directories.lib;
         // lib
         config.lib = URL.resolve(location, "./" + lib);

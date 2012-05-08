@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="picasa-carousel.css">
+
+    <script type="text/montage-serialization">
+    {
+        "owner": {
+            "prototype": "montage/lab/sandbox/ui/picasa-carousel.reel",
+            "properties": {
+                "element": {"#": "montage-google-picasa-carousel"},
+                "flow": {"@": "flow"}
+            }
+        },
+        "searchResultsController": {
+            "module": "montage/ui/controller/array-controller",
+            "name": "ArrayController",
+            "bindings": {
+                "content": {
+                    "boundObject": {"@": "owner"},
+                    "boundObjectPropertyPath": "searchResults"
+                }
+            }
+        },
+        "image": {
+            "prototype": "montage/lab/sandbox/ui/picasa-carousel.reel/image.reel",
+            "properties": {
+                "element": {"#": "image"}
+            },
+            "bindings": {
+                "src": {
+                    "boundObject": {"@": "flow"},
+                    "boundObjectPropertyPath": "objectAtCurrentIteration.media$group.media$thumbnail.2.url",
+                    "oneway": true
+                }
+            }
+        },
+        "flow": {
+            "module": "montage/ui/flow.reel",
+            "name": "Flow",
+            "properties": {
+                "element": {"#": "flow"},
+                "cameraFov": 60,
+                "stride": 1,
+                "paths": [
+                    {
+                        "knots": [
+                            {
+                                "knotPosition": [-1980, -154, 0],
+                                "nextHandlerPosition": [-1760, -154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [-1320, -154, 0],
+                                "previousHandlerPosition": [-1540, -154, 0],
+                                "nextHandlerPosition": [-1100, -154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [-660, -154, 0],
+                                "previousHandlerPosition": [-880, -154, 0],
+                                "nextHandlerPosition": [-440, -154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [0, -154, 350],
+                                "previousHandlerPosition": [-220, -154, 350],
+                                "nextHandlerPosition": [220, -154, 350],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [660, -154, 0],
+                                "previousHandlerPosition": [440, -154, 0],
+                                "nextHandlerPosition": [880, -154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [1320, -154, 0],
+                                "previousHandlerPosition": [1100, -154, 0],
+                                "nextHandlerPosition": [1540, -154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [1980, -154, 0],
+                                "previousHandlerPosition": [1760, -154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            }
+                        ],
+                        "headOffset": 9,
+                        "tailOffset": 9,
+                        "units": {}
+                    },
+                    {
+                        "knots": [
+                            {
+                                "knotPosition": [-1980, 0, 0],
+                                "nextHandlerPosition": [-1760, 0, 0],
+                                "rotateX": 0,
+                                "opacity": 0.5,
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [-1320, 0, 0],
+                                "previousHandlerPosition": [-1540, 0, 0],
+                                "nextHandlerPosition": [-1100, 0, 0],
+                                "rotateX": 0,
+                                "previousDensity": 3,
+                                "opacity": 0.5,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [-660, 0, 0],
+                                "previousHandlerPosition": [-880, 0, 0],
+                                "nextHandlerPosition": [-440, 0, 0],
+                                "rotateX": 0,
+                                "previousDensity": 3,
+                                "opacity": 0,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [0, 0, 350],
+                                "previousHandlerPosition": [-220, 0, 350],
+                                "nextHandlerPosition": [220, 0, 350],
+                                "rotateX": 0,
+                                "previousDensity": 3,
+                                "opacity": 1,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [660, 0, 0],
+                                "previousHandlerPosition": [440, 0, 0],
+                                "nextHandlerPosition": [880, 0, 0],
+                                "rotateX": 1,
+                                "opacity": 0.5,
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [1320, 0, 0],
+                                "previousHandlerPosition": [1100, 0, 0],
+                                "nextHandlerPosition": [1540, 0, 0],
+                                "previousDensity": 3,
+                                "rotateX": 0,
+                                "opacity": 0.5,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [1980, 0, 0],
+                                "previousHandlerPosition": [1760, 0, 0],
+                                "previousDensity": 3,
+                                "rotateX": 0,
+                                "opacity": 0.5,
+                                "nextDensity": 3
+                            }
+                        ],
+                        "headOffset": 9,
+                        "tailOffset": 9,
+                        "units": {
+                            "rotateX": "rad",
+                            "opacity": ""
+                        }
+                    },
+                    {
+                        "knots": [
+                            {
+                                "knotPosition": [-1980, 154, 0],
+                                "nextHandlerPosition": [-1760, 154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [-1320, 154, 0],
+                                "previousHandlerPosition": [-1540, 154, 0],
+                                "nextHandlerPosition": [-1100, 154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [-660, 154, 0],
+                                "previousHandlerPosition": [-880, 154, 0],
+                                "nextHandlerPosition": [-440, 154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [0, 154, 350],
+                                "previousHandlerPosition": [-220, 154, 350],
+                                "nextHandlerPosition": [220, 154, 350],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [660, 154, 0],
+                                "previousHandlerPosition": [440, 154, 0],
+                                "nextHandlerPosition": [880, 154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [1320, 154, 0],
+                                "previousHandlerPosition": [1100, 154, 0],
+                                "nextHandlerPosition": [1540, 154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            },
+                            {
+                                "knotPosition": [1980, 154, 0],
+                                "previousHandlerPosition": [1760, 154, 0],
+                                "previousDensity": 3,
+                                "nextDensity": 3
+                            }
+                        ],
+                        "headOffset": 9,
+                        "tailOffset": 9,
+                        "units": {}
+                    }
+                ],
+                "elementsBoundingSphereRadius": 700
+            },
+            "bindings": {
+                "objects": {
+                    "boundObject": {"@": "searchResultsController"},
+                    "boundObjectPropertyPath": "content",
+                    "oneway": true
+                }
+            }
+        }
+    }
+    </script>
+
+</head>
+<body>
+
+    <div data-montage-id="montage-google-picasa-carousel" class="montage-google-picasa-carousel">
+        <div data-montage-id="flow" class="flow">
+            <img data-montage-id="image" class="image"/>
+        </div>
+    </div>
+
+</body>
+</html>

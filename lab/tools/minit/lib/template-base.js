@@ -41,8 +41,9 @@ exports.TemplateBase = Object.create(Object.prototype, {
         value: {}
     },
 
+    // The output destination relative to the package root
     destination: {
-        value: "../../../"
+        value: null
     },
 
     process: {
@@ -67,8 +68,14 @@ exports.TemplateBase = Object.create(Object.prototype, {
 
     finish: {
         value: function() {
-            var path = "cp -R " + this.buildDir + "/ " + Path.join(this.options.minitHome, this.destination);
-            //console.log(path);
+            var path;
+            if (!this.destination) {
+                // destination is the working directory
+                path = "cp -R " + this.buildDir + "/ .";
+            } else {
+                // otherwise relative to the package root
+                path = "cp -R " + this.buildDir + "/ " + Path.join(this.options.packageHome, this.destination);
+            }
             if (! this.options.dryRun) {
                 childProcess.exec(path, function (error, stdout, stderr) {
                     if (error) {
@@ -117,11 +124,11 @@ exports.TemplateBase = Object.create(Object.prototype, {
             this.rename(dirname, function(dirname) {
                 fs.readdir(dirname, function(err, filenames) {
                     if (err) throw err;
-                    filenames = filenames.map(function(value){return Path.join(dirname, value)}); // grunf..
+                    filenames = filenames.map(function(value){return Path.join(dirname, value);}); // grunf..
                     this.processFiles(filenames);
                     this.doneProcessingFile(dirname);
                 }.bind(this));
-            }.bind(this))
+            }.bind(this));
         }
     },
 
@@ -175,7 +182,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
 
     rename: {
         value: function(filename, callback) {
-            var newName = filename.replace("__name__", this.variables.name);
+            var newName = filename.replace("__name__", this.variables.name),
                 path = "mv " + filename + " " + newName;
             childProcess.exec(path, function (error, stdout, stderr) {
                 //console.log(path);
