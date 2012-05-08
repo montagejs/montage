@@ -58,9 +58,9 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     load: {
         value: function() {
             if (window.Touch) {
-                this._element.addEventListener("touchstart", this);
+                this._element.addEventListener("touchstart", this, true);
             } else {
-                this._element.addEventListener("mousedown", this);
+                this._element.addEventListener("mousedown", this, true);
             }
         }
     },
@@ -191,16 +191,16 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                     return false;
                 }
 
-                document.addEventListener("touchend", this);
-                document.addEventListener("touchcancel", this);
+                document.addEventListener("touchend", this, false);
+                document.addEventListener("touchcancel", this, false);
             } else if (event.type === "mousedown") {
                 this._observedPointer = "mouse";
                 // Needed to cancel action event dispatch is mouseup'd when
                 // not on the component
-                document.addEventListener("mouseup", this);
+                document.addEventListener("mouseup", this, false);
                 // Needed to preventDefault if another component has claimed
                 // the pointer
-                document.addEventListener("click", this);
+                document.addEventListener("click", this, false);
             }
 
             this.component.eventManager.claimPointer(this._observedPointer, this);
@@ -320,7 +320,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
 
     // Handlers
 
-    handleTouchstart: {
+    captureTouchstart: {
         value: function(event) {
             this._startInteraction(event);
         }
@@ -353,7 +353,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         }
     },
 
-    handleMousedown: {
+    captureMousedown: {
         value: function(event) {
             this._startInteraction(event);
         }
