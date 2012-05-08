@@ -270,7 +270,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 aParentNode,
                 eventManager = this.eventManager;
             if (anElement) {
-                while ((aParentNode = anElement.parentNode) !== null && eventManager.eventHandlerForElement(aParentNode) == null) {
+                while ((aParentNode = anElement.parentNode) != null && eventManager.eventHandlerForElement(aParentNode) == null) {
                     anElement = aParentNode;
                 }
                 return aParentNode ? eventManager.eventHandlerForElement(aParentNode) : this._alternateParentComponent;
@@ -1708,6 +1708,11 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     Description TODO
     @function
     */
+    _previousDrawDate: {
+        enumerable: false,
+        value: 0
+    },
+    
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -1757,8 +1762,16 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                 if (requestAnimationFrame) {
                     this.requestedAnimationFrame = requestAnimationFrame.call(window, _drawTree);
                 } else {
-                    //1000/17 = 60fps
-                    this.requestedAnimationFrame = setTimeout(_drawTree, 16);
+                    // Shim based in Erik Möller's code at
+                    // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
+                    var currentDate = Date.now(),
+                        miliseconds = 17 - currentDate + this._previousDrawDate;
+                    
+                    if (miliseconds < 0) {
+                        miliseconds = 0;
+                    }
+                    this.requestedAnimationFrame = setTimeout(_drawTree, miliseconds);
+                    this._previousDrawDate = currentDate + miliseconds;
                 }
                 this._scheduleComposerRequest = false;
             }

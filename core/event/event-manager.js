@@ -449,15 +449,16 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                     && 'addEventListener' in window.HTMLElement.prototype
                     && window.Components
                     && window.Components.interfaces) {
-                    var candidate;
+                    var candidate, candidatePrototype;
                     for(candidate in Components.interfaces) {
                         if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
                             candidate = candidate.replace(/^nsIDOM/, '');
                             if(candidate = window[candidate]) {
-                                candidate.prototype.nativeAddEventListener = candidate.prototype.addEventListener;
-                                candidate.prototype.addEventListener = Element.prototype.addEventListener;
-                                candidate.prototype.nativeRemoveEventListener = candidate.prototype.removeEventListener;
-                                candidate.prototype.removeEventListener = Element.prototype.removeEventListener;
+                                candidatePrototype = candidate.prototype;
+                                candidatePrototype.nativeAddEventListener = candidatePrototype.addEventListener;
+                                candidatePrototype.addEventListener = Element.prototype.addEventListener;
+                                candidatePrototype.nativeRemoveEventListener = candidatePrototype.removeEventListener;
+                                candidatePrototype.removeEventListener = Element.prototype.removeEventListener;
                             }
                         }
                     }
@@ -788,6 +789,12 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     },
 
 
+    _nonDelegateableEventTypes: {
+        enumerable: false,
+        distinct: true,
+        value: ["load", "resize", "message", "orientationchange", "beforeunload", "unload",
+            "dragenter", "dragleave", "drop", "dragover", "dragend"]
+    },
 
    /**
     Determines the actual target to observe given a target and an eventType. This correctly decides whether to observe the element specified or to observe some other element to leverage event delegation. This should be consulted whenever starting or stopping the observation of a target for a given eventType.
@@ -807,10 +814,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 // We install all native event listeners on the document, except for a few special event types
                 // TODO this may be problematic for some events in some browsers, I'm afraid there will be too
                 // many exceptions to do this in a generic manner
-                var nonDelegateableEventTypes = ["load", "resize", "message", "orientationchange",
-                    "beforeunload", "unload", "dragenter", "dragleave", "drop", "dragover", "dragend"];
-
-                if ((/*isDocument*/!!target.defaultView) || nonDelegateableEventTypes.indexOf(eventType) >= 0) {
+                if ((/*isDocument*/!!target.defaultView) || this._nonDelegateableEventTypes.indexOf(eventType) >= 0) {
                     return target;
                 } else {
                     return /* isWindow*/target.screen ? target.document : target.ownerDocument;

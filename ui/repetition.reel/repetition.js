@@ -16,6 +16,7 @@ var Montage = require("montage").Montage,
     Template = require("ui/template").Template,
     logger = require("core/logger").logger("repetition"),
     Gate = require("core/gate").Gate,
+    MutableEvent = require("core/event/mutable-event").MutableEvent,
     ChangeTypeModification = require("core/event/mutable-event").ChangeTypes.MODIFICATION;
 /**
  @class module:"montage/ui/repetition.reel".Repetition
@@ -37,7 +38,18 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         enumerable: false,
         value: function(event) {
             if(event._event.propertyChange !== ChangeTypeModification) {
-                this.selectedIndexes = null;
+
+                if (!this.contentController) {
+
+                    // if the objects collection itself was actually modified: clear the selection
+                    // TODO preserve selection if possible
+                    if (this._objects === event.plus) {
+                        this.selectedIndexes = null;
+                    }
+                    // otherwise; the change to objects was a result of a change to the indexMap
+
+                }
+
                 this._mappedObjects = null;
 
                 if (this._isComponentExpanded) {
@@ -182,15 +194,15 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         @default null
     */
     objects: {
-        dependencies: ["indexMap"],
+        dependencies: ["indexMap", "indexMapEnabled"],
         enumerable: false,
         get: function() {
-            if (!this.indexMap) {
+            if (!this.indexMap || !this.indexMapEnabled) {
                 return this._objects;
             } else {
                 if (this._objects && !this._mappedObjects) {
                     this._mappedObjects = this.indexMap.map(function(value) {
-                        return this._objects.getProperty(value);
+                        return !isNaN(value) ? this._objects.getProperty(value) : undefined;
                     }, this);
                 }
                 return this._mappedObjects;
@@ -279,21 +291,105 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     indexMap: {
         get: function() {
             return this._indexMap;
+        }
+    },
+
+    _indexMapEnabled: {
+        enumerable: false,
+        value: false
+    },
+
+    indexMapEnabled: {
+        get: function() {
+            return this._indexMapEnabled;
         },
         set: function(value) {
-            if (value === this._indexMap) {
+            if (value === this._indexMapEnabled) {
                 return;
             }
 
+            if (!this._indexMap && value) {
+                this._indexMap = [];
+            }
+
+            this._indexMapEnabled = value;
+
+            this.refreshIndexMap();
+        }
+    },
+
+    _drawnIndexMap: {
+        enumerable: false,
+        value: null
+    },
+
+    drawnIndexMap: {
+        get: function() {
+            return this._drawnIndexMap;
+        }
+    },
+
+    mapIndexToIndex: {
+        value: function(actual, apparent, update) {
+
+            if (!this._indexMap) {
+                this._indexMap = [];
+            }
+
+            if (apparent === this._indexMap[actual] || this._indexMap.indexOf(apparent) > -1) {
+                return;
+            }
+
+            this._indexMap[actual] = apparent;
+
+            // Track that the indexMap changed what is appearing at the given index
+            // so that we can force it to not transition
+            this._indexMapAffectedIndexes[actual] = true;
+            this._indexMapChanged = true;
+
+            // Don't update if the end-user forced no update, they might be doing a bunch of modifications
+            // and want to manually refresh the indexMap when they're done.
+            if (update || typeof update === "undefined") {
+                this.refreshIndexMap();
+            }
+        }
+    },
+
+    clearIndexMap: {
+        value: function() {
+            this._indexMap.length = 0;
+            this.indexMapEnabled = false;
+        }
+    },
+
+    refreshIndexMap: {
+        value: function() {
             this._mappedObjects = null;
-            this._indexMap = value;
+
+            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("indexMap"));
 
             if (this._isComponentExpanded) {
                 this._refreshItems();
+                this.needsDraw = true;
             }
-
-            //TODO react to modifications to the indexMap?
         }
+    },
+
+    _indexMapChanged: {
+        enumerable: false,
+        value: false
+    },
+
+    _indexMapAffectedIndexes: {
+        enumerable: false,
+        distinct: true,
+        value: {}
+    },
+
+    _dirtyIndexes: {
+        enumerable: false,
+        distinct: true,
+        value: {}
     },
 
  /**
@@ -354,10 +450,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             var objectCount = this._objects ? this._objects.length : 0,
                 itemCount = this._items.length + this._itemsToAppend.length,
                 neededItemCount,
-                i;
+                i,
+                addItem = this._addItem,
+                deleteItem = this._deleteItem;
 
-
-            if (this._objects && this.indexMap) {
+            if (this._objects && this.indexMap && this._indexMapEnabled) {
                 objectCount = this.indexMap.length;
             }
 
@@ -382,12 +479,12 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 this.canDrawGate.setField("iterationLoaded", false);
                 // Need to add more items
                 for (i = 0; i < neededItemCount; i++) {
-                    this._addItem();
+                    addItem.call(this);
                 }
             } else if (neededItemCount < 0) {
                 // Need to remove extra items
                 for (i = neededItemCount; i < 0; i++) {
-                    this._deleteItem();
+                    deleteItem.call(this);
                 }
             }
 
@@ -409,7 +506,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             index,
             componentStartIndex,
             componentEndIndex,
-            canDrawGate = self.canDrawGate;
+            canDrawGate = self.canDrawGate,
+            i;
 
         // TODO simply pop from deletedItems if we have any in that pool
         this._currentItem = {};
@@ -431,7 +529,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 childComponents = self.childComponents;
                 componentStartIndex = index * self._iterationChildComponentsCount;
                 componentEndIndex = componentStartIndex + componentsCount;
-                for (var i = componentStartIndex; i < componentEndIndex; i++) {
+                for (i = componentStartIndex; i < componentEndIndex; i++) {
                     childComponent = childComponents[i];
                     childComponent.needsDraw = true;
                     childComponent.loadComponentTree(function() {
@@ -450,7 +548,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     _deleteItem: {value: function() {
 
         var deletedItem, itemIndex, removedComponents, childComponents = this.childComponents, childComponentsCount = this._iterationChildComponentsCount,
-            itemsToAppendCount = this._itemsToAppend.length;
+            itemsToAppendCount = this._itemsToAppend.length,
+            i,
+            removedComponentCount;
+
         if (itemsToAppendCount > 0) {
             // We caught the need to remove these items before they got inserted
             // just don't bother appending them
@@ -470,7 +571,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             removedComponents = childComponents.splice(childComponents.length - childComponentsCount, childComponentsCount);
             this._childLoadedCount -= childComponentsCount;
             this._expectedChildComponentsCount -= childComponentsCount;
-            for (var i = 0, l = removedComponents.length; i < l; i++) {
+            for (i = 0, removedComponentCount = removedComponents.length; i < removedComponentCount; i++) {
                 removedComponents[i].cleanupDeletedComponentTree();
             }
         } else {
@@ -578,11 +679,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     reset: {
         value: function() {
-            this._items = [];
-            this._itemsToAppend = [];
+            this._items.wipe();
+            this._itemsToAppend.wipe();
             this._nextDeserializedItemIx = 0;
-            this._itemsToRemove = [];
-            this._deletedItems = [];
+            this._itemsToRemove.wipe();
+            this._deletedItems.wipe();
         }
     },
 
@@ -591,9 +692,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             // this is setup just for the flattening of the template iteration, the iteration needs to be serialized once it's completely flatten.
             this.setupIterationSerialization();
         }
-        var controllerBindingDescriptorsToInstall = this._controllerBindingsToInstall;
+        var controllerBindingDescriptorsToInstall = this._controllerBindingsToInstall,
+            key;
+
         if (controllerBindingDescriptorsToInstall) {
-            for (var key in controllerBindingDescriptorsToInstall) {
+            for (key in controllerBindingDescriptorsToInstall) {
                 Object.defineBinding(this, key, controllerBindingDescriptorsToInstall[key]);
             }
             delete this._controllerBindingsToInstall;
@@ -651,20 +754,9 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             return this._selectedIndexes;
         },
         set: function(value) {
-
-            if (!this._selectedIndexesToDeselectOnDraw) {
-                this._selectedIndexesToDeselectOnDraw = this.selectedIndexes ? this.selectedIndexes : [];
-            }
-
-            // Accumulate the indexes that were selected since the last time we drew
-            // Note this may mean we remove and re-add a selected class when we draw, but that should be quicker
-            // than trying to keep this list as accurate as possible
-            if (this.selectedIndexes || 0 === this.selectedIndexes) {
-                this._selectedIndexesToDeselectOnDraw = this._selectedIndexesToDeselectOnDraw.concat(this.selectedIndexes);
-            }
-
             this._selectedIndexes = value;
 
+            this._markIndexesDirty(value);
 
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
@@ -694,15 +786,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     },
 
-
-/**
-  Description TODO
-  @private
-*/
-    _activeIndexesToClearOnDraw: {
-        enumerable: false,
-        value: null
-    },
 /**
   Description TODO
   @private
@@ -723,21 +806,28 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         },
         set: function(value) {
 
-            if (!this._activeIndexesToClearOnDraw) {
-                this._activeIndexesToClearOnDraw = this._activeIndexes ? this.activeIndexes : [];
-            }
-
-            if (this._activeIndexes || 0 === this._activeIndexes) {
-                this._activeIndexesToClearOnDraw = this._activeIndexesToClearOnDraw.concat(this._activeIndexes);
-            }
-
             this._activeIndexes = value;
+
+            this._markIndexesDirty(value);
 
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
         }
     },
+
+    _markIndexesDirty: {
+        value: function(indexes) {
+
+            if (indexes) {
+                for (var i = 0, indexCount = indexes.length; i < indexCount; i++) {
+                    this._dirtyIndexes[this._indexMap ? this._indexMap.indexOf(indexes[i]) : indexes[i]] = true;
+                }
+            }
+
+        }
+    },
+
 /**
   Description TODO
   @private
@@ -825,6 +915,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             var activeIndex = this._itemIndexOfElement(event.target);
             if (null !== activeIndex) {
                 this.activeIndexes = [activeIndex];
+            } else {
+                this._ignoreSelectionPointer();
             }
         }
     },
@@ -837,14 +929,16 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         value: function(event) {
             // TODO only grab new touches that are in target touches as well maybe?
 
-            var i = 0;
+            var i = 0,
+                selectedIndex;
+
             while (i < event.changedTouches.length && event.changedTouches[i].identifier !== this._selectionPointer) {
                 i++;
             }
 
             if (i < event.changedTouches.length) {
                 if (this.eventManager.isPointerClaimedByComponent(this._selectionPointer, this)) {
-                    var selectedIndex = this._itemIndexOfElement(event.target);
+                    selectedIndex = this._itemIndexOfElement(event.target);
 
                     if (null !== selectedIndex) {
                         this.selectedIndexes = [selectedIndex];
@@ -877,6 +971,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             var activeIndex = this._itemIndexOfElement(event.target);
             if (null !== activeIndex) {
                 this.activeIndexes = [activeIndex];
+            } else {
+                this._ignoreSelectionPointer();
             }
         }
     },
@@ -988,16 +1084,16 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             doc = repetitionElement.ownerDocument,
             firstAddedIndex,
             selectionCount,
-            deselectionCount,
             rangeToRemove,
             iterationElements,
-            deselectableElementCount,
-            deactivateCount,
-            deactivatableElementCount,
             selectableElementCount,
             activatedCount,
             activatableElementCount,
-            iterationElement;
+            iterationElement,
+            iterationElementClassList,
+            indexMapChanged = this._indexMapChanged,
+            activeIndex,
+            selectedIndex;
 
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
@@ -1015,40 +1111,37 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             iterationElements = repetitionElement.children;
 
-            if (this._activeIndexesToClearOnDraw &&
-                this._activeIndexesToClearOnDraw.length > 0) {
+            // NOTE Might be a bit excessive, but with the idea that the repetition will have a reasonable amount
+            // of elements given the indexMap support I'll start with this
+            // Wipe-out selection related classnames throughout the repetition to ensure a clean slate
+            for (i = 0; i < iterationElements.length; i++) {
+                iterationElement = iterationElements.item(i);
+                if (iterationElement) {
 
-                deactivateCount = this._activeIndexesToClearOnDraw.length;
-                deactivatableElementCount = Math.min(deactivateCount, iterationElements.length);
+                    if (this._dirtyIndexes[i]) {
+                        iterationElementClassList = iterationElement.classList;
 
-                for (i = 0; i < deactivateCount; i++) {
-                    iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._activeIndexesToClearOnDraw[i]): this._activeIndexesToClearOnDraw[i]));
-                    if (iterationElement) {
-                        iterationElement.classList.remove("active");
+                        iterationElementClassList.remove("active");
+                        iterationElementClassList.remove("selected");
+                        iterationElementClassList.remove("no-transition");
+
+                        if (indexMapChanged && this._indexMapAffectedIndexes[i]) {
+                            iterationElementClassList.add("no-transition");
+                            this._dirtyIndexes[i] = false;
+                        }
+
                     }
                 }
-
-                this._activeIndexesToClearOnDraw = [];
             }
-
-            if (this._selectedIndexesToDeselectOnDraw &&
-                this._selectedIndexesToDeselectOnDraw.length > 0) {
-
-                deselectionCount = this._selectedIndexesToDeselectOnDraw.length;
-                deselectableElementCount = Math.min(deselectionCount, iterationElements.length);
-
-                for (i = 0; i < deselectableElementCount; i++) {
-                    iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._selectedIndexesToDeselectOnDraw[i]): this._selectedIndexesToDeselectOnDraw[i]));
-                    if (iterationElement) {
-                        iterationElement.classList.remove("selected");
-                    }
-                }
-
-                this._selectedIndexesToDeselectOnDraw = [];
-            }
-
         }
 
+        // We've accounted for drawing given an indexMap change, schedule the next draw to clean up from that
+        // by re-enabling transitions
+        if (indexMapChanged) {
+            this._indexMapAffectedIndexes.wipe();
+            this._indexMapChanged = false;
+            this.needsDraw = true;
+        }
 
         // Remove items pending removal
         if (this._itemsToRemove.length && this._itemsToRemove.length > 0) {
@@ -1061,7 +1154,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                 rangeToRemove.extractContents();
             }
-            this._itemsToRemove = [];
+            this._itemsToRemove.wipe();
         }
 
         if (this._itemsToAppend.length && this._itemsToAppend.length > 0) {
@@ -1090,7 +1183,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             itemCount = this._items.length;
 
-            this._itemsToAppend = [];
+            this._itemsToAppend.wipe();
             this._nextDeserializedItemIx = 0;
         }
 
@@ -1103,9 +1196,12 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             selectableElementCount = Math.min(selectionCount, iterationElements.length);
 
             for (i = 0; i < selectableElementCount; i++) {
-                iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this.selectedIndexes[i]): this.selectedIndexes[i]));
+                selectedIndex = this.indexMap ? this.indexMap.indexOf(this.selectedIndexes[i]): this.selectedIndexes[i];
+                iterationElement = iterationElements.item(selectedIndex);
                 if (iterationElement) {
                     iterationElement.classList.add("selected");
+                    //Mark the rediscovered selected index as dirty
+                    this._dirtyIndexes[selectedIndex] = true;
                 }
             }
         }
@@ -1119,12 +1215,17 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             activatableElementCount = Math.min(activatedCount, iterationElements.length);
 
             for (i = 0; i < activatableElementCount; i++) {
-                iterationElement = iterationElements.item((this.indexMap ? this.indexMap.indexOf(this._activeIndexes[i]): this._activeIndexes[i]));
+                activeIndex = this.indexMap ? this.indexMap.indexOf(this._activeIndexes[i]): this._activeIndexes[i];
+                iterationElement = iterationElements.item(activeIndex);
                 if (iterationElement) {
                     iterationElement.classList.add("active");
+                    //Mark the rediscovered active index as dirty
+                    this._dirtyIndexes[activeIndex] = true;
                 }
             }
         }
+
+        this._drawnIndexMap = this._indexMap ? this.indexMap.slice(0) : null;
 
     }},
 /**
@@ -1163,50 +1264,53 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     */
     propertyChangeBindingListener: {value: function(type, listener, useCapture, atSignIndex, bindingOrigin, bindingPropertyPath, bindingDescriptor) {
 
-        var usefulBindingDescriptor = bindingDescriptor;
-        var usefulType = type;
-        var currentIndex;
+        var usefulBindingDescriptor = bindingDescriptor,
+            usefulType = type,
+            currentIndex,
+            descriptorKeys,
+            descriptorKeyCount,
+            iDescriptorKey,
+            i,
+            modifiedBoundObjectPropertyPath;
 
         if (bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
             if (this._currentItem) {
                 currentIndex = this._items.length + this._nextDeserializedItemIx - 1;
                 usefulBindingDescriptor = {};
-                var descriptorKeys = Object.keys(bindingDescriptor);
-                var descriptorKeyCount = descriptorKeys.length;
-                var iDescriptorKey;
-                for (var i = 0; i < descriptorKeyCount; i++) {
+                descriptorKeys = Object.keys(bindingDescriptor);
+                descriptorKeyCount = descriptorKeys.length;
+                for (i = 0; i < descriptorKeyCount; i++) {
                     iDescriptorKey = descriptorKeys[i];
                     usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
                 }
 
                 //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/objectAtCurrentIteration/, 'objects.' + currentIndex);
+                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/objectAtCurrentIteration/, 'objects.' + currentIndex);
                 usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
 
                 usefulType = type.replace(/objectAtCurrentIteration/, 'objects.' + currentIndex);
-            }   else {
+            } else {
                 return null;
             }
         } else if(bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/selectionAtCurrentIteration/)) {
             if (this._currentItem) {
                 currentIndex = this._items.length + this._nextDeserializedItemIx - 1;
                 usefulBindingDescriptor = {};
-                var descriptorKeys = Object.keys(bindingDescriptor);
-                var descriptorKeyCount = descriptorKeys.length;
-                var iDescriptorKey;
-                for (var i = 0; i < descriptorKeyCount; i++) {
+                descriptorKeys = Object.keys(bindingDescriptor);
+                descriptorKeyCount = descriptorKeys.length;
+                for (i = 0; i < descriptorKeyCount; i++) {
                     iDescriptorKey = descriptorKeys[i];
                     usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
                 }
 
                 //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
 
-                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'selections.' + currentIndex);
+                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'selections.' + currentIndex);
                 usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
 
                 usefulType = type.replace(/selectionAtCurrentIteration/, 'selections.' + currentIndex);
 
-            }   else {
+            } else {
                 return null;
             }
         }
@@ -1220,9 +1324,13 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     */
     serializeIteration: {value: function(serializer) {
         serializer.setProperty("element", this.element);
-        var childComponents = this.childComponents;
-        for (var i = 0, l = childComponents.length; i < l; i++) {
-            serializer.addObject(childComponents[i]);
+        var childComponents = this.childComponents,
+            addObject = serializer.addObject,
+            i,
+            childComponentCount = childComponents.length;
+
+        for (i = 0; i < childComponentCount; i++) {
+            addObject.call(serializer, childComponents[i]);
         }
         // iterations are already expanded
         serializer.setProperty("_isComponentExpanded", true);

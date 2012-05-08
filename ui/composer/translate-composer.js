@@ -388,6 +388,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: 500
     },
 
+    startTranslateRadius: {
+        value: 8
+    },
+
     _hasMomentum: {
         enumerable: false,
         value: true
@@ -529,7 +533,13 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 event.preventDefault();
                 this._move(event.clientX, event.clientY);
             } else {
-                this._analyzeMovement(event.velocity);
+                if (this.axis !== "both") {
+                    this._analyzeMovement(event);
+                } else {
+                    this._stealPointer();
+                    event.preventDefault();
+                    this._move(event.clientX, event.clientY);
+                }
             }
 
         }
@@ -609,7 +619,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                     event.preventDefault();
                     this._move(event.changedTouches[i].clientX, event.changedTouches[i].clientY);
                 } else {
-                    this._analyzeMovement(event.changedTouches[i].velocity);
+                    this._analyzeMovement(event.changedTouches[i]);
                 }
 
             }
@@ -630,7 +640,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _analyzeMovement: {
-        value: function(velocity) {
+        value: function(event) {
+            var velocity = event.velocity;
 
             if (!velocity) {
                 return;
@@ -642,7 +653,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 upperRight = -0.7853981633974483, // 7pi/4
                 isUp, isDown, isRight, isLeft,
                 angle,
-                speed;
+                speed,
+                dX, dY;
 
             speed = velocity.speed;
 
@@ -674,6 +686,12 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
 
             } else if (speed >= this.startTranslateSpeed) {
                 this._stealPointer();
+            } else {
+                dX = this.pointerStartEventPosition.pageX - event.pageX;
+                dY = this.pointerStartEventPosition.pageY - event.pageY;
+                if (dX * dX + dY * dY > this.startTranslateRadius * this.startTranslateRadius) {
+                    this._stealPointer();
+                }
             }
 
         }
@@ -743,11 +761,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
-    _animationInterval: {
-        enumerable: false,
-        value: false
-    },
-
     _bezierTValue: {
         enumerable: false,
         value: function(x, p1x, p1y, p2x, p2y) {
@@ -804,68 +817,117 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         }
     },
 
+    animateBouncingX: {value: false, enumerable: false},
+    startTimeBounceX: {value: false, enumerable: false},
+    animateBouncingY: {value: false, enumerable: false},
+    startTimeBounceY: {value: false, enumerable: false},
+    animateMomentum: {value: false, enumerable: false},
+    startTime: {value: null, enumerable: false},
+    startX: {value: null, enumerable: false},
+    posX: {value: null, enumerable: false},
+    endX: {value: null, enumerable: false},
+    startY: {value: null, enumerable: false},
+    posY: {value: null, enumerable: false},
+    endY: {value: null, enumerable: false},
+
+    translateStrideX: {
+        value: null
+    },
+
+    translateStrideY: {
+        value: null
+    },
+
+    translateStrideDuration: {
+        value: 330
+    },
+
+    _animationInterval: {
+        value: function () {
+            var time = Date.now(), t, tmp, tmpX, tmpY, animateStride = false;
+
+            if (this.animateMomentum) {
+                t=time-this.startTime;
+                if (t<this.__momentumDuration) {
+                    this.posX=this.startX-((this.momentumX+this.momentumX*(this.__momentumDuration-t)/this.__momentumDuration)*t/1000)/2;
+                    this.posY=this.startY-((this.momentumY+this.momentumY*(this.__momentumDuration-t)/this.__momentumDuration)*t/1000)/2;
+                    if (this.translateStrideX && (this.startStrideXTime === null) && ((this.__momentumDuration - t < this.translateStrideDuration) || (Math.abs(this.posX - this.endX) < this.translateStrideX * .75))) {
+                        this.startStrideXTime = time;
+                    }
+                    if (this.translateStrideY && (this.startStrideYTime === null) && ((this.__momentumDuration - t < this.translateStrideDuration) || (Math.abs(this.posY - this.endY) < this.translateStrideY * .75))) {
+                        this.startStrideYTime = time;
+                    }
+                } else {
+                    this.animateMomentum = false;
+                }
+            }
+            tmp = Math.round(this.endX / this.translateStrideX);
+            if (this.startStrideXTime && (time - this.startStrideXTime > 0)) {
+                if (time - this.startStrideXTime < this.translateStrideDuration) {
+                    t = this._bezierTValue((time - this.startStrideXTime) / this.translateStrideDuration, .275, 0, .275, 1);
+                    this.posX = this.posX * (1 - t) + (tmp *  this.translateStrideX) * t;
+                    animateStride = true;
+                } else {
+                    this.posX = tmp * this.translateStrideX;
+                }
+            }
+            tmp = Math.round(this.endY / this.translateStrideY);
+            if (this.startStrideYTime && (time - this.startStrideYTime > 0)) {
+                if (time - this.startStrideYTime < this.translateStrideDuration) {
+                    t = this._bezierTValue((time - this.startStrideYTime) / this.translateStrideDuration, .275, 0, .275, 1);
+                    this.posY = this.posY * (1 - t) + (tmp *  this.translateStrideY) * t;
+                    animateStride = true;
+                } else {
+                    this.posY = tmp * this.translateStrideY;
+                }
+            }
+            tmpX = this.posX;
+            tmpY = this.posY;
+            this._isSelfUpdate=true;
+            this.translateX=tmpX;
+            this.translateY=tmpY;
+            this._isSelfUpdate=false;
+            this.isAnimating = this.animateMomentum || animateStride;
+            if (this.isAnimating) {
+                this.needsFrame=true;
+            } else {
+                this._dispatchTranslateEnd();
+            }
+        },
+        enumerable: false
+    },
+
 
     _end: {
         enumerable: false,
-        value: function(event) {
+        value: function (event) {
 
-            var animateMomentum=false,
-                momentumX,
-                momentumY,
-                startX = this._translateX,
-                startY = this._translateY,
-                posX = startX,
-                posY = startY,
-                endX = startX,
-                endY = startY,
-                self=this,
-                startTime=Date.now();
+            this.startTime=Date.now();
 
-            if ((this._hasMomentum) && (event.velocity.speed > 40)) {
+            this.endX = this.posX = this.startX=this._translateX;
+            this.endY=this.posY=this.startY=this._translateY;
+
+            if ((this._hasMomentum) && ((event.velocity.speed>40) || this.translateStrideX || this.translateStrideY)) {
                 if (this._axis != "vertical") {
-                    momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
+                    this.momentumX = event.velocity.x * this._pointerSpeedMultiplier * (this._invertXAxis ? 1 : -1);
                 } else {
-                    momentumX = 0;
+                    this.momentumX = 0;
                 }
                 if (this._axis != "horizontal") {
-                    momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
+                    this.momentumY = event.velocity.y * this._pointerSpeedMultiplier * (this._invertYAxis ? 1 : -1);
                 } else {
-                    momentumY = 0;
+                    this.momentumY=0;
                 }
-                endX = startX - (momentumX * this.__momentumDuration / 2000);
-                endY = startY - (momentumY * this.__momentumDuration / 2000);
-                animateMomentum = true;
+                this.endX = this.startX - (this.momentumX * this.__momentumDuration / 2000);
+                this.endY = this.startY - (this.momentumY * this.__momentumDuration / 2000);
+                this.startStrideXTime = null;
+                this.startStrideYTime = null;
+                this.animateMomentum = true;
+            } else {
+                this.animateMomentum = false;
             }
 
-            this._animationInterval = function() {
-                var time = Date.now(),
-                    t, tmpX, tmpY;
-
-                if (animateMomentum) {
-                    t = time - startTime;
-                    if (t < self.__momentumDuration) {
-                        posX = startX - ((momentumX + momentumX * (self.__momentumDuration - t) / self.__momentumDuration) * t / 1000) / 2;
-                        posY = startY - ((momentumY + momentumY * (self.__momentumDuration - t) / self.__momentumDuration) * t / 1000) / 2;
-                    } else {
-                        animateMomentum = false;
-                    }
-                }
-
-                tmpX = posX;
-                tmpY = posY;
-
-                self._isSelfUpdate = true;
-                self.translateX = tmpX;
-                self.translateY = tmpY;
-                self._isSelfUpdate = false;
-                self.isAnimating = animateMomentum;
-                if (self.isAnimating) {
-                    self.needsFrame = true;
-                } else {
-                    this._dispatchTranslateEnd();
-                }
-            };
-            if (animateMomentum) {
+            if (this.animateMomentum) {
                 this._animationInterval();
             } else if (!this._isFirstMove) {
                 // Only dispatch a translateEnd if a translate start has occured

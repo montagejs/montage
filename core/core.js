@@ -80,6 +80,35 @@ Object.defineProperty(Montage, "create", {
     }
 });
 
+/**
+     Removes all properties owned by this object making the object suitable for reuse
+     @function module:montage/core/core.Object.wipe
+     */
+Object.defineProperty(Object.prototype, "wipe", {
+   value: function() {
+       var keys = Object.keys(this),
+           keyCount = keys.length,
+           i;
+
+       for (i = 0; i < keyCount; i++) {
+           delete this[keys[i]];
+       }
+
+       return this;
+   }
+});
+
+/**
+     Removes all members of this array making the object suitable for reuse
+     @function module:montage/core/core.Array.wipe
+     */
+Object.defineProperty(Array.prototype, "wipe", {
+   value: function() {
+       this.length = 0;
+       return this;
+   }
+});
+
 var extendedPropertyAttributes = [SERIALIZABLE, MODIFY];
 
 // Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"

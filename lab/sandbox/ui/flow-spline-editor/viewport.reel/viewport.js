@@ -355,7 +355,7 @@ exports.Viewport = Montage.create(Component, {
             this._context.save();
             this._context.fillStyle= "rgba(231, 255, 87, .45)";
             for (i = 0; i<maxTime; i++) {
-                b = spline.getPositionAtTime(i);
+                b = spline.getPositionAtTime(i, []);
                 this._context.fillRect(b[0]-2, b[1]-2, 5, 5);
             }
             this._context.restore();
