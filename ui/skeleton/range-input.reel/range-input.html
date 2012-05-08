@@ -17,20 +17,20 @@
             "component": {"@": "owner"},
             "axis": "horizontal",
             "hasBouncing": false,
-            "hasMomentum": false
+            "hasMomentum": false,
+            "minTranslateX": 0
         },
         "bindings": {
-            "maxTranslateX": {"<-": "@owner.sliderWidth"},
-            "translateX": {"<<->": "@owner.positionX"}            
+            "maxTranslateX": {"<-": "@owner._sliderWidth"},
+            "translateX": {"<<->": "@owner._positionX"}
         }
     },
     "owner": {
         "prototype": "montage/ui/skeleton/range-input.reel",
         "properties": {
             "element": {"#": "slider"},
-            "sliderEl": {"#": "slider"},
-            "handleEl": {"#": "slider-handle"},
-            "translateComposer": {"@": "translateComposer1"}
+            "_handleEl": {"#": "slider-handle"},
+            "_translateComposer": {"@": "translateComposer1"}
         }
 
     }

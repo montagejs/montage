@@ -87,6 +87,7 @@ if (spec) {
         "ui/repetition-spec",
         "ui/rich-text-editor-spec",
         "ui/select-input-spec",
+        "ui/skeleton-range-input-spec",
         "ui/slider-spec",
         "ui/slot-spec",
         "ui/textfield-spec",
