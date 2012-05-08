@@ -80,9 +80,10 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
                 return false;
             }
 
-            if (this._minValue && value < this._minValue) {
+            // != null also checking for undefined
+            if (this._minValue != null && value < this._minValue) {
                 value = this._minValue;
-            } else if (this._maxValue && value > this._maxValue) {
+            } else if (this._maxValue != null && value > this._maxValue) {
                 value = this._maxValue;
             }
 
