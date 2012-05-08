@@ -91,6 +91,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     this._paths = [];
                 } else {
                     this._paths.wipe();
+                    this._splinePaths.wipe();
                 }
 
                 for (i = 0; i < length; i++) {
