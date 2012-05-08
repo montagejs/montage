@@ -91,6 +91,7 @@ if (spec) {
         "ui/slider-spec",
         "ui/slot-spec",
         "ui/textfield-spec",
+        "ui/token-field-spec",
 
         "ui/example-components-spec"
     ];
