@@ -43,6 +43,7 @@ if (spec) {
         "core/promise-queue-spec",
         "core/promise-connection-spec",
         "core/next-tick-spec",
+        "core/selector-spec",
 
         "data/blueprint-spec",
         "data/context-spec",
