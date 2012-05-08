@@ -7,68 +7,62 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>RangeInput test</title>
+    <title>SkeletonRangeInput Test</title>
     <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
-    <script type="text/montage-serialization">{
+    <script type="text/montage-serialization">
+        {
+            "range_input1": {
+                "prototype": "montage/ui/skeleton/range-input.reel",
+                "properties": {
+                    "element": {"#": "range_input1"}
+                }
+            },
+            "range_input2": {
+                "prototype": "montage/ui/skeleton/range-input.reel",
+                "properties": {
+                    "element": {"#": "range_input2"},
+                    "value": 1
+                }
+            },
+            "output": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "output"},
+                    "value": "hello"
+                },
+                "bindings": {
+                    "value": {"<-": "@range_input1.value"}
+                }
+            },
 
-    "range_input1": {
-        "prototype": "montage/ui/skeleton/range-input.reel",
-        "properties": {
-            "element": {"#": "range_input1"}
-        }
-    },
-    "range_input2": {
-        "prototype": "montage/ui/skeleton/range-input.reel",
-        "properties": {
-            "element": {"#": "range_input2"},
-            "value": 1
-        }
-    },
-    "output": {
-        "prototype": "montage/ui/dynamic-text.reel",
-        "properties": {
-            "element": {"#": "output"},
-            "value": "hello"
-        },
-        "bindings": {
-            "value": {"<-": "@range_input1.value"}
-        }
-    },
+            "scroll": {
+                "prototype": "montage/ui/scroller.reel",
+                "properties": {
+                    "element": {"#": "scroll"}
+                }
+            },
+            "scroll_range": {
+                "prototype": "montage/ui/skeleton/range-input.reel",
+                "properties": {
+                    "element": {"#": "scroll_range"}
+                }
+            },
 
-    "scroll": {
-        "prototype": "montage/ui/scroller.reel",
-        "properties": {
-            "element": {"#": "scroll"}
+            "test": {
+                "object": "ui/skeleton-range-input-test/skeleton-range-input-test[theTest]",
+                "properties": {
+                    "range_input1": {"@": "range_input1"},
+                    "range_input2": {"@": "range_input2"},
+                    "scroll": {"@": "scroll"},
+                    "scroll_range": {"@": "scroll_range"}
+                }
+            }
         }
-    },
-    "scroll_range": {
-        "prototype": "montage/ui/skeleton/range-input.reel",
-        "properties": {
-            "element": {"#": "scroll_range"}
-        }
-    },
-
-    "test": {
-        "prototype": "ui/skeleton-range-input-test/skeleton-range-input-test",
-        "properties": {
-            "range_input1": {"@": "range_input1"},
-            "range_input2": {"@": "range_input2"},
-            "scroll": {"@": "scroll"},
-            "scroll_range": {"@": "scroll_range"}
-        }
-    },
-    "application": {
-        "prototype": "montage/ui/application",
-        "properties": {
-            "delegate": {"@": "test"}
-        }
-    }
-
-    }</script>
+    </script>
 
 </head>
 <body>
-    <h1>RangeInput test</h1>
+    <h1>SkeletonRangeInput test</h1>
 
     <p>
         <input type="range" data-montage-id="range_input1" value="0"/>

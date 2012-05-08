@@ -3,10 +3,9 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-/*global require,exports,describe,it,expect,waits,runs */
+/*global require,exports,describe,it,expect */
 var Montage = require("montage").Montage,
-    TestPageLoader = require("support/testpageloader").TestPageLoader,
-    ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener;
+    TestPageLoader = require("support/testpageloader").TestPageLoader;
 
 var testPage = TestPageLoader.queueTest("skeleton-range-input-test", function() {
     var test = testPage.test;
@@ -79,7 +78,7 @@ var testPage = TestPageLoader.queueTest("skeleton-range-input-test", function() 
                                 el.offsetLeft, el.offsetTop - 50,
                                 false, false, false, false,
                                 0, null);
-                        var valueBeforeScroll = test.scroll_range.value;                        
+                        var valueBeforeScroll = test.scroll_range.value;
                         scroll_el.dispatchEvent(moveEvent);
 
                         expect(test.scroll_range.value).toBe(valueBeforeScroll);
