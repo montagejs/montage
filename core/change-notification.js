@@ -548,7 +548,16 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                 isMutationNotification = notification.isMutation;
                 for (var key in listeners) {
                     listener = listeners[key];
-                    if (!isMutationNotification || listener.listensToMutation) {
+
+                    // NOTE it's possible to have a changeListener not listen for mutations in cases
+                    // where it will still need to react to them. This is the case when the propertyPath depends
+                    // upon other propertyPaths. The installed changeListener will not necessarily listen for mutations
+                    // but the other changeListeners installed to observe the dependent properties were listening to
+                    // mutation, as is the original function. So call the listenerFunction.
+                    if ((isMutationNotification && this.target._dependenciesForProperty &&
+                            this.target._dependenciesForProperty[this.propertyPath])
+                            || !isMutationNotification || listener.listensToMutation) {
+
                         if (dependentDescriptorsIndex) {
                             notification._dependenciesIndex = dependentDescriptorsIndex[key];
                         }

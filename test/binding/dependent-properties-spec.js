@@ -141,189 +141,7 @@ describe("binding/dependent-properties-spec", function() {
             person = Person.create();
         });
 
-        describe("when adding dependent properties after a prototype was defined", function() {
-
-            it("should accommodate adding dependencies", function() {
-
-                Montage.defineProperty(Person, "jobTitle", {
-                    enumerable: false,
-                    value: null
-                });
-
-                Montage.defineProperty(Person, "businessCard", {
-                    enumerable: false,
-                    get: function() {
-                        return this.formalName + " - " + this.jobTitle;
-                    },
-                    set: function() {}
-                });
-
-                person.firstName = "Alice";
-                person.lastName = "Allman";
-
-                var personInformation = {};
-
-                Montage.addDependencyToProperty(Person, "firstName", "businessCard");
-                Montage.addDependencyToProperty(Person, "jobTitle", "businessCard");
-
-                Object.defineBinding(personInformation, "businessCard", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "businessCard"
-                });
-
-                person.firstName = "Al";
-                person.jobTitle = "Software Engineer";
-
-                expect(personInformation.businessCard).toBe("Al Allman - Software Engineer");
-            });
-
-        });
-
-        describe("when removing dependent properties after a prototype was defined", function() {
-
-            it("should remove listeners for the removed dependency if the dependent property is already observed", function() {
-
-                // Doing this on the person not Person to avoid botching all subsequent tests
-                Montage.defineProperty(person, "name", {
-                    enumerable: false,
-                    value: "Foo Bar"
-                });
-
-                person.firstName = "Alice";
-                person.lastName = "Allman";
-
-                var personInformation = {};
-
-                Montage.removeDependencyFromProperty(Person, "firstName", "name");
-                Montage.removeDependencyFromProperty(Person, "lastName", "name");
-
-                Object.defineBinding(personInformation, "name", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "name"
-                });
-
-                person.firstName = "Al";
-
-                expect(person.firstName).toBe("Al");
-                expect(personInformation.name).toBe("Foo Bar");
-
-                // Tidying up to make sure everything is back to normal
-                Montage.addDependencyToProperty(Person, "firstName", "name");
-                Montage.addDependencyToProperty(Person, "lastName", "name");
-
-            });
-
-        });
-
-        describe("when changes actually happen", function() {
-
-            it("should continue affect the actual property changed, regardless of dependencies", function() {
-
-                person.firstName = "Alice";
-                person.lastName = "Allman";
-
-                var personInformation = {};
-
-                Object.defineBinding(personInformation, "firstName", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "firstName"
-                });
-
-                person.firstName = "Al";
-
-                expect(personInformation.firstName).toBe("Al");
-            });
-
-            it("should affect properties dependent on some other independent property", function() {
-
-                person.firstName = "Alice";
-                person.lastName = "Allman";
-
-                var personInformation = {};
-
-                Object.defineBinding(personInformation, "name", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "name"
-                });
-
-                person.firstName = "Al";
-
-                expect(personInformation.name).toBe("Al Allman");
-            });
-
-            it("should affect properties dependent on multiple independent property, regardless of which are affected", function() {
-
-                person.firstName = "Alice";
-                person.lastName = "Allman";
-
-                var personInformation = {};
-
-                Object.defineBinding(personInformation, "name", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "name"
-                });
-
-                person.firstName = "Al";
-                expect(personInformation.name).toBe("Al Allman");
-
-                person.lastName = "Allen";
-                expect(personInformation.name).toBe("Al Allen");
-            });
-
-            it("should affect an entire chain of dependent keys", function() {
-                person.firstName = "Alice";
-                person.lastName = "Allman";
-
-                var personInformation = {};
-
-                Object.defineBinding(personInformation, "formalName", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "formalName"
-                });
-
-                // a change in "firstName" affects "name" which affects "formalName"
-                person.firstName = "Al";
-
-                expect(personInformation.formalName).toBe("Al Allman");
-            });
-
-            it("should affect properties dependent upon an array that was mutated", function() {
-                person.firstName = "Alice";
-
-                var personInformation = {};
-
-                Object.defineBinding(personInformation, "isParent", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "isParent",
-                    oneway: true
-                });
-
-                var baby = Person.create();
-                baby.firstName = "Bob";
-
-                expect(personInformation.isParent).toBe(false);
-
-                person.children.push(baby);
-
-                expect(personInformation.isParent).toBe(true);
-            });
-
-            it("should affect dependent properties involved along a boundPropertyPath that may go beyond the dependent property path", function() {
-                person.firstName = "Alice";
-
-                var personInformation = {};
-
-                Object.defineBinding(personInformation, "count", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "name.length",
-                    oneway: true
-                });
-
-                person.lastName = "Allman";
-
-                // 11 characters, 12 including the space…
-                expect(personInformation.count).toBe(12);
-            });
+        describe("when observed for propertyChanges", function() {
 
             it("should affect dependent properties concerned with the property of array members", function() {
                 var personInformation = {};
@@ -334,13 +152,9 @@ describe("binding/dependent-properties-spec", function() {
                 person.children = [baby, baby2];
 
                 // childrenAtHome depends upon "children.atHome"
-                Object.defineBinding(personInformation, "count", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "childrenAtHome.count()",
-                    oneway: true
-                });
-
-                expect(personInformation.count).toBe(0);
+                person.addPropertyChangeListener("childrenAtHome.count()", function(change) {
+                    personInformation.count = person.getProperty("childrenAtHome.count()");
+                })
 
                 baby.atHome = true;
                 expect(personInformation.count).toBe(1);
@@ -352,136 +166,353 @@ describe("binding/dependent-properties-spec", function() {
                 expect(personInformation.count).toBe(1);
             });
 
-            it("should be dependent on newly added members to an array that is along a dependent property path", function() {
-                var personInformation = {};
-
-                var baby = Person.create(),
-                    baby2 = Person.create();
-
-                baby.atHome = true;
-
-                // childrenAtHome depends upon "children.atHome"
-                Object.defineBinding(personInformation, "count", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "childrenAtHome.count()",
-                    oneway: true
-                });
-
-                expect(personInformation.count).toBe(0);
-
-                person.children.push(baby);
-                expect(personInformation.count).toBe(1);
-
-                person.children.push(baby2);
-                expect(personInformation.count).toBe(1);
-
-                baby2.atHome = true;
-                expect(personInformation.count).toBe(2);
-
-            });
-
-            it("TODO must no longer be dependent on removed members of an array that is along a dependent property path", function() {
-            });
-
         });
 
-        describe("when an object with dependent properties is encountered along a property path", function() {
+        describe("involved in bindings", function() {
 
-            var department,
-                personInformation;
+            describe("when adding dependent properties after a prototype was defined", function() {
 
-            beforeEach(function() {
-                person.firstName = "Alice";
-                person.lastName = "Allman";
+                it("should accommodate adding dependencies", function() {
 
-                department = Department.create();
-                personInformation = {};
+                    Montage.defineProperty(Person, "jobTitle", {
+                        enumerable: false,
+                        value: null
+                    });
+
+                    Montage.defineProperty(Person, "businessCard", {
+                        enumerable: false,
+                        get: function() {
+                            return this.formalName + " - " + this.jobTitle;
+                        },
+                        set: function() {}
+                    });
+
+                    person.firstName = "Alice";
+                    person.lastName = "Allman";
+
+                    var personInformation = {};
+
+                    Montage.addDependencyToProperty(Person, "firstName", "businessCard");
+                    Montage.addDependencyToProperty(Person, "jobTitle", "businessCard");
+
+                    Object.defineBinding(personInformation, "businessCard", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "businessCard"
+                    });
+
+                    person.firstName = "Al";
+                    person.jobTitle = "Software Engineer";
+
+                    expect(personInformation.businessCard).toBe("Al Allman - Software Engineer");
+                });
+
             });
 
+            describe("when removing dependent properties after a prototype was defined", function() {
 
-            it("should correctly react to changes to the dependent property when the bath was fully populated when the binding was defined", function() {
-                department.manager = person;
+                it("should remove listeners for the removed dependency if the dependent property is already observed", function() {
 
-                Object.defineBinding(personInformation, "name", {
-                    "boundObject": department,
-                    "boundObjectPropertyPath": "manager.name",
-                    "oneway": true
+                    // Doing this on the person not Person to avoid botching all subsequent tests
+                    Montage.defineProperty(person, "name", {
+                        enumerable: false,
+                        value: "Foo Bar"
+                    });
+
+                    person.firstName = "Alice";
+                    person.lastName = "Allman";
+
+                    var personInformation = {};
+
+                    Montage.removeDependencyFromProperty(Person, "firstName", "name");
+                    Montage.removeDependencyFromProperty(Person, "lastName", "name");
+
+                    Object.defineBinding(personInformation, "name", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "name"
+                    });
+
+                    person.firstName = "Al";
+
+                    expect(person.firstName).toBe("Al");
+                    expect(personInformation.name).toBe("Foo Bar");
+
+                    // Tidying up to make sure everything is back to normal
+                    Montage.addDependencyToProperty(Person, "firstName", "name");
+                    Montage.addDependencyToProperty(Person, "lastName", "name");
+
                 });
 
-                person.lastName = "Somebody";
-
-                expect(personInformation.name).toBe("Alice Somebody");
             });
 
-            it("should correctly react to changes to the dependent property when the bath was a dead-end when the binding was defined", function() {
-                Object.defineBinding(personInformation, "name", {
-                    "boundObject": department,
-                    "boundObjectPropertyPath": "manager.name",
-                    "oneway": true
+            describe("when changes actually happen", function() {
+
+                it("should continue affect the actual property changed, regardless of dependencies", function() {
+
+                    person.firstName = "Alice";
+                    person.lastName = "Allman";
+
+                    var personInformation = {};
+
+                    Object.defineBinding(personInformation, "firstName", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "firstName"
+                    });
+
+                    person.firstName = "Al";
+
+                    expect(personInformation.firstName).toBe("Al");
                 });
 
-                department.manager = person;
+                it("should affect properties dependent on some other independent property", function() {
 
-                person.lastName = "Somebody";
+                    person.firstName = "Alice";
+                    person.lastName = "Allman";
 
-                expect(personInformation.name).toBe("Alice Somebody");
+                    var personInformation = {};
+
+                    Object.defineBinding(personInformation, "name", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "name"
+                    });
+
+                    person.firstName = "Al";
+
+                    expect(personInformation.name).toBe("Al Allman");
+                });
+
+                it("should affect properties dependent on multiple independent property, regardless of which are affected", function() {
+
+                    person.firstName = "Alice";
+                    person.lastName = "Allman";
+
+                    var personInformation = {};
+
+                    Object.defineBinding(personInformation, "name", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "name"
+                    });
+
+                    person.firstName = "Al";
+                    expect(personInformation.name).toBe("Al Allman");
+
+                    person.lastName = "Allen";
+                    expect(personInformation.name).toBe("Al Allen");
+                });
+
+                it("should affect an entire chain of dependent keys", function() {
+                    person.firstName = "Alice";
+                    person.lastName = "Allman";
+
+                    var personInformation = {};
+
+                    Object.defineBinding(personInformation, "formalName", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "formalName"
+                    });
+
+                    // a change in "firstName" affects "name" which affects "formalName"
+                    person.firstName = "Al";
+
+                    expect(personInformation.formalName).toBe("Al Allman");
+                });
+
+                it("should affect properties dependent upon an array that was mutated", function() {
+                    person.firstName = "Alice";
+
+                    var personInformation = {};
+
+                    Object.defineBinding(personInformation, "isParent", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "isParent",
+                        oneway: true
+                    });
+
+                    var baby = Person.create();
+                    baby.firstName = "Bob";
+
+                    expect(personInformation.isParent).toBe(false);
+
+                    person.children.push(baby);
+
+                    expect(personInformation.isParent).toBe(true);
+                });
+
+                it("should affect dependent properties involved along a boundPropertyPath that may go beyond the dependent property path", function() {
+                    person.firstName = "Alice";
+
+                    var personInformation = {};
+
+                    Object.defineBinding(personInformation, "count", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "name.length",
+                        oneway: true
+                    });
+
+                    person.lastName = "Allman";
+
+                    // 11 characters, 12 including the space…
+                    expect(personInformation.count).toBe(12);
+                });
+
+                it("should affect dependent properties concerned with the property of array members", function() {
+                    var personInformation = {};
+
+                    var baby = Person.create(),
+                        baby2 = Person.create();
+
+                    person.children = [baby, baby2];
+
+                    // childrenAtHome depends upon "children.atHome"
+                    Object.defineBinding(personInformation, "count", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "childrenAtHome.count()",
+                        oneway: true
+                    });
+
+                    expect(personInformation.count).toBe(0);
+
+                    baby.atHome = true;
+                    expect(personInformation.count).toBe(1);
+
+                    baby2.atHome = true;
+                    expect(personInformation.count).toBe(2);
+
+                    person.children.pop();
+                    expect(personInformation.count).toBe(1);
+                });
+
+                it("should be dependent on newly added members to an array that is along a dependent property path", function() {
+                    var personInformation = {};
+
+                    var baby = Person.create(),
+                        baby2 = Person.create();
+
+                    baby.atHome = true;
+
+                    // childrenAtHome depends upon "children.atHome"
+                    Object.defineBinding(personInformation, "count", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "childrenAtHome.count()",
+                        oneway: true
+                    });
+
+                    expect(personInformation.count).toBe(0);
+
+                    person.children.push(baby);
+                    expect(personInformation.count).toBe(1);
+
+                    person.children.push(baby2);
+                    expect(personInformation.count).toBe(1);
+
+                    baby2.atHome = true;
+                    expect(personInformation.count).toBe(2);
+
+                });
+
+                it("TODO must no longer be dependent on removed members of an array that is along a dependent property path", function() {
+                });
+
             });
 
-        })
+            describe("when an object with dependent properties is encountered along a property path", function() {
 
-        describe("when an event occurs along the event distribution path for an object with dependent properties", function() {
+                var department,
+                    personInformation;
 
-            it("must not interpret a change event affecting a property on another object as a change at its own dependent property if the properties have the same name", function() {
-                person.firstName = "Alice";
-                person.lastName = "Allman";
+                beforeEach(function() {
+                    person.firstName = "Alice";
+                    person.lastName = "Allman";
 
-                var child = Person.create();
-                child.firstName = "Bob";
-                child.lastName = "Baggins";
-                child.parentProperty = "parent";
-                child.parent = person;
-
-                var personInformation = {};
-                var childInformation = {};
-
-                // These bindings trigger installing listeners for the dependencies for the 'name' property
-                Object.defineBinding(personInformation, "name", {
-                    boundObject: person,
-                    boundObjectPropertyPath: "name"
+                    department = Department.create();
+                    personInformation = {};
                 });
 
-                Object.defineBinding(childInformation, "name", {
-                    boundObject: child,
-                    boundObjectPropertyPath: "name"
+
+                it("should correctly react to changes to the dependent property when the bath was fully populated when the binding was defined", function() {
+                    department.manager = person;
+
+                    Object.defineBinding(personInformation, "name", {
+                        "boundObject": department,
+                        "boundObjectPropertyPath": "manager.name",
+                        "oneway": true
+                    });
+
+                    person.lastName = "Somebody";
+
+                    expect(personInformation.name).toBe("Alice Somebody");
                 });
 
-                var personObserver = {
-                    handleEvent: function(evt) {}
-                }
+                it("should correctly react to changes to the dependent property when the bath was a dead-end when the binding was defined", function() {
+                    Object.defineBinding(personInformation, "name", {
+                        "boundObject": department,
+                        "boundObjectPropertyPath": "manager.name",
+                        "oneway": true
+                    });
 
-                var childObserver = {
-                    handleEvent: function() {}
-                }
+                    department.manager = person;
 
-                spyOn(personObserver, "handleEvent").andCallThrough();
-                spyOn(childObserver, "handleEvent");
+                    person.lastName = "Somebody";
 
-                person.addPropertyChangeListener("name", personObserver, false);
-                child.addPropertyChangeListener("name", childObserver, false);
+                    expect(personInformation.name).toBe("Alice Somebody");
+                });
 
-                window.hey = true;
-                child.firstName = "Robert";
+            })
 
-                // Parent should be unaffected by the dependency;
-                // It was given the chance to handle the change@name that bubbled up from the child
-                // It must not use the dependency listener for firstName
-                expect(personObserver.handleEvent.callCount).toBe(1);
-                expect(personInformation.name).toBe("Alice Allman");
-                expect(person.name).toBe("Alice Allman");
+            describe("when an event occurs along the event distribution path for an object with dependent properties", function() {
 
-                expect(childObserver.handleEvent).toHaveBeenCalled();
-                expect(childInformation.name).toBe("Robert Baggins");
-                expect(child.name).toBe("Robert Baggins");
+                it("must not interpret a change event affecting a property on another object as a change at its own dependent property if the properties have the same name", function() {
+                    person.firstName = "Alice";
+                    person.lastName = "Allman";
+
+                    var child = Person.create();
+                    child.firstName = "Bob";
+                    child.lastName = "Baggins";
+                    child.parentProperty = "parent";
+                    child.parent = person;
+
+                    var personInformation = {};
+                    var childInformation = {};
+
+                    // These bindings trigger installing listeners for the dependencies for the 'name' property
+                    Object.defineBinding(personInformation, "name", {
+                        boundObject: person,
+                        boundObjectPropertyPath: "name"
+                    });
+
+                    Object.defineBinding(childInformation, "name", {
+                        boundObject: child,
+                        boundObjectPropertyPath: "name"
+                    });
+
+                    var personObserver = {
+                        handleEvent: function(evt) {}
+                    }
+
+                    var childObserver = {
+                        handleEvent: function() {}
+                    }
+
+                    spyOn(personObserver, "handleEvent").andCallThrough();
+                    spyOn(childObserver, "handleEvent");
+
+                    person.addPropertyChangeListener("name", personObserver, false);
+                    child.addPropertyChangeListener("name", childObserver, false);
+
+                    window.hey = true;
+                    child.firstName = "Robert";
+
+                    // Parent should be unaffected by the dependency;
+                    // It was given the chance to handle the change@name that bubbled up from the child
+                    // It must not use the dependency listener for firstName
+                    expect(personObserver.handleEvent.callCount).toBe(1);
+                    expect(personInformation.name).toBe("Alice Allman");
+                    expect(person.name).toBe("Alice Allman");
+
+                    expect(childObserver.handleEvent).toHaveBeenCalled();
+                    expect(childInformation.name).toBe("Robert Baggins");
+                    expect(child.name).toBe("Robert Baggins");
+
+                });
 
             });
 
