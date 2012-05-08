@@ -208,14 +208,11 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
     // handle user clicking the slider scale directly instead of moving the knob
     _handleClick: {
         value: function(position) {
-            var relativePosition = (position - this._sliderLeft);
-            if(relativePosition > 0 && relativePosition < (this._sliderLeft + this._sliderWidth + RangeInput.HANDLE_ADJUST)) {
-                var positionX = (position - (this._sliderLeft + 2*RangeInput.HANDLE_ADJUST));
-                if(positionX < 0) {
-                    positionX = 0;
-                }
-                this._positionX = positionX;
+            var positionX = (position - (this._sliderLeft + 2*RangeInput.HANDLE_ADJUST));
+            if(positionX < 0) {
+                positionX = 0;
             }
+            this._positionX = positionX;
         }
     },
 
