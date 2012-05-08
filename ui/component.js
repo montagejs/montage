@@ -551,12 +551,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
-    _newContent: {
+    _newDomContent: {
         enumerable: false,
         value: null
     },
 
-    content: {
+    domContent: {
         get: function() {
             if (this._element) {
                 return Array.prototype.slice.call(this._element.childNodes, 0);
@@ -566,14 +566,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         },
         set: function(value) {
             var components,
-                componentsToAdd = [],
-                childNodes;
+                componentsToAdd = [];
 
-            this._newContent = value;
+            this._newDomContent = value;
             this.needsDraw = true;
 
-            if (this._newContent === null) {
-                this._shouldClearContentOnNextDraw = true;
+            if (this._newDomContent === null) {
+                this._shouldClearDomContentOnNextDraw = true;
             }
 
             if (typeof this.contentWillChange === "function") {
@@ -617,7 +616,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-    _shouldClearContentOnNextDraw: {
+    _shouldClearDomContentOnNextDraw: {
         value: false
     },
 
@@ -1024,7 +1023,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         }
     },
 
-    _updateComponentDOM: {
+    _updateComponentDom: {
         value: function() {
             var component, composer, length, i;
             if (this._firstDraw) {
@@ -1052,11 +1051,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 this._firstDraw = false;
             }
 
-            if (this._newContent !== null || this._shouldClearContentOnNextDraw) {
+            if (this._newDomContent !== null || this._shouldClearDomContentOnNextDraw) {
                 if (drawLogger.isDebug) {
-                    logger.debug("Component content changed: component ", this._montage_metadata.objectName, this.identifier, " newContent", this._newContent);
+                    logger.debug("Component content changed: component ", this._montage_metadata.objectName, this.identifier, " newDomContent", this._newDomContent);
                 }
-                this._performContentChanges();
+                this._performDomContentChanges();
             }
         }
     },
@@ -1159,13 +1158,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
   Description TODO
   @private
 */
-    _performContentChanges: {
+    _performDomContentChanges: {
         value: function() {
-            var contents = this._newContent,
+            var contents = this._newDomContent,
                 oldContent = this._element.childNodes[0],
                 element;
 
-            if (contents || this._shouldClearContentOnNextDraw) {
+            if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
 
                 element.innerHTML = "";
@@ -1178,11 +1177,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 }
 
-                this._newContent = null;
+                this._newDomContent = null;
                 if (typeof this.contentDidChange === "function") {
                     this.contentDidChange(this._element.childNodes[0], oldContent);
                 }
-                this._shouldClearContentOnNextDraw = false;
+                this._shouldClearDomContentOnNextDraw = false;
             }
         }
     },
@@ -1867,7 +1866,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             this._readyToDrawList.push(component);
             this._readyToDrawListIndex[component.uuid] = true;
 
-            component._updateComponentDOM();
+            component._updateComponentDom();
         }
     },
 

@@ -605,19 +605,15 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 var newContent = content[0].ownerDocument.createElement("div");
                 newContent.textContent = "Y";
 
-                list11.content = newContent;
+                list11.domContent = newContent;
 
                 testPage.waitForDraw();
 
-                // it requires 2 draws for the change to take effect, one for changing the contents and another to recreate the repetition
                 runs(function() {
-                    testPage.waitForDraw();
-                    runs(function() {
-                        var content = list11.content;
-                        for (var i = 0; i < content.length; i++) {
-                            expect(content[i].textContent).toBe("Y");
-                        }
-                    });
+                    var content = list11.domContent;
+                    for (var i = 0; i < content.length; i++) {
+                        expect(content[i].textContent).toBe("Y");
+                    }
                 });
             });
         });
