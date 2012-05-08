@@ -988,7 +988,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         enumerable: false,
         value: function _drawIfNeeded(level) {
             var childComponent,
-                oldDrawList;
+                oldDrawList, i, childComponentListLength;
             this._treeLevel = level;
             if (this.needsDraw && !this._addedToDrawCycle) {
                 rootComponent.addToDrawCycle(this);
@@ -999,7 +999,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this._drawList !== null && this._drawList.length > 0) {
                 oldDrawList = this._drawList;
                 this._drawList = [];
-                while ((childComponent = oldDrawList.shift())) {
+                childComponentListLength = oldDrawList.length;
+                for (i = 0; i < childComponentListLength; i++) {
+                    childComponent = oldDrawList[i];
                     if (drawLogger.isDebug) {
                         drawLogger.debug("Parent Component " + (this.element != null ? this.element.id : "") + " drawList length: " + oldDrawList.length);
                     }
@@ -1390,10 +1392,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     */
     clearAllComposers: {
         value: function() {
-            var composer;
-            while (composer = this.composerList.shift()) {
-                composer.unload();
+            var i, length, composerList = this.composerList;
+            length = composerList.length;
+            for (i = 0; i < length; i++) {
+                composerList[i].unload();
             }
+            composerList.splice(0, length);
         }
     }
 
@@ -1515,13 +1519,16 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
 */
     _clearNeedsDrawList: {
         value: function() {
-            var component;
-            while ((component = this._needsDrawList.shift())) {
+            var component, i, length, needsDrawList = this._needsDrawList;
+            length = needsDrawList.length;
+            for (i = 0; i < length; i++) {
+                component = needsDrawList[i];
                 if (component.needsDraw) {
                     component._addToParentsDrawList();
                 }
             }
             this._clearNeedsDrawTimeOut = null;
+            needsDrawList.splice(0, length);
         }
     },
 /**
@@ -1848,18 +1855,21 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     drawIfNeeded:{
         value: function drawIfNeeded() {
             var needsDrawList = this._readyToDrawList, component, i, j, start = 0, firstDrawEvent,
-                composerList = this.composerList, composer;
+                composerList = this.composerList, composer, composerListLength;
             needsDrawList.length = 0;
+            composerListLength = composerList.length;
             this._readyToDrawListIndex = {};
 
             // Process the composers first so that any components that need to be newly drawn due to composer changes
             // get added in this cycle
-            if (composerList.length > 0) {
+            if (composerListLength > 0) {
                 this.composerList = this.composerListSwap; // Swap between two arrays instead of creating a new array each draw cycle
-                while (composer = composerList.shift()) {
+                for (i = 0; i < composerListLength; i++) {
+                    composer = composerList[i];
                     composer.needsFrame = false;
                     composer.frame(this._frameTime);
                 }
+                composerList.splice(0, composerListLength);
                 this.composerListSwap = composerList;
             }
 
