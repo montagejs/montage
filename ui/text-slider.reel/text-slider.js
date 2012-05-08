@@ -68,7 +68,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     },
     /**
     The value of the TextSlider.
-    @type {number}
+    @type {Number}
     @default 0
     */
     value: {
@@ -97,7 +97,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     The value of the TextSlider converted using {@link converter} for display.
     Setting this will call <code>revert</code> on the converter and set
     {@link value}.
-    @type {string}
+    @type {String}
     @default "0"
     */
     convertedValue: {
@@ -167,7 +167,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     /**
     The small amount to increase/decrease the value by. Used when the user
     holds the Control key and drags or presses the Up arrow in input mode.
-    @type {number}
+    @type {Number}
     @default 0.1
     */
     smallStepSize: {
@@ -177,7 +177,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     /**
     The amount to increase/decrease the value by. Used per pixel when the user
     drags the TextSlider or presses the Up arrow in input mode.
-    @type {number}
+    @type {Number}
     @default 1
     */
     stepSize: {
@@ -187,7 +187,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     /**
     The large amount to increase/decrease the value by. Used when the user
     holds the Shift key and drags or presses the Up arrow in input mode.
-    @type {number}
+    @type {Number}
     @default 10
     */
     largeStepSize: {
@@ -202,7 +202,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     /**
     The unit the value is in. This will be appended to the {@link convertedValue}
     for display.
-    @type {string|null}
+    @type {String|null}
     @default null
     */
     unit: {
