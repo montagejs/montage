@@ -234,6 +234,27 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         }
     },
 
+    _isEditing: {
+        enumerable: false,
+        value: null
+    },
+    /**
+        Whether the TextSlider is currently being edited as a textbox
+        @type {Boolean}
+        @default false
+    */
+    isEditing: {
+        get: function() {
+            return this._isEditing;
+        },
+        set: function(value) {
+            if (this._isEditing !== value) {
+                this._isEditing = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+
     // private
 
     _input: {
@@ -269,10 +290,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     _direction: {
         enumerable: false,
         value: null
-    },
-    _isEditing: {
-        enumerable: false,
-        value: false
     },
 
     // draw
@@ -319,8 +336,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     handlePress: {
         value: function(event) {
             if (!this._isEditing) {
-                this._isEditing = true;
-                this.needsDraw = true;
+                this.isEditing = true;
             }
         }
     },
@@ -328,9 +344,8 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     handleBlur: {
         value: function(event) {
             if (this._isEditing) {
-                this._isEditing = false;
                 this.convertedValue = this._inputElement.value;
-                this.needsDraw = true;
+                this.isEditing = false;
             }
         }
     },
@@ -350,13 +365,11 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
                     this.needsDraw = true;
                 } else if (event.keyCode === 13) {
                     // enter
-                    this._isEditing = false;
                     this.convertedValue = this._inputElement.value;
-                    this.needsDraw = true;
+                    this.isEditing = false;
                 } else if (event.keyCode === 27) {
                     // esc
-                    this._isEditing = false;
-                    this.needsDraw = true;
+                    this.isEditing = false;
                 }
             } else {
                 if (event.shiftKey || event.keyCode === 16) {
