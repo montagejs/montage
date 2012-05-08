@@ -257,15 +257,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
 
     // private
 
-    _input: {
-        enumerable: false,
-        value: null
-    },
-    _unitsLabel: {
-        enumerable: false,
-        value: null
-    },
-    _valueLabel: {
+    _inputElement: {
         enumerable: false,
         value: null
     },
