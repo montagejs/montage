@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>RangeInput test</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">{
+
+    "range_input1": {
+        "prototype": "montage/ui/skeleton/range-input.reel",
+        "properties": {
+            "element": {"#": "range_input1"}
+        }
+    },
+    "range_input2": {
+        "prototype": "montage/ui/skeleton/range-input.reel",
+        "properties": {
+            "element": {"#": "range_input2"},
+            "value": 1
+        }
+    },
+    "output": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "output"},
+            "value": "hello"
+        },
+        "bindings": {
+            "value": {"<-": "@range_input1.value"}
+        }
+    },
+
+    "scroll": {
+        "prototype": "montage/ui/scroller.reel",
+        "properties": {
+            "element": {"#": "scroll"}
+        }
+    },
+    "scroll_range": {
+        "prototype": "montage/ui/skeleton/range-input.reel",
+        "properties": {
+            "element": {"#": "scroll_range"}
+        }
+    },
+
+    "test": {
+        "prototype": "ui/skeleton-range-input-test/skeleton-range-input-test",
+        "properties": {
+            "range_input1": {"@": "range_input1"},
+            "range_input2": {"@": "range_input2"},
+            "scroll": {"@": "scroll"},
+            "scroll_range": {"@": "scroll_range"}
+        }
+    },
+    "application": {
+        "prototype": "montage/ui/application",
+        "properties": {
+            "delegate": {"@": "test"}
+        }
+    }
+
+    }</script>
+
+</head>
+<body>
+    <h1>RangeInput test</h1>
+
+    <p>
+        <input type="range" data-montage-id="range_input1" value="0"/>
+        <span data-montage-id="output">0</span>
+    </p>
+
+    <p>
+        <input type="range" id="hello" data-montage-id="range_input2"/>
+    </p>
+
+    <h2>Scroll</h2>
+    <form action="" method="get">
+    <div id="scroll" style="background:#CCC; height: 300px">
+        <div style="background:#A00; height:50px; width:10px">.</div>
+        <input type="range" id="scroll_range" value="0" />
+        <div style="background:#A00; height:400px; width:10px">.</div>
+    </div>
+    </form>
+
+</body>
+</html>
