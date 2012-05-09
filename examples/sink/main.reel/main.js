@@ -10,6 +10,7 @@ exports.Main = Montage.create(Component, {
     content: {value: null},
     sidebar: {value: null},
 
+    // content.selectedItem and sidebar.selectedItem are bound to selectedItem
     _selectedItem: {value: null},
     selectedItem: {
         get: function() {return this._selectedItem;},
@@ -28,16 +29,30 @@ exports.Main = Montage.create(Component, {
         }
     },
 
+    _extractItemFromHash: {
+        value: function() {
+            var hash = window.location.hash;
+            if(hash) {
+                return hash.substring(hash.indexOf('#')+1);
+            }
+            return null;
+        }
+    },
+
     prepareForDraw: {
         value: function() {
             console.log("main prepareForDraw");
 
             // routing logic
-            this.content.hash = window.location.hash;
+            this.selectedItem = this._extractItemFromHash();
             var self = this;
             window.onhashchange = function(event) {
                 event.preventDefault();
-                self.content.hash = window.location.hash;
+                var hash = window.location.hash;
+                if(hash) {
+                    self.selectedItem = self._extractItemFromHash(); //window.location.hash;
+                }
+
             };
         }
     },
