@@ -68,6 +68,7 @@ if (spec) {
 
         "ui/application-spec",
         "ui/anchor-spec",
+        "ui/autocomplete-spec",
         "ui/button-spec",
         "ui/check-spec",
         "ui/condition-spec",
@@ -91,6 +92,7 @@ if (spec) {
         "ui/slider-spec",
         "ui/slot-spec",
         "ui/textfield-spec",
+        "ui/token-field-spec",
 
         "ui/example-components-spec"
     ];

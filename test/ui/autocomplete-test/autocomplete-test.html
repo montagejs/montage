@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Autocomplete Test</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+     <script type="text/montage-serialization">
+{
+
+     "autocomplete1": {
+         "prototype": "montage/ui/autocomplete/autocomplete.reel",
+         "properties": {
+             "element": {"#": "autocomplete1"},
+             "identifier": "autocomplete1",
+             "delegate": {"@": "test"}
+         }
+     },
+
+     "autocomplete2": {
+         "prototype": "montage/ui/autocomplete/autocomplete.reel",
+         "properties": {
+             "element": {"#": "autocomplete2"},
+             "identifier": "autocomplete2",
+             "value": "Montage Rocks!",
+             "delegate": {"@": "test"}
+         }
+     },
+
+    "test": {
+        "prototype": "ui/autocomplete-test/autocomplete-test",
+        "properties": {
+            "autocomplete1": {"@": "autocomplete1"},
+            "autocomplete2": {"@": "autocomplete2"}
+        },
+        "bindings": {
+            "selectedValue1": {"<-": "@autocomplete1.value"},
+            "selectedValue2": {"<-": "@autocomplete2.value"}
+        }
+    },
+
+    "application": {
+        "prototype": "montage/ui/application",
+        "properties": {
+            "delegate": {"@": "test"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <h1>Autocomplete test</h1>
+    <input type="text" data-montage-id="autocomplete1" style="width: 400px;" value="hello1" />
+    <input type="text" data-montage-id="autocomplete2" style="width: 400px;" value="hello2" />
+</body>
+</html>

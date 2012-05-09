@@ -1,0 +1,54 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+.montage-token {
+    display: inline-block;
+    margin: 3px 1px;
+    border: 1px solid hsl(0,0%,85%);
+    background-color: hsl(0,0%,95%);
+    color: #333;
+    vertical-align: middle;
+    cursor: default;
+    border-radius: 3px;
+}
+
+.montage-token > .montage-token-text {
+    padding: 0px 1px 0px 5px;
+}
+
+.montage-token > .montage-token-delete {
+    display: inline-block;
+    padding: 3px 6px;
+    border-left: inherit;
+    border-radius: 0 2px 2px 0;
+    color: hsl(0,0%,60%);    
+    cursor: pointer;
+}
+.montage-token > .montage-token-delete:hover {
+    color: hsl(0,0%,30%);
+    background-color: hsl(0,0%,90%);
+}
+.montage-token > .montage-token-delete:active {
+    color: hsl(0,0%,60%);
+    background-color: hsl(0,0%,85%);
+}
+
+/* selected */
+.montage-token.selected {
+    border-color: hsl(0,0%,60%);
+}
+
+.montage-token.selected > .montage-token-delete {
+    color: hsl(0,0%,100%);
+    background-color: hsl(0,0%,60%);
+}
+
+.montage-token.active {
+    border: 1px solid #ccc;
+}
+
+.montage-token.montage-token-adhoc {
+    border: 1px dashed #ccc;
+}

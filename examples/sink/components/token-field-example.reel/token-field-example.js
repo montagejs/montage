@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage/core/core").Montage,
-    logger = require("montage/core/logger").logger("autocomplete-example"),
+    logger = require("montage/core/logger").logger("tokenField-example"),
     Component = require("montage/ui/component").Component;
 
 // Sample data for list of US States
@@ -62,6 +62,13 @@ var states = [
     {name: "Wyoming", code: "WY"}
 ];
 
+var tags = [
+'science', 'programming', 'javascript', 'java', 'user experience', 'UX', 'UI', 'user interface design',
+'travel', 'arts', 'design', 'education', 'entertainment', 'fasion', 'movies', 'tv shows', 'gadgets',
+'apple', 'social', 'network', 'technology', 'tools', 'home', 'interiors', 'search', 'politics', 'news',
+'business', 'companies', 'startups', 'silicon valley', 'bay area', 'biking', 'tennis', 'united states', 'USA'
+];
+
 var toQueryString = function(obj) {
    if(obj) {
        var arr = [], key, value;
@@ -97,17 +104,24 @@ var request = function(uri, method, params) {
 };
 
 
-exports.AutocompleteExample = Montage.create(Component, {
+exports.TokenFieldExample = Montage.create(Component, {
 
     json: {value: null},
     states: {value: null},
     members: {value: null},
+    tags: {value: null},
     info: {value: null},
 
     _cachedStates: {value: null},
 
+    prepareForDraw: {
+        value: function() {
+            this.states = [states[0], states[3], states[5]];
+        }
+    },
+
     stateShouldGetSuggestions: {
-        value: function(autocomplete, searchTerm) {
+        value: function(tokenField, searchTerm) {
             var results = [];
             if(searchTerm) {
                 var term = searchTerm.toLowerCase();
@@ -124,14 +138,28 @@ exports.AutocompleteExample = Montage.create(Component, {
                     this._cachedStates[term] = results;
                 }
             }
-            autocomplete.suggestions = results.map(function(item) {
-                return item.name;
-            });
+            tokenField.suggestions = results;
+        }
+    },
+
+    // Return the represented object for the specified stringValue
+    stateGetRepresentedObject: {
+        value: function(stringValue) {
+            if(stringValue) {
+                stringValue = stringValue.trim().toLowerCase();
+                var i, len = states.length;
+                for(i=0; i<len; i++) {
+                    if(states[i].name.toLowerCase() === stringValue) {
+                        return states[i];
+                    }
+                }
+            }
+            return null;
         }
     },
 
     membersShouldGetSuggestions: {
-        value: function(autocomplete, searchTerm) {
+        value: function(tokenField, searchTerm) {
             var results = [];
             // The data set is based on https://www.google.com/fusiontables/DataSource?docid=1QJT7Wi2oj5zBgjxb2yvZWA42iNPUvnvE8ZOwhA
             // Google fusion tables # 383121. However Google's API returns a CSV. So need to use this app to convert to json
@@ -146,14 +174,12 @@ exports.AutocompleteExample = Montage.create(Component, {
                    data = JSON.parse(this.response).data;
                    var result = [];
                    if(data && data.length > 0) {
-                       result = data.map(function(item) {
-                           return item.FirstName + ' ' + item.LastName;
-                       });
+                       result = data;
                    }
-                   autocomplete.suggestions = result;
+                   tokenField.suggestions = result;
 
                } catch(e) {
-                   autocomplete.suggestions = [];
+                   tokenField.suggestions = [];
                }
 
             };
@@ -162,21 +188,28 @@ exports.AutocompleteExample = Montage.create(Component, {
                     logger.debug('xhr timed out');
                 }
 
-               autocomplete.suggestions = [];
+               tokenField.suggestions = [];
             };
             xhr.onerror = function(e) {
                 if (logger.isDebug) {
                     logger.debug('xhr errored out', e);
                 }
-                autocomplete.suggestions = [];
+                tokenField.suggestions = [];
             };
 
         }
     },
 
-    prepareForDraw: {
-        value: function() {
-            this.states = "California";
+    tagsShouldGetSuggestions: {
+        value: function(tokenField, searchTerm) {
+            var results = [];
+            if(searchTerm) {
+                var term = searchTerm.toLowerCase();
+                results = tags.filter(function(item) {
+                    return (item.toLowerCase().indexOf(term) >= 0);
+                });
+            }
+            tokenField.suggestions = results;
         }
     },
 
@@ -187,7 +220,8 @@ exports.AutocompleteExample = Montage.create(Component, {
             }
             this.json = JSON.stringify({
                 state: this.states,
-                members: this.members
+                members: this.members,
+                tags: this.tags
             });
         }
     }
