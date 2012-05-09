@@ -764,8 +764,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 pos3,
                 positionKeys,
                 positionKeyCount,
-                jPositionKey,
-                iOffset;
+                jPositionKey;
 
             slide = this._cachedSlide.wipe();
             pos = this._cachedPos.wipe();
