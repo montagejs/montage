@@ -627,6 +627,7 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
                     notification;
 
                 if (!descriptor) {
+                    this[prefixedPropertyName] = value;
                     return;
                 }
 
