@@ -363,16 +363,18 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     handleKeydown: {
         value: function(event) {
             if (event.target === this._inputElement) {
+                var value;
                 if (event.keyCode === 38) {
                     // up
                     this.convertedValue = this._inputElement.value;
-                    var value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
+                    value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
                     this.value += value;
                     this.needsDraw = true;
                 } else if (event.keyCode === 40) {
                     // down
                     this.convertedValue = this._inputElement.value;
-                    this.value -= (event.shiftKey) ? this.largeStepSize : (event.shiftKey) ? this.smallStepSize : this.stepSize;
+                    value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
+                    this.value -= value;
                     this.needsDraw = true;
                 } else if (event.keyCode === 13) {
                     // enter
