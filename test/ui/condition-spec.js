@@ -31,7 +31,7 @@ var conditionTestPage = TestPageLoader.queueTest("ui/condition", {src: "ui/condi
         describe("condition with false condition and removal strategy remove", function() {
             it("upon initial load its contents should be empty", function() {
                 var conditionDiv = conditionTestPage.iframe.contentDocument.getElementsByClassName("fetchRemove")[0];
-                expect(conditionDiv.innerHTML).toBe("<div></div>");
+                expect(conditionDiv.innerHTML).toBe("");
             });
             it("should add its contents to the DOM when condition becomes true", function() {
                 conditionTestPage.test.removeValue = true;
@@ -39,7 +39,7 @@ var conditionTestPage = TestPageLoader.queueTest("ui/condition", {src: "ui/condi
 
                 runs(function(){
                     var conditionDiv = conditionTestPage.iframe.contentDocument.getElementsByClassName("fetchRemove")[0];
-                    expect(conditionDiv.innerHTML).toBe("<div><div><span>Foo</span></div></div>");
+                    expect(conditionDiv.innerHTML).toBe("<span>Foo</span>");
                 });
             });
         });
