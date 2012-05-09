@@ -88,7 +88,6 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             localNewValue = event.plus,
             localPrevValue = event.minus,
             localTarget = event.target,
-            type = event.type,
             boundObjectValue,
             sourceObjectValue,
             dotIndex,
@@ -100,9 +99,6 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             leftOriginated,
             changeOriginPropertyPath = null,
             exploredPath,
-            remainingPath,
-            i,
-            localPrevValueCount,
             valueChanged;
 
         if (target !== bindingOrigin) {
@@ -139,9 +135,6 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 }
             }
 
-            targetPropertyPath = this.bindingPropertyPath;
-            target = bindingOrigin;
-
         } else if (!this.bindingOriginChangeTriggered) {
 
             // If we're handling the event at this point we know the right side triggered it, from somewhere inside the observed propertyPath
@@ -165,7 +158,6 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 event.target = this;
             }
 
-            baseType = event.baseType ? event.baseType : type;
             // The binding listener detected some change along the property path it cared about
             // make sure the event we "dispatch" has the full change@propertyPath eventType
             event.type = this.targetPropertyPath;
@@ -236,32 +228,14 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                         changeOriginPropertyPath = exploredPath.replace(/^\./, "");
                     }
                 });
-
-                if (changeOriginPropertyPath) {
-                    remainingPath = this.targetPropertyPath.replace(new RegExp("^" + changeOriginPropertyPath  + "\.?"), "");
-                } else {
-                    remainingPath = this.targetPropertyPath;
-                }
-
-                // NOTE this check works around Safari not having a removeEventListener on its CanvasPixelArray
-                // TODO investigate if this is an appropriate fix or not
-                if (typeof localPrevValue.removeEventListener === "function") {
-                    localPrevValue.removePropertyChangeListener(remainingPath, this, false);
-                }
             }
-
-            if (localNewValue) {
-                // Reinstall listeners along the entire propertyPath from the target
-                this.target.addPropertyChangeListener(this.targetPropertyPath, this, false);
-            }
-
         }
+
         targetPropertyPath = null;
         target = null;
         localNewValue = null;
         localPrevValue = null;
         localTarget = null;
-        type = null;
         dotIndex = null;
         nextPathComponent = null;
         atSignIndex = null;
