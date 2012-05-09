@@ -758,7 +758,7 @@ Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
                 observedProperties.push(iProperty, descriptor, notification);
 
                 notification.target = this;
-                notification.minus = this[iProperty];
+                notification.minus = this.getProperty(iProperty);
                 descriptor.handleWillChange(notification);
             }
         }
@@ -770,7 +770,7 @@ Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
             descriptor = observedProperties[i+1];
             notification = observedProperties[i+2];
 
-            notification.plus = this[iProperty];
+            notification.plus = this.getProperty(iProperty);
             descriptor.handleChange(notification);
         }
 
@@ -936,6 +936,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayChangeN
             notification = Object.create(PropertyChangeNotification);
             notification.target = this;
             notification.minus = oldValues;
+            notification.plus = newValues;
             notification.index = index;
             notification.isMutation = true;
             // dispatch mutation notification
