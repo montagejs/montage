@@ -314,9 +314,14 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
                 this._inputElement.value = this.convertedValue + ((this._unit) ? " " + this._unit : "");
                 // Replace this with just focus when merged
                 this._inputElement.focus();
+                // When _element gets focus we focus the input. Because of this
+                // shift+tab stops working, so prevent _element getting
+                // focus while editing
+                this._element.tabIndex = -1;
             } else {
                 this._element.classList.remove("montage-text-slider-editing");
                 this._inputElement.blur();
+                this._element.tabIndex = 0;
             }
 
             if (this._direction === "horizontal") {
