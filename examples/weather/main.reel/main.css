@@ -1,0 +1,137 @@
+.main-content h4, .main-content h5
+{
+    line-height: 24px;
+}
+
+.container > footer p {
+  text-align: center; /* center align it with the container */
+
+}
+
+
+/* The white background main-content wrapper */
+.main-content {
+  background-color: #fff;
+  padding: 20px;
+  margin: 0 -20px; /* negative indent the amount of the padding to maintain the grid system */
+  -webkit-border-radius: 0 0 6px 6px;
+     -moz-border-radius: 0 0 6px 6px;
+          border-radius: 0 0 6px 6px;
+  -webkit-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+     -moz-box-shadow: 0 1px 2px rgba(0,0,0,.15);
+          box-shadow: 0 1px 2px rgba(0,0,0,.15);
+}
+
+/* Page header tweaks */
+.page-header {
+  border-bottom: 1px solid #DDD;
+  background-color: #f5f5f5;
+  padding: 20px 20px 10px;
+  margin: -20px -20px 20px;
+}
+
+/* Styles you shouldn't keep as they are for displaying this base example only */
+.main-content .sidebar,
+.main-content .content {
+  /*min-height: 500px;*/
+}
+/* Give a quick and non-cross-browser friendly divider */
+/*
+.main-content .span5 {
+  margin-left: 0;
+  padding-left: 40px;
+  border-left: 1px solid #eee;
+}
+*/
+.topbar .btn {
+  border: 0;
+}
+
+.main-content .content {
+    /*min-height: 500px;*/
+}
+
+.main-content p {
+    margin-top: 5px;
+}
+
+.main-content section {
+    margin: 10px 0;
+}
+
+.demo{
+    background-color: whitesmoke;
+    margin-bottom: 5px;
+    padding: 10px;
+}
+
+.demo .app {
+  padding-bottom: 10px;
+}
+
+.demo input {
+    display: inline-block;
+}
+
+.logger {
+    position: fixed;
+    bottom: 0;
+    width: 80%;
+    left: 10%;
+}
+
+/* Montage components CSS Override */
+
+/* The invalid state is added by the browser if it detects an error in the entered text */
+ :invalid {
+     border: 1px solid #E73525;
+     border-style: dashed;
+ }
+
+ .montage-text-invalid {
+     border: 1px solid #E73525;
+     border-style: dashed;
+ }
+
+
+
+/* Spin button */
+input::-webkit-outer-spin-button {
+    margin-left: 10px;
+    -webkit-transform: scale(1.4) translateY(-1px);
+}
+input::-webkit-inner-spin-button {
+    margin-left: 3px;
+    -webkit-transform: scale(1.4) translateY(-1px);
+}
+
+footer {
+  margin-top: 17px;
+  margin-bottom: 2em;
+  padding-bottom: 17px;
+}
+
+.forkme {
+  position: fixed;
+  top: 0px;
+  left: 0px;
+}
+
+.accordion-inner pre.prettyprint {
+  overflow: auto;
+}
+
+/* borrowed from Bootstrap v2 */
+.btn-group{position:relative;zoom:1;}.btn-group:before,.btn-group:after{display:table;*display:inline;content:"";zoom:1;}
+.btn-group:after{clear:both;}
+.btn-group+.btn-group{margin-left:5px;}
+.btn-toolbar .btn-group{display:inline-block;}
+.btn-group .btn{position:relative;float:left;margin-left:-1px;-webkit-border-radius:0;-moz-border-radius:0;border-radius:0;}
+.btn-group .btn:first-child{margin-left:0;-webkit-border-top-left-radius:4px;-moz-border-radius-topleft:4px;border-top-left-radius:4px;-webkit-border-bottom-left-radius:4px;-moz-border-radius-bottomleft:4px;border-bottom-left-radius:4px;}
+.btn-group .btn:last-child,.btn-group .dropdown-toggle{-webkit-border-top-right-radius:4px;-moz-border-radius-topright:4px;border-top-right-radius:4px;-webkit-border-bottom-right-radius:4px;-moz-border-radius-bottomright:4px;border-bottom-right-radius:4px;}
+.btn-group .btn.large:first-child{margin-left:0;-webkit-border-top-left-radius:6px;-moz-border-radius-topleft:6px;border-top-left-radius:6px;-webkit-border-bottom-left-radius:6px;-moz-border-radius-bottomleft:6px;border-bottom-left-radius:6px;}
+.btn-group .btn.large:last-child,.btn-group .large.dropdown-toggle{-webkit-border-top-right-radius:6px;-moz-border-radius-topright:6px;border-top-right-radius:6px;-webkit-border-bottom-right-radius:6px;-moz-border-radius-bottomright:6px;border-bottom-right-radius:6px;}
+.btn-group .btn:hover,.btn-group .btn:focus,.btn-group .btn:active{z-index:2;}
+.btn-group .dropdown-toggle{padding-left:8px;padding-right:8px;-webkit-box-shadow:inset 1px 0 0 rgba(255, 255, 255, 0.125),0 1px 2px rgba(0, 0, 0, 0.05);-moz-box-shadow:inset 1px 0 0 rgba(255, 255, 255, 0.125),0 1px 2px rgba(0, 0, 0, 0.05);box-shadow:inset 1px 0 0 rgba(255, 255, 255, 0.125),0 1px 2px rgba(0, 0, 0, 0.05);}
+.btn-group.open .dropdown-menu{display:block;top:30px;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;}.btn-group.open .dropdown-menu.large{top:40px;}
+.btn-group.open .dropdown-toggle{background-image:none;-webkit-box-shadow:inset 0 1px 6px rgba(0, 0, 0, 0.15),0 1px 2px rgba(0, 0, 0, 0.05);-moz-box-shadow:inset 0 1px 6px rgba(0, 0, 0, 0.15),0 1px 2px rgba(0, 0, 0, 0.05);box-shadow:inset 0 1px 6px rgba(0, 0, 0, 0.15),0 1px 2px rgba(0, 0, 0, 0.05);}
