@@ -284,10 +284,24 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         value: null
     },
 
+    didCreate: {
+        value: function() {
+            this.handlePress = this.handleFocus;
+            this.handleClick = this.handleFocus;
+        }
+    },
+
     // draw
+
+    prepareForActivationEvents: {
+        value: function() {
+            this._element.addEventListener("click", this, false);
+        }
+    },
 
     prepareForDraw: {
         value: function() {
+            this._element.addEventListener("focus", this, false);
             this._inputElement.addEventListener("blur", this, false);
             this._inputElement.addEventListener("keydown", this, false);
         }
@@ -325,14 +339,18 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         }
     },
 
-    handlePress: {
+    // handlePress and handleClick are set to equal handleFocus in didCreate
+    // handlePress: edit on touch
+    // handleClick: edit when parent <label> element is clicked/touched
+    // handleFocus: edit when tabbed to
+    handleFocus: {
         value: function(event) {
             if (!this._isEditing) {
                 this.isEditing = true;
             }
         }
     },
-
+    // stop editing when blurred
     handleBlur: {
         value: function(event) {
             if (this._isEditing) {
@@ -341,6 +359,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
             }
         }
     },
+
     handleKeydown: {
         value: function(event) {
             if (event.target === this._inputElement) {
