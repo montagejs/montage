@@ -44,6 +44,15 @@
                     }
                 ]
             },
+            "slot": {
+                "prototype": "montage/ui/slot.reel",
+                "properties": {
+                    "element": {"#": "content"}
+                },
+                "bindings": {
+                    "domContent": {"<-": "@owner.domContent"}
+                }
+            },
             "owner": {
                 "prototype": "montage/ui/scroller.reel",
                 "properties": {

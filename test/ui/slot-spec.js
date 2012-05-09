@@ -22,7 +22,7 @@ var testPage = TestPageLoader.queueTest("slot-test", function() {
 
         describe("when first loaded", function() {
             it("it should have no initial content", function() {
-                expect(slot.content).toBeNull();
+                expect(slot.content).toEqual([]);
                 expect(slot.element.childNodes.length).toEqual(0);
             });
         });
