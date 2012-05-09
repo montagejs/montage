@@ -707,7 +707,7 @@ describe("controllers/array-controller-spec.js", function() {
             };
             spyOn(changeHandler, "handleEvent").andCallThrough();
 
-            arrayController.addEventListener("change@organizedObjects", changeHandler, true);
+            arrayController.addPropertyChangeListener("organizedObjects", changeHandler, true);
 
             arrayController.organizeObjects();
 
@@ -724,7 +724,7 @@ describe("controllers/array-controller-spec.js", function() {
             };
             spyOn(changeHandler, "handleEvent").andCallThrough();
 
-            arrayController.addEventListener("change@organizedObjects", changeHandler, true);
+            arrayController.addPropertyChangeListener("organizedObjects", changeHandler, true);
 
             arrayController.organizeObjects();
 

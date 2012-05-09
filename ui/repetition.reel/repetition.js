@@ -30,14 +30,14 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     didCreate: {
         value: function() {
-            this.addEventListener("change@objects", this._onObjectsChange, false);
+            this.addPropertyChangeListener("objects", this);
         }
     },
 
-    _onObjectsChange: {
+    handleChange: {
         enumerable: false,
-        value: function(event) {
-            if(event._event.propertyChange !== ChangeTypeModification) {
+        value: function(notification) {
+            if (notification.isMutation && notification.plus.length != notification.minus.length) {
 
                 if (!this.contentController) {
 

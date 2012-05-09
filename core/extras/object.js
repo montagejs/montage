@@ -16,7 +16,14 @@ Object.defineProperty(Object.prototype, "getProperty", {
     value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
         var dotIndex,
             result,
-            currentPathComponent;
+            currentPathComponent,
+            nextDotIndex,
+            remainingPath = null;
+
+        if (aPropertyPath == null) {
+            return;
+        }
+
         dotIndex = aPropertyPath.indexOf(".", currentIndex);
         currentIndex = currentIndex || 0;
         currentPathComponent = aPropertyPath.substring(currentIndex, (dotIndex === -1 ? aPropertyPath.length : dotIndex));
@@ -28,13 +35,17 @@ Object.defineProperty(Object.prototype, "getProperty", {
         }
 
         if (visitedComponentCallback) {
-            visitedComponentCallback(this, currentPathComponent, result);
+            nextDotIndex = aPropertyPath.indexOf(".", currentIndex);
+            if (nextDotIndex != -1) {
+                remainingPath = aPropertyPath.substr(nextDotIndex+1);
+            }
+            visitedComponentCallback(this, currentPathComponent, result, null, remainingPath);
         }
 
         if (visitedComponentCallback && result && -1 === dotIndex) {
 
             // We resolved the last object on the propertyPath, be sure to give the visitor a chance to handle this one
-            visitedComponentCallback(result);
+            //visitedComponentCallback(result, null, null, null, null);
 
         } else if (result && dotIndex !== -1) {
             // We resolved that component of the path, but there's more path components; go to the next

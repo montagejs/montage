@@ -539,6 +539,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      */
     cleanupDeletedComponentTree: {
         value: function() {
+            Object.deleteBindings(this);
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
                 Object.deleteBindings(component);
