@@ -8,10 +8,6 @@ var Montage = require("montage/core/core").Montage,
     Notifier = require("montage/ui/popup/notifier.reel/notifier").Notifier;
 
 exports.Content = Montage.create(Component, {
-    // the main component
-    sandbox: {
-        value: null
-    },
 
     contentDeck: {value: null},
 
@@ -22,6 +18,7 @@ exports.Content = Montage.create(Component, {
             return this._selectedItem;
         },
         set: function(value) {
+            console.log('set selectedItem ', value, this._selectedItem);
             this._selectedItem = value;
             Notifier.show('Loading ... please wait');
             this.needsDraw = true;
@@ -41,8 +38,19 @@ exports.Content = Montage.create(Component, {
         }
     },
 
+    prepareForDraw: {
+        value: function() {
+            // If a selectedItem is passed in via URL, the value is updated before the
+            // deck contents are loaded. Just force a redraw of the contentDeck
+            if(this.selectedItem) {
+                this.contentDeck.needsDraw = true;
+            }
+        }
+    },
+
     draw: {
         value: function() {
+            console.log('content draw', this.selectedItem, this.contentDeck.switchValue);
             Notifier.hide();
         }
     }

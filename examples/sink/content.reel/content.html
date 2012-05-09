@@ -182,8 +182,12 @@
                     "delegate": {"@": "owner"}
                 },
                 "bindings": {
-                    "switchValue": {"<-": "@owner.selectedItem"}
+                    "switchValue": {"<<->": "@owner.selectedItem"}
                 }
+            },
+
+            "appState": {
+                "object": "sink-app-state"
             },
 
             "owner": {
@@ -191,6 +195,9 @@
                 "properties": {
                     "element": {"#": "content"},
                     "contentDeck": {"@": "content"}
+                },
+                "bindings": {
+                    "selectedItem": {"<<->": "@appState.selectedItem"}
                 }
             }
 

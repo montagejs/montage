@@ -13,13 +13,19 @@
 
     <script type="text/montage-serialization">{
 
-
             "owner": {
-                "prototype": "sidebar.reel[sidebar]",
+                "prototype": "sidebar.reel",
                 "properties": {
                     "element": {"#": "sidebar"}
+                },
+                "bindings": {
+                    "selectedItem": {"<<->": "@appState.selectedItem"}
                 }
+            },
+            "appState": {
+                "object": "sink-app-state"
             }
+
 
     }</script>
 </head>

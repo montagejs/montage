@@ -30,31 +30,25 @@
             "owner": {
                 "prototype": "main.reel",
                 "properties": {
-                    "element": {"#": "main"},
-                    "content": {"@": "content"},
-                    "sidebar": {"@": "sidebar"}
+                    "element": {"#": "main"}
                 }
+            },
+
+            "appState": {
+                "object": "sink-app-state"
             },
 
             "sidebar": {
                 "prototype": "sidebar.reel",
                 "properties": {
-                    "element": {"#": "sidebar"},
-                    "sandbox": {"@": "owner"}
-                },
-                "bindings": {
-                    "selectedItem": {"<<->": "@owner.selectedItem"}
+                    "element": {"#": "sidebar"}
                 }
             },
 
             "content": {
                 "prototype": "content.reel",
                 "properties": {
-                    "element": {"#": "content"},
-                    "sandbox": {"@": "owner"}
-                },
-                "bindings": {
-                    "selectedItem": {"<<->": "@owner.selectedItem"}
+                    "element": {"#": "content"}
                 }
             }
         }
