@@ -622,7 +622,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     captureTouchend: {
         value: function(event) {
             var i = 0, len = event.changedTouches.length;
-            while (i < len && !this.eventManager.isPointerClaimedByComponent(event.changedTouches[i].identifier, this)) {
+            while (i < len && event.changedTouches[i].identifier !== this._observedPointer) {
                 i++;
             }
             if (i < len) {
