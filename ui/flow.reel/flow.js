@@ -492,68 +492,64 @@ var Flow = exports.Flow = Montage.create(Component, {
                 normals = this._frustrumNormals,
                 mod,
                 r, r2, r3 = [], tmp,
-                i, j;
+                i, j,
+                elementsBoundingSphereRadius = this._elementsBoundingSphereRadius,
+                splineKnots = spline._knots,
+                splineNextHandlers = spline._nextHandlers,
+                splinePreviousHandlers = spline._previousHandlers;
 
             this._computeFrustumNormals(normals);
 
             for (i = 0; i < splineLength; i++) {
                 mod = normals[0];
                 r = spline.directedPlaneBezierIntersection(
-                    [
-                        planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
-                        planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
-                        planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
-                    ],
+                        planeOrigin[0] - mod[0] * elementsBoundingSphereRadius,
+                        planeOrigin[1] - mod[1] * elementsBoundingSphereRadius,
+                        planeOrigin[2] - mod[2] * elementsBoundingSphereRadius,
                     normals[0],
-                    spline._knots[i],
-                    spline._nextHandlers[i],
-                    spline._previousHandlers[i + 1],
-                    spline._knots[i + 1]
+                    splineKnots[i],
+                    splineNextHandlers[i],
+                    splinePreviousHandlers[i + 1],
+                    splineKnots[i + 1]
                 );
                 if (r.length) {
                     mod = normals[1];
                     r2 = spline.directedPlaneBezierIntersection(
-                        [
-                            planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
-                            planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
-                            planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
-                        ],
+                            planeOrigin[0] - mod[0] * elementsBoundingSphereRadius,
+                            planeOrigin[1] - mod[1] * elementsBoundingSphereRadius,
+                            planeOrigin[2] - mod[2] * elementsBoundingSphereRadius,
                         normals[1],
-                        spline._knots[i],
-                        spline._nextHandlers[i],
-                        spline._previousHandlers[i + 1],
-                        spline._knots[i + 1]
+                        splineKnots[i],
+                        splineNextHandlers[i],
+                        splinePreviousHandlers[i + 1],
+                        splineKnots[i + 1]
                     );
                     if (r2.length) {
                         tmp = this._segmentsIntersection(r, r2);
                         if (tmp.length) {
                             mod = normals[2];
                             r = spline.directedPlaneBezierIntersection(
-                                [
-                                    planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
-                                    planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
-                                    planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
-                                ],
+                                    planeOrigin[0] - mod[0] * elementsBoundingSphereRadius,
+                                    planeOrigin[1] - mod[1] * elementsBoundingSphereRadius,
+                                    planeOrigin[2] - mod[2] * elementsBoundingSphereRadius,
                                 normals[2],
-                                spline._knots[i],
-                                spline._nextHandlers[i],
-                                spline._previousHandlers[i + 1],
-                                spline._knots[i + 1]
+                                splineKnots[i],
+                                splineNextHandlers[i],
+                                splinePreviousHandlers[i + 1],
+                                splineKnots[i + 1]
                             );
                             tmp = this._segmentsIntersection(r, tmp);
                             if (tmp.length) {
                                 mod = normals[3];
                                 r = spline.directedPlaneBezierIntersection(
-                                    [
-                                        planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
-                                        planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
-                                        planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
-                                    ],
+                                        planeOrigin[0] - mod[0] * elementsBoundingSphereRadius,
+                                        planeOrigin[1] - mod[1] * elementsBoundingSphereRadius,
+                                        planeOrigin[2] - mod[2] * elementsBoundingSphereRadius,
                                     normals[3],
-                                    spline._knots[i],
-                                    spline._nextHandlers[i],
-                                    spline._previousHandlers[i + 1],
-                                    spline._knots[i + 1]
+                                    splineKnots[i],
+                                    splineNextHandlers[i],
+                                    splinePreviousHandlers[i + 1],
+                                    splineKnots[i + 1]
                                 );
                                 tmp = this._segmentsIntersection(r, tmp);
                                 for (j = 0; j < tmp.length; j++) {
@@ -764,7 +760,9 @@ var Flow = exports.Flow = Montage.create(Component, {
                 pos3,
                 positionKeys,
                 positionKeyCount,
-                jPositionKey;
+                jPositionKey,
+                indexMap = this._repetition.indexMap,
+                iRepetitionComponentElement;
 
             slide = this._cachedSlide.wipe();
             pos = this._cachedPos.wipe();
@@ -794,14 +792,15 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (this.splinePaths.length) {
                 iOffset = {};
                 for (i = 0; i < length; i++) {
-                    pathIndex = this._repetition.indexMap[i] % pathsLength;
-                    iOffset = this.offset(Math.floor(this._repetition.indexMap[i] / pathsLength),iOffset);
-                    slide.index = this._repetition.indexMap[i];
+                    pathIndex = indexMap[i] % pathsLength;
+                    iOffset = this.offset(Math.floor(indexMap[i] / pathsLength),iOffset);
+                    slide.index = indexMap[i];
                     slide.time = iOffset.time + this._paths[pathIndex].headOffset;
                     slide.speed = iOffset.speed;
                     pos = this._splinePaths[pathIndex].getPositionAtTime(slide.time, pos);
+                    iRepetitionComponentElement = this._repetitionComponents[i].element;
                     if ((pos.length > 0) && (slide.index < this._numberOfIterations)) {
-                        iStyle = this._repetitionComponents[i].element.parentNode.style;
+                        iStyle = iRepetitionComponentElement.parentNode.style;
                         if (iStyle.opacity == 0) {
                             iStyle.opacity = 1;
                         }
@@ -811,7 +810,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                         transform += (typeof pos3.rotateY !== "undefined") ? "rotateY(" + pos3.rotateY + ") " : "";
                         transform += (typeof pos3.rotateX !== "undefined") ? "rotateX(" + pos3.rotateX + ") " : "";
                         iStyle.webkitTransform = transform;
-                        iStyle = this._repetitionComponents[i].element.style;
+                        iStyle = iRepetitionComponentElement.style;
                         positionKeys = Object.keys(pos3);
                         positionKeyCount = positionKeys.length;
                         for (j = 0; j < positionKeyCount; j++) {
@@ -821,7 +820,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                             }
                         }
                     } else {
-                        iStyle = this._repetitionComponents[i].element.parentNode.style;
+                        iStyle = iRepetitionComponentElement.parentNode.style;
                         if (iStyle.opacity !== 0) {
                             iStyle.opacity = 0;
                             iStyle.webkitTransform = "scale3d(0, 0, 0)";
@@ -1051,9 +1050,10 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._repetition.activeIndexes = this._activeIndexesForRepetition;
                 this._activeIndexesForRepetition = null;
             }
-            this._repetition.addEventListener("change@selectedIndexes", function (event) {
+            
+            this._repetition.addPropertyChangeListener("selectedIndexes", function (event) {
                 self._handleSelectedIndexesChange.call(self, event);
-            }, false);
+            },false);
             Object.defineBinding(this, "numberOfIterations", {
                 boundObject: this._repetition,
                 boundObjectPropertyPath: "_objects.count()",
