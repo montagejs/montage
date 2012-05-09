@@ -858,7 +858,7 @@ var PrefixedPropertyDescriptor = {
     configurable: true
 };
 
-var PropertyChangeNotification = Object.create(null, {
+var PropertyChangeNotification = exports.PropertyChangeNotification = Object.create(null, {
     phase: {writable: true, value: null},
     target: {writable: true, value: null},
     propertyPath: {writable: true, value: null},
