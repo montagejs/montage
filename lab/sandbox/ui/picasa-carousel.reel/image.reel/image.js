@@ -7,10 +7,10 @@ var Image = exports.Image = Montage.create(Component, {
 
     src: {
         set: function(value) {
-			if(value !== this._src) {
-	            this._src = value;
-	            this.needsDraw = true;
-			}
+            if(value !== this._src) {
+                this._src = value;
+                this.needsDraw = true;
+            }
         }
     },
 

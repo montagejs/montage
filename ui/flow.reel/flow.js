@@ -765,7 +765,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 positionKeys,
                 positionKeyCount,
                 jPositionKey,
-				iOffset;
+                iOffset;
 
             slide = this._cachedSlide.wipe();
             pos = this._cachedPos.wipe();
@@ -793,7 +793,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._isCameraUpdated = false;
             }
             if (this.splinePaths.length) {
-				iOffset = {};
+                iOffset = {};
                 for (i = 0; i < length; i++) {
                     pathIndex = this._repetition.indexMap[i] % pathsLength;
                     iOffset = this.offset(Math.floor(this._repetition.indexMap[i] / pathsLength),iOffset);
@@ -1362,17 +1362,17 @@ var Flow = exports.Flow = Montage.create(Component, {
     offset: {
         enumerable: false,
         value: function (interationIndex,offset) {
-			if(typeof offset === "undefined") {
-				offset = {};
-			}
+            if(typeof offset === "undefined") {
+                offset = {};
+            }
             if (typeof this.animatingHash[interationIndex] === "undefined") {
-				offset.time = interationIndex - this._scroll;
-				offset.speed = 0;
+                offset.time = interationIndex - this._scroll;
+                offset.speed = 0;
             } else {
                     offset.time = this.slide[interationIndex].x - this.scroll,
                     offset.speed = this.slide[interationIndex].speed
             }
-			return offset;
+            return offset;
         }
     },
 
