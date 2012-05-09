@@ -673,7 +673,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         value: function() {
             this._refreshingItems = false;
             this._setupIterationTemplate();
-            this._skipCurrentDraw = true;
         }
     },
 
@@ -1098,11 +1097,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
             repetitionElement.innerHTML = "";
-            // even if there were items to remove we don't need to do that anymore.
-            if (this._skipCurrentDraw) {
-                this._skipCurrentDraw = false;
-                return;
-            }
         }
 
         // Before we remove any nodes, make sure we "deselect" them

@@ -552,12 +552,12 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
-    _newContent: {
+    _newDomContent: {
         enumerable: false,
         value: null
     },
 
-    content: {
+    domContent: {
         get: function() {
             if (this._element) {
                 return Array.prototype.slice.call(this._element.childNodes, 0);
@@ -566,11 +566,15 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
         },
         set: function(value) {
-            var components = [],
-                childNodes;
+            var components,
+                componentsToAdd = [];
 
-            this._newContent = value;
+            this._newDomContent = value;
             this.needsDraw = true;
+
+            if (this._newDomContent === null) {
+                this._shouldClearDomContentOnNextDraw = true;
+            }
 
             if (typeof this.contentWillChange === "function") {
                 this.contentWillChange(value);
@@ -585,7 +589,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
             if (value instanceof Element) {
                 findAndDetachComponents(value);
-            } else {
+            } else if (value) {
                 for (var i = 0; i < value.length; i++) {
                     findAndDetachComponents(value[i]);
                 }
@@ -597,7 +601,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
                 if (component) {
                     component.detachFromParentComponent();
-                    components.push(component);
+                    componentsToAdd.push(component);
                 } else {
                     var childNodes = node.childNodes;
                     for (var i = 0, childNode; (childNode = childNodes[i]); i++) {
@@ -607,10 +611,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
 
             // not sure if I can rely on _cachedParentComponent to detach the nodes instead of doing one loop for dettach and another to attach...
-            for (var i = 0, component; (component = components[i]); i++) {
+            for (var i = 0, component; (component = componentsToAdd[i]); i++) {
                 this._addChildComponent(component);
             }
         }
+    },
+
+    _shouldClearDomContentOnNextDraw: {
+        value: false
     },
 
 /**
@@ -1017,6 +1025,44 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             }
         }
     },
+
+    _updateComponentDom: {
+        value: function() {
+            var component, composer, length, i;
+            if (this._firstDraw) {
+
+                if (this.parentComponent && typeof this.parentComponent.childComponentWillPrepareForDraw === "function") {
+                    this.parentComponent.childComponentWillPrepareForDraw(this);
+                }
+
+                this._prepareForDraw();
+
+                if (this.prepareForDraw) {
+                    this.prepareForDraw();
+                }
+
+                // Load any non lazyLoad composers that have been added
+                length = this.composerList.length;
+                for (i = 0; i < length; i++) {
+                    composer = this.composerList[i];
+                    if (!composer.lazyLoad) {
+                        composer._load();
+                    }
+                }
+
+                // Will we expose a different property, firstDraw, for components to check
+                this._firstDraw = false;
+            }
+
+            if (this._newDomContent !== null || this._shouldClearDomContentOnNextDraw) {
+                if (drawLogger.isDebug) {
+                    logger.debug("Component content changed: component ", this._montage_metadata.objectName, this.identifier, " newDomContent", this._newDomContent);
+                }
+                this._performDomContentChanges();
+            }
+        }
+    },
+
 /**
   Description TODO
   @private
@@ -1045,7 +1091,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 template.setAttribute(attributeName, value);
             }
 
-            element.parentNode.replaceChild(template, element);
+            if (element.parentNode) {
+                element.parentNode.replaceChild(template, element);
+            } else {
+                console.warn("Warning: Trying to replace element ", element," which has no parentNode");
+            }
 
             this.eventManager.unregisterEventHandlerForElement(element);
             this.eventManager.registerEventHandlerForElement(this, template);
@@ -1111,31 +1161,30 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
   Description TODO
   @private
 */
-    _draw: {
+    _performDomContentChanges: {
         value: function() {
-            var contents = this._newContent,
+            var contents = this._newDomContent,
+                oldContent = this._element.childNodes[0],
                 element;
 
-            this._canDrawTable = {};
-            this._canDrawCount = 0;
-
-            if (contents) {
+            if (contents || this._shouldClearDomContentOnNextDraw) {
                 element = this._element;
 
                 element.innerHTML = "";
 
                 if (contents instanceof Element) {
                     element.appendChild(contents);
-                } else {
+                } else if(contents !== null) {
                     for (var i = 0, content; (content = contents[i]); i++) {
                         element.appendChild(content);
                     }
                 }
 
-                this._newContent = null;
+                this._newDomContent = null;
                 if (typeof this.contentDidChange === "function") {
-                    this.contentDidChange();
+                    this.contentDidChange(this._element.childNodes[0], oldContent);
                 }
+                this._shouldClearDomContentOnNextDraw = false;
             }
         }
     },
@@ -1191,6 +1240,9 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                     }
                 } else {
                     parentComponent._addToDrawList(this);
+                }
+                if (drawLogger.isDebug) {
+                    drawLogger.debug("drawList -- childComponent",this._montage_metadata.objectName," added to ",parentComponent._montage_metadata.objectName);
                 }
             }
         }
@@ -1822,29 +1874,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             this._readyToDrawList.push(component);
             this._readyToDrawListIndex[component.uuid] = true;
 
-            if (component._firstDraw) {
-
-                if (component.parentComponent && typeof component.parentComponent.childComponentWillPrepareForDraw === "function") {
-                    component.parentComponent.childComponentWillPrepareForDraw(component);
-                }
-
-                component._prepareForDraw();
-                if (component.prepareForDraw) {
-                    component.prepareForDraw();
-                }
-
-                // Load any non lazyLoad composers that have been added
-                length = component.composerList.length;
-                for (var i = 0; i < length; i++) {
-                    composer = component.composerList[i];
-                    if (!composer.lazyLoad) {
-                        composer._load();
-                    }
-                }
-
-                // Will we expose a different property, firstDraw, for components to check
-                component._firstDraw = false;
-            }
+            component._updateComponentDom();
         }
     },
 
@@ -1906,7 +1936,6 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
             // TODO: add the possibility to display = "none" the body during development (IKXARIA-3631).
             for (i = j-1; i >= 0; i--) {
                 component = needsDrawList[i];
-                component._draw();
                 component.draw(this._frameTime);
                 if (drawLogger.isDebug) {
                     drawLogger.debug(component._montage_metadata.objectName, " draw treeLevel ",component._treeLevel);
