@@ -43,7 +43,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                     // if the objects collection itself was actually modified: clear the selection
                     // TODO preserve selection if possible
-                    if (this._objects === event.plus) {
+                    if (this._objects === notification.plus) {
                         this.selectedIndexes = null;
                     }
                     // otherwise; the change to objects was a result of a change to the indexMap
