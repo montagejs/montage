@@ -5,7 +5,8 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
-    Deserializer = require("montage/core/deserializer").Deserializer;
+    Deserializer = require("montage/core/deserializer").Deserializer,
+    ChangeNotification = require("montage/core/change-notification").ChangeNotification;
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
@@ -565,23 +566,36 @@ describe("binding/definebinding-spec", function() {
     });
 
     describe("two hop binding with boolean", function() {
-        var FormatBar = Montage.create(Montage, {boldMode: {value: null}}),
-            DocumentController = Montage.create(Montage, {boldMode: {value: null}}),
-            TextItem = Montage.create(Montage, {boldMode: {value: null}}),
-            formatBar = FormatBar.create(),
-            documentController = DocumentController.create(),
+
+        var FormatBar,
+            DocumentController,
+            TextItem,
+            formatBar,
+            documentController,
+            textItem;
+
+        beforeEach(function() {
+
+            ChangeNotification.__reset__();
+
+            FormatBar = Montage.create(Montage, {boldMode: {value: null}});
+            DocumentController = Montage.create(Montage, {boldMode: {value: null}});
+            TextItem = Montage.create(Montage, {boldMode: {value: null}});
+            formatBar = FormatBar.create();
+            documentController = DocumentController.create();
             textItem = TextItem.create();
 
-        // [formatBar] <====> [DocumentController] ----> [TextItem]
-        Object.defineBinding(formatBar, "boldMode", {
-            boundObject: documentController,
-            boundObjectPropertyPath: "boldMode"
-        });
+            // [formatBar] <====> [DocumentController] ----> [TextItem]
+            Object.defineBinding(formatBar, "boldMode", {
+                boundObject: documentController,
+                boundObjectPropertyPath: "boldMode"
+            });
 
-        Object.defineBinding(textItem, "boldMode", {
-            boundObject: documentController,
-            boundObjectPropertyPath: "boldMode",
-            oneway: true
+            Object.defineBinding(textItem, "boldMode", {
+                boundObject: documentController,
+                boundObjectPropertyPath: "boldMode",
+                oneway: true
+            });
         });
 
         it("should propagate values to all parties when the change occurs on a two-way bound object", function() {
@@ -594,8 +608,9 @@ describe("binding/definebinding-spec", function() {
         it("must not propagate values to all parties when the change occurs on a one-way bound object", function() {
             // NOTE this runs this the risk of putting this object out of sync with all the other objects bound together
             textItem.boldMode = false;
-            expect(formatBar.boldMode).toBeTruthy();
-            expect(documentController.boldMode).toBeTruthy();
+
+            expect(formatBar.boldMode).toBeNull();
+            expect(documentController.boldMode).toBeNull();
             expect(textItem.boldMode).toBeFalsy();
         });
 
@@ -604,7 +619,7 @@ describe("binding/definebinding-spec", function() {
 
             expect(formatBar.boldMode).toBeTruthy();
             expect(documentController.boldMode).toBeTruthy();
-            expect(textItem.boldMode).toBeFalsy(); // This was false from the last test
+            expect(textItem.boldMode).toBeTruthy();
 
         });
     });
@@ -659,22 +674,36 @@ describe("binding/definebinding-spec", function() {
         });
 
         describe("two hop binding with string", function() {
-            var FormatBar = Montage.create(Montage, {boldMode: {value: null}}),
-                DocumentController = Montage.create(Montage, {boldMode: {value: null}}),
-                TextItem = Montage.create(Montage, {boldMode: {value: null}}),
-                formatBar = FormatBar.create(),
-                documentController = DocumentController.create(),
+
+            var FormatBar,
+                DocumentController,
+                TextItem,
+                formatBar,
+                documentController,
+                textItem;
+
+            beforeEach(function() {
+
+                ChangeNotification.__reset__();
+
+                FormatBar = Montage.create(Montage, {boldMode: {value: null}});
+                DocumentController = Montage.create(Montage, {boldMode: {value: null}});
+                TextItem = Montage.create(Montage, {boldMode: {value: null}});
+                formatBar = FormatBar.create();
+                documentController = DocumentController.create();
                 textItem = TextItem.create();
 
-            Object.defineBinding(formatBar, "boldMode", {
-                boundObject: documentController,
-                boundObjectPropertyPath: "boldMode"
-            });
+                // [formatBar] <====> [DocumentController] ----> [TextItem]
+                Object.defineBinding(formatBar, "boldMode", {
+                    boundObject: documentController,
+                    boundObjectPropertyPath: "boldMode"
+                });
 
-            Object.defineBinding(textItem, "boldMode", {
-                boundObject: documentController,
-                boundObjectPropertyPath: "boldMode",
-                oneway: true
+                Object.defineBinding(textItem, "boldMode", {
+                    boundObject: documentController,
+                    boundObjectPropertyPath: "boldMode",
+                    oneway: true
+                });
             });
 
             it("should propagate values to all parties when the change occurs on a two-way bound object", function() {
@@ -686,8 +715,8 @@ describe("binding/definebinding-spec", function() {
 
             it("must not propagate values to all parties when the change occurs on a one-way bound object", function() {
                 textItem.boldMode = "false";
-                expect(formatBar.boldMode).toEqual("true");
-                expect(documentController.boldMode).toEqual("true");
+                expect(formatBar.boldMode).toBeNull();
+                expect(documentController.boldMode).toBeNull();
                 expect(textItem.boldMode).toEqual("false");
           });
 
@@ -695,7 +724,7 @@ describe("binding/definebinding-spec", function() {
                 documentController.boldMode = "true";
                 expect(formatBar.boldMode).toEqual("true");
                 expect(documentController.boldMode).toEqual("true");
-                expect(textItem.boldMode).toEqual("false"); // This was false from the last test
+                expect(textItem.boldMode).toEqual("true");
 
           });
         });

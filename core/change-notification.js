@@ -816,8 +816,8 @@ Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
             // automaticDispatchPropertyChangeListener, probably
             if (dependentPropertyPaths) {
                 for (i = 0; (iPath = dependentPropertyPaths[i]); i++) {
-                        descriptor.addDependency(this, iPath, false, true);
-
+                    this.addPropertyChangeListener(iPath, descriptor, beforeChange, false);
+                    descriptor.registerDependency(this, iPath, null);
                 }
             }
         }
