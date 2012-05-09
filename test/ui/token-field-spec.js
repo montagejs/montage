@@ -56,7 +56,7 @@ var testPage = TestPageLoader.queueTest("token-field-test", function() {
                               // simulate the 'input' event on the textfield
                               autocomplete2._setValue();
 
-                              waits(1000);
+                              testPage.waitForDraw();
 
                               runs(function() {
 
@@ -88,7 +88,7 @@ var testPage = TestPageLoader.queueTest("token-field-test", function() {
                            // simulate the 'input' event on the textfield
                            autocomplete1._setValue();
 
-                           waits(1000);
+                           testPage.waitForDraw();
 
                            runs(function() {
 
