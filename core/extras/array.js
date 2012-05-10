@@ -280,3 +280,13 @@ Object.defineProperty(Array.prototype, "sum", {
     }
 });
 
+/**
+ Removes all members of this array making the object suitable for reuse
+ @function module:montage/core/core.Array.wipe
+ */
+Object.defineProperty(Array.prototype, "wipe", {
+   value: function() {
+       this.length = 0;
+       return this;
+   }
+});

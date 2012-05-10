@@ -1310,3 +1310,22 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "sort", {
         }
     }
 });
+
+Object.defineProperty(ChangeNotificationDispatchingArray, "_wipe", {
+    enumerable: false,
+    configurable: true,
+    value: Array.prototype.wipe
+});
+
+/**
+ Removes all members of this array making the object suitable for reuse
+ @function module:montage/core/core.Array.wipe
+ */
+Object.defineProperty(ChangeNotificationDispatchingArray, "wipe", {
+    enumerable: false,
+    configurable: true,
+    value: function() {
+        this._dispatchArrayChangeNotification("_wipe", arguments, this.length, 0, Array.prototype.slice.call(arguments, 0));
+        return this;
+    }
+});
