@@ -185,7 +185,7 @@ var ChangeNotification = exports.ChangeNotification = Object.create(Montage, {
     }
 });
 
-var ChangeNotificationDescriptor = Object.create(Object.prototype, {
+var ChangeNotificationDescriptor = Montage.create(Montage, {
     target: {value: null},
     propertyPath: {value: null},
     willChangeListeners: {value: null},
