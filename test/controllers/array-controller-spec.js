@@ -699,36 +699,19 @@ describe("controllers/array-controller-spec.js", function() {
             arrayController.filterFunction = filterNewEnglandOnly;
 
             var changeHandler = {
-                handleEvent: function(event) {
+                handleChange: function(event) {
                     expect(event.plus.length).toBe(2);
                     expect(event.plus[0]).toBe(alice);
                     expect(event.plus[1]).toBe(frank);
                 }
             };
-            spyOn(changeHandler, "handleEvent").andCallThrough();
+            spyOn(changeHandler, "handleChange").andCallThrough();
 
-            arrayController.addPropertyChangeListener("organizedObjects", changeHandler, true);
-
-            arrayController.organizeObjects();
-
-            expect(changeHandler.handleEvent).toHaveBeenCalled();
-
-        });
-
-        it("should dispatch a change event for which the prevValue is always separate from newValue", function() {
-
-            var changeHandler = {
-                handleEvent: function(event) {
-                    expect(event.minus).not.toBe(event.plus);
-                }
-            };
-            spyOn(changeHandler, "handleEvent").andCallThrough();
-
-            arrayController.addPropertyChangeListener("organizedObjects", changeHandler, true);
+            arrayController.addPropertyChangeListener("organizedObjects", changeHandler);
 
             arrayController.organizeObjects();
 
-            expect(changeHandler.handleEvent).toHaveBeenCalled();
+            expect(changeHandler.handleChange).toHaveBeenCalled();
 
         });
 
