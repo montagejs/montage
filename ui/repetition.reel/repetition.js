@@ -366,8 +366,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         value: function() {
             this._mappedObjects = null;
 
-            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("indexMap"));
-
             if (this._isComponentExpanded) {
                 this._refreshItems();
                 this.needsDraw = true;
