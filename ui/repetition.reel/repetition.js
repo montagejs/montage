@@ -455,7 +455,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 this._indexMap = [];
             }
 
-            if (apparent === this._indexMap[actual] || this._indexMap.indexOf(apparent) > -1) {
+            if (apparent === this._indexMap[actual] || (!isNaN(apparent) && this._indexMap.indexOf(apparent) > -1)) {
                 return;
             }
 
@@ -476,8 +476,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     clearIndexMap: {
         value: function() {
-            this._indexMap.length = 0;
-            this.indexMapEnabled = false;
+            this._indexMap.wipe();
         }
     },
 
@@ -814,7 +813,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             }
 
             if (this.objects && (this.objects.length !== this._items.length)) {
-                this._updateItems([], this._objects, 0);
+                this._updateItems([], this.objects, 0);
             }
         }
     },
