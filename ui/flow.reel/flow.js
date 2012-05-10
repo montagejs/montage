@@ -243,8 +243,8 @@ var Flow = exports.Flow = Montage.create(Component, {
     _handleSelectedIndexesChange: {
         enumerable: false,
         value: function (event) {
-            if (this.hasSelectedIndexScrolling && event._plus) {
-                this.startScrollingIndexToOffset(event._plus[0], this.selectedIndexScrollingOffset);
+            if (this.hasSelectedIndexScrolling && event.plus) {
+                this.startScrollingIndexToOffset(event.plus[0], this.selectedIndexScrollingOffset);
             }
         }
     },
