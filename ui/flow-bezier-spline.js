@@ -337,14 +337,14 @@ var Montage = require("montage").Montage,
             }
         }
     },
-
+    
     reflectionMatrix: {
         enumerable: false,
         value: function (planeNormal) {
-            var angleZ = Math.PI/2 - Math.atan2(planeNormal[1], planeNormal[0]),
+            var angleZ = Math.PI*.5 - Math.atan2(planeNormal[1], planeNormal[0]),
                 p1 = planeNormal[0] * Math.sin(angleZ) + planeNormal[1] * Math.cos(angleZ),
                 p2 = planeNormal[2],
-                angleX = Math.PI/2 - Math.atan2(p2, p1);
+                angleX = Math.PI*.5 - Math.atan2(p2, p1);
 
             return [Math.sin(angleX) * Math.sin(angleZ), Math.cos(angleZ) * Math.sin(angleX), Math.cos(angleX)];
         }
@@ -377,12 +377,12 @@ var Montage = require("montage").Montage,
 
     directedPlaneBezierIntersection: {
         enumerable: false,
-        value: function (planeOrigin, planeNormal, b0, b1, b2, b3) {
+        value: function (planeOrigin0, planeOrigin1, planeOrigin2, planeNormal, b0, b1, b2, b3) {
             var matrix = this.reflectionMatrix(planeNormal), // TODO: cache for matrix and cache for cubicRealRoots
-                d = this.reflectedY(b0[0] - planeOrigin[0], b0[1] - planeOrigin[1], b0[2] - planeOrigin[2], matrix),
-                r1 = this.reflectedY(b1[0] - planeOrigin[0], b1[1] - planeOrigin[1], b1[2] - planeOrigin[2], matrix),
-                r2 = this.reflectedY(b2[0] - planeOrigin[0], b2[1] - planeOrigin[1], b2[2] - planeOrigin[2], matrix),
-                r3 = this.reflectedY(b3[0] - planeOrigin[0], b3[1] - planeOrigin[1], b3[2] - planeOrigin[2], matrix),
+                d = this.reflectedY(b0[0] - planeOrigin0, b0[1] - planeOrigin1, b0[2] - planeOrigin2, matrix),
+                r1 = this.reflectedY(b1[0] - planeOrigin0, b1[1] - planeOrigin1, b1[2] - planeOrigin2, matrix),
+                r2 = this.reflectedY(b2[0] - planeOrigin0, b2[1] - planeOrigin1, b2[2] - planeOrigin2, matrix),
+                r3 = this.reflectedY(b3[0] - planeOrigin0, b3[1] - planeOrigin1, b3[2] - planeOrigin2, matrix),
                 a = (r1 - r2) * 3 + r3 - d,
                 b = (d + r2) * 3 - 6 * r1,
                 c = (r1 - d) * 3,
