@@ -121,7 +121,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     },
 
     _emptyFunction: {value: function(){}},
-    
+
     _updateItems: {
         value: function(minus, plus, index) {
             var fakeObjects = this._fakeObjects,
@@ -141,7 +141,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 //console.log("Going to change " + (index+i), minus[index+i]);
                 fakeObjects._dispatchFakePropertyChange(fakeObjects._fakeIndex[index+i], minus[index+i]);
             }
-            
+
             // add new objects, no need to send updates on this one, they're new!
             if (delta > 0) {
 //console.log("Going to add " + (max-i) + " iterations");
@@ -165,7 +165,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             }
         }
     },
-    
+
     handleChange: {
         enumerable: false,
         value: function(notification) {
@@ -174,7 +174,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             }
         }
     },
-    
+
     _fakeObjects: {
         value: null
     },
@@ -1313,7 +1313,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             this._indexMapChanged = false;
             this.needsDraw = true;
         }
-        
+
         // Remove items pending removal
         var removalIndex;
         if (this._itemsToRemove.length > 0) {
