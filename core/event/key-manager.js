@@ -33,9 +33,9 @@ var KEYNAMES_TO_KEYCODES = {
     down:                   40,
     delete:                 46,
 
-    // W3C Optional Key Code (mostly for US keyboard layout
-    semicolumn:             186,
-    column:                 186,
+    // W3C Optional Key Code (mostly for US keyboard layout)
+    semicolon:              186,
+    colon:                  186,
     equal:                  187,
     plus:                   187,
     comma:                  188,
@@ -152,8 +152,8 @@ MODIFIERS = {
 },
 
 NORMALIZED_KEYS = {
-    semicolumn:             ";",
-    column:                 ":",
+    semicolon:              ";",
+    colon:                  ":",
     equal:                  "=",
     plus:                   "+",
     comma:                  ",",
@@ -181,7 +181,7 @@ NORMALIZED_KEYS = {
     divide:                 "/"
 },
 
-NORMALIZED_CHARS = null;    // Will generate from the NORMALIZED_KEYS
+NORMALIZED_CHARS = null;    // Will be generated from the NORMALIZED_KEYS
 
 
 /* Event type dispatched by KeyComposer */
@@ -311,7 +311,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 keyComposer._modifiers = modifiersAndKey.modifiers;
                 keyComposer._keyCode = modifiersAndKey.keyCode;
 
-                // console.log("KEY REGISTERED:", keyComposer.identifier, normalizedKeys ,map);
                 this._registerListeners();
             }
         }
@@ -338,7 +337,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                     if (entry.object === keyComposer) {
                         entry.refCount --;
                         if (entry.refCount <= 0) {
-                            // console.log("UNREGISTERING KEY:", keyComposer, entry);
                             mapKeyEntry.splice(i, 1);
                             if (mapKeyEntry.length === 0) {
                                 delete mapModifiersEntry[keyComposer._keyCode];
@@ -370,13 +368,14 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 console.warn("Rather than creating a new KeyManager object, you might want to use the default key manager");
             }
 
-            // console.log("KEYBOARD MANAGER CREATED");
-
             // Browser detection
             if (userAgent.match(/ firefox\//i)) {
                 this._firefox = true;
-            } else if (userAgent.match(/ chrome\//i)) {
-                this._chrome = true;
+            } else if (userAgent.match(/ appleWebkit\//i)) {
+                this._webkit = true;
+                if (userAgent.match(/ chrome\//i)) {
+                    this._chrome = true;
+                }
             } else if (userAgent.match(/^opera\//i)) {
                 this._opera = true;
             }
@@ -488,7 +487,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 submap,
                 stopped = false;
 
-            // console.log("***  captureKeypress:", keyCode, event.charCode, event.keyIdentifier, event);
+            // console.log("  captureKeypress:", event.keyCode, event.charCode, event.keyIdentifier, this._modifiers);
             this._preprocessKeyEvent(event);
 
             submap = this._submap;
@@ -554,7 +553,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 }
 
                 // Check the keyIdentifier for a match
-                if (stopped && event.keyIdentifier) {
+                if (!stopped && event.keyIdentifier) {
                     identifierCode = KEYNAMES_TO_KEYCODES[event.keyIdentifier.toLowerCase()] ||
                         this._decodeKeyIdentifier(event.keyIdentifier);
                     if (identifierCode && identifierCode !== dispatchedKeyCode && submap[identifierCode]) {
@@ -573,7 +572,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 }
             }
 
-            this._setupCleanupTimer();
+            this._cleanup();
         }
     },
 
@@ -675,8 +674,8 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 }
             }
 
-            if (this._mac && keyCode == KEYNAMES_TO_KEYCODES.contextmenu) {
-                // Safari and Chrome will interpret the right command key as the window context-menu but will keep the
+            if (this._mac && this._webkit && keyCode == KEYNAMES_TO_KEYCODES.contextmenu) {
+                // Webkit browsers will interpret the right command key as the window context-menu but will keep the
                 // meta modifier on preventing us from having a "context-menu" shortcut. We need to clear the meta flag
                 // (the limitation is that we wont be able to support a "META+CONTEXT-MENU" shortcut
                 this._metaKey = false;
@@ -706,7 +705,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
     _registerListeners: {
         value: function() {
             if (!this._keyEventsListenerInstalled) {
-                // console.log("ADDING KEY EVENTS LISTENER TO KEYBOARD MANAGER");
                 window.addEventListener("keydown", this, true);
                 window.addEventListener("keypress", this, true);
                 window.addEventListener("keyup", this, true);
@@ -721,7 +719,6 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
     _unregisterListeners: {
         value: function() {
             if (this._keyEventsListenerInstalled) {
-                // console.log("REMOVING KEY EVENTS LISTENER FROM KEYBOARD MANAGER");
                 window.removeEventListener("keydown", this, true);
                 window.removeEventListener("keypress", this, true);
                 window.removeEventListener("keyup", this, true);
@@ -738,6 +735,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             var thisRef = this,
                 stopped = false,
                 keyUp = event.type == "keyup",
+                keyDown = event.type == "keydown",
                 eventType = keyUp ? KEYRELEASE_EVENT_TYPE : KEYPRESS_EVENT_TYPE,
                 nbrMatches = matches.length,
                 keyComposer,
@@ -774,7 +772,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 if (keyUp) {
                     triggeredKeys = Object.keys(this._triggeredKeys);
                     if (triggeredKeys.indexOf(keyComposer.uuid) == -1) {
-                        // Do not generate a keyup event if the composerKey has not been triggered on keydow or keypress
+                        // Do not generate a keyup event if the composerKey has not been triggered on keydown or keypress
                         continue;
                     }
 
@@ -784,14 +782,14 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                         delete this._longPressKeys[keyComposer.uuid];
                     }
                 } else {
-                    if (this._triggeredKeys[keyComposer.uuid]) {
-                        // Ignore repeat keydown
+                    if (keyDown) {
+                        // Reset trigger
+                        delete this._triggeredKeys[keyComposer.uuid];
+                    } else if (this._triggeredKeys[keyComposer.uuid]) {
+                        // that key has already been triggered, let's ignore it...
                         continue;
                     }
-                    if (keyComposer._shouldDispatchLongPress) {
-                        if (keyComposer._longPressTimeout) {
-                            clearTimeout(keyComposer._longPressTimeout);
-                        }
+                    if (keyComposer._shouldDispatchLongPress && !keyComposer._longPressTimeout) {
                         keyComposer._longPressTimeout = setTimeout(function() {
                             var longPressEvent;
 
@@ -814,6 +812,9 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
                 keyComposerEvent.initCustomEvent(eventType, true, true, null);
                 keyComposerEvent.activeElement = event.target;
                 keyComposerEvent = MutableEvent.fromEvent(keyComposerEvent);
+                if (this._opera) {
+                    keyComposerEvent.type = eventType; // Opera modifes the capitalization of custom event's type when that one is similar to a native event's type
+                }
                 keyComposer.dispatchEvent(keyComposerEvent);
 
                 // console.log("keyComposer Event DISPATCHED:", keyComposerEvent, event.target, keyComposer);
@@ -855,36 +856,50 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
     /**
       @private
     */
+    _cleanup: {
+        value: function() {
+            var keyComposer,
+                i;
+
+            if (this._cleanupTimeout) {
+                clearTimeout(this._cleanupTimeout);
+            }
+
+            for (i in this._triggeredKeys) {
+                if (this._triggeredKeys.hasOwnProperty(i)) {
+                    delete this._triggeredKeys[i];
+                }
+            }
+
+            for (i in this._longPressKeys) {
+                if (this._longPressKeys.hasOwnProperty(i)) {
+                    keyComposer = this._longPressKeys[i];
+                    clearTimeout(keyComposer._longPressTimeout);
+                    keyComposer._longPressTimeout = null;
+                    delete this._longPressKeys[i];
+                }
+            }
+
+            this._cleanupTimeout = null;
+        }
+    },
+
+    /**
+      @private
+    */
     _setupCleanupTimer: {
         value: function() {
             var thisRef = this;
 
             // When a keydown event is stopped, we will not received the corresponding keyup event.
-            // If we haven't detected any key events for 2 seconds, let's presume the user is done using teh keyboard
+            // If we haven't detected any key events for 2 seconds, let's presume the user is done using the keyboard
             // and do some internal cleanup in case we missed some keyup events.
 
             if (this._cleanupTimeout) {
                 clearTimeout(this._cleanupTimeout);
             }
             this._cleanupTimeout = setTimeout(function() {
-                var keyComposer;
-
-                for (i in thisRef._triggeredKeys) {
-                    if (thisRef._triggeredKeys.hasOwnProperty(i)) {
-                        delete thisRef._triggeredKeys[i];
-                    }
-                }
-
-                for (i in thisRef._longPressKeys) {
-                    if (thisRef._longPressKeys.hasOwnProperty(i)) {
-                        keyComposer = thisRef._longPressKeys[i];
-                        clearTimeout(keyComposer._longPressTimeout);
-                        keyComposer._longPressTimeout = null;
-                        delete thisRef._longPressKeys[i];
-                    }
-                }
-
-                thisRef._cleanupTimeout = null;
+                thisRef._cleanup();
             }, this._cleanupThreshold);
         }
     },
@@ -922,7 +937,7 @@ var KeyManager = exports.KeyManager = Montage.create(Montage,/** @lends module:m
             // Extract the final key
             key = keys[nbrKeys - 1];
             key = NORMALIZED_CHARS[key] || key;
-//            key = NORMALIZED_KEYS[key] || key;
+            key = NORMALIZED_KEYS[key] || key;  // This is needed for browsers that don't use W3C Optional Key Codes
 
             if (key.length > 1) {
                 keyCode = KEYNAMES_TO_KEYCODES[key];
