@@ -1332,3 +1332,87 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "wipe", {
         return this;
     }
 });
+
+if (typeof define === "function") {
+// ugly code is ugly
+Object.defineProperty(Object.prototype, "__debugChangeNotifications__", {
+    enumerable: false,
+    configurable: false,
+    value: function() {
+        var registry = ChangeNotification._descriptorsRegistry[this.uuid],
+            log = [];
+
+        if (registry) {
+            for (path in registry) {
+                log.push('"'+path+'"', registry[path]);
+
+                var dependencies = registry[path].dependencies;
+                if (dependencies) {
+                    log.push("\n\tlistens to ");
+                    for (var i = 0; i < dependencies.length; i += 3) {
+                        if (dependencies[i+1] == null) {
+                            log.push("mutation @", dependencies[i]);
+                        } else {
+                            log.push("\"" + dependencies[i+1] + "\" @", dependencies[i]);
+                        }
+                        log.push("\n\t           ");
+                    }
+                    log.pop();
+                }
+
+                var changeListeners = registry[path].changeListeners;
+                var bindings = [];
+                for (var key in changeListeners) {
+                    var listenerTarget = changeListeners[key].listenerTarget;
+                    var listenerFunctionName = changeListeners[key].listenerFunctionName;
+                    var info = Montage.getInfoForObject(listenerTarget);
+                    if (info.objectName === "PropertyChangeBindingListener") {
+                        bindings.push("\"" + listenerTarget.bindingPropertyPath + "\" @ " + Montage.getInfoForObject(listenerTarget.bindingOrigin).objectName + "(", listenerTarget.bindingOrigin, ")");
+                        bindings.push("\n\t            ");
+                    }
+                }
+
+                var listeners = [];
+                (function gatherListeners(descriptor, withBindings) {
+                    var changeListeners = descriptor.changeListeners;
+                    for (var key in changeListeners) {
+                        var listenerTarget = changeListeners[key].listenerTarget,
+                            listenerFunctionName = changeListeners[key].listenerFunctionName,
+                            info = Montage.getInfoForObject(listenerTarget);
+
+                        if (info.objectName !== "PropertyChangeBindingListener") {
+                            if (descriptor.dependentDescriptorsIndex && key in descriptor.dependentDescriptorsIndex) {
+                                listeners.push('"'+listenerTarget.propertyPath + "\" (", listenerTarget ,")", "-> ");
+
+                            } else {
+                                listeners.push(listenerFunctionName ? listenerFunctionName : "<function>", "@ " + info.objectName + " (", listenerTarget, ")");
+                            }
+                            gatherListeners(listenerTarget, true);
+                            listeners.push("\n\t               ");
+                        } else if (withBindings) {
+                            listeners.push("\"" + listenerTarget.bindingPropertyPath + "\" @ " + Montage.getInfoForObject(listenerTarget.bindingOrigin).objectName + "(", listenerTarget.bindingOrigin, ")");
+                        }
+                    }
+                })(registry[path]);
+
+                if (listeners.length > 0) {
+                    listeners.pop();
+                    log.push("\n\tis listened by ");
+                    log.push.apply(log, listeners);
+                }
+                if (bindings.length > 0) {
+                    bindings.pop();
+                    log.push("\n\tis bound to ");
+                    log.push.apply(log, bindings);
+                }
+
+                log.push("\n\n");
+            }
+
+            console.log.apply(console, log);
+        } else {
+            console.log("No change listeners installed.");
+        }
+    }
+});
+}
