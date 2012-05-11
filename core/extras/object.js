@@ -247,12 +247,9 @@ Object.getPrototypeAndDescriptorDefiningProperty = function(anObject, propertyNa
 Object.defineProperty(Object.prototype, "wipe", {
    value: function() {
        var keys = Object.keys(this),
-           keyCount = keys.length,
-           i;
+           i = keys.length;
 
-       for (i = 0; i < keyCount; i++) {
-           delete this[keys[i]];
-       }
+       while(i) delete this[keys[--i]];
 
        return this;
    }

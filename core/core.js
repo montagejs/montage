@@ -159,7 +159,7 @@ Object.defineProperty(Montage, "defineProperty", {
 
         //this is added to enable value properties with [] or Objects that are new for every instance
         if (descriptor.distinct === true && typeof descriptor.value === "object") {
-            (function(internalProperty, value) {
+            (function(prop,internalProperty, value, obj) {
                 Object.defineProperty(obj, internalProperty, {
                     enumerable: false,
                     configurable: true,
@@ -270,7 +270,7 @@ Object.defineProperty(Montage, "defineProperty", {
                         }
                     });
                 }
-            })(UNDERSCORE + prop, descriptor.value);
+            })(prop, UNDERSCORE + prop, descriptor.value, obj);
 
         } else {
             return Object.defineProperty(obj, prop, descriptor);
