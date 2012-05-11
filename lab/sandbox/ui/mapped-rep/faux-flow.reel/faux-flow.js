@@ -8,6 +8,31 @@ var Montage = require("montage/core/core").Montage,
 
 exports.FauxFlow = Montage.create(List, {
 
+    __repetition :{
+        serializable: true,
+        enumerable: false,
+        value: null
+    },
+
+    objects: {
+        serializable: true,
+        value: null
+    },
+
+    _repetition: {
+        serializable: true,
+        get: function() {
+            return this.__repetition;
+        },
+        set: function(value) {
+            this.__repetition = value;
+
+            if (value) {
+                this.shuffle();
+            }
+        }
+    },
+
     shuffle: {
         value: function() {
 
@@ -17,8 +42,9 @@ exports.FauxFlow = Montage.create(List, {
                     i,
                     iContent,
                     contentCount,
-                    indexMap = [],
                     repetitionIndex = 0;
+
+            this._repetition.clearIndexMap();
 
             if ("random" === this.mode) {
 
@@ -27,7 +53,7 @@ exports.FauxFlow = Montage.create(List, {
                         y: (Math.random() * 100) - 50};
 
                     if (this.doesIntersect(point.x, point.y, this._tileWidth, this._tileHeight)) {
-                        indexMap[repetitionIndex] = i;
+                        this._repetition.mapIndexToIndex(repetitionIndex, i);
                         repetitionIndex++;
                         points.push(point);
                     }
@@ -39,7 +65,7 @@ exports.FauxFlow = Montage.create(List, {
                     point = {x: (i * this._tileWidth) + 10, y: 0};
 
                     if (this.doesIntersect(point.x, point.y, this._tileWidth, this._tileHeight)) {
-                        indexMap[repetitionIndex] = i;
+                        this._repetition.mapIndexToIndex(repetitionIndex, i);
                         repetitionIndex++;
                         points.push(point);
                     }
@@ -54,32 +80,26 @@ exports.FauxFlow = Montage.create(List, {
 
                 if (firstContent) {
                     point = {x: 10, y: 0};
-                    indexMap[repetitionIndex] = 0;
+                    this._repetition.mapIndexToIndex(repetitionIndex, 0);
                     repetitionIndex++;
                     points.push(point);
                 }
 
                 if (lastContent && lastContent !== firstContent) {
                     point = {x: this._tileWidth + 100, y: 0};
-                    indexMap[repetitionIndex] = contentCount - 1;
-                    repetitionIndex++;
+                    this._repetition.mapIndexToIndex(repetitionIndex, contentCount - 1);
                     points.push(point)
                 }
             }
 
+            this._repetition.refreshIndexMap();
             this.points = points;
-
-            // TODO need to have a more approved way to only set the index map on the repetition once
-            // it's ...ready for it?
-            if (this._repetition._items.length > 0) {
-                this._repetition.indexMap = indexMap;
-            }
-
             this.needsDraw = true;
         }
     },
 
     mode: {
+        serializable: true,
         value: "random"
     },
 
@@ -120,7 +140,7 @@ exports.FauxFlow = Montage.create(List, {
                 this._tileHeight = content.offsetHeight;
             }
 
-            this.contentController.addEventListener("change@organizedObjects", this, false);
+            this.contentController.addPropertyChangeListener("organizedObjects", this, false);
         }
     },
 
@@ -142,9 +162,9 @@ exports.FauxFlow = Montage.create(List, {
         }
     },
 
-    handleEvent: {
-        value: function(evt) {
-            if ("change@organizedObjects" === evt.type) {
+    handleChange: {
+        value: function(notification) {
+            if ("organizedObjects" === notification.currentPropertyPath) {
                 this.shuffle();
             }
         }
