@@ -32,11 +32,13 @@ var FakeObjects = Montage.create(Object.prototype, {
             return this;
         }
     },
+
     automaticallyDispatchPropertyChangeListener: {
         value: function() {
             return false;
         }
     },
+
     undefinedGet: {
         value: function(propertyName) {
             if (this._repetition.objects) {
@@ -44,6 +46,20 @@ var FakeObjects = Montage.create(Object.prototype, {
             }
         }
     },
+
+    // This is to catch a two-way binding on
+    "0": {
+        // This is to catch two way bindings
+        set: function() {
+            console.warn("You cannot use a two-way binding on the \"objectAtCurrentIteration\" or \"current\" property.")
+        },
+        get: function() {
+            if (this._repetition.objects) {
+                return this._repetition.objects[this._fakeIndex.indexOf("0")];
+            }
+        }
+    },
+
     addFakeObjectAtPosition: {
         value: function(position) {
             var index;
