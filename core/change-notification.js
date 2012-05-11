@@ -515,7 +515,7 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
                     }
                 } while (targetIx != -1);
                 if (targetIx == -1) {
-                    throw "getProperty target not found in dependencies";
+                    throw "getProperty target (" + this.target.uuid + ":" + propertyName + ") not found in dependencies for " + this.propertyPath;
                 }
 
                 delete dependencyDescriptor.dependentDescriptorsIndex[this.uuid];
