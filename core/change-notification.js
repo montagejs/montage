@@ -79,6 +79,7 @@ var ChangeNotification = exports.ChangeNotification = Object.create(Montage, {
 
                     functionName = "handle" + identifier + (beforeChange ? "WillChange" : "Change");
                     if (typeof listener[functionName] === "function") {
+                        functionDescriptor.listenerFunctionName = functionName;
                         functionDescriptor.listenerFunction = listener[functionName];
                         functionDescriptor.listenerTarget = listener;
                     }
@@ -87,6 +88,7 @@ var ChangeNotification = exports.ChangeNotification = Object.create(Montage, {
                 if (!functionDescriptor.listenerFunction) {
                     functionName = "handle" + (beforeChange ? "WillChange" : "Change");
                     if (typeof listener[functionName] === "function") {
+                        functionDescriptor.listenerFunctionName = functionName;
                         functionDescriptor.listenerFunction = listener[functionName];
                         functionDescriptor.listenerTarget = listener;
                     }
@@ -573,6 +575,7 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
 var ChangeNotificationFunctionDescriptor = Object.create(null, {
     listenerTarget: {writable: true, value: null},
     listenerFunction: {writable: true, value: null},
+    listenerFunctionName: {writable: true, value: null},
     listensToMutation: {writable: true, value: false}
 });
 
