@@ -16,7 +16,6 @@ var Montage = require("montage").Montage,
     Template = require("ui/template").Template,
     logger = require("core/logger").logger("repetition"),
     Gate = require("core/gate").Gate,
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
     ChangeNotification = require("core/change-notification").ChangeNotification,
     PropertyChangeNotification = require("core/change-notification").PropertyChangeNotification;
 
