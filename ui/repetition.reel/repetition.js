@@ -51,7 +51,7 @@ var FakeObjects = Montage.create(Object.prototype, {
     "0": {
         // This is to catch two way bindings
         set: function() {
-            console.warn("You cannot use a two-way binding on the \"objectAtCurrentIteration\" or \"current\" property.")
+            throw("You cannot use a two-way binding on the \"objectAtCurrentIteration\" or \"current\" property.");
         },
         get: function() {
             if (this._repetition.objects) {
