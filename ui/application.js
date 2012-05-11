@@ -137,6 +137,18 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: null
     },
 
+    state: {
+        value: null
+    },
+
+    stateDelegate: {
+        value: null
+    },
+
+    stateKeys: {
+        value: null
+    },
+
     /**
      Description TODO
      @function
@@ -149,16 +161,109 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 self = this;
 
             self = Application.isPrototypeOf(self) ? self : Application.create();
-
             // assign to the exports so that it is available in the deserialization of the template
             exports.application = self;
 
             template.instantiateWithOwnerAndDocument(null, window.document, function() {
                 require("ui/component").__root__.needsDraw = true;
+
+                if(self.stateKeys) {
+                    self._createState();
+                }
+
+                window.onhashchange = function(event) {
+                    event.preventDefault();
+                    self._updateStateFromUrl();
+                };
+
+                // initial state from URL
+                self._updateStateFromUrl();
+
                 if (callback) {
                     callback(self);
                 }
             });
+        }
+    },
+
+    _synching : {value: null},
+    _updateStateFromUrl: {
+        value: function() {
+            if(this.state && this.stateDelegate) {
+                this._synching = true;
+                var stateValues = this.stateDelegate.getStateFromUrl(window.location), state = this.state;
+                for(var prop in stateValues) {
+                    if(state && typeof state[prop] !== 'undefined') {
+                        state[prop] = stateValues[prop];
+                    }
+                }
+                this._synching = false;
+            }
+        }
+    },
+
+    _updateUrlFromState: {
+        value: function() {
+            if(this.state && this.stateDelegate) {
+                if(!this._synching) {
+
+                    var url = this.stateDelegate.getUrlFromState(this.state);
+                    this._synching = true;
+                    if(String.isString(url)) {
+                        window.location = url;
+                    } else {
+                        if(url.hash) {
+                            window.location.hash = url.hash;
+                        } else {
+                            // todo
+                        }
+                    }
+                    this._synching = false;
+                }
+
+            }
+        }
+    },
+
+    _createState: {
+        value: function() {
+            this.state = Montage.create(Montage, {});
+            if(this.stateKeys && this.stateKeys.length > 0) {
+                var i, len = this.stateKeys.length;
+                for(i=0; i< len; i++) {
+                    this._defineStateProperty(this.stateKeys[i]);
+                }
+            }
+        }
+    },
+
+    _defineStateProperty: {
+        value: function(name) {
+            var _name = '_' + name, self = this, stateDelegate = this.stateDelegate;
+            var newDescriptor = {
+                configurable: true,
+                enumerable: true,
+                serializable: true,
+                set: (function(name, attrName) {
+                    return function(value) {
+                        if((typeof value !== 'undefined') && this[attrName] !== value) {
+                            // this = state
+                            this[attrName] = value;
+                            self._updateUrlFromState();
+                        }
+                    };
+                }(name, _name)),
+                get: (function(name, attrName) {
+                    return function() {
+                        return this[attrName];
+                    };
+                }(name, _name))
+            };
+
+            // Define _ property
+            Montage.defineProperty(this.state, _name, {value: null});
+            // Define property getter and setter
+            Montage.defineProperty(this.state, name, newDescriptor);
         }
     },
 

@@ -186,10 +186,6 @@
                 }
             },
 
-            "appState": {
-                "object": "sink-app-state"
-            },
-
             "owner": {
                 "prototype": "content.reel[content]",
                 "properties": {
@@ -197,7 +193,7 @@
                     "contentDeck": {"@": "content"}
                 },
                 "bindings": {
-                    "selectedItem": {"<<->": "@appState.selectedItem"}
+                    "selectedItem": {"<<->": "@application.state.selectedItem"}
                 }
             }
 

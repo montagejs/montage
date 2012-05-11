@@ -68,21 +68,6 @@ exports.Main = Montage.create(Component, {
         }
     },
 
-    _setZipFromHash: {
-        value: function() {
-            var hash = window.location.hash;
-
-            if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
-                this.zip = hash.substring(hash.indexOf('#')+1);
-            }
-        }
-    },
-
-    prepareForDraw: {
-        value: function() {
-            
-        }
-    },
 
     getWeatherForZip: {
         value: function() {

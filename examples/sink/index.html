@@ -8,10 +8,10 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Montage Kitchen Sink</title>
-    
+
     <link rel="stylesheet" href="google-code-prettify/prettify.css" />
     <link rel="stylesheet" href="bootstrap.min.css" />
-    
+
     <script src="google-code-prettify/prettify.js" type="text/javascript"></script>
 
     <script src="../../montage.js" data-package="."></script>
@@ -20,6 +20,17 @@
         {
             "owner": {
                 "prototype": "montage/ui/loader.reel"
+            },
+            "stateDelegate": {
+                "prototype": "app-delegate"
+            },
+            "application": {
+                "prototype": "montage/ui/application",
+                "properties": {
+                    "delegate": {"@": "stateDelegate"},
+                    "stateKeys": ["selectedItem"],
+                    "stateDelegate": {"@": "stateDelegate"}
+                }
             }
         }
     </script>

@@ -38,16 +38,6 @@ exports.Content = Montage.create(Component, {
         }
     },
 
-    prepareForDraw: {
-        value: function() {
-            // If a selectedItem is passed in via URL, the value is updated before the
-            // deck contents are loaded. Just force a redraw of the contentDeck
-            if(this.selectedItem) {
-                this.contentDeck.needsDraw = true;
-            }
-        }
-    },
-
     draw: {
         value: function() {
             console.log('content draw', this.selectedItem, this.contentDeck.switchValue);

@@ -10,14 +10,25 @@
     <title>Montage Weather Sample</title>
     <link rel="stylesheet" href="style/reset-min.css" />
     <link rel="stylesheet" href="style/app.css" />
-    
-    
+
+
     <script src="../../montage.js" data-package="."></script>
 
     <script type="text/montage-serialization">
         {
             "owner": {
                 "prototype": "montage/ui/loader.reel"
+            },
+            "stateDelegate": {
+                "prototype": "app-delegate"
+            },
+            "application": {
+                "prototype": "montage/ui/application",
+                "properties": {
+                    "delegate": {"@": "stateDelegate"},
+                    "stateKeys": ["zip"],
+                    "stateDelegate": {"@": "stateDelegate"}
+                }
             }
         }
     </script>

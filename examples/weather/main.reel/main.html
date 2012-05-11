@@ -13,6 +13,7 @@
 
     <script type="text/montage-serialization">
         {
+            
             "owner": {
                 "prototype": "main.reel",
                 "properties": {
@@ -20,19 +21,12 @@
                     "currentConditionsEl": {"#": "current-conditions"}
                 },
                 "bindings": {
-                    "zip": {"->": "@zip.value"}
+                    "zip": {
+                        "<<->": "@application.state.zip"
+                    }
                 }
             },
-            "appState": {
-                "object": "weather-app-state",
-                "properties": {
-                    
-                },
-                "bindings": {
-                    "zip": {"<->>": "@owner.zip"}
-                }
-            },
-            
+
             "zip": {
                 "prototype": "montage/ui/textfield.reel",
                 "properties": {
@@ -41,7 +35,7 @@
                 "bindings": {
                     "value": {"->": "@owner.zipTxtValue"}
                 }
-            },            
+            },
             "goButton": {
                 "prototype": "montage/ui/button.reel",
                 "properties": {
@@ -75,11 +69,11 @@
             }
         }
     </script>
-    
+
     <style>
         .main {
             width: 600px;
-            
+
         }
     </style>
 </head>
@@ -87,17 +81,17 @@
     <div class="main container" data-montage-id="main">
         <div class="main-content">
             <h3>Weather Forecast</h3>
-            
+
             <div class="search">
                 <input type="search" data-montage-id="zip" value="94087" style="width: 80%" placeholder="Enter US zip code"/>
                 <button type="button" data-montage-id="goButton" class="btn">OK</button>
-            </div>  
+            </div>
             <h3 data-montage-id="result-title"></h3>
             <div data-montage-id="current-conditions"></div>
             <div data-montage-id="error" class="error"></div>
-            
+
             <div class="forecast">
-                
+
             </div>
       </div>
       <footer>
