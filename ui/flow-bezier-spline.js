@@ -195,9 +195,9 @@ var Montage = require("montage").Montage,
                     jParameter = this._parameters[parameterKeys[j]];
                     jParameterData = jParameter.data;
                     if ((typeof jParameterData[i] !== "undefined") && (typeof jParameterData[i + 1] !== "undefined")) {
-                        parameters[parameterKeys[j]] = (jParameterData[i] * y + jParameterData[i + 1] * t) + jParameter.units;
+                        parameters[parameterKeys[j]] = (jParameterData[i] * y + jParameterData[i + 1] * t).toFixed(3) + jParameter.units;
                     } else {
-                        parameters[parameterKeys[j]] = jParameterData[jParameterData.length - 1] + jParameter.units;
+                        parameters[parameterKeys[j]] = jParameterData[jParameterData.length - 1].toFixed(5) + jParameter.units;
                     }
 
                 }

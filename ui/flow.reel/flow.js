@@ -754,10 +754,10 @@ var Flow = exports.Flow = Montage.create(Component, {
             var i,
                 length = this._repetitionComponents.length,
                 slide,
-                transform,
+                style,
                 j,
                 iOffset,
-                iStyle,
+                iElement,
                 pathsLength = this._paths.length,
                 pathIndex,
                 pos,
@@ -787,8 +787,8 @@ var Flow = exports.Flow = Montage.create(Component, {
                 xAngle = Math.atan2(-vY, -tmpZ);
                 this._element.style.webkitPerspective = perspective + "px";
                 this._repetition._element.style.webkitTransform =
-                    "translate3d(" + 0 + "px, " + 0 + "px, " + perspective + "px) rotateX(" + xAngle + "rad) rotateY(" + (-yAngle) + "rad) " +
-                    "translate3d(" + (-this.cameraPosition[0]) + "px, " + (-this.cameraPosition[1]) + "px, " + (-this.cameraPosition[2]) + "px)";
+                    "translate3d(" + 0 + "px," + 0 + "px," + perspective + "px)rotateX(" + xAngle + "rad)rotateY(" + (-yAngle) + "rad)" +
+                    "translate3d(" + (-this.cameraPosition[0]) + "px," + (-this.cameraPosition[1]) + "px," + (-this.cameraPosition[2]) + "px)";
                 this._isCameraUpdated = false;
             }
             if (this.splinePaths.length) {
@@ -799,32 +799,26 @@ var Flow = exports.Flow = Montage.create(Component, {
                     slide.time = iOffset.time + this._paths[pathIndex].headOffset;
                     slide.speed = iOffset.speed;
                     pos = this._splinePaths[pathIndex].getPositionAtTime(slide.time, pos);
+                    iElement = this._repetitionComponents[i].element.parentNode;
                     if ((pos.length > 0) && (slide.index < this._numberOfIterations)) {
-                        iStyle = this._repetitionComponents[i].element.parentNode.style;
-                        if (iStyle.opacity == 0) {
-                            iStyle.opacity = 1;
-                        }
                         pos3 = pos[3];
-                        transform = "translate3d(" + pos[0] + "px," + pos[1] + "px," + pos[2] + "px) ";
-                        transform += (typeof pos3.rotateZ !== "undefined") ? "rotateZ(" + pos3.rotateZ + ") " : "";
-                        transform += (typeof pos3.rotateY !== "undefined") ? "rotateY(" + pos3.rotateY + ") " : "";
-                        transform += (typeof pos3.rotateX !== "undefined") ? "rotateX(" + pos3.rotateX + ") " : "";
-                        iStyle.webkitTransform = transform;
-                        iStyle = this._repetitionComponents[i].element.style;
+                        style =
+                            "-webkit-transform:translate3d(" + pos[0].toFixed(5) + "px," + pos[1].toFixed(5) + "px," + pos[2].toFixed(5) + "px)" +
+                            ((typeof pos3.rotateZ !== "undefined") ? "rotateZ(" + pos3.rotateZ + ")" : "") +
+                            ((typeof pos3.rotateY !== "undefined") ? "rotateY(" + pos3.rotateY + ")" : "") +
+                            ((typeof pos3.rotateX !== "undefined") ? "rotateX(" + pos3.rotateX + ")" : "") + ";";
+
                         positionKeys = Object.keys(pos3);
                         positionKeyCount = positionKeys.length;
                         for (j = 0; j < positionKeyCount; j++) {
                             jPositionKey = positionKeys[j];
-                            if (!(jPositionKey === "rotateX" || jPositionKey === "rotateY" || jPositionKey === "rotateZ") && iStyle[jPositionKey] !== pos3[jPositionKey]) {
-                                iStyle[jPositionKey] = pos3[jPositionKey];
+                            if (!(jPositionKey === "rotateX" || jPositionKey === "rotateY" || jPositionKey === "rotateZ")) {
+                                style += jPositionKey + ":" + pos3[jPositionKey] + ";";
                             }
                         }
+                        iElement.setAttribute("style", style);
                     } else {
-                        iStyle = this._repetitionComponents[i].element.parentNode.style;
-                        if (iStyle.opacity !== 0) {
-                            iStyle.opacity = 0;
-                            iStyle.webkitTransform = "scale3d(0, 0, 0)";
-                        }
+                        iElement.setAttribute("style", "-webkit-transform:scale3d(0,0,0);opacity:0");
                     }
                 }
             }
