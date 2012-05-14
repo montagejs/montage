@@ -31,7 +31,7 @@ var Todo = exports.Todo = Montage.create(Component, {
             }
         });
 
-        todos.addEventListener("change@done", function() {
+        todos.addPropertyChangeListener("done", function() {
             self.needsDraw = true;
         });
 
