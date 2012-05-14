@@ -151,7 +151,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
             });
 
             describe("longPress", function() {
-                it("is fired after longPressTimeout", function() {
+                it("is fired after longPressThreshold", function() {
                     var listener = testPage.addListener(test.press_composer, null, "longPress");
 
                     if (window.Touch) {
@@ -160,7 +160,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
                     }
 
-                    waits(test.press_composer.longPressTimeout);
+                    waits(test.press_composer.longPressThreshold);
                     runs(function() {
                         expect(listener).toHaveBeenCalled();
 
@@ -181,7 +181,7 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                         testPage.mouseEvent({target: test.example.element}, "mousedown");
                     }
 
-                    waits(test.press_composer.longPressTimeout - 100);
+                    waits(test.press_composer.longPressThreshold - 100);
                     runs(function() {
                         expect(longListener).not.toHaveBeenCalled();
 
@@ -193,11 +193,11 @@ var testPage = TestPageLoader.queueTest("press-composer-test", function() {
                     });
                 });
 
-                describe("longPressTimeout", function() {
+                describe("longPressThreshold", function() {
                     it("can be changed", function() {
                         var listener = testPage.addListener(test.press_composer, null, "longPress");
-                        var timeout = test.press_composer.longPressTimeout - 500;
-                        test.press_composer.longPressTimeout = timeout;
+                        var timeout = test.press_composer.longPressThreshold - 500;
+                        test.press_composer.longPressThreshold = timeout;
 
                         if (window.Touch) {
                             testPage.touchEvent({target: test.example.element}, "touchstart");

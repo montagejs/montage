@@ -35,16 +35,16 @@ describe("array-spec", function() {
                 it("should notify listeners observing the array for 'change' events, with a collection of the pushed values", function() {
                     var arrayChangeListener = {
                         changeHandlerFunction: function(event) {
-                            expect(event.minus).toBeUndefined();
+                            expect(event.minus.length).toBe(0);
                             expect(event.plus[0]).toBe(newValue);
                             expect(event.plus.length).toBe(1);
-                            expect(event.changeIndex).toBe(3);
+                            expect(event.index).toBe(3);
                         }
                     };
 
                     spyOn(arrayChangeListener, 'changeHandlerFunction').andCallThrough();
 
-                    array.addEventListener("change", arrayChangeListener.changeHandlerFunction, true);
+                    array.addPropertyChangeListener(null, arrayChangeListener.changeHandlerFunction, false);
 
                     array.push(newValue);
 
@@ -61,7 +61,7 @@ describe("array-spec", function() {
 
                     spyOn(indexChangeListener, 'changeHandlerFunction').andCallThrough();
 
-                    array.addEventListener("change@3", indexChangeListener.changeHandlerFunction, true);
+                    array.addPropertyChangeListener("3", indexChangeListener.changeHandlerFunction, false);
 
                     array.push(newValue);
 
@@ -114,7 +114,7 @@ describe("array-spec", function() {
                 it("should notify listeners observing the array for 'change' events, detailing the diff", function() {
                     var arrayChangeListener = {
                         changeHandlerFunction: function(event) {
-                            expect(event.minus).toBeUndefined();
+                            expect(event.minus.length).toBe(0);
                             expect(event.plus.length).toBe(2);
                             expect(event.plus[0]).toBe(newValues[0]);
                             expect(event.plus[1]).toBe(newValues[1]);
@@ -123,7 +123,7 @@ describe("array-spec", function() {
 
                     spyOn(arrayChangeListener, 'changeHandlerFunction').andCallThrough();
 
-                    array.addEventListener("change", arrayChangeListener.changeHandlerFunction, true);
+                    array.addPropertyChangeListener(null, arrayChangeListener.changeHandlerFunction, false);
 
                     array.push.apply(array, newValues);
 
@@ -148,8 +148,8 @@ describe("array-spec", function() {
                     spyOn(index3ChangeListener, 'index3ChangeHandlerFunction').andCallThrough();
                     spyOn(index4ChangeListener, 'index4ChangeHandlerFunction').andCallThrough();
 
-                    array.addEventListener("change@3", index3ChangeListener.index3ChangeHandlerFunction, true);
-                    array.addEventListener("change@4", index4ChangeListener.index4ChangeHandlerFunction, true);
+                    array.addPropertyChangeListener("3", index3ChangeListener.index3ChangeHandlerFunction, false);
+                    array.addPropertyChangeListener("4", index4ChangeListener.index4ChangeHandlerFunction, false);
 
                     array.push.apply(array, newValues);
 
@@ -166,11 +166,11 @@ describe("array-spec", function() {
 
                     spyOn(indexChangeListener, 'changeHandlerFunction').andCallThrough();
 
-                    array.addEventListener("change@0", indexChangeListener.changeHandlerFunction, true);
-                    array.addEventListener("change@1", indexChangeListener.changeHandlerFunction, true);
-                    array.addEventListener("change@2", indexChangeListener.changeHandlerFunction, true);
+                    array.addPropertyChangeListener("0", indexChangeListener.changeHandlerFunction, false);
+                    array.addPropertyChangeListener("1", indexChangeListener.changeHandlerFunction, false);
+                    array.addPropertyChangeListener("2", indexChangeListener.changeHandlerFunction, false);
                     // Skipping change@3 and change@4 as it is the affected index in this case
-                    array.addEventListener("change@5", indexChangeListener.changeHandlerFunction, true);
+                    array.addPropertyChangeListener("5", indexChangeListener.changeHandlerFunction, false);
 
                     array.push.apply(array, newValues);
 
@@ -205,14 +205,14 @@ describe("array-spec", function() {
             it("should notify listeners observing the array for 'change' events, detailing the diff of the change", function() {
                 var arrayChangeListener = {
                     changeHandlerFunction: function(event) {
-                        expect(event.minus).toBe(poppedValue);
-                        expect(event.plus).toBeUndefined();
+                        expect(event.minus[0]).toBe(poppedValue);
+                        expect(event.plus.length).toBe(0);
                     }
                 };
 
                 spyOn(arrayChangeListener, 'changeHandlerFunction').andCallThrough();
 
-                array.addEventListener("change", arrayChangeListener.changeHandlerFunction, true);
+                array.addPropertyChangeListener(null, arrayChangeListener.changeHandlerFunction, false);
 
                 expect(array.pop()).toBe(poppedValue);
 
@@ -229,7 +229,7 @@ describe("array-spec", function() {
 
                 spyOn(indexChangeListener, 'changeHandlerFunction').andCallThrough();
 
-                array.addEventListener("change@2", indexChangeListener.changeHandlerFunction, true);
+                array.addPropertyChangeListener("2", indexChangeListener.changeHandlerFunction, false);
 
                 expect(array.pop()).toBe(poppedValue);
 
@@ -245,10 +245,10 @@ describe("array-spec", function() {
 
                 spyOn(indexChangeListener, 'changeHandlerFunction').andCallThrough();
 
-                array.addEventListener("change@0", indexChangeListener.changeHandlerFunction, true);
-                array.addEventListener("change@1", indexChangeListener.changeHandlerFunction, true);
+                array.addPropertyChangeListener("0", indexChangeListener.changeHandlerFunction, false);
+                array.addPropertyChangeListener("1", indexChangeListener.changeHandlerFunction, false);
                 // Skipping change@2 as it is the affected index in this case
-                array.addEventListener("change@3", indexChangeListener.changeHandlerFunction, true);
+                array.addPropertyChangeListener("3", indexChangeListener.changeHandlerFunction, false);
 
                 expect(array.pop()).toBe(poppedValue);
 
@@ -306,9 +306,9 @@ describe("array-spec", function() {
                 spyOn(indexChangeListener, 'index1ChangeHandlerFunction').andCallThrough();
                 spyOn(indexChangeListener, 'index2ChangeHandlerFunction').andCallThrough();
 
-                array.addEventListener("change@0", indexChangeListener.index0ChangeHandlerFunction, true);
-                array.addEventListener("change@1", indexChangeListener.index1ChangeHandlerFunction, true);
-                array.addEventListener("change@2", indexChangeListener.index2ChangeHandlerFunction, true);
+                array.addPropertyChangeListener("0", indexChangeListener.index0ChangeHandlerFunction, false);
+                array.addPropertyChangeListener("1", indexChangeListener.index1ChangeHandlerFunction, false);
+                array.addPropertyChangeListener("2", indexChangeListener.index2ChangeHandlerFunction, false);
 
                 expect(array.shift()).toBe(shiftedValue);
 
@@ -380,10 +380,10 @@ describe("array-spec", function() {
                     spyOn(indexChangeListener, 'index2ChangeHandlerFunction').andCallThrough();
                     spyOn(indexChangeListener, 'index3ChangeHandlerFunction').andCallThrough();
 
-                    array.addEventListener("change@0", indexChangeListener.index0ChangeHandlerFunction, true);
-                    array.addEventListener("change@1", indexChangeListener.index1ChangeHandlerFunction, true);
-                    array.addEventListener("change@2", indexChangeListener.index2ChangeHandlerFunction, true);
-                    array.addEventListener("change@3", indexChangeListener.index3ChangeHandlerFunction, true);
+                    array.addPropertyChangeListener("0", indexChangeListener.index0ChangeHandlerFunction, false);
+                    array.addPropertyChangeListener("1", indexChangeListener.index1ChangeHandlerFunction, false);
+                    array.addPropertyChangeListener("2", indexChangeListener.index2ChangeHandlerFunction, false);
+                    array.addPropertyChangeListener("3", indexChangeListener.index3ChangeHandlerFunction, false);
 
                     array.unshift(unshiftedValue);
 
@@ -460,11 +460,11 @@ describe("array-spec", function() {
                     spyOn(indexChangeListener, 'index3ChangeHandlerFunction').andCallThrough();
                     spyOn(indexChangeListener, 'index4ChangeHandlerFunction').andCallThrough();
 
-                    array.addEventListener("change@0", indexChangeListener.index0ChangeHandlerFunction, true);
-                    array.addEventListener("change@1", indexChangeListener.index1ChangeHandlerFunction, true);
-                    array.addEventListener("change@2", indexChangeListener.index2ChangeHandlerFunction, true);
-                    array.addEventListener("change@3", indexChangeListener.index3ChangeHandlerFunction, true);
-                    array.addEventListener("change@4", indexChangeListener.index4ChangeHandlerFunction, true);
+                    array.addPropertyChangeListener("0", indexChangeListener.index0ChangeHandlerFunction, false);
+                    array.addPropertyChangeListener("1", indexChangeListener.index1ChangeHandlerFunction, false);
+                    array.addPropertyChangeListener("2", indexChangeListener.index2ChangeHandlerFunction, false);
+                    array.addPropertyChangeListener("3", indexChangeListener.index3ChangeHandlerFunction, false);
+                    array.addPropertyChangeListener("4", indexChangeListener.index4ChangeHandlerFunction, false);
 
                     array.unshift.apply(array, unshiftedValues);
 
@@ -525,14 +525,14 @@ describe("array-spec", function() {
                 spyOn(indexChangeListener, 'index1ChangeHandlerFunction').andCallThrough();
                 spyOn(indexChangeListener, 'index2ChangeHandlerFunction').andCallThrough();
 
-                array.addEventListener("change@0", indexChangeListener.index0ChangeHandlerFunction, true);
-                array.addEventListener("change@1", indexChangeListener.index1ChangeHandlerFunction, true);
-                array.addEventListener("change@2", indexChangeListener.index2ChangeHandlerFunction, true);
+                array.addPropertyChangeListener("0", indexChangeListener.index0ChangeHandlerFunction, false);
+                array.addPropertyChangeListener("1", indexChangeListener.index1ChangeHandlerFunction, false);
+                array.addPropertyChangeListener("2", indexChangeListener.index2ChangeHandlerFunction, false);
 
                 array.reverse();
 
                 expect(indexChangeListener.index0ChangeHandlerFunction).toHaveBeenCalled();
-                expect(indexChangeListener.index1ChangeHandlerFunction).toHaveBeenCalled();
+                expect(indexChangeListener.index1ChangeHandlerFunction).not.toHaveBeenCalled();
                 expect(indexChangeListener.index2ChangeHandlerFunction).toHaveBeenCalled();
             });
 
@@ -634,7 +634,7 @@ describe("array-spec", function() {
 
                             spyOn(changeListener, 'changeHandlerFunction').andCallThrough();
 
-                            array.addEventListener("change", changeListener.changeHandlerFunction, true);
+                            array.addPropertyChangeListener(null, changeListener.changeHandlerFunction, false);
 
                             array.splice(spliceIndex, spliceLength, splicedValue);
 
@@ -650,9 +650,9 @@ describe("array-spec", function() {
 
                             spyOn(indexChangeListener, 'indexChangeHandlerFunction').andCallThrough();
 
-                            array.addEventListener("change@0", indexChangeListener.indexChangeHandlerFunction, true);
+                            array.addPropertyChangeListener("0", indexChangeListener.indexChangeHandlerFunction, false);
                             // Skipping event listeners on affected indices 1,2,3
-                            array.addEventListener("change@4", indexChangeListener.indexChangeHandlerFunction, true);
+                            array.addPropertyChangeListener("4", indexChangeListener.indexChangeHandlerFunction, false);
 
                             array.splice(spliceIndex, spliceLength, splicedValue);
 
@@ -681,9 +681,9 @@ describe("array-spec", function() {
                             spyOn(indexChangeListener, 'index2ChangeHandlerFunction').andCallThrough();
                             spyOn(indexChangeListener, 'index3ChangeHandlerFunction').andCallThrough();
 
-                            array.addEventListener("change@1", indexChangeListener.index1ChangeHandlerFunction, true);
-                            array.addEventListener("change@2", indexChangeListener.index2ChangeHandlerFunction, true);
-                            array.addEventListener("change@3", indexChangeListener.index3ChangeHandlerFunction, true);
+                            array.addPropertyChangeListener("1", indexChangeListener.index1ChangeHandlerFunction, false);
+                            array.addPropertyChangeListener("2", indexChangeListener.index2ChangeHandlerFunction, false);
+                            array.addPropertyChangeListener("3", indexChangeListener.index3ChangeHandlerFunction, false);
 
                             array.splice(spliceIndex, spliceLength, splicedValue);
 
@@ -748,7 +748,7 @@ describe("array-spec", function() {
 
                             spyOn(index1ChangeListener, 'index1ChangeHandlerFunction').andCallThrough();
 
-                            array.addEventListener("change@1", index1ChangeListener.index1ChangeHandlerFunction, true);
+                            array.addPropertyChangeListener("1", index1ChangeListener.index1ChangeHandlerFunction, false);
 
                             var removedValues = array.splice(spliceIndex, spliceLength, splicedValue);
 
@@ -811,7 +811,7 @@ describe("array-spec", function() {
 
                         spyOn(changeListener, 'changeHandlerFunction').andCallThrough();
 
-                        array.addEventListener("change", changeListener.changeHandlerFunction, true);
+                        array.addPropertyChangeListener(null, changeListener.changeHandlerFunction, false);
 
                         array.splice(spliceIndex, spliceLength);
 
@@ -827,9 +827,9 @@ describe("array-spec", function() {
 
                         spyOn(indexChangeListener, 'indexChangeHandlerFunction').andCallThrough();
 
-                        array.addEventListener("change@0", indexChangeListener.indexChangeHandlerFunction, true);
+                        array.addEventListener("change@0", indexChangeListener.indexChangeHandlerFunction, false);
                         // Skipping event listeners on affected indices 1,2
-                        array.addEventListener("change@3", indexChangeListener.indexChangeHandlerFunction, true);
+                        array.addEventListener("change@3", indexChangeListener.indexChangeHandlerFunction, false);
 
                         array.splice(spliceIndex, spliceLength);
 
@@ -852,8 +852,8 @@ describe("array-spec", function() {
                         spyOn(indexChangeListener, 'index1ChangeHandlerFunction').andCallThrough();
                         spyOn(indexChangeListener, 'index2ChangeHandlerFunction').andCallThrough();
 
-                        array.addEventListener("change@1", indexChangeListener.index1ChangeHandlerFunction, true);
-                        array.addEventListener("change@2", indexChangeListener.index2ChangeHandlerFunction, true);
+                        array.addPropertyChangeListener("1", indexChangeListener.index1ChangeHandlerFunction, false);
+                        array.addPropertyChangeListener("2", indexChangeListener.index2ChangeHandlerFunction, false);
 
                         array.splice(spliceIndex, spliceLength);
 

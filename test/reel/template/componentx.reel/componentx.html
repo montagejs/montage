@@ -2,18 +2,21 @@
 <head>
     <script type="text/montage-serialization">
     {
-        "componentplaceholder1": {
-            "prototype": "montage/ui/component-placeholder.reel[ComponentPlaceHolder]",
+        "componentholder": {
+            "prototype": "montage/ui/component",
             "properties": {
-                "ownerComponent": {"@": "owner"},
-                "name": "textfield",
-                "element": {"#": "textfield2"}
+                "element": {"#": "textfield2"},
+                "hasTemplate": false
+            },
+            "bindings": {
+                "domContent": {"<-": "@owner.originalContent"}
             }
         },
         "owner": {
             "prototype": "reel/template/componentx.reel[ComponentX]",
             "properties": {
-                "element": {"#": "componentx"}
+                "element": {"#": "componentx"},
+                "textfield": {"@": "componentholder"}
             }
         }
     }

@@ -51,8 +51,9 @@ exports.Logger = Montage.create(Component, {
       // TODO: change this to print out the component name (if possible) or
       // just more information
       var msg = "Action event on " + ev.target.element.tagName.toLowerCase();
-      if (ev.target.id) {
-        msg += "#"+ev.target.id;
+      var id = ev.target.element.dataset.montageId || ev.target.id;
+      if (id) {
+        msg += "#"+id;
       }
       this.log(msg);
     }

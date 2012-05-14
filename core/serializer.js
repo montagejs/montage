@@ -653,6 +653,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 return this._serializeValue(objectDescriptor.value);
             } else {
                 objectDescriptor.properties = this._serializeObjectLiteral(objectDescriptor.properties, null, 3);
+                var units;
                 if (units = /* assignment */ objectDescriptor._units) {
                     delete objectDescriptor._units;
                     this._applySerializationUnits(objectDescriptor, object, units);

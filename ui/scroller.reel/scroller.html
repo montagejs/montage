@@ -21,13 +21,15 @@
                 "prototype": "montage/ui/composer/translate-composer",
                 "properties": {
                     "component": {"@": "owner"},
+                    "minTranslateX": 0,
+                    "minTranslateY": 0,
                     "invertAxis": true
                 },
                 "bindings": {
                     "translateX": {"<<->": "@owner.scrollX"},
                     "translateY": {"<<->": "@owner.scrollY"},
-                    "maxTranslateY": {"<-": "@owner._maxTranslateY"},
                     "maxTranslateX": {"<-": "@owner._maxTranslateX"},
+                    "maxTranslateY": {"<-": "@owner._maxTranslateY"},
                     "axis": {"<-": "@owner.axis"},
                     "hasMomentum": {"<-": "@owner.hasMomentum"}
                 },
@@ -41,6 +43,15 @@
                         "listener": {"@": "owner"}
                     }
                 ]
+            },
+            "slot": {
+                "prototype": "montage/ui/slot.reel",
+                "properties": {
+                    "element": {"#": "content"}
+                },
+                "bindings": {
+                    "domContent": {"<-": "@owner.domContent"}
+                }
             },
             "owner": {
                 "prototype": "montage/ui/scroller.reel",

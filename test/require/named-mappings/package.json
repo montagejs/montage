@@ -1,7 +1,7 @@
 {
     "mappings": {
-        "bar": "bar@0.0.0",
-        "foo": "@"
+        "bar": {"name": "bar"},
+        "foo": {"name": "foo"}
     },
     "directories": {
         "packages": "."
