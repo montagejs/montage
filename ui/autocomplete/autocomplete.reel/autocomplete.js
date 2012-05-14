@@ -54,6 +54,15 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         value: null
     },
 
+    /**
+    * If the delegate returns Objects, this property can be used to derive the
+    * display string for an object. If this property is not provided, the results
+    * provided by the delegate are assumed to be String.
+    */
+    textPropertyPath: {
+        value: null
+    },
+
     separator: {
         value: ',',
         distinct: true
@@ -112,42 +121,40 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             // get the entered text after the separator
             var value = this._value;
 
-
-            if(fromInput) {
-                this._valueSyncedWithInputField = true;
-                if(value) {
-                    var arr = value.split(this.separator).map(function(item) {
-                        return item.trim();
-                    });
-                    this.activeTokenIndex = this._findActiveTokenIndex(this.tokens, arr);
-                    this._tokens = value.split(this.separator).map(function(item) {
-                        return item.trim();
-                    });
-                    if(this._tokens.length && this._tokens.length > 0) {
-                        var searchTerm = this._tokens[this.activeTokenIndex];
-                        searchTerm = searchTerm ? searchTerm.trim() : '';
-                        if(searchTerm.length >= this.minLength) {
-                            var self = this;
-                            clearTimeout(this.delayTimer);
-                            this.delayTimer = setTimeout(function() {
-                                self.delayTimer = null;
-                                if (logger.isDebug) {
-                                    logger.debug('SEARCH for ', searchTerm);
-                                }
-                                self.performSearch(searchTerm);
-                            }, this.delay);
-                        } else {
-                            this.showPopup = false;
-                        }
-                    } else {
-                        this.showPopup = false;
-                    }
-                }
+            if(value) {
+                var arr = value.split(this.separator).map(function(item) {
+                    return item.trim();
+                });
+                this.activeTokenIndex = this._findActiveTokenIndex(this.tokens, arr);
+                this._tokens = value.split(this.separator).map(function(item) {
+                    return item.trim();
+                });
             } else {
                 this.activeTokenIndex = 0;
                 this._tokens = [];
-                this.showPopup = false;
+            }
 
+            if(fromInput) {
+                this._valueSyncedWithInputField = true;
+                this.showPopup = false;
+                if(this._tokens.length && this._tokens.length > 0) {
+                    var searchTerm = this._tokens[this.activeTokenIndex];
+                    searchTerm = searchTerm ? searchTerm.trim() : '';
+                    if(searchTerm.length >= this.minLength) {
+                        var self = this;
+                        clearTimeout(this.delayTimer);
+                        this.delayTimer = setTimeout(function() {
+                            self.delayTimer = null;
+                            if (logger.isDebug) {
+                                logger.debug('SEARCH for ', searchTerm);
+                            }
+                            self.performSearch(searchTerm);
+                        }, this.delay);
+                    }
+                }
+
+            } else {
+                this.showPopup = false;
                 this._valueSyncedWithInputField = false;
                 this.needsDraw = true;
             }
@@ -239,11 +246,24 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         get: function() {
             return this._suggestedValue;
         },
-        set: function(value) {
-            if(value) {
-                this._suggestedValue = value;
-                var arr = this.tokens;
-                arr[this.activeTokenIndex] = this._suggestedValue;
+        set: function(aValue) {
+            this._suggestedValue = aValue;
+            if(aValue) {
+
+                var arr = this.tokens || [];
+                var token;
+
+                if(String.isString(aValue)) {
+                    token = aValue;
+                } else {
+                    if(this.textPropertyPath) {
+                        token = aValue[this.textPropertyPath];
+                    } else {
+                        token = '';
+                    }
+                }
+
+                arr[this.activeTokenIndex] = token;
                 this.tokens = arr;
                 this.showPopup = false;
             }
@@ -283,6 +303,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             if (logger.isDebug) {
                 logger.debug('got suggestions: ', value);
             }
+
             this.loadingStatus = 'complete';
             this._suggestions = value;
             this.showPopup = (value && value.length > 0);
@@ -305,19 +326,12 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         enumerable: false,
         value: function(searchTerm) {
             if(this.delegate) {
+                this.resultsController.selectedIndexes = [];
                 // index on the popup
                 this.activeItemIndex = 0;
                 this.loadingStatus = 'loading';
-                //this.showPopup = true;
-                // delegate must set the results on the AutoComplete
-                var fn = this.identifier + 'ShouldGetSuggestions';
-                if(typeof this.delegate[fn] === 'function') {
-                    this.delegate[fn](this, searchTerm);
-                } else if(typeof this.delegate.shouldGetSuggestions === 'function') {
-                    this.delegate.shouldGetSuggestions(this, searchTerm);
-                } else {
-                    // error - d
-                }
+                var delegateFn = this.callDelegateMethod('ShouldGetSuggestions', this, searchTerm);
+
             }
         }
     },
@@ -326,26 +340,16 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     _addEventListeners: {
         enumerable: false,
         value: function() {
-            if (window.Touch) {
-                //this.element.ownerDocument.addEventListener('touchstart', this, false);
-            } else {
-                this.element.addEventListener("keyup", this);
-                this.element.addEventListener("keydown", this);
-                this.element.addEventListener("input", this);
-            }
+            this.element.addEventListener("keyup", this);
+            this.element.addEventListener("input", this);
         }
     },
 
     _removeEventListeners: {
         enumerable: false,
         value: function() {
-            if (window.Touch) {
-                //this.element.ownerDocument.removeEventListener('touchstart', this, false);
-            } else {
-                this.element.removeEventListener("keyup", this);
-                this.element.removeEventListener("keydown", this);
-                this.element.removeEventListener("input", this);
-            }
+            this.element.removeEventListener("keyup", this);
+            this.element.removeEventListener("input", this);
         }
     },
 
@@ -413,6 +417,11 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 boundObjectPropertyPath: "_activeIndexes",
                 oneway: true
             });
+            Object.defineBinding(this.resultsList, "textPropertyPath", {
+                boundObject: this,
+                boundObjectPropertyPath: "textPropertyPath",
+                oneway: true
+            });
 
             var popup = this._getPopup();
         }
@@ -435,11 +444,18 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
             if (!this._valueSyncedWithInputField) {
                 this.value = this.tokens.join(this.separator);
+                if(this.value && this.value.charAt(this.value.length-1) != this.separator) {
+                    this.value += this.separator;
+                }
                 this.element.value = this.value;
                 this._valueSyncedWithInputField = true;
             }
+            var showPopup = this.showPopup;
+            if(this.value === '') {
+                showPopup = false;
+            }
 
-            if(this.showPopup) {
+            if(showPopup) {
                 this.popup.show();
                 // reset active index
                 this.activeItemIndex = 0;
@@ -464,7 +480,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
             switch(code) {
                 case KEY_DOWN:
-                if(popup.displayed == false) {
+                if(!popup.displayed) {
                     popup.show();
                     this.activeItemIndex = 0;
                 } else {
@@ -480,7 +496,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 break;
 
                 case KEY_UP:
-                if(popup.displayed == true) {
+                if(popup.displayed === true) {
                     if(this.activeItemIndex > 0) {
                         this.activeItemIndex --;
                     } else {
@@ -491,23 +507,18 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 break;
 
                 case KEY_ENTER:
-                if(popup.displayed == true) {
+                if(popup.displayed === true) {
                     this.resultsController.selectedIndexes = [this.activeItemIndex];
-                    //this.selectSuggestedValue();
+                    e.preventDefault();
                     // select the currently active item in the results list
+                } else {
+                    this.suggestedValue = this.tokens[this.tokens.length-1];
                 }
 
                 break;
 
             }
             this.element.focus();
-        }
-    },
-
-    handleKeydown: {
-        enumerable: false,
-        value: function(event) {
-            var code = event.keyCode;
         }
     }
 

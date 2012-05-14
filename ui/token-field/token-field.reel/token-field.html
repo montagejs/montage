@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>TokenField Template</title>
+    <link rel="stylesheet" type="text/css" href="token-field.css">
+
+    <script type="text/montage-serialization">
+{
+
+    "owner": {
+        "prototype": "montage/ui/token-field/token-field.reel",
+        "properties": {
+            "element": {"#": "token-field"},
+            "_autocomplete": {"@": "autocomplete"},
+            "_tokenList": {"@": "tokenList"},
+            "_tokensController": {"@": "tokensController"}
+        },
+        "bindings": {
+            "_suggestedValue": {"<-": "@autocomplete.suggestedValue"},
+            "_autocompleteValue": {"<-": "@autocomplete.value"}
+        }
+    },
+    "tokensController": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"<<->": "@owner.values"}
+        }
+    },
+
+    "tokenList": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "token-list"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "tokensController"},
+            "orientation": "horizontal"
+        }
+    },
+
+    "token": {
+        "prototype": "montage/ui/token-field/token.reel",
+        "properties": {
+            "element": {"#": "token"}
+        },
+        "bindings": {
+            "value": {"<-": "@tokenList.objectAtCurrentIteration"},
+            "tokensController": {"<-": "@tokenList.contentController"},
+            "textPropertyPath": {"<-": "@owner.textPropertyPath"},
+            "allowAdHocValues": {"<-": "@owner.allowAdHocValues"}
+        }
+    },
+    "autocomplete": {
+        "prototype": "montage/ui/autocomplete/autocomplete.reel",
+        "properties": {
+            "element": {"#": "autocomplete"},
+            "identifier": "autocomplete",
+            "delay": "500",
+            "value": ""
+        },
+        "bindings": {
+            "textPropertyPath": {"<-": "@owner.textPropertyPath"},
+            "placeholder": {"<-": "@owner.placeholder"}
+        }
+    }
+}
+    </script>
+
+</head>
+<body>
+    <div data-montage-id="token-field" class="montage-token-field">
+        <div data-montage-id="token-list" class="montage-token-list">
+            <span data-montage-id="token"></span>
+        </div>
+        <span class="montage-autocomplete-wrapper">
+            <input type="text" data-montage-id="autocomplete" class="montage-token-autocomplete" tabindex="0" />
+        </span>
+    </div>
+
+</body>
+</html>

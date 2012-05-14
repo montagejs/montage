@@ -32,12 +32,13 @@
     },
 
     "resultItem": {
-        "prototype": "montage/ui/dynamic-text.reel",
+        "prototype": "montage/ui/autocomplete/result-item.reel",
         "properties": {
             "element": {"#": "result-item"}
         },
         "bindings": {
-            "value": {"<-": "@repetition1.objectAtCurrentIteration"}
+            "textPropertyPath": {"<-": "@owner.textPropertyPath"},
+            "object": {"<-": "@repetition1.objectAtCurrentIteration"}
         }
     },
 

@@ -23,26 +23,10 @@ exports.Content = Montage.create(Component, {
         },
         set: function(value) {
             this._selectedItem = value;
+            Notifier.show('Loading ... please wait');
             this.needsDraw = true;
         }
     },
-
-    _hash: {value: null},
-    hash: {
-        get: function() {
-            return this._hash;
-        },
-        set: function(hash) {
-            this._hash = hash;
-
-            if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
-                this.selectedItem = hash.substring(hash.indexOf('#')+1);
-                Notifier.show('Loading ... please wait');
-                this.needsDraw = true;
-            }
-        }
-    },
-
 
     slotDidSwitchContent: {
         value: function(substitution, nodeShown, componentShown, nodeHidden, componentHidden) {

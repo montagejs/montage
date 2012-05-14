@@ -1,12 +1,129 @@
+# v0.9.0
+
+-   **Draw  cycle changes**
+
+    After the willDraw phase all the components needing draw are sorted by their level in the
+    component hierarchy. They are then processed in reverse order. This ensures that all the
+    childComponents needing draw have drawn by the time the parent's draw is called. The didDraw 
+    uses the same list but processes the componets in top down order (the reverse of draw)
+
+-   **Components**
+
+    Autocomplete Textfield Added
+        An Autocomplete Textfield extends the Textfield component to support suggestions for the user to pick values.
+        The HTML markup for the Autocomplete is the same as the standard HTML5 markup (<input>).
+        Wrapping the <input> HTMLElement as a Montage Autocomplete component adds Data Binding support for all
+        writable attributes of this element and allows the Developer to provide suggestions to the user based
+        on the entered value.
+
+    Popup
+        Support HTMLElement and Montage Component for the anchor property
+        Change willPositionPopup(popup, anchor, anchorPosition) to willPosition(popup, defaultPosition).
+        Change autoDismiss to autoHide
+        Support autoHide only for non-modal popups
+        Support string values (eg: 20px, 30%) for position parameters. If a number is provided, default to 'px'.
+
+-   **Template**
+
+    ``instantiateWithDocument(document, callback)`` method is added to use plain html templates without an owner.
+
+    Backwards compatibility for id attribute based references in serilization is removed, you should now use the
+    data-montage-id attribute.
+
+# v0.8.0
+
+-   **Data binding shorthand in serializations**
+
+    This release introduces a new shorthand syntax for declaring data bindings in a serialization. The new syntax
+    includes an arrow symbol that indicates the source of the binding and whether its one-way or two-way.The symbol can
+    take one of the following forms:
+
+    `<-` – One-way data binding, bound object on right
+
+    `->` – One-way data binding, bound object on left
+
+    `<<->` – Two-way data binding, bound object on right
+
+    `<->>` – Two-way data binding, bound object on left
+
+    Example:
+
+    ```javascript
+    {
+        "inputText": {
+            "prototype": "textfield",
+            "bindings": {
+                "value": {"<-": "@slider.value"}
+            }
+        }
+    }
+    ```
+
+-   **RichTextEditor component**
+
+    RichTextEditor is a lightweight component that provides basic HTML editing capability. It is wrapper around the
+    HTML5 contentEditable attribute, and depends on the browser’s level of support of the execCommand() method. The
+    RichTextEditor lets you set, on a specific text selection range, various formatting attributes including text and
+    font styles, colors, justification, list style and paragraph indent level. It also supports drag-and-drop of images,
+    plain text, or HTML fragments between two HTML documents, or the desktop and the document. Images can also be
+    resized within the editor.
+
+-   **Flow component**
+
+    This release introduces the first drop of the Flow component. Flow is UI component that allows the design of
+    scrollable 3D-layouts. Flow is useful for creating a wide range of visual interfaces from 3D carousels to common
+    vertical and horizontal scrollable lists.
+
+-   **Extending components**
+
+    There are three options to extend a component’s template:
+
+    1.  If the extended component doesn’t wish to introduce changes in the template, the component can set its
+        templateModuleId property to point to the parent module’s template.
+    2.  Create a new template that will completely redefine the markup of the component with no relation to the original
+        template.
+    3.  Set the extends property of the template that points to the template to be imported and where. This is similar
+        to the “decorator” pattern of the proposed Web Components feature. This approach is useful when the component
+        needs to add additional CSS data, or reuse the original markup. The template object will be accessible through
+        the template label of the serialization.
+
+-   **Auto packaging**
+
+    Many applications will initially only use their own modules and those provided by the Montage package.
+    As long as that’s the case, you do not need to make a package.json; just put the data-auto-package attribute on
+    your Montage script tag.
+
+-   **Pop-up component updates**
+
+    The Popup component API has been updated to provide better support for popup positioning.
+
+    -   `anchor` The HTMLElement or Montage component below which the popup will be anchored on the page. To specify a
+        custom position for a popup, use a delegate (see below). If an anchor is not provided, the position property is
+        used, if provided. If no positioning support is provided, the Popup is displayed at the center of the screen by
+        default.
+    -   `position` An object with properties named top, left, bottom and right that specify the position of the popup.
+        This property is used to position the popup if no anchor is specified.
+    -   `delegate` An object that defines methods that are invoked by the Popup component. The only delegate method
+        currently supported is willPositionPopup(). This method must return an object with any of the following
+        properties: top, left, bottom or right. Values assigned to these properties must strings in valid
+        CSS units (“10px” or “50%”).
+    -   `content` The Montage component that will be displayed in the popup.
+    -   `modal` If set to true, the popup is rendered with a mask underneath. A non-modal popup is hidden when the user
+        presses the Esc key, or clicks outside of the popup. The developer is responsible for hiding a modal popup.
+        Default is false. Modal popups never auto-hide themselves.
+    -   `autoHide` Optional. The popup will be automatically hidden after the specified number of milliseconds. This
+        property has no effect on modal popups.
+
+
 # v0.7.0
 
--   Adding `ownerComponent` property to the Component.
+-   **Adding `ownerComponent` property to the Component.**
     When the template is deserialized we populate the ownerComponent property of any component created within it's
     serialization with the owner of the template.
--   Adding `setElementWithParentComponent` function on the Component.
+-   **Adding `setElementWithParentComponent` function on the Component.**
     This formalizes the API to set a detached element to a component. The caller is responsible for appending the
     element to the DOM before prepareForDraw is called on the callee.
--   Serialization changes
+-   **Serialization changes**
     -   Specifying types and references
         1.  Changed the way we specify an object by merging the module id and the name into only one string using
             `"<module>[<name>]"` (e.g.: `"montage/ui/button.reel[Button]"`). When the name matches the last part of the module
@@ -42,7 +159,7 @@
                 ```
     -   Serialization labels are now used as the value of the identifier property by default.
 
--   Properties with a leading underscore in their name are now {enumerable: false} by default.
+-   **Properties with a leading underscore in their name are now {enumerable: false} by default.**
     i.e. defining a property as
         ```javascript
         _name: {value: null}
@@ -51,12 +168,12 @@
         ```javascript
         _name: {value: null, enumerable:false}
         ```
--   Components
+-   **Components**
     -   Repetition: Adding indexMap property to provide the necessary underpinnings for large data handling.
     -   SelectInput: Adding values and value property to be able to bind directly to the value of the selected option(s)
     -   Scroller: Replaces Scrollview. Now uses the Translate composer.
     -   Scrollview: _deprecated_
--   Browser Support
+-   **Browser Support**
     -   Better support for Firefox
     -   Better support for Opera
 

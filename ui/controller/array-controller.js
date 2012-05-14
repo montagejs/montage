@@ -7,11 +7,11 @@
  @module montage/ui/controller/array-controller
  @requires montage/core/core
  @requires montage/ui/controller/object-controller
- @requires montage/core/event/mutable-event
+ @requires montage/core/change-notification
  */
 var Montage = require("montage").Montage,
     ObjectController = require("ui/controller/object-controller").ObjectController,
-    MutableEvent = require("core/event/mutable-event").MutableEvent;
+    ChangeNotification = require("core/change-notification").ChangeNotification;
 /**
     The ArrayController helps with organizing a collection of objects, and managing user selection within that collection.
     TYou can assign an ArrayController instance as the <code>contentProvider</code> property for a Montage List or Repetition object.
@@ -273,7 +273,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 return this._selectedIndexes;
             }
 
-            if (!this._selectedContentIndexes) {
+            if (!this.selectedContentIndexes) {
                 return null;
             }
             return this._selectedIndexes = this._convertIndexesFromContentToOrganized(this.selectedContentIndexes);
@@ -295,15 +295,11 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 }
 
                 this._selectedIndexes = value;
-                var selectedContentIndexesChangeEvent,selectedObjectsChangeEvent;
-                selectedContentIndexesChangeEvent = MutableEvent.changeEventForKeyAndValue("selectedContentIndexes" , this.selectedContentIndexes);
-                selectedObjectsChangeEvent = MutableEvent.changeEventForKeyAndValue("selectedObjects" , this._selectedObjects);
 
-                this._selectedContentIndexes = newIndexes;
-                this._selectedObjects = null;
-
-                this.dispatchEvent(selectedContentIndexesChangeEvent.withPlusValue(this.selectedContentIndexes));
-                this.dispatchEvent(selectedObjectsChangeEvent.withPlusValue(this.selectedObjects));
+                this.dispatchPropertyChange("selectedContentIndexes", "selectedObjects", function() {
+                    this._selectedContentIndexes = newIndexes;
+                    this._selectedObjects = null;
+                });
             }
         }
     },
@@ -483,11 +479,9 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             // I don't want to provide a setter for organizedObjects, so update the cached value and notify observers that
             // the organizedObjects property changed
-            changeEvent = MutableEvent.changeEventForKeyAndValue("organizedObjects" , this._organizedObjects ? this._organizedObjects.slice(0) : this._organizedObjects);
-
-            this._organizedObjects = organizedObjects ? organizedObjects : [];
-
-            this.dispatchEvent(changeEvent.withPlusValue(this._organizedObjects));
+            this.dispatchPropertyChange("organizedObjects", function() {
+                this._organizedObjects = organizedObjects ? organizedObjects : [];
+            });
         }
     },
 
@@ -550,17 +544,10 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
             this._selectedObjects = value;
 
-            var selectedContentIndexesChangeEvent,
-                selectedIndexesChangeEvent;
-
-            selectedContentIndexesChangeEvent = MutableEvent.changeEventForKeyAndValue("selectedContentIndexes" , this._selectedContentIndexes);
-            selectedIndexesChangeEvent = MutableEvent.changeEventForKeyAndValue("selectedIndexes" , this._selectedIndexes);
-
-            this._selectedContentIndexes = null;
-            this._selectedIndexes = null;
-
-            this.dispatchEvent(selectedContentIndexesChangeEvent.withPlusValue(this.selectedContentIndexes));
-            this.dispatchEvent(selectedIndexesChangeEvent.withPlusValue(this.selectedIndexes));
+            this.dispatchPropertyChange("selectedContentIndexes", "selectedIndexes", function() {
+                this._selectedContentIndexes = null;
+                this._selectedIndexes = null;
+            });
         }
     },
 
@@ -635,14 +622,10 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             this._selectedContentIndexes = value;
 
-            selectedIndexesChangeEvent = MutableEvent.changeEventForKeyAndValue("selectedIndexes" , this._selectedIndexes);
-            selectedObjectsChangeEvent = MutableEvent.changeEventForKeyAndValue("selectedObjects" , this._selectedObjects);
-
-            this._selectedIndexes = null;
-            this._selectedObjects = null;
-
-            this.dispatchEvent(selectedIndexesChangeEvent.withPlusValue(this.selectedIndexes));
-            this.dispatchEvent(selectedObjectsChangeEvent.withPlusValue(this.selectedObjects));
+            this.dispatchPropertyChange("selectedIndexes", "selectedObjects", function() {
+                this._selectedIndexes = null;
+                this._selectedObjects = null;
+            });
 
             if(!internalSet) {
                 // update the selections only if the selectedContentIndexes is set directly

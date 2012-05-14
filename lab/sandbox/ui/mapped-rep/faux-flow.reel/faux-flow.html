@@ -22,10 +22,11 @@
             "repetition": {
                 "prototype": "montage/ui/repetition.reel",
                 "properties": {
-                    "element": {"#": "repetition"}
+                    "element": {"#": "repetition"},
+                    "indexMapEnabled": true
                 },
                 "bindings": {
-                    "content": {"<-": "@owner.originalContent"},
+                    "domContent": {"<-": "@owner.originalContent"},
                     "objects": {"<-": "@owner.objects"},
                     "contentController": {"<-": "@owner.contentController"},
                     "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}

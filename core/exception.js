@@ -88,7 +88,7 @@ var Exception = exports.Exception = Montage.create(Montage,/** @lends module:mon
     toString: {
         enumerable: false,
         value: function() {
-            return "Exception: " + (message !== null ? message + " " : null) + (target !== null ? target + " " : null) + (method !== null ? method + " " : null);
+            return "Exception: " + (this.message !== null ? this.message + " " : null) + (this.target !== null ? this.target + " " : null) + (this.method !== null ? this.method + " " : null);
         }
     }
 

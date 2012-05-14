@@ -18,7 +18,7 @@ describe("propertychange-spec", function() {
 
             spyOn(testChangeListener, 'handleChange');
 
-            testArray.addEventListener("change", testChangeListener, false);
+            testArray.addPropertyChangeListener(null, testChangeListener, false);
             testArray.push("a");
 
             expect(testChangeListener.handleChange).toHaveBeenCalled();
@@ -34,7 +34,7 @@ describe("propertychange-spec", function() {
 
             spyOn(testChangeListener, 'handleChange');
 
-            testArray.addEventListener("change", testChangeListener, false);
+            testArray.addPropertyChangeListener(null, testChangeListener, false);
             testArray.push("b");
 
             expect(testChangeListener.handleChange).toHaveBeenCalled();
@@ -50,7 +50,7 @@ describe("propertychange-spec", function() {
 
             spyOn(testChangeListener, 'handleChange');
 
-            testArray.addEventListener("change", testChangeListener, false);
+            testArray.addPropertyChangeListener(null, testChangeListener, false);
             testArray.pop();
 
             expect(testChangeListener.handleChange).toHaveBeenCalled();
@@ -66,7 +66,7 @@ describe("propertychange-spec", function() {
 
             spyOn(testChangeListener, 'handleChange');
 
-            testArray.addEventListener("change", testChangeListener, false);
+            testArray.addPropertyChangeListener(null, testChangeListener, false);
             testArray.pop();
 
             expect(testChangeListener.handleChange).not.toHaveBeenCalled();

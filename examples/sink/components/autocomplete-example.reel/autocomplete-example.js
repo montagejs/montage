@@ -176,7 +176,7 @@ exports.AutocompleteExample = Montage.create(Component, {
 
     prepareForDraw: {
         value: function() {
-            this.states = "Bar";
+            this.states = "California";
         }
     },
 

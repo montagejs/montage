@@ -101,26 +101,6 @@ exports.Scroller = Montage.create(Component, {
         }
     },
 
-    _content: {
-        enumerable: false,
-        value: null
-    },
-
-    templateDidLoad: {
-        value: function () {
-            var orphanedFragment = document.createDocumentFragment(),
-                children = this.element.childNodes;
-
-
-            while (children.length > 0) {
-                // As the nodes are appended to item.fragment they are removed
-                // from item.element, so always use index 0.
-                orphanedFragment.appendChild(children[0]);
-            }
-            this._content.appendChild(orphanedFragment);
-        }
-    },
-
     handleTranslateStart: {
         value: function(event) {
             this._scrollBars.opacity = 0.5;

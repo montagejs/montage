@@ -31,6 +31,7 @@ exports.SplineEditor = Montage.create(Component, {
         set: function (value) {
             this._cameraPosition = value;
             this._hasSplineUpdated = true;
+            this.flow._updateLength.call(this.flow);
         }
     },
 
@@ -41,6 +42,7 @@ exports.SplineEditor = Montage.create(Component, {
         set: function (value) {
             this._cameraTargetPoint = value;
             this._hasSplineUpdated = true;
+            this.flow._updateLength.call(this.flow);
         }
     },
 
@@ -51,6 +53,7 @@ exports.SplineEditor = Montage.create(Component, {
         set: function (value) {
             this._cameraFov = value;
             this._hasSplineUpdated = true;
+            this.flow._updateLength.call(this.flow);
         }
     },
 
@@ -61,6 +64,7 @@ exports.SplineEditor = Montage.create(Component, {
         set: function (value) {
             this._cameraRoll = value;
             this._hasSplineUpdated = true;
+            this.flow._updateLength.call(this.flow);
         }
     },
 
@@ -113,9 +117,11 @@ exports.SplineEditor = Montage.create(Component, {
                 self.spline.knots.push([x, 0, y]);
                 self.spline.nextHandlers.push([x, 0, y]);
                 self.spline.densities.push(3);
+                self.spline._computeDensitySummation.call(self.spline);
                 self.frontView.updateSpline();
                 self.topView.updateSpline();
                 self.hasSplineUpdated = true;
+                self.flow._updateLength.call(self.flow);
                 sX = x;
                 sY = y;
                 return false;
@@ -125,9 +131,11 @@ exports.SplineEditor = Montage.create(Component, {
                 self.spline.knots.push([x, y, 0]);
                 self.spline.nextHandlers.push([x, y, 0]);
                 self.spline.densities.push(3);
+                self.spline._computeDensitySummation.call(self.spline);
                 self.frontView.updateSpline();
                 self.topView.updateSpline();
                 self.hasSplineUpdated = true;
+                self.flow._updateLength.call(self.flow);
                 sX = x;
                 sY = y;
                 return false;
@@ -141,6 +149,7 @@ exports.SplineEditor = Montage.create(Component, {
                 self.frontView.updateSpline();
                 self.topView.updateSpline();
                 self.hasSplineUpdated = true;
+                self.flow._updateLength.call(self.flow);
                 return false;
             };
             this.frontView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
@@ -152,6 +161,7 @@ exports.SplineEditor = Montage.create(Component, {
                 self.frontView.updateSpline();
                 self.topView.updateSpline();
                 self.hasSplineUpdated = true;
+                self.flow._updateLength.call(self.flow);
                 return false;
             };
         }
@@ -170,6 +180,8 @@ exports.SplineEditor = Montage.create(Component, {
                     self.frontView.updateSpline();
                     self.topView.updateSpline();
                     self.hasSplineUpdated = true;
+                    self.spline._computeDensitySummation.call(self.spline);
+                    self.flow._updateLength.call(self.flow);
                     return false;
                 } else {
                     return true;
@@ -204,6 +216,7 @@ exports.SplineEditor = Montage.create(Component, {
                     self.frontView.updateSpline(true);
                     self.topView.updateSpline(true);
                     self.hasSplineUpdated = true;
+                    self.flow._updateLength.call(self.flow);
                 }
             };
             this.frontView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
@@ -217,6 +230,7 @@ exports.SplineEditor = Montage.create(Component, {
                     self.frontView.updateSpline(true);
                     self.topView.updateSpline(true);
                     self.hasSplineUpdated = true;
+                    self.flow._updateLength.call(self.flow);
                 }
             };
         }
@@ -254,6 +268,7 @@ exports.SplineEditor = Montage.create(Component, {
                     self.frontView.updateSpline(true);
                     self.topView.updateSpline(true);
                     self.hasSplineUpdated = true;
+                    self.flow._updateLength.call(self.flow);
                 }
             };
             this.frontView.mousemoveDelegate = function (x, y, knot, handler, isScrolling) {
@@ -272,6 +287,7 @@ exports.SplineEditor = Montage.create(Component, {
                     self.frontView.updateSpline(true);
                     self.topView.updateSpline(true);
                     self.hasSplineUpdated = true;
+                    self.flow._updateLength.call(self.flow);
                 }
             };
         }
@@ -328,6 +344,7 @@ exports.SplineEditor = Montage.create(Component, {
                     self.frontView.updateSpline(true);
                     self.topView.updateSpline(true);
                     self.hasSplineUpdated = true;
+                    self.flow._updateLength.call(self.flow);
                 }
             };
         }
@@ -423,6 +440,12 @@ exports.SplineEditor = Montage.create(Component, {
             var self = this;
             
             this.spline = Object.create(FlowBezierSpline);
+            this.flow._paths = [];
+            this.flow._paths.push({
+                headOffset: 0,
+                tailOffset: 0
+            });
+            this.flow.splinePaths.push(this.spline);
             window.addEventListener("resize", this, false);
             this.parametersEditor.textContent = JSON.stringify(this.spline.parameters);
             this.parametersEditor.addEventListener("keyup", function () {
