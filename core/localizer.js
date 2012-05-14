@@ -7,7 +7,9 @@
 /**
     @module montage/core/localizer
     @requires montage/core/core
-    TODO
+    @requires montage/core/messageformat
+    @requires montage/core/logger
+    @requires montage/core/deserializer
 */
 var Montage = require("montage").Montage,
     MessageFormat = require("core/messageformat"),
@@ -17,14 +19,65 @@ var Montage = require("montage").Montage,
 var KEY_KEY = "_",
     DEFAULT_MESSAGE_KEY = "_default";
 
-// TODO create with the correct locale
-var messageFormat = exports.messageFormat = new MessageFormat("en");
+var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 
 /**
     @class module:montage/core/localizer.Localizer
     @extends module:montage/core/core.Montage
 */
 var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:montage/core/localizer.Localizer# */ {
+
+    /**
+        Initialize the object
+
+        @function
+        @param {String} locale The RFC-5646 language tag this localizer should use.
+        @returns {Localizer} The Localizer object it was called on.
+    */
+    init: {
+        value: function(locale) {
+            this.locale = locale;
+            return this;
+        }
+    },
+
+    _locale: {
+        enumerable: false,
+        value: null
+    },
+    /**
+        A RFC-5646 language-tag specifying the locale of this localizer.
+
+        Setting the locale will create a new {@link messageFormat} object
+        with the new locale.
+
+        @type {String}
+        @default null
+    */
+    locale: {
+        get: function() {
+            return this._locale;
+        },
+        set: function(value) {
+            if (!reLanguageTagValidator.test(value)) {
+                throw new TypeError("Language tag '" + value + "' is not valid. It must match http://tools.ietf.org/html/rfc5646 (alphanumeric characters separated by hyphens)");
+            }
+            if (this._locale !== value) {
+                this._locale = value;
+                this.messageFormat = new MessageFormat(value);
+            }
+        }
+    },
+
+    /**
+        The MessageFormat object to use.
+
+        @type {MessageFormat}
+        @default null
+    */
+    messageFormat: {
+        value: null
+    }
 
 });
 
