@@ -17,7 +17,8 @@ var Montage = require("montage").Montage,
     Deserializer = require("core/deserializer").Deserializer;
 
 var KEY_KEY = "_",
-    DEFAULT_MESSAGE_KEY = "_default";
+    DEFAULT_MESSAGE_KEY = "_default",
+    LOCALE_STORAGE_KEY = "montage_locale";
 
 var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 
@@ -80,6 +81,71 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     }
 
 });
+
+var DefaultLocalizer = Montage.create(Localizer, {
+    init: {
+        value: function() {
+            var defaultLocale;
+            if (typeof window !== "undefined") {
+                if (window.localStorage) {
+                    defaultLocale = window.localStorage.getItem(LOCALE_STORAGE_KEY);
+                }
+                defaultLocale = defaultLocale || window.navigator.userLanguage || window.navigator.language;
+            }
+            defaultLocale = defaultLocale || "en";
+            this.locale = defaultLocale;
+
+            return this;
+        }
+    },
+
+    locale: {
+        get: function() {
+            return this._locale;
+        },
+        set: function(value) {
+            Object.getPropertyDescriptor(Localizer, "locale").set.call(this, value);
+
+            // If possible, save locale
+            if (typeof window !== "undefined" && window.localStorage) {
+                window.localStorage.setItem(LOCALE_STORAGE_KEY, value);
+            }
+        }
+    },
+
+    // Resets the saved locale of the defaultLocalizer.
+    reset: {
+        value: function() {
+            if (typeof window !== "undefined" && window.localStorage) {
+                window.localStorage.removeItem(LOCALE_STORAGE_KEY);
+            }
+            this.init();
+        }
+    }
+});
+
+/**
+    <p>The default localizer.</p>
+
+    <p>The default locale is determined by following these steps:</p>
+
+    <ol>
+        <li>If localStorage exists, use the value stored in "montage_locale" (LOCALE_STORAGE_KEY)</li>
+        <li>Otherwise use the value of navigator.userLanguage (Internet Explorer)</li>
+        <li>Otherwise use the value of navigator.language (other browsers)</li>
+        <li>Otherwise fall back to "en"</li>
+    </ol>
+
+    <p>This can be set and the locale of {@link defaultLocalizer} will be
+    updated to match. If localStorage exists then the value will be saved in
+    "montage_locale" (LOCALE_STORAGE_KEY).</p>
+
+    @property {Function} reset Reset the saved locale back to default by using the steps above.
+
+    @type {Localizer}
+*/
+var defaultLocalizer = exports.defaultLocalizer = DefaultLocalizer.create().init();
+
 
 /**
     Stores variables needed for {@link MessageLocalizer}.
@@ -259,7 +325,7 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
 
         // only set variables here once KEY_KEY and DEFAULT_MESSAGE_KEY have been removed
         variables = Object.keys(desc);
-        var messageLocalizer = MessageLocalizer.create().init(messageFormat, message, variables);
+        var messageLocalizer = MessageLocalizer.create().init(defaultLocalizer.messageFormat, message, variables);
 
         for (var i = 0, len = variables.length; i < len; i++) {
             var variable = variables[i];
