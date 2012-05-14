@@ -1582,7 +1582,7 @@ var Montage = require("montage").Montage,
             return function (s) {
                 var rx = _fn.call(this, s);
                 return [
-                    [rx[0][0], r[0][2]],
+                    [rx[0][0], rx[0][2]],
                     rx[1]
                 ];
             };
@@ -1592,7 +1592,7 @@ var Montage = require("montage").Montage,
             c = c || null;
             return (p instanceof Array ?
                 _.each(_.product(p.slice(0, -1), _.ignore(d)), p.slice(-1), _.ignore(c)) :
-                _.each(_.many(_.each(p, _.ignore(d))), px, _.ignore(c)));
+                _.each(_.many(_.each(p, _.ignore(d))), p, _.ignore(c)));
         },
         set: function (px, d, c) {
             d = d || _.rtoken(/^\s*/);

@@ -12,7 +12,6 @@
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    Slot = require("ui/slot.reel").Slot,
     logger = require("core/logger").logger("condition");
 /**
  @class module:"montage/ui/condition.reel".Condition
@@ -53,52 +52,17 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
 
             this._condition = value;
             this.needsDraw = true;
-            if (this.removalStrategy === "remove") {
+            // If it is being deserialized originalContent has not been populated yet
+            if (this.removalStrategy === "remove"  && !this.isDeserializing) {
                 if (value) {
-                    this._slot.content = this.content;
+                    this.domContent = this.originalContent;
                 } else {
-                    this._slot.content = null;
+                    this.domContent = null;
                 }
             }
         },
         get: function() {
             return this._condition;
-        }
-    },
-/**
-  Description TODO
-  @private
-*/
-    _content: {
-        enumerable: false,
-        value: null
-    },
-/**
-        Description TODO
-        @type {Function}
-        @default null
-    */
-    content: {
-        enumerable: false,
-        get: function() {
-            return this._content;
-        },
-        set: function(value) {
-            if (this._content === value) {
-                return;
-            }
-
-            this._content = value;
-            this.needsDraw = true;
-
-            if (this.removalStrategy === "remove") {
-                if (this.condition) {
-                    this._slot.content = value;
-                }
-            } else {
-                this._slot.content = value;
-            }
-
         }
     },
 
@@ -120,45 +84,22 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             if (this._removalStrategy === value) {
                 return;
             }
-            if (value === "hide" || this.condition) {
-                // was remove OR was hide
-                this._slot.content = this.content;
+            if (value === "hide" && !this.isDeserializing) {
+                this.domContent = this.originalContent;
             }
             this._removalStrategy = value;
+            this.needsDraw = true;
         }
     },
 
-
-    didCreate:{
-        value:function () {
-            this._slot = Slot.create();
-        }
-    },
-
-
-    /**
-    Description TODO
-    @function
-    */
     prepareForDraw: {
-        enumerable: false,
         value: function() {
-            var i, childList, childElement;
-            if (!this.content) {
-                this.content = document.createElement("div");
-                childList = Array.prototype.slice.call(this._element.childNodes, 0);
-                for (i = 0; (childElement = childList[i]); i++) {
-                    childElement.parentNode.removeChild(childElement);
-                    this.content.appendChild(childElement);
-                }
+            if (this.removalStrategy === "remove" && !this.condition) {
+                this.domContent = null;
             }
-
-            var slotRoot = document.createElement("div");
-            this.element.appendChild(slotRoot);
-
-            this._slot.element = slotRoot;
         }
     },
+
     /**
     Description TODO
     @function

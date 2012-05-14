@@ -149,11 +149,7 @@
                         "element": {"#": "echo"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "json",
-                            "oneway": "true"
-                        }
+                        "value": {"<-": "@owner.json"}
                     }
                 }
 
@@ -196,28 +192,28 @@
                 <div class="app">
                      <form class="form-stacked">
                          <label for="fname">First name</label>
-                         <input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/>
+                         <input type="text" placeholder="Enter first name" data-montage-id="fname" id="fname" required  value="foo" maxlength="20"/>
                          <label for="lname">Last name</label>
-                         <input type="text" placeholder="Enter last name" data-montage-id="lname" value="foo" maxlength="20"/>
+                         <input type="text" placeholder="Enter last name" data-montage-id="lname" id="lname" value="foo" maxlength="20"/>
 
                          <label for="pwd1">Password</label>
-                         <input type="password" data-montage-id="pwd" value="abcdef" />
+                         <input type="password" data-montage-id="pwd" id="pwd1" value="abcdef" />
 
                          <label for="email1">Email</label>
-                         <input type="email" data-montage-id="email" value="foo@bar.com" />
+                         <input type="email" data-montage-id="email" id="email1" value="foo@bar.com" />
 
                          <label for="url1">URL</label>
-                         <input type="url" data-montage-id="url" value="http://www.google.com" />
+                         <input type="url" data-montage-id="url" id="url1" value="http://www.google.com" />
 
                          <label for="tel1">Phone Number</label>
-                         <input type="tel" data-montage-id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
+                         <input type="tel" data-montage-id="phone" id="tel1" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
                          <button class="btn" data-montage-id="editPhone" type="button">Edit Phone Number</button>
 
                          <label for="zipcode">US Postal code</label>
-                          <input type="text" data-montage-id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
+                          <input type="text" data-montage-id="zip" id="zipcode" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
 
                          <label for="date1">Date of Birth</label>
-                         <input type="date" data-montage-id="dob" value="" name="dob"  />
+                         <input type="date" data-montage-id="dob" value="" name="dob" id="date1"  />
                          <div data-montage-id="dobError" class="error"></div>
 
                          <div style="margin-top: 10px;">
@@ -393,11 +389,7 @@
             "element": {"#": "dobError"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "dob"},
-                "boundObjectPropertyPath": "errorMessage",
-                "oneway": "true"
-            }
+            "value": {"&lt;-": "@dob.errorMessage"}
         }
     },
 
@@ -421,11 +413,7 @@
             "element": {"#": "echo"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "json",
-                "oneway": "true"
-            }
+            "value": {"&lt;-": "@owner.json"}
         }
     }
 }
@@ -499,7 +487,7 @@ exports.InputTextExample = Montage.create(Component, {
 
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.6/examples/sink/components/input-text-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/input-text-example.reel" target="_blank">View source on GitHub</a>
             </section>
 
 <!--             <section>

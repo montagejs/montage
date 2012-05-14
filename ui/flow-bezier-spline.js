@@ -1,6 +1,14 @@
 var Montage = require("montage").Montage,
     FlowBezierSpline = exports.FlowBezierSpline = Montage.create(Montage, {
 
+    init: {
+        value: function() {
+            this._densities = [];
+            this._densitySummation = [];
+            return this;
+        }
+    },
+
     knots: {
         get: function () {
             if (!this._knots) {
@@ -37,17 +45,20 @@ var Montage = require("montage").Montage,
         }
     },
 
+    _densities: {
+        enumerable: false,
+        value:null
+    },
+
     densities: {
         get: function () {
-            if (!this._densities) {
-                this._densities = [];
-            }
             return this._densities;
         },
         set: function (value) {
             this._densities = value;
             this._densitiesLength = this._densities.length;
-            this._densitySummation = null;
+            this._densitySummation.wipe();
+            this._maxTime = null;
         }
     },
 
@@ -75,7 +86,7 @@ var Montage = require("montage").Montage,
     parameters: {
         get: function () {
             if (!this._parameters) {
-                this._parameters = [];
+                this._parameters = {};
             }
             return this._parameters;
         },
@@ -122,51 +133,70 @@ var Montage = require("montage").Montage,
         }
     },
 
+    _maxTime: {
+        enumerable: false,
+        value:null
+    },
+
     maxTime: {
         get: function () {
-            if (!this._densitySummation) {
+            if (this._densitySummation.length === 0) {
                 this._computeDensitySummation();
             }
-            return this._densitySummation[this._densitySummation.length - 1];
+            return this._maxTime || (this._maxTime = this._densitySummation[this._densitySummation.length - 1]);
         },
         set: function () {}
+    },
+
+    _densitySummation: {
+        enumerable: false,
+        value:null
     },
 
     _computeDensitySummation: {
         enumerable: false,
         value: function () {
-            var length = this.densities.length - 1,
+            var densities = this.densities, length = densities.length - 1,
                 sum = 0,
-                i;
+                i,
+                densitySummation = this._densitySummation;
 
-            this._densitySummation = [];
+            densitySummation.wipe();
             for (i = 0; i < length; i++) {
-                sum += (this._densities[i] + this._densities[i + 1]) / 2;
-                this._densitySummation[i] = sum;
+                sum += (densities[i] + densities[i + 1]) / 2;
+                densitySummation[i] = sum;
             }
         }
     },
 
     getPositionAtTime: {
-        value: function (time) {
+        value: function (time, position, parameters) {
             var p0, p1, p2, p3,
                 a, b, c,
                 t, y,
                 start,
-                parameters = {},
-                i, j;
+                _parameters = this._parameters,
+                i, j,
+                parameterKeys,
+                parameterKeyCount,
+                jParameter,
+                jParameterData,
+                densitySummation = this._densitySummation;
+
+            position.length = 0;
+            parameters.wipe();
 
             if ((time >= 0) && (time < this.maxTime)) {
-                if (this._previousIndex && (time >= this._densitySummation[this._previousIndex - 1])) {
+                if (this._previousIndex && (time >= densitySummation[this._previousIndex - 1])) {
                     i = this._previousIndex;
                 } else {
                     i = 0;
                 }
-                while (time >= this._densitySummation[i]) {
+                while (time >= densitySummation[i]) {
                     i++;
                 }
                 this._previousIndex = i;
-                start = i ? this._densitySummation[i - 1] : 0;
+                start = i ? densitySummation[i - 1] : 0;
                 p0 = this._knots[i],
                 p1 = this._nextHandlers[i],
                 p2 = this._previousHandlers[i + 1],
@@ -181,24 +211,29 @@ var Montage = require("montage").Montage,
                 }
                 y = 1 - t;
                 // TODO: Redo this and create getParametersAtTime or getPositionAndParametersAtTime
-                for (j in this._parameters) {
-                    if (this._parameters.hasOwnProperty(j)) {
-                        if ((typeof this._parameters[j].data[i] !== "undefined") && (typeof this._parameters[j].data[i + 1] !== "undefined")) {
-                            parameters[j] = (this._parameters[j].data[i] * y + this._parameters[j].data[i + 1] * t) + this._parameters[j].units;
-                        } else {                        
-                            parameters[j] = this._parameters[j].data[this._parameters[j].data.length - 1] + this._parameters[j].units;
-                        }
+
+                parameterKeys = Object.keys(_parameters);
+                parameterKeyCount = parameterKeys.length;
+
+                for (j = 0; j < parameterKeyCount; j++) {
+                    jParameter = _parameters[parameterKeys[j]];
+                    jParameterData = jParameter.data;
+                    if ((typeof jParameterData[i] !== "undefined") && (typeof jParameterData[i + 1] !== "undefined")) {
+                        parameters[parameterKeys[j]] = (jParameterData[i] * y + jParameterData[i + 1] * t) + jParameter.units;
+                    } else {
+                        parameters[parameterKeys[j]] = jParameterData[jParameterData.length - 1] + jParameter.units;
                     }
+
                 }
-                return [
-                    p0[0]*(y*y*y)+p1[0]*(y*y*t*3)+p2[0]*(y*t*t*3)+p3[0]*(t*t*t),
-                    p0[1]*(y*y*y)+p1[1]*(y*y*t*3)+p2[1]*(y*t*t*3)+p3[1]*(t*t*t),
-                    p0[2]*(y*y*y)+p1[2]*(y*y*t*3)+p2[2]*(y*t*t*3)+p3[2]*(t*t*t),
-                    parameters
-                ];
-            } else {
-                return null;
+
+                position.push(p0[0]*(y*y*y)+p1[0]*(y*y*t*3)+p2[0]*(y*t*t*3)+p3[0]*(t*t*t));
+                position.push(p0[1]*(y*y*y)+p1[1]*(y*y*t*3)+p2[1]*(y*t*t*3)+p3[1]*(t*t*t));
+                position.push(p0[2]*(y*y*y)+p1[2]*(y*y*t*3)+p2[2]*(y*t*t*3)+p3[2]*(t*t*t));
+                position.push(parameters);
+
             }
+
+            return position;
         }
     },
 
@@ -267,7 +302,7 @@ var Montage = require("montage").Montage,
     cubicRealRoots: {
         enumerable: false,
         value: function (a, b, c, d) {
-            var epsilon = 1e-100;
+            var epsilon = 1e-100, math = Math;
 
             if ((a < -epsilon) || (a > epsilon)) {
                 var dv = 1 / a,
@@ -278,8 +313,8 @@ var Montage = require("montage").Montage,
                     D = Q * Q * Q + R * R;
 
                 if (D > epsilon) {
-                    var sqD = Math.sqrt(D);
-                    
+                    var sqD = math.sqrt(D);
+
                     return [this.cubeRoot(R + sqD) + this.cubeRoot(R - sqD) + A * (-1 / 3)];
                 } else {
                     if (D > -epsilon) {
@@ -287,7 +322,7 @@ var Montage = require("montage").Montage,
                             var S = this.cubeRoot(R),
                                 r1 = S * 2 + A * (-1 / 3),
                                 r2 = A * (-1 / 3) - S;
-                            
+
                             if (r1 < r2) {
                                 return [r1, r2];
                             } else {
@@ -297,12 +332,12 @@ var Montage = require("montage").Montage,
                             return [A * (-1 / 3)];
                         }
                     } else {
-                        var O = Math.acos(R / Math.sqrt(-Q * Q * Q)) * (1 / 3),
-                            tmp1 = Math.sqrt(-Q),
-                            sinO = tmp1 * Math.sin(O) * 1.7320508075688772,
+                        var O = math.acos(R / math.sqrt(-Q * Q * Q)) * (1 / 3),
+                            tmp1 = math.sqrt(-Q),
+                            sinO = tmp1 * math.sin(O) * 1.7320508075688772,
                             tmp2 = A * (-1 / 3);
 
-                        tmp1 *= Math.cos(O);
+                        tmp1 *= math.cos(O);
                         return [tmp2 - tmp1 - sinO, tmp2 - tmp1 + sinO,	tmp2 + tmp1 * 2];
                     }
                 }
@@ -311,7 +346,7 @@ var Montage = require("montage").Montage,
                     var sq = c * c - 4 * b * d;
 
                     if (sq >= 0) {
-                        sq = Math.sqrt(sq);
+                        sq = math.sqrt(sq);
                         return [(-c - sq) / (2 * b), (sq - c) / (2 * b)];
                     } else {
                         return [];
@@ -327,15 +362,25 @@ var Montage = require("montage").Montage,
         }
     },
 
+    _halfPI: {
+        enumerable: false,
+        value: Math.PI*0.5
+    },
+
     reflectionMatrix: {
         enumerable: false,
-        value: function (planeNormal) {
-            var angleZ = Math.PI/2 - Math.atan2(planeNormal[1], planeNormal[0]),
-                p1 = planeNormal[0] * Math.sin(angleZ) + planeNormal[1] * Math.cos(angleZ),
-                p2 = planeNormal[2],
-                angleX = Math.PI/2 - Math.atan2(p2, p1);
+        value: function (planeNormal0,planeNormal1,planeNormal2,reflectionMatrixBuffer) {
+            var math = Math, angleZ = this._halfPI - math.atan2(planeNormal1, planeNormal0),
+                sinAngleZ = math.sin(angleZ),
+                cosAngleZ = math.cos(angleZ),
+                angleX = this._halfPI - math.atan2(/*p2*/ planeNormal2, /*p1*/ planeNormal0 * sinAngleZ + planeNormal1 * cosAngleZ),
+                sinAngleX = math.sin(angleX);
 
-            return [Math.sin(angleX) * Math.sin(angleZ), Math.cos(angleZ) * Math.sin(angleX), Math.cos(angleX)];
+            reflectionMatrixBuffer[0] = sinAngleX * sinAngleZ;
+            reflectionMatrixBuffer[1] = cosAngleZ * sinAngleX;
+            reflectionMatrixBuffer[2] = math.cos(angleX);
+
+            return reflectionMatrixBuffer;
         }
     },
 
@@ -366,12 +411,12 @@ var Montage = require("montage").Montage,
 
     directedPlaneBezierIntersection: {
         enumerable: false,
-        value: function (planeOrigin, planeNormal, b0, b1, b2, b3) {
-            var matrix = this.reflectionMatrix(planeNormal), // TODO: cache for matrix and cache for cubicRealRoots
-                d = this.reflectedY(b0[0] - planeOrigin[0], b0[1] - planeOrigin[1], b0[2] - planeOrigin[2], matrix),
-                r1 = this.reflectedY(b1[0] - planeOrigin[0], b1[1] - planeOrigin[1], b1[2] - planeOrigin[2], matrix),
-                r2 = this.reflectedY(b2[0] - planeOrigin[0], b2[1] - planeOrigin[1], b2[2] - planeOrigin[2], matrix),
-                r3 = this.reflectedY(b3[0] - planeOrigin[0], b3[1] - planeOrigin[1], b3[2] - planeOrigin[2], matrix),
+        value: function (planeOrigin0, planeOrigin1, planeOrigin2, planeNormal, b0, b1, b2, b3, reflectionMatrixBuffer, segments) {
+            var matrix = this.reflectionMatrix(planeNormal[0],planeNormal[1],planeNormal[2],reflectionMatrixBuffer), // TODO: cache for matrix and cache for cubicRealRoots
+                d = this.reflectedY(b0[0] - planeOrigin0, b0[1] - planeOrigin1, b0[2] - planeOrigin2, matrix),
+                r1 = this.reflectedY(b1[0] - planeOrigin0, b1[1] - planeOrigin1, b1[2] - planeOrigin2, matrix),
+                r2 = this.reflectedY(b2[0] - planeOrigin0, b2[1] - planeOrigin1, b2[2] - planeOrigin2, matrix),
+                r3 = this.reflectedY(b3[0] - planeOrigin0, b3[1] - planeOrigin1, b3[2] - planeOrigin2, matrix),
                 a = (r1 - r2) * 3 + r3 - d,
                 b = (d + r2) * 3 - 6 * r1,
                 c = (r1 - d) * 3,
@@ -379,8 +424,9 @@ var Montage = require("montage").Montage,
                 min,
                 max = 0,
                 mid,
-                i = 0,
-                segments = [];
+                i = 0;
+
+            segments.wipe();
 
             while ((i < r.length) && (r[i] <= 0)) {
                 i++;

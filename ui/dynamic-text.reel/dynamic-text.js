@@ -20,17 +20,14 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
     hasTemplate: {
         value: false
     },
-/**
-  Description TODO
-  @private
-*/
+
     _value: {
-        enumerable: false,
         value: null
     },
-/**
+
+    /**
         Description TODO
-        @type {Function}
+        @type {Property}
         @default null
     */
     value: {
@@ -39,13 +36,14 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         },
         set: function(value) {
             if (this._value !== value) {
+                this._value = value;
                 this.needsDraw = true;
             }
-            this._value = value;
         },
         serializable: true
     },
-/**
+
+    /**
         The Montage converted used to convert or format values displayed by this DynamicText instance.
         @type {Property}
         @default null
@@ -53,7 +51,8 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
     converter: {
         value: null
     },
-/**
+
+    /**
         The default string value assigned to the DynamicText instance.
         @type {Property}
         @default {String} ""
@@ -62,32 +61,34 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         value: ""
     },
 
-    /**
-     @private
-     */
     _valueNode: {
-        value: null,
-        enumerable: false
+        value: null
+    },
+
+    _RANGE: {
+        value: document.createRange()
     },
 
     prepareForDraw: {
         value: function() {
-            this._element.innerHTML = "";
-            if (!this._element.firstChild) {
-                this._element.appendChild(document.createTextNode(""));
-            }
-            this._valueNode = this._element.firstChild;
+            var range = this._RANGE;
+            range.selectNodeContents(this.element);
+            range.deleteContents();
+            this._valueNode = document.createTextNode("");
+            range.insertNode(this._valueNode);
         }
     },
 
-
     draw: {
         value: function() {
-            var displayValue = (this.value || 0 === this.value ) ? this._value : this.defaultValue;
+            // get correct value
+            var value = this._value, displayValue = (value || 0 === value ) ? value : this.defaultValue;
 
             if (this.converter) {
                 displayValue = this.converter.convert(displayValue);
             }
+
+            //push to DOM
             this._valueNode.data = displayValue;
         }
     }

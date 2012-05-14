@@ -147,12 +147,12 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         @type {number}
         @default 1000
     */
-    holdTimeout: {
+    holdThreshold: {
         get: function() {
-            return this._pressComposer.longPressTimeout;
+            return this._pressComposer.longPressThreshold;
         },
         set: function(value) {
-            this._pressComposer.longPressTimeout = value;
+            this._pressComposer.longPressThreshold = value;
         }
     },
 
@@ -242,7 +242,6 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
 
     handleKeyup: {
         value: function(event) {
-            console.log(event.keyCode);
             // action event on spacebar
             if (event.keyCode === 32) {
                 this.active = false;
@@ -317,9 +316,13 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
                 }
             }
 
-            this._element.addEventListener("keyup", this, false);
-
             this.needsDraw = true;
+        }
+    },
+
+    prepareForDraw: {
+        value: function() {
+            this._element.addEventListener("keyup", this, false);
         }
     },
 
@@ -351,6 +354,12 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
                 this._element.classList.remove("disabled");
             }
 
+            if (this._active) {
+                this._element.classList.add("active");
+            } else {
+                this._element.classList.remove("active");
+            }
+
             this._drawLabel(this.label);
         }
     }
@@ -372,7 +381,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
  @param {Event} event
 
  Dispatched when the button is pressed for a period of time, set by
- {@link holdTimeout}.
+ {@link holdThreshold}.
  */
 
 Button.addAttributes( /** @lends module:"montage/ui/button.reel".Button# */{

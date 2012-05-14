@@ -569,7 +569,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
                             prevValue = this._textValue;
                             if (this.textValue !== prevValue) {
-                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(text.value));
+                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(this.textValue));
                             }
                         }
                     } else if (this._textValue && !this._dirtyTextValue) {
@@ -608,7 +608,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
                             prevValue = this._textValue;
                             if (this.textValue !== prevValue) {
-                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(text.value));
+                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(this.textValue));
                             }
                         }
 

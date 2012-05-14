@@ -10,6 +10,97 @@ var Montage = require("montage").Montage,
 
 var Flow = exports.Flow = Montage.create(Component, {
 
+    _splinePaths: {
+        enumerable: false,
+        value: null
+    },
+
+    splinePaths: {
+        enumerable: false,
+        get: function () {
+            if (!this._splinePaths) {
+                this._splinePaths = [];
+            }
+            return this._splinePaths;
+        },
+        set: function (value) {
+            this._splinePaths = value;
+        }
+    },
+
+    appendPath: {
+        value: function (path) {
+            var splinePath = Object.create(FlowBezierSpline).init(),
+                pathKnots = path.knots,
+                length = path.knots.length,
+                knots = [],
+                nextHandlers = [],
+                previousHandlers = [],
+                densities = [],
+                i, j;
+
+            splinePath.parameters = {};
+            for (i in path.units) {
+                splinePath.parameters[i] = {
+                    data: [],
+                    units: path.units[i]
+                };
+            }
+            for (i = 0; i < length; i++) {
+                knots[i] = pathKnots[i].knotPosition;
+                previousHandlers[i] = pathKnots[i].previousHandlerPosition;
+                nextHandlers[i] = pathKnots[i].nextHandlerPosition;
+                densities[i] = pathKnots[i].previousDensity; // TODO: implement previous/next density
+                for (j in path.units) {
+                    splinePath.parameters[j].data.push(pathKnots[i][j]);
+                }
+            }
+            splinePath.knots = knots;
+            splinePath.previousHandlers = previousHandlers;
+            splinePath.nextHandlers = nextHandlers;
+            splinePath.densities = densities;
+            splinePath._computeDensitySummation();
+            this.splinePaths.push(splinePath);
+            if (!path.hasOwnProperty("headOffset")) {
+                path.headOffset = 0;
+            }
+            if (!path.hasOwnProperty("tailOffset")) {
+                path.tailOffset = 0;
+            }
+            this._paths.push(path);
+            this._updateLength();
+        }
+    },
+
+    _paths: {
+        enumerable: false,
+        value: null
+    },
+
+    paths: { // TODO: listen for changes?
+        get: function () {
+            return this._paths;
+        },
+        set: function (value) {
+            var length = value.length,
+                i;
+
+            if (length) {
+
+                if (!this._paths) {
+                    this._paths = [];
+                } else {
+                    this._paths.wipe();
+                    this._splinePaths.wipe();
+                }
+
+                for (i = 0; i < length; i++) {
+                    this.appendPath(value[i]);
+                }
+            }
+        }
+    },
+
     _cameraPosition: {
         enumerable: false,
         value: [0, 0, 800]
@@ -76,17 +167,196 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    _splinePath: {
+    _stride: {
         enumerable: false,
-        value: null
+        value: 0
     },
 
-    splinePath: {
+    stride: {
         get: function () {
-            return this._splinePath;
+            return this._stride;
         },
         set: function (value) {
-            this._splinePath = value;
+            this._stride = value;
+            if (this._translateComposer) {
+                this._translateComposer.translateStrideX = value * 300;
+            }
+        }
+    },
+
+    _scrollingTransitionDurationMiliseconds: {
+        enumerable: false,
+        value: 500
+    },
+
+    _scrollingTransitionDuration: {
+        enumerable: false,
+        value: "500ms"
+    },
+
+    scrollingTransitionDuration: { // TODO: think about using the Date Converter
+        get: function () {
+            return this._scrollingTransitionDuration;
+        },
+        set: function (duration) {
+            var durationString = duration + "",
+                length = durationString.length,
+                value;
+
+            if ((length >= 2) && (durationString[length - 1] === "s")) {
+                if ((length >= 3) && (durationString[length - 2] === "m")) {
+                    value = durationString.substr(0, length - 2) - 0;
+                } else {
+                    value = durationString.substr(0, length - 1) * 1000;
+                }
+            } else {
+                value = durationString - 0;
+                durationString += "ms";
+            }
+            if (!isNaN(value) && (this._scrollingTransitionDurationMiliseconds !== value)) {
+                this._scrollingTransitionDurationMiliseconds = value;
+                this._scrollingTransitionDuration = durationString;
+            }
+        }
+    },
+
+    _scrollingTransitionTimingFunctionBezier: {
+        enumerable: false,
+        value: [.25, .1, .25, 1]
+    },
+
+    _scrollingTransitionTimingFunction: {
+        enumerable: false,
+        value: "ease"
+    },
+
+    hasSelectedIndexScrolling: {
+        enumerable: false,
+        value: false
+    },
+
+    selectedIndexScrollingOffset: {
+        enumerable: false,
+        value: 0
+    },
+
+    _handleSelectedIndexesChange: {
+        enumerable: false,
+        value: function (event) {
+            if (this.hasSelectedIndexScrolling && event.plus) {
+                this.startScrollingIndexToOffset(event.plus[0], this.selectedIndexScrollingOffset);
+            }
+        }
+    },
+
+    _timingFunctions: {
+        enumerable: false,
+        value: {
+            "ease": [.25, .1, .25, 1],
+            "linear": [0, 0, 1, 1],
+            "ease-in": [.42, 0, 1, 1],
+            "ease-out": [0, 0, .58, 1],
+            "ease-in-out": [.42, 0, .58, 1]
+        }
+    },
+
+    scrollingTransitionTimingFunction: {
+        get: function () {
+            return this._scrollingTransitionTimingFunction;
+        },
+        set: function (timingFunction) {
+            var string = timingFunction + "",
+                bezier,
+                i;
+
+            if (this._timingFunctions.hasOwnProperty(string)) {
+                this._scrollingTransitionTimingFunction = string;
+                this._scrollingTransitionTimingFunctionBezier = this._timingFunctions[string];
+            } else {
+                if ((string.substr(0, 13) === "cubic-bezier(") && (string.substr(string.length - 1, 1) === ")")) {
+                    bezier = string.substr(13, string.length - 14).split(",");
+
+                    if (bezier.length === 4) {
+                        for (i = 0; i < 4; i++) {
+                            bezier[i] -= 0;
+                            if (isNaN(bezier[i])) {
+                                return;
+                            }
+                        }
+                        if (bezier[0] < 0) {
+                            bezier[0] = 0;
+                        } else {
+                            if (bezier[0] > 1) {
+                                bezier[0] = 1;
+                            }
+                        }
+                        if (bezier[2] < 0) {
+                            bezier[2] = 0;
+                        } else {
+                            if (bezier[2] > 1) {
+                                bezier[2] = 1;
+                            }
+                        }
+                        // TODO: check it is not the same bezier
+                        this._scrollingTransitionTimingFunction = "cubic-bezier(" + bezier + ")";
+                        this._scrollingTransitionTimingFunctionBezier = bezier;
+                    }
+                }
+            }
+        }
+    },
+
+    _computeCssCubicBezierValue: {
+        enumerable: false,
+        value: function (x, bezier) {
+            var t = .5,
+                step = .25,
+                t2,
+                k,
+                i;
+
+            for (i = 0; i < 20; i++) { // TODO: optimize with Newton's method or similar
+                t2 = t * t;
+                k = 1 - t;
+                if ((3 * (k * k * t * bezier[0] + k * t2 * bezier[2]) + t2 * t) > x) {
+                    t -= step;
+                } else {
+                    t += step;
+                }
+                step *= .5;
+            }
+            t2 = t * t;
+            k = 1 - t;
+            return 3 * (k * k * t * bezier[1] + k * t2 * bezier[3]) + t2 * t;
+        }
+    },
+
+    _isTransitioningScroll: {
+        enumerable: false,
+        value: false
+    },
+
+    stopScrolling: {
+        value: function () {
+            this._isTransitioningScroll = false;
+            // TODO: Fire scrollingTransitionCancel event
+        }
+    },
+
+    startScrollingIndexToOffset: { // TODO: Fire scrollingTransitionStart event
+        value: function (index, offset) {
+            this._scrollingOrigin = this.scroll;
+            this._scrollingDestination = index - offset;
+            if (this._scrollingDestination > this._length) {
+                this._scrollingDestination = this._length;
+            } else {
+                if (this._scrollingDestination < 0) {
+                    this._scrollingDestination = 0;
+                }
+            }
+            this._isScrolling = true;
+            this._scrollingStartTime = Date.now();
+            this._isTransitioningScroll = true;
             this.needsDraw = true;
         }
     },
@@ -113,7 +383,7 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     _elementsBoundingSphereRadius: {
         enumerable: false,
-        value: 142
+        value: 150
     },
 
     elementsBoundingSphereRadius: {
@@ -127,39 +397,48 @@ var Flow = exports.Flow = Montage.create(Component, {
             }
         }
     },
+    
+    _halfPI: {
+        enumerable: false,
+        value: Math.PI*0.5
+    },
+    
+    _doublePI: {
+        enumerable: false,
+        value: Math.PI*2
+    },
 
     _computeFrustumNormals: {
-        value: function() {
-            var angle = ((this.cameraFov * .5) * Math.PI * 2) / 360,
-                y = Math.sin(angle),
-                z = Math.cos(angle),
+        value: function(out) {
+            var math = Math,
+                angle = ((this.cameraFov * .5) * this._doublePI) / 360,
+                y = math.sin(angle),
+                z = math.cos(angle),
                 x = (y * this._width) / this._height,
                 vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
                 vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
                 vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
-                yAngle = Math.PI / 2 - Math.atan2(vZ, vX),
-                tmpZ = vX * Math.sin(yAngle) + vZ * Math.cos(yAngle),
+                yAngle = this._halfPI - math.atan2(vZ, vX),
+                tmpZ = vX * math.sin(yAngle) + vZ * math.cos(yAngle),
                 rX, rY, rZ,
                 rX2, rY2, rZ2,
-                xAngle = Math.PI / 2 - Math.atan2(tmpZ, vY),
+                xAngle = this._halfPI - math.atan2(tmpZ, vY),
                 invLength,
                 vectors = [[z, 0, x], [-z, 0, x], [0, z, y], [0, -z, y]],
                 iVector,
-                out = [],
                 i;
 
             for (i = 0; i < 4; i++) {
                 iVector = vectors[i];
                 rX = iVector[0];
-                rY = iVector[1] * Math.cos(-xAngle) - iVector[2] * Math.sin(-xAngle);
-                rZ = iVector[1] * Math.sin(-xAngle) + iVector[2] * Math.cos(-xAngle);
-                rX2 = rX * Math.cos(-yAngle) - rZ * Math.sin(-yAngle);
+                rY = iVector[1] * math.cos(-xAngle) - iVector[2] * math.sin(-xAngle);
+                rZ = iVector[1] * math.sin(-xAngle) + iVector[2] * math.cos(-xAngle);
+                rX2 = rX * math.cos(-yAngle) - rZ * math.sin(-yAngle);
                 rY2 = rY;
-                rZ2 = rX * Math.sin(-yAngle) + rZ * Math.cos(-yAngle);
-                invLength = 1 / Math.sqrt(rX2 * rX2 + rY2 * rY2 + rZ2 * rZ2);
+                rZ2 = rX * math.sin(-yAngle) + rZ * math.cos(-yAngle);
+                invLength = 1 / math.sqrt(rX2 * rX2 + rY2 * rY2 + rZ2 * rZ2);
                 out.push([rX2 * invLength, rY2 * invLength, rZ2 * invLength]);
             }
-            return out;
         }
     },
 
@@ -207,75 +486,92 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
+    _frustrumNormals: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
     _computeVisibleRange: { // TODO: make it a loop, optimize
         enumerable: false,
-        value: function () {
-            var spline = this._splinePath,
-                splineLength = spline.knotsLength - 1,
-                planeOrigin = this._cameraPosition,
-                normals = this._computeFrustumNormals(),
+        value: function (spline, out) {
+
+            this._frustrumNormals.wipe();
+
+            var splineLength = spline.knotsLength - 1,
+            planeOrigin0 = this._cameraPosition[0],
+            planeOrigin1 = this._cameraPosition[1],
+            planeOrigin2 = this._cameraPosition[2],
+                normals = this._frustrumNormals,
                 mod,
-                r, r2, r3 = [], out = [], tmp,
-                i, j;
+                r=[], r2=[], r3 = [], tmp,
+                i, j,
+                elementsBoundingSphereRadius = this._elementsBoundingSphereRadius,
+                splineKnots = spline._knots,
+                splineNextHandlers = spline._nextHandlers,
+                splinePreviousHandlers = spline._previousHandlers,
+                reflectionMatrixBuffer = [];
+
+            this._computeFrustumNormals(normals);
 
             for (i = 0; i < splineLength; i++) {
                 mod = normals[0];
                 r = spline.directedPlaneBezierIntersection(
-                    [
-                        planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
-                        planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
-                        planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
-                    ],
+                        planeOrigin0 - mod[0] * elementsBoundingSphereRadius,
+                        planeOrigin1 - mod[1] * elementsBoundingSphereRadius,
+                        planeOrigin2 - mod[2] * elementsBoundingSphereRadius,
                     normals[0],
-                    spline._knots[i],
-                    spline._nextHandlers[i],
-                    spline._previousHandlers[i + 1],
-                    spline._knots[i + 1]
+                    splineKnots[i],
+                    splineNextHandlers[i],
+                    splinePreviousHandlers[i + 1],
+                    splineKnots[i + 1],
+                    reflectionMatrixBuffer,
+                    r
                 );
                 if (r.length) {
                     mod = normals[1];
                     r2 = spline.directedPlaneBezierIntersection(
-                        [
-                            planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
-                            planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
-                            planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
-                        ],
+                            planeOrigin0 - mod[0] * elementsBoundingSphereRadius,
+                            planeOrigin1 - mod[1] * elementsBoundingSphereRadius,
+                            planeOrigin2 - mod[2] * elementsBoundingSphereRadius,
                         normals[1],
-                        spline._knots[i],
-                        spline._nextHandlers[i],
-                        spline._previousHandlers[i + 1],
-                        spline._knots[i + 1]
+                        splineKnots[i],
+                        splineNextHandlers[i],
+                        splinePreviousHandlers[i + 1],
+                        splineKnots[i + 1],
+                        reflectionMatrixBuffer,
+                        r2
                     );
                     if (r2.length) {
                         tmp = this._segmentsIntersection(r, r2);
                         if (tmp.length) {
                             mod = normals[2];
                             r = spline.directedPlaneBezierIntersection(
-                                [
-                                    planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
-                                    planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
-                                    planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
-                                ],
+                                    planeOrigin0 - mod[0] * elementsBoundingSphereRadius,
+                                    planeOrigin1 - mod[1] * elementsBoundingSphereRadius,
+                                    planeOrigin2 - mod[2] * elementsBoundingSphereRadius,
                                 normals[2],
-                                spline._knots[i],
-                                spline._nextHandlers[i],
-                                spline._previousHandlers[i + 1],
-                                spline._knots[i + 1]
+                                splineKnots[i],
+                                splineNextHandlers[i],
+                                splinePreviousHandlers[i + 1],
+                                splineKnots[i + 1],
+                                reflectionMatrixBuffer,
+                                r
                             );
                             tmp = this._segmentsIntersection(r, tmp);
                             if (tmp.length) {
                                 mod = normals[3];
                                 r = spline.directedPlaneBezierIntersection(
-                                    [
-                                        planeOrigin[0] - mod[0] * this._elementsBoundingSphereRadius,
-                                        planeOrigin[1] - mod[1] * this._elementsBoundingSphereRadius,
-                                        planeOrigin[2] - mod[2] * this._elementsBoundingSphereRadius
-                                    ],
+                                        planeOrigin0 - mod[0] * elementsBoundingSphereRadius,
+                                        planeOrigin1 - mod[1] * elementsBoundingSphereRadius,
+                                        planeOrigin2 - mod[2] * elementsBoundingSphereRadius,
                                     normals[3],
-                                    spline._knots[i],
-                                    spline._nextHandlers[i],
-                                    spline._previousHandlers[i + 1],
-                                    spline._knots[i + 1]
+                                    splineKnots[i],
+                                    splineNextHandlers[i],
+                                    splinePreviousHandlers[i + 1],
+                                    splineKnots[i + 1],
+                                    reflectionMatrixBuffer,
+                                    r
                                 );
                                 tmp = this._segmentsIntersection(r, tmp);
                                 for (j = 0; j < tmp.length; j++) {
@@ -297,7 +593,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 t2 = (d2 - d1) * p2 * p2 * .5 + p2 * d1 + dS;
                 out.push([t1, t2]);
             }
-            return out;
         }
     },
 
@@ -306,18 +601,16 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function () {
             var self = this;
 
-            if (!this._splinePath) {
-                this.splinePath = Object.create(FlowBezierSpline);
-            }
             this._repetitionComponents = this._repetition._childComponents;
             window.addEventListener("resize", function () {
                 self._isCameraUpdated = true;
                 self.needsDraw = true;
             }, false);
+            this._translateComposer.translateStrideX = this._stride * 300;
         }
     },
 
-    _updateIndexMap: {
+/*    _updateIndexMap: {
         enumerable: false,
         value: function (currentIndexMap, newIndexes) {
             var indexMap = currentIndexMap.slice(0, newIndexes.length),
@@ -350,26 +643,145 @@ var Flow = exports.Flow = Montage.create(Component, {
             }
             return indexMap;
         }
+    },*/
+
+    _updateIndexMap2: {
+        enumerable: false,
+        value: function (newIndexes, newIndexesHash) {
+            var currentIndexMap = this._repetition.indexMap,
+                emptySpaces = [],
+                j,
+                i,
+                currentIndexCount = currentIndexMap && !isNaN(currentIndexMap.length) ? currentIndexMap.length : 0;
+
+            for (i = 0; i < currentIndexCount; i++) {
+                //The likelyhood that newIndexesHash had a number-turned-to-string property that wasn't his own is pretty slim as it's provided internally.
+                //if (newIndexesHash.hasOwnProperty(currentIndexMap[i])) {
+                if (typeof newIndexesHash[currentIndexMap[i]] === "number") {
+                    newIndexes[newIndexesHash[currentIndexMap[i]]] = null;
+                } else {
+                    emptySpaces.push(i);
+                }
+            }
+            for (i = j = 0; (j < emptySpaces.length) && (i < newIndexes.length); i++) {
+                if (newIndexes[i] !== null) {
+                    this._repetition.mapIndexToIndex(emptySpaces[j], newIndexes[i], false);
+                    j++;
+                }
+            }
+            for (j = currentIndexCount; i < newIndexes.length; i++) {
+                if (newIndexes[i] !== null) {
+                    this._repetition.mapIndexToIndex(j,newIndexes[i], false);
+                    j++;
+                }
+            }
+            this._repetition.refreshIndexMap();
+        }
+    },
+
+    _tmpIndexMap: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
+    _intersections: {
+        enumerable: false,
+        distinct: true,
+        value: []
     },
 
     willDraw: {
         enumerable: false,
         value: function () {
-            var newIndexMap = [],
+            var intersections = this._intersections,
+                index,
                 i,
                 j,
-                intersections = this._computeVisibleRange();
+                k,
+                offset,
+                startIndex,
+                endIndex,
+                mod,
+                div,
+                iterations,
+                newIndexMap,
+                time,
+                interpolant,
+                newIndexesHash = {},
+                math = Math,
+                paths = this._paths,
+                pathsLength = paths.length,
+                splinePaths = this.splinePaths;
 
-            this._width = this._element.offsetWidth;
-            this._height = this._element.offsetHeight;
-
-            for (i = 0; i < intersections.length; i++) {
-                for (j = Math.ceil(intersections[i][0] + this._origin/this._scale); j < intersections[i][1] + this._origin/this._scale; j++) {
-                    newIndexMap.push(j);
+            newIndexMap = this._tmpIndexMap.wipe();
+            if (this._isTransitioningScroll) {
+                time = (Date.now() - this._scrollingStartTime) / this._scrollingTransitionDurationMiliseconds; // TODO: division by zero
+                interpolant = this._computeCssCubicBezierValue(time, this._scrollingTransitionTimingFunctionBezier);
+                if (time < 1) {
+                    this.scroll = this._scrollingOrigin + (this._scrollingDestination - this._scrollingOrigin) * interpolant;
+                } else {
+                    this.scroll = this._scrollingDestination;
+                    this._isTransitioningScroll = false;
                 }
             }
-            this._repetition.indexMap = this._updateIndexMap(this._repetition.indexMap, newIndexMap);
+            this._width = this._element.offsetWidth;
+            this._height = this._element.offsetHeight;
+            if (splinePaths.length) {
+                mod = this._numberOfIterations % pathsLength;
+                div = (this._numberOfIterations - mod) / pathsLength;
+                for (k = 0; k < pathsLength; k++) {
+                    iterations = div + ((k < mod) ? 1 : 0);
+                    intersections.wipe();
+                    this._computeVisibleRange(splinePaths[k], intersections);
+                    splinePaths[k]._computeDensitySummation();
+                    offset =  this._scroll - paths[k].headOffset;
+                    for (i = 0; i < intersections.length; i++) {
+                        startIndex = math.ceil(intersections[i][0] + offset);
+                        endIndex = math.ceil(intersections[i][1] + offset);
+                        if (startIndex < 0) {
+                            startIndex = 0;
+                        }
+                        if (endIndex > iterations) {
+                            endIndex = iterations;
+                        }
+                        for (j = startIndex; j < endIndex; j++) {
+                            index = j * pathsLength + k;
+                            if (typeof newIndexesHash[index] === "undefined") {
+                                newIndexesHash[index] = newIndexMap.length;
+                                newIndexMap.push(index);
+                            }
+                        }
+                    }
+                }
+                this._updateIndexMap2(newIndexMap, newIndexesHash);
+            }
         }
+    },
+
+    _cachedPos: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+    
+    _cachedPosParameter: {
+        enumerable: false,
+        distinct: true,
+        value: {}
+    },
+    
+    _cachedDrawOffset: {
+        enumerable: false,
+        distinct: true,
+        value: {}
+    },
+    
+
+    _cachedSlide: {
+        enumerable: false,
+        distinct: true,
+        value: {}
     },
 
     draw: {
@@ -377,63 +789,82 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function () {
             var i,
                 length = this._repetitionComponents.length,
-                slide = {},
+                slide,
                 transform,
-                origin,
                 j,
-                iOffset,
+                iOffset = this._cachedDrawOffset,
                 iStyle,
-                pos;
+                pathsLength = this._paths.length,
+                pathIndex,
+                pos,
+                pos3,
+                positionKeys,
+                positionKeyCount,
+                jPositionKey,
+                indexMap = this._repetition.indexMap,
+                iRepetitionComponentElement,
+                math = Math,
+                posParameter = this._cachedPosParameter;
 
-            if (this.isAnimating) {
+            slide = this._cachedSlide.wipe();
+            pos = this._cachedPos.wipe();
+            if (this._isTransitioningScroll) {
+                this.needsDraw = true;
+            }
+            if (this.isAnimating) { // move it to willDraw
                 this._animationInterval();
             }
             if (this._isCameraUpdated) {
-                var perspective = Math.tan(((90 - this.cameraFov * .5) * Math.PI * 2) / 360) * this._height * .5,
+                var perspective = math.tan(((90 - this.cameraFov * .5) * this._doublePI) / 360) * this._height * .5,
                     vX = this.cameraTargetPoint[0] - this.cameraPosition[0],
                     vY = this.cameraTargetPoint[1] - this.cameraPosition[1],
                     vZ = this.cameraTargetPoint[2] - this.cameraPosition[2],
-                    yAngle = Math.atan2(-vX, -vZ),  // TODO: Review this
+                    yAngle = math.atan2(-vX, -vZ),  // TODO: Review this
                     tmpZ,
                     xAngle;
 
-                tmpZ = vX * -Math.sin(-yAngle) + vZ * Math.cos(-yAngle);
-                xAngle = Math.atan2(-vY, -tmpZ);
+                tmpZ = vX * -math.sin(-yAngle) + vZ * math.cos(-yAngle);
+                xAngle = math.atan2(-vY, -tmpZ);
                 this._element.style.webkitPerspective = perspective + "px";
                 this._repetition._element.style.webkitTransform =
                     "translate3d(" + 0 + "px, " + 0 + "px, " + perspective + "px) rotateX(" + xAngle + "rad) rotateY(" + (-yAngle) + "rad) " +
                     "translate3d(" + (-this.cameraPosition[0]) + "px, " + (-this.cameraPosition[1]) + "px, " + (-this.cameraPosition[2]) + "px)";
                 this._isCameraUpdated = false;
             }
-            if (this._splinePath) {
-                this._splinePath._computeDensitySummation(); // TODO: This should not be done per frame
+            if (this.splinePaths.length) {
                 for (i = 0; i < length; i++) {
-                    iStyle = this._repetitionComponents[i].element.style;
-                    iOffset = this._offset.value(this._repetition.indexMap[i]);
-                    slide.index = this._repetition.indexMap[i];
-                    slide.time = iOffset.time;
+                    pathIndex = indexMap[i] % pathsLength;
+                    iOffset = this.offset(math.floor(indexMap[i] / pathsLength),iOffset);
+                    slide.index = indexMap[i];
+                    slide.time = iOffset.time + this._paths[pathIndex].headOffset;
                     slide.speed = iOffset.speed;
-                    pos = this._splinePath.getPositionAtTime(slide.time / 300);
-                    if (pos) {
-                        if (iStyle.display !== "block") {
-                            iStyle.display = "block";
+                    pos = this._splinePaths[pathIndex].getPositionAtTime(slide.time, pos,posParameter);
+                    iRepetitionComponentElement = this._repetitionComponents[i].element;
+                    if ((pos.length > 0) && (slide.index < this._numberOfIterations)) {
+                        iStyle = iRepetitionComponentElement.parentNode.style;
+                        if (iStyle.opacity == 0) {
+                            iStyle.opacity = 1;
                         }
+                        pos3 = pos[3];
                         transform = "translate3d(" + pos[0] + "px," + pos[1] + "px," + pos[2] + "px) ";
-                        transform += (typeof pos[3].rotateZ !== "undefined") ? "rotateZ(" + pos[3].rotateZ + ") " : "";
-                        transform += (typeof pos[3].rotateY !== "undefined") ? "rotateY(" + pos[3].rotateY + ") " : "";
-                        transform += (typeof pos[3].rotateX !== "undefined") ? "rotateX(" + pos[3].rotateX + ") " : "";
+                        transform += (typeof pos3.rotateZ !== "undefined") ? "rotateZ(" + pos3.rotateZ + ") " : "";
+                        transform += (typeof pos3.rotateY !== "undefined") ? "rotateY(" + pos3.rotateY + ") " : "";
+                        transform += (typeof pos3.rotateX !== "undefined") ? "rotateX(" + pos3.rotateX + ") " : "";
                         iStyle.webkitTransform = transform;
-                        delete pos[3].rotateX;
-                        delete pos[3].rotateY;
-                        delete pos[3].rotateZ;
-                        for (j in pos[3]) {
-                            if ((pos[3].hasOwnProperty(j)) && (iStyle[j] !== pos[3][j])) {
-                                iStyle[j] = pos[3][j];
+                        iStyle = iRepetitionComponentElement.style;
+                        positionKeys = Object.keys(pos3);
+                        positionKeyCount = positionKeys.length;
+                        for (j = 0; j < positionKeyCount; j++) {
+                            jPositionKey = positionKeys[j];
+                            if (!(jPositionKey === "rotateX" || jPositionKey === "rotateY" || jPositionKey === "rotateZ") && iStyle[jPositionKey] !== pos3[jPositionKey]) {
+                                iStyle[jPositionKey] = pos3[jPositionKey];
                             }
                         }
                     } else {
-                        if (iStyle.display !== "none") {
-                            iStyle.display = "none";
+                        iStyle = iRepetitionComponentElement.parentNode.style;
+                        if (iStyle.opacity !== 0) {
+                            iStyle.opacity = 0;
+                            iStyle.webkitTransform = "scale3d(0, 0, 0)";
                         }
                     }
                 }
@@ -441,11 +872,100 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    /////////////////////////////// Almost Copy/Pasted from List ///////////////////////////
-
     _orphanedChildren: {
         enumerable: false,
         value: null
+    },
+
+    _selectedIndexesForRepetition: {
+        enumerable: false,
+        value: null
+    },
+
+    selectedIndexes: {
+        get: function () {
+            if (this._repetition) {
+                return this._repetition.selectedIndexes;
+            } else {
+                return this._selectedIndexesForRepetition;
+            }
+        },
+        set: function (value) {
+            if (this._repetition) {
+                this._repetition.selectedIndexes = value;
+            } else {
+                this._selectedIndexesForRepetition = value;
+            }
+        }
+    },
+
+    _activeIndexesForRepetition: {
+        enumerable: false,
+        value: null
+    },
+
+    activeIndexes: {
+        get: function () {
+            if (this._repetition) {
+                return this._repetition.activeIndexes;
+            } else {
+                return this._activeIndexesForRepetition;
+            }
+        },
+        set: function (value) {
+            if (this._repetition) {
+                this._repetition.activeIndexes = value;
+            } else {
+                this._activeIndexesForRepetition = value;
+            }
+        }
+    },
+
+    _updateLength: {
+        enumerable: false,
+        value: function () {
+            if (this._paths) {
+                var iPath,
+                    pathsLength = this._paths.length,
+                    iterations,
+                    iLength,
+                    maxLength = 0,
+                    div, mod,
+                    i;
+
+                if (pathsLength > 0) {
+                    mod = this._numberOfIterations % pathsLength; // TODO: review after implementing multiple paths
+                    div = (this._numberOfIterations - mod) / pathsLength;
+                    for (i = 0; i < pathsLength; i++) {
+                        iPath = this._paths[i];
+                        iterations = div + ((i < mod) ? 1 : 0);
+                        iLength = iterations - iPath.tailOffset + iPath.headOffset - 1;
+                        if (iLength > maxLength) {
+                            maxLength = iLength;
+                        }
+                    }
+                    this.length = maxLength;
+                }
+            }
+        }
+    },
+
+    _numberOfIterations: {
+        enumerable: false,
+        value: 0
+    },
+
+    numberOfIterations: {
+        enumerable: false,
+        get: function () {
+            return this._numberOfIterations;
+        },
+        set: function (value) {
+            if (this._numberOfIterations !== value) {
+                this._numberOfIterations = value;
+                this._updateLength();
+            }
+        }
     },
 
     _objectsForRepetition: {
@@ -454,7 +974,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     objects: {
-        enumerable: false,
         get: function() {
             if (this._repetition) {
                 return this._repetition.objects;
@@ -465,6 +984,7 @@ var Flow = exports.Flow = Montage.create(Component, {
         set: function(value) {
             if (this._repetition) {
                 this._repetition.objects = value;
+                this.needsDraw = true;
             } else {
                 this._objectsForRepetition = value;
             }
@@ -477,7 +997,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     contentController: {
-        enumerable: false,
         get: function() {
             if (this._repetition) {
                 return this._repetition.contentController;
@@ -500,7 +1019,6 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     isSelectionEnabled: {
-        enumerable: false,
         get: function() {
             if (this._repetition) {
                 return this._repetition.isSelectionEnabled;
@@ -536,20 +1054,21 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: function() {
             this._orphanedChildren = this.childComponents;
             this.childComponents = null;
-            this.offset = true;
         }
     },
 
     templateDidLoad: {
         value: function() {
             var orphanedFragment,
-                currentContentRange = this.element.ownerDocument.createRange();
-
+                currentContentRange = this.element.ownerDocument.createRange(),
+                wrapper,
+                self = this;
 
             currentContentRange.selectNodeContents(this.element);
             orphanedFragment = currentContentRange.extractContents();
-            this._repetition.element.appendChild(orphanedFragment);
-            this._repetition.indexMap = [];
+            wrapper = this._repetition.element.appendChild(document.createElement("div"));
+            wrapper.appendChild(orphanedFragment);
+            this._repetition.indexMapEnabled = true;
             this._repetition.childComponents = this._orphanedChildren;
             this._repetition.needsDraw = true;
             if (this._objectsForRepetition !== null) {
@@ -564,10 +1083,27 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._repetition.isSelectionEnabled = this._isSelectionEnabledForRepetition;
                 this._isSelectionEnabledForRepetition = null;
             }
+            if (this._selectedIndexesForRepetition !== null) {
+                this._repetition.selectedIndexes = this._selectedIndexesForRepetition;
+                this._selectedIndexesForRepetition = null;
+            }
+            if (this._activeIndexesForRepetition !== null) {
+                this._repetition.activeIndexes = this._activeIndexesForRepetition;
+                this._activeIndexesForRepetition = null;
+            }
+            
+            this._repetition.addPropertyChangeListener("selectedIndexes", function (event) {
+                self._handleSelectedIndexesChange.call(self, event);
+            },false);
+            Object.defineBinding(this, "numberOfIterations", {
+                boundObject: this._repetition,
+                boundObjectPropertyPath: "_objects.count()",
+                oneway: "true"
+            });
         }
     },
 
-    ////////////////////// offset /////////////////////////
+    // TODO: rename isAnimating and animationInterval to elasticAnimation
 
     isAnimating: {
         enumerable: false,
@@ -605,7 +1141,7 @@ var Flow = exports.Flow = Montage.create(Component, {
         }
     },
 
-    _selectedSlideIndex: {
+    _selectedSlideIndex: { // TODO: rename it to elasticScrollingTargetIndex
         enumerable: false,
         value: null
     },
@@ -619,7 +1155,7 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (typeof this.animatingHash[this._selectedSlideIndex] !== "undefined") {
                 var tmp = this.slide[this._selectedSlideIndex].x;
 
-                this.origin += (this._selectedSlideIndex * this._scale) - tmp;
+                this.scroll += this._selectedSlideIndex - tmp;
             }
         }
     },
@@ -636,8 +1172,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._animating = [];
             }
             return this._animating;
-        },
-        set: function () {
         }
     },
 
@@ -653,8 +1187,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._animatingHash = {};
             }
             return this._animatingHash;
-        },
-        set: function () {
         }
     },
 
@@ -670,8 +1202,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._slide = {};
             }
             return this._slide;
-        },
-        set: function () {
         }
     },
 
@@ -714,143 +1244,17 @@ var Flow = exports.Flow = Montage.create(Component, {
         value: null
     },
 
-    _origin: {
+    _maxTranslateX: {
         enumerable: false,
         value: 0
     },
 
-    origin: {
+    maxTranslateX: {
         get: function () {
-            return this._origin;
+            return this._maxTranslateX;
         },
         set: function (value) {
-            if ((this._hasElasticScrolling)&&(this._selectedSlideIndex !== null)) {
-                var i,
-                    n,
-                    min = this._selectedSlideIndex - this._range,
-                    max = this._selectedSlideIndex + this._range + 1,
-                    tmp,
-                    j,
-                    x,
-                    self = this;
-
-                tmp = value - this._origin;
-                if (min < 0) {
-                    min = 0;
-                }
-
-                if (!this.isAnimating) {
-                    this.lastDrawTime = Date.now();
-                }
-                for (i = min; i < max; i++) {
-                    if (i != this._selectedSlideIndex) {
-                        if (typeof this.animatingHash[i] === "undefined") {
-                            x = i * this._scale;
-                        } else {
-                            x = this.slide[i].x;
-                        }
-                        x += tmp;
-                        if (i < this._selectedSlideIndex) {
-                            if (x < i * this._scale) {
-                                this.startAnimating(i, x);
-                            }
-                        } else {
-                            if (x > i * this._scale) {
-                                this.startAnimating(i, x);
-                            }
-                        }
-                    }
-                }
-                this.stopAnimating(this._selectedSlideIndex);
-                if (!this.isAnimating) {
-                    this._animationInterval = function () {
-                        var animatingLength = self.animating.length,
-                            n, j, i, _iterations = 8,
-                            time = Date.now(),
-                            interval1 = self.lastDrawTime ? (time - self.lastDrawTime) * 0.015 * this._elasticScrollingSpeed : 0,
-                            interval = interval1 / _iterations,
-                            mW = self._scale, x,
-                            epsilon = .5;
-
-                        for (n = 0; n < _iterations; n++) {
-                            for (j = 0; j < animatingLength; j++) {
-                                i = self.animating[j];
-                                if (i < self._selectedSlideIndex) {
-                                    if (typeof self.animatingHash[i + 1] === "undefined") {
-                                        x = ((i + 1) * self._scale);
-                                    } else {
-                                        x = self.slide[i + 1].x;
-                                    }
-                                    self.slide[i].speed = x - self.slide[i].x - mW;
-                                } else {
-                                    if (typeof self.animatingHash[i - 1] === "undefined") {
-                                        x = ((i - 1) * self._scale);
-                                    } else {
-                                        x = self.slide[i - 1].x;
-                                    }
-                                    self.slide[i].speed = x - self.slide[i].x + mW;
-                                }
-                                self.slide[i].x += (self.slide[i].speed) * interval;
-                            }
-                        }
-                        j = 0;
-                        while (j < animatingLength) {
-                            i = self.animating[j];
-                            if (i < self._selectedSlideIndex) {
-                                if (self.slide[i].x > i * self._scale - epsilon) {
-                                    self.stopAnimating(i);
-                                    animatingLength--;
-                                } else {
-                                    j++;
-                                }
-                            } else {
-                                if (self.slide[i].x < i * self._scale + epsilon) {
-                                    self.stopAnimating(i);
-                                    animatingLength--;
-                                } else {
-                                    j++;
-                                }
-                            }
-                        }
-                        self.lastDrawTime = time;
-                        if (!animatingLength) {
-                            self.isAnimating = false;
-                        } else {
-                            self.needsDraw = true;
-                            if (!self.isAnimating) {
-                                self.isAnimating = true;
-                            }
-                        }
-                    }
-                }
-                if (!this.isAnimating) {
-                    this._animationInterval();
-                }
-            }
-            this._origin = value;
-            this.needsDraw = true;
-        }
-    },
-
-    _scale: {
-        enumerable: false,
-        value: 100
-    },
-
-    scale: {
-        get: function () {
-            return this._scale;
-        },
-        set: function (value) {
-            var oldScale = this._scale;
-
-            this._scale = value;
-            this.length = value * (this._numberOfNodes - 1);
-            if (!this.isAnimating) {
-                this.selectedSlideIndex = null;
-                this.origin = this._origin * value / oldScale;
-            }
-            this.needsDraw = true;
+            this._maxTranslateX = value;
         }
     },
 
@@ -867,43 +1271,181 @@ var Flow = exports.Flow = Montage.create(Component, {
             if (value < 0) {
                 this._length = 0;
             } else {
+                this.maxTranslateX = value * 300;
                 this._length = value;
             }
         }
     },
 
-    _offset: {
+    _scroll: {
         enumerable: false,
-        value: {
-            value: function (nodeNumber) {
-                return 0;
+        value: 0
+    },
+
+    _animationInterval: {
+        enumerable: false,
+        value: function () {
+            var animatingLength = this.animating.length,
+                n, j, i, _iterations = 8,
+                time = Date.now(),
+                interval1 = this.lastDrawTime ? (time - this.lastDrawTime) * 0.015 * this._elasticScrollingSpeed : 0,
+                interval = interval1 / _iterations,
+                x,
+                epsilon = .5;
+
+            for (n = 0; n < _iterations; n++) {
+                for (j = 0; j < animatingLength; j++) {
+                    i = this.animating[j];
+                    if (i < this._selectedSlideIndex) {
+                        if (typeof this.animatingHash[i + 1] === "undefined") {
+                            x = i + 1;
+                        } else {
+                            x = this.slide[i + 1].x;
+                        }
+                        this.slide[i].speed = x - this.slide[i].x - 1;
+                    } else {
+                        if (typeof this.animatingHash[i - 1] === "undefined") {
+                            x = i - 1;
+                        } else {
+                            x = this.slide[i - 1].x;
+                        }
+                        this.slide[i].speed = x - this.slide[i].x + 1;
+                    }
+                    this.slide[i].x += (this.slide[i].speed) * interval;
+                }
+            }
+            j = 0;
+            while (j < animatingLength) {
+                i = this.animating[j];
+                if (i < this._selectedSlideIndex) {
+                    if (this.slide[i].x > i - epsilon) {
+                        this.stopAnimating(i);
+                        animatingLength--;
+                    } else {
+                        j++;
+                    }
+                } else {
+                    if (this.slide[i].x < i + epsilon) {
+                        this.stopAnimating(i);
+                        animatingLength--;
+                    } else {
+                        j++;
+                    }
+                }
+            }
+            this.lastDrawTime = time;
+            if (!animatingLength) {
+                this.isAnimating = false;
+            } else {
+                this.needsDraw = true;
+                if (!this.isAnimating) {
+                    this.isAnimating = true;
+                }
             }
         }
     },
 
-    offset: {
+    scroll: {
         get: function () {
-            return this._offset;
+            return this._scroll;
         },
-        set: function () {
-            var self = this;
+        set: function (value) {
+            /*if ((this._hasElasticScrolling)&&(this._selectedSlideIndex !== null)) {
+                var i,
+                    n,
+                    min = this._selectedSlideIndex - this._range,
+                    max = this._selectedSlideIndex + this._range + 1,
+                    tmp,
+                    j,
+                    x;
 
-            this._offset = {
-                value: function (nodeNumber) {
-                    if (typeof self.animatingHash[nodeNumber] === "undefined") {
-                        return {
-                            time: (nodeNumber * self._scale) - self._origin,
-                            speed: 0
+                tmp = value - this._scroll;
+                if (min < 0) {
+                    min = 0;
+                }
+
+                if (!this.isAnimating) {
+                    this.lastDrawTime = Date.now();
+                }
+                for (i = min; i < max; i++) {
+                    if (i != this._selectedSlideIndex) {
+                        if (typeof this.animatingHash[i] === "undefined") {
+                            x = i;
+                        } else {
+                            x = this.slide[i].x;
                         }
-                    } else {
-                        return {
-                            time: self.slide[nodeNumber].x - self.origin,
-                            speed: self.slide[nodeNumber].speed
+                        x += tmp;
+                        if (i < this._selectedSlideIndex) {
+                            if (x < i) {
+                                this.startAnimating(i, x);
+                            }
+                        } else {
+                            if (x > i) {
+                                this.startAnimating(i, x);
+                            }
                         }
                     }
-                    this.needsDraw = true;
                 }
-            };
+                this.stopAnimating(this._selectedSlideIndex);
+                if (!this.isAnimating) {
+                    this._animationInterval();
+                }
+            }*/
+            this._scroll = value;
+            if (this._translateComposer) {
+                this._translateComposer.translateX = value * 300; // TODO Remove magic/spartan numbers
+            }
+            this.needsDraw = true;
+        }
+    },
+
+    offset: {
+        enumerable: false,
+        value: function (interationIndex,offset) {
+            if (typeof this.animatingHash[interationIndex] === "undefined") {
+                offset.time = interationIndex - this._scroll;
+                offset.speed = 0;
+            } else {
+                offset.time = this.slide[interationIndex].x - this._scroll,
+                offset.speed = this.slide[interationIndex].speed
+            }
+            return offset;
+        }
+    },
+
+    _isInputEnabled: {
+        enumerable: false,
+        value: true
+    },
+
+    isInputEnabled: {
+        get: function () {
+            return this._isInputEnabled;
+        },
+        set: function (value) {
+            if (value) {
+                this._isInputEnabled = true;
+                this.needsDraw = true;
+            } else {
+                this._isInputEnabled = false;
+            }
+        }
+    },
+
+    _translateX: {
+        enumerable: false,
+        value: 0
+    },
+
+    translateX: {
+        get: function () {
+            return this._translateX;
+        },
+        set: function (value) {
+            if (this._isInputEnabled) {
+                this._translateX = value;
+                this.scroll = this._translateX / 300;
+            }
         }
     }
 });

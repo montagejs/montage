@@ -25,8 +25,7 @@
 
 
     "statesController": {
-        "name": "ArrayController",
-        "module": "montage/ui/controller/array-controller",
+        "prototype": "montage/ui/controller/array-controller",
         "properties": {
             "selectObjectsOnAddition": true,
             "automaticallyOrganizeObjects": true,
@@ -135,11 +134,7 @@
                 "element": {"#": "justifyResult"}
             },
             "bindings": {
-                "value": {
-                    "boundObject": {"@": "test"},
-                    "boundObjectPropertyPath": "justify",
-                    "oneway": "true"
-                }
+                "value": {"<-": "@test.justify"}
             }
         },
 

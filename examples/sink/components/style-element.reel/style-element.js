@@ -9,28 +9,48 @@ var Montage = require("montage/core/core").Montage,
 exports.StyleElement = Montage.create(Component, {
     hasTemplate: {value: false},
 
+    _bold: {
+        value: false
+    },
     bold: {
         get: function() {
-            return this.element.style.fontWeight === "bold";
+            return this._bold;
         },
         set: function(val) {
-            this.element.style.fontWeight = (val) ? "bold" : "normal";
+            this._bold = !!val;
+            this.needsDraw = true;
         }
+    },
+    _underline: {
+        value: false
     },
     underline: {
         get: function() {
-            return this.element.style.textDecoration === "underline";
+            return this._underline;
         },
         set: function(val) {
-            this.element.style.textDecoration = (val) ? "underline" : "none";
+            this._underline = !!val;
+            this.needsDraw = true;
         }
+    },
+    _italic: {
+        value: false
     },
     italic: {
         get: function() {
-            return this.element.style.fontStyle === "italic";
+            return this._italic;
         },
         set: function(val) {
-            this.element.style.fontStyle = (val) ? "italic" : "normal";
+            this._italic = !!val;
+            this.needsDraw = true;
+        }
+    },
+
+    draw: {
+        value: function() {
+            this.element.style.fontWeight = (this._bold) ? "bold" : "normal";
+            this.element.style.textDecoration = (this._underline) ? "underline" : "none";
+            this.element.style.fontStyle = (this._italic) ? "italic" : "normal";
         }
     }
 });

@@ -28,8 +28,8 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     });
                 });
                 it("can be set", function() {
-                    test.translate_composer.translateX = 5;
-                    expect(test.x).toBe("5px");
+                    test.translate_composer.translateX = 25;
+                    expect(test.x).toBe("25px");
                 });
             });
             describe("translateY", function() {
@@ -44,7 +44,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                 });
             });
             describe("maxTranslateX", function() {
-                it ("limits translateX", function() {
+                it("limits translateX", function() {
                     testPage.dragElementOffsetTo(test.example.element, 500, 0, null, null, function() {
                         runs(function() {
                             expect(test.translate_composer.translateX).not.toBeGreaterThan(350);
@@ -62,6 +62,63 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                 });
             });
 
+            describe("minTranslateX", function() {
+                it ("limits translateX", function() {
+                    testPage.dragElementOffsetTo(test.example.element, -500, 0, null, null, function() {
+                        expect(test.translate_composer.translateX).not.toBeLessThan(20);
+                    });
+                });
+
+                it("can be set to null and translateX has no minimum", function() {
+                    var old = test.translate_composer.minTranslateX;
+                    test.translate_composer.minTranslateX = null;
+                    test.translate_composer.translateX = 0;
+                    testPage.dragElementOffsetTo(test.example.element, -500, 0, null, null, function() {
+                        expect(test.translate_composer.translateX).toBeLessThan(-400);
+                        test.translate_composer.minTranslateX = old;
+                    });
+                });
+            });
+
+            describe("minTranslateY", function() {
+                it("limits translateY", function() {
+                    testPage.dragElementOffsetTo(test.example.element, 0, -500, null, null, function() {
+                        expect(test.translate_composer.translateY).not.toBeLessThan(-40);
+                    });
+                });
+            });
+
+            describe("allowFloats", function() {
+                it('only allows translate{X|Y} to be ints when false', function() {
+                    test.translate_composer.translateX = 100.543;
+                    test.translate_composer.translateY = -20.4;
+                    expect(test.translate_composer.translateX).toBe(100);
+                    expect(test.translate_composer.translateY).toBe(-20);
+                });
+                it('allows translate{X|Y} to be floats when true', function() {
+                    test.translate_composer.allowFloats = true;
+                    test.translate_composer.translateX = 100.543;
+                    test.translate_composer.translateY = -20.4;
+                    expect(test.translate_composer.translateX).toBe(100.543);
+                    expect(test.translate_composer.translateY).toBe(-20.4);
+                    test.translate_composer.allowFloats = false;
+                });
+            });
+
+            describe("invertAxis", function() {
+                it("causes translation in the opposite direction to pointer movement when true", function() {
+                    test.translate_composer.translateX = 0;
+                    test.translate_composer.translateY = 0;
+                    test.translate_composer.invertAxis = true;
+
+                    testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
+                        expect(test.translate_composer.translateX).toBeGreaterThan(49);
+                        expect(test.translate_composer.translateY).toBeGreaterThan(49);
+                        test.translate_composer.invertAxis = false;
+                    });
+                });
+            });
+
             describe("axis", function() {
 
                 it("limits movement to horizonal when set to 'horizontal'", function() {
@@ -72,7 +129,7 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         runs(function() {
                             expect(test.translate_composer.translateX).toBeGreaterThan(49);
-                            expect(test.translate_composer.translateY).toBe(0);
+                            expect(test.translate_composer.translateY).toBe(-40);
                         });
                     });
                 });
@@ -83,8 +140,8 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
 
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         runs(function() {
-                            expect(test.translate_composer.translateX).toBe(0);
-                            expect(test.translate_composer.translateY).toBeGreaterThan(49);
+                            expect(test.translate_composer.translateX).toBe(20);
+                            expect(test.translate_composer.translateY).toBeGreaterThan(9);
                         });
                     });
                 });
@@ -100,16 +157,6 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                         });
                     });
                 });
-                it("returns negative translate values when invertAxis is false", function() {
-                    test.translate_composer.translateX = 0;
-                    test.translate_composer.translateY = 0;
-                    test.translate_composer.invertAxis = true;
-
-                    testPage.dragElementOffsetTo(test.example.element, -50, -50, null, null, function() {
-                            expect(test.translate_composer.translateX).toBeGreaterThan(49);
-                            expect(test.translate_composer.translateY).toBeGreaterThan(49);
-                    });
-                });
             });
             describe("pointerSpeedMultiplier", function() {
                 it ("multiplies the translation values by 3 when set to 3", function() {
@@ -121,6 +168,40 @@ var testPage = TestPageLoader.queueTest("translate-composer-test", function() {
                     testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
                         expect(test.translate_composer.translateX).toBeGreaterThan(149);
                         expect(test.translate_composer.translateY).toBeGreaterThan(149);
+                        test.translate_composer.pointerSpeedMultiplier = 1;
+
+                    });
+                });
+            });
+            describe("hasMomentum", function() {
+                it("keeps translating after mouse is released", function() {
+                    test.translate_composer.hasMomentum = true;
+                    test.translate_composer.translateX = 0;
+                    test.translate_composer.translateY = 0;
+
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                        waits(100);
+                        runs(function(){
+                            expect(test.translate_composer.translateX).toBeGreaterThan(55);
+                            expect(test.translate_composer.translateY).toBeGreaterThan(55);
+                            test.translate_composer.hasMomentum = false;
+                        });
+                    });
+                });
+                it("keeps translating after mouse is released when inverted", function() {
+                    test.translate_composer.hasMomentum = true;
+                    test.translate_composer.invertAxis = true;
+                    test.translate_composer.translateX = 0;
+                    test.translate_composer.translateY = 0;
+
+                    testPage.dragElementOffsetTo(test.example.element, 50, 50, null, null, function() {
+                        waits(100);
+                        runs(function(){
+                            expect(test.translate_composer.translateX).toBeLessThan(45);
+                            expect(test.translate_composer.translateY).toBeLessThan(45);
+                            test.translate_composer.hasMomentum = false;
+                            test.translate_composer.invertAxis = false;
+                        });
                     });
                 });
             });

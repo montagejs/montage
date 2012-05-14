@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>DynamicText Test</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "test": {
+                "object": "ui/dynamic-text-test/dynamic-text-test[theTest]",
+                "properties": {
+                    "dynamictext": {"@": "dynamictext"},
+                    "plainText": {"@": "plainText"},
+                    "htmlText": {"@": "htmlText"}
+                }
+            },
+
+            "dynamictext": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "dynamictext"}
+                }
+            },
+
+            "plainText": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "plainText"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <h1>DynamicText test</h1>
+
+    <div data-montage-id="dynamictext"><div id="bar"></div></div>
+    <div data-montage-id="plainText"></div></div>
+
+</body>
+</html>

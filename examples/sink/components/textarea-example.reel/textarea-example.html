@@ -70,14 +70,9 @@
                         "element": {"#": "echo"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "owner"},
-                            "boundObjectPropertyPath": "json",
-                            "oneway": "true"
-                        }
+                        "value": {"<-": "@owner.json"}
                     }
                 }
-
     }</script>
 
         <style>
@@ -110,12 +105,12 @@
 
                 <form class="form-stacked">
                      <label for="fname">First Name</label>
-                     <input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/>
+                     <input type="text" placeholder="Enter first name" data-montage-id="fname" id="fname" required  value="foo" maxlength="20"/>
                      <label for="lname">Last Name</label>
-                     <input type="text" placeholder="Enter last name" data-montage-id="lname" value="bar" maxlength="20"/>
+                     <input type="text" placeholder="Enter last name" data-montage-id="lname" id="lname" value="bar" maxlength="20"/>
 
                      <label for="info">Tell us a bit about yourself</label>
-                     <textarea required data-montage-id="info">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum. Vestibulum pretium, lectus nec venenatis volutpat, purus lectus ultrices risus, a condimentum risus mi et quam. Pellentesque auctor fringilla neque. Duis eu massa ut lorem iaculis vestibulum. Maecenas facilisis elit sed justo. Quisque volutpat malesuada velit.
+                     <textarea required data-montage-id="info" id="info">Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Nam nibh. Nunc varius facilisis eros. Sed erat. In in velit quis arcu ornare laoreet. Curabitur adipiscing luctus massa. Integer ut purus ac augue commodo commodo. Nunc nec mi eu justo tempor consectetuer. Etiam vitae nisl. In dignissim lacus ut ante. Cras elit lectus, bibendum a, adipiscing vitae, commodo et, dui. Ut tincidunt tortor. Donec nonummy, enim in lacinia pulvinar, velit tellus scelerisque augue, ac posuere libero urna eget neque. Cras ipsum. Vestibulum pretium, lectus nec venenatis volutpat, purus lectus ultrices risus, a condimentum risus mi et quam. Pellentesque auctor fringilla neque. Duis eu massa ut lorem iaculis vestibulum. Maecenas facilisis elit sed justo. Quisque volutpat malesuada velit.
                      </textarea>
 
                      <div style="margin-top: 10px;">
@@ -168,7 +163,6 @@
             "info": {"&lt;&lt;-&gt;": "@info.value"}
         }
     },
-
     "fname": {
         "prototype": "montage/ui/textfield.reel",
         "properties": {
@@ -179,7 +173,6 @@
             "title": {"&lt;&lt;-&gt;": "@owner.firstName"}
         }
     },
-
     "lname": {
         "prototype": "montage/ui/textfield.reel",
         "properties": {
@@ -214,11 +207,7 @@
             "element": {"#": "echo"}
         },
         "bindings": {
-            "value": {
-                "boundObject": {"@": "owner"},
-                "boundObjectPropertyPath": "json",
-                "oneway": "true"
-            }
+            "value": {"&lt;-": "@owner.json"}
         }
     }
 }
@@ -231,9 +220,9 @@
             </section>
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.8/examples/sink/components/textarea-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/textarea-example.reel" target="_blank">View source on GitHub</a>
             </section>
-
+    </div>
 <!--             <section>
                 <h4>Component Properties</h4>
                 <table>

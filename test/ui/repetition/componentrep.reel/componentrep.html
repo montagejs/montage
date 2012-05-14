@@ -14,7 +14,7 @@
                     "element": {"#": "textfield"}
                 },
                 "bindings": {
-                    "text": {"<<->": "@repetition1.objectAtCurrentIteration.text"}
+                    "text": {"<-": "@repetition1.objectAtCurrentIteration.text"}
                 }
             },
             "repetition1": {
@@ -23,7 +23,7 @@
                     "element": {"#": "list1"}
                 },
                 "bindings": {
-                    "objects": {"<<->": "@owner.listObjects"}
+                    "objects": {"<-": "@owner.listObjects"}
                 }
             },
             "owner": {
