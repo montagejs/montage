@@ -443,7 +443,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             fn.call(this);
 
             if (!this._valueSyncedWithInputField) {
-                this.value = this.tokens.join(this.separator);
+                this.value = this.tokens ? this.tokens.join(this.separator) : '';
                 if(this.value && this.value.charAt(this.value.length-1) != this.separator) {
                     this.value += this.separator;
                 }
