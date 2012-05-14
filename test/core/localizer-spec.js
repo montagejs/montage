@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-/*global require,exports,describe,it,expect,waitsFor,runs */
+/*global require,exports,describe,beforeEach,it,expect,waitsFor,runs */
 var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Deserializer = require("montage/core/deserializer").Deserializer;
@@ -25,6 +25,41 @@ describe("core/localizer-spec", function() {
             callback(objects);
         });
     }
+
+    describe("Localizer", function(){
+
+        describe("locale", function() {
+            it("can't be set to an invalid tag", function() {
+                var l = Localizer.Localizer.create().init("en");
+                var threw = false;
+                try {
+                    l.locale = "123-en-US";
+                } catch (e) {
+                    threw = true;
+                }
+                expect(l.locale).not.toBe("123-en-US");
+                expect(threw).toBe(true);
+            });
+        });
+
+        describe("defaultLocalizer", function() {
+            beforeEach(function() {
+                Localizer.defaultLocalizer.reset();
+            });
+
+            describe("locale", function() {
+                it("defaults to navigator.language", function() {
+                    expect(Localizer.defaultLocalizer.locale).toBe(window.navigator.language);
+                });
+                it("saves the value to local storage", function() {
+                    Localizer.defaultLocalizer.locale = "en-x-test";
+                    expect(Localizer.defaultLocalizer.locale).toBe("en-x-test");
+                    expect(window.localStorage.getItem("montage_locale")).toBe("en-x-test");
+                });
+            });
+        });
+
+    });
 
     describe("serialization", function() {
         describe("localization unit", function() {
@@ -121,7 +156,7 @@ describe("core/localizer-spec", function() {
                 });
             });
 
-            it("can set properties on DOM elements", function() {
+            it("can set properties on any object", function() {
                 testDeserializer({
                     other: {
                         value: {x: "fail"}
@@ -141,9 +176,26 @@ describe("core/localizer-spec", function() {
                     expect(objects.other.x).toBe("pass");
                 });
             });
+            it("uses the existing property value as a key", function() {
+                testDeserializer({
+                    other: {
+                        value: {x: "pass"}
+                    },
+                    localizer: {
+                        object: "montage/core/localizer",
+                        localizeObjects: [
+                            {
+                                object: {"@": "other"},
+                                "properties": {
+                                    x: true
+                                }
+                            }
+                        ]
+                    }
+                }, function(objects) {
+                    expect(objects.other.x).toBe("pass");
+                });
+            });
         });
-    });
-
-    describe("Localizer", function(){
     });
 });
