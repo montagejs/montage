@@ -232,7 +232,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _contentController: {
-        enumerable: false,
         value: null
     },
 /**
@@ -241,7 +240,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         @default null
     */
     contentController: {
-        enumerable: false,
         get: function() {
             return this._contentController;
         },
@@ -306,7 +304,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             //TODO otherwise if no contentController should we disable selections?
 
-        }
+        },
+        serializable: true
     },
 /**
   Description TODO

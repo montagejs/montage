@@ -121,7 +121,8 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                     return function() {
                         return this[attrName];
                     };
-                }(name, _name))
+                }(name, _name)),
+                serializable: true
             };
 
             // Define _ property
