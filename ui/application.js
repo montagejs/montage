@@ -171,13 +171,16 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                     self._createState();
                 }
 
-                window.onhashchange = function(event) {
-                    event.preventDefault();
-                    self._updateStateFromUrl();
-                };
+                if(self.stateDelegate) {
+                    window.onhashchange = function(event) {
+                        event.preventDefault();
+                        self._updateStateFromUrl();
+                    };
 
-                // initial state from URL
-                self._updateStateFromUrl();
+                    // initial state from URL
+                    self._updateStateFromUrl();
+                }
+
 
                 if (callback) {
                     callback(self);
