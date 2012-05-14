@@ -151,7 +151,7 @@
             "content": {
                 "prototype": "montage/ui/substitution.reel",
                 "properties": {
-                    "element": {"#": "content"},
+                    "element": {"#": "content-deck"},
                     "switchComponents": {
                         "toggleButton": {"@": "toggleButton"},
                         "button": {"@": "button"},
@@ -201,8 +201,10 @@
 </head>
 <body>
 
-    <div data-montage-id="content" class="content">
-        <h5>Please select a Component to view</h5>
+    <div data-montage-id="content">
+        <div data-montage-id="content-deck" class="content">
+            <h5>Please select a Component to view</h5>
+        </div>
     </div>
 
 </body>
