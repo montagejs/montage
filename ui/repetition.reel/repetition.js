@@ -313,13 +313,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 */
     _objects: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
     _mappedObjects: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -358,7 +356,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             //if (this._isComponentExpanded) {
             //    this._refreshItems();
             //}
-        }
+        },
+        serializable: true
     },
 /**
   Description TODO
@@ -387,7 +386,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this._refreshSelectionTracking();
             }
-        }
+        },
+        serializable: true
     },
 /**
   Description TODO
@@ -448,7 +448,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             this._indexMapEnabled = value;
 
             this.refreshIndexMap();
-        }
+        },
+        serializable: true
     },
 
     _drawnIndexMap: {
@@ -919,7 +920,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _selectedIndexesToDeselectOnDraw: {
-        enumerable: false,
         value: null
     },
 /**
@@ -927,7 +927,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _selectedIndexes: {
-        enumerable: false,
         value: null
     },
 /**
@@ -936,7 +935,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         @default null
     */
     selectedIndexes: {
-        enumerable: false,
         get: function() {
             return this._selectedIndexes;
         },
@@ -948,7 +946,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 
 
@@ -978,7 +977,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _activeIndexes: {
-        enumerable: false,
         value: null
     },
 /**
@@ -987,7 +985,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         @default null
     */
     activeIndexes: {
-        enumerable: false,
         get: function() {
             return this._activeIndexes;
         },
@@ -1000,7 +997,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 
     _markIndexesDirty: {
@@ -1197,7 +1195,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _selectionPointer: {
-        enumerable: false,
         value: null
     },
 /**
@@ -1242,7 +1239,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _iterationChildCount: {
-        enumerable: false,
         value: null
     },
 /**
@@ -1250,7 +1246,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _iterationChildElementCount: {
-        enumerable: false,
         value: null
     },
 /**

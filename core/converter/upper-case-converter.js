@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-	@module montage/core/converter/upper-case-converter
+    @module montage/core/converter/upper-case-converter
     @requires montage/core/core
     @requires montage/core/converter/converter
 */

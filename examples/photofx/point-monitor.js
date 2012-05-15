@@ -8,7 +8,8 @@ var Montage = require("montage").Montage;
 exports.PointMonitor = Montage.create(Montage, {
 
     color: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     x: {

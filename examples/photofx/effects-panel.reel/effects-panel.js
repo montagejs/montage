@@ -10,7 +10,7 @@ var Component = require("montage/ui/component").Component;
 exports.EffectsPanel = Montage.create(Component, {
 
     editor: {
-        enumerable: false,
+        serializable: true,
         value: null
     }
 

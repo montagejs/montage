@@ -587,6 +587,11 @@ Object.defineProperty(Object.prototype, "uuid", {
     }
 });
 
+Montage.defineProperty(Montage, "identifier", {
+    value: null,
+    serializable: true
+});
+
 /**
      Returns true if two objects are equal, otherwise returns false.
      @function module:montage/core/core.Montage#equals
@@ -598,6 +603,8 @@ Object.defineProperty(Montage, "equals", {
         return this === anObject || this.uuid === anObject.uuid;
     }
 });
+
+
 
 /*
  * If it exists this method calls the method named with the identifier prefix.

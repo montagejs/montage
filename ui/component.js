@@ -30,7 +30,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     delegate: {
-        enumerable: false,
+        serializable: true,
         value: null
     },
 
@@ -1772,7 +1772,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         enumerable: false,
         value: 0
     },
-    
+
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -1826,7 +1826,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
                     var currentDate = Date.now(),
                         miliseconds = 17 - currentDate + this._previousDrawDate;
-                    
+
                     if (miliseconds < 0) {
                         miliseconds = 0;
                     }
