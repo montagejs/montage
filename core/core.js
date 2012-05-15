@@ -456,7 +456,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
         var metadata;
         var instanceMetadataDescriptor;
 
-        if (object.hasOwnProperty("_montage_metadata")) {
+        if (hasOwnProperty.call(object, "_montage_metadata")) {
             return object._montage_metadata;
         } else {
             metadata = object._montage_metadata || (object.constructor && object.constructor._montage_metadata) || null;
@@ -516,6 +516,8 @@ Object.defineProperty(Montage, "__OBJECT_COUNT", {
 
 var UUID = require("core/uuid");
 
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
 var uuidGetGenerator = function() {
 
     var uuid = UUID.generate(),
@@ -561,7 +563,7 @@ var uuidGetGenerator = function() {
 };
 
 var defaultUuidGet = function defaultUuidGet() {
-    return (this.hasOwnProperty("_uuid") ? this._uuid : uuidGetGenerator.call(this));
+    return (hasOwnProperty.call(this, "_uuid") ? this._uuid : uuidGetGenerator.call(this));
 };
 
 /**
