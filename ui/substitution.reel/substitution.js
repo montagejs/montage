@@ -73,19 +73,5 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
     transition: {
         enumerable: false,
         value: null
-    },
-/**
-    Description TODO
-    @function
-    */
-    prepareForDraw: {
-        enumerable: false,
-        value: function() {
-
-            if (this.switchComponents) {
-                this.content = this.switchComponents[this.switchValue];
-            }
-        }
     }
-
 });
