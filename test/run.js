@@ -43,6 +43,7 @@ if (spec) {
         "core/promise-queue-spec",
         "core/promise-connection-spec",
         "core/next-tick-spec",
+        "core/selector-spec",
 
         "data/blueprint-spec",
         "data/context-spec",
@@ -55,6 +56,7 @@ if (spec) {
 
         "events/eventmanager-spec",
         "events/object-hierarchy-spec",
+        "events/change-notification-spec",
 
         "geometry/cubicbezier-spec",
         "geometry/point-spec",
@@ -68,6 +70,7 @@ if (spec) {
 
         "ui/application-spec",
         "ui/anchor-spec",
+        "ui/autocomplete-spec",
         "ui/button-spec",
         "ui/check-spec",
         "ui/condition-spec",
@@ -87,9 +90,11 @@ if (spec) {
         "ui/repetition-spec",
         "ui/rich-text-editor-spec",
         "ui/select-input-spec",
+        "ui/skeleton-range-input-spec",
         "ui/slider-spec",
         "ui/slot-spec",
         "ui/textfield-spec",
+        "ui/token-field-spec",
 
         "ui/example-components-spec"
     ];

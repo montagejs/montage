@@ -12,7 +12,18 @@ var args = process.argv.slice(3);
 var options = {};
 options.templateName = process.argv[2];
 
-options.minitHome = process.argv[1].split("/").slice(0, -1).join("/") + "/";
+options.minitHome = __dirname + "/";
+options.packageHome = ".";
+while (true) {
+    if (path.existsSync(path.join(options.packageHome, "package.json"))) {
+        break;
+    }
+    options.packageHome = path.resolve(path.join(options.packageHome, ".."));
+    if (options.packageHome === "/") {
+        options.packageHome = __dirname;
+        break;
+    }
+}
 
 if (args.length === 0) {
     usage();
@@ -36,7 +47,7 @@ function usage() {
     fileNames.forEach(function(filename) {
         var stats = fs.statSync(path.join(options.minitHome,"templates",filename));
         if (stats.isDirectory()) {
-            console.log("Usage: ./minit.js " + filename + " " + require("./templates/" + filename).Template.usage());
+            console.log("Usage: minit " + filename + " " + require("./templates/" + filename).Template.usage());
         }
     });
 }

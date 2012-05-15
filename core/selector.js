@@ -3,10 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- /**
-	@module montage/core/shim
-    @requires montage/core/shim/string
-    @requires montage/core/shim/array
-*/
-require("./shim/string");
-require("./shim/array");
+
+var Language = require("./selector/language").Language;
+exports.Selector = Language.Selector
+

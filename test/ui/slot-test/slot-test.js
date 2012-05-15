@@ -56,6 +56,8 @@ var SlotTest = exports.SlotTest = Montage.create(Component, {
 
             this.currentMedia = this.photo;
 
+            this.showContent(null);
+
             return this;
         }
     },

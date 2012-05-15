@@ -20,11 +20,7 @@
                     "parametersEditor": {"#": "parameters-editor"}
                 },
                 "bindings": {
-                    "selectedTool": {
-                        "boundObject": {"@": "toolbar"},
-                        "boundObjectPropertyPath": "selectedTool",
-                        "oneway": true
-                    }
+                    "selectedTool": {"<-": "@toolbar.selectedTool"}
                 }
             },
             "topView": {
@@ -39,42 +35,16 @@
                     ]
                 },
                 "bindings": {
-                    "centralX": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "centralX"
-                    },
-                    "centralY": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "centralZ"
-                    },
-                    "scale": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "scale"
-                    },
-                    "spline": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "spline"
-                    },
-                    "cameraPosition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "cameraPosition"
-                    },
-                    "cameraTargetPoint": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "cameraTargetPoint"
-                    },
-                    "cameraFov": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "cameraFov"
-                    },
-                    "closerKnot": {
-                        "boundObject": {"@": "frontView"},
-                        "boundObjectPropertyPath": "closerKnot"
-                    },
-                    "closerHandler": {
-                        "boundObject": {"@": "frontView"},
-                        "boundObjectPropertyPath": "closerHandler"
-                    }
+                    "centralX": {"<<->": "@owner.centralX"},
+                    "centralY": {"<<->": "@owner.centralZ"},
+                    "scale": {"<<->": "@owner.scale"},
+                    "spline": {"<<->": "@owner.spline"},
+                    "cameraPosition": {"<<->": "@owner.cameraPosition"},
+                    "cameraTargetPoint": {"<<->": "@owner.cameraTargetPoint"},
+                    "cameraFov": {"<<->": "@owner.cameraFov"},
+                    "cameraRoll": {"<<->": "@flow.cameraRoll"},
+                    "closerKnot": {"<<->": "@frontView.closerKnot"},
+                    "closerHandler": {"<<->": "@frontView.closerHandler"}
                 }
             },
             "frontView": {
@@ -83,34 +53,13 @@
                     "element": {"#": "front-view"}
                 },
                 "bindings": {
-                    "centralX": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "centralX"
-                    },
-                    "centralY": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "centralY"
-                    },
-                    "scale": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "scale"
-                    },
-                    "spline": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "spline"
-                    },
-                    "cameraPosition": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "cameraPosition"
-                    },
-                    "cameraTargetPoint": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "cameraTargetPoint"
-                    },
-                    "cameraFov": {
-                        "boundObject": {"@": "owner"},
-                        "boundObjectPropertyPath": "cameraFov"
-                    }
+                    "centralX": {"<<->": "@owner.centralX"},
+                    "centralY": {"<<->": "@owner.centralY"},
+                    "scale": {"<<->": "@owner.scale"},
+                    "spline": {"<<->": "@owner.spline"},
+                    "cameraPosition": {"<<->": "@owner.cameraPosition"},
+                    "cameraTargetPoint": {"<<->": "@owner.cameraTargetPoint"},
+                    "cameraFov": {"<<->": "@owner.cameraFov"}
                 }
             },
             "toolbar": {

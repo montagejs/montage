@@ -32,7 +32,7 @@ var testPage = TestPageLoader.queueTest("template", function() {
             it("should draw all components", function() {
                 expect(querySelectorAll("input.textfield0").length).toBe(1);
                 expect(querySelectorAll(".content1 > input.textfield").length).toBe(1);
-                expect(querySelectorAll(".content2 > input.textfield").length).toBe(1);
+                expect(querySelectorAll(".content2 > div input.textfield").length).toBe(1);
             });
         });
 

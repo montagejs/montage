@@ -18,6 +18,7 @@
  */
 
 var Montage = require("montage").Montage,
+    UUID = require("core/uuid"),
     MutableEvent = require("core/event/mutable-event").MutableEvent,
     Serializer = require("core/serializer").Serializer,
     Deserializer = require("core/deserializer").Deserializer,
@@ -73,6 +74,37 @@ Montage.defineProperty(Element.prototype, "controller", {
     enumerable: false
 });
 
+/**
+    Adds an event listener to the object.
+    @function external:Object#addEventListener
+    @param {string} type The event type to listen for.
+    @param {object | function} listener The listener object or function.
+    @param {boolean} useCapture Specifies whether to listen for the event during the bubble or capture phases.
+*/
+Montage.defineProperty(Object.prototype, "addEventListener", {
+    value: function addEventListener(type, listener, useCapture) {
+        if (listener) {
+            this.dispatchChangeEvent = true;
+            defaultEventManager.registerEventListener(this, type, listener, useCapture);
+        }
+    }
+});
+
+/**
+    Removes an event listener from the object.
+    @function external:Object#removeEventListener
+    @param {string} type The event type.
+    @param {object | function} listener The listener object or function.
+    @param {boolean} useCapture The phase of the event listener.
+*/
+Montage.defineProperty(Object.prototype, "removeEventListener", {
+    value: function removeEventListener(type, listener, useCapture) {
+        if (listener) {
+            this.dispatchChangeEvent = true;
+            defaultEventManager.unregisterEventListener(this, type, listener, useCapture);
+        }
+    }
+});
 
 /**
  @function external:Object#dispatchEvent
@@ -393,7 +425,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             }
 
             if (!aWindow.uuid || aWindow.uuid.length === 0) {
-                aWindow.uuid = Montage.generateUID();
+                aWindow.uuid = UUID.generate();
             }
 
             if (this._windowsAwaitingFinalRegistration[aWindow.uuid] === aWindow) {

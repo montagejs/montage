@@ -82,7 +82,7 @@ if (global.navigator && global.navigator.userAgent.indexOf("Firefox") >= 0) {
 }
 
 var __FILE__String = "__FILE__",
-    DoubleUnderscoreString = "__"
+    DoubleUnderscoreString = "__",
     globalEvalConstantA = "(function ",
     globalEvalConstantB = "(require, exports, module) {",
     globalEvalConstantC = "//*/\n})\n//@ sourceURL=";

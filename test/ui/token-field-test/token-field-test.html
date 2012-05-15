@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>TokenField Test</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">
+        {
+            "test": {
+                "object": "ui/token-field-test/token-field-test[theTest]",
+                "properties": {
+                    "tokenField1": {"@": "tokenField1"},
+                    "tokenField2": {"@": "tokenField2"}
+                }
+            },
+            "tokenField1": {
+                "prototype": "montage/ui/token-field/token-field.reel",
+                "properties": {
+                    "element": {"#": "token-field1"},
+                    "identifier": "state",
+                    "textPropertyPath": "name",
+                    "delegate": {"@": "test"}
+                },
+                "bindings": {
+                    "values": {"<<->": "@test.states"}
+                }
+            },
+
+            "tokenField2": {
+                "prototype": "montage/ui/token-field/token-field.reel",
+                "properties": {
+                    "element": {"#": "token-field2"},
+                    "identifier": "tags",
+                    "allowAdHocValues": true,
+                    "placeholder": "Add more tags",
+                    "delegate": {"@": "test"}
+                },
+                "bindings": {
+                    "values": {"<<->": "@test.tags"}
+                }
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <h1>TokenField test</h1>
+
+    <form>
+
+         <label for="state">State: Suggestions from in-memory data. Does not allow ad-hoc values</label>
+         <div data-montage-id="token-field1" style="width: 400px;"></div>
+
+         <label for="tags">Tags: Suggests existing tags. Ad-hoc values are allowed</label>
+         <div data-montage-id="token-field2" style="width: 400px;"></div>
+
+    </form>
+
+</body>
+</html>

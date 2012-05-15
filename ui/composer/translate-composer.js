@@ -34,6 +34,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         ]
     },
 
+    _WHEEL_POINTER: {
+        value: "wheel",
+        writable: false
+    },
+
     _externalUpdate: {
         enumerable: false,
         value: true
@@ -517,7 +522,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     handleMousedown: {
         enumerable: false,
         value: function(event) {
-            if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
+            if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer)) {
                 this.eventManager.claimPointer(this._observedPointer, this);
                 this._start(event.clientX, event.clientY, event.target);
             }
@@ -708,25 +713,37 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: null
     },
 
+    captureMousewheel: {
+        value: function(event) {
+            if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
+                this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
+            }
+        }
+    },
+
     handleMousewheel: {
         enumerable: false,
         value: function(event) {
             var self = this;
 
-            var oldTranslateY = this._translateY;
-            this._dispatchTranslateStart();
-            this.translateY = this._translateY - ((event.wheelDeltaY * 20) / 120);
-            this._dispatchTranslate();
-            window.clearTimeout(this._translateEndTimeout);
-            this._translateEndTimeout = window.setTimeout(function() {
-                self._dispatchTranslateEnd();
-            }, 400);
+            // If this composers' component is claiming the "wheel" pointer then handle the event
+            if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
+                var oldTranslateY = this._translateY;
+                this._dispatchTranslateStart();
+                this.translateY = this._translateY - ((event.wheelDeltaY * 20) / 120);
+                this._dispatchTranslate();
+                window.clearTimeout(this._translateEndTimeout);
+                this._translateEndTimeout = window.setTimeout(function() {
+                    self._dispatchTranslateEnd();
+                }, 400);
 
-            // If we're not at one of the extremes (i.e. the scroll actully
-            // changed the translate) then we want to preventDefault to stop
-            // the page scrolling.
-            if (oldTranslateY !== this._translateY) {
-                event.preventDefault();
+                // If we're not at one of the extremes (i.e. the scroll actually
+                // changed the translate) then we want to preventDefault to stop
+                // the page scrolling.
+                if (oldTranslateY !== this._translateY && this._shouldPreventDefault(event)) {
+                    event.preventDefault();
+                }
+                this.eventManager.forfeitPointer(this._WHEEL_POINTER, this.component);
             }
         }
     },
@@ -958,6 +975,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this._element.addEventListener("mousedown", this, true);
                 this._element.addEventListener("mousedown", this, false);
                 this._element.addEventListener("mousewheel", this, false);
+                this._element.addEventListener("mousewheel", this, true);
             }
 
             this.eventManager.isStoringPointerEvents = true;

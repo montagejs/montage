@@ -167,7 +167,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         this.createHtmlDocumentFromModuleId(requireFunction, moduleId, function(doc) {
             if (!doc) {
-                throw "Template '" + url + "' not found.";
+                throw "Template '" + moduleId + "' not found.";
             }
             self._isLoaded = true;
             self.initWithDocument(doc);

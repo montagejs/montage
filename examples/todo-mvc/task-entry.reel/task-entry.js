@@ -25,14 +25,14 @@ exports.TaskEntry = Montage.create(Component, {
             }
 
             if (this._task) {
-                this._task.removeEventListener("change@completed", this, false);
+                this._task.removePropertyChangeListener("completed", this, false);
             }
 
             this._task = value;
             this.needsDraw = true;
 
             if (this.task) {
-                this._task.addEventListener("change@completed", this, false);
+                this._task.addPropertyChangeListener("completed", this, false);
             }
         }
     },
@@ -55,9 +55,9 @@ exports.TaskEntry = Montage.create(Component, {
         }
     },
 
-    handleEvent: {
+    handleChange: {
         value: function() {
-            this.needsDraw = true;
+             this.needsDraw = true;
         }
     },
 

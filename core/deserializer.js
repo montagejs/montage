@@ -142,7 +142,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         return this;
     }},
 
-    initWithObjectAndRequire: {value: function(string, require, origin) {
+    initWithObjectAndRequire: {value: function(object, require, origin) {
         this._reset();
         this._serializationString = JSON.stringify(object);
         this._require = require;

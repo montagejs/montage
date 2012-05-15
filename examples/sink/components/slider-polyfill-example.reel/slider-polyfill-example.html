@@ -26,7 +26,8 @@
                 "red": {
                     "prototype": "montage/ui/skeleton/range-input.reel",
                     "properties": {
-                        "element": {"#": "color-red"}
+                        "element": {"#": "color-red"},
+                        "width": 280
                     },
                     "bindings": {
                         "value": {"<<->": "@owner.red"}
@@ -45,56 +46,57 @@
                 "green": {
                         "prototype": "montage/ui/skeleton/range-input.reel",
                         "properties": {
-                            "element": {"#": "color-green"}
+                            "element": {"#": "color-green"},
+                            "width": 280
                         },
                         "bindings": {
                             "value": {"<<->": "@owner.green"}
                         }
                     },
-                    "greenValue": {
-                        "prototype": "montage/ui/dynamic-text.reel",
-                        "properties": {
-                            "element": {"#": "greenValue"}
-                        },
-                        "bindings": {
-                            "value": {"<-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
-                        }
+                "greenValue": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "greenValue"}
                     },
-                    "blue": {
-                        "prototype": "montage/ui/skeleton/range-input.reel",
-                        "properties": {
-                            "element": {"#": "color-blue"}
-                        },
-                        "bindings": {
-                            "value": {"<<->": "@owner.blue"}
-                        }
+                    "bindings": {
+                        "value": {"<-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
+                    }
+                },
+                "blue": {
+                    "prototype": "montage/ui/skeleton/range-input.reel",
+                    "properties": {
+                        "element": {"#": "color-blue"},
+                        "width": 280
                     },
-                    "blueValue": {
-                        "prototype": "montage/ui/dynamic-text.reel",
-                        "properties": {
-                            "element": {"#": "blueValue"}
-                        },
-                        "bindings": {
-                            "value": {"<-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
-                        }
+                    "bindings": {
+                        "value": {"<<->": "@owner.blue"}
+                    }
+                },
+                "blueValue": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "blueValue"}
                     },
-                    "resultHexValue": {
-                        "prototype": "montage/ui/dynamic-text.reel",
-                        "properties": {
-                            "element": {"#": "result-hex"}
-                        },
-                        "bindings": {
-                            "value": {"<-": "@owner.resultHex"}
-                        }
+                    "bindings": {
+                        "value": {"<-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
+                    }
+                },
+                "resultHexValue": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "result-hex"}
                     },
+                    "bindings": {
+                        "value": {"<-": "@owner.resultHex"}
+                    }
+                },
 
-                    "accordion1": {
-                        "prototype": "accordion.reel",
-                        "properties": {
-                            "element": {"#": "slider-polyfill-accordion1"}
-                        }
-                    },
-
+                "accordion1": {
+                    "prototype": "accordion.reel",
+                    "properties": {
+                        "element": {"#": "slider-polyfill-accordion1"}
+                    }
+                },
 
                 "reset": {
                     "prototype": "montage/ui/button.reel",
@@ -197,35 +199,30 @@
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
-&lt;div class="span8"&gt;<br>
-&lt;h5&gt;Make your own color&lt;/h5&gt;<br>
-<br>
-&lt;div data-montage-id="result" style="height: 100px;"&gt;&lt;/div&gt;<br>
-&lt;h1 class="result-hex" data-montage-id="result-hex"&gt;&lt;/h1&gt;<br>
-&lt;/div&gt;<br>
-&lt;div class="span8"&gt;<br>
-<br>
-&lt;section class="control"&gt;<br>
-&lt;section&gt;<br>
-Red:<br>
-&lt;input data-montage-id="color-red" type="range" min="0" max="15" value="0"/&gt;<br>
-&lt;span data-montage-id="redValue" class="range-value"&gt;&lt;/span&gt;<br>
-&lt;/section&gt;<br>
-&lt;section&gt;<br>
-Green:<br>
-&lt;input data-montage-id="color-green" type="range" min="0" max="15" value="0" /&gt;<br>
-&lt;span data-montage-id="greenValue" class="range-value"/&gt;<br>
-&lt;/section&gt;<br>
-&lt;section&gt;<br>
-Blue:<br>
-&lt;input data-montage-id="color-blue" type="range" min="0" max="15" value="0" /&gt;<br>
-&lt;span data-montage-id="blueValue" class="range-value" /&gt;<br>
-&lt;/section&gt;<br>
-<br>
-&lt;/section&gt;<br>
-<br>
-&lt;button data-montage-id="reset" class="btn cancel small"&gt;Reset&lt;/button&gt;<br>
-<br>
+&lt;div class="span8"&gt;
+    &lt;h5&gt;Make your own color&lt;/h5&gt;
+    &lt;div data-montage-id="result" style="height: 100px;"&gt;&lt;/div&gt;
+    &lt;h1 class="result-hex" data-montage-id="result-hex"&gt;&lt;/h1&gt;
+&lt;/div&gt;
+&lt;div class="span8"&gt;
+    &lt;section class="control"&gt;
+        &lt;section&gt;
+            Red:
+            &lt;input data-montage-id="color-red" type="range" min="0" max="15" value="0"/&gt;
+            &lt;span data-montage-id="redValue" class="range-value"&gt;&lt;/span&gt;
+        &lt;/section&gt;
+        &lt;section&gt;
+            Green:
+            &lt;input data-montage-id="color-green" type="range" min="0" max="15" value="0" /&gt;
+            &lt;span data-montage-id="greenValue" class="range-value"/&gt;
+        &lt;/section&gt;
+        &lt;section&gt;
+            Blue:
+            &lt;input data-montage-id="color-blue" type="range" min="0" max="15" value="0" /&gt;
+            &lt;span data-montage-id="blueValue" class="range-value" /&gt;
+        &lt;/section&gt;
+    &lt;/section&gt;
+    &lt;button data-montage-id="reset" class="btn cancel small"&gt;Reset&lt;/button&gt;
 &lt;/div&gt;
                             </pre>
                        </div>
@@ -269,50 +266,50 @@ Blue:<br>
         }
     },
     "green": {
-            "prototype": "montage/ui/skeleton/range-input.reel",
-            "properties": {
-                "element": {"#": "color-green"}
-            },
-            "bindings": {
-                "value": {"&lt;&lt;-&gt;": "@owner.green"}
-            }
+        "prototype": "montage/ui/skeleton/range-input.reel",
+        "properties": {
+            "element": {"#": "color-green"}
         },
-        "greenValue": {
-            "prototype": "montage/ui/dynamic-text.reel",
-            "properties": {
-                "element": {"#": "greenValue"}
-            },
-            "bindings": {
-                "value": {"&lt;-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
-            }
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.green"}
+        }
+    },
+    "greenValue": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "greenValue"}
         },
-        "blue": {
-            "prototype": "montage/ui/skeleton/range-input.reel",
-            "properties": {
-                "element": {"#": "color-blue"}
-            },
-            "bindings": {
-                "value": {"&lt;&lt;-&gt;": "@owner.blue"}
-            }
+        "bindings": {
+            "value": {"&lt;-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
+        }
+    },
+    "blue": {
+        "prototype": "montage/ui/skeleton/range-input.reel",
+        "properties": {
+            "element": {"#": "color-blue"}
         },
-        "blueValue": {
-            "prototype": "montage/ui/dynamic-text.reel",
-            "properties": {
-                "element": {"#": "blueValue"}
-            },
-            "bindings": {
-                "value": {"&lt;-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
-            }
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.blue"}
+        }
+    },
+    "blueValue": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "blueValue"}
         },
-        "resultHexValue": {
-            "prototype": "montage/ui/dynamic-text.reel",
-            "properties": {
-                "element": {"#": "result-hex"}
-            },
-            "bindings": {
-                "value": {"&lt;-": "@owner.resultHex"}
-            }
+        "bindings": {
+            "value": {"&lt;-": "@owner.blue", "converter": {"@": "roundTo2Decimals"}}
+        }
+    },
+    "resultHexValue": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "result-hex"}
         },
+        "bindings": {
+            "value": {"&lt;-": "@owner.resultHex"}
+        }
+    },
 
     "reset": {
         "prototype": "montage/ui/button.reel",

@@ -102,8 +102,8 @@ exports.Main = Montage.create(Component, {
                     self.save();
                 };
 
-            this.addEventListener("change@tasks.completedDate", saveCallback, false);
-            this.addEventListener("change@tasks.note", saveCallback, false);
+            this.addPropertyChangeListener("tasks.completedDate", saveCallback, false);
+            this.addPropertyChangeListener("tasks.note", saveCallback, false);
         }
     },
 

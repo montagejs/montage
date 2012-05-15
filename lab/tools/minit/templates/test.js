@@ -28,7 +28,7 @@ exports.Template = Object.create(TemplateBase, {
     },
 
     destination: {
-        value: "../../../test/ui/"
+        value: "test/ui/"
     },
 
     finish: {
