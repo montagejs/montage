@@ -35,6 +35,8 @@ exports.BinderHelper = Montage.create(Montage, {
 
             personBlueprint.addToManyAssociationNamed("projects", projectBlueprint.addToManyAssociationNamed("contributors"));
 
+            BlueprintBinder.manager.addBlueprintBinder(companyBinder);
+
             return companyBinder;
         }
     }

@@ -13,17 +13,14 @@ var Montage = require("montage").Montage;
 var Uuid = require("core/uuid").Uuid;
 var logger = require("core/logger").logger("transactionid");
 /**
- Description TODO
  @private
  */
 var _lastTimestamp = Date.now();
 /**
- Description TODO
  @private
  */
 var _lastNanos = 1;
 /**
- Description TODO
  @private
  */
 var _transactionManagerInstance = null;
@@ -32,42 +29,60 @@ var _transactionManagerInstance = null;
  @extends module:montage/core/core.Montage
  */
 var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends module:montage/data/transactionid.TransactionId# */ {
+
+    _mappingFolderName:{
+        serializable:true,
+        enumerable:false,
+        value:""
+    },
+
+    mappingFolderName:{
+        get:function () {
+            return this._mappingFolderName;
+        }
+    },
+
     /**
      This is used to guarantee unicity.
      @private
      */
-    _uuid: {
-        serializable: true,
-        enumerable: false,
-        value: null
+    _uuid:{
+        serializable:true,
+        enumerable:false,
+        value:null
     },
+
     /**
      This is used to order transactions.
      @private
      */
-    _timestamp: {
-        serializable: true,
-        enumerable: false,
-        value: null
+    _timestamp:{
+        serializable:true,
+        enumerable:false,
+        value:null
     },
+
     /**
      This is used to order transactions.
      @private
      */
-    _nanos: {
-        serializable: true,
-        enumerable: false,
-        value: null
+    _nanos:{
+        serializable:true,
+        enumerable:false,
+        value:null
     },
+
     /**
      Description TODO
+     @param {name} Mapping folder name used for this transaction
      @function
      @returns itself
      */
-    init: {
-        serializable: false,
-        enumerable: false,
-        value: function() {
+    initWithMappingFolderName:{
+        serializable:false,
+        enumerable:false,
+        value:function (name) {
+            this._mappingFolderName = name;
             this._uuid = Uuid.generate();
             var timestamp = Date.now();
             if (_lastTimestamp === timestamp) {
@@ -92,8 +107,8 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
      @function
      @returns TransactionId.create().init() A newly initialized transaction ID.
      */
-    factory: {
-        value: function() {
+    factory:{
+        value:function () {
             if (this.factory.delegate && typeof this.factory.delegate.createTransactionId === "function") {
                 return this.factory.delegate.createTransactionId();
             } else {
@@ -107,8 +122,8 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
      @param {Property} transactionId For comparison purposes.
      @returns {Boolean} true If transactionId is after the target transaction ID.
      */
-    before: {
-        value: function(transactionId) {
+    before:{
+        value:function (transactionId) {
             if (this._timestamp === transactionId._timestamp) {
                 return this._nanos < transactionId._nanos;
             }
@@ -122,8 +137,8 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
      @param {Property} transactionId For comparison purposes.
      @returns {Boolean} true If transactionId is before the target transaction ID.
      */
-    after: {
-        value: function(transactionId) {
+    after:{
+        value:function (transactionId) {
             if (this._timestamp === transactionId._timestamp) {
                 return this._nanos > transactionId._nanos;
             }
@@ -136,10 +151,10 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
      @function
      @returns transaction manager
      */
-    manager: {
-        get: function() {
+    manager:{
+        get:function () {
             if (_transactionManagerInstance === null) {
-                _transactionManagerInstance = Object.freeze(TransactionManager.create().init());
+                _transactionManagerInstance = TransactionManager.create().init();
             }
             return _transactionManagerInstance;
         }
@@ -152,16 +167,25 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
  */
 var TransactionManager = exports.TransactionManager = Montage.create(Montage, /** @lends module:montage/data/transactionid.TransactionManager# */ {
 
+    /*
+     * @private
+     */
+    _currentTransaction:{
+        serializable:false,
+        enumerable:false,
+        value:null
+    },
+
     /**
      Enables the trace of creation starts.<br>
      When enabled, the transaction ID will memorize the state of the thread stack when created.
      @type {Property} Function
      @default {Boolean} false
      */
-    traceTransactionStart: {
-        serializable: false,
-        enumerable: false,
-        value: false
+    traceTransactionStart:{
+        serializable:false,
+        enumerable:false,
+        value:false
     },
 
     /**
@@ -169,10 +193,10 @@ var TransactionManager = exports.TransactionManager = Montage.create(Montage, /*
      @function
      @returns itself
      */
-    init: {
-        serializable: false,
-        enumerable: false,
-        value: function() {
+    init:{
+        serializable:false,
+        enumerable:false,
+        value:function () {
             return this;
         }
     },
@@ -180,11 +204,16 @@ var TransactionManager = exports.TransactionManager = Montage.create(Montage, /*
     /**
      Opens a new transaction ID for this thread.
      @function
+     @param {name} Mapping folder name used for this transaction
      @returns null or new transaction ID
      @throws IllegalStateException if a transaction is already open for this thread.
      */
-    startTransaction: { value: function() {
-        return null;
+    startTransaction:{ value:function (name) {
+        if (this._currentTransaction) {
+            throw new Error("Transaction Open: " + JSON.stringify(this._currentTransaction));
+        }
+        this._currentTransaction = TransactionId.create().initWithMappingFolderName(name);
+        return this._currentTransaction;
     }},
 
     /**
@@ -192,8 +221,8 @@ var TransactionManager = exports.TransactionManager = Montage.create(Montage, /*
      @function
      @returns null or current transaction ID
      */
-    currentTransaction: { value: function() {
-        return null;
+    currentTransaction:{ value:function () {
+        return this._currentTransaction;
     }},
 
     /**
@@ -201,8 +230,8 @@ var TransactionManager = exports.TransactionManager = Montage.create(Montage, /*
      @function
      @returns {Boolean} <code>true</code> if the current thread has an open transaction, <code>flase</code> otherwise.
      */
-    hasCurrentTransaction: { value: function() {
-        return false;
+    hasCurrentTransaction:{ value:function () {
+        return this._currentTransaction != null;
     }},
 
     /**
@@ -212,8 +241,12 @@ var TransactionManager = exports.TransactionManager = Montage.create(Montage, /*
      @param {Property} transactionId to use
      @throws IllegalStateException if there is an open transaction for this thread or if there is another thread using this ID.
      */
-    openTransaction: { value: function(transactionId) {
-        //
+    openTransaction:{ value:function (transactionId) {
+        if (this._currentTransaction) {
+            throw new Error("Transaction Open: " + JSON.stringify(this._currentTransaction));
+        }
+        this._currentTransaction = transactionId;
+        return this._currentTransaction;
     }},
 
     /**
@@ -222,8 +255,12 @@ var TransactionManager = exports.TransactionManager = Montage.create(Montage, /*
      @param {Property} transactionId The current transaction ID.
      @throws IllegalStateException if there is no open transaction ID for this thread.
      */
-    closeTransaction: { value: function(transactionId) {
-        //
+    closeTransaction:{ value:function (transactionId) {
+        if (this._currentTransaction !== transactionId) {
+            throw new Error("Transaction Not Open: " + JSON.stringify(this._currentTransaction));
+        }
+        this._currentTransaction = null;
+        return this._currentTransaction;
     }}
 
 });
