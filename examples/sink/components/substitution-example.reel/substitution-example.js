@@ -10,19 +10,25 @@ var Montage = require("montage/core/core").Montage,
 exports.SubstitutionExample = Montage.create(Component, {
 
     navEl: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     // the substitution
-    content: {value: null},
-    
+    content: {
+        value: null,
+        serializable: true
+    },
+
     prepareForDraw: {
         value: function() {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
-    
-    
-    
 });

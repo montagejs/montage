@@ -35,22 +35,32 @@ exports.Converters = Montage.create(Component, {
         }
     },
     $number: {
-        value: null
+        value: null,
+        serializable: true
+    },
+    num1Cmp: {
+        value: null,
+        serializable: true
     },
     num2Cmp: {
-        value: null
+        value: null,
+        serializable: true
     },
     num2Cmp: {
-        value: null
+        value: null,
+        serializable: true
     },
     num3Cmp: {
-        value: null
+        value: null,
+        serializable: true
     },
     num4Cmp: {
-        value: null
+        value: null,
+        serializable: true
     },
     currencyCmp: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     applyNumberFormat: {
@@ -65,18 +75,16 @@ exports.Converters = Montage.create(Component, {
         }
     },
 
-    applyCurrencyFormat: {
-        value: function() {
-            var value = this.$currencyValue.value;
-            this.currencyCmp.value = value;
-        }
-    },
-
     prepareForDraw: {
         value: function() {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 
 });

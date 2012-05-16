@@ -298,7 +298,8 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     this._selectedObjects = null;
                 });
             }
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -543,7 +544,8 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 this._selectedContentIndexes = null;
                 this._selectedIndexes = null;
             });
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -625,7 +627,8 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 this._updateSelections();
             }
 
-        }
+        },
+        serializable: true
     },
 
 

@@ -123,6 +123,11 @@ exports.SliderExample = Montage.create(Component, {
                 //
 
             }
+        },
+
+        logger: {
+            value: null,
+            serializable: true
         }
     });
 

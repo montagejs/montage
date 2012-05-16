@@ -70,7 +70,8 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, /** @lend
         },
         get: function() {
             return this._content;
-        }
+        },
+        serializable: true
     },
 
     // If a <code>contentController</code> is provided, this allows the developer to specify
@@ -78,15 +79,23 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, /** @lend
     /**
         Specifies the property belonging to the component's <code>contentController</code> to use as the "value" part of the <option>.
     */
-    valuePropertyPath: {value: null},
+    valuePropertyPath: {
+        value: null,
+            serializable: true
+    },
 
     /**
         Specifies the property belonging to the component's <code>contentController</code> to use as the text content of the <option>.
     */
-    textPropertyPath: {value: null},
+    textPropertyPath: {
+        value: null,
+        serializable: true
+    },
 
 
-    _contentController: {value: null, enumerable: false},
+    _contentController: {
+        value: null
+    },
 
 /**
     An ArrayController instance used to manage the content and selection of the select input control.
@@ -128,7 +137,8 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, /** @lend
                 });
             }
 
-        }
+        },
+        serializable: true
     },
 
     _getSelectedValuesFromIndexes: {
@@ -185,7 +195,8 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, /** @lend
                     this._synching = false;
                 }
             }
-        }
+        },
+        serializable: true
         //dependencies: ["_selectedIndexes"]
     },
 
@@ -206,7 +217,8 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, /** @lend
             }
 
 
-        }
+        },
+        serializable: true
         //dependencies: ["_selectedIndexes"]
     },
 
@@ -317,7 +329,6 @@ var SelectInput = exports.SelectInput =  Montage.create(NativeControl, /** @lend
     @function
     */
     prepareForDraw: {
-        enumerable: false,
         value: function() {
             this.element.addEventListener("focus", this);
             this.element.addEventListener('change', this);

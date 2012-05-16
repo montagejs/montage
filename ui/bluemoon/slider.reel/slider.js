@@ -230,6 +230,11 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         serializable: true
     },
 
+    step: {
+        value: null,
+        serializable: true
+    },
+
     _pressed: {
         value: false
     },

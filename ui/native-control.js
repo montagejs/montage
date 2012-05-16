@@ -96,7 +96,6 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
             var newDescriptor = {
                 configurable: (typeof descriptor.configurable == 'undefined') ? true: descriptor.configurable,
                 enumerable: (typeof descriptor.enumerable == 'undefined') ?  true: descriptor.enumerable,
-                serializable: (typeof descriptor.serializable == 'undefined') ? true: descriptor.serializable,
                 set: (function(name, attrName) {
                     return function(value) {
                         var desc = this._getElementAttributeDescriptor(name, this);

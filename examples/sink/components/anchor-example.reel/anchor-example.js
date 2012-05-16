@@ -8,6 +8,11 @@ var Montage = require("montage/core/core").Montage,
 
 exports.AnchorExample = Montage.create(Component, {
 
+    data: {
+        value: null,
+        serializable: true
+    },
+
     images: {
         value: null
     },
@@ -17,8 +22,14 @@ exports.AnchorExample = Montage.create(Component, {
     },
 
     prepareForDraw: {
-    	value: function() {
-    		prettyPrint();
-    	}
+        value: function() {
+            prettyPrint();
+        }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
+
 });

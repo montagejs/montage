@@ -58,5 +58,11 @@ exports.ButtonExample = Montage.create(Component, {
         value: function() {
             this.log("Setting button clicked");
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
+
 });
