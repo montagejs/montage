@@ -24,16 +24,7 @@ exports.GridMagnifier = Montage.create(Component, {
         get: function() {
             return this._grid;
         },
-        set: function(value) {
-
-            if (value === this._grid) {
-                return;
-            }
-
-            this._grid = value;
-
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_grid")
     },
 
     _width: {

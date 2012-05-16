@@ -18,14 +18,7 @@ exports.Ruler = Montage.create(Component, {
         get: function() {
             return this._position;
         },
-        set: function(value) {
-            if (value === this._position) {
-                return;
-            }
-
-            this._position = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_position")
     },
 
     _savedPosition: {
@@ -36,14 +29,7 @@ exports.Ruler = Montage.create(Component, {
         get: function() {
             return this._savedPosition;
         },
-        set: function(value) {
-            if (value === this._savedPosition) {
-                return;
-            }
-
-            this._savedPosition = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_savedPosition")
     },
 
     rangeStart: {
@@ -62,14 +48,7 @@ exports.Ruler = Montage.create(Component, {
         get: function() {
             return this._axis;
         },
-        set: function(value) {
-            if (value === this._axis) {
-                return;
-            }
-
-            this._axis = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_axis")
     },
 
     container: {

@@ -26,15 +26,7 @@ exports.ColorPicker = Montage.create(Component, {
         get: function() {
             return this._currentColor;
         },
-        set: function(value) {
-            if (value === this._currentColor) {
-                return;
-            }
-
-            this._currentColor = value;
-
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_currentColor")
     },
 
     colorWell: {

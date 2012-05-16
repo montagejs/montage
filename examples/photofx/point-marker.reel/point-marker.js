@@ -18,14 +18,7 @@ exports.PointMarker = Montage.create(Component, {
         get: function() {
             return this._x;
         },
-        set: function(value) {
-            if (value === this._x) {
-                return;
-            }
-
-            this._x = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_x")
     },
 
     _y: {
@@ -38,14 +31,7 @@ exports.PointMarker = Montage.create(Component, {
         get: function() {
             return this._y;
         },
-        set: function(value) {
-            if (value === this._y) {
-                return;
-            }
-
-            this._y = value;
-            this.needsDraw = true;
-        }
+        set: Component.setPropertyAndNeedsDraw("_y")
     },
 
     willDraw: {

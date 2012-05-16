@@ -39,6 +39,18 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: "parentComponent"
     },
 
+    setPropertyAndNeedsDraw: {
+        value: function(propertyName) {
+            return function(value) {
+                if (value == this[propertyName]) {
+                    return;
+                }
+                this[propertyName] = value;
+                this.needsDraw = true;
+            }
+        }
+    },
+
     /**
       Dispatch the actionEvent this component is configured to emit upon interaction
       @private
