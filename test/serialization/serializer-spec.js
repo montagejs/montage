@@ -113,6 +113,21 @@ describe("serialization/serializer-spec", function() {
             expect((new Function(object.arguments, object.body))(2)).toBe(4);
         });
 
+        it("should not serialize objects with a null value", function() {
+            var object = {number: 42, nil: null};
+            var serialization = serializer.serialize(object);
+
+            expect(stripPP(serialization)).toBe('{"number":{"value":42}}');
+        });
+
+        it("should serialize objects with a null value", function() {
+            var object = {number: 42, nil: null};
+            serializer.serializeNullValues = true;
+            var serialization = serializer.serialize(object);
+
+            expect(stripPP(serialization)).toBe('{"number":{"value":42},"nil":{"value":null}}');
+        });
+
         it("should serialize array with shorthand", function() {
             expect(JSON.parse(serialize([1, 2, 3]))).toEqual({
                 root: {
