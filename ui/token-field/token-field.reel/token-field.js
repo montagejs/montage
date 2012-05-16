@@ -150,7 +150,8 @@ exports.TokenField = Montage.create(Component, {
                         // check if the selected token is the last one
                         if(selectedIndexes && selectedIndexes.length > 0) {
                             // removes the selected one
-                            this._tokensController.remove();
+                            this._tokensController.removeObjectsAtSelectedIndices();
+                            this._tokensController.selectedIndexes = [];
                         } else {
                             this._tokensController.selectedIndexes = [this.values.length-1];
                         }

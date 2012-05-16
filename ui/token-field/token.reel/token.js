@@ -73,7 +73,9 @@ exports.Token = Montage.create(Component, {
 
     removeSelf: {
         value: function() {
-            this.tokensController.removeObjects(this.value);
+            this.tokensController.selectedObjects = [this.value];
+            this.tokensController.removeObjectsAtSelectedIndices();
+            this.tokensController.selectedIndexes = [];
         }
     },
 

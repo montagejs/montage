@@ -198,6 +198,18 @@ describe("controllers/array-controller-spec.js", function() {
                 expect(arrayController.selectedContentIndexes).toBe(null);
             });
 
+            it("should remove objects at the selected indices", function() {
+                arrayController.selectedIndexes = [1];
+                arrayController.removeObjectsAtSelectedIndices();
+
+                expect(arrayController.content.length).toBe(1);
+            });
+
+            it("should remove objects at the specified indices", function() {
+                arrayController.removeObjectsAtIndices([0,1]);
+                expect(arrayController.content.length).toBe(0);
+            });
+
         });
 
     });
@@ -330,7 +342,7 @@ describe("controllers/array-controller-spec.js", function() {
 
             //TODO not sure if we care to select new objects we may find out about via bindings to the content or anything
 
-        })
+        });
 
 
     });
@@ -614,7 +626,7 @@ describe("controllers/array-controller-spec.js", function() {
 
                 it("should select the indexes for objects that were found", function() {
                     arrayController.selectedObjects = [david, frank];
-                    expect(arrayController.selectedIndexes).toEqual([3,5])
+                    expect(arrayController.selectedIndexes).toEqual([3,5]);
                     expect(arrayController.selectedContentIndexes).toEqual([3,5]);
                 });
 
@@ -634,7 +646,7 @@ describe("controllers/array-controller-spec.js", function() {
 
                 it("should select the indexes for objects that were found", function() {
                     arrayController.selectedObjects = [david, frank];
-                    expect(arrayController.selectedIndexes).toEqual([1,2])
+                    expect(arrayController.selectedIndexes).toEqual([1,2]);
                     expect(arrayController.selectedContentIndexes).toEqual([3,5]);
                 });
 
