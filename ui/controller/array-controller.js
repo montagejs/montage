@@ -846,13 +846,13 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         }
     },
 
-    removeObjectsAtSelectedIndices: {
+    removeObjectsAtSelectedIndexes: {
         value: function() {
-            this.removeObjectsAtIndices(this.selectedIndexes);
+            this.removeObjectsAtIndexes(this.selectedIndexes);
         }
     },
 
-    removeObjectsAtIndices: {
+    removeObjectsAtIndexes: {
         value: function(indices) {
             var remainingObjects;
             if(indices && indices.length > 0) {

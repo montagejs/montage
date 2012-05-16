@@ -15,21 +15,21 @@ KEY_DOWN = 40;
 
 exports.TokenField = Montage.create(Component, {
 
-    delegate: {value: null},
+    delegate: {value: null, enumerable: true, serializable: true},
 
-    values: {value: null},
+    values: {value: null, enumerable: true, serializable: true},
 
     /**
     * Path to a String within an Object that is representative of the Object
     */
-    textPropertyPath: {value: null},
+    textPropertyPath: {value: null, enumerable: true, serializable: true},
 
     /**
     * Allow ad-hoc strings (strings that do not have corresponding represented object) to be entered.
     */
-    allowAdHocValues: {value: null},
+    allowAdHocValues: {value: null, enumerable: true, serializable: true},
 
-    placeholder: {value: null},
+    placeholder: {value: null, enumerable: true, serializable: true},
 
 
     // private
@@ -47,11 +47,12 @@ exports.TokenField = Montage.create(Component, {
         }
     },
 
-    _tokensController: {value: null},
-    _tokenList: {value: null, enumerable: false},
-    _autocomplete: {value: null, enumerable: false},
+    _tokensController: {value: null, serializable: true},
+    _tokenList: {value: null, enumerable: false, serializable: true},
+    _autocomplete: {value: null, enumerable: false, serializable: true},
     __autocompleteValue: {value: null},
     _autocompleteValue: {
+        serializable: true,
         get: function() {
             return this.__autocompleteValue;
         },
@@ -62,6 +63,7 @@ exports.TokenField = Montage.create(Component, {
 
     __suggestedValue: {value: null},
     _suggestedValue: {
+        serializable: true,
         get: function() {
             return this.__suggestedValue;
         },
@@ -150,7 +152,7 @@ exports.TokenField = Montage.create(Component, {
                         // check if the selected token is the last one
                         if(selectedIndexes && selectedIndexes.length > 0) {
                             // removes the selected one
-                            this._tokensController.removeObjectsAtSelectedIndices();
+                            this._tokensController.removeObjectsAtSelectedIndexes();
                             this._tokensController.selectedIndexes = [];
                         } else {
                             this._tokensController.selectedIndexes = [this.values.length-1];

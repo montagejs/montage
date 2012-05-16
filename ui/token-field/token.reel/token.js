@@ -8,11 +8,13 @@ var Montage = require("montage").Montage,
 
 exports.Token = Montage.create(Component, {
 
-    text: {value: null},
+    text: {value: null, enumerable: true, serializable: true},
 
-    allowAdHocValues: {value: null},
+    allowAdHocValues: {value: null, enumerable: true, serializable: true},
 
     value: {
+        enumerable: true,
+        serializable: true,
         get: function() {
             return this._value;
         },
@@ -34,9 +36,9 @@ exports.Token = Montage.create(Component, {
         }
     },
 
-    textPropertyPath: {value: null},
+    textPropertyPath: {value: null, enumerable: true, serializable: true},
 
-    tokensController: {value: null},
+    tokensController: {value: null, enumerable: true, serializable: true},
 
     // private
 
@@ -51,7 +53,7 @@ exports.Token = Montage.create(Component, {
         }
     },
 
-    _deleteEl: {value: null},
+    _deleteEl: {value: null, serializable: true, enumerable: false},
 
     prepareForDraw: {
         value: function() {
@@ -74,7 +76,7 @@ exports.Token = Montage.create(Component, {
     removeSelf: {
         value: function() {
             this.tokensController.selectedObjects = [this.value];
-            this.tokensController.removeObjectsAtSelectedIndices();
+            this.tokensController.removeObjectsAtSelectedIndexes();
             this.tokensController.selectedIndexes = [];
         }
     },

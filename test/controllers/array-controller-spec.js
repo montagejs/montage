@@ -200,13 +200,13 @@ describe("controllers/array-controller-spec.js", function() {
 
             it("should remove objects at the selected indices", function() {
                 arrayController.selectedIndexes = [1];
-                arrayController.removeObjectsAtSelectedIndices();
+                arrayController.removeObjectsAtSelectedIndexes();
 
                 expect(arrayController.content.length).toBe(1);
             });
 
             it("should remove objects at the specified indices", function() {
-                arrayController.removeObjectsAtIndices([0,1]);
+                arrayController.removeObjectsAtIndexes([0,1]);
                 expect(arrayController.content.length).toBe(0);
             });
 
