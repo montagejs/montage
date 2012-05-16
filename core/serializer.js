@@ -89,7 +89,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         value: function(objects) {
             var serialization,
                 valueSerialization,
-                label;
+                label,
+                serializeNullValues = this.serializeNullValues;
 
             this._serializedObjects = {};
             this._serializedReferences = {};
@@ -100,14 +101,18 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             this._objectReferences = {};
 
             for (label in objects) {
-                this._objectLabels[objects[label].uuid] = label;
+                if (objects[label] != null) {
+                    this._objectLabels[objects[label].uuid] = label;
+                }
             }
 
             for (label in objects) {
-                valueSerialization = this._serializeValue(objects[label], null, 2);
-                // objects are automatically inserted as top level objects after calling _serializeValue, but native objects have to be manually inserted them.
-                if (!(label in this._serializedObjects)) {
-                    this._serializedObjects[label] = {value: valueSerialization};
+                if (objects[label] != null || serializeNullValues) {
+                    valueSerialization = this._serializeValue(objects[label], null, 2);
+                    // objects are automatically inserted as top level objects after calling _serializeValue, but native objects have to be manually inserted them.
+                    if (!(label in this._serializedObjects)) {
+                        this._serializedObjects[label] = {value: valueSerialization};
+                    }
                 }
             }
 
