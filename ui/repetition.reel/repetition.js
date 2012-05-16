@@ -1483,6 +1483,28 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             } else {
                 return null;
             }
+        } else if(bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/selectionAtCurrentIteration/)) {
+            if (this._deserializedItem) {
+                currentFakeIndex = this._fakeObjects._fakeIndex[this._deserializedItem.index];
+                usefulBindingDescriptor = {};
+                var descriptorKeys = Object.keys(bindingDescriptor);
+                var descriptorKeyCount = descriptorKeys.length;
+                var iDescriptorKey;
+                for (var i = 0; i < descriptorKeyCount; i++) {
+                    iDescriptorKey = descriptorKeys[i];
+                    usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
+                }
+
+                //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
+
+                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'selections.' + currentFakeIndex);
+                usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
+
+                usefulType = type.replace(/selectionAtCurrentIteration/, 'selections.' + currentFakeIndex);
+
+            }   else {
+                return null;
+            }
         }
 
         if (usefulBindingDescriptor.boundObject === this) {
