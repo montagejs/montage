@@ -1075,7 +1075,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             object;
 
         for (var label in objects) {
-            if (label in labels) {
+            if (labels[label] != null) { // we should call deserializedFromSerialization on all instantiated objects even if they were passed as null/undefined in instances.
                 continue;
             }
             object = objects[label];

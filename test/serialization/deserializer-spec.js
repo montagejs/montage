@@ -349,6 +349,34 @@ describe("serialization/deserializer-spec", function() {
             })
         });
 
+         it("should call deserializedFromSerialization function on the instantiated objects even if they were given as null instances", function() {
+                var latch;
+                var instances = {root: null};
+                var exports;
+
+                deserializer.initWithObject({
+                    root: {
+                        module: "serialization/testobjects-v2",
+                        name: "OneProp",
+                        properties: {
+                            prop: {"@": "oneprop"}
+                        }
+                    },
+                    oneprop: {
+                        module: "serialization/testobjects-v2",
+                        name: "OneProp"
+                    }
+                }).deserializeWithInstances(instances, function(objs) {
+                    latch = true;
+                    exports = objs;
+                });
+
+                waitsFor(function() { return latch; });
+                runs(function() {
+                    expect(exports.root.deserializedFromSerializationCount).toBe(1);
+                })
+            });
+
         it("must not return the root object as deserialized when the deserialization fails",
         function() {
             var owner = {};
