@@ -47,7 +47,7 @@ var Montage = require("montage").Montage,
 
     _densities: {
         enumerable: false,
-        value:null
+        value: null
     },
 
     densities: {
@@ -135,22 +135,22 @@ var Montage = require("montage").Montage,
 
     _maxTime: {
         enumerable: false,
-        value:null
+        value: null
     },
 
     maxTime: {
         get: function () {
-            if (this._densitySummation.length === 0) {
+            if ((this._densitySummation === null) || this._densitySummation.length) {
                 this._computeDensitySummation();
             }
-            return this._maxTime || (this._maxTime = this._densitySummation[this._densitySummation.length - 1]);
+            return this._densitySummation[this._densitySummation.length - 1];
         },
         set: function () {}
     },
 
     _densitySummation: {
         enumerable: false,
-        value:null
+        value: null
     },
 
     _computeDensitySummation: {
@@ -258,9 +258,10 @@ var Montage = require("montage").Montage,
 
     transform: {
         value: function (matrix) {
-            var spline = Montage.create(FlowBezierSpline);
+            var spline = Montage.create(FlowBezierSpline).init();
 
             spline._densities = this._densities;
+            spline._densitySummation = this._densitySummation;
             spline._knots = this.transformVectorArray(this.knots, matrix);
             spline._previousHandlers = this.transformVectorArray(this.previousHandlers, matrix);
             spline._nextHandlers = this.transformVectorArray(this.nextHandlers, matrix);
