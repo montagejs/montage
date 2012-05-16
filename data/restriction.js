@@ -26,6 +26,7 @@ var Restriction = exports.Restriction = Montage.create(Montage, /** @lends modul
         enumerable: true,
         value: ""
     },
+
     /**
      Description TODO
      @type {Property}
@@ -38,6 +39,7 @@ var Restriction = exports.Restriction = Montage.create(Montage, /** @lends modul
         enumerable: false,
         writable: false
     },
+
     /**
      Description TODO
      @function

@@ -46,8 +46,8 @@ if (spec) {
         "core/selector-spec",
 
         "data/blueprint-spec",
-        "data/context-spec",
         "data/store-spec",
+        "data/context-spec",
         "data/selector/property-spec",
         "data/selector/query-spec",
         "data/selector/selector-spec",

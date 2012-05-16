@@ -22,16 +22,32 @@ var ObjectId = exports.ObjectId = Montage.create(Montage, /** @lends module:mont
      @type {Property}
      @default {Boolean} false
      */
-    isTemporary: {
-        value: false
+    isTemporary:{
+        get function () {
+            return false;
+        }
     },
+
     /**
      Description TODO
      @type {Property}
      @default {Object} null
      */
-    blueprint: {
-        value: null
+    _blueprint:{
+        serializable: true,
+        enumerable: false,
+        value:null
+    },
+
+    /**
+     Description TODO
+     @type {Property}
+     @default {Object} null
+     */
+    blueprint:{
+        get function () {
+            return this._blueprint;
+        }
     }
 
 });
@@ -44,27 +60,30 @@ var TemporaryObjectId = exports.TemporaryObjectId = Montage.create(ObjectId, /**
      @type {Property}
      @default {Boolean} true
      */
-    isTemporary: {
-        value: true
+    isTemporary:{
+        get function () {
+            return true;
+        }
     },
     /**
      Description TODO
      @private
      */
-    _uuid: {
-        serializable: true,
-        enumerable: false,
-        value: null
+    _uuid:{
+        serializable:true,
+        enumerable:false,
+        value:null
     },
     /**
      Description TODO
      @function
      @returns itself
      */
-    init: {
-        serializable: false,
-        enumerable: false,
-        value: function() {
+    initWithBlueprint:{
+        serializable:false,
+        enumerable:false,
+        value:function (blueprint) {
+            this._blueprint = blueprint;
             this._uuid = Uuid.generate();
             if (logger.isDebug) {
                 logger.debug(this, "New Temporary Object ID: " + this._uuid);

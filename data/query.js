@@ -27,6 +27,7 @@ var Query = exports.Query = Montage.create(Selector, /** @lends module:montage/d
         value: null,
         serializable: true
     },
+
     /**
      Description TODO
      @type {Property}
@@ -36,6 +37,7 @@ var Query = exports.Query = Montage.create(Selector, /** @lends module:montage/d
         value: null,
         serializable: true
     },
+
     /**
      Description TODO
      @type {Property}
@@ -46,6 +48,7 @@ var Query = exports.Query = Montage.create(Selector, /** @lends module:montage/d
         enumerable: true,
         value: ""
     },
+
     /**
      Description TODO
      @function
