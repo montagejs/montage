@@ -683,12 +683,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         if (!item) {
             item = {};
         }
-        this._currentItem = item;
 
         // TODO when do we actually consider the item part of the "items" array? now or after drawing?
         // right now I think we want to say if it's not in the DOM; it's not in the items list
         // for clarity sake
-        itemsToAppendCount = itemsToAppend.push(this._currentItem) - 1;
+        itemsToAppendCount = itemsToAppend.push(item) - 1;
         index = items.length + itemsToAppendCount;
 
         if ("index" in item) {
@@ -1465,8 +1464,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             currentIndex, currentFakeIndex;
 
         if (bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
-            if (this._currentItem) {
-                currentFakeIndex = this._fakeObjects._fakeIndex[this._currentItem.index];
+            if (this._deserializedItem) {
+                currentFakeIndex = this._fakeObjects._fakeIndex[this._deserializedItem.index];
                 usefulBindingDescriptor = {};
                 descriptorKeys = Object.keys(bindingDescriptor);
                 descriptorKeyCount = descriptorKeys.length;
