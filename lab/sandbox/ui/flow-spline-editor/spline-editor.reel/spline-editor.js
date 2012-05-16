@@ -439,7 +439,7 @@ exports.SplineEditor = Montage.create(Component, {
         value: function () {
             var self = this;
             
-            this.spline = Object.create(FlowBezierSpline);
+            this.spline = Object.create(FlowBezierSpline).init();
             this.flow._paths = [];
             this.flow._paths.push({
                 headOffset: 0,
