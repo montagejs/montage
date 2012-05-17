@@ -82,91 +82,55 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
             this.deferredValueTarget = "";
         }
     },
-    handleChange: {value: function(event) {
-        var targetPropertyPath = this.targetPropertyPath,
-            target = this.target,
-            localNewValue = event.plus,
-            localPrevValue = event.minus,
-            localTarget = event.target,
-            boundObjectValue,
-            sourceObjectValue,
-            dotIndex,
-            nextPathComponent,
-            atSignIndex,
-            baseType,
-            bindingDescriptor,
-            bindingOrigin = this.bindingOrigin,
-            leftOriginated,
-            changeOriginPropertyPath = null,
-            exploredPath,
-            valueChanged;
+    handleChange:{
+        value:function (notification) {
 
-        if (target !== bindingOrigin) {
-            //the left and the right are different objects; easy enough
-            leftOriginated = event.target === bindingOrigin;
-        } else {
-            //otherwise, they're the same object; time to try and figure out which "side" the event came from
-            // TODO this is a very weak check that relies on the bindingOrigin using a property and not a full propertyPath
-            leftOriginated = event.propertyName === this.bindingPropertyPath;
-        }
+            var bindingOriginTriggeredChange,
+                // Left
+                bindingOrigin = this.bindingOrigin,
+                bindingOriginPropertyPath = this.bindingPropertyPath,
+                bindingOriginValue = bindingOrigin.getProperty(bindingOriginPropertyPath),
+                // Right
+                boundObject = this.target,
+                boundObjectPropertyPath = this.targetPropertyPath,
+                boundObjectValue = boundObject.getProperty(boundObjectPropertyPath);
 
-        if (leftOriginated) {
-            // This change event targeted the left side of the binding; try to push to the right side
+            // Determine if binding triggered by change on bindingOrigin
+            if (boundObject !== bindingOrigin) {
+                // the origin and bound object are different objects; easy enough
+                bindingOriginTriggeredChange = notification.currentTarget === bindingOrigin;
+            } else {
+                // otherwise, if the objects are the same the propertyPaths must differ
+                bindingOriginTriggeredChange = notification.propertyPath === bindingOriginPropertyPath;
+            }
 
-            if (!bindingOrigin.setProperty.changeEvent) {
+            if (bindingOriginTriggeredChange) {
+                // This change notification targeted the left side of the binding; try to push to the right side
 
-                sourceObjectValue = localNewValue;
-
-                if (this.bindingDescriptor.converter) {
-                    sourceObjectValue = this.bindingDescriptor.converter.revert(sourceObjectValue);
-                }
-
-                // If this event was triggered by the right-to-left- value push; don't bother setting
+                // If this notification was triggered by the right-to-left value push; don't bother setting
                 // the value on the left side, that's where all this value changing started
                 // (The original right-to-left push installs this changeEvent key on the setProperty function)
-                if (this.bindingOriginValueDeferred === true || bindingOrigin._bindingsDisabled) {
-                    this.deferredValue = sourceObjectValue;
-                    this.deferredValueTarget = "target";
-                } else {
-                    this.bindingOriginChangeTriggered = true;
-                    // Set the value on the RIGHT side now
-                    this.target.setProperty(this.targetPropertyPath, sourceObjectValue);
-                    this.bindingOriginChangeTriggered = false;
-                }
-            }
+                if (!bindingOrigin.setProperty.changeEvent) {
 
-        } else if (!this.bindingOriginChangeTriggered) {
+                    if (this.bindingDescriptor.converter) {
+                        bindingOriginValue = this.bindingDescriptor.converter.revert(bindingOriginValue);
+                    }
 
-            // If we're handling the event at this point we know the right side triggered it, from somewhere inside the observed propertyPath
-            // the event target, which just changed, could be any of the objects along the path, but from here on we want to
-            // treat the event as "change@fullTargetPropertyPath" so adjust the event we have to reflect that
-            if (this.target && targetPropertyPath) {
-                event.target = target;
-                event.propertyPath = targetPropertyPath;
-
-                event.plus = target.getProperty(targetPropertyPath);
-
-                // If the newValue and the storedPreviousValue are the same, this was a mutation on that object
-                // we want to show the prevValue that came along from the event lest we point
-                // somebody a reference to the same array as the prevValue and newValue
-                if (!Array.isArray(this.previousTargetPropertyPathValue) && event.plus !== this.previousTargetPropertyPathValue) {
-                    event.minus = this.previousTargetPropertyPathValue;
+                    if (this.bindingOriginValueDeferred === true || bindingOrigin._bindingsDisabled) {
+                        this.deferredValue = bindingOriginValue;
+                        this.deferredValueTarget = "target";
+                    } else {
+                        this.bindingOriginChangeTriggered = true;
+                        // Set the value on the RIGHT side now
+                        boundObject.setProperty(boundObjectPropertyPath, bindingOriginValue);
+                        this.bindingOriginChangeTriggered = false;
+                    }
                 }
 
-            } else {
-                // TODO I'm not sure when this would happen..
-                event.target = this;
-            }
+            } else if (!this.bindingOriginChangeTriggered) {
 
-            // The binding listener detected some change along the property path it cared about
-            // make sure the event we "dispatch" has the full change@propertyPath eventType
-            event.type = this.targetPropertyPath;
-
-            //For bindings, start the right-to-left value push
-            if (event.target === this.target && this.bindingPropertyPath && bindingOrigin) {
-                //console.log("@ % @ % @ % @ % @ % Binding Worked!!");
-
-                boundObjectValue = event.plus;
+                // Start the right-to-left value push
+                boundObjectValue = boundObject.getProperty(boundObjectPropertyPath);
 
                 if (this.bindingDescriptor.boundValueMutator) {
                     boundObjectValue = this.bindingDescriptor.boundValueMutator(boundObjectValue);
@@ -174,75 +138,23 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                     boundObjectValue = this.bindingDescriptor.converter.convert(boundObjectValue);
                 }
 
-                // If the the value about to be pushed over to the bindingOrigin is already there don't call the setter
-                valueChanged = boundObjectValue !== event.plus ?
-                    (this.bindingOrigin.getProperty(this.bindingPropertyPath) !== boundObjectValue) : true;
-
-                if (valueChanged) {
+                if (boundObjectValue !== bindingOriginValue) {
                     if (this.bindingOriginValueDeferred === true || bindingOrigin._bindingsDisabled) {
                         this.deferredValue = boundObjectValue;
                         this.deferredValueTarget = "bound";
                     } else {
-                        // Make the original event available to the setter
-                        this.bindingOrigin.setProperty.changeEvent = event;
+                        // Make the original notification available to the setter
+                        bindingOrigin.setProperty.changeEvent = notification;
                         // Set the value on the LEFT side now
-                        this.bindingOrigin.setProperty(this.bindingPropertyPath, boundObjectValue);
-                        this.bindingOrigin.setProperty.changeEvent = null;
+                        bindingOrigin.setProperty(bindingOriginPropertyPath, boundObjectValue);
+                        bindingOrigin.setProperty.changeEvent = null;
                     }
                 }
-            }
-            // Otherwise, there was probably a listener for a change at this path that was not a part of some binding
-            // so distribute the event to the original listener
-            // TODO this is not as full featured as the EventManager event distribution so it may differ, which is bad
-            else if (this.originalListener) {
-                if (this.originalListenerIsFunction) {
-                    this.originalListener.call(this.target, event);
-                } else {
-                    this.originalListener.handleEvent(event);
-                }
-            }
 
-            // Update the stored value of the propertyPath
-            this.previousTargetPropertyPathValue = event.plus;
-
-            // TODO I'm not exactly sure why this happens here, or really why it does in general
-            event.minus = localPrevValue;
-            event.plus = localNewValue;
-            event.target = localTarget;
-
-            if (localPrevValue) {
-
-                // Determine where along the property path the change originated from so we know how to build the path
-                // to stop observing on things that were removed
-                //TODO extract this into a "obj.getPathOfObjectAlongPropertyPath" method or something with proper tests
-                exploredPath = "";
-                this.target.getProperty(this.targetPropertyPath, null, null, function(value, currentPathComponent, result) {
-
-                    if (changeOriginPropertyPath) {
-                        return;
-                    }
-
-                    exploredPath += "." + currentPathComponent;
-
-                    if (result === event.target) {
-                        changeOriginPropertyPath = exploredPath.replace(/^\./, "");
-                    }
-                });
+                // Update the stored value of the propertyPath
+                this.previousTargetPropertyPathValue = boundObjectValue;
             }
         }
-
-        targetPropertyPath = null;
-        target = null;
-        localNewValue = null;
-        localPrevValue = null;
-        localTarget = null;
-        dotIndex = null;
-        nextPathComponent = null;
-        atSignIndex = null;
-        baseType = null;
-        bindingDescriptor = null;
-        bindingOrigin = null;
-    }
     }
 
 });
