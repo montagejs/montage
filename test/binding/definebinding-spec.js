@@ -733,6 +733,35 @@ describe("binding/definebinding-spec", function() {
 
     describe("when bound to an array", function() {
 
+        it("should not go out of its way to protect you from mutations to an object on the left making their way over to the right", function() {
+
+            var sourceObject = Alpha.create(),
+            boundObject = Omega.create();
+
+            boundObject.bar = ["a", "b", "c"];
+
+            Object.defineBinding(sourceObject, "foo", {
+                boundObject: boundObject,
+                boundObjectPropertyPath: "bar",
+                oneway: true
+            });
+
+            // Ideally, this should be avoided; but the way it works is expected
+            sourceObject.foo.push("d");
+
+            expect(sourceObject.foo.length).toBe(4);
+            expect(sourceObject.foo[0]).toBe("a");
+            expect(sourceObject.foo[1]).toBe("b");
+            expect(sourceObject.foo[2]).toBe("c");
+            expect(sourceObject.foo[3]).toBe("d");
+
+            expect(boundObject.bar.length).toBe(4); // Yep, this is a little unexpected
+            expect(boundObject.bar[0]).toBe("a");
+            expect(boundObject.bar[1]).toBe("b");
+            expect(boundObject.bar[2]).toBe("c");
+            expect(boundObject.bar[3]).toBe("d"); //but it makes sense, left and right are the same array
+        });
+
         it("should propagate additions from the bound array to the source propertyPath", function() {
 
             var sourceObject = Alpha.create(),
