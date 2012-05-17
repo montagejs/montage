@@ -93,7 +93,7 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 // Right
                 boundObject = this.target,
                 boundObjectPropertyPath = this.targetPropertyPath,
-                boundObjectValue = boundObject.getProperty(boundObjectPropertyPath);
+                boundObjectValue;
 
             // Determine if binding triggered by change on bindingOrigin
             if (boundObject !== bindingOrigin) {
@@ -110,21 +110,23 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 // If this notification was triggered by the right-to-left value push; don't bother setting
                 // the value on the left side, that's where all this value changing started
                 // (The original right-to-left push installs this changeEvent key on the setProperty function)
-                if (!bindingOrigin.setProperty.changeEvent) {
+                if (bindingOrigin.setProperty.changeEvent) {
+                    return;
+                }
 
-                    if (this.bindingDescriptor.converter) {
-                        bindingOriginValue = this.bindingDescriptor.converter.revert(bindingOriginValue);
-                    }
+                // TODO should not assume revert is available
+                if (this.bindingDescriptor.converter) {
+                    bindingOriginValue = this.bindingDescriptor.converter.revert(bindingOriginValue);
+                }
 
-                    if (this.bindingOriginValueDeferred === true || bindingOrigin._bindingsDisabled) {
-                        this.deferredValue = bindingOriginValue;
-                        this.deferredValueTarget = "target";
-                    } else {
-                        this.bindingOriginChangeTriggered = true;
-                        // Set the value on the RIGHT side now
-                        boundObject.setProperty(boundObjectPropertyPath, bindingOriginValue);
-                        this.bindingOriginChangeTriggered = false;
-                    }
+                if (this.bindingOriginValueDeferred === true || bindingOrigin._bindingsDisabled) {
+                    this.deferredValue = bindingOriginValue;
+                    this.deferredValueTarget = "target";
+                } else {
+                    this.bindingOriginChangeTriggered = true;
+                    // Set the value on the RIGHT side now
+                    boundObject.setProperty(boundObjectPropertyPath, bindingOriginValue);
+                    this.bindingOriginChangeTriggered = false;
                 }
 
             } else if (!this.bindingOriginChangeTriggered) {
