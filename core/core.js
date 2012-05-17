@@ -21,8 +21,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     PROTO = "__proto__",
     VALUE = "value",
     ENUMERABLE = "enumerable",
-    SERIALIZABLE = "serializable",
-    MODIFY = "modify";
+    SERIALIZABLE = "serializable"
 
 /**
  @private
@@ -80,7 +79,7 @@ Object.defineProperty(Montage, "create", {
     }
 });
 
-var extendedPropertyAttributes = [SERIALIZABLE, MODIFY];
+var extendedPropertyAttributes = [SERIALIZABLE];
 
 // Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"
 /**
@@ -151,10 +150,6 @@ Object.defineProperty(Montage, "defineProperty", {
         if (SERIALIZABLE in descriptor) {
             // get the _serializableAttributeProperties property or creates it through the entire chain if missing.
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
-        }
-
-        if (MODIFY in descriptor) {
-            getAttributeProperties(obj, MODIFY)[prop] = descriptor.modify;
         }
 
         //this is added to enable value properties with [] or Objects that are new for every instance

@@ -914,59 +914,6 @@ describe("binding/definebinding-spec", function() {
             expect(boundObject.bar.length).toBe(0);
         });
 
-        describe("when modifiying content with a 'modify' property attribute set", function() {
-
-            var verification, sourceObject, boundObject;
-
-            beforeEach(function() {
-                verification = {modified: false};
-                sourceObject = Alpha.create();
-                boundObject = Omega.create();
-
-                var modifyFunction = (function(verification) {
-                    return function(type, newValue, oldValue) {
-                        verification.modified = true;
-                    }
-                })(verification);
-
-                Montage.defineProperty(sourceObject, "foo", {
-                    enumerable: false,
-                        set: function(value) {
-                            this._foo = value;
-                        },
-                        get: function() {
-                            return this._foo;
-                        },
-                        modify: modifyFunction
-                });
-            }),
-
-            it("should invoke the 'modify' property attribute function on the source object when an observed array, of a two or more component path, is mutated", function() {
-                boundObject.bar = [["a", "b"]];
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar.0"
-                });
-
-                boundObject.bar[0].pop();
-                expect(verification.modified).toBeTruthy();
-            });
-
-            it("should invoke the 'modify' property attribute function on the source object when an observed object, of a two or more component path, is mutated", function() {
-                boundObject.bar = {x: ["a", "b"]};
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar.x"
-                });
-
-                boundObject.bar.x.pop();
-                expect(verification.modified).toBeTruthy();
-            });
-
-        });
-
         it("should propagate a change from the bound object when the property path includes an array index and that element is removed", function() {
             var sourceObject = Alpha.create(),
                     boundObject = Omega.create();
