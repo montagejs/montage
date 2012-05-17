@@ -175,9 +175,11 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
     _addEventListeners: {
         value: function() {
             if(window.Touch) {
-                this.element.addEventListener('touchend', this, false);
+                this.element.addEventListener('touchstart', this, false);
+                //this.element.addEventListener('touchend', this, false);
             } else {
-                this.element.addEventListener('mouseup', this, false);
+                this.element.addEventListener('mousedown', this, false);
+                //this.element.addEventListener('mouseup', this, false);
             }
         }
     },
@@ -185,9 +187,11 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
     _removeEventListeners: {
         value: function() {
             if(window.Touch) {
-                this.element.removeEventListener('touchend', this, false);
+                //this.element.removeEventListener('touchend', this, false);
+                this.element.removeEventListener('touchstart', this, false);
             } else {
-                this.element.removeEventListener('mouseup', this, false);
+                //this.element.removeEventListener('mouseup', this, false);
+                this.element.removeEventListener('mousedown', this, false);
             }
         }
     },
@@ -216,12 +220,12 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
         }
     },
 
-    handleMouseup: {
+    handleMousedown: {
         value: function(e) {
             this._handleClick(e.clientX);
         }
     },
-    handleTouchend: {
+    handleTouchstart: {
         value: function(event) {
             this._handleClick(event.changedTouches[0].clientX);
         }
