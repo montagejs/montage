@@ -8,7 +8,7 @@ var Montage = require("montage").Montage;
 var WeakMap = require("montage/core/shim/weak-map").WeakMap;
 var Map = require("montage/core/shim/structures").Map;
 
-describe("core-spec", function() {
+describe("core/core-spec", function() {
 
     describe("inherited object creation and basic properties", function() {
         var A,
@@ -537,7 +537,35 @@ describe("core-spec", function() {
             expect(a.getsetSkipped).toEqual("setA");
         });
 
-        describe("distinct value properties", function() {
+        describe("distinct properties", function() {
+
+            it("must not allow marking a get-only property with as distinct", function() {
+                expect(function() {
+                    Montage.defineProperty({}, "foo", {
+                        distinct: true,
+                        get: function() {}
+                    })
+                }).toThrow();
+            });
+
+            it("must not allow marking a set-only property with as distinct", function() {
+                expect(function() {
+                    Montage.defineProperty({}, "foo", {
+                        distinct: true,
+                        set: function() {}
+                    })
+                }).toThrow();
+            });
+
+            it("must not allow marking a get-set property with as distinct", function() {
+                expect(function() {
+                    Montage.defineProperty({}, "foo", {
+                        distinct: true,
+                        get: function() {},
+                        set: function() {}
+                    })
+                }).toThrow();
+            });
 
             describe("array property", function() {
 

@@ -21,6 +21,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     PROTO = "__proto__",
     VALUE = "value",
     ENUMERABLE = "enumerable",
+    DISTINCT = "distinct",
     SERIALIZABLE = "serializable",
     MODIFY = "modify";
 
@@ -112,13 +113,21 @@ extendedPropertyAttributes.forEach(function(name) {
 Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
-        var dependencies = descriptor.dependencies;
+
+        var dependencies = descriptor.dependencies,
+            isValueDescriptor = (VALUE in descriptor);
+
+        if (DISTINCT in descriptor && !isValueDescriptor) {
+            throw ("Cannot use distinct attribute on non-value property '" + prop + "'");
+        }
+
+
         //reset defaults appropriately for framework.
         if (PROTO in descriptor) {
-            descriptor.__proto__ = (VALUE in descriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+            descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
             var defaults;
-            if (VALUE in descriptor) {
+            if (isValueDescriptor) {
                 if (typeof descriptor.value === "function") {
                     defaults = _defaultFunctionValueProperty;
                 } else {
