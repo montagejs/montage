@@ -83,7 +83,8 @@
             "markAllCompleteConditional": {
                 "prototype": "montage/ui/condition.reel",
                 "properties": {
-                    "element": {"#": "markAllCompleteForm"}
+                    "element": {"#": "markAllCompleteForm"},
+                    "removalStrategy": "hide"
                 },
                 "bindings": {
                     "condition": {"<-": "@owner.tasksController.organizedObjects.count()"}
@@ -96,7 +97,7 @@
                     "element": {"#": "markAllCompleteButton"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner.unfinishedTasks", "converter": {"@": "markAllReadValueConverter"}}
+                    "label": {"<-": "@owner.unfinishedTasks", "converter": {"@": "markAllReadValueConverter"}}
                 }
             },
 
