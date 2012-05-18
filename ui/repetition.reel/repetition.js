@@ -759,7 +759,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 this._expectedChildComponentsCount -= childComponentsCount;
 //console.log("this._expectedChildComponentsCount: ", this._expectedChildComponentsCount);
                 for (var i = 0, l = removedComponents.length; i < l; i++) {
-                    removedComponents[i].cleanupDeletedComponentTree();
+                    removedComponents[i].cleanupDeletedComponentTree(true);
                 }
             } else {
                 this._childLoadedCount--;
