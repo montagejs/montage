@@ -22,7 +22,7 @@ var testPage = TestPageLoader.queueTest("slot-test", function() {
 
         describe("when first loaded", function() {
             it("it should have no initial content", function() {
-                expect(slot.content).toEqual([]);
+                expect(slot.content).toEqual(null);
                 expect(slot.element.childNodes.length).toEqual(0);
             });
         });
@@ -111,6 +111,36 @@ var testPage = TestPageLoader.queueTest("slot-test", function() {
 
                     runs(function() {
                         expect(slot.childComponents).toContain(content);
+                    });
+                });
+            });
+
+            it("accessing the content property should return an element if an element was initially set", function() {
+                testPage.waitForDraw();
+                runs(function() {
+                    var content = testPage.test.bazContent;
+
+                    slot.content = content;
+
+                    testPage.waitForDraw();
+
+                    runs(function() {
+                        expect(slot.content).toEqual(content);
+                    });
+                });
+            });
+
+            it("accessing the content property should return a component if a component was initially set", function() {
+                testPage.waitForDraw();
+                runs(function() {
+                    var content = testPage.test.componentInPageWithElement;
+
+                    slot.content = content;
+
+                    testPage.waitForDraw();
+
+                    runs(function() {
+                        expect(slot.content).toEqual(content);
                     });
                 });
             });
