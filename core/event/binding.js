@@ -101,7 +101,7 @@ var PropertyChangeBindingListener = exports.PropertyChangeBindingListener = Obje
                 bindingOriginTriggeredChange = notification.currentTarget === bindingOrigin;
             } else {
                 // otherwise, if the objects are the same the propertyPaths must differ
-                bindingOriginTriggeredChange = notification.propertyPath === bindingOriginPropertyPath;
+                bindingOriginTriggeredChange = notification.currentPropertyPath === bindingOriginPropertyPath;
             }
 
             if (bindingOriginTriggeredChange) {
