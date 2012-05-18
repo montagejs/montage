@@ -539,10 +539,13 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      */
     cleanupDeletedComponentTree: {
         value: function() {
-            Object.deleteBindings(this);
+            // This was causing the symptoms expressed in gh-603
+            // Until we have a more granular way we shouldn't do this.
+            //Object.deleteBindings(this);
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
-                Object.deleteBindings(component);
+                // See above comment
+                //Object.deleteBindings(component);
                 component.needsDraw = false;
             });
         }
