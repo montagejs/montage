@@ -8,6 +8,30 @@ var Montage = require("montage").Montage;var Component = require("montage/ui/com
 exports.TaskListControls = Montage.create(Component, {
     hasTemplate: {value: true},
 
+    didCreate: {
+        value: function() {
+            Object.defineBinding(this, "completedValues", { boundObject:this, boundObjectPropertyPath: "tasksController.organizedObjects.completed"});
+        }
+    },
+
+    _completedValues: {
+        value: null
+    },
+
+    completedValues: {
+        get: function() {
+            return this._completedValues;
+        },
+        set: function(values) {
+            this._completedValues = values;
+            this.anyCompleted = values.some(function(value) {return value;});
+        }
+    },
+
+    anyCompleted: {
+        value: null
+    },
+
     prepareForDraw: {
         value: function() {
 
