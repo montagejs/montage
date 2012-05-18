@@ -9,21 +9,19 @@ var Montage = require("montage/core/core").Montage,
 exports.RepetitionExample = Montage.create(Component, {
 
     jsonSelectedItems: {
-        value: null
-    },
-
-    _selectedItems: {value: null},
-    selectedItems: {
-        get: function(){ return this._selectedItems; },
-        set: function(v) {
-
-            this._selectedItems = v;
-            this.jsonSelectedItems = JSON.stringify(this._selectedItems||[]);
-            console.log('selected items = ', v);
+        dependencies: ["selectedItems"],
+        get: function() {
+            return JSON.stringify(this.selectedItems||[]);
         }
     },
 
-    selectedAnswer: {value: null},
+    selectedItems: {
+        value: null
+    },
+
+    selectedAnswer: {
+        value: null
+    },
 
      prepareForDraw: {
         value: function() {

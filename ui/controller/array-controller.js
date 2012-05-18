@@ -21,6 +21,24 @@ var Montage = require("montage").Montage,
 */
 var ArrayController = exports.ArrayController = Montage.create(ObjectController, /** @lends module:montage/ui/controller/array-controller.ArrayController# */ {
 
+    didCreate: {
+        value: function() {
+            var self = this;
+            this.addPropertyChangeListener("selections", function(notification) {
+
+                    var arr = [];
+                    self._selections.forEach(function(item, i) {
+                        if(item) {
+                            arr.push(i);
+                        }
+                    });
+                    // use the internalSet flag to prevent setting the selections again,
+                    Object.getPropertyDescriptor(self, "selectedIndexes").set.call(self, arr, true);
+
+            });
+        }
+    },
+
     /**
      @private
      */
@@ -645,7 +663,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             arr[0] = null;
             arr[len-1] = null;
 
-            this._selections = arr;
+            this.selections = arr;
             //Object.getPropertyDescriptor(this, "selections").set.call(this, arr, true);
         }
     },
