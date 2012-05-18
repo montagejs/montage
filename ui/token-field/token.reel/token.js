@@ -8,12 +8,11 @@ var Montage = require("montage").Montage,
 
 exports.Token = Montage.create(Component, {
 
-    text: {value: null, enumerable: true, serializable: true},
+    text: {value: null, serializable: true},
 
-    allowAdHocValues: {value: null, enumerable: true, serializable: true},
+    allowAdHocValues: {value: null, serializable: true},
 
     value: {
-        enumerable: true,
         serializable: true,
         get: function() {
             return this._value;
@@ -36,9 +35,9 @@ exports.Token = Montage.create(Component, {
         }
     },
 
-    textPropertyPath: {value: null, enumerable: true, serializable: true},
+    textPropertyPath: {value: null, serializable: true},
 
-    tokensController: {value: null, enumerable: true, serializable: true},
+    tokensController: {value: null, serializable: true},
 
     // private
 
@@ -53,7 +52,7 @@ exports.Token = Montage.create(Component, {
         }
     },
 
-    _deleteEl: {value: null, serializable: true, enumerable: false},
+    _deleteEl: {value: null, serializable: true},
 
     prepareForDraw: {
         value: function() {

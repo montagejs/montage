@@ -15,21 +15,21 @@ KEY_DOWN = 40;
 
 exports.TokenField = Montage.create(Component, {
 
-    delegate: {value: null, enumerable: true, serializable: true},
+    delegate: {value: null, serializable: true},
 
-    values: {value: null, enumerable: true, serializable: true},
+    values: {value: null, serializable: true},
 
     /**
     * Path to a String within an Object that is representative of the Object
     */
-    textPropertyPath: {value: null, enumerable: true, serializable: true},
+    textPropertyPath: {value: null, serializable: true},
 
     /**
     * Allow ad-hoc strings (strings that do not have corresponding represented object) to be entered.
     */
-    allowAdHocValues: {value: null, enumerable: true, serializable: true},
+    allowAdHocValues: {value: null, serializable: true},
 
-    placeholder: {value: null, enumerable: true, serializable: true},
+    placeholder: {value: null, serializable: true},
 
 
     // private
@@ -48,8 +48,8 @@ exports.TokenField = Montage.create(Component, {
     },
 
     _tokensController: {value: null, serializable: true},
-    _tokenList: {value: null, enumerable: false, serializable: true},
-    _autocomplete: {value: null, enumerable: false, serializable: true},
+    _tokenList: {value: null, serializable: true},
+    _autocomplete: {value: null, serializable: true},
     __autocompleteValue: {value: null},
     _autocompleteValue: {
         serializable: true,
@@ -131,7 +131,6 @@ exports.TokenField = Montage.create(Component, {
     },
 
     handleKeyup: {
-        enumerable: false,
         value: function(e) {
             var code = e.keyCode;
             //console.log('keyCode', code);
