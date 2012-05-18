@@ -878,13 +878,15 @@ var _unobservable_array_property_regexp = /^length$/;
 Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
     value: function(path, listener, beforeChange, ignoreMutation) {
         var listenChange, listenIndexChange, listenFunctionChange,
-            descriptor;
+            descriptor,
+            dotIndex;
 
         if (!listener) {
             return;
         }
 
-        if (path == null || path.indexOf(".") == -1) {
+        if (path == null || (dotIndex = path.indexOf(".")) == -1) {
+
 
             if (_unobservable_array_property_regexp.test(path)) {
                 return;
@@ -909,6 +911,12 @@ Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
             }
         } else {
             Object.prototype.addPropertyChangeListener.apply(this, arguments);
+            // We need to do this because the Object.prototype.addPropertyChangeListener doesn't create dependencies
+            // for no-dot paths, but in array array.path will have dependencies when path is not an index or null.
+            if (dotIndex == -1) {
+                descriptor = ChangeNotification.getPropertyChangeDescriptor(this, path);
+                descriptor.setupDependencies(this, path, beforeChange, !ignoreMutation);
+            }
         }
     }
 });
