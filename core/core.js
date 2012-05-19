@@ -62,10 +62,6 @@ Object.defineProperty(Montage, "create", {
 
             var newObject = Object.create(typeof aPrototype === "undefined" ? this : aPrototype);
 
-            if (newObject._dependenciesForProperty) {
-                newObject._dependencyListeners = {};
-            }
-
             if (typeof newObject.didCreate === "function") {
                 newObject.didCreate();
             }

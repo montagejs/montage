@@ -205,6 +205,7 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
     dependentDescriptorsIndex: {value: null},
     mutationDependencyIndex: {value: null},
     mutationListenersCount: {value: 0},
+    observedDependentProperties: {value: null},
 
     initWithTargetPath: {
         value: function(target, path) {
@@ -818,9 +819,19 @@ Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
             // TODO should adding a dispatcher on a dependent property also be subjected to checking for
             // automaticDispatchPropertyChangeListener, probably
             if (dependentPropertyPaths) {
+
+                if (!descriptor.observedDependentProperties) {
+                    descriptor.observedDependentProperties = {};
+                }
+
                 for (i = 0; (iPath = dependentPropertyPaths[i]); i++) {
-                    this.addPropertyChangeListener(iPath, descriptor, beforeChange, false);
-                    descriptor.registerDependency(this, iPath, null);
+
+                    if (!descriptor.observedDependentProperties[iPath]) {
+                        descriptor.observedDependentProperties[iPath] = true;
+
+                        this.addPropertyChangeListener(iPath, descriptor, beforeChange, false);
+                        descriptor.registerDependency(this, iPath, null);
+                    }
                 }
             }
         }
