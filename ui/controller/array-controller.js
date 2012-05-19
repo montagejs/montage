@@ -36,6 +36,16 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     Object.getPropertyDescriptor(self, "selectedIndexes").set.call(self, arr, true);
 
             });
+
+            this.addPropertyChangeListener("content", function() {
+                //TODO for right now assume that any content change invalidates the selection completely; we'll need to address this of course
+                self.selectedObjects = null;
+
+                if (self.automaticallyOrganizeObjects) {
+                    self.organizeObjects();
+                }
+                self._initSelections();
+            });
         }
     },
 
@@ -62,10 +72,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
             this._content = value;
 
-            //TODO for right now assume that any content change invalidates the selection completely; we'll need to address this of course
-            this.selectedObjects = null;
-            this.organizeObjects();
-            this._initSelections();
+
         }
     },
 
@@ -94,7 +101,8 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      */
     _organizedObjects: {
         enumerable: false,
-        value: null
+        distinct: true,
+        value: []
     },
 
     /**
@@ -105,24 +113,17 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
     organizedObjects: {
         enumerable: false,
         get: function() {
-
-            if (this._organizedObjects) {
-                return this._organizedObjects;
-            }
-
-            this.organizeObjects();
-
             return this._organizedObjects;
         }
     },
 
     /**
-     Specifies whether the ArrayCollection's content is automatically organized (false, by default).
+     Specifies whether the ArrayCollection's content is automatically organized.
      @type {Property}
-     @default {Boolean} false
+     @default {Boolean} true
      */
     automaticallyOrganizeObjects: {
-        value: false
+        value: true
     },
 
     /**
@@ -390,19 +391,18 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         value: function() {
 
             var organizedObjects = this.content,
-                funktion = this.filterFunction,
+                filterFunction = this.filterFunction,
+                sortFunction = this.sortFunction,
                 index = 0,
                 newIndex = 0,
                 filteredIndexes,
                 sortedIndexes,
-                startIndex = this.startIndex,
-                endIndex = this.endIndex,
                 tmpArray, item;
 
-            if (organizedObjects && typeof funktion === "function") {
+            if (organizedObjects && typeof filterFunction === "function") {
                 filteredIndexes = [];
                 organizedObjects = organizedObjects.filter(function filterFunctionWrapper(item) {
-                    var filterValue = funktion.call(this, item);
+                    var filterValue = filterFunction.call(this, item);
                     if (filterValue) {
                         // we are going to keep the item in the new array
                         filteredIndexes[newIndex] = index;
@@ -413,7 +413,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 }, this);
             }
 
-            if (typeof (funktion = this._sortFunction) === "function") {
+            if (typeof sortFunction === "function") {
 
                 // need to attach index information so that we can pick it up after the sort
                 // this has the added side effect of creating a clone of the array so that if it wasn't filtered,
@@ -444,7 +444,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     if (b._montage_array_controller_value) {
                         b = b._montage_array_controller_value;
                     }
-                    return funktion.call(this, a, b);
+                    return sortFunction.call(this, a, b);
                 });
 
                 // get all the new indexes
@@ -477,8 +477,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         value: function(organizedObjects) {
 
             var startIndex = this.startIndex,
-                endIndex = this.endIndex,
-                changeEvent;
+                endIndex = this.endIndex;
 
 
             // We apply the range after the content is filtered and sorted
@@ -656,15 +655,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
     _initSelections: {
         value: function() {
-            // create an array with null values with same
-            // length as organizedObjects
-            var len = this._organizedObjects.length;
-            var arr = [];
-            arr[0] = null;
-            arr[len-1] = null;
-
-            this.selections = arr;
-            //Object.getPropertyDescriptor(this, "selections").set.call(this, arr, true);
+            this.selections = new Array(this._organizedObjects.length);
         }
     },
 
