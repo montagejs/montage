@@ -77,11 +77,11 @@ describe("array-spec", function() {
 
                     spyOn(indexChangeListener, 'changeHandlerFunction').andCallThrough();
 
-                    array.addEventListener("change@0", indexChangeListener.changeHandlerFunction, true);
-                    array.addEventListener("change@1", indexChangeListener.changeHandlerFunction, true);
-                    array.addEventListener("change@2", indexChangeListener.changeHandlerFunction, true);
+                    array.addPropertyChangeListener("0", indexChangeListener.changeHandlerFunction);
+                    array.addPropertyChangeListener("1", indexChangeListener.changeHandlerFunction);
+                    array.addPropertyChangeListener("2", indexChangeListener.changeHandlerFunction);
                     // Skipping change@3 as it is the affected index in this case
-                    array.addEventListener("change@4", indexChangeListener.changeHandlerFunction, true);
+                    array.addPropertyChangeListener("4", indexChangeListener.changeHandlerFunction);
 
                     array.push(newValue);
 
@@ -728,10 +728,10 @@ describe("array-spec", function() {
 
                             spyOn(indexChangeListener, 'indexChangeHandlerFunction').andCallThrough();
 
-                            array.addEventListener("change@0", indexChangeListener.indexChangeHandlerFunction, true);
+                            array.addPropertyChangeListener("0", indexChangeListener.indexChangeHandlerFunction);
                             // Skipping event listener on change@1, that's the affected index
                             // There should be no change@2 because we added and removed the same number of elements
-                            array.addEventListener("change@2", indexChangeListener.indexChangeHandlerFunction, true);
+                            array.addPropertyChangeListener("2", indexChangeListener.indexChangeHandlerFunction);
 
                             array.splice(spliceIndex, spliceLength, splicedValue);
 
