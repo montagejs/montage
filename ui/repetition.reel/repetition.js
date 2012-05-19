@@ -646,21 +646,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     },
 
-    _deleteItems: {
-        value: function(minus, index) {
-            if (this._updatingItems) {
-                return;
-            }
-            this._updatingItems = true;
-
-            for (var i = 0, l = minus.length; i < l; i++) {
-                this._deleteItem(index + i);
-            }
-
-            this._updatingItems = false;
-        }
-    },
-
 /**
   Description TODO
   @private
@@ -717,9 +702,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                     childComponent.needsDraw = true;
                     childComponent.loadComponentTree(function() {
                         if (++self._childLoadedCount === self._expectedChildComponentsCount) {
-//if(self.identifier == "repetition13") {
-//    debugger
-//}
                             canDrawGate.setField("iterationLoaded", true);
                             self.needsDraw = true;
                         }
@@ -734,38 +716,77 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 */
     _deleteItem: {
         value: function(index) {
-            var deletedItem, itemIndex, removedComponents, childComponents = this.childComponents, childComponentsCount = this._iterationChildComponentsCount,
-                itemsToAppendCount = this._itemsToAppend.length;
+            var deletedItem,
+                itemIndex = index,
+                removedComponents,
+                childComponents = this.childComponents,
+                childComponentsCount = this._iterationChildComponentsCount,
+                itemsToAppend = this._itemsToAppend,
+                itemsToAppendCount = itemsToAppend.length,
+                itemWasToBeAppended = false,
+                removedItemsBeforeIndexCount = 0;
 
-            if (itemsToAppendCount > 0) {
-                // We caught the need to remove these items before they got inserted
-                // just don't bother appending them
-                deletedItem = this._itemsToAppend.pop();
-                // TODO: make _deletedItems usable in _addItem
-                //this._deletedItems.push(deletedItem);
-                if (--itemsToAppendCount <= this._nextDeserializedItemIx) {
-                    this._nextDeserializedItemIx = itemsToAppendCount;
+
+            for (var i = 0; i < itemsToAppendCount; i++) {
+                itemToAppend = itemsToAppend[i];
+                if (itemToAppend.index > index) {
+                    itemToAppend.index--;
+                } else if (itemToAppend.index < index) {
+                    removedItemsBeforeIndexCount++;
+                } else {
+                    itemWasToBeAppended = itemToAppend.removed = true;
                 }
-            } else if (this._items.length > 0) {
-                // No items were scheduled for appending, so we need to extract some
-                deletedItem = this._items.splice(index, 1)[0];
-                deletedItem.removalIndex = index;
-                this._itemsToRemove.push(deletedItem);
             }
 
+            if (!itemWasToBeAppended) {
+                if (this._items.length > 0) {
+                    itemIndex = index - removedItemsBeforeIndexCount;
+
+                    deletedItem = this._items.splice(itemIndex, 1)[0];
+                    deletedItem.removalIndex = itemIndex;
+                    this._itemsToRemove.push(deletedItem);
+                } else {
+                    throw "BUG: _deleteItem was called on the repetition but no elements exist to be removed";
+                }
+
+                this._removeIterationChildComponents(deletedItem.childComponentsIndex);
+            }
+
+            this.needsDraw = true;
+        }
+    },
+
+
+    _removeIterationChildComponents: {
+        value: function(index) {
+            var childComponents = this.childComponents,
+                childComponentsCount = this._iterationChildComponentsCount,
+                removedComponents,
+                items, item;
+
             if (childComponentsCount > 0) {
-                removedComponents = childComponents.splice(index * childComponentsCount, childComponentsCount);
+                removedComponents = childComponents.splice(index, childComponentsCount);
                 this._childLoadedCount -= childComponentsCount;
                 this._expectedChildComponentsCount -= childComponentsCount;
-//console.log("this._expectedChildComponentsCount: ", this._expectedChildComponentsCount);
                 for (var i = 0, l = removedComponents.length; i < l; i++) {
                     removedComponents[i].cleanupDeletedComponentTree();
+                }
+                items = this._items;
+                for (var i = 0; item = items[i]; i++) {
+                    if (item.childComponentsIndex > index) {
+                        item.childComponentsIndex -= childComponentsCount;
+                    }
+                }
+                items = this._itemsToAppend;
+                for (var i = 0; item = items[i]; i++) {
+                    if (item.childComponentsIndex > index) {
+                        item.childComponentsIndex -= childComponentsCount;
+                    }
                 }
             } else {
                 this._childLoadedCount--;
                 this._expectedChildComponentsCount--;
             }
-            this.needsDraw = true;
         }
     },
 
@@ -842,6 +863,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         if (item) {
             children = item.element.childNodes;
             item.fragment = document.createDocumentFragment();
+            item.childComponentsIndex = this.childComponents.length - this._iterationChildComponentsCount;
             while (children.length > 0) {
                 // As the nodes are appended to item.fragment they are removed
                 // from item.element, so always use index 0.
@@ -1282,7 +1304,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             indexMapChanged = this._indexMapChanged,
             activeIndex,
             selectedIndex,
-            childCount = this._iterationChildCount;
+            childCount = this._iterationChildCount,
+            childComponentsCount;
 
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
@@ -1345,9 +1368,15 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         if (this._itemsToAppend.length > 0) {
             //addFragment = doc.createDocumentFragment();
             //firstAddedIndex = itemCount;
-
             // Append items pending addition
             for (i = 0; (iItem = this._itemsToAppend[i]); i++) {
+                // this item could have been removed from the objects array after it's adition.
+                if (iItem.removed) {
+                    this._removeIterationChildComponents(iItem.childComponentsIndex);
+
+                    continue;
+                }
+
                 fragment = iItem.fragment;
                 insertionIndex = iItem.insertionIndex;
                 delete iItem.fragment;
