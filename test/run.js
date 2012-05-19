@@ -35,7 +35,6 @@ if (spec) {
         "binding/self-binding-spec",
 
         "controllers/array-controller-spec",
-        "controllers/paged-array-controller-spec",
 
         "core/core-require-spec",
         "core/core-spec",
