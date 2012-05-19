@@ -12,7 +12,7 @@
 
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    Button = require("ui/button.reel/button").Button;
+    Button = require("ui/button.reel").Button;
 /**
   The ToggleButton component extends the Button component to include state management (pressed or not pressed), and the ability to specify labels and CSS classes for each state.
   @class module:"montage/ui/toggle-button.reel".ToggleButton
