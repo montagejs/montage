@@ -1367,7 +1367,12 @@ Object.defineProperty(Object.prototype, "__debugChangeNotifications__", {
                     var listenerFunctionName = changeListeners[key].listenerFunctionName;
                     var info = Montage.getInfoForObject(listenerTarget);
                     if (info.objectName === "PropertyChangeBindingListener") {
-                        bindings.push("\"" + listenerTarget.bindingPropertyPath + "\" @ " + Montage.getInfoForObject(listenerTarget.bindingOrigin).objectName + "(", listenerTarget.bindingOrigin, ")");
+                        if (listenerTarget.bindingOrigin === this && listenerTarget.bindingPropertyPath === path) {
+                            bindings.push("\"" + listenerTarget.targetPropertyPath + "\" @ " + (Montage.getInfoForObject(listenerTarget.target).objectName || "<object>") + "(", listenerTarget.target, ")");
+                        } else {
+                            bindings.push("\"" + listenerTarget.bindingPropertyPath + "\" @ " + (Montage.getInfoForObject(listenerTarget.bindingOrigin).objectName || "<object>") + "(", listenerTarget.bindingOrigin, ")");
+                        }
+
                         bindings.push("\n\t            ");
                     }
                 }
