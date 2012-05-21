@@ -1029,7 +1029,7 @@ describe("events/change-notification-spec", function() {
                 expect(listeners.listener.callCount).toBe(1);
             });
 
-            it("should not listen to mutation of a value at a direct property if we ignore mutations", function() {
+            it("should not listen to mutation of a value at a property path if we use ignore mutations parameter", function() {
                 var object = {"array": [1, 2, 3]},
                     listeners = {
                         listener: function(notification) {
