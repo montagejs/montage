@@ -538,11 +538,19 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      * @function
      */
     cleanupDeletedComponentTree: {
-        value: function() {
-            Object.deleteBindings(this);
+        value: function(deleteBindings) {
+            // Deleting bindings in all cases was causing the symptoms expressed in gh-603
+            // Until we have a more granular way we shouldn't do this,
+            // the deleteBindings parameter is a short term fix.
+            if (deleteBindings) {
+                Object.deleteBindings(this);
+            }
             this.needsDraw = false;
             this.traverseComponentTree(function(component) {
-                Object.deleteBindings(component);
+                // See above comment
+                if (deleteBindings) {
+                    Object.deleteBindings(component);
+                }
                 component.needsDraw = false;
             });
         }
@@ -1772,7 +1780,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
         enumerable: false,
         value: 0
     },
-    
+
     drawTree: {
         value: function drawTree() {
             if (this.requestedAnimationFrame === null) { // 0 is a valid requestedAnimationFrame value
@@ -1826,7 +1834,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     // http://my.opera.com/emoller/blog/2011/12/20/requestanimationframe-for-smart-er-animating
                     var currentDate = Date.now(),
                         miliseconds = 17 - currentDate + this._previousDrawDate;
-                    
+
                     if (miliseconds < 0) {
                         miliseconds = 0;
                     }
