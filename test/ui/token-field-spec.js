@@ -49,35 +49,69 @@ var testPage = TestPageLoader.queueTest("token-field-test", function() {
 
 
                    it("can select a suggestion", function() {
+                        test.tags = ['business'];
+
                           runs(function(){
                               var autocomplete2 = test.tokenField2._autocomplete;
 
                               autocomplete2.element.value = 'news';
                               // simulate the 'input' event on the textfield
                               autocomplete2._setValue();
-
-                              testPage.waitForDraw();
+                              waits(1000);
 
                               runs(function() {
-
+                                  //console.log('draw after selecting a suggestion');
                                   var event = document.createEvent('CustomEvent');
                                   event.initEvent('keyup', true, true);
                                   event.keyCode = 13;
 
                                   autocomplete2.handleKeyup(event);
                                   testPage.waitForDraw();
-                                  //console.log('tokenField1 suggestedValue', test.tokenField1.suggestedValue);
 
                                   runs(function() {
-                                      //console.log('tokenField1 value after accepting suggestion', test.tokenField1.value);
-                                      expect(test.tokenField2.values[0]).toBe("news");
-                                      expect(test.tags[0]).toBe("news");
+                                      expect(test.tokenField2._suggestedValue).toBe("news");
+                                      //console.log('tokenField2 values after accepting suggestion', test.tokenField2.values);
+                                      expect(test.tokenField2.values[1]).toBe("news");
+                                      expect(test.tags[0]).toBe("business");
+
                                   });
 
                               });
 
                           });
                       });
+
+                      it("can select a suggestion without existing values (gh-572)", function() {
+                        runs(function(){
+                            var autocomplete2 = test.tokenField2._autocomplete;
+
+                            autocomplete2.element.value = 'news';
+                            // simulate the 'input' event on the textfield
+                            autocomplete2._setValue();
+                            waits(1000);
+
+                            runs(function() {
+                                console.log('draw after selecting a suggestion');
+                                var event = document.createEvent('CustomEvent');
+                                event.initEvent('keyup', true, true);
+                                event.keyCode = 13;
+
+                                autocomplete2.handleKeyup(event);
+                                testPage.waitForDraw();
+
+                                runs(function() {
+                                    expect(test.tokenField2._suggestedValue).toBe("news");
+                                    console.log('tokenField2 values after accepting suggestion', test.tokenField2.values);
+                                    expect(test.tokenField2.values[1]).toBe("news");
+                                    expect(test.tags[0]).toBe("business");
+
+                                });
+
+                            });
+
+                        });
+                    });
+
 
 
                    it("cannot select a suggestion unless a match is found if ad-hoc values are not allowed", function() {
@@ -88,7 +122,7 @@ var testPage = TestPageLoader.queueTest("token-field-test", function() {
                            // simulate the 'input' event on the textfield
                            autocomplete1._setValue();
 
-                           testPage.waitForDraw();
+                           waits(1000);
 
                            runs(function() {
 
