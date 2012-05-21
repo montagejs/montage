@@ -26,7 +26,7 @@
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
-                        "values": {"<<->": "@owner.states"}
+                        "values": {"<-": "@owner.states"}
                     }
                 },
 
@@ -40,7 +40,7 @@
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
-                        "values": {"<<->": "@owner.members"}
+                        "values": {"<-": "@owner.members"}
                     }
                 },
 
@@ -54,7 +54,7 @@
                         "delegate": {"@": "owner"}
                     },
                     "bindings": {
-                        "values": {"<<->": "@owner.tags"}
+                        "values": {"<-": "@owner.tags"}
                     }
                 },
 
@@ -192,7 +192,7 @@ Ad-hoc values are allowed<br>
             "delegate": {"@": "owner"}
         },
         "bindings": {
-            "tokens": {"<<->": "@owner.states"}
+            "tokens": {"&lt;-": "@owner.states"}
         }
     },
 
@@ -207,7 +207,7 @@ Ad-hoc values are allowed<br>
             "delegate": {"@": "owner"}
         },
         "bindings": {
-            "tokens": {"<<->": "@owner.members"}
+            "tokens": {"&lt;-": "@owner.members"}
         }
     },
     "tags": {
@@ -219,7 +219,7 @@ Ad-hoc values are allowed<br>
             "delegate": {"@": "owner"}
         },
         "bindings": {
-            "tokens": {"<<->": "@owner.tags"}
+            "tokens": {"&lt;-": "@owner.tags"}
         }
     },
 
@@ -315,7 +315,7 @@ exports.TokenFieldExample = Montage.create(Component, {
         value: function(stringValue) {
             if(stringValue) {
                 stringValue = stringValue.trim().toLowerCase();
-                var i; 
+                var i;
                 var len = states.length;
                 for(i=0; i < len; i++) {
                     if(states[i].name.toLowerCase() === stringValue) {
