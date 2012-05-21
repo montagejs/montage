@@ -21,6 +21,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     PROTO = "__proto__",
     VALUE = "value",
     ENUMERABLE = "enumerable",
+    DISTINCT = "distinct",
     SERIALIZABLE = "serializable",
     MODIFY = "modify";
 
@@ -63,10 +64,6 @@ Object.defineProperty(Montage, "create", {
 
             var newObject = Object.create(typeof aPrototype === "undefined" ? this : aPrototype);
 
-            if (newObject._dependenciesForProperty) {
-                newObject._dependencyListeners = {};
-            }
-
             if (typeof newObject.didCreate === "function") {
                 newObject.didCreate();
             }
@@ -80,7 +77,7 @@ Object.defineProperty(Montage, "create", {
     }
 });
 
-var extendedPropertyAttributes = [SERIALIZABLE, MODIFY];
+var extendedPropertyAttributes = [SERIALIZABLE];
 
 // Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"
 /**
@@ -112,13 +109,21 @@ extendedPropertyAttributes.forEach(function(name) {
 Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
-        var dependencies = descriptor.dependencies;
+
+        var dependencies = descriptor.dependencies,
+            isValueDescriptor = (VALUE in descriptor);
+
+        if (DISTINCT in descriptor && !isValueDescriptor) {
+            throw ("Cannot use distinct attribute on non-value property '" + prop + "'");
+        }
+
+
         //reset defaults appropriately for framework.
         if (PROTO in descriptor) {
-            descriptor.__proto__ = (VALUE in descriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+            descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
             var defaults;
-            if (VALUE in descriptor) {
+            if (isValueDescriptor) {
                 if (typeof descriptor.value === "function") {
                     defaults = _defaultFunctionValueProperty;
                 } else {
@@ -151,10 +156,6 @@ Object.defineProperty(Montage, "defineProperty", {
         if (SERIALIZABLE in descriptor) {
             // get the _serializableAttributeProperties property or creates it through the entire chain if missing.
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
-        }
-
-        if (MODIFY in descriptor) {
-            getAttributeProperties(obj, MODIFY)[prop] = descriptor.modify;
         }
 
         //this is added to enable value properties with [] or Objects that are new for every instance

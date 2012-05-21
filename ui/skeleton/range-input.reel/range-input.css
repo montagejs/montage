@@ -2,7 +2,7 @@
    display: inline-block;
    border-radius: 4px;
    position: relative;
-   height: 5px;
+   height: 8px;
    background-color: #556270; 
    border: 1px solid #aaa;
    cursor: default;
@@ -17,9 +17,9 @@
     height: 1.2em;
     background-color: #ddd;
     color: #fff;
-    padding: 2px;
+    padding: 4px;
     border: 1px solid #333;
-    border-radius: 10px;
+    border-radius: 20px;
 }
 
 .slider-handle:hover {

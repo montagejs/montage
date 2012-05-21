@@ -21,6 +21,12 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
         value: false
     },
 
+    didCreate: {
+        value: function() {
+            this.content = null;
+        }
+    },
+
 /**
         Description TODO
         @type {Property}
@@ -32,6 +38,10 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
         serializable: true
     },
 
+    _content: {
+        value: null
+    },
+
 /**
         Description TODO
         @type {Function}
@@ -40,7 +50,7 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
     content: {
         enumerable: false,
         get: function() {
-            return Object.getPropertyDescriptor(Component, "domContent").get.call(this);
+            return this._content;
         },
         set: function(value) {
             var element;
@@ -63,6 +73,7 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
             } else {
                 Object.getPropertyDescriptor(Component, "domContent").set.call(this, value);
             }
+            this._content = value;
             this.needsDraw = true;
         }
     },

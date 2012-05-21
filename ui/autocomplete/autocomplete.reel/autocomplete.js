@@ -70,7 +70,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
     _delay: {value: null},
     delay: {
-        distinct: true,
         get: function(){
             return this._delay;
         },
@@ -106,8 +105,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         },
         modify: function(v) {
             this._tokens = v;
-        },
-        distinct: true
+        }
     },
 
     // overridden here to get the substring/searchString
@@ -243,7 +241,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
     _suggestedValue: {value: null},
     suggestedValue: {
-        distinct: true,
         enumerable: false,
         get: function() {
             return this._suggestedValue;

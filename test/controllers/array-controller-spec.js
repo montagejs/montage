@@ -466,6 +466,14 @@ describe("controllers/array-controller-spec.js", function() {
 
         describe("when not automatically organizing objects", function() {
 
+            beforeEach(function() {
+                arrayController.automaticallyOrganizeObjects = false;
+            });
+
+            afterEach(function() {
+                arrayController.automaticallyOrganizeObjects = true;
+            });
+
             it("should not organize objects when the sort function is set", function() {
                 arrayController.sortFunction = sortByHome;
 

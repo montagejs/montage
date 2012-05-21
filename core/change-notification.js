@@ -205,6 +205,7 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
     dependentDescriptorsIndex: {value: null},
     mutationDependencyIndex: {value: null},
     mutationListenersCount: {value: 0},
+    observedDependentProperties: {value: null},
 
     initWithTargetPath: {
         value: function(target, path) {
@@ -216,7 +217,8 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
     },
     registerListener: {
         value: function(listener, beforeChange, mutation) {
-            var listenerKey = listener.uuid;
+            var listenerKey = listener.uuid,
+                listeners;
 
             if (beforeChange) {
                 listeners = this.willChangeListeners;
@@ -247,7 +249,8 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
     },
     unregisterListener: {
         value: function(listener, beforeChange) {
-            var listenerKey = listener.uuid;
+            var listenerKey = listener.uuid,
+                listeners;
 
             if (beforeChange) {
                 listeners = this.willChangeListeners;
@@ -818,9 +821,19 @@ Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
             // TODO should adding a dispatcher on a dependent property also be subjected to checking for
             // automaticDispatchPropertyChangeListener, probably
             if (dependentPropertyPaths) {
+
+                if (!descriptor.observedDependentProperties) {
+                    descriptor.observedDependentProperties = {};
+                }
+
                 for (i = 0; (iPath = dependentPropertyPaths[i]); i++) {
-                    this.addPropertyChangeListener(iPath, descriptor, beforeChange, false);
-                    descriptor.registerDependency(this, iPath, null);
+
+                    if (!descriptor.observedDependentProperties[iPath]) {
+                        descriptor.observedDependentProperties[iPath] = true;
+
+                        this.addPropertyChangeListener(iPath, descriptor, beforeChange, false);
+                        descriptor.registerDependency(this, iPath, null);
+                    }
                 }
             }
         }
@@ -918,6 +931,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayChangeN
     configurable: false,
     value: function(methodName, methodArguments, index, howManyToRemove, newValues) {
         var descriptor = ChangeNotification.getPropertyChangeDescriptor(this, null),
+            result,
             notification,
             indexNotification = Object.create(PropertyChangeNotification),
             delta,
@@ -1235,6 +1249,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "sort", {
             indexNotification,
             oldValue,
             newValue,
+            indexArray,
             _sortIndexArray,
             _sortIndexArrayLength;
 
@@ -1340,6 +1355,7 @@ Object.defineProperty(Object.prototype, "__debugChangeNotifications__", {
     configurable: false,
     value: function() {
         var registry = ChangeNotification._descriptorsRegistry[this.uuid],
+            path,
             log = [];
 
         if (registry) {
@@ -1367,7 +1383,12 @@ Object.defineProperty(Object.prototype, "__debugChangeNotifications__", {
                     var listenerFunctionName = changeListeners[key].listenerFunctionName;
                     var info = Montage.getInfoForObject(listenerTarget);
                     if (info.objectName === "PropertyChangeBindingListener") {
-                        bindings.push("\"" + listenerTarget.bindingPropertyPath + "\" @ " + Montage.getInfoForObject(listenerTarget.bindingOrigin).objectName + "(", listenerTarget.bindingOrigin, ")");
+                        if (listenerTarget.bindingOrigin === this && listenerTarget.bindingPropertyPath === path) {
+                            bindings.push("\"" + listenerTarget.targetPropertyPath + "\" @ " + (Montage.getInfoForObject(listenerTarget.target).objectName || "<object>") + "(", listenerTarget.target, ")");
+                        } else {
+                            bindings.push("\"" + listenerTarget.bindingPropertyPath + "\" @ " + (Montage.getInfoForObject(listenerTarget.bindingOrigin).objectName || "<object>") + "(", listenerTarget.bindingOrigin, ")");
+                        }
+
                         bindings.push("\n\t            ");
                     }
                 }

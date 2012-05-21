@@ -97,7 +97,6 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
 
     _selectedTab: {value: null},
     selectedTab: {
-        distinct: true,
         enumerable: false,
         get: function() {
             return this._selectedTab;
