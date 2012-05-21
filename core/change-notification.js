@@ -216,7 +216,8 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
     },
     registerListener: {
         value: function(listener, beforeChange, mutation) {
-            var listenerKey = listener.uuid;
+            var listenerKey = listener.uuid,
+                listeners;
 
             if (beforeChange) {
                 listeners = this.willChangeListeners;
@@ -247,7 +248,8 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
     },
     unregisterListener: {
         value: function(listener, beforeChange) {
-            var listenerKey = listener.uuid;
+            var listenerKey = listener.uuid,
+                listeners;
 
             if (beforeChange) {
                 listeners = this.willChangeListeners;
@@ -1236,6 +1238,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "sort", {
             indexNotification,
             oldValue,
             newValue,
+            indexArray,
             _sortIndexArray,
             _sortIndexArrayLength;
 
@@ -1341,6 +1344,7 @@ Object.defineProperty(Object.prototype, "__debugChangeNotifications__", {
     configurable: false,
     value: function() {
         var registry = ChangeNotification._descriptorsRegistry[this.uuid],
+            path,
             log = [];
 
         if (registry) {
