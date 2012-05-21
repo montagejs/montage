@@ -733,6 +733,35 @@ describe("binding/definebinding-spec", function() {
 
     describe("when bound to an array", function() {
 
+        it("should not go out of its way to protect you from mutations to an object on the left making their way over to the right", function() {
+
+            var sourceObject = Alpha.create(),
+            boundObject = Omega.create();
+
+            boundObject.bar = ["a", "b", "c"];
+
+            Object.defineBinding(sourceObject, "foo", {
+                boundObject: boundObject,
+                boundObjectPropertyPath: "bar",
+                oneway: true
+            });
+
+            // Ideally, this should be avoided; but the way it works is expected
+            sourceObject.foo.push("d");
+
+            expect(sourceObject.foo.length).toBe(4);
+            expect(sourceObject.foo[0]).toBe("a");
+            expect(sourceObject.foo[1]).toBe("b");
+            expect(sourceObject.foo[2]).toBe("c");
+            expect(sourceObject.foo[3]).toBe("d");
+
+            expect(boundObject.bar.length).toBe(4); // Yep, this is a little unexpected
+            expect(boundObject.bar[0]).toBe("a");
+            expect(boundObject.bar[1]).toBe("b");
+            expect(boundObject.bar[2]).toBe("c");
+            expect(boundObject.bar[3]).toBe("d"); //but it makes sense, left and right are the same array
+        });
+
         it("should propagate additions from the bound array to the source propertyPath", function() {
 
             var sourceObject = Alpha.create(),
@@ -912,59 +941,6 @@ describe("binding/definebinding-spec", function() {
 
             expect(sourceObject.foo).toBeFalsy();
             expect(boundObject.bar.length).toBe(0);
-        });
-
-        describe("when modifiying content with a 'modify' property attribute set", function() {
-
-            var verification, sourceObject, boundObject;
-
-            beforeEach(function() {
-                verification = {modified: false};
-                sourceObject = Alpha.create();
-                boundObject = Omega.create();
-
-                var modifyFunction = (function(verification) {
-                    return function(type, newValue, oldValue) {
-                        verification.modified = true;
-                    }
-                })(verification);
-
-                Montage.defineProperty(sourceObject, "foo", {
-                    enumerable: false,
-                        set: function(value) {
-                            this._foo = value;
-                        },
-                        get: function() {
-                            return this._foo;
-                        },
-                        modify: modifyFunction
-                });
-            }),
-
-            it("should invoke the 'modify' property attribute function on the source object when an observed array, of a two or more component path, is mutated", function() {
-                boundObject.bar = [["a", "b"]];
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar.0"
-                });
-
-                boundObject.bar[0].pop();
-                expect(verification.modified).toBeTruthy();
-            });
-
-            it("should invoke the 'modify' property attribute function on the source object when an observed object, of a two or more component path, is mutated", function() {
-                boundObject.bar = {x: ["a", "b"]};
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar.x"
-                });
-
-                boundObject.bar.x.pop();
-                expect(verification.modified).toBeTruthy();
-            });
-
         });
 
         it("should propagate a change from the bound object when the property path includes an array index and that element is removed", function() {
