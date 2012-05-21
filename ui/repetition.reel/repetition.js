@@ -769,7 +769,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 this._childLoadedCount -= childComponentsCount;
                 this._expectedChildComponentsCount -= childComponentsCount;
                 for (var i = 0, l = removedComponents.length; i < l; i++) {
-                    removedComponents[i].cleanupDeletedComponentTree();
+                    removedComponents[i].cleanupDeletedComponentTree(true);
                 }
                 items = this._items;
                 for (var i = 0; item = items[i]; i++) {
