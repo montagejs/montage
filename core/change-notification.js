@@ -918,6 +918,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayChangeN
     configurable: false,
     value: function(methodName, methodArguments, index, howManyToRemove, newValues) {
         var descriptor = ChangeNotification.getPropertyChangeDescriptor(this, null),
+            result,
             notification,
             indexNotification = Object.create(PropertyChangeNotification),
             delta,
