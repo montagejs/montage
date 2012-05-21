@@ -759,15 +759,18 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             var objects = Array.prototype.slice.call(arguments),
                 i,
                 objectCount = objects.length,
-                selectedContentIndexes, firstIndex;
+                selectedContentIndexes, firstIndex,
+                content = this.content;
 
-            for (i = 0; i < objectCount; i++) {
-                this.content.push(objects[i]);
+            if (content) {
+                content.push.apply(content, objects);
+            } else {
+                this.content = content = objects;
             }
 
             if (this.selectObjectsOnAddition) {
                 selectedContentIndexes = [];
-                firstIndex = this.content.length-objectCount;
+                firstIndex = content.length-objectCount;
                 for (i = 0; i < objectCount; i++) {
                     selectedContentIndexes[i] = firstIndex++;
                 }

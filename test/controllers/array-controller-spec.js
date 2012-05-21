@@ -53,6 +53,10 @@ describe("controllers/array-controller-spec.js", function() {
             expect(arrayController.content).toBe(content);
         });
 
+        it("should initialize content", function() {
+            arrayController.addObjects("Foo");
+            expect(arrayController.content).toEqual(["Foo"]);
+        });
     });
 
     describe("when used in bindings", function() {
