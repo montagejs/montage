@@ -416,6 +416,32 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
         }
     },
 
+    enterString: {
+        enumerable: false,
+        value: function(string, callback) {
+            var eventInfo = {}, eventName = "keypress";
+            eventInfo.modifiers = eventInfo.modifiers || "";
+            eventInfo.keyCode = eventInfo.keyCode || 0;
+            eventInfo.charCode = eventInfo.charCode || 0;
+            
+            var len = string.length, charArr = [];
+            for(var i=0; <len; i++) {
+                eventInfo.keyCode = string.charCodeAt(i);                
+                this.keyEvent(eventInfo, eventName, callback);
+            }
+
+            if (typeof callback === "function") {
+                if(this.willNeedToDraw) {
+                    this.waitForDraw();
+                    runs(callback);
+                } else {
+                    callback();
+                }
+            }
+            return eventInfo;
+        }
+    },
+    
 
     mouseEvent: {
         enumerable: false,

@@ -1291,6 +1291,25 @@ describe("binding/definebinding-spec", function() {
                     boundObject.bar.pop();
                     expect(sourceObject.foo).toBe(false);
                 });
+
+                it("should propagate a change from false to true when the array is initially null.", function() {
+                    var sourceObject = Alpha.create(),
+                    boundObject = Omega.create();
+
+                    boundObject.bar = null;
+
+                    Object.defineBinding(sourceObject, "foo", {
+                        boundObject: boundObject,
+                        boundObjectPropertyPath: "bar.any(a)",
+                        oneway: true
+                    });
+
+                    expect(sourceObject.foo).toBeFalsy();
+
+                    boundObject.bar = [{a: false}, {a: null}, {a: true}];
+
+                    expect(sourceObject.foo).toBe(true);
+                });
             });
         });
     });
