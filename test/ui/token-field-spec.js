@@ -49,31 +49,27 @@ var testPage = TestPageLoader.queueTest("token-field-test", function() {
 
 
                    it("can select a suggestion", function() {
-                        test.tags = ['business'];
-
                           runs(function(){
                               var autocomplete2 = test.tokenField2._autocomplete;
 
                               autocomplete2.element.value = 'news';
                               // simulate the 'input' event on the textfield
                               autocomplete2._setValue();
-                              waits(1000);
+                              // this is required as needsDraw is normally not set when user enters
+                              // into the input field directly
+                              autocomplete2.needsDraw = true;
+                              testPage.waitForDraw();
 
                               runs(function() {
-                                  //console.log('draw after selecting a suggestion');
-                                  var event = document.createEvent('CustomEvent');
-                                  event.initEvent('keyup', true, true);
-                                  event.keyCode = 13;
-
-                                  autocomplete2.handleKeyup(event);
+                                  //console.log('autocomplete2.value after input event', autocomplete2.value);
+                                  testPage.keyEvent({target: autocomplete2.element, keyCode: 13}, 'keyup');
                                   testPage.waitForDraw();
+                                  //console.log('tokenField1 suggestedValue', test.tokenField1.suggestedValue);
 
                                   runs(function() {
-                                      expect(test.tokenField2._suggestedValue).toBe("news");
-                                      //console.log('tokenField2 values after accepting suggestion', test.tokenField2.values);
-                                      expect(test.tokenField2.values[1]).toBe("news");
-                                      expect(test.tags[0]).toBe("business");
-
+                                      //console.log('tokenField1 value after accepting suggestion', test.tokenField1.value);
+                                      expect(test.tokenField2.values[0]).toBe("news");
+                                      expect(test.tags[0]).toBe("news");
                                   });
 
                               });
@@ -82,28 +78,28 @@ var testPage = TestPageLoader.queueTest("token-field-test", function() {
                       });
 
                       it("can select a suggestion without existing values (gh-572)", function() {
+
                         runs(function(){
                             var autocomplete2 = test.tokenField2._autocomplete;
+                            var newToken = 'User Experience';
 
-                            autocomplete2.element.value = 'news';
+                            autocomplete2.element.value = newToken;
                             // simulate the 'input' event on the textfield
                             autocomplete2._setValue();
-                            waits(1000);
+                            autocomplete2.needsDraw = true;
+
+                            testPage.waitForDraw();
 
                             runs(function() {
                                 console.log('draw after selecting a suggestion');
-                                var event = document.createEvent('CustomEvent');
-                                event.initEvent('keyup', true, true);
-                                event.keyCode = 13;
-
-                                autocomplete2.handleKeyup(event);
+                                testPage.keyEvent({target: autocomplete2.element, keyCode: 13}, 'keyup');
                                 testPage.waitForDraw();
 
                                 runs(function() {
-                                    expect(test.tokenField2._suggestedValue).toBe("news");
+                                    expect(test.tokenField2._suggestedValue).toBe(newToken);
                                     console.log('tokenField2 values after accepting suggestion', test.tokenField2.values);
-                                    expect(test.tokenField2.values[1]).toBe("news");
-                                    expect(test.tags[0]).toBe("business");
+                                    expect(test.tokenField2.values[1]).toBe(newToken);
+                                    expect(test.tags[1]).toBe(newToken);
 
                                 });
 
@@ -121,8 +117,9 @@ var testPage = TestPageLoader.queueTest("token-field-test", function() {
                            autocomplete1.element.value = 'ABCD';
                            // simulate the 'input' event on the textfield
                            autocomplete1._setValue();
+                           autocomplete1.needsDraw = true;
 
-                           waits(1000);
+                           testPage.waitForDraw();
 
                            runs(function() {
 
