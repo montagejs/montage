@@ -86,6 +86,8 @@ exports.TokenField = Montage.create(Component, {
                     this.values.push(this.__suggestedValue);
                     this._autocomplete.value = '';
                 }
+                // nullify the value as autocomplete.value is empty
+                this.__suggestedValue = null;
 
             }
         }
