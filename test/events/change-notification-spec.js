@@ -14,7 +14,7 @@ var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
 };
 
-describe("event/change-notification-spec", function() {
+describe("events/change-notification-spec", function() {
     beforeEach(function() {
         ChangeNotification.__reset__();
     });
@@ -990,6 +990,26 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener.callCount).toBe(0);
             });
 
+            it("should listen to mutations of a value at a direct property name", function() {
+                var object1 = {done: false},
+                    array = [object1, {done: false}, {done: false}],
+                    listeners = {
+                        listener: function(notification) {
+                            expect(notification.currentTarget).toBe(array);
+                            expect(notification.target).toBe(object1);
+                            expect(notification.isMutation).toBe(false);
+                            expect(notification.minus).toBe(false);
+                            expect(notification.plus).toBe(true);
+                        }
+                    };
+
+                spyOn(listeners, "listener").andCallThrough();
+
+                array.addPropertyChangeListener("done", listeners.listener, false, false);
+                object1.done = true;
+                expect(listeners.listener.callCount).toBe(1);
+            });
+
             it("should listen to mutations of a value at a property path", function() {
                 var object = {"array": [1, 2, 3]},
                     listeners = {
@@ -1009,7 +1029,7 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener.callCount).toBe(1);
             });
 
-            it("should not listen to mutation of a value at a property path", function() {
+            it("should not listen to mutation of a value at a property path if we use ignore mutations parameter", function() {
                 var object = {"array": [1, 2, 3]},
                     listeners = {
                         listener: function(notification) {
@@ -1192,6 +1212,21 @@ describe("event/change-notification-spec", function() {
                 object.x = 4;
 
                 expect(listeners.listener.callCount).toBe(0);
+            });
+
+            it("should remove a function listener and continue setting the value after removal", function() {
+                var object = {x: 3},
+                    listeners = {
+                        listener: function(notification) {
+                        }
+                    };
+
+                spyOn(listeners, "listener").andCallThrough();
+                object.addPropertyChangeListener("x", listeners.listener);
+                object.removePropertyChangeListener("x", listeners.listener);
+                object.x = 4;
+
+                expect(object.x).toBe(4);
             });
 
             it("should remove a function listener after being triggered", function() {
@@ -1655,6 +1690,63 @@ describe("event/change-notification-spec", function() {
             expect(Object.getOwnPropertyDescriptor(object, "enumerable").enumerable).toBe(true);
             expect(Object.getOwnPropertyDescriptor(object, "notEnumerable").enumerable).toBe(false);
         });
+
+        it("should remove a function listener and continue calling the original setter after removal", function() {
+            var setters = {
+                 setter: function(value) {
+                     this._foo = value;
+                 }
+             };
+
+            var MeaningfulObject = Montage.create(Montage, {
+                _foo: {
+                    value: "same"
+                },
+
+                foo: {
+                    set: setters.setter,
+                    get: function() {
+                        return this._foo;
+                    }
+                }
+            });
+            var object = MeaningfulObject.create();
+
+            spyOn(setters, "setter").andCallThrough();
+            object.addPropertyChangeListener("x", function(notification) {});
+            object.removePropertyChangeListener("x", function(notification) {});
+            object.foo = "new";
+
+            expect(object.foo).toEqual("new");
+        });
+
+        it("should always call the original setter", function() {
+
+            var setterCalled = false;
+
+            var MeaningfulObject = Montage.create(Montage, {
+                _foo: {
+                    value: "same"
+                },
+
+                foo: {
+                    set: function(value) {
+                        setterCalled = true;
+                        this._foo = value;
+                    },
+                    get: function() {
+                        return this._foo;
+                    }
+                }
+            });
+            var object = MeaningfulObject.create();
+
+            object.addPropertyChangeListener("x", function(notification) {});
+            object.foo = "same";
+
+            expect(setterCalled).toBeTruthy();
+         });
+
     });
 
     describe("listener cycles", function() {

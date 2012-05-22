@@ -10,7 +10,6 @@ var Montage = require("montage").Montage,
 exports.Scroller = Montage.create(Component, {
 
     _scrollX: {
-        enumerable: false,
         value: 0
     },
 
@@ -21,11 +20,11 @@ exports.Scroller = Montage.create(Component, {
         set: function (value) {
             this._scrollX = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _scrollY: {
-        enumerable: false,
         value: 0
     },
 
@@ -36,7 +35,8 @@ exports.Scroller = Montage.create(Component, {
         set: function (value) {
             this._scrollY = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _maxTranslateX: {
@@ -48,7 +48,6 @@ exports.Scroller = Montage.create(Component, {
     },
 
     _axis: {
-        enumerable: false,
         value: "auto"
     },
 
@@ -59,11 +58,11 @@ exports.Scroller = Montage.create(Component, {
         set: function (value) {
             this._axis = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _displayScrollbars: {
-        enumerable: false,
         value: "auto"
     },
 
@@ -84,11 +83,11 @@ exports.Scroller = Montage.create(Component, {
                     break;
             }
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _hasMomentum: {
-        enumerable: false,
         value: true
     },
 
@@ -98,7 +97,18 @@ exports.Scroller = Montage.create(Component, {
         },
         set: function (value) {
             this._hasMomentum = value;
-        }
+        },
+        serializable: true
+    },
+
+    _content: {
+        value: null,
+        serializable: true
+    },
+
+    _scrollBars: {
+        value: null,
+        serializable: true
     },
 
     handleTranslateStart: {
@@ -121,7 +131,6 @@ exports.Scroller = Montage.create(Component, {
     },
 
     willDraw: {
-        enumerable: false,
         value: function () {
             this._left = this._element.offsetLeft;
             this._top = this._element.offsetTop;
@@ -187,7 +196,6 @@ exports.Scroller = Montage.create(Component, {
     },
 
     draw: {
-        enumerable: false,
         value: function () {
             this._content.style.webkitTransform="translate3d("+(-this._scrollX)+"px, "+(-this._scrollY)+"px, 0)";
         }

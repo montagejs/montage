@@ -190,5 +190,10 @@ exports.AutocompleteExample = Montage.create(Component, {
                 members: this.members
             });
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

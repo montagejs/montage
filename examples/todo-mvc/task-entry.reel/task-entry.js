@@ -6,15 +6,12 @@
 var Montage = require("montage").Montage;var Component = require("montage/ui/component").Component;
 
 exports.TaskEntry = Montage.create(Component, {
-    hasTemplate: {value: true},
 
     _task: {
-        enumerable: false,
         value: null
     },
 
     task: {
-        enumerable: false,
         get: function() {
             return this._task;
         },
@@ -38,8 +35,8 @@ exports.TaskEntry = Montage.create(Component, {
     },
 
     completedCheckbox: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     prepareForDraw: {

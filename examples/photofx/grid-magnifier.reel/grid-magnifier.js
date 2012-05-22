@@ -10,17 +10,16 @@ var Component = require("montage/ui/component").Component;
 exports.GridMagnifier = Montage.create(Component, {
 
     _canvas: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     _grid: {
-        enumerable: false,
         value: null
     },
 
     grid: {
-        enumerable: false,
+        serializable: true,
         get: function() {
             return this._grid;
         },
@@ -37,22 +36,18 @@ exports.GridMagnifier = Montage.create(Component, {
     },
 
     _width: {
-        enumerable: false,
         value: null
     },
 
     _height: {
-        enumerable: false,
         value: null
     },
 
     _clientCenterX: {
-        enumerable: false,
         value: null
     },
 
     _clientCenterY: {
-        enumerable: false,
         value: null
     },
 

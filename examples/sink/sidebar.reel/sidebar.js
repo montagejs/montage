@@ -33,7 +33,8 @@ exports.Sidebar = Montage.create(Component, {
 
     // the main component
     sandbox: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     _selectedItem: {value: null},

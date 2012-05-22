@@ -20,7 +20,6 @@ var Montage = require("montage").Montage,
  */
 var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends module:"montage/ui/toggle-button.reel".ToggleButton# */ {
     _pressed: {
-        enumerable: false,
         value: false
     },
 /**
@@ -36,13 +35,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
             this._pressed = !!value;
             this._label = (this._pressed) ? this._pressedLabel : this._unpressedLabel;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _unpressedLabel: {
-        enumerable: false,
-        value: null,
-        serializable: true
+        value: null
     },
 /**
     The label to display when the ToggleButton is in its unpressed state. By default, it is set to the value of the <code>value</code> attribute assigned to the input element.
@@ -59,13 +57,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
                 this.label = this._unpressedLabel;
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 
     _pressedLabel: {
-        enumerable: false,
-        value: null,
-        serializable: true
+        value: null
     },
 /**
     The value the button should take when it is in the pressed state. By default, it is set to the value of the <code>value</code> attribute assigned to the input element.
@@ -82,13 +79,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
                 this.label = this._pressedLabel;
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 
     _pressedClass: {
-        enumerable: false,
         value: "pressed",
-        serializable: true
     },
 /**
     The CSS class that should be added to the element's class list when the button is in
@@ -105,7 +101,8 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
             if (this._pressed) {
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -117,18 +114,19 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
         @default null
     */
     label: {
-      get: function() {
-        return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").get.call(this);
-      },
-      set: function(value) {
-        // Call super
-        Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").set.call(this, value);
-        if (this._pressed === true && this._label === this._unpressedLabel) {
-            this.pressed = false;
-        } else if (this._pressed === false && this._label === this._pressedLabel) {
-            this.pressed = true;
-        }
-      }
+        get: function() {
+            return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").get.call(this);
+        },
+        set: function(value) {
+            // Call super
+            Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").set.call(this, value);
+            if (this._pressed === true && this._label === this._unpressedLabel) {
+                this.pressed = false;
+            } else if (this._pressed === false && this._label === this._pressedLabel) {
+                this.pressed = true;
+            }
+        },
+        serializable: true
     },
 
     didSetElement: {

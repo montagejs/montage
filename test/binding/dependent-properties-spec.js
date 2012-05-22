@@ -547,4 +547,69 @@ describe("binding/dependent-properties-spec", function() {
 
     });
 
+    describe("an object with a circular dependency", function() {
+
+        var Example, example;
+
+        Example = Montage.create(Montage, {
+
+            _foo: {
+                value: "foo"
+            },
+
+            foo: {
+                dependencies: ["baz"],
+                get: function() {
+                    return "foo (" + this._foo + ") reports baz: " + this._baz;
+                },
+                set: function(value) {
+                    this._foo = value;
+                }
+            },
+
+            _bar: {
+                value: "bar"
+            },
+
+            bar: {
+                dependencies: ["foo"],
+                get: function() {
+                    return "bar (" + this._bar + ") reports foo: " + this._foo;
+                },
+                set: function(value) {
+                    this._bar = value;
+                }
+
+            },
+
+            _baz: {
+                value: "baz"
+            },
+
+            baz: {
+                dependencies: ["bar"],
+                get: function() {
+                    return "baz (" + this._baz + ") reports bar: " + this._bar;
+                },
+                set: function(value) {
+                    this._baz = value;
+                }
+            }
+
+        });
+
+        beforeEach(function() {
+            example = Example.create();
+        });
+
+        it("should allow installing listeners on properties involved in the cycle without looping infinitely", function() {
+            expect(function() {
+                example.addPropertyChangeListener("foo", function() {});
+                example.addPropertyChangeListener("bar", function() {});
+                example.addPropertyChangeListener("baz", function() {});
+            }).not.toThrow();
+        });
+
+    })
+
 });

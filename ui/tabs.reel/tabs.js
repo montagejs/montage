@@ -27,13 +27,14 @@ var Montage = require("montage").Montage,
 
 var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/ui/tabs.reel".Tabs# */ {
 
-    hasTemplate: {
-        value: true
+    _repetition: {
+        value: null,
+        serializable: true
     },
 
-    _repetition: {
-        enumerable: false,
-        value: null
+    _indicator: {
+        value: null,
+        serializable: true
     },
 /**
         Description TODO
@@ -41,13 +42,14 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
         @default {Array} []
     */
     tabs: {
-        enumerable: false,
         distinct: true,
+        serializable: true,
         value: []
     },
 
     navController: {
-        value: null
+        value: null,
+        serializable: true
     },
     // optional property. If provided, this will result in wiring tab clicks to switching components in content
     /**
@@ -57,6 +59,7 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
     */
     content: {
         enumerable: false,
+        serializable: true,
         value: null
     },
 
@@ -87,7 +90,8 @@ var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/u
                 var index = this._indexOf(value);
                 this.navController.selectedIndexes = [index];
             }
-        }
+        },
+        serializable: true
     },
 
 

@@ -12,5 +12,15 @@ exports.ToggleButtonExample = Montage.create(Component, {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
+    },
+
+    display: {
+        value: null,
+        serializable: true
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

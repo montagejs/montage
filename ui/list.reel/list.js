@@ -15,13 +15,13 @@ var Montage = require("montage").Montage,
  @extends module:montage/ui/component.Component
  */
 var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui/list.reel".List# */ {
-/**
-  Description TODO
-  @private
-*/
+    /**
+      Description TODO
+      @private
+    */
     _repetition: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
     /**
         Description TODO
@@ -29,19 +29,22 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
         @default null
     */
     delegate: {
-        enumerable: false,
+        serializable: true,
         value: null
     },
-    
+
     objects: {
+        serializable: true,
         value: null
     },
-    
+
     contentController: {
+        serializable: true,
         value: null
     },
-    
+
     axis: {
+        serializable: true,
         value: null
     },
 
@@ -50,6 +53,7 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
   @private
 */
     isSelectionEnabled: {
+        serializable: true,
         value: null
     },
 

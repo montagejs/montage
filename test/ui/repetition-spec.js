@@ -125,6 +125,26 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 });
             });
 
+            it("should change the repetition on shift and consecutive pop", function() {
+                delegate.list1Objects = [1, 2, 3];
+                testPage.waitForComponentDraw(delegate.repetition1);
+
+                runs(function() {
+                    // sanity test
+                    var lis = querySelectorAll(".list1 > li");
+                    expect(lis.length).toBe(3);
+
+                    delegate.list1Objects.unshift(0);
+                    delegate.list1Objects.pop();
+
+                    testPage.waitForComponentDraw(delegate.repetition1);
+                    runs(function() {
+                        lis = querySelectorAll(".list1 > li");
+                        expect(lis.length).toBe(3);
+                    });
+                });
+            });
+
             it("should replace an item of the repetition", function() {
                 delegate.list1Objects = [1];
                 testPage.waitForComponentDraw(delegate.repetition1);

@@ -3,10 +3,10 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-var Montage = require("montage").Montage;var Component = require("montage/ui/component").Component;
+var Montage = require("montage").Montage,
+    Component = require("montage/ui/component").Component;
 
 exports.TaskListControls = Montage.create(Component, {
-    hasTemplate: {value: true},
 
     didCreate: {
         value: function() {
@@ -43,17 +43,15 @@ exports.TaskListControls = Montage.create(Component, {
     },
 
     tasksController: {
-        enumerable: false,
         value: null
     },
 
     clearCompletedForm: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     handleSubmit: {
-        enumerable: false,
         value: function(event) {
             event.preventDefault();
 

@@ -2,6 +2,12 @@ var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.Logger = Montage.create(Component, {
+
+    output: {
+        value: null,
+        serializable: true
+    },
+
   _messages: {
     enumerable: false,
     value: ["Logger (click to open)"]

@@ -26,7 +26,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
     @default {Boolean} false
 */
     hasTemplate: {
-        enumerable: false,
         value: false
     },
 /**
@@ -34,7 +33,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
   @private
 */
     _condition: {
-        enumerable: false,
         value: null
     },
 /**
@@ -43,7 +41,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
         @default null
     */
     condition: {
-        enumerable: false,
         set: function(value) {
 
             if (value === this._condition) {
@@ -63,15 +60,15 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
         },
         get: function() {
             return this._condition;
-        }
+        },
+        serializable: true
     },
 
     /**
      @private
      */
     _removalStrategy:{
-        value: "remove",
-        enumerable:false
+        value: "remove"
     },
 
     // TODO should this strategy be part of another class?
@@ -89,7 +86,8 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             }
             this._removalStrategy = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     prepareForDraw: {
@@ -105,7 +103,6 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
     @function
     */
     draw: {
-        enumerable: false,
         value: function() {
 
             if (this.condition) {

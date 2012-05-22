@@ -128,8 +128,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     didCreate: {
         value: function() {
-            var self = this;
-
             this.addPropertyChangeListener("objects", this);
             this._fakeObjects = Object.create(FakeObjects).initWithRepetition(this);
         }
@@ -184,7 +182,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
     handleChange: {
         enumerable: false,
         value: function(notification) {
-            if (this._isComponentExpanded) {
+            if ("objects" === notification.currentPropertyPath && this._isComponentExpanded) {
                 this._updateItems(notification.minus, notification.plus, notification.index || 0);
             }
         }
@@ -232,7 +230,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _contentController: {
-        enumerable: false,
         value: null
     },
 /**
@@ -241,7 +238,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         @default null
     */
     contentController: {
-        enumerable: false,
         get: function() {
             return this._contentController;
         },
@@ -253,7 +249,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._contentController) {
                 Object.deleteBinding(this, "objects");
                 Object.deleteBinding(this, "selectedIndexes");
-                Object.deleteBinding(this, "selections");
             }
 
             this._contentController = value;
@@ -267,8 +262,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                 // And bind what we need from the new contentController
                 var objectsBindingDescriptor,
-                    selectedIndexesBindingDescriptor,
-                    selectionsBindingDescriptor;
+                    selectedIndexesBindingDescriptor;
 
                 objectsBindingDescriptor = {
                     boundObject: this._contentController,
@@ -281,17 +275,12 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                     boundObjectPropertyPath: "selectedIndexes"
                 };
 
-                selectionsBindingDescriptor = {
-                    boundObject: this._contentController,
-                    boundObjectPropertyPath: "selections"
-                };
-
                 // If we're ready for bindings...go ahead an install
                 // TODO: Look at changing this once the new serialization has been implemented
                 if (this._hasBeenDeserialized) {
                     Object.defineBinding(this, "objects", objectsBindingDescriptor);
                     Object.defineBinding(this, "selectedIndexes", selectedIndexesBindingDescriptor);
-                    Object.defineBinding(this, "selections", selectionsBindingDescriptor);
+
                 } else {
                     // otherwise we need to defer it until later; we haven't been deserialized yet
                     if (!this._controllerBindingsToInstall) {
@@ -300,13 +289,13 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                     this._controllerBindingsToInstall.objects = objectsBindingDescriptor;
                     this._controllerBindingsToInstall.selectedIndexes = selectedIndexesBindingDescriptor;
-                    this._controllerBindingsToInstall.selections = selectionsBindingDescriptor;
                 }
             }
 
             //TODO otherwise if no contentController should we disable selections?
 
-        }
+        },
+        serializable: true
     },
 /**
   Description TODO
@@ -314,13 +303,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 */
     _objects: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
     _mappedObjects: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -359,7 +346,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             //if (this._isComponentExpanded) {
             //    this._refreshItems();
             //}
-        }
+        },
+        serializable: true
     },
 /**
   Description TODO
@@ -388,7 +376,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this._refreshSelectionTracking();
             }
-        }
+        },
+        serializable: true
     },
 /**
   Description TODO
@@ -449,7 +438,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             this._indexMapEnabled = value;
 
             this.refreshIndexMap();
-        }
+        },
+        serializable: true
     },
 
     _drawnIndexMap: {
@@ -646,21 +636,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     },
 
-    _deleteItems: {
-        value: function(minus, index) {
-            if (this._updatingItems) {
-                return;
-            }
-            this._updatingItems = true;
-
-            for (var i = 0, l = minus.length; i < l; i++) {
-                this._deleteItem(index + i);
-            }
-
-            this._updatingItems = false;
-        }
-    },
-
 /**
   Description TODO
   @private
@@ -717,9 +692,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                     childComponent.needsDraw = true;
                     childComponent.loadComponentTree(function() {
                         if (++self._childLoadedCount === self._expectedChildComponentsCount) {
-//if(self.identifier == "repetition13") {
-//    debugger
-//}
                             canDrawGate.setField("iterationLoaded", true);
                             self.needsDraw = true;
                         }
@@ -734,38 +706,77 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 */
     _deleteItem: {
         value: function(index) {
-            var deletedItem, itemIndex, removedComponents, childComponents = this.childComponents, childComponentsCount = this._iterationChildComponentsCount,
-                itemsToAppendCount = this._itemsToAppend.length;
+            var deletedItem,
+                itemIndex = index,
+                removedComponents,
+                childComponents = this.childComponents,
+                childComponentsCount = this._iterationChildComponentsCount,
+                itemsToAppend = this._itemsToAppend,
+                itemsToAppendCount = itemsToAppend.length,
+                itemWasToBeAppended = false,
+                removedItemsBeforeIndexCount = 0;
 
-            if (itemsToAppendCount > 0) {
-                // We caught the need to remove these items before they got inserted
-                // just don't bother appending them
-                deletedItem = this._itemsToAppend.pop();
-                // TODO: make _deletedItems usable in _addItem
-                //this._deletedItems.push(deletedItem);
-                if (--itemsToAppendCount <= this._nextDeserializedItemIx) {
-                    this._nextDeserializedItemIx = itemsToAppendCount;
+
+            for (var i = 0; i < itemsToAppendCount; i++) {
+                itemToAppend = itemsToAppend[i];
+                if (itemToAppend.index > index) {
+                    itemToAppend.index--;
+                } else if (itemToAppend.index < index) {
+                    removedItemsBeforeIndexCount++;
+                } else {
+                    itemWasToBeAppended = itemToAppend.removed = true;
                 }
-            } else if (this._items.length > 0) {
-                // No items were scheduled for appending, so we need to extract some
-                deletedItem = this._items.splice(index, 1)[0];
-                deletedItem.removalIndex = index;
-                this._itemsToRemove.push(deletedItem);
             }
 
+            if (!itemWasToBeAppended) {
+                if (this._items.length > 0) {
+                    itemIndex = index - removedItemsBeforeIndexCount;
+
+                    deletedItem = this._items.splice(itemIndex, 1)[0];
+                    deletedItem.removalIndex = itemIndex;
+                    this._itemsToRemove.push(deletedItem);
+                } else {
+                    throw "BUG: _deleteItem was called on the repetition but no elements exist to be removed";
+                }
+
+                this._removeIterationChildComponents(deletedItem.childComponentsIndex);
+            }
+
+            this.needsDraw = true;
+        }
+    },
+
+
+    _removeIterationChildComponents: {
+        value: function(index) {
+            var childComponents = this.childComponents,
+                childComponentsCount = this._iterationChildComponentsCount,
+                removedComponents,
+                items, item;
+
             if (childComponentsCount > 0) {
-                removedComponents = childComponents.splice(index * childComponentsCount, childComponentsCount);
+                removedComponents = childComponents.splice(index, childComponentsCount);
                 this._childLoadedCount -= childComponentsCount;
                 this._expectedChildComponentsCount -= childComponentsCount;
-//console.log("this._expectedChildComponentsCount: ", this._expectedChildComponentsCount);
                 for (var i = 0, l = removedComponents.length; i < l; i++) {
-                    removedComponents[i].cleanupDeletedComponentTree();
+                    removedComponents[i].cleanupDeletedComponentTree(true);
+                }
+                items = this._items;
+                for (var i = 0; item = items[i]; i++) {
+                    if (item.childComponentsIndex > index) {
+                        item.childComponentsIndex -= childComponentsCount;
+                    }
+                }
+                items = this._itemsToAppend;
+                for (var i = 0; item = items[i]; i++) {
+                    if (item.childComponentsIndex > index) {
+                        item.childComponentsIndex -= childComponentsCount;
+                    }
                 }
             } else {
                 this._childLoadedCount--;
                 this._expectedChildComponentsCount--;
             }
-            this.needsDraw = true;
         }
     },
 
@@ -842,6 +853,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         if (item) {
             children = item.element.childNodes;
             item.fragment = document.createDocumentFragment();
+            item.childComponentsIndex = this.childComponents.length - this._iterationChildComponentsCount;
             while (children.length > 0) {
                 // As the nodes are appended to item.fragment they are removed
                 // from item.element, so always use index 0.
@@ -920,7 +932,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _selectedIndexesToDeselectOnDraw: {
-        enumerable: false,
         value: null
     },
 /**
@@ -928,7 +939,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _selectedIndexes: {
-        enumerable: false,
         value: null
     },
 /**
@@ -937,7 +947,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         @default null
     */
     selectedIndexes: {
-        enumerable: false,
         get: function() {
             return this._selectedIndexes;
         },
@@ -949,29 +958,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
-        }
-    },
-
-
-    // parse array with same length as objects but contains true / false(falsy)
-    // only applicable if contentController is used with the Repetition
-    selections: {
-        get: function() {
-            if(this.contentController) {
-                return this.contentController.selections;
-            }
-            return null;
         },
-        set: function(v) {
-            if(this.contentController) {
-                this.contentController.selections = v;
-            }
-        },
-        modify: function(v) {
-            if(this.contentController) {
-                this.contentController.selections = this.selections;
-            }
-        }
+        serializable: true
     },
 
 /**
@@ -979,7 +967,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _activeIndexes: {
-        enumerable: false,
         value: null
     },
 /**
@@ -988,7 +975,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         @default null
     */
     activeIndexes: {
-        enumerable: false,
         get: function() {
             return this._activeIndexes;
         },
@@ -1001,7 +987,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 
     _markIndexesDirty: {
@@ -1198,7 +1185,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _selectionPointer: {
-        enumerable: false,
         value: null
     },
 /**
@@ -1243,7 +1229,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _iterationChildCount: {
-        enumerable: false,
         value: null
     },
 /**
@@ -1251,7 +1236,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
   @private
 */
     _iterationChildElementCount: {
-        enumerable: false,
         value: null
     },
 /**
@@ -1282,7 +1266,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             indexMapChanged = this._indexMapChanged,
             activeIndex,
             selectedIndex,
-            childCount = this._iterationChildCount;
+            childCount = this._iterationChildCount,
+            childComponentsCount;
 
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
@@ -1345,9 +1330,15 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         if (this._itemsToAppend.length > 0) {
             //addFragment = doc.createDocumentFragment();
             //firstAddedIndex = itemCount;
-
             // Append items pending addition
             for (i = 0; (iItem = this._itemsToAppend[i]); i++) {
+                // this item could have been removed from the objects array after it's adition.
+                if (iItem.removed) {
+                    this._removeIterationChildComponents(iItem.childComponentsIndex);
+
+                    continue;
+                }
+
                 fragment = iItem.fragment;
                 insertionIndex = iItem.insertionIndex;
                 delete iItem.fragment;
@@ -1497,10 +1488,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                 //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
 
-                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'selections.' + currentFakeIndex);
+                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
                 usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
 
-                usefulType = type.replace(/selectionAtCurrentIteration/, 'selections.' + currentFakeIndex);
+                usefulType = type.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
 
             }   else {
                 return null;

@@ -21,13 +21,44 @@ var Montage = require("montage").Montage,
 */
 var ArrayController = exports.ArrayController = Montage.create(ObjectController, /** @lends module:montage/ui/controller/array-controller.ArrayController# */ {
 
+    didCreate: {
+        value: function() {
+            var self = this;
+
+            // TODO optimize this, try to use dependentProperties perhaps
+
+            this.addPropertyChangeListener("selections", function() {
+
+                var newSelectedIndexes = [];
+                self._selections.forEach(function(item, i) {
+                    if (item) {
+                        newSelectedIndexes.push(i);
+                    }
+                });
+
+                // TODO this triggers an infinite loop
+                // self.selectedIndexes = newSelectedIndexes;
+            });
+
+            this.addPropertyChangeListener("content", function() {
+                // TODO for right now assume that any content change invalidates the selection completely;
+                // we'll need to address this of course
+                self.selectedObjects = null;
+
+                if (self.automaticallyOrganizeObjects) {
+                    self.organizeObjects();
+                }
+            });
+        }
+    },
+
     /**
      @private
      */
     _content: {
-        enumerable: false,
         value: null
     },
+
     /**
         The content managed by the ArrayController.
         @type {Function}
@@ -44,11 +75,8 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
             this._content = value;
 
-            //TODO for right now assume that any content change invalidates the selection completely; we'll need to address this of course
-            this.selectedObjects = null;
-            this.organizeObjects();
-            this._initSelections();
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -68,15 +96,16 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      })
      */
     delegate: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     /**
      @private
      */
     _organizedObjects: {
-        enumerable: false,
-        value: null
+        distinct: true,
+        value: []
     },
 
     /**
@@ -85,33 +114,25 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default null
      */
     organizedObjects: {
-        enumerable: false,
         get: function() {
-
-            if (this._organizedObjects) {
-                return this._organizedObjects;
-            }
-
-            this.organizeObjects();
-
             return this._organizedObjects;
         }
     },
 
     /**
-     Specifies whether the ArrayCollection's content is automatically organized (false, by default).
+     Specifies whether the ArrayCollection's content is automatically organized.
      @type {Property}
-     @default {Boolean} false
+     @default {Boolean} true
      */
     automaticallyOrganizeObjects: {
-        value: false
+        value: true,
+        serializable: true
     },
 
     /**
      @private
      */
     _sortFunction: {
-        enumerable: false,
         value: null
     },
 
@@ -136,14 +157,14 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this.automaticallyOrganizeObjects) {
                 this.organizeObjects();
             }
-        }
+        },
+        serializable: true
     },
 
     /**
      @private
      */
     _filterFunction: {
-        enumerable: false,
         value: null
     },
 
@@ -168,14 +189,14 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this.automaticallyOrganizeObjects) {
                 this.organizeObjects();
             }
-        }
+        },
+        serializable: true
     },
 
     /**
         @private
     */
     _startIndex: {
-        enumerable: false,
         value: null
     },
 
@@ -186,7 +207,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @version 1.0
     */
     startIndex: {
-        enumerable: false,
+        serializable: true,
         get: function() {
             return this._startIndex;
         },
@@ -219,7 +240,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @version 1.0
     */
     endIndex: {
-        enumerable: false,
+        serializable: true,
         get: function() {
             return this._endIndex;
         },
@@ -241,24 +262,21 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @private
     */
     _organizedObjectsIndexes: {
-        value: null,
-        enumerable: false
+        value: null
     },
 
     /*
         @private
     */
     _rangedOrganizedObjectsIndexes: {
-        value: null,
-        enumerable: false
+        value: null
     },
 
     /**
         @private
      */
     _selectedIndexes: {
-        value: null,
-        enumerable: false
+        value: null
     },
 
    /**
@@ -279,9 +297,10 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             return this._selectedIndexes = this._convertIndexesFromContentToOrganized(this.selectedContentIndexes);
         },
         set: function(value) {
-            if (this._selectedIndexes !== value) {
+            if (this.selectedIndexes !== value) {
                 var newIndexes = value ? this._convertIndexesFromOrganizedToContent(value) : null,
                     newSelection = null;
+
                 if (this.delegate && typeof this.delegate.shouldChangeSelection === "function") {
                     if (newIndexes) {
                         newSelection = this.content.filter(function(value, i) {
@@ -296,12 +315,14 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
                 this._selectedIndexes = value;
 
-                this.dispatchPropertyChange("selectedContentIndexes", "selectedObjects", function() {
+                this.dispatchPropertyChange("selectedContentIndexes", "selectedObjects", "selections", function() {
                     this._selectedContentIndexes = newIndexes;
                     this._selectedObjects = null;
+                    this._selections = null;
                 });
             }
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -372,19 +393,18 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         value: function() {
 
             var organizedObjects = this.content,
-                funktion = this.filterFunction,
+                filterFunction = this.filterFunction,
+                sortFunction = this.sortFunction,
                 index = 0,
                 newIndex = 0,
                 filteredIndexes,
                 sortedIndexes,
-                startIndex = this.startIndex,
-                endIndex = this.endIndex,
                 tmpArray, item;
 
-            if (organizedObjects && typeof funktion === "function") {
+            if (organizedObjects && typeof filterFunction === "function") {
                 filteredIndexes = [];
                 organizedObjects = organizedObjects.filter(function filterFunctionWrapper(item) {
-                    var filterValue = funktion.call(this, item);
+                    var filterValue = filterFunction.call(this, item);
                     if (filterValue) {
                         // we are going to keep the item in the new array
                         filteredIndexes[newIndex] = index;
@@ -395,7 +415,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 }, this);
             }
 
-            if (typeof (funktion = this._sortFunction) === "function") {
+            if (typeof sortFunction === "function") {
 
                 // need to attach index information so that we can pick it up after the sort
                 // this has the added side effect of creating a clone of the array so that if it wasn't filtered,
@@ -426,7 +446,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     if (b._montage_array_controller_value) {
                         b = b._montage_array_controller_value;
                     }
-                    return funktion.call(this, a, b);
+                    return sortFunction.call(this, a, b);
                 });
 
                 // get all the new indexes
@@ -459,8 +479,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         value: function(organizedObjects) {
 
             var startIndex = this.startIndex,
-                endIndex = this.endIndex,
-                changeEvent;
+                endIndex = this.endIndex;
 
 
             // We apply the range after the content is filtered and sorted
@@ -489,7 +508,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @private
      */
     _selectedObjects: {
-        enumerable: false,
         value: null
     },
 
@@ -501,7 +519,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @fires change@selectedContentIndexes
      */
     selectedObjects: {
-        enumerable: false,
         get: function() {
 
             if (this._selectedObjects) {
@@ -533,7 +550,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             // TODO validate the array content maybe?
 
-            if (this._selectedObjects === value) {
+            if (this.selectedObjects === value) {
                 return;
             }
 
@@ -544,18 +561,19 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
             this._selectedObjects = value;
 
-            this.dispatchPropertyChange("selectedContentIndexes", "selectedIndexes", function() {
+            this.dispatchPropertyChange("selectedContentIndexes", "selectedIndexes", "selections", function() {
                 this._selectedContentIndexes = null;
                 this._selectedIndexes = null;
+                this._selections = null;
             });
-        }
+        },
+        serializable: true
     },
 
     /**
      @private
      */
     _selectedContentIndexes: {
-        enumerable: false,
         value: null
     },
 
@@ -566,7 +584,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default null
      */
     selectedContentIndexes: {
-        enumerable: false,
         get: function() {
 
             if (this._selectedContentIndexes) {
@@ -587,10 +604,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             return this._selectedContentIndexes;
         },
-        set: function(value, internalSet) {
-            var selectedIndexesChangeEvent,
-                selectedObjectsChangeEvent;
-
+        set: function(value) {
             // Normalizing the value before the difference check prevents false-positive "changes" for things like [x]=>x
             if (value === null || value === false || typeof value === "undefined") {
                 // undefined, false => null
@@ -602,7 +616,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             // TODO validate the array content maybe?
 
-            if (this._selectedContentIndexes === value) {
+            if (this.selectedContentIndexes === value) {
                 return;
             }
 
@@ -622,52 +636,11 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             this._selectedContentIndexes = value;
 
-            this.dispatchPropertyChange("selectedIndexes", "selectedObjects", function() {
+            this.dispatchPropertyChange("selectedIndexes", "selectedObjects", "selections", function() {
                 this._selectedIndexes = null;
                 this._selectedObjects = null;
+                this._selections = null;
             });
-
-            if(!internalSet) {
-                // update the selections only if the selectedContentIndexes is set directly
-                this._updateSelections();
-            }
-
-        }
-    },
-
-
-    _initSelections: {
-        value: function() {
-            // create an array with null values with same
-            // length as organizedObjects
-            var len = this._organizedObjects.length;
-            var arr = [];
-            arr[0] = null;
-            arr[len-1] = null;
-
-            this._selections = arr;
-            //Object.getPropertyDescriptor(this, "selections").set.call(this, arr, true);
-        }
-    },
-
-    _updateSelections: {
-        value: function() {
-
-            if(this.selectedIndexes) {
-                this._initSelections();
-                var arr = this._selections;
-                var selectedIndexes = this.selectedIndexes || [];
-                var len = selectedIndexes.length, i=0, index;
-
-                for(i=0; i< len; i++) {
-                    index = selectedIndexes[i];
-                    if(index < arr.length-1) {
-                        arr[index] = true;
-                    }
-                }
-            }
-
-            Object.getPropertyDescriptor(this, "selections").set.call(this, arr, true);
 
         }
     },
@@ -676,24 +649,28 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
     _selections: {value: null},
     selections: {
         get: function() {
-            return this._selections;
-        },
-        set: function(v, internalSet) {
-            this._selections = v;
-            if(this._selections) {
+            if (!this._selections) {
 
-                if(!internalSet) {
-                    var arr = [];
-                    this._selections.forEach(function(item, i) {
-                        if(item) {
-                            arr.push(i);
+                this._selections = new Array(this._organizedObjects.length);
+
+                if (this.selectedIndexes) {
+
+                    var selections = this._selections,
+                        selectedIndexes = this.selectedIndexes,
+                        selectedIndexCount = selectedIndexes.length,
+                        i,
+                        index;
+
+                    for (i = 0; i < selectedIndexCount; i++) {
+                        index = selectedIndexes[i];
+                        if (index < selections.length-1) {
+                            selections[index] = true;
                         }
-                    });
-                    // use the internalSet flag to prevent setting the selections again,
-                    Object.getPropertyDescriptor(this, "selectedIndexes").set.call(this, arr, true);
+                    }
                 }
 
             }
+            return this._selections;
         }
     },
 
@@ -718,7 +695,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} false
      */
     selectObjectsOnAddition: {
-        enumerable: false,
+        serializable: true,
         value: false
     },
 
@@ -728,7 +705,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} true
      */
     clearFilterFunctionOnAddition: {
-        enumerable: false,
+        serializable: true,
         value: true
     },
 
@@ -776,15 +753,18 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             var objects = Array.prototype.slice.call(arguments),
                 i,
                 objectCount = objects.length,
-                selectedContentIndexes, firstIndex;
+                selectedContentIndexes, firstIndex,
+                content = this.content;
 
-            for (i = 0; i < objectCount; i++) {
-                this.content.push(objects[i]);
+            if (content) {
+                content.push.apply(content, objects);
+            } else {
+                this.content = content = objects;
             }
 
             if (this.selectObjectsOnAddition) {
                 selectedContentIndexes = [];
-                firstIndex = this.content.length-objectCount;
+                firstIndex = content.length-objectCount;
                 for (i = 0; i < objectCount; i++) {
                     selectedContentIndexes[i] = firstIndex++;
                 }

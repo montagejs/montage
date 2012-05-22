@@ -19,136 +19,84 @@ var Montage = require("montage").Montage,
  */
 exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon/slider.reel".Slider# */ {
     // Extra elements for rendering
-/**
-  Description TODO
-  @private
-*/
+
     _bghl: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _handlerbg: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _bg: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _handler: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _line: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _scale: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _line2: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _handler2: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _handler3: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _handler4: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _handlerDragArea: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
     // Slider properties
-/**
-  Description TODO
-  @private
-*/
+
     _isDragging: {
-        enumerable: true,
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
+
     _cursorPosition: {
-        enumerable: false,
         value: null
     },
-/**
-  Description TODO
-  @private
-*/
+
     _width: {
-        enumerable: false,
         value: 0
     },
-/**
-  Description TODO
-  @private
-*/
+
     _minValue: {
-        enumerable: false,
         value: 0
     },
-/**
-  Description TODO
-  @private
-*/
+
     _hasTapBarToScroll: {
-        enumerable: false,
         value: false
     },
-/**
+
+    /**
         Description TODO
         @type {Function}
         @default {Boolean} false
@@ -159,14 +107,11 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             this._hasTapBarToScroll = !!value;
-        }
+        },
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _hasClickBarToScroll: {
-        enumerable: false,
         value: true
     },
 /**
@@ -180,12 +125,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             this._hasClickBarToScroll = !!value;
-            if (this._hasClickBarToScroll) {
-                this.element.addEventListener("mousedown", this, false);
-            } else {
-                this.element.removeEventListener("mousedown", this, false);
-            }
-        }
+        },
+        serializable: true
     },
 /**
         Description TODO
@@ -193,7 +134,6 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default {Number} 0
     */
     minValue: {
-        serializable: true,
         get: function () {
             return this._minValue;
         },
@@ -206,14 +146,11 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 this._valueRange = null;
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _maxValue: {
-        enumerable: false,
         value: 100
     },
 
@@ -223,7 +160,6 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default {Number} 100
     */
     maxValue: {
-        serializable: true,
         get: function () {
             return this._maxValue;
         },
@@ -236,23 +172,20 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 this._valueRange = null;
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
     _valueRange: {
-        enumerable: false,
-        value: undefined
+        value: null
     },
- /**
+
+    /**
         Description TODO
         @type {Function}
-        @default undefined
+        @default null
     */
     valueRange: {
-        enumerable: false,
         get: function () {
             if (!this._valueRange) {
                 this._valueRange = this._maxValue - this._minValue;
@@ -260,30 +193,21 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             return this._valueRange;
         }
     },
-/**
-  Description TODO
-  @private
-*/
+
     _value: {
-        enumerable: false,
         value: 0
     },
-/**
-  Description TODO
-  @private
-*/
+
     _observedPointer: {
-        enumerable: false,
         value: null
     },
-/**
+
+    /**
         Description TODO
         @type {Function}
         @default {Number} 0
     */
     value: {
-        enumerable: true,
-        serializable: true,
         get: function () {
             if (this._value < this._minValue) {
                 return this._minValue;
@@ -302,25 +226,24 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                     this.needsDraw = true;
                 }
             }
-        }
+        },
+        serializable: true
     },
-/**
-  Description TODO
-  @private
-*/
+
+    step: {
+        value: null,
+        serializable: true
+    },
+
     _pressed: {
-        enumerable: false,
         value: false
     },
-/**
-  Description TODO
-  @private
-*/
+
     _scrollTo: {
-        enumerable: false,
         value: null
     },
-/**
+
+    /**
     Description TODO
     @function
     @param {Event} event TODO
@@ -364,7 +287,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             }
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     @param {Event} event TODO
@@ -385,7 +309,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             this._pressedStart = false;
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     */
@@ -406,7 +331,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             }
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     @param {Event} event TODO
@@ -452,7 +378,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             }
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     @param {Event} event TODO
@@ -468,7 +395,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             this.needsDraw = true;
         }
     },
-/**
+
+    /**
     Description TODO
     @function
     */
@@ -484,22 +412,13 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             this._pressedEnd = true;
         }
     },
-/**
-    Description TODO
-    @function
-    @param {String} pointer TODO
-    @param {Component} demandingComponent TODO
-    @returns {Boolean} false
-    */
+
     surrenderPointer: {
         value: function(pointer, demandingComponent) {
             return false;
         }
     },
-/**
-  Description TODO
-  @private
-*/
+
     _observePointer: {
         value: function(pointer) {
             this.eventManager.claimPointer(pointer, this);
@@ -510,10 +429,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             this.dispatchEvent(interactionStartEvent);
         }
     },
-/**
-  Description TODO
-  @private
-*/
+
     _releaseInterest: {
         value: function() {
             this.eventManager.forfeitPointer(this._observedPointer, this);
@@ -524,12 +440,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             this.dispatchEvent(interactionEndEvent);
         }
     },
-/**
-    Description TODO
-    @function
-    */
+
     prepareForActivationEvents: {
-        enumerable: false,
         value: function() {
             if (window.Touch) {
                 this._handlerDragArea.addEventListener("touchstart", this, false);
@@ -543,12 +455,8 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             }
         }
     },
-/**
-    Description TODO
-    @function
-    */
+
     willDraw: {
-        enumerable: false,
         value: function () {
             this._width = this.element.offsetWidth - 55;
             if (this._scrollTo !== null) {
@@ -557,10 +465,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
             }
         }
     },
-/**
-    Description TODO
-    @function
-    */
+
     draw: {
         value: function() {
 
