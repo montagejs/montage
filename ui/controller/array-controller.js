@@ -37,7 +37,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 });
 
                 // TODO this triggers an infinite loop
-                // self.selectedIndexes = newSelectedIndexes;
+                self.selectedIndexes = newSelectedIndexes;
             });
 
             this.addPropertyChangeListener("content", function() {
