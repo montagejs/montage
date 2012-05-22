@@ -15,21 +15,21 @@ KEY_DOWN = 40;
 
 exports.TokenField = Montage.create(Component, {
 
-    delegate: {value: null},
+    delegate: {value: null, serializable: true},
 
-    values: {value: null},
+    values: {value: null, serializable: true},
 
     /**
     * Path to a String within an Object that is representative of the Object
     */
-    textPropertyPath: {value: null},
+    textPropertyPath: {value: null, serializable: true},
 
     /**
     * Allow ad-hoc strings (strings that do not have corresponding represented object) to be entered.
     */
-    allowAdHocValues: {value: null},
+    allowAdHocValues: {value: null, serializable: true},
 
-    placeholder: {value: null},
+    placeholder: {value: null, serializable: true},
 
 
     // private
@@ -47,11 +47,12 @@ exports.TokenField = Montage.create(Component, {
         }
     },
 
-    _tokensController: {value: null},
-    _tokenList: {value: null, enumerable: false},
-    _autocomplete: {value: null, enumerable: false},
+    _tokensController: {value: null, serializable: true},
+    _tokenList: {value: null, serializable: true},
+    _autocomplete: {value: null, serializable: true},
     __autocompleteValue: {value: null},
     _autocompleteValue: {
+        serializable: true,
         get: function() {
             return this.__autocompleteValue;
         },
@@ -62,6 +63,7 @@ exports.TokenField = Montage.create(Component, {
 
     __suggestedValue: {value: null},
     _suggestedValue: {
+        serializable: true,
         get: function() {
             return this.__suggestedValue;
         },
@@ -84,6 +86,8 @@ exports.TokenField = Montage.create(Component, {
                     this.values.push(this.__suggestedValue);
                     this._autocomplete.value = '';
                 }
+                // nullify the value as autocomplete.value is empty
+                this.__suggestedValue = null;
 
             }
         }
@@ -129,7 +133,6 @@ exports.TokenField = Montage.create(Component, {
     },
 
     handleKeyup: {
-        enumerable: false,
         value: function(e) {
             var code = e.keyCode;
             //console.log('keyCode', code);
@@ -150,7 +153,8 @@ exports.TokenField = Montage.create(Component, {
                         // check if the selected token is the last one
                         if(selectedIndexes && selectedIndexes.length > 0) {
                             // removes the selected one
-                            this._tokensController.remove();
+                            this._tokensController.removeObjectsAtSelectedIndexes();
+                            this._tokensController.selectedIndexes = [];
                         } else {
                             this._tokensController.selectedIndexes = [this.values.length-1];
                         }
