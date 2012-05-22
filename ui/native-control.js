@@ -175,10 +175,15 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                 name = attributes[i].name;
                 value = attributes[i].value;
 
-                if(typeof this._elementAttributeValues[name] == 'undefined') {
-                    this._elementAttributeValues[name] = value;
-                    if( (typeof this[name] == 'undefined') || this[name] == null) {
-                        this[name] = value;
+                descriptor = this._getElementAttributeDescriptor(name, this);
+                // check if this attribute from the markup is a well-defined attribute of the component
+                if(descriptor || (typeof this[name] !== 'undefined')) {
+                    // only set the value if a value has not already been set by binding
+                    if(typeof this._elementAttributeValues[name] == 'undefined') {
+                        this._elementAttributeValues[name] = value;
+                        if( (typeof this[name] == 'undefined') || this[name] == null) {
+                            this[name] = value;
+                        }
                     }
                 }
             }
@@ -218,25 +223,30 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                 if(this._elementAttributeValues.hasOwnProperty(attributeName)) {
                     var value = this[attributeName];
                     descriptor = this._getElementAttributeDescriptor(attributeName, this);
-                    if(descriptor && descriptor.dataType === 'boolean') {
-                        if(value === true) {
-                            element[attributeName] = true;
-                            element.setAttribute(attributeName, attributeName.toLowerCase());
-                        } else {
-                            element[attributeName] = false;
-                            element.removeAttribute(attributeName);
-                        }
-                    } else {
-                        if(typeof value !== 'undefined') {
-                            if(attributeName === 'textContent') {
-                                element.textContent = value;
-                            } else {
-                                //https://developer.mozilla.org/en/DOM/element.setAttribute
-                                element.setAttribute(attributeName, value);
-                            }
+                    if(descriptor) {
 
+                        if(descriptor.dataType === 'boolean') {
+                            if(value === true) {
+                                element[attributeName] = true;
+                                element.setAttribute(attributeName, attributeName.toLowerCase());
+                            } else {
+                                element[attributeName] = false;
+                                element.removeAttribute(attributeName);
+                            }
+                        } else {
+                            if(typeof value !== 'undefined') {
+                                if(attributeName === 'textContent') {
+                                    element.textContent = value;
+                                } else {
+                                    //https://developer.mozilla.org/en/DOM/element.setAttribute
+                                    element.setAttribute(attributeName, value);
+                                }
+
+                            }
                         }
+
                     }
+
                     delete this._elementAttributeValues[attributeName];
                 }
             }
