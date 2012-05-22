@@ -5,7 +5,8 @@ var Montage = require("montage").Montage,
     dom = require("montage/ui/dom"),
     URL = require("montage/core/url"),
     ActionEventListener = require("montage/core/event/action-event-listener").ActionEventListener,
-    MutableEvent = require("montage/core/event/mutable-event").MutableEvent;
+    MutableEvent = require("montage/core/event/mutable-event").MutableEvent,
+    defaultEventManager;
 
 
 var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
@@ -50,7 +51,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
     queueTest: {
         value: function(testName, options, callback) {
             console.log("TestPageLoader.queueTest() - " + testName);
-            var testPage = window.testpage
+            var testPage = window.testpage;
             if (!testPage) {
                 testPage = TestPageLoader.create().init();
             }
@@ -190,7 +191,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                                     if (event.which === 82) {
                                         theTestPage.document.removeEventListener("keyup", handleKeyUp,false);
                                         document.removeEventListener("keyup", handleKeyUp,false);
-                                        continueDraw()
+                                        continueDraw();
                                     }
                                 };
                                 theTestPage.document.addEventListener("keyup", handleKeyUp,false);
@@ -207,7 +208,15 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                             originalAddToDrawList.call(root, childComponent);
                             theTestPage.willNeedToDraw = true;
                         };
+
+                        defaultEventManager = null;
+                        this.window.montageRequire.async("core/event/event-manager", function (exports) {
+                            defaultEventManager = exports.defaultEventManager;
+                        });
+
                     });
+
+
                 };
                 if (theTestPage.testWindow) {
                     theTestPage.testWindow.removeEventListener("load", frameLoad, true);
@@ -402,7 +411,7 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
                     },
                 targettedEvent = MutableEvent.fromEvent(event);
 
-            doc.defaultView.defaultEventManager.handleEvent(targettedEvent);
+            defaultEventManager.handleEvent(targettedEvent);
 
             if (typeof callback === "function") {
                 if(this.willNeedToDraw) {
@@ -415,7 +424,6 @@ var TestPageLoader = exports.TestPageLoader = Montage.create(Montage, {
             return eventInfo;
         }
     },
-
 
     mouseEvent: {
         enumerable: false,
