@@ -824,6 +824,27 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
 
         }
+    },
+
+    removeObjectsAtSelectedIndexes: {
+        value: function() {
+            this.removeObjectsAtIndexes(this.selectedIndexes);
+        }
+    },
+
+    removeObjectsAtIndexes: {
+        value: function(indices) {
+            var remainingObjects;
+            if(indices && indices.length > 0) {
+                remainingObjects = this.content.filter(function(value, index) {
+                    return indices.indexOf(index) < 0;
+                });
+                this.content = remainingObjects;
+                if (this.automaticallyOrganizeObjects) {
+                    this.organizeObjects();
+                }
+            }
+        }
     }
 
 });
