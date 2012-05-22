@@ -108,8 +108,8 @@ if (typeof window !== "undefined") {
 
                 if ('autoPackage' in params) {
                     montageRequire.injectPackageDescription(location, {
-                        mappings: {
-                            montage: "@"
+                        dependencies: {
+                            montage: "*"
                         }
                     });
                 }
