@@ -4,7 +4,20 @@ var Montage = require("montage").Montage,
 var Todo = exports.Todo = Montage.create(Component, {
     hasTemplate: {value: false},
 
-    todos: {value: null},
+    todos: {
+        value: null
+    },
+
+    todoItem: {
+        value: null,
+        serializable: true
+    },
+
+    todoList: {
+        value: null,
+        serializable: true
+    },
+
 
     templateDidLoad: {value: function() {
         var self = this,

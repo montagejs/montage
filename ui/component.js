@@ -30,7 +30,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     delegate: {
-        enumerable: false,
+        serializable: true,
         value: null
     },
 
@@ -639,7 +639,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (this._element) {
                 this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
             }
-            if (!("identifier" in this)) {
+            if (! this.hasOwnProperty("identifier")) {
                 this.identifier = Montage.getInfoForObject(this).label;
             }
         }

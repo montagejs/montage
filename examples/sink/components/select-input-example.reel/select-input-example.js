@@ -6,11 +6,14 @@
 var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component,
     Converter = require("montage/core/converter/converter").Converter;
-    
-    
+
+
 exports.JustifyConverter = Montage.create(Converter, {
-    justify: {value: null},
-    
+    justify: {
+        value: null,
+        serializable: true
+    },
+
     convert: {
         value: function(value) {
             return (value === this.justify);
@@ -30,6 +33,11 @@ exports.SelectInputExample = Montage.create(Component, {
     firstName: {value: null},
     lastName: {value: null},
 
+    statesController: {
+        value: null,
+        serializable: true
+    },
+
     departments: {
         value: [
             {name: 'Please select a Department', code: ''},
@@ -41,7 +49,10 @@ exports.SelectInputExample = Montage.create(Component, {
         ]
     },
 
-    dept: {value: null},
+    dept: {
+        value: null,
+        serializable: true
+    },
 
     states: {
         value: {
@@ -94,7 +105,7 @@ exports.SelectInputExample = Montage.create(Component, {
             this._selectedDepts = (value || []);
         }
     },
-    
+
     _justify: {value: null},
     justify: {
         get: function() {
@@ -104,8 +115,8 @@ exports.SelectInputExample = Montage.create(Component, {
             this._justify = value;
         }
     },
-    
-    
+
+
 
     prepareForDraw: {
         value: function() {
@@ -113,7 +124,7 @@ exports.SelectInputExample = Montage.create(Component, {
             this.firstName = "John";
             this.lastName = "FooBar";
 
-            this.dept.contentController.selectedIndexes = [2, 4, 5];            
+            this.dept.contentController.selectedIndexes = [2, 4, 5];
             this.justify = "center";
 
             // invoke pretty-fier
@@ -132,5 +143,10 @@ exports.SelectInputExample = Montage.create(Component, {
                 departments: this.selectedDepts
             });
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

@@ -9,20 +9,20 @@ var Component = require("montage/ui/component").Component;
 exports.ColorPicker = Montage.create(Component, {
 
     x: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     y: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     _currentColor: {
-        enumerable: false,
         value: null
     },
 
     currentColor: {
-        enumerable: false,
         get: function() {
             return this._currentColor;
         },
@@ -38,8 +38,8 @@ exports.ColorPicker = Montage.create(Component, {
     },
 
     colorWell: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     draw: {

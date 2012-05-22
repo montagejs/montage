@@ -10,8 +10,14 @@ exports.ProgressExample = Montage.create(Component, {
 
     _uploadProgress: {value: null},
     uploadProgress: {
-        set: function(value) {this._uploadProgress = value; this.needsDraw = true;},
-        get: function() {return this._uploadProgress;}
+        set: function(value) {
+            this._uploadProgress = value;
+            this.needsDraw = true;
+        },
+        get: function() {
+            return this._uploadProgress;
+        },
+        serializable: true
     },
 
     _intervalId: {value: null},
@@ -51,6 +57,11 @@ exports.ProgressExample = Montage.create(Component, {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 
 });

@@ -7,7 +7,12 @@ var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.CheckboxExample = Montage.create(Component, {
-    
+
+    data: {
+        value: null,
+        serializable: true
+    },
+
     jsonSelectedItems: {
         value: null
     },
@@ -22,11 +27,16 @@ exports.CheckboxExample = Montage.create(Component, {
             console.log('selected items = ', v);
         }
     },
-    
+
     prepareForDraw: {
         value: function() {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

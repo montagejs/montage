@@ -10,7 +10,7 @@ var undoManager = require("montage/core/undo-manager").defaultUndoManager;
 exports.ColorInfoPanel = Montage.create(Component, {
 
     pointMonitorController: {
-        enumerable: false,
+        serializable: true,
         value: null
     },
 
@@ -60,7 +60,6 @@ exports.ColorInfoPanel = Montage.create(Component, {
     },
 
     _undoColorPickInfo: {
-        enumerable: false,
         value: null
     },
 

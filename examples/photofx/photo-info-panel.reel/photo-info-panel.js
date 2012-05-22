@@ -9,7 +9,6 @@ var Component = require("montage/ui/component").Component;
 exports.PhotoInfoPanel = Montage.create(Component, {
 
     _photo: {
-        enumerable: false,
         value: null
     },
 
@@ -29,17 +28,16 @@ exports.PhotoInfoPanel = Montage.create(Component, {
     },
 
     _dragProxy: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     _canvas: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     _modifiedCanvas: {
-        enumerable: false,
         value: null
     },
 

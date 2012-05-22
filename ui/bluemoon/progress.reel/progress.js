@@ -20,7 +20,7 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
   @private
 */
     _barElement: {
-        enumerable: false,
+        serializable: true,
         value: null
     },
 /**
@@ -51,7 +51,8 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
                 }
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 /**
   Description TODO
@@ -78,7 +79,8 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
                 }
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 /**
   Description TODO
@@ -111,7 +113,8 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
                 this._scrolling = value;
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 /**
     Description TODO

@@ -8,6 +8,16 @@ var Montage = require("montage/core/core").Montage,
 
 exports.RepetitionExample = Montage.create(Component, {
 
+    data: {
+        value: null,
+        serializable: true
+    },
+
+    answers: {
+        value: null,
+        serializable: true
+    },
+
     jsonSelectedItems: {
         dependencies: ["selectedItems"],
         get: function() {
@@ -28,6 +38,11 @@ exports.RepetitionExample = Montage.create(Component, {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 
 });

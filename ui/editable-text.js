@@ -164,7 +164,8 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
         },
         set: function(v) {
             this._updateOnInput = v;
-        }
+        },
+        serializable: true
     },
 
 

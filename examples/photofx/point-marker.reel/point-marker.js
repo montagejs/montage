@@ -9,12 +9,10 @@ var Component = require("montage/ui/component").Component;
 exports.PointMarker = Montage.create(Component, {
 
     _x: {
-        enumerable: false,
         value: null
     },
 
     x: {
-        enumerable: false,
         get: function() {
             return this._x;
         },
@@ -25,16 +23,15 @@ exports.PointMarker = Montage.create(Component, {
 
             this._x = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _y: {
-        enumerable: false,
         value: null
     },
 
     y: {
-        enumerable: false,
         get: function() {
             return this._y;
         },
@@ -45,7 +42,8 @@ exports.PointMarker = Montage.create(Component, {
 
             this._y = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     willDraw: {

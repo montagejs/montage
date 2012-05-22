@@ -8,7 +8,6 @@ var Montage = require("montage").Montage,
     Task = require("task").Task,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
-    ChangeEventConstructor = require("montage/core/event/mutable-event")._Change,
     LOCAL_STORAGE_KEY = "montage_todo_mvc_tasks";
 
 exports.Main = Montage.create(Component, {
@@ -36,14 +35,12 @@ exports.Main = Montage.create(Component, {
     },
 
     tasks: {
-        enumerable: false,
         distinct: true,
         value: []
     },
 
     unfinishedTasks: {
         dependencies: ["tasks.completed"],
-        enumerable: false,
         get: function() {
 
             if (this.tasks) {
@@ -55,34 +52,33 @@ exports.Main = Montage.create(Component, {
     },
 
     tasksController: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     taskForm: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     _markAllCompleteForm: {
-        enumerable: false,
         value: false
     },
 
     markAllCompleteForm: {
-        enumerable: false,
         get: function() {
             return this._markAllCompleteForm;
         },
         set: function(value) {
             this._markAllCompleteForm = value;
             this._markAllCompleteForm.identifier = "markAllComplete";
-        }
+        },
+        serializable: true
     },
 
     taskNoteField: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     prepareForDraw: {
@@ -144,7 +140,6 @@ exports.Main = Montage.create(Component, {
     },
 
     _saveTimeout: {
-        enumerable: false,
         value: null
     },
 

@@ -20,9 +20,11 @@ var Popup = require("ui/popup/popup.reel").Popup;
  */
 
 var Notifier = exports.Notifier = Montage.create(Component, /** @lends module:"montage/ui/popup/notifier.reel".Notifier# */ {
-    hasTemplate: {value: true},
 
-    _msgEl: {value: null},
+    _msgEl: {
+        value: null,
+        serializable: true
+    },
 /**
   Description TODO
   @private

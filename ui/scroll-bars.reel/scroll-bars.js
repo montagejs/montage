@@ -12,22 +12,18 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
     // Scroll and length are defined in a [0..1] range
 
     _verticalScroll: {
-        enumerable: false,
         value: 0
     },
 
     _horizontalScroll: {
-        enumerable: false,
         value: 0
     },
 
     _verticalLength: {
-        enumerable: false,
         value: 0
     },
 
     _horizontalLength: {
-        enumerable: false,
         value: 0
     },
 
@@ -38,7 +34,8 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._verticalScroll = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     horizontalScroll: {
@@ -48,7 +45,8 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._horizontalScroll = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     verticalLength: {
@@ -58,7 +56,8 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._verticalLength = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     horizontalLength: {
@@ -68,11 +67,11 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._horizontalLength = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _opacity: {
-        enumerable: false,
         value: 0
     },
 
@@ -83,16 +82,15 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._opacity = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _isDisplayUpdated: {
-        enumerable: false,
         value: false
     },
 
     _displayVertical: {
-        enumerable: false,
         value: false
     },
 
@@ -106,11 +104,11 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
                 this._isDisplayUpdated = true;
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
     },
 
     _displayHorizontal: {
-        enumerable: false,
         value: false
     },
 
@@ -124,16 +122,45 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
                 this._isDisplayUpdated = true;
                 this.needsDraw = true;
             }
-        }
+        },
+        serializable: true
+    },
+
+    _top: {
+        value: false,
+        serializable: true
+    },
+
+    _bottomClip: {
+        value: false,
+        serializable: true
+    },
+
+    _bottom: {
+        value: false,
+        serializable: true
+    },
+
+    _left: {
+         value: false,
+         serializable: true
+     },
+
+    _rightClip: {
+        value: false,
+        serializable: true
+    },
+
+    _right: {
+        value: false,
+        serializable: true
     },
 
     _hasResizedHorizontal: {
-        enumerable: false,
         value: false
     },
 
     _hasResizedVertical: {
-        enumerable: false,
         value: false
     },
 
