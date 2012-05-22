@@ -45,8 +45,8 @@
                 "maxlength": "5"
             },
             "bindings": {
-                "value": {"<<->": "@sample-form.firstName"},
-                "title": {"<<->": "@sample-form.firstName"}
+                "value": {"<->": "@sample-form.firstName"},
+                "title": {"<->": "@sample-form.firstName"}
 
             }
         },
@@ -56,7 +56,7 @@
                 "element": {"#": "lname"}
             },
             "bindings": {
-                "value": {"<<->": "@sample-form.lastName"}
+                "value": {"<->": "@sample-form.lastName"}
             }
         },
         "email1": {
@@ -65,7 +65,7 @@
                 "element": {"#": "email1"}
             },
             "bindings": {
-                "value": {"<<->": "@sample-form.email"}
+                "value": {"<->": "@sample-form.email"}
             }
         },
         "url1": {
@@ -74,7 +74,7 @@
                 "element": {"#": "url1"}
             },
             "bindings": {
-                "value": {"<<->": "@sample-form.url"}
+                "value": {"<->": "@sample-form.url"}
             }
         },
         "info1": {
@@ -126,7 +126,7 @@
                 "element": {"#": "number1"}
             },
             "bindings": {
-                "value": {"<<->": "@range1.value"},
+                "value": {"<->": "@range1.value"},
                 "max": {"<-": "@limit-max.value"}
             }
         },
@@ -179,7 +179,7 @@
                 "element": {"#": "check-text"}
             },
             "bindings": {
-                "value": {"<<->": "@check1.checked"}
+                "value": {"<->": "@check1.checked"}
             }
         },
 

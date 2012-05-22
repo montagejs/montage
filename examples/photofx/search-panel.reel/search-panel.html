@@ -20,14 +20,14 @@
                     "searchResultsList": {"@": "searchResultsList"}
                 },
                 "bindings": {
-                    "queryParameter": {"<<->": "@queryField.value"}
+                    "queryParameter": {"<->": "@queryField.value"}
                 }
             },
 
             "searchResultsController": {
                 "prototype": "montage/ui/controller/array-controller",
                 "bindings": {
-                    "content": {"<<->": "@owner.searchResults"}
+                    "content": {"<->": "@owner.searchResults"}
                 }
             },
 
