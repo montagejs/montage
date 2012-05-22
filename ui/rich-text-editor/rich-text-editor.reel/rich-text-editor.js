@@ -27,7 +27,7 @@ The easiest way to create a RichTextEditor is with a serialization and a &lt;div
 <pre class="sh_javascript">
 {
 "editor": {
-   "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
+   "prototype": "ui/rich-text-editor/rich-text-editor.reel",
    "properties": {
       "element": {"#": "editor" }
    }

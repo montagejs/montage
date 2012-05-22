@@ -32,7 +32,7 @@ b1.addEventListener("action", function(event) {
 <caption>Serialized example</caption>
 {
     "aButton": {
-        "prototype": "montage/ui/button.reel",
+        "prototype": "ui/button.reel",
         "properties": {
             "element": {"#": "btnElement"}
         },
