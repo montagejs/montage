@@ -207,11 +207,14 @@ describe("controllers/array-controller-spec.js", function() {
                 arrayController.removeObjectsAtSelectedIndexes();
 
                 expect(arrayController.content.length).toBe(1);
+                expect(arrayController.content.indexOf(bob)).toBe(-1);
             });
 
             it("should remove objects at the specified indices", function() {
                 arrayController.removeObjectsAtIndexes([0,1]);
                 expect(arrayController.content.length).toBe(0);
+                expect(arrayController.content.indexOf(bob)).toBe(-1);
+                expect(arrayController.content.indexOf(alice)).toBe(-1);
             });
 
         });
