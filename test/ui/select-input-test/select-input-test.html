@@ -96,7 +96,7 @@
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorLeft"}}
+                "pressed": {"<->": "@test.justify", "converter": {"@": "justifyComparatorLeft"}}
             }
         },
         "justifyCenter": {
@@ -106,7 +106,7 @@
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorCenter"}}
+                "pressed": {"<->": "@test.justify", "converter": {"@": "justifyComparatorCenter"}}
             }
         },
         "justifyRight": {
@@ -116,7 +116,7 @@
                 "pressedClass": "success"
             },
             "bindings": {
-                "pressed": {"<<->": "@test.justify", "converter": {"@": "justifyComparatorRight"}}
+                "pressed": {"<->": "@test.justify", "converter": {"@": "justifyComparatorRight"}}
             }
         },
         "justifySelect": {
@@ -125,7 +125,7 @@
                 "element": {"#": "justifySelect"}
             },
             "bindings": {
-                "value": {"<<->": "@test.justify"}
+                "value": {"<->": "@test.justify"}
             }
         },
         "justifyResult": {
@@ -149,9 +149,9 @@
             "statesController": {"@": "statesController"}
         },
         "bindings": {
-            "selectedCountry": {"<<->": "@country.contentController.selectedObjects.0"},
-            "selectedState": {"<<->": "@state.contentController.selectedObjects.0"},
-            "selectedDept": {"<<->": "@dept.contentController.selectedObjects.0"}
+            "selectedCountry": {"<->": "@country.contentController.selectedObjects.0"},
+            "selectedState": {"<->": "@state.contentController.selectedObjects.0"},
+            "selectedDept": {"<->": "@dept.contentController.selectedObjects.0"}
         }
     },
 

@@ -21,9 +21,10 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@owner.enabled"}
+                    "pressed": {"<->": "@owner.enabled"}
                 }
             },
+
             "valueSlider": {
                 "prototype": "montage/ui/range-input.reel",
                 "properties": {
@@ -31,9 +32,9 @@
                     "identifier": "valueSlider"
                 },
                 "bindings": {
-                    "value": {"<<->": "@owner.sliderValue"},
-                    "min": {"<<->": "@owner.minValue"},
-                    "max": {"<<->": "@owner.maxValue"}
+                    "value": {"<->": "@owner.sliderValue"},
+                    "min": {"<->": "@owner.minValue"},
+                    "max": {"<->": "@owner.maxValue"}
                 },
                 "listeners": [
                     {
