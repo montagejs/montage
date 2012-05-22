@@ -684,12 +684,14 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
                     notification;
 
                 if (!descriptor) {
+                    originalSetter.apply(this, arguments);
                     return;
                 }
 
                 previousValue = this[propertyName];
                 if (previousValue === value) {
-                    // Nothing to do here
+                    originalSetter.apply(this, arguments);
+                    // Nothing more to do here
                     return;
                 }
 
