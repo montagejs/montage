@@ -15,7 +15,8 @@
                         "element": {"#": "input-text-example"}
                     },
                     "bindings": {
-                        "phone": {"<->": "@phone.value"}
+                        "phone": {"<->": "@phone.value"},
+                        "dobError": {"<-": "@dob.error"}
                     }
                 },
 
@@ -108,8 +109,7 @@
                         "converter": {"@": "dateConverter"}
                     },
                     "bindings": {
-                        "value": {"<->": "@owner.dob"},
-                        "error": {"->": "@owner.dobError"}
+                        "value": {"<->": "@owner.dob"}
                     }
                 },
                 "dobError": {
