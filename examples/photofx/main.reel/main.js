@@ -28,7 +28,6 @@ exports.Main = Montage.create(Component, {
     },
 
     _loadPhotos: {
-        enumerable: false,
         value: function() {
             var stateSerialization,
                 deserializer,
@@ -56,17 +55,16 @@ exports.Main = Montage.create(Component, {
             // Restore default images if there are no photos and we didn't have a serialization
             if (!this.photos && !stateSerialization) {
                 this.photos = [
-                    {src: "images/IMG_1337.jpg", title: "Piston", authors: ["mike"]},
-                    {src: "images/IMG_1375.jpg", title: "Big Sky", authors: ["mike"]},
-                    {src: "images/IMG_1414.jpg", title: "5771", authors: ["mike"]},
-                    {src: "images/IMG_1416.jpg", title: "Horizon", authors: ["mike"]}
+                    {src: "images/IMG_1337.jpg", title: "Piston", authors: ["mike"], id:"4692177F-8C28-4273-99A5-DB453EF2767C"},
+                    {src: "images/IMG_1375.jpg", title: "Big Sky", authors: ["mike"], id:"89C81183-BB4C-4FAB-93B2-F193A54FF8CF"},
+                    {src: "images/IMG_1414.jpg", title: "5771", authors: ["mike"], id:"9797A89D-6EC6-4AC1-A568-87A42D04915A"},
+                    {src: "images/IMG_1416.jpg", title: "Horizon", authors: ["mike"], id:"61E19879-7E28-4D53-AECE-F1D80D9EDE0A"}
                 ];
             }
         }
     },
 
     _testCrossOriginCanvas: {
-        enumerable: false,
         value: function() {
 
             var corsImage,
@@ -101,8 +99,8 @@ exports.Main = Montage.create(Component, {
     },
 
     photoListController: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     prepareForDraw: {
@@ -139,7 +137,6 @@ exports.Main = Montage.create(Component, {
     },
 
     _showControls: {
-        enumerable: false,
         value: true
     },
 
@@ -227,7 +224,6 @@ exports.Main = Montage.create(Component, {
     },
 
     _willingToAcceptDrop: {
-        enumerable: false,
         value: false
     },
 
@@ -267,12 +263,16 @@ exports.Main = Montage.create(Component, {
     },
 
     searchPanel: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
-    searchPopup: {
-        enumerable: false,
+    photoEditor: {
+        value: null,
+        serializable: true
+    },
+
+     searchPopup: {
         value: null
     },
 

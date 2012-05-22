@@ -30,7 +30,8 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
         },
         set: function(component) {
             this._component = component;
-        }
+        },
+        serializable: true
     },
 
     _element: {
@@ -48,7 +49,8 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
         },
         set: function(element) {
             this._element = element;
-        }
+        },
+        serializable: true
     },
 
 
@@ -61,7 +63,8 @@ exports.Composer = Montage.create(Montage, /** @lends module:montage/ui/composer
      * @default false
      */
     lazyLoad: {
-        value: false
+        value: false,
+        serializable: true
     },
 
     _needsFrame: {

@@ -340,7 +340,7 @@ describe("serialization/serializer-spec", function() {
                 simple.identifier = "myprop";
 
                 serialization = serializer.serializeObject(object);
-                expect(stripPP(serialization)).toBe('{"myprop":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"myprop"}}}}');
+                expect(stripPP(serialization)).toBe('{"myprop":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string","identifier":"myprop"}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"myprop"}}}}');
             });
 
             it("should not serialize an object using its identifier property as the label if it's invalid", function() {

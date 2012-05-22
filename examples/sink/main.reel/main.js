@@ -7,8 +7,15 @@ var Montage = require("montage/core/core").Montage,
     Component = require("montage/ui/component").Component;
 
 exports.Main = Montage.create(Component, {
-    content: {value: null},
-    sidebar: {value: null},
+    content: {
+        value: null,
+        serializable: true
+    },
+
+    sidebar: {
+        value: null,
+        serializable: true
+    },
 
     // content.selectedItem and sidebar.selectedItem are bound to selectedItem
     _selectedItem: {value: null},

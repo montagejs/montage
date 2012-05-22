@@ -9,7 +9,6 @@ var Component = require("montage/ui/component").Component;
 exports.PhotoThumb = Montage.create(Component, {
 
     photo: {
-        enumerable: false,
         value: null
     }
 

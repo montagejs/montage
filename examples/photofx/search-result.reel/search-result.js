@@ -9,13 +9,13 @@ var Component = require("montage/ui/component").Component;
 exports.SearchResult = Montage.create(Component, {
 
     photoListController: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     result: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     resultAlreadyImported: {
@@ -32,7 +32,6 @@ exports.SearchResult = Montage.create(Component, {
     },
 
     addPhotoAction: {
-        enumerable: false,
         value: function() {
 
             if (this.resultAlreadyImported) {

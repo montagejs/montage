@@ -29,7 +29,6 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
         @default {}
     */
     switchComponents: {
-        enumerable: false,
         serializable: true,
         distinct: true,
         value: {}
@@ -39,7 +38,6 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
   @private
 */
     _switchValue: {
-        enumerable: false,
         value: null
     },
 /**
@@ -48,7 +46,6 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
         @default null
     */
     switchValue: {
-        enumerable: false,
         get: function() {
             return this._switchValue;
         },
@@ -63,7 +60,8 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
             if (this.switchComponents) {
                 this.content = this.switchComponents[this.switchValue];
             }
-        }
+        },
+        serializable: true
     },
 /**
         Description TODO
@@ -71,7 +69,7 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
         @default null
     */
     transition: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     }
 });

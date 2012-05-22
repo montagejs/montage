@@ -56,9 +56,9 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @private
      */
     _content: {
-        enumerable: false,
         value: null
     },
+
     /**
         The content managed by the ArrayController.
         @type {Function}
@@ -75,8 +75,8 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
             this._content = value;
 
-
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -96,14 +96,14 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      })
      */
     delegate: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     /**
      @private
      */
     _organizedObjects: {
-        enumerable: false,
         distinct: true,
         value: []
     },
@@ -114,7 +114,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default null
      */
     organizedObjects: {
-        enumerable: false,
         get: function() {
             return this._organizedObjects;
         }
@@ -126,14 +125,14 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} true
      */
     automaticallyOrganizeObjects: {
-        value: true
+        value: true,
+        serializable: true
     },
 
     /**
      @private
      */
     _sortFunction: {
-        enumerable: false,
         value: null
     },
 
@@ -158,14 +157,14 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this.automaticallyOrganizeObjects) {
                 this.organizeObjects();
             }
-        }
+        },
+        serializable: true
     },
 
     /**
      @private
      */
     _filterFunction: {
-        enumerable: false,
         value: null
     },
 
@@ -190,14 +189,14 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this.automaticallyOrganizeObjects) {
                 this.organizeObjects();
             }
-        }
+        },
+        serializable: true
     },
 
     /**
         @private
     */
     _startIndex: {
-        enumerable: false,
         value: null
     },
 
@@ -208,7 +207,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @version 1.0
     */
     startIndex: {
-        enumerable: false,
+        serializable: true,
         get: function() {
             return this._startIndex;
         },
@@ -241,7 +240,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @version 1.0
     */
     endIndex: {
-        enumerable: false,
+        serializable: true,
         get: function() {
             return this._endIndex;
         },
@@ -263,24 +262,21 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @private
     */
     _organizedObjectsIndexes: {
-        value: null,
-        enumerable: false
+        value: null
     },
 
     /*
         @private
     */
     _rangedOrganizedObjectsIndexes: {
-        value: null,
-        enumerable: false
+        value: null
     },
 
     /**
         @private
      */
     _selectedIndexes: {
-        value: null,
-        enumerable: false
+        value: null
     },
 
    /**
@@ -325,7 +321,8 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     this._selections = null;
                 });
             }
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -511,7 +508,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @private
      */
     _selectedObjects: {
-        enumerable: false,
         value: null
     },
 
@@ -523,7 +519,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @fires change@selectedContentIndexes
      */
     selectedObjects: {
-        enumerable: false,
         get: function() {
 
             if (this._selectedObjects) {
@@ -571,14 +566,14 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 this._selectedIndexes = null;
                 this._selections = null;
             });
-        }
+        },
+        serializable: true
     },
 
     /**
      @private
      */
     _selectedContentIndexes: {
-        enumerable: false,
         value: null
     },
 
@@ -589,7 +584,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default null
      */
     selectedContentIndexes: {
-        enumerable: false,
         get: function() {
 
             if (this._selectedContentIndexes) {
@@ -701,7 +695,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} false
      */
     selectObjectsOnAddition: {
-        enumerable: false,
+        serializable: true,
         value: false
     },
 
@@ -711,7 +705,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} true
      */
     clearFilterFunctionOnAddition: {
-        enumerable: false,
+        serializable: true,
         value: true
     },
 

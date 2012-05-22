@@ -12,5 +12,10 @@ exports.TabsExample = Montage.create(Component, {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

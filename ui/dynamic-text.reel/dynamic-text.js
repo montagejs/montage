@@ -49,7 +49,8 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         @default null
     */
     converter: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     /**
@@ -58,7 +59,8 @@ exports.DynamicText = Montage.create(Component, /** @lends module:"montage/ui/dy
         @default {String} ""
     */
     defaultValue: {
-        value: ""
+        value: "",
+        serializable: true
     },
 
     _valueNode: {

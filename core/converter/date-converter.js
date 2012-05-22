@@ -2539,7 +2539,8 @@ var DateValidator = exports.DateValidator = Montage.create(Validator,/** @lends 
         @default {Date} 'MM/dd/yyyy'
     */
     pattern: {
-        value: 'MM/dd/yyyy'
+        value: 'MM/dd/yyyy',
+        serializable: true
     },
    /**
     @function
@@ -2576,7 +2577,8 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
      @default {Boolean} true
      */
     allowPartialConversion: {
-        value: false
+        value: false,
+        serializable: true
     },
 
 /**
@@ -2584,7 +2586,8 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
         @default {Function} Montage.create(DateValidator)
     */
     validator: {
-        value: Montage.create(DateValidator)
+        value: Montage.create(DateValidator),
+        serializable: true
     },
 
     // valid fn values are:
@@ -2593,7 +2596,8 @@ var DateConverter = exports.DateConverter = Montage.create(Converter,/** @lends 
         @default {Date} 'MM/dd/yyyy'
     */
     pattern: {
-        value: 'MM/dd/yyyy'
+        value: 'MM/dd/yyyy',
+        serializable: true
     },
     /**
     @function

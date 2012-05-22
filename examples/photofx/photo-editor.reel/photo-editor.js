@@ -18,12 +18,10 @@ var MultiplyEffect = require("effect/multiply-effect").MultiplyEffect;
 exports.PhotoEditor = Montage.create(Component, {
 
     __image: {
-        enumerable: false,
         value: null
     },
 
     _image: {
-        enumerable: false,
         get: function() {
             return this.__image;
         },
@@ -44,16 +42,21 @@ exports.PhotoEditor = Montage.create(Component, {
                 this.__image.element.addEventListener("load", this, false);
             }
 
-        }
+        },
+        serializable: true
     },
 
     _canvas: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
+    },
+
+    _toolLayer: {
+        value: null,
+        serializable: true
     },
 
     _pointerIdentifier: {
-        enumerable: false,
         value: null
     },
 
@@ -138,7 +141,6 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     handleMousemove: {
-        enumerable: false,
         value: function(event) {
 
             if (!this._pointerIdentifier) {
@@ -150,7 +152,6 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     handleTouchmove: {
-        enumerable: false,
         value: function(event) {
 
             var i = 0,
@@ -233,12 +234,10 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     _photo: {
-        enumerable: false,
         value: null
     },
 
     photo: {
-        enumerable: false,
         get: function() {
             return this._photo;
         },
@@ -262,7 +261,6 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     handleEditorImageLoad: {
-        enumerable: false,
         value: function(event) {
             this._imageDirty = true;
             this.hasImage = true;
@@ -271,29 +269,24 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     _width: {
-        enumerable: false,
         value: null
     },
 
     _height: {
-        enumerable: false,
         value: null
     },
 
     currentColor: {
-        enumerable: false,
         value: null
     },
 
     // TODO Eventually we need to maintain a stack of effects to apply to the image inside the editor
     // I don't want to complicate this for the demo right now though
     _inverted: {
-        enumerable: false,
         value: false
     },
 
     inverted: {
-        enumerable: false,
         get: function() {
             return this._inverted;
         },
@@ -306,16 +299,15 @@ exports.PhotoEditor = Montage.create(Component, {
             this._inverted = value;
             this._imageDirty = true;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     _desaturated: {
-        enumerable: false,
         value: false
     },
 
     desaturated: {
-        enumerable: false,
         get: function() {
             return this._desaturated;
         },
@@ -332,12 +324,10 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     _sepiaToned: {
-        enumerable: false,
         value: false
     },
 
     sepiaToned: {
-        enumerable: false,
         get: function() {
             return this._sepiaToned;
         },
@@ -354,12 +344,10 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     _multiplyEffect: {
-        enumerable: false,
         value: false
     },
 
     multiplyEffect: {
-        enumerable: false,
         get: function() {
             return this._multiplyEffect;
         },
@@ -376,12 +364,10 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     _multiplyMultiplier: {
-        enumerable: false,
         value: 1
     },
 
     multiplyMultiplier: {
-        enumerable: false,
         get: function() {
             return this._multiplyMultiplier;
         },
@@ -416,17 +402,25 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     pointMonitorController: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
+    },
+
+    horizontalRuler: {
+        value: null,
+        serializable: true
+    },
+
+    verticalRuler: {
+        value: null,
+        serializable: true
     },
 
     _pointMonitors: {
-        enumerable: false,
         value: null
     },
 
     pointMonitors: {
-        enumerable: false,
         get: function() {
             if (!this._pointMonitors) {
                 if (window.Touch) {
@@ -441,12 +435,10 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     _isShowingPointMonitors: {
-        enumerable: false,
         value: null
     },
 
     isShowingPointMonitors: {
-        enumerable: false,
         get: function() {
             return this._isShowingPointMonitors;
         },
