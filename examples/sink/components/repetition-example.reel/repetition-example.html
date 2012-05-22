@@ -100,7 +100,7 @@
             "element": {"#": "selection"}
         },
         "bindings": {
-            "checked": {"<<->": "@list1.selectionAtCurrentIteration"}
+            "checked": {"<->": "@list1.selectionAtCurrentIteration"}
         }
     },
 
@@ -142,7 +142,7 @@
             "element": {"#": "answerSelection"}
         },
         "bindings": {
-            "checked": {"<<->": "@list2.selectionAtCurrentIteration"}
+            "checked": {"<->": "@list2.selectionAtCurrentIteration"}
         }
     },
 
@@ -162,7 +162,7 @@
             "element": {"#": "selectedAnswer"}
         },
         "bindings": {
-            "value": {"<<->": "@owner.selectedAnswer"}
+            "value": {"<->": "@owner.selectedAnswer"}
         }
     },
 
@@ -200,8 +200,8 @@
             ]
         },
         "bindings": {
-            "selectedItems": {"<<->": "@controller.selectedObjects"},
-            "selectedAnswer": {"<<->": "@answersController.selectedObjects.0"}
+            "selectedItems": {"<->": "@controller.selectedObjects"},
+            "selectedAnswer": {"<->": "@answersController.selectedObjects.0"}
         }
     }
 

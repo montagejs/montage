@@ -27,8 +27,7 @@
                 },
                 "bindings": {
                     "element": {"<-": "@owner._element"},
-                    "maxTranslateX": {"<-": "@owner.maxTranslateX"},
-                    "translateX": {"->": "@owner.translateX"}
+                    "maxTranslateX": {"<-": "@owner.maxTranslateX"}
                 }
             },
             "owner": {
@@ -47,7 +46,8 @@
                     "isSelectionEnabled": {
                         "boundObject": {"@": "repetition"},
                         "boundObjectPropertyPath": "isSelectionEnabled"
-                    }
+                    },
+                    "translateX": {"<-": "@translateComposer.translateX"}
                 }
             }
         }
