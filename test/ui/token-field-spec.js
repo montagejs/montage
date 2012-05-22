@@ -96,7 +96,6 @@ var testPage = TestPageLoader.queueTest("token-field-test", function() {
                                 testPage.waitForDraw();
 
                                 runs(function() {
-                                    expect(test.tokenField2._suggestedValue).toBe(newToken);
                                     console.log('tokenField2 values after accepting suggestion', test.tokenField2.values);
                                     expect(test.tokenField2.values[1]).toBe(newToken);
                                     expect(test.tags[1]).toBe(newToken);
