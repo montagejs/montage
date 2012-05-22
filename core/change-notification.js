@@ -206,11 +206,14 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
     mutationDependencyIndex: {value: null},
     mutationListenersCount: {value: 0},
     observedDependentProperties: {value: null},
+    _isHandlingNotification: {value: null},
 
     initWithTargetPath: {
         value: function(target, path) {
             this.target = target;
             this.propertyPath = path;
+            // TODO: this probably should be in didCreate...
+            this._isHandlingNotification = {};
 
             return this;
         }
@@ -536,7 +539,15 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
             var listener,
                 dependentDescriptorsIndex = this.dependentDescriptorsIndex,
                 dependenciesIndex = notification._dependenciesIndex,
-                isMutationNotification;
+                isMutationNotification,
+                isHandlingNotification = this._isHandlingNotification,
+                notificationUuid = notification.uuid;
+
+            // we need to stop circular property dependencies.
+            // e.g.: object.foo depends on object.bar and object.bar depends on object.foo.
+            if (notificationUuid in isHandlingNotification) {
+                return;
+            }
 
             // TODO: maybe I should replicate this
             if (arguments.length < 2) {
@@ -566,7 +577,9 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
                         if (dependentDescriptorsIndex) {
                             notification._dependenciesIndex = dependentDescriptorsIndex[key];
                         }
+                        isHandlingNotification[notificationUuid] = true;
                         listener.listenerFunction.call(listener.listenerTarget, notification);
+                        delete isHandlingNotification[notificationUuid];
                     }
                 }
                 notification._dependenciesIndex = dependenciesIndex;
@@ -876,16 +889,16 @@ var PrefixedPropertyDescriptor = {
     configurable: true
 };
 
-var PropertyChangeNotification = exports.PropertyChangeNotification = Object.create(null, {
-    phase: {writable: true, value: null},
-    target: {writable: true, value: null},
-    propertyPath: {writable: true, value: null},
-    minus: {writable: true, value: null},
-    plus: {writable: true, value: null},
-    currentTarget: {writable: true, value: null},
-    currentPropertyPath: {writable: true, value: null},
-    isMutation: {writable: true, value: false}
-});
+var PropertyChangeNotification = exports.PropertyChangeNotification = {
+    phase: null,
+    target: null,
+    propertyPath: null,
+    minus: null,
+    plus: null,
+    currentTarget: null,
+    currentPropertyPath: null,
+    isMutation: false
+};
 
 var ChangeNotificationDispatchingArray = exports.ChangeNotificationDispatchingArray = [];
 var _index_array_regexp = /^[0-9]+$/;

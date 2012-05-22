@@ -1872,6 +1872,58 @@ describe("events/change-notification-spec", function() {
                 expect(ex.type).toBe("stack_overflow");
             }
         });
+
+        it("should not create an infinite loop on a cycle with direct property dependencies", function() {
+            var MeaningfulObject = Montage.create(Montage, {
+                    foo: {
+                        dependencies: ["bar"],
+                        value: null
+                    },
+
+                    bar: {
+                        dependencies: ["foo"],
+                        value: null
+                    }
+                });
+
+            var object = MeaningfulObject.create(),
+                listeners = {
+                    listener: function(notification) {
+                    }
+                };
+
+            object.addPropertyChangeListener("foo", listeners.listener);
+            object.foo = 1;
+            expect(true).toBe(true);
+        });
+
+        it("should not create an infinite loop on a cycle with direct inproperty dependencies", function() {
+            var MeaningfulObject = Montage.create(Montage, {
+                    foo: {
+                        dependencies: ["bar"],
+                        value: null
+                    },
+
+                    bar: {
+                        dependencies: ["foo", "baz"],
+                        value: null
+                    },
+
+                    baz: {
+                        value: null
+                    }
+                });
+
+            var object = MeaningfulObject.create(),
+                listeners = {
+                    listener: function(notification) {
+                    }
+                };
+
+            object.addPropertyChangeListener("foo", listeners.listener);
+            object.baz = 1;
+            expect(true).toBe(true);
+        });
     });
 
     describe("calling listeners on arrays", function() {
