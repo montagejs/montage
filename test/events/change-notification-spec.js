@@ -14,7 +14,7 @@ var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
 };
 
-describe("event/change-notification-spec", function() {
+describe("events/change-notification-spec", function() {
     beforeEach(function() {
         ChangeNotification.__reset__();
     });
@@ -990,6 +990,26 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener.callCount).toBe(0);
             });
 
+            it("should listen to mutations of a value at a direct property name", function() {
+                var object1 = {done: false},
+                    array = [object1, {done: false}, {done: false}],
+                    listeners = {
+                        listener: function(notification) {
+                            expect(notification.currentTarget).toBe(array);
+                            expect(notification.target).toBe(object1);
+                            expect(notification.isMutation).toBe(false);
+                            expect(notification.minus).toBe(false);
+                            expect(notification.plus).toBe(true);
+                        }
+                    };
+
+                spyOn(listeners, "listener").andCallThrough();
+
+                array.addPropertyChangeListener("done", listeners.listener, false, false);
+                object1.done = true;
+                expect(listeners.listener.callCount).toBe(1);
+            });
+
             it("should listen to mutations of a value at a property path", function() {
                 var object = {"array": [1, 2, 3]},
                     listeners = {
@@ -1009,7 +1029,7 @@ describe("event/change-notification-spec", function() {
                 expect(listeners.listener.callCount).toBe(1);
             });
 
-            it("should not listen to mutation of a value at a property path", function() {
+            it("should not listen to mutation of a value at a property path if we use ignore mutations parameter", function() {
                 var object = {"array": [1, 2, 3]},
                     listeners = {
                         listener: function(notification) {
