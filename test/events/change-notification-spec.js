@@ -1897,7 +1897,7 @@ describe("events/change-notification-spec", function() {
             expect(true).toBe(true);
         });
 
-        it("should not create an infinite loop on a cycle with direct inproperty dependencies", function() {
+        it("should not create an infinite loop on a cycle with indirect property dependencies", function() {
             var MeaningfulObject = Montage.create(Montage, {
                     foo: {
                         dependencies: ["bar"],
@@ -1922,6 +1922,36 @@ describe("events/change-notification-spec", function() {
 
             object.addPropertyChangeListener("foo", listeners.listener);
             object.baz = 1;
+            expect(true).toBe(true);
+        });
+
+        it("should not create an infinite loop on a cycle created by manually dispatching a property change in a changeProperty listener that is triggered by that dispatch", function() {
+            var MeaningfulObject = Montage.create(Montage, {
+                    _foo: {value: 2},
+                    foo: {
+                        get: function() {
+                            return this._foo;
+                        },
+                        set: function(value) {
+                            this._foo = value;
+                            this.dispatchPropertyChange("bar", function() {
+                                this.bar = null;
+                            });
+                        }
+                    },
+
+                    bar: {value: null}
+                });
+
+            var object = MeaningfulObject.create(),
+                listeners = {
+                    listener: function(notification) {
+                        object.foo = 1;
+                    }
+                };
+
+            object.addPropertyChangeListener("bar", listeners.listener);
+            object.foo = 1;
             expect(true).toBe(true);
         });
     });

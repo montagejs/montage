@@ -774,12 +774,13 @@ Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
         for (i = 0; i < callbackArgumentIndex; i++) {
             iProperty = arguments[i];
             descriptor = ChangeNotification.getPropertyChangeDescriptor(this, iProperty);
-            if (descriptor) {
+            if (descriptor && !descriptor.isActive) {
                 notification = Object.create(PropertyChangeNotification);
                 observedProperties.push(iProperty, descriptor, notification);
 
                 notification.target = this;
                 notification.minus = this.getProperty(iProperty);
+                descriptor.isActive = true;
                 descriptor.handleWillChange(notification);
             }
         }
@@ -793,6 +794,7 @@ Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
 
             notification.plus = this.getProperty(iProperty);
             descriptor.handleChange(notification);
+            descriptor.isActive = false;
         }
 
     }
