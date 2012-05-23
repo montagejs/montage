@@ -99,16 +99,22 @@ exports.TempConverter = Montage.create(Converter, {
     // convert fahrenheit to celsius (showing our non-metric heritage here)
     convert: {
         value: function(value) {
-            var result = (parseInt(value, 10) - 32) / 1.8;
-            return result.toFixed(2);
+            value = parseInt(value, 10);
+            if(!isNaN(value)) {
+                return ((value - 32) / 1.8).toFixed(2);
+            }
+            return null;
         }
     },
 
     // revert celsius to fahrenheit
     revert: {
         value: function(value) {
-            var result = (1.8 * parseInt(value, 10)) + 32;
-            return result.toFixed(2);
+            value = parseInt(value, 10);
+            if(!isNaN(value)) {
+                return ((1.8 * value) + 32).toFixed(2);
+            }
+            return null;
         }
     }
 
