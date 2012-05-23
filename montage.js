@@ -411,7 +411,7 @@ if (typeof window !== "undefined") {
 
         initMontage: function (montageRequire, applicationRequire, params) {
             // If a module was specified in the config then we initialize it now
-            if (params.module) {
+            if (params.module && params.loadApplication !== "true") {
                 applicationRequire.async(params.module)
                 .end();
             } else {
@@ -429,6 +429,10 @@ if (typeof window !== "undefined") {
                             window.document.application = application;
                             defaultEventManager.application = application;
                             application.eventManager = defaultEventManager;
+                            if (params.module) {
+                                applicationRequire.async(params.module)
+                                .end();
+                            }
                         });
                     });
                 });

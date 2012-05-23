@@ -11,7 +11,6 @@
 */
 
 var Montage = require("core/core").Montage,
-    EventManager = require("core/event/event-manager").EventManager,
     Template = require("ui/template").Template,
     Component = require("ui/component").Component,
     Slot;
@@ -43,6 +42,14 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      @type {module:montage/core/event/event-manager.EventManager}
      */
     eventManager: {
+        value: null
+    },
+
+    /**
+     Provides a reference to the parent application (in multi-window environment).
+     @type {module:montage/core/event/event-manager.EventManager}
+     */
+    parentApplication: {
         value: null
     },
 
@@ -80,23 +87,70 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      Opens a URL in a new browser window, and registers the window with the Montage event manager.<br>
      The document URL must be in the same domain as the calling script.
      @function
-     @param {URL} url The URL to open in the new window.
-     @returns newWindow
+     @param {PATH} component The path to the real component to open in the new window.
+     @param {STRING} name the component main class name.
+     @param {STRING} params the the new window parameters (as in window.open).
+     @param {FUNCTION} callback the function to call once the component has been loaded in the window. the callback params are the window and the component instance
      @example
      var app = document.application;
-     app.openWindow("docs/help.html");
+     app.openWindow("docs/help.reel", "width=300, height=500", function(aWindow, aComponent){...});
      */
     openWindow: {
-        value: function(url) {
-            var newWindow = window.open(url);
+        value: function(component, name, params, callback) {
+            var thisRef = this,
+                newWindow,
+                addedEventListener = false;
 
-            // Make the required modules available to the new window
-            newWindow.require = require;
-            newWindow.document.application = this;
+            var loadInfo = {
+                module: component,
+                name: name,
+                callback: function(aWindow, aComponent) {
+                    aWindow.document.application.parentApplication = thisRef;
+                    if (callback) {
+                        callback(aWindow, aComponent);
+                    }
 
-            this.eventManager.registerWindow(newWindow);
-            this.attachedWindows.push(newWindow);
-            return newWindow;
+                    thisRef.attachedWindows.push(newWindow);
+                    newWindow.addEventListener("unload", function() {
+                        if (newWindow.location.href !== "about:blank") {
+                            var index = thisRef.attachedWindows.indexOf(newWindow);
+                            if (index !== -1) {
+                                thisRef.attachedWindows.splice(index, 1);
+                            }
+                            newWindow.removeEventListener("unload", arguments.callee);
+                        }
+                    });
+                }
+            };
+
+            var _initializeWindow = function() {
+                newWindow.load(component, name, function(aWindow, aComponent) {
+                    aWindow.document.application.parentApplication = thisRef;
+                    if (callback) {
+                        callback(aWindow, aComponent);
+                    }
+
+                    thisRef.attachedWindows.push(newWindow);
+                    newWindow.addEventListener("unload", function() {
+                        if (newWindow.location.href !== "about:blank") {
+                            var index = thisRef.attachedWindows.indexOf(newWindow);
+                            if (index !== -1) {
+                                thisRef.attachedWindows.splice(index, 1);
+                            }
+                            newWindow.removeEventListener("unload", arguments.callee);
+                        }
+                    });
+                });
+
+                if (addedEventListener) {
+                    newWindow.removeEventListener("DOMContentLoaded", _initializeWindow);
+                }
+            };
+
+            window.require.loadPackage({name: "montage"}).then(function(require) {
+                newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", params);
+                newWindow.loadInfo = loadInfo;
+            }).end();
         }
     },
 
@@ -123,7 +177,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      */
     removeEventListener: {
         value: function(type, listener, useCapture) {
-            Object.getPrototypeOf(Application)["addEventListener"].call(this, type, listener, useCapture);
+            Object.getPrototypeOf(Application)["removeEventListener"].call(this, type, listener, useCapture);
         }
     },
 
