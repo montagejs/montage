@@ -24,7 +24,9 @@ exports.TaskListControls = Montage.create(Component, {
         },
         set: function(values) {
             this._completedValues = values;
-            this.anyCompleted = values.some(function(value) {return value;});
+            if (values) {
+                this.anyCompleted = values.some(function(value) {return value;});
+            }
         }
     },
 
