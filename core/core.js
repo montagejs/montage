@@ -15,6 +15,7 @@ require("core/shim/array");
 require("core/extras/object");
 require("core/extras/array");
 require("core/extras/string");
+require("core/extras/function");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
