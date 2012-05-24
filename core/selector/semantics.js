@@ -6,8 +6,6 @@
 
 var AbstractSemantics = require("./abstract-semantics").AbstractSemantics;
 
-var empty = {}; // used for getting properties of falsy objects
-
 var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, {
 
     operators: {
@@ -22,12 +20,10 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
 
             // function calls
             startsWith: function (a, b) {
-                return a.length >= b.length &&
-                    this.equals(a.slice(0, b.length), b);
+                return a.startsWith(b);
             },
             endsWith: function (a, b) {
-                return a.length >= b.length &&
-                    this.equals(a.slice(a.length - b.length, a.length), b);
+                return a.endsWith(b);
             },
 
             // algebra
@@ -58,47 +54,49 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
 
             // transitive relations
             lessThan: function (a, b) {
-                return Semantics.compare(a, b) < 0;
+                return Object.compare(a, b) < 0;
             },
             lessThanOrEquals: function (a, b) {
-                return Semantics.compare(a, b) <= 0;
+                return Object.compare(a, b) <= 0;
             },
             greaterThan: function (a, b) {
-                return Semantics.compare(a, b) > 0;
+                return Object.compare(a, b) > 0;
             },
             greaterThanOrEquals: function (a, b) {
-                return Semantics.compare(a, b) >= 0;
+                return Object.compare(a, b) >= 0;
             },
 
             // equivalence relations
             equals: function (a, b) {
-                if (a == null || b == null) {
-                    return a === b;
-                } else if (a.equals) {
-                    return a.equals(b);
-                } else if (b.equals) {
-                    return b.equals(a);
-                } else {
-                    return a === b;
-                }
+                return Object.equals(a, b);
             },
             notEquals: function (a, b) {
-                return !this.equals(a, b);
+                return !Object.equals(a, b);
             },
 
             // logical ('and' and 'or' are evaluators for the short-circuiting)
 
+            and: function (a, b) {
+                return a && b;
+            },
+            or: function (a, b) {
+                return a || b;
+            },
+            // retained as distinct from notEqual because of a different
+            // type signature and level of precedence.  the type is not
+            // important for JavaScript in memory, but is distinguished
+            // for data-layer queries.
             xor: function (a, b) {
                 return a !== b;
             },
 
             // collection operators
 
-            contains: function (collection, value) { // pertains to strings
-                return collection.indexOf(value) !== -1;
+            contains: function (collection, string) {
+                return collection.contains(string);
             },
-            has: function (collection, value) { // pertains to other collections
-                return collection.indexOf(value) !== -1;
+            has: function (collection, value) {
+                return collection.has(value);
             },
 
             slice: function (collection, start, stop) {
@@ -142,7 +140,13 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                 return function (value, parameters, visitor) {
                     var object = evaluateObject(value, parameters, visitor);
                     var key = evaluateKey(value, parameters, visitor);
-                    var result = (object || empty)[key];
+                    var result;
+                    object = object || Object.empty;
+                    if (typeof object.get === "function") {
+                        result = object.get(key);
+                    } else {
+                        result = object[key];
+                    }
                     if (visitor) {
                         visitor(object, key, result, remainingPath);
                     }
@@ -176,115 +180,38 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                 };
             },
 
-            it: function (a, b) {
+            it: function (it, modify) {
                 return function (value, parameters) {
-                    return b(a(value, parameters), parameters);
-                }
+                    return modify(it(value, parameters), parameters);
+                };
             },
 
-            one: function (a, b) {
-                return function (value, parameters) {
-                    var object = a(value, parameters)[0]; // handle other collections
-                    return b(object, parameters);
-                };
-            },
-            only: function (a, b) {
-                return function (value, parameters) {
-                    var objects = a(value, parameters); // handle other collections
-                    if (objects.length !== 1)
-                        return false;
-                    return b(objects[0], parameters);
-                };
-            },
-            filter: function (a, b) {
-                return function (value, parameters) {
-                    return a(value, parameters)
-                    .filter(function (object) {
-                        return b(object, parameters);
-                    });
-                };
-            },
-            every: function (a, b) {
-                return function (value, parameters) {
-                    return a(value, parameters)
-                    .every(function (object) {
-                        return b(object, parameters);
-                    });
-                };
-            },
-            some: function (a, b) {
-                return function (value, parameters) {
-                    return a(value, parameters)
-                    .some(function (object) {
-                        return b(object, parameters);
-                    });
-                };
-            },
-            map: function (a, b) {
-                return function (value, parameters) {
-                    return a(value, parameters)
-                    .map(function (object) {
-                        return b(object, parameters);
-                    });
-                };
-            },
+            one: makeNoArgumentsMethodCompiler('one'),
+            only: makeNoArgumentsMethodCompiler('only'),
+
+            map: makeReductionCompiler('map'),
+            filter: makeReductionCompiler('filter'),
+            every: makeReductionCompiler('every'),
+            some: makeReductionCompiler('some'),
 
             sorted: function (collection, by, descending) {
-                var semantics = this;
                 return function (value, parameters) {
-                    var order = descending() ? -1 : 1;
                     return collection(value, parameters)
-                    .map(function (item) {
-                        return {
-                            by: by(item, parameters),
-                            value: item
-                        };
-                    })
-                    .sort(function (a, b) {
-                        return semantics.compare(a.by, b.by) * order;
-                    })
-                    .map(function (pair) {
-                        return pair.value;
-                    })
-                }
+                    .sorted(Object.compare, function (item) {
+                        return by(item, parameters);
+                    }, descending() ? -1 : 1);
+                };
             },
 
-            // reductions
-            sum: function (collection, modify) {
-                var self = this;
-                return function (value, parameters) {
-                    var value = self.sum(collection(value, parameters));
-                    return modify(value, parameters);
-                };
-            },
-            count: function (collection, modify) {
-                var self = this;
-                return function (value, parameters) {
-                    var value = self.count(collection(value, parameters));
-                    return modify(value, parameters);
-                };
-            },
-            average: function (collection, modify) {
-                var self = this;
-                return function (value, parameters) {
-                    var value = self.average(collection(value, parameters));
-                    return modify(value, parameters);
-                };
-            },
-            unique: function (collection, modify) {
-                var self = this;
-                return function (value, parameters) {
-                    var value = self.unique(collection(value, parameters));
-                    return modify(value, parameters);
-                };
-            },
-            flatten: function (collection, modify) {
-                var self = this;
-                return function (value, parameters) {
-                    var value = self.flatten(collection(value, parameters));
-                    return modify(value, parameters);
-                };
-            }
+            sum: makeNoArgumentsMethodCompiler('sum'),
+            count: makeNoArgumentsMethodCompiler('count'),
+            any: makeNoArgumentsMethodCompiler('any'),
+            all: makeNoArgumentsMethodCompiler('all'),
+            average: makeNoArgumentsMethodCompiler('average'),
+            min: makeNoArgumentsMethodCompiler('min'),
+            max: makeNoArgumentsMethodCompiler('max'),
+            unique: makeNoArgumentsMethodCompiler('unique'),
+            flatten: makeNoArgumentsMethodCompiler('flatten')
 
         }
     },
@@ -309,84 +236,34 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                 return AbstractSemantics.compile.call(self, syntax, parents);
             }
         }
-    },
-
-    compare: {
-        value: function (a, b) {
-            if (typeof a !== typeof b)
-                return 0;
-            if (a === b)
-                return 0;
-            if (typeof a === "number")
-                return a - b;
-            if (typeof a === "string")
-                return a < b ? -1 : 1;
-            if (Array.isArray(a)) {
-                if (!Array.isArray(b))
-                    return 0;
-                var length = Math.min(a.length, b.length);
-                for (var i = 0; i < length; i++) {
-                    var comparison = this.compare(a[i], b[i]);
-                    if (comparison)
-                        return comparison;
-                }
-                return a.length - b.length;
-            }
-            if (typeof a.compare === "function")
-                return a.compare(b);
-            if (typeof b.compare === "function")
-                return -b.compare(a);
-            if (typeof a.lessThan === "function" && typeof a.equals === "function")
-                return a.equals(b) ? 0 : a.lessThan(b) ? -1 : 1;
-            return 0;
-        }
-    },
-
-    count: {
-        value: function (collection) {
-            if (typeof collection.count === "function") {
-                return collection.count();
-            } else {
-                return collection.length;
-            }
-        }
-    },
-
-    sum: {
-        value: function (collection) {
-            return collection.reduce(function (a, b) {
-                return a + b;
-            }, 0);
-        }
-    },
-
-    average: {
-        value: function (collection) {
-            return this.sum(collection) / this.count(collection);
-        }
-    },
-
-    unique: {
-        value: function (collection) {
-            var unique = [];
-            collection.forEach(function (value) {
-                if (unique.every(function (uniqueValue) {
-                    return Semantics.compare(value, uniqueValue) !== 0;
-                })) {
-                    unique.push(value);
-                }
-            });
-            return unique;
-        }
-    },
-
-    flatten: {
-        value: function (table) {
-            return table.reduce(function (flat, row) {
-                return flat.concat(row);
-            }, [])
-        }
     }
 
 });
+
+// used to generate evaluators that iterate through a collection
+// applying some predicate, like 'map', 'filter', 'every', 'some'
+function makeReductionCompiler(name) {
+    return function (collection, relation) {
+        return function (value, parameters, visitor) {
+            return collection(value, parameters, visitor)
+            [name](function (object) {
+                return relation(object, parameters, visitor);
+            });
+        };
+    };
+}
+
+// used to generate evaluators for functions that take no arguments, like
+// 'sum', 'count', 'any', 'all'
+function makeNoArgumentsMethodCompiler(name) {
+    return function (collection, modify) {
+        var self = this;
+        return function (value, parameters, visitor) {
+            return modify(
+                collection(value, parameters, visitor)[name](),
+                parameters
+            );
+        };
+    };
+}
 

@@ -44,7 +44,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             this.parseRightToLeft(['sum', 'count', 'average', 'unique', 'flatten']);
             var parseExpression = this.precedence();
 
-            // TODO median, mode, flatten, any, all
+            // TODO median, mode
 
             // extra
 

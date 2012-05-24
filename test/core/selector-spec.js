@@ -365,9 +365,13 @@ describe('core/selector-spec', function () {
 
             it("works for only", function () {
                 assert(Selector.only.equals(10).evaluate([10]), true);
-                assert(Selector.only.equals(10).evaluate([10, 20]), false);
                 assert(Selector.only.equals(10).evaluate([20]), false);
-                assert(Selector.only.equals(10).evaluate([]), false);
+                expect(function () {
+                    Selector.only.equals(10).evaluate([]);
+                }).toThrow();
+                expect(function () {
+                    Selector.only.equals(10).evaluate([10, 20]);
+                }).toThrow();
             });
 
             it("works for only with property", function () {
