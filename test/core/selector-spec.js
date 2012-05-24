@@ -881,29 +881,6 @@ describe('core/selector-spec', function () {
 
     });
 
-    describe("visitor", function () {
-        it("visits each getter node", function () {
-
-            var visits = [];
-            Selector.property("a.b").property("c").equals(10).evaluate({
-                a: {
-                    b: {
-                        c: 10
-                    }
-                }
-            }, {}, function (object, key, value, remaining) {
-                visits.push([key, remaining]);
-            })
-
-            expect(visits).toEqual([
-                ['a', 'b.c'],
-                ['b', 'c'],
-                ['c', null]
-            ]);
-
-        });
-    });
-
     describe("property map", function () {
         var evaluate = Selector.property("array.*.foo").compile();
 

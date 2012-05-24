@@ -316,6 +316,9 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                 this.reemit(syntax.args[1], emit);
                 emit(tokens.end);
             } else {
+                if (!(syntax.type in tokens)) {
+                    throw new Error("No such syntax type: " + syntax.type);
+                }
                 emit(tokens.begin);
                 this.reemit(syntax.args[0], emit);
                 emit(tokens[syntax.type]);

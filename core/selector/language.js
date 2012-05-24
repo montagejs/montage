@@ -7,12 +7,17 @@
 var Montage = require("montage").Montage;
 var AbstractLanguage = require("./abstract-language").AbstractLanguage;
 var Semantics = require("./semantics").Semantics;
+var ObserverSemantics = require("./observer-semantics").ObserverSemantics;
 var PropertyLanguage = require("./property-language").PropertyLanguage;
 
 var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
 
     semantics: {
         value: Semantics
+    },
+
+    observerSemantics: {
+        value: ObserverSemantics
     },
 
     grammar: {
@@ -41,7 +46,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             this.parseRightToLeft(['has', 'contains', 'every', 'some', 'one', 'only', 'filter', 'map', 'it']);
             this.parseSorted(parseScalar);
             this.parseSlice(parseScalar);
-            this.parseRightToLeft(['sum', 'count', 'average', 'unique', 'flatten']);
+            this.parseRightToLeft(['sum', 'count', 'average', 'unique', 'flatten', 'any', 'all']);
             var parseExpression = this.precedence();
 
             // TODO median, mode
@@ -71,6 +76,15 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
         }
     },
 
+    selectorForwardsToSemantics: {
+        value: [
+            "compile",
+            "evaluate",
+            "compileObserver",
+            "observe"
+        ]
+    },
+
     selectorExtras: {
         value: {
 
@@ -78,6 +92,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             property: {
                 value: function (path) {
                     try {
+                        // TODO add a parsing memo here, guaranteeing an identical selector for an identical path
                         var self = this;
                         var syntax = PropertyLanguage.parse(path);
                         PropertyLanguage.reemit(syntax, function (token) {

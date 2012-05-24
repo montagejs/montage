@@ -74,7 +74,7 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                 return !Object.equals(a, b);
             },
 
-            // logical ('and' and 'or' are evaluators for the short-circuiting)
+            // logical
 
             and: function (a, b) {
                 return a && b;
@@ -151,18 +151,6 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                         visitor(object, key, result, remainingPath);
                     }
                     return result;
-                };
-            },
-
-            // logical
-            and: function (a, b) {
-                return function (value, parameters) {
-                    return a(value, parameters) && b(value, parameters);
-                };
-            },
-            or: function (a, b) {
-                return function (value, parameters) {
-                    return a(value, parameters) || b(value, parameters);
                 };
             },
 

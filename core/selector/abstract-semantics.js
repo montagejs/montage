@@ -46,6 +46,7 @@ var AbstractSemantics = exports.AbstractSemantics = Montage.create(Montage, {
 
     compile: {
         value: function (syntax, parents) {
+            // TODO put a weak map memo of syntax to evaluator here to speed up common property compilation
             var self = this;
             parents = {
                 syntax: syntax,
