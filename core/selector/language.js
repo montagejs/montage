@@ -92,7 +92,6 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             property: {
                 value: function (path) {
                     try {
-                        // TODO add a parsing memo here, guaranteeing an identical selector for an identical path
                         var self = this;
                         var syntax = PropertyLanguage.parse(path);
                         PropertyLanguage.reemit(syntax, function (token) {

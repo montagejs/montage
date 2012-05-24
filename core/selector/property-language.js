@@ -109,7 +109,20 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
         }
     },
 
+    memo: {
+        value: {}
+    },
+
     parse: {
+        value: function (string) {
+            if (!Object.owns(this.memo, string)) {
+                this.memo[string] = this.memoizedParse(string);
+            }
+            return this.memo[string]
+        }
+    },
+
+    memoizedParse: {
         value: function (string) {
             var self = this;
             var syntax;

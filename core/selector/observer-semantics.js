@@ -5,6 +5,7 @@
  </copyright> */
 
 var Montage = require("core/core").Montage;
+var WeakMap = require("core/shim/weak-map").WeakMap;
 var Semantics = require("./semantics").Semantics;
 
 var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
@@ -160,8 +161,21 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
         }
     },
 
+    memo: {
+        value: new WeakMap()
+    },
+
     compile: {
-        value: function (syntax, parent) {
+        value: function (syntax) {
+            if (!this.memo.has(syntax)) {
+                this.memo.set(syntax, this.memoizedCompile(syntax));
+            }
+            return this.memo.get(syntax);
+        }
+    },
+
+    memoizedCompile: {
+        value: function (syntax) {
             // TODO put a weak map memo of syntax to evaluator here to speed up common property compilation
             var self = this;
             if (syntax.type === 'value') {

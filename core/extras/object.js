@@ -375,6 +375,16 @@ Object.defineProperty(Object, "is", {
     @returns {Boolean} whether the values are deeply equivalent
     @function external:Object.equals
 */
+var owns = Object.prototype.hasOwnProperty;
+Object.defineProperty(Object, "owns", {
+    value: function (object, key) {
+        return owns.call(object, key);
+    }
+});
+
+// TODO
+/**
+*/
 Object.defineProperty(Object, "equals", {
     value: function (a, b) {
         // unbox objects, but do not confuse object literals
