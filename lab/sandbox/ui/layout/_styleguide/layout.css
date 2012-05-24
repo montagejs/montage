@@ -146,6 +146,28 @@
 }
 
 
+/* Table --------------------------------- */
+
+.montage-table {
+    width: 100%;
+    border-right: 1px solid hsl(0,0%,80%);
+    border-bottom: 1px solid hsl(0,0%,80%);
+    -webkit-border-horizontal-spacing: 0;
+    -webkit-border-vertical-spacing: 0;
+    background-color: hsl(0,0%,92%);
+}
+
+.montage-table tr:nth-child(odd) {
+    background-color: hsl(0,0%,96%);
+}
+
+.montage-table td {
+    padding: 10px;
+    margin: 0;
+    border-top: 1px solid hsl(0,0%,80%);
+    border-left: 1px solid hsl(0,0%,80%);
+}
+
 
 /* Flex --------------------------------- */
 
