@@ -6,59 +6,154 @@
 /**
     Defines extensions to native Array object.
     @see [Array class]{@link external:Array}
-    @module montage/core/shim/array
+    @module montage/core/extras/array
 */
+
 /**
     @external Array
 */
 
 /**
     @function external:Array#equals
-    @param {object} right The object to compare.
+    @param {object} that The object to compare.
     @returns {Boolean} true or false
 */
-if (!Array.prototype.equals) {
-    Object.defineProperty(Array.prototype, "equals", {
-        value: function (right) {
-            var i = 0,
-                length = this.length,
-                lhs,
-                rhs;
+Object.defineProperty(Array.prototype, "equals", {
+    value: function (that) {
+        var i = 0,
+            length = this.length,
+            lhs,
+            rhs;
 
-            if (this === right) {
-                return true;
-            }
+        if (this === that) {
+            return true;
+        }
 
-            if (!right || !Array.isArray(right)) {
-                return false;
-            }
+        if (!that || !Array.isArray(that)) {
+            return false;
+        }
 
-            if (length !== right.length) {
-                return false;
-            } else {
-                for (; i < length; ++i) {
-                    if (i in this) {
-                        lhs = this[i],
-                            rhs = right[i];
+        if (length !== that.length) {
+            return false;
+        } else {
+            for (; i < length; ++i) {
+                if (i in this) {
+                    lhs = this[i],
+                        rhs = that[i];
 
-                        if (lhs !== rhs && (lhs && rhs && !lhs.equals(rhs))) {
-                            return false;
-                        }
-                    } else {
-                        if (i in right) {
-                            return false;
-                        }
+                    if (lhs !== rhs && (lhs && rhs && !lhs.equals(rhs))) {
+                        return false;
+                    }
+                } else {
+                    if (i in that) {
+                        return false;
                     }
                 }
             }
-            return true;
         }
-    });
-}
-Object.defineProperty(Array, "isCanvasPixelArray", {
-    value: function(obj) {
-        return Object.prototype.toString.call(obj) === "[object CanvasPixelArray]";
-    }
+        return true;
+    },
+    writable: true
+});
+
+/**
+    @function external:Array#compare
+    @param {object} right The object to compare.
+    @returns {Number} related to zero in the same way as left is to right
+*/
+Object.defineProperty(Array.prototype, "compare", {
+    value: function (that) {
+        var i,
+            length,
+            lhs,
+            rhs,
+            relative;
+
+        if (this === that) {
+            return 0;
+        }
+
+        if (!that || !Array.isArray(that)) {
+            return 1;
+        }
+
+        length = Math.min(this.length, that.length);
+
+        for (i = 0; i < length; i++) {
+            if (i in this) {
+                if (!(i in that)) {
+                    return 1;
+                } else {
+                    lhs = this[i];
+                    rhs = that[i];
+                    relative = Object.compare(lhs, rhs);
+                    if (relative) {
+                        return relative;
+                    }
+                }
+            } else if (i in that) {
+                return -1;
+            }
+        }
+
+        return this.length - that.length;
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "get", {
+    value: function (index) {
+        return this[index];
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "set", {
+    value: function (index, value) {
+        this.setProperty(index, value); // TODO subsume this functionality
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "has", {
+    value: function (value) {
+        return this.indexOf(value) !== -1;
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "add", {
+    value: function (value) {
+        if (!this.has(value)) {
+            this.push(value);
+        }
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "delete", {
+    value: function (value) {
+        var index = this.indexOf(value);
+        if (index !== -1) {
+            this.splice(index, 1);
+        }
+    },
+    writable: true
 });
 
 /**
@@ -210,7 +305,7 @@ Object.defineProperty(Array.prototype, "getProperty", {
 
         return result;
     },
-    enumerable: false
+    writable: true
 });
 
 /**
@@ -221,7 +316,8 @@ Object.defineProperty(Array.prototype, "getProperty", {
 Object.defineProperty(Array.prototype, "count", {
     value: function() {
         return this.length;
-    }
+    },
+    writable: true
 });
 
 /**
@@ -245,7 +341,40 @@ Object.defineProperty(Array.prototype, "any", {
             });
         }
         return result;
-    }
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "all", {
+    value: function() {
+        return this.every(function (value) {
+            return !!value;
+        });
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "min", {
+    value: function() {
+        return Math.min.apply(Math, this);
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "max", {
+    value: function() {
+        return Math.max.apply(Math, this);
+    },
+    writable: true
 });
 
 /**
@@ -256,37 +385,179 @@ Description
 @returns sum
 */
 Object.defineProperty(Array.prototype, "sum", {
-    value: function(propertyPath, visitedCallBack) {
-        var sum = 0, result, resultSum;
-        if (propertyPath) {
-            this.map(function(value) {
-                result = value.getProperty(propertyPath, null, null, visitedCallBack);
-                if (Array.isArray(result)) {
-                    resultSum = 0;
-                    result.map(function(value) {
-                        return (resultSum += Number(value));
-                    });
-                    result = resultSum;
+    value: function(propertyPath, visitedCallback) {
+        if (propertyPath) { // follow property paths XXX deprecated in favor of selector
+            return this.map(function (value) {
+                return value.getProperty(propertyPath, null, null, visitedCallback);
+            }).sum();
+        } else {
+            return this.reduce(function(sum, value) {
+                if (Array.isArray(value)) { // implicitly flatten arrays XXX deprecated
+                    value = value.sum();
                 }
-                return (sum += Number(result));
-            });
+                return sum + value;
+            }, 0);
         }
-        else {
-            this.map(function(value) {
-                return (sum += Number(value));
-            });
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "average", {
+    value: function () {
+        return this.sum() / this.count();
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "unique", {
+    value: function (equals) {
+        var equals = Object.equals;
+        var unique = [];
+        this.forEach(function (value) {
+            if (unique.every(function (other) {
+                return !equals(value, other);
+            })) {
+                unique.push(value);
+            }
+        }, this);
+        return unique;
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "flatten", {
+    value: function () {
+        return this.reduce(function (flat, row) {
+            return flat.concat(row);
+        }, []);
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "one", {
+    value: function () {
+        if (this.length === 0) {
+            throw new Error("Can't get one element from empty array");
         }
-        return sum;
-    }
+        return this[0];
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "only", {
+    value: function () {
+        if (this.length !== 1) {
+            throw new Error(
+                "Can't get only element of array with " +
+                this.length + " elements."
+            );
+        }
+        return this[0];
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "startsWith", {
+    value: function (start) {
+        return (
+            this.length >= start.length &&
+            this.slice(0, start.length).equals(start)
+        );
+    },
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Array.prototype, "endsWith", {
+    value: function (end) {
+        return (
+            this.length >= end.length &&
+            this.slice(this.length - end.length, this.length)
+                .equals(end)
+        );
+    },
+    writable: true
 });
 
 /**
- Removes all members of this array making the object suitable for reuse
- @function module:montage/core/core.Array.wipe
- */
+    Produces a sorted version of an array, with a sensible default comparator,
+    and the ability to perform a "Schwartzian Transform" so that the compared
+    property of each element of the array only needs to be computed once per
+    element.
+    @param {Function} compare a comparator that returns a number describing the
+    transitive relationship between the two given arguments.  The number will
+    have the same relationship to zero (equals, less than, greater than, &c) as
+    the numbers have to each other.  The comparator may by an object with
+    `compare` and `by` properties, where the `compare` is a comparator and `by`
+    is a "mapping" function that accepts an element of the array and returns
+    the property by which to sort it.  The default comparator is
+    `Object.compare`.
+    @param {Function} by is a "mapping" function for each element of the array.
+    The default mapping is `Function.identity`.
+    @returns a new array with the values from the original array in
+    the specified sorted order.
+*/
+Object.defineProperty(Array.prototype, "sorted", {
+    value: function (compare, by, order) {
+        compare = compare || Object.compare;
+        // account for comparators generated by Function.by
+        by = by || compare.by || Function.identity;
+        compare = compare.compare || compare;
+        if (order === undefined)
+            order = 1;
+        return this.map(function (item) {
+            return {
+                by: by(item),
+                value: item
+            };
+        })
+        .sort(function (a, b) {
+            return Object.compare(a.by, b.by) * order;
+        })
+        .map(function (pair) {
+            return pair.value;
+        })
+    },
+    writable: true
+});
+
+/**
+    Removes all members of this array making the object suitable for reuse.
+    Assumes that the array has no other named properties.
+    @function module:montage/core/core.Array.wipe
+*/
 Object.defineProperty(Array.prototype, "wipe", {
    value: function() {
        this.length = 0;
        return this;
-   }
+   },
+   writable: true
 });
+
+Object.defineProperty(Array, "isCanvasPixelArray", {
+    value: function(obj) {
+        return Object.prototype.toString.call(obj) === "[object CanvasPixelArray]";
+    },
+    writable: true
+});
+

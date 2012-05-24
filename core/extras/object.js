@@ -1,7 +1,84 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+/**
+    Defines extensions to native Object object.
+    @see [Object class]{@link external:Object}
+    @module montage/core/extras/object
+*/
+
+/**
+    @external Object
+*/
 
 var M = require("core/core"); // lazy bound because of dependency cycle
 
 var MODIFY = "modify";
+
+// TODO
+/**
+*/
+Object.defineProperty(Object, "empty", {
+    value: Object.freeze(Object.create(null)),
+    writable: true
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Object, "equals", {
+    value: function (a, b) {
+        if (typeof a !== typeof b)
+            return false;
+        if (a === b)
+            return true;
+        if (typeof a.equals === "function")
+            return a.equals(b);
+        if (typeof b.equals === "function")
+            return b.equals(a);
+        return false;
+    },
+    writable: true
+});
+
+// Because a return value of 0 from a `compare` function  may mean either
+// "equals" or "is incomparable", `equals` cannot be defined in terms of
+// `compare`.  However, `compare` *can* be defined in terms of `equals` and
+// `lessThan`.
+
+// TODO
+/**
+*/
+Object.defineProperty(Object, "compare", {
+    value: function (a, b) {
+        if (typeof a !== typeof b)
+            return 0;
+        if (a === b)
+            return 0;
+        if (typeof a === "number")
+            return a - b;
+        if (typeof a === "string")
+            return a < b ? -1 : 1;
+            // the possibility of equality elimiated above
+        if (a instanceof Date) {
+            if (!(b instanceof Date))
+                return 0;
+            return a - b;
+        }
+        if (typeof a.compare === "function")
+            return a.compare(b);
+        if (typeof b.compare === "function")
+            return -b.compare(a);
+        if (typeof a.equals === "function" && typeof a.lessThan === "function")
+            return a.equals(b) ? 0 : (a.lessThan(b) ? -1 : 1);
+            // that these parentheses are not necessary is not a fact anyone
+            // should be expected to know, so provided here for clarity
+        return 0;
+    },
+    writable: true
+});
 
 /**
 @function external:Object#getProperty
@@ -60,21 +137,26 @@ Object.defineProperty(Object.prototype, "getProperty", {
         // Otherwise, we reached the end of the propertyPath, or at least as far as we could; stop
         return result;
     },
-    enumerable: false
+    writable: true
 });
+
+// TODO(mczepiel): determine whether the following two memos on the object
+// prototype are necessary, and if necessary, document why.
 
 /**
   @private
 */
 Object.defineProperty(Object.prototype, "_propertySetterNamesByName", {
-    value: {}
+    value: {},
+    writable: true
 });
 
 /**
   @private
 */
 Object.defineProperty(Object.prototype, "_propertySetterByName", {
-    value: {}
+    value: {},
+    writable: true
 });
 
 /**
@@ -149,7 +231,7 @@ Object.defineProperty(Object.prototype, "setProperty", {
             setObject[aPropertyPath] = value;
         }
     },
-    enumerable: false
+    writable: true
 });
 
 /**
@@ -191,16 +273,19 @@ Object.defineProperty(Object.prototype, "undefinedSet", {
  @param {String} propertyName The name of the property.
  @returns {Object} The object's property descriptor.
  */
-Object.getPropertyDescriptor = function(anObject, propertyName) {
-    var current = anObject,
-        currentDescriptor;
+Object.defineProperty(Object, "getPropertyDescriptor", {
+    value: function(anObject, propertyName) {
+        var current = anObject,
+            currentDescriptor;
 
-    do {
-        currentDescriptor = Object.getOwnPropertyDescriptor(current, propertyName);
-    } while (!currentDescriptor && (current = current.__proto__ || Object.getPrototypeOf(current)));
+        do {
+            currentDescriptor = Object.getOwnPropertyDescriptor(current, propertyName);
+        } while (!currentDescriptor && (current = current.__proto__ || Object.getPrototypeOf(current)));
 
-    return currentDescriptor;
-};
+        return currentDescriptor;
+    },
+    writable: true
+});
 
 /**
  Returns the prototype object and property descriptor for a property belonging to an object.
@@ -209,21 +294,24 @@ Object.getPropertyDescriptor = function(anObject, propertyName) {
  @param {String} propertyName The name of the property.
  @returns {Object} An object containing two properties named <code>prototype</code> and <code>propertyDescriptor</code> that contain the object's prototype object and property descriptor, respectively.
  */
-Object.getPrototypeAndDescriptorDefiningProperty = function(anObject, propertyName) {
-    var current = anObject,
-        currentDescriptor;
-    if (propertyName) {
+Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
+    value: function(anObject, propertyName) {
+        var current = anObject,
+            currentDescriptor;
+        if (propertyName) {
 
-        do {
-            currentDescriptor = Object.getOwnPropertyDescriptor(current, propertyName);
-        } while (!currentDescriptor && (current = current.__proto__ || Object.getPrototypeOf(current)));
+            do {
+                currentDescriptor = Object.getOwnPropertyDescriptor(current, propertyName);
+            } while (!currentDescriptor && (current = current.__proto__ || Object.getPrototypeOf(current)));
 
-        return {
-            prototype: current,
-            propertyDescriptor: currentDescriptor
-        };
-    }
-};
+            return {
+                prototype: current,
+                propertyDescriptor: currentDescriptor
+            };
+        }
+    },
+    writable: true
+});
 
 /**
  Removes all properties owned by this object making the object suitable for reuse
@@ -237,5 +325,7 @@ Object.defineProperty(Object.prototype, "wipe", {
        while(i) delete this[keys[--i]];
 
        return this;
-   }
+   },
+   writable: true
 });
+
