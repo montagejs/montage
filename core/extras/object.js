@@ -28,6 +28,16 @@ Object.defineProperty(Object, "empty", {
 // TODO
 /**
 */
+var owns = Object.prototype.hasOwnProperty;
+Object.defineProperty(Object, "owns", {
+    value: function (object, key) {
+        return owns.call(object, key);
+    }
+});
+
+// TODO
+/**
+*/
 Object.defineProperty(Object, "equals", {
     value: function (a, b) {
         if (typeof a !== typeof b)
