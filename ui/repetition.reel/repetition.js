@@ -1246,15 +1246,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         var i,
             iItem,
             fragment,
-            //componentStartIndex,
-            //componentEndIndex,
             j,
-            //isFirstItem,
             itemCount = this._items.length,
             addFragment,
             repetitionElement = this.element,
             doc = repetitionElement.ownerDocument,
-            //firstAddedIndex,
             selectionCount,
             rangeToRemove,
             iterationElements,
@@ -1268,6 +1264,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             selectedIndex,
             childCount = this._iterationChildCount,
             childComponentsCount;
+
+        // this is needed to make sure that a new iteration wasn't created after the repetition has been added to the draw list of the draw cycle
+        if (!this.canDrawGate.value) {
+            return;
+        }
 
         if (this._removeOriginalContent) {
             this._removeOriginalContent = false;
