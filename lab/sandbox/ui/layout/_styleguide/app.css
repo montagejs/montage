@@ -1,6 +1,6 @@
 
 
-/* Sparrow ----------------------------------- */
+/* App ----------------------------------- */
 
 .app {
     width: 800px;
@@ -22,14 +22,15 @@
 
 .title {
     margin: 0;
-    padding: 10px;
-	background-image: -webkit-linear-gradient(top, hsl(0,0%,98%), hsl(0,0%,94%));
+    font-size: 16px;
+    padding: 10px 15px;
+	background: hsl(0,0%,95%);
     border-bottom: 1px solid hsl(0,0%,80%);
 }
 
 .reply {
     padding: 15px;
-	background-color: hsl(210,30%,95%);
+	background-color: hsl(0,0%,90%);
     border-bottom: 1px solid hsl(0,0%,80%);
     text-align: right;
 }
@@ -42,17 +43,6 @@
 .buttons {
     margin-top: 5px;
     text-align: right;
-}
-
-.skeleton.cancel {
-    color: white;
-    background-color: hsl(0,0%,35%);
-    border: 1px solid hsl(0,0%,0%);
-}
-.skeleton.send {
-    color: white;
-    background-color: hsl(210,100%,60%);
-    border: 1px solid hsl(210,100%,30%);
 }
 
 .detail {
