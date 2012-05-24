@@ -1,0 +1,155 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+
+/* Global border box */
+* {
+    box-sizing: border-box;
+}
+
+/* Bar --------------------------------- */
+
+.montage-bar {
+    background: hsl(0,0%,80%);
+    padding: 10px;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+}
+
+.montage-bar > button {
+    display: block;
+    vertical-align: middle;
+}
+
+.montage-bar input {
+    vertical-align: middle;
+}
+
+.montage-bar-title {
+    text-align: center;
+    padding: 0 10px;
+    margin: 0;
+    font-size: 20px;
+    line-height: 30px;
+}
+
+
+/* Menu Bar --------------------------------- */
+
+.montage-bar-menu {
+    padding: 0;
+}
+
+.montage-bar-menu a {
+    display: block;
+    line-height: 50px;
+    padding: 0 15px;
+    font-size: 16px;
+    text-decoration: none;
+    color: hsl(0,0%,30%);
+    margin-left: -1px;
+    border-left: 1px solid hsl(0,0%,90%);
+    border-right: 1px solid hsl(0,0%,90%);
+}
+
+.montage-bar-menu a:hover,
+.montage-bar-menu a.selected {
+    background: hsla(0,0%,100%,.2);
+}
+
+.montage-bar-menu a:active {
+    background: hsla(0,0%,0%,.1);
+}
+
+
+/* Vertical Bar --------------------------------- */
+
+.montage-bar-vertical {
+    padding: 0;
+    -webkit-box-orient: vertical;
+}
+
+.montage-bar-side-divider {
+    height: 10px;
+}
+
+.montage-bar-vertical > i {
+    display: block;
+    width: 50px;
+    line-height: 50px;
+    margin-top: -1px;
+    border-top: 1px solid hsl(0,0%,90%);
+    border-bottom: 1px solid hsl(0,0%,90%);
+    color: hsl(0,0%,30%);
+    text-align: center;
+    font-size: 26px;
+    cursor: pointer;
+}
+.montage-bar-vertical > i:hover,
+.montage-bar-vertical > i.selected {
+    background: hsla(0,0%,100%,.2);
+}
+.montage-bar-vertical > i:active {
+    background: hsla(0,0%,0%,.1);
+}
+
+
+.montage-bar-vertical button.skeleton {
+    display: block;
+    width: 50px;
+    height: 50px;
+    margin: 2px 10px;
+    font-size: 20px;
+    padding: 0;
+    color: hsl(0,0%,30%);
+}
+
+.montage-bar-vertical button.skeleton:first-child {
+    margin-top: 8px;
+}
+.montage-bar-vertical button.skeleton:last-child {
+    margin-bottom: 8px;
+}
+
+
+/* List --------------------------------- */
+
+.montage-list {
+	background-color: hsl(0,0%,60%);
+	padding: 0;
+	margin: 0;
+	list-style: none;
+	overflow-y: scroll;
+}
+
+.montage-list-item {
+    padding: 0 20px;
+    line-height: 50px;
+    font-size: 16px;
+    border-top: 1px solid hsl(0,0%,100%);
+    border-bottom: 1px solid hsl(0,0%,85%);
+	background: hsl(0,0%,95%);
+	display: -webkit-box;
+	-webkit-box-pack: justify;
+	-webkit-box-align: center;
+}
+.montage-list-item > span {
+    display: block;
+}
+
+.montage-list-item > .skeleton-toggle {
+    border-radius: 12px;
+}
+
+
+
+/* Flex --------------------------------- */
+
+.montage-flex-pack-start { -webkit-box-pack: start; }
+.montage-flex-pack-end { -webkit-box-pack: end; }
+.montage-flex-pack-justify { -webkit-box-pack: justify; }
+
