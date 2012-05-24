@@ -12,6 +12,7 @@
  */
 require("core/shim/object");
 require("core/shim/array");
+require("core/shim/string");
 require("core/extras/object");
 require("core/extras/array");
 require("core/extras/string");
