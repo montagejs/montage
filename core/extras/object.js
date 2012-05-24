@@ -824,3 +824,43 @@ Object.defineProperty(Object.prototype, "wipe", {
     configurable: true
 });
 
+// TODO
+/**
+*/
+Object.defineProperty(Object.prototype, "evaluate", {
+    value: function (selector, callback, parameters) {
+        var Selector = require("core/selector").Selector;
+        var evaluate;
+        if (typeof selector === "string") {
+            evaluate = Selector.property(selector).compile();
+        } else if (typeof selector === "function") {
+            evaluate = selector;
+        } else if (typeof selector.compile === "function") {
+            evaluate = selector.compile();
+        } else {
+            throw new Error("Selector must be a string or an evaluator function using Selector#compile");
+        }
+        return evaluate(this, parameters, callback);
+    }
+});
+
+// TODO
+/**
+*/
+Object.defineProperty(Object.prototype, "observe", {
+    value: function (selector, callback, parameters) {
+        var Selector = require("core/selector").Selector;
+        var observe;
+        if (typeof selector === "string") {
+            observe = Selector.property(selector).compileObserver();
+        } else if (typeof selector === "function") {
+            observe = selector;
+        } else if (typeof selector.compileObserver === "function") {
+            evaluate = selector.compileObserver();
+        } else {
+            throw new Error("Observed selector must be a string or an observer function using Selector#compileObserver");
+        }
+        return observe(this, parameters, callback);
+    }
+});
+
