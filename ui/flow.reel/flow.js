@@ -10,6 +10,16 @@ var Montage = require("montage").Montage,
 
 var Flow = exports.Flow = Montage.create(Component, {
 
+    _repetition: {
+        serializable: true,
+        value: null
+    },
+
+    _translateComposer: {
+        serializable: true,
+        value: null
+    },
+
     _splinePaths: {
         enumerable: false,
         value: null
@@ -78,6 +88,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     paths: { // TODO: listen for changes?
+        serializable: true,
         get: function () {
             return this._paths;
         },
@@ -146,6 +157,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     cameraFov: {
+        serializable: true,
         get: function () {
             return this._cameraFov;
         },
@@ -173,6 +185,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     stride: {
+        serializable: true,
         get: function () {
             return this._stride;
         },
@@ -195,6 +208,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     scrollingTransitionDuration: { // TODO: think about using the Date Converter
+        serializable: true,
         get: function () {
             return this._scrollingTransitionDuration;
         },
@@ -387,6 +401,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     elementsBoundingSphereRadius: {
+        serializable: true,
         get: function () {
             return this._elementsBoundingSphereRadius;
         },
@@ -966,6 +981,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     objects: {
+        serializable: true,
         get: function() {
             if (this._repetition) {
                 return this._repetition.objects;
@@ -989,6 +1005,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     contentController: {
+        serializable: true,
         get: function() {
             if (this._repetition) {
                 return this._repetition.contentController;
@@ -1011,6 +1028,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     isSelectionEnabled: {
+        serializable: true,
         get: function() {
             if (this._repetition) {
                 return this._repetition.isSelectionEnabled;
