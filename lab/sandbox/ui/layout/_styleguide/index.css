@@ -53,7 +53,8 @@ body > h3 {
 
 /* Non component styles */
 
-body > .montage-bar {
+body > .montage-bar,
+body > .montage-tabs {
     margin-bottom: 50px;
 }
 

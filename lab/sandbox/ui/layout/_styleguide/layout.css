@@ -66,6 +66,46 @@
 }
 
 
+/* Tabs --------------------------------- */
+
+.montage-tabs {
+    margin: 0;
+    padding: 0 0 0 1px;
+    list-style: none;
+    display: -webkit-box;
+    -webkit-box-pack: center;
+}
+
+.montage-tab {
+    margin: 0 0 0 -1px;
+    padding: 0;
+    list-style: none;
+    padding: 0px 15px;
+    font-size: 14px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 8px 8px 0 0;
+    background-color: hsl(0,0%,95%);
+    border: 1px solid hsl(0,0%,70%);
+    cursor: pointer;
+}
+
+.montage-tab:hover,
+.montage-tab.selected {
+    background-color: #ffffff;
+}
+
+.montage-tab:active {
+    background-color: #e5e5e5;
+}
+
+.montage-tabs-flex > .montage-tab {
+    -webkit-box-flex: 1;
+}
+
+
+
+
 /* Vertical Bar --------------------------------- */
 
 .montage-bar-vertical {
