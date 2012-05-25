@@ -953,6 +953,7 @@ var Flow = exports.Flow = Montage.create(Component, {
                     }
                     this.length = maxLength;
                 }
+                this.needsDraw = true;
             }
         }
     },
@@ -1072,7 +1073,8 @@ var Flow = exports.Flow = Montage.create(Component, {
             var orphanedFragment,
                 currentContentRange = this.element.ownerDocument.createRange(),
                 wrapper,
-                self = this;
+                self = this,
+                oldWillDraw = this._repetition.willDraw;
 
             currentContentRange.selectNodeContents(this.element);
             orphanedFragment = currentContentRange.extractContents();
@@ -1102,6 +1104,12 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._activeIndexesForRepetition = null;
             }
             
+            this._repetition.willDraw = function () {
+                if (oldWillDraw) {
+                    oldWillDraw.apply(self._repetition, arguments);
+                }
+                self.needsDraw = true;
+            };
             this._repetition.addPropertyChangeListener("selectedIndexes", function (event) {
                 self._handleSelectedIndexesChange.call(self, event);
             },false);
