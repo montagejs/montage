@@ -135,6 +135,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     cameraPosition: {
+        serializable: true,
         get: function () {
             return this._cameraPosition;
         },
@@ -146,6 +147,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     cameraTargetPoint: {
+        serializable: true,
         get: function () {
             return this._cameraTargetPoint;
         },
@@ -169,6 +171,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     cameraRoll: {
+        serializable: true,
         get: function () {
             return this._cameraRoll;
         },
@@ -245,12 +248,12 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     hasSelectedIndexScrolling: {
-        enumerable: false,
+        serializable: true,
         value: false
     },
 
     selectedIndexScrollingOffset: {
-        enumerable: false,
+        serializable: true,
         value: 0
     },
 
@@ -275,6 +278,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     scrollingTransitionTimingFunction: {
+        serializable: true,
         get: function () {
             return this._scrollingTransitionTimingFunction;
         },
@@ -890,6 +894,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     selectedIndexes: {
+        serializable: true,
         get: function () {
             if (this._repetition) {
                 return this._repetition.selectedIndexes;
@@ -912,6 +917,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     activeIndexes: {
+        serializable: true,
         get: function () {
             if (this._repetition) {
                 return this._repetition.activeIndexes;
@@ -1082,7 +1088,6 @@ var Flow = exports.Flow = Montage.create(Component, {
             wrapper.appendChild(orphanedFragment);
             this._repetition.indexMapEnabled = true;
             this._repetition.childComponents = this._orphanedChildren;
-            this._repetition.needsDraw = true;
             if (this._objectsForRepetition !== null) {
                 this._repetition.objects = this._objectsForRepetition;
                 this._objectsForRepetition = null;
@@ -1103,7 +1108,6 @@ var Flow = exports.Flow = Montage.create(Component, {
                 this._repetition.activeIndexes = this._activeIndexesForRepetition;
                 this._activeIndexesForRepetition = null;
             }
-            
             this._repetition.willDraw = function () {
                 if (oldWillDraw) {
                     oldWillDraw.apply(self._repetition, arguments);
@@ -1134,6 +1138,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     hasElasticScrolling: {
+        serializable: true,
         get: function () {
             return this._hasElasticScrolling;
         },
@@ -1148,6 +1153,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     elasticScrollingSpeed: {
+        serializable: true,
         get: function () {
             return this._elasticScrollingSpeed;
         },
@@ -1364,6 +1370,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     scroll: {
+        serializable: true,
         get: function () {
             return this._scroll;
         },
@@ -1437,6 +1444,7 @@ var Flow = exports.Flow = Montage.create(Component, {
     },
 
     isInputEnabled: {
+        serializable: true,
         get: function () {
             return this._isInputEnabled;
         },
