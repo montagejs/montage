@@ -67,8 +67,12 @@ body > .montage-tabs {
 }
 
 .verticals > div,
-.verticals > ul:first-of-type {
-    margin-right: 50px;
+.verticals > ul {
+    margin-right: 40px;
+}
+
+.verticals > ul:last-child {
+    margin-right: 0px;
 }
 
 

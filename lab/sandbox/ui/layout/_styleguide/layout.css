@@ -185,6 +185,21 @@
     border-radius: 12px;
 }
 
+.montage-list-item > input {
+    margin: 0 10px 0 0;
+}
+.montage-list-item > .montage-label {
+    color: #B3B3B3;
+}
+
+.montage-list-item.checked > .montage-label {
+    color: #444;
+}
+
+
+
+
+
 
 /* Table --------------------------------- */
 
