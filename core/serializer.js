@@ -529,10 +529,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                     return this._serializeElement(value);
                 } else if (Array.isArray(value)) {
                     return this._serializeArray(value, indent + 1);
-                } else if (Object.getPrototypeOf(value) === Object.prototype) {
-                    return this._serializeObjectLiteral(value, null, indent + 1);
                 } else if (value.constructor === Function) {
                     return this._serializeFunction(value, indent);
+                } else if (!("getInfoForObject" in value)) { // we consider object literals the ones who aren't a Montage object
+                    return this._serializeObjectLiteral(value, null, indent + 1);
                 } else {
                     // TODO: should refactor this to handle references here, doesn't make
                     //       sense to wait until it hits _serializeObject for that to happen
