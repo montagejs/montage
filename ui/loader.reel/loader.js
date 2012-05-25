@@ -36,6 +36,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     mainModule: {
         enumerable: false,
+        serializable: true,
         value: "main.reel"
     },
 
@@ -44,6 +45,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     mainName: {
         enumerable: false,
+        serializable: true,
         value: "Main"
     },
 
@@ -52,6 +54,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     includeFrameworkModules: {
         enumerable: false,
+        serializable: true,
         value: false
     },
 
@@ -60,6 +63,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     minimumBootstrappingDuration: {
         enumerable: false,
+        serializable: true,
         value: 1500
     },
 
@@ -68,6 +72,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     minimumLoadingDuration: {
         enumerable: false,
+        serializable: true,
         value: 2000
     },
 
