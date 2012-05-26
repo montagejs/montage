@@ -649,13 +649,13 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                     clearTimeout(thisRef._updateValuesTimeout);
                     delete thisRef._updateValuesTimeout;
 
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", thisRef)) {
                         prevValue = thisRef._value;
                         if (thisRef.value !== prevValue) {
                             thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(thisRef.value));
                         }
                     }
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
+                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", thisRef)) {
                         prevValue = thisRef._textValue;
                         if (thisRef.textValue !== prevValue) {
                             thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(thisRef.textValue));
