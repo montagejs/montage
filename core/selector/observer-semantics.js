@@ -35,21 +35,14 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                                 value,
                                 parameters,
                                 function objectChange(object) {
-                                    object = object || Object.empty;
 
                                     var _cancel;
 
                                     var onchange = function () {
-                                        var result;
-                                        if (typeof object.get === "function") {
-                                            result = object.get(key);
-                                        } else {
-                                            result = object[key];
-                                        }
                                         if (_cancel) {
                                             _cancel();
                                         }
-                                        _cancel = callback(result);
+                                        _cancel = callback(Object.get(object, key));
                                     };
 
                                     onchange();
@@ -195,7 +188,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                     return self.compile(term, syntax);
                 });
                 return makeFixedLengthArrayObserver(termEvaluators);
-            } else if (self.compilers[syntax.type]) {
+            } else if (Object.has(self.compilers, syntax.type)) {
                 var compiler = self.compilers[syntax.type];
                 var length = compiler.length;
                 var argEvaluators = syntax.args.map(function (child) {
@@ -295,8 +288,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
 // make compilers for every operator in the language's semantics
 var compilers = ObserverSemantics.compilers;
 var operators = Semantics.operators;
-Object.keys(operators).forEach(function (name) {
-    var operator = operators[name];
+Object.forEach(operators, function (operator, name) {
     compilers[name] = makeOperatorCompiler(operator);
 });
 

@@ -67,9 +67,7 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
             },
 
             // equivalence relations
-            equals: function (a, b) {
-                return Object.equals(a, b);
-            },
+            equals: Object.equals,
             notEquals: function (a, b) {
                 return !Object.equals(a, b);
             },
@@ -120,42 +118,17 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
         value: {
 
             // properties
-            get: function (evaluateObject, evaluateKey, parents) {
+            get: function (evaluateObject, evaluateKey) {
 
-                // construct remaining path
-                var remainingPath = [];
-                parents = parents.parents;
-                while (parents) {
-                    if (parents.syntax.type !== 'get')
-                        break;
-                    remainingPath.push(parents.syntax.args[1].value);
-                    parents = parents.parents;
-                }
-                if (remainingPath.length === 0) {
-                    remainingPath = null;
-                } else {
-                    remainingPath = remainingPath.join(".");
-                }
-
-                return function (value, parameters, visitor) {
-                    var object = evaluateObject(value, parameters, visitor);
-                    var key = evaluateKey(value, parameters, visitor);
-                    var result;
-                    object = object || Object.empty;
-                    if (typeof object.get === "function") {
-                        result = object.get(key);
-                    } else {
-                        result = object[key];
-                    }
-                    if (visitor) {
-                        visitor(object, key, result, remainingPath);
-                    }
-                    return result;
+                return function (value, parameters) {
+                    var object = evaluateObject(value, parameters);
+                    var key = evaluateKey(value, parameters);
+                    return Object.get(object, key);
                 };
             },
 
             // ternary conditional
-            'if': function (guard, consequent, alternate) {
+            "if": function (guard, consequent, alternate) {
                 return function (value, parameters) {
                     var flag = guard(value, parameters);
                     if (flag === true) {
@@ -174,13 +147,13 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                 };
             },
 
-            one: makeNoArgumentsMethodCompiler('one'),
-            only: makeNoArgumentsMethodCompiler('only'),
+            one: makeNoArgumentsMethodCompiler("one"),
+            only: makeNoArgumentsMethodCompiler("only"),
 
-            map: makeReductionCompiler('map'),
-            filter: makeReductionCompiler('filter'),
-            every: makeReductionCompiler('every'),
-            some: makeReductionCompiler('some'),
+            map: makeReductionCompiler("map"),
+            filter: makeReductionCompiler("filter"),
+            every: makeReductionCompiler("every"),
+            some: makeReductionCompiler("some"),
 
             sorted: function (collection, by, descending) {
                 return function (value, parameters) {
@@ -191,15 +164,15 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                 };
             },
 
-            sum: makeNoArgumentsMethodCompiler('sum'),
-            count: makeNoArgumentsMethodCompiler('count'),
-            any: makeNoArgumentsMethodCompiler('any'),
-            all: makeNoArgumentsMethodCompiler('all'),
-            average: makeNoArgumentsMethodCompiler('average'),
-            min: makeNoArgumentsMethodCompiler('min'),
-            max: makeNoArgumentsMethodCompiler('max'),
-            unique: makeNoArgumentsMethodCompiler('unique'),
-            flatten: makeNoArgumentsMethodCompiler('flatten')
+            sum: makeNoArgumentsMethodCompiler("sum"),
+            count: makeNoArgumentsMethodCompiler("count"),
+            any: makeNoArgumentsMethodCompiler("any"),
+            all: makeNoArgumentsMethodCompiler("all"),
+            average: makeNoArgumentsMethodCompiler("average"),
+            min: makeNoArgumentsMethodCompiler("min"),
+            max: makeNoArgumentsMethodCompiler("max"),
+            unique: makeNoArgumentsMethodCompiler("unique"),
+            flatten: makeNoArgumentsMethodCompiler("flatten")
 
         }
     },
@@ -211,7 +184,7 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                 syntax: syntax,
                 parents: parents
             };
-            if (syntax.type === 'array') {
+            if (syntax.type === "array") {
                 var terms = syntax.terms.map(function (term) {
                     return self.compile(term, child);
                 });
@@ -229,7 +202,7 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
 });
 
 // used to generate evaluators that iterate through a collection
-// applying some predicate, like 'map', 'filter', 'every', 'some'
+// applying some predicate, like "map", "filter", "every", "some"
 function makeReductionCompiler(name) {
     return function (collection, relation) {
         return function (value, parameters, visitor) {
@@ -242,7 +215,7 @@ function makeReductionCompiler(name) {
 }
 
 // used to generate evaluators for functions that take no arguments, like
-// 'sum', 'count', 'any', 'all'
+// "sum", "count", "any", "all"
 function makeNoArgumentsMethodCompiler(name) {
     return function (collection, modify) {
         var self = this;

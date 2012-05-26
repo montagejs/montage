@@ -16,8 +16,7 @@ var AbstractSemantics = exports.AbstractSemantics = Montage.create(Montage, {
             self.evaluatorArgumentLengths = {};
 
             // convert the declared operators into evaluators
-            Object.keys(operators).forEach(function (name) {
-                var operate = operators[name];
+            Object.forEach(operators, function (operate, name) {
                 self.evaluators[name] = function () { // ...args
                     var args = Array.prototype.slice.call(
                         arguments,
@@ -45,13 +44,9 @@ var AbstractSemantics = exports.AbstractSemantics = Montage.create(Montage, {
     },
 
     compile: {
-        value: function (syntax, parents) {
+        value: function (syntax) {
             // TODO put a weak map memo of syntax to evaluator here to speed up common property compilation
             var self = this;
-            parents = {
-                syntax: syntax,
-                parents: parents
-            };
             if (syntax.type === 'value') {
                 return function (value) {
                     return value;
@@ -64,13 +59,13 @@ var AbstractSemantics = exports.AbstractSemantics = Montage.create(Montage, {
                 return function () {
                     return syntax.value;
                 };
-            } else if (self.evaluators[syntax.type]) {
+            } else if (Object.has(self.evaluators, syntax.type)) {
                 var evaluator = self.evaluators[syntax.type];
                 var length =
                     self.evaluatorArgumentLengths[syntax.type] ||
                         evaluator.length;
                 var args = syntax.args.map(function (child) {
-                    return self.compile(child, parents);
+                    return self.compile(child);
                 });
                 if (syntax.insensitive) {
                     args = args.map(function (evaluate) {
@@ -84,7 +79,7 @@ var AbstractSemantics = exports.AbstractSemantics = Montage.create(Montage, {
                         };
                     })
                 }
-                return evaluator.apply(self, args.concat([parents]));
+                return evaluator.apply(self, args);
             } else {
                 throw new Error("Unknown evaluator " + syntax.type);
             }
