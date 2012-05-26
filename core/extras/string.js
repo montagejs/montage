@@ -5,55 +5,65 @@
  </copyright> */
 
 /**
-    Defines extensions to native String object.
+    Defines extensions to the intrinsic <code>String</code> object.
     @see [String class]{@link external:String}
 	@module montage/core/extras/string
 */
 
+// TODO rationalize the existence of this method.  typeof is useful
+// for strings, even cross-context strings.  Array.isArray is necessary
+// because typeof does not distinguish arrays and instanceof does not
+// distinguish cross-context arrays.  Perhaps this exists to provide
+// a mote of consistency?
 /**
-    @external String
-*/
-
-/**
-    String.isString()
-    @function external:String.isString()
-    @param {object} obj The object to determine if its a String.
-    @returns {boolean} Object.prototype.toString.call(obj) === "[object String]"
+    Determines whether the given value is a string.
+    @function external:String.isString
+    @param {Any} value The object to determine if its a String.
+    @returns {Boolean} whether the given value is a string
 */
 Object.defineProperty(String, "isString", {
     value: function(obj) {
         return Object.prototype.toString.call(obj) === "[object String]";
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
-// TODO
 /**
     Returns true if the two strings are equal, otherwise returns false.
-    @function external:String.equals
-    @param {Object} anObject The object to compare to the string.
-    @returns {Boolean} Returns true if the string is equal to <code>anObject</code>.
+
+    @function external:String#equals
+    @param {Object} that The object to compare to the string.
+    @returns {Boolean} Returns true if the string is equal to
+    <code>that</code>.
 */
 Object.defineProperty(String.prototype, "equals", {
     value: function (that) {
         return this.valueOf() === that;
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
-// TODO
 /**
- */
+    Determines whether a substring exists within this string.
+
+    @function external:String#contains
+    @param {String} content
+    @returns {Boolean} whether this string contains the given content
+*/
 Object.defineProperty(String.prototype, "contains", {
     value: function (substring) {
         return this.indexOf(substring) !== -1;
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
     Capitalizes the first letter in the string.
-    @function external:String.toCapitalized
+
+    @function external:String#toCapitalized
     @returns {String} The original string with its first letter capitalized.
     @example
     var fname = "abe";
@@ -65,17 +75,23 @@ Object.defineProperty(String.prototype, "toCapitalized", {
     value: function() {
         return this.charAt(0).toUpperCase() + this.slice(1);
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
+// TODO discover where we are currently using this
 /**
-    @function external:String.addEventListener
+    Does nothing, but exists so that strings may be used generically as
+    potential event sources.
+
+    @function external:String#addEventListener
     @param {Listener} type The type of event listener.
     @param {Listener} listener The event listener.
     @param {Function} useCapture The capturing function.
 */
 Object.defineProperty(String.prototype, "addEventListener", {
     value: Function.noop, // on purpose
-    writable: true
+    writable: true,
+    configurable: true
 });
 

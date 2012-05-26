@@ -4,67 +4,398 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
-    Defines extensions to native Object object.
+    Defines extensions to intrinsic <code>Object</code>.
     @see [Object class]{@link external:Object}
     @module montage/core/extras/object
 */
 
-/**
-    @external Object
-*/
-
 var M = require("core/core"); // lazy bound because of dependency cycle
 
+// string table, for strings that might be constructed multiple times
+// seems to reduce allocations in a version of Firefox I once heard tell
 var MODIFY = "modify";
+var STRING = "string";
+var FUNCTION = "function";
+var OBJECT = "object";
+var HAS = "has";
+var GET = "get";
+var UNDEFINED_GET = "undefinedGet";
+var SET = "set";
+var EQUALS = "equals";
+var VALUE_OF = "valueOf";
 
-// TODO
 /**
+    A utility object to avoid unnecessary allocations of an empty object
+    <code>{}</code>.  This object is frozen so it is safe to share.
+
+    @function external:Object.empty
 */
 Object.defineProperty(Object, "empty", {
     value: Object.freeze(Object.create(null)),
-    writable: true
+    writable: true,
+    configurable: true
 });
 
-// TODO
 /**
+    Returns whether the given value is an object, as opposed to a value.
+    Unboxed numbers, strings, true, false, undefined, and null are not
+    objects.  Arrays are objects.
+
+    @function external:Object.isObject
+    @param {Any} value
+    @returns {Boolean} whether the given value is an object
+*/
+Object.defineProperty(Object, "isObject", {
+    value: function (object) {
+        return Object(object) === object;
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    A shorthand for <code>Object.prototype.hasOwnProperty.call(object,
+    key)</code>.  Returns whether the object owns a property for the given key.
+    It does not consult the prototype chain and works for any string (including
+    "hasOwnProperty") except "__proto__".
+    @param {Object} object
+    @param {String} key
+    @returns {Boolean} whether the object owns a property wfor the given key.
+    @function external:Object.owns
 */
 var owns = Object.prototype.hasOwnProperty;
 Object.defineProperty(Object, "owns", {
     value: function (object, key) {
         return owns.call(object, key);
-    }
+    },
+    writable: true,
+    configurable: true
 });
 
-// TODO
 /**
+    A utility that is like Object.owns but is also useful for finding
+    properties on the prototype chain, provided that they do not refer to
+    methods on the Object prototype.  Works for all strings except "__proto__".
+
+    <p>Alternately, you could use the "in" operator as long as the object
+    descends from "null" instead of the Object.prototype, as with
+    <code>Object.create(null)</code>.  However,
+    <code>Object.create(null)</code> only works in fully compliant EcmaScript 5
+    JavaScript engines and cannot be faithfully shimmed.
+
+    <p>If the given object is an instance of a type that implements a method
+    named "has", this function defers to the collection, so this method can be
+    used to generically handle objects, arrays, or other collections.  In that
+    case, the domain of the key depends on the instance.
+
+    @param {Object} object
+    @param {String} key
+    @returns {Boolean} whether the object, or any of its prototypes except
+    <code>Object.prototype</code>
+    @function external:Object.has
+*/
+Object.defineProperty(Object, "has", {
+    value: function (object, key) {
+        // forward to mapped collections that implement "has"
+        if (typeof object.has === FUNCTION && !owns.call(object, HAS)) {
+            return object.has(key);
+        // otherwise report whether the key is on the prototype chain,
+        // as long as it is not one of the methods on object.prototype
+        } else if (typeof key === STRING) {
+            return key in object && object[key] !== Object.prototype[key];
+        } else {
+            throw new Error("Key must be a string for Object.has on plain objects");
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Gets the value for a corresponding key from an object.
+
+    <p>Uses Object.has to determine whether there is a corresponding value for
+    the given key.  As such, <code>Object.get</code> is capable of retriving
+    values from the prototype chain as long as they are not from the
+    <code>Object.prototype</code>.
+
+    <p>If there is no corresponding value and the given default value is not
+    <code>undefined</code>, returns the given default value.  Otherwise, if the
+    object implements <code>undefinedGet</code>, delegates to that method.
+    Otherwise returns <code>undefined</code>.
+
+    <p>If the given object is an instance of a type that implements a method
+    named "get", this function defers to the collection, so this method can be
+    used to generically handle objects, arrays, or other collections.  In that
+    case, the domain of the key depends on the implementation.  For a `Map`,
+    for example, the key might be any object.
+
+    @param {Object} object
+    @param {String} key
+    @param {Any} value a default to return, <code>undefined</code> if omitted
+    @returns {Any} value for key, or default value
+    @function external:Object.get
+*/
+Object.defineProperty(Object, "get", {
+    value: function (object, key, value) {
+        // forward to mapped collections that implement "get"
+        if (typeof object.get === FUNCTION && !owns.call(object, GET)) {
+            return object.get(key, value);
+        } else if (Object.has(object, key)) {
+            return object[key];
+        } else if (value !== undefined) {
+            return value;
+        } else if (
+            typeof object.undefinedGet === FUNCTION &&
+            !owns.call(object, UNDEFINED_GET)
+        ) {
+            return object.undefinedGet();
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Sets the value for a given key on an object.
+
+    <p>If the given object is an instance of a type that implements a method
+    named "set", this function defers to the collection, so this method can be
+    used to generically handle objects, arrays, or other collections.  As such,
+    the key domain varies by the object type.
+
+    @param {Object} object
+    @param {String} key
+    @param {Any} value
+    @returns <code>undefined</code>
+    @function external:Object.set
+*/
+Object.defineProperty(Object, "set", {
+    value: function (object, key, value) {
+        // forward to mapped collections that implement "set"
+        if (typeof object.set === FUNCTION && !owns.call(object, SET)) {
+            object.set(key, value);
+        } else {
+            object[key] = value;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Gets the value for a given key on an object.  If the object does not have a
+    value for the given key, sets the value to the given fallback value before
+    returning it.
+
+    <p>This method works best for object literals where unconditionally
+    constructing the default value is not particularly wasteful (pure values or
+    empty object literals).  In other situations, it would be better to
+    implement <code>undefinedGet</code> on the object or create an object with
+    a custom <code>get</code> method that constructs and memoizes the default
+    value only when the key is missing.
+
+    <p>If the given object is an instance of a type that implements a methods
+    named "has", "get", and "set", this function defers to the collection, so
+    this method can be used to generically handle objects, arrays, or other
+    collections.  As such, the key domain varies by the object type.  This
+    method does not defer to a "getset" method since no sensible variation of
+    "getset" would not be equivalent to using "has", "get", and "set"
+    internally.
+
+    @param {Object} object
+    @param {String} key
+    @param {Any} value the fallback
+    @function external:Object.getset
+*/
+Object.defineProperty(Object, "getset", {
+    value: function (object, key, value) {
+        // implicitly forwards to collections that implement get and set
+        if (!Object.has(object, key)) {
+            Object.set(key, value);
+        }
+        return Object.get(object, key);
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Iterates over the owned properties of an object.
+
+    @function external:Object.forEach
+    @param {Object} object an object to iterate.
+    @param {Function} callback a function to call for every key and value
+    pair in the object.  Receives <code>value</code>, <code>key</code>,
+    and <code>object</code> as arguments.
+    @param {Object} thisp the <code>this</code> to pass through to the
+    callback
+*/
+Object.defineProperty(Object, "forEach", {
+    value: function (object, callback, thisp) {
+        Object.keys(object).forEach(function (key) {
+            callback.call(thisp, object[key], key, object);
+        });
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Returns whether two values are identical.  Any value is identical to itself
+    and only itself.  This is much more restictive than equivalence and subtly
+    different than strict equality, <code>===</code> because of edge cases
+    including negative zero and <code>NaN</code>.  Identity is useful for
+    resolving collisions among keys in a mapping where the domain is any value.
+    This method does not delgate to any method on an object and cannot be
+    overridden.
+    @see http://wiki.ecmascript.org/doku.php?id=harmony:egal
+    @param {Any} this
+    @param {Any} that
+    @returns {Boolean} whether this and that are identical
+    @function external:Object.is
+*/
+Object.defineProperty(Object, "is", {
+    value: function(x, y) {
+        if (x === y) {
+            // 0 === -0, but they are not identical
+            return x !== 0 || 1 / x === 1 / y;
+        }
+        // NaN !== NaN, but they are identical.
+        // NaNs are the only non-reflexive value, i.e., if x !== x,
+        // then x is a NaN.
+        // isNaN is broken: it converts its argument to number, so
+        // isNaN("foo") => true
+        return x !== x && y !== y;
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Performs a polymorphic, type-sensitive deep equivalence comparison of any
+    two values.
+
+    <ul>
+        <li><strong>polymorphic:</strong>
+            If the given object is an instance of a type that implements a
+            methods named "equals", this function defers to the method.  So,
+            this function can safely compare any values regardless of type,
+            including undefined, null, numbers, strings, any pair of objects
+            where either implements "equals", or object literals that may even
+            contain an "equals" key.
+        <li><strong>type-sensitive:</strong>
+            Incomparable types are not equal.  No object is equivalent to any
+            array.  No string is equal to any other number.
+        <li><strong>deep:</strong>
+            Collections with equivalent content are equivalent, recursively.
+        <li><strong>equivalence:</strong>
+            Identical values and objects are equivalent, but so are collections
+            that contain equivalent content.  Whether order is important varies
+            by type.  For Arrays and lists, order is important.  For Objects,
+            maps, and sets, order is not important.  Boxed objects are mutally
+            equivalent with their unboxed values, by virtue of the standard
+            <code>valueOf</code> method.
+    </ul>
+    @param this
+    @param that
+    @returns {Boolean} whether the values are deeply equivalent
+    @function external:Object.equals
 */
 Object.defineProperty(Object, "equals", {
     value: function (a, b) {
         if (typeof a !== typeof b)
             return false;
+        // unbox objects, but do not confuse object literals
+        if (
+            typeof a === OBJECT &&
+            typeof a.valueOf === FUNCTION &&
+            !owns.call(a, VALUE_OF)
+        )
+            a = a.valueOf();
+        if (
+            typeof b === OBJECT &&
+            typeof b.valueOf === FUNCTION &&
+            !owns.call(b, VALUE_OF)
+        )
+            b = b.valueOf();
         if (a === b)
             return true;
-        if (typeof a.equals === "function")
+        if (typeof a.equals === FUNCTION && !owns.call(a, EQUALS))
             return a.equals(b);
-        if (typeof b.equals === "function")
+        // commutative
+        if (typeof b.equals === FUNCTION && !owns.call(b, EQUALS))
             return b.equals(a);
+        if (typeof a === OBJECT && typeof b === OBJECT) {
+            var aKeys = Object.keys(a);
+            var bKeys = Object.keys(b);
+            return (
+                aKeys.equals(bKeys) &&
+                aKeys.every(function (key) {
+                    return Object.equals(a[key], b[key]);
+                })
+            );
+        }
         return false;
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 // Because a return value of 0 from a `compare` function  may mean either
 // "equals" or "is incomparable", `equals` cannot be defined in terms of
 // `compare`.  However, `compare` *can* be defined in terms of `equals` and
-// `lessThan`.
+// `lessThan`.  Again however, more often it would be desirable to implement
+// all of the comparison functions in terms of compare rather than the other
+// way around.
 
-// TODO
 /**
+    Determines the order in which any two objects should be sorted by returning
+    a number that has an analogous relationship to zero as the left value to
+    the right.  That is, if the left is "less than" the right, the returned
+    value will be "less than" zero, where "less than" may be any other
+    transitive relationship.
+
+    <p>Arrays are compared by the first diverging values, or by length.
+
+    <p>Any two values that are incomparable return zero.  As such,
+    <code>equals</code> should not be implemented with <code>compare</code>
+    since incomparability is indistinguishable from equality.
+
+    <p>Sorts strings lexicographically.  This is not suitable for any
+    particular international setting.  Different locales sort their phone books
+    in very different ways, particularly regarding diacritics and ligatures.
+
+    <p>If the given object is an instance of a type that implements a method
+    named "compare", this function defers to the instance.  The method does not
+    need to be an owned property to distinguish it from an object literal since
+    object literals are incomparable.  Unlike <code>Object</code> however,
+    <code>Array</code> implements <code>compare</code>.
+
+    @param {Any} left
+    @param {Any} right
+    @returns {Number} a value having the same transitive relationship to zero
+    as the left and right values.
+    @function external:Object.compare
 */
 Object.defineProperty(Object, "compare", {
     value: function (a, b) {
         if (typeof a !== typeof b)
             return 0;
+        // unbox objects, but do not confuse object literals
+        // mercifully handles the Date case
+        if (
+            typeof a === OBJECT &&
+            typeof a.valueOf === FUNCTION &&
+            !owns.call(a, VALUE_OF)
+        )
+            a = a.valueOf();
+        if (
+            typeof b === OBJECT &&
+            typeof b.valueOf === FUNCTION &&
+            !owns.call(b, VALUE_OF)
+        )
+            b = b.valueOf();
         if (a === b)
             return 0;
         if (typeof a === "number")
@@ -72,32 +403,35 @@ Object.defineProperty(Object, "compare", {
         if (typeof a === "string")
             return a < b ? -1 : 1;
             // the possibility of equality elimiated above
-        if (a instanceof Date) {
-            if (!(b instanceof Date))
-                return 0;
-            return a - b;
-        }
-        if (typeof a.compare === "function")
+        if (typeof a.compare === FUNCTION)
             return a.compare(b);
-        if (typeof b.compare === "function")
+        // not commutative, the relationship is reversed
+        if (typeof b.compare === FUNCTION)
             return -b.compare(a);
-        if (typeof a.equals === "function" && typeof a.lessThan === "function")
-            return a.equals(b) ? 0 : (a.lessThan(b) ? -1 : 1);
-            // that these parentheses are not necessary is not a fact anyone
-            // should be expected to know, so provided here for clarity
         return 0;
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
-@function external:Object#getProperty
-@param {Object} aPropertyPath
-@param {Property} unique
-@param {Property} preserve
-@param {Function} visitedComponentCallback
-@param {Array} currentIndex
-@returns result
+    Returns the value at the end of a property path starting from this object.
+
+    <p>A property path is a dot delimited list of property names and supports
+    certain "function calls".  The argument of any function is a property
+    path to traverse on each element of a collection of elements.  Indexing
+    a property of an array maps to an array of the corresponding property
+    of each element in the array.
+
+    @param {String} propertyPath
+    @param {Property} unique
+    @param {Property} preserve
+    @param {Function} visitedComponentCallback
+    @param {Array} currentIndex
+    @returns result
+    @deprecated in favor of upcoming selector evaluator and observer
+    interfaces.
+    @function external:Object#getProperty
 */
 Object.defineProperty(Object.prototype, "getProperty", {
     value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
@@ -118,7 +452,7 @@ Object.defineProperty(Object.prototype, "getProperty", {
         if (currentPathComponent in this) {
             result = this[currentPathComponent];
         } else {
-            result = typeof this.undefinedGet === "function" ? this.undefinedGet(currentPathComponent) : undefined;
+            result = typeof this.undefinedGet === FUNCTION ? this.undefinedGet(currentPathComponent) : undefined;
         }
 
         if (visitedComponentCallback) {
@@ -147,35 +481,41 @@ Object.defineProperty(Object.prototype, "getProperty", {
         // Otherwise, we reached the end of the propertyPath, or at least as far as we could; stop
         return result;
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 // TODO(mczepiel): determine whether the following two memos on the object
 // prototype are necessary, and if necessary, document why.
 
 /**
-  @private
+    @private
 */
 Object.defineProperty(Object.prototype, "_propertySetterNamesByName", {
     value: {},
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
-  @private
+    @private
 */
 Object.defineProperty(Object.prototype, "_propertySetterByName", {
     value: {},
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
-Description
-@member external:Object#setProperty
-@function
-@param {Object} aPropertyPath
-@param {Object} value
-@returns itself
+    Sets the value on the end of a property path starting at this object.
+
+    @see external:Object#getProperty
+    @member external:Object#setProperty
+    @function
+    @param {Object} propertyPath
+    @param {Object} value
+    @returns this
+    @deprecated
 */
 Object.defineProperty(Object.prototype, "setProperty", {
     value: function(aPropertyPath, value) {
@@ -241,48 +581,58 @@ Object.defineProperty(Object.prototype, "setProperty", {
             setObject[aPropertyPath] = value;
         }
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
-@member external:Object#parentProperty
-@default null
+    @member external:Object#parentProperty
+    @default null
+    @private
 */
 Object.defineProperty(Object.prototype, "parentProperty", {
-    enumerable: false,
     value: null,
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
- @function module:montage/core/core.Montage#undefinedGet
- @param {Object} aPropertyName The object property name.
- */
+    Observes when an undefined property has been accessed, but may be
+    overridden on other types of objects to return an alternate sensible
+    default for the given key, perhaps even memoizing that value by setting it
+    before returning.
+    @param {Object} key A missing property name on the given object.
+    @returns <code>undefined</code>
+    @function extenal:Object#undefinedGet
+*/
 Object.defineProperty(Object.prototype, "undefinedGet", {
     value: function(aPropertyName) {
         console.warn("get undefined property -" + aPropertyName + "-");
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
- @function module:montage/core/core.Montage#undefinedSet
- @param {Object} aPropertyName The object property name.
- */
+    Observes when an undefined property has been changed.
+    @function external:Object#undefinedSet
+    @param {Object} aPropertyName The object property name.
+*/
 Object.defineProperty(Object.prototype, "undefinedSet", {
     value: function(aPropertyName) {
         console.warn("set undefined property -" + aPropertyName + "-");
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
- Returns the descriptor object for an object's property.
- @function external:Object#getPropertyDescriptor
- @param {Object} anObject The object containing the property.
- @param {String} propertyName The name of the property.
- @returns {Object} The object's property descriptor.
- */
+    Returns the descriptor object for an object's property.
+    @param {Object} anObject The object containing the property.
+    @param {String} propertyName The name of the property.
+    @returns {Object} The object's property descriptor.
+    @function external:Object.getPropertyDescriptor
+*/
 Object.defineProperty(Object, "getPropertyDescriptor", {
     value: function(anObject, propertyName) {
         var current = anObject,
@@ -294,16 +644,17 @@ Object.defineProperty(Object, "getPropertyDescriptor", {
 
         return currentDescriptor;
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
- Returns the prototype object and property descriptor for a property belonging to an object.
- @function external:Object#getPrototypeAndDescriptorDefiningProperty
- @param {Object} anObject The object to return the prototype for.
- @param {String} propertyName The name of the property.
- @returns {Object} An object containing two properties named <code>prototype</code> and <code>propertyDescriptor</code> that contain the object's prototype object and property descriptor, respectively.
- */
+    Returns the prototype object and property descriptor for a property belonging to an object.
+    @param {Object} anObject The object to return the prototype for.
+    @param {String} propertyName The name of the property.
+    @returns {Object} An object containing two properties named <code>prototype</code> and <code>propertyDescriptor</code> that contain the object's prototype object and property descriptor, respectively.
+    @function external:Object.getPrototypeAndDescriptorDefiningProperty
+*/
 Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
     value: function(anObject, propertyName) {
         var current = anObject,
@@ -320,22 +671,118 @@ Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
             };
         }
     },
-    writable: true
+    writable: true,
+    configurable: true
 });
 
 /**
- Removes all properties owned by this object making the object suitable for reuse
- @function module:montage/core/core.Object.wipe
- */
+    Creates a deep copy of any value.  Values, being immutable, are
+    returned without alternation.  Forwards to <code>clone</code> on
+    objects and arrays.
+
+    @function external:Object.clone
+    @param {Any} value a value to clone
+    @returns a copy of the value
+*/
+Object.defineProperty(Object, "clone", {
+    value: function (value) {
+        if (Object.isObject(value)) {
+            return value.clone();
+        } else {
+            return value;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Creates a deep copy of any value.  Values, being immutable, are
+    returned without alternation.  Forwards to <code>deepClone</code>
+    on objects and arrays.
+
+    @function external:Object.deepClone
+    @param {Any} value a value to clone
+    @returns a deep copy of the value
+*/
+Object.defineProperty(Object, "deepClone", {
+    value: function (value) {
+        if (Object.isObject(value)) {
+            if ("deepClone" in value && !owns.call(value, "deepClone")) {
+                return value.deepClone();
+            } else if ("clone" in value && !owns.call(value, "clone")) {
+                return value.clone();
+            } else {
+                return Object.prototype.deepClone.call(value);
+            }
+        } else {
+            return value;
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Creates a shallow copy of this object with all the same owned
+    properties and prototype.
+
+    @function external:Object#clone
+    @returns {Object} a copy of this object with the same owned properties
+    and prototype.
+*/
+Object.defineProperty(Object.prototype, "clone", {
+    value: function () {
+        var clone = Object.create(Object.getPrototypeOf(this));
+        Object.forEach(this, function (value, key) {
+            clone[key] = value;
+        });
+        return clone;
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Creates a deep copy of this object with all the same owned properties
+    and prototype.
+
+    @function external:Object#deepClone
+    @returns {Object} a copy of this object with the same owned properties
+    and prototype.
+*/
+Object.defineProperty(Object.prototype, "deepClone", {
+    value: function () {
+        var clone = Object.create(Object.getPrototypeOf(this));
+        Object.forEach(this, function (value, key) {
+            clone[key] = Object.deepClone(value);
+        });
+        return clone;
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Removes all properties owned by this object making the object suitable for
+    reuse.
+
+    @function external:Object#wipe
+    @returns this
+*/
 Object.defineProperty(Object.prototype, "wipe", {
-   value: function() {
-       var keys = Object.keys(this),
-           i = keys.length;
+    value: function() {
+        var keys = Object.keys(this),
+            i = keys.length;
 
-       while(i) delete this[keys[--i]];
+        while (i) {
+            i--;
+            delete this[keys[i]];
+        }
 
-       return this;
-   },
-   writable: true
+        return this;
+    },
+    writable: true,
+    configurable: true
 });
 
