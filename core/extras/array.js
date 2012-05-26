@@ -635,7 +635,9 @@ Object.defineProperty(Array.prototype, "unique", {
 Object.defineProperty(Array.prototype, "flatten", {
     value: function () {
         return this.reduce(function (flat, row) {
-            row.forEach(flat.push, flat);
+            row.forEach(function (value) {
+                flat.push(value);
+            });
             return flat;
         }, []);
     },
