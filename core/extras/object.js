@@ -96,6 +96,9 @@ Object.defineProperty(Object, "owns", {
 */
 Object.defineProperty(Object, "has", {
     value: function (object, key) {
+        if (typeof object !== "object") {
+            throw new Error("Object.has can't accept non-object: " + typeof object);
+        }
         // forward to mapped collections that implement "has"
         if (typeof object.has === FUNCTION && !owns.call(object, HAS)) {
             return object.has(key);
@@ -138,6 +141,9 @@ Object.defineProperty(Object, "has", {
 */
 Object.defineProperty(Object, "get", {
     value: function (object, key, value) {
+        if (typeof object !== "object") {
+            throw new Error("Object.get can't accept non-object: " + typeof object);
+        }
         // forward to mapped collections that implement "get"
         if (typeof object.get === FUNCTION && !owns.call(object, GET)) {
             return object.get(key, value);
