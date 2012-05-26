@@ -66,6 +66,42 @@
 }
 
 
+/* Paging --------------------------------- */
+
+.montage-paging {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    text-align: center;
+    font-size: 0; /* White-space fix */
+}
+
+.montage-paging > button:nth-child(4) {
+    margin-left: 12px;
+}
+.montage-paging > button:nth-child(6) {
+    margin-right: 12px;
+}
+
+
+.montage-paging-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 4px;
+    margin: 0 2px;
+    background-color: hsl(0,0%,80%);
+    cursor: pointer;
+}
+
+.montage-paging-dot:hover,
+.montage-paging-dot.selected {
+    background-color: hsl(0,0%,50%);
+}
+
+
+
 /* Tabs --------------------------------- */
 
 .montage-tabs {
