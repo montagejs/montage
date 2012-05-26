@@ -593,7 +593,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         editorInnerElement.appendChild(contents);
                         contentChanged = true;
                     } else {
-                        for (i = 0; this.originalContent && (content = contents[i]); i++) {
+                        for (i = 0; contents && (content = contents[i]); i++) {
                             editorInnerElement.appendChild(content);
                             contentChanged = true;
                         }
