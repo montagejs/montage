@@ -307,11 +307,6 @@ describe('core/selector-spec', function () {
                 assert(Selector.property("a.b").evaluate({a:{b:10}}), 10);
             });
 
-            it("compares property or value of implied subject", function () {
-                assert(Selector.property("foo").equals("foo").or.equals("bar").evaluate("bar"), true);
-                assert(Selector.property("foo").equals("foo").or.equals("bar").evaluate({foo: "foo"}), true);
-            });
-
             it("compares strings with case-insensitivity", function () {
                 assert(Selector.insensitive.equals("Charles Babbage").evaluate("charles babbage"), true);
                 assert(Selector.insensitive.startsWith("charles").evaluate("Charles Babbage"), true);
@@ -831,12 +826,6 @@ describe('core/selector-spec', function () {
             //    assert(Selector(10).lessThan.or.equals(10).evaluate(), true);
             //});
 
-        });
-
-        describe('properties of undefined objects', function () {
-            it('should pass through without errors', function () {
-                expect(Selector.property("a.b.c").evaluate(undefined)).toBe(undefined);
-            });
         });
 
     });
