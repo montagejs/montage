@@ -206,14 +206,11 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
     mutationDependencyIndex: {value: null},
     mutationListenersCount: {value: 0},
     observedDependentProperties: {value: null},
-    _isHandlingNotification: {value: null},
 
     initWithTargetPath: {
         value: function(target, path) {
             this.target = target;
             this.propertyPath = path;
-            // TODO: this probably should be in didCreate...
-            this._isHandlingNotification = {};
 
             return this;
         }
@@ -540,12 +537,11 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
                 dependentDescriptorsIndex = this.dependentDescriptorsIndex,
                 dependenciesIndex = notification._dependenciesIndex,
                 isMutationNotification,
-                isHandlingNotification = this._isHandlingNotification,
-                notificationUuid = notification.uuid;
+                uuid = this.uuid;
 
             // we need to stop circular property dependencies.
             // e.g.: object.foo depends on object.bar and object.bar depends on object.foo.
-            if (notificationUuid in isHandlingNotification) {
+            if (notification[uuid]) {
                 return;
             }
 
@@ -577,9 +573,9 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
                         if (dependentDescriptorsIndex) {
                             notification._dependenciesIndex = dependentDescriptorsIndex[key];
                         }
-                        isHandlingNotification[notificationUuid] = true;
+                        notification[uuid] = true;
                         listener.listenerFunction.call(listener.listenerTarget, notification);
-                        delete isHandlingNotification[notificationUuid];
+                        notification[uuid] = false;
                     }
                 }
                 notification._dependenciesIndex = dependenciesIndex;
