@@ -87,12 +87,16 @@ Object.defineProperty(Array.prototype, "equals", {
     Comparison recurs on each value.
 
     @function external:Array#compare
-    @param {object} that Another value
+    @param {Any} that Another value
+    @param {Function} compare an alternate comparison function for each
+    respective value of this and that array, defaults to
+    <code>Object.compare</code>
     @returns {Number} related to zero in the same way as left is to right
 */
 Object.defineProperty(Array.prototype, "compare", {
-    value: function (that) {
-        var i,
+    value: function (that, compare) {
+        var compare = compare || Object.compare,
+            i,
             length,
             lhs,
             rhs,
@@ -111,7 +115,7 @@ Object.defineProperty(Array.prototype, "compare", {
                         if (index >= length) {
                             return comparison;
                         } else {
-                            return Object.compare(self[index], that[index]);
+                            return compare(self[index], that[index]);
                         }
                     } else {
                         return comparison;
@@ -134,7 +138,7 @@ Object.defineProperty(Array.prototype, "compare", {
                 } else {
                     lhs = this[i];
                     rhs = that[i];
-                    relative = Object.compare(lhs, rhs);
+                    relative = compare(lhs, rhs);
                     if (relative) {
                         return relative;
                     }
@@ -670,8 +674,9 @@ Object.defineProperty(Array.prototype, "unique", {
     @function external:Array#flatten
     @returns {Array} a linear array from the planar array
 */
+// TODO(kriskowal) add a depth argument, infinity by default
 Object.defineProperty(Array.prototype, "flatten", {
-    value: function () {
+    value: function (depth) {
         return this.reduce(function (flat, row) {
             row.forEach(function (value) {
                 flat.push(value);
