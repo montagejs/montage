@@ -318,10 +318,6 @@ describe('core/selector-spec', function () {
                 assert(Selector.insensitive.endsWith("babbage").evaluate("Charles Babbage"), true);
             });
 
-            it("ends with operator works on arrays", function () {
-                assert(Selector.endsWith([4,5,6]).evaluate([1,2,3,4,5,6]), true);
-            });
-
             describe("conditional expressions:", function () {
 
                 it("where the guard is the implicit subject value", function () {
