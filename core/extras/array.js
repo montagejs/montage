@@ -774,7 +774,7 @@ Object.defineProperty(Array.prototype, "sorted", {
             by = compare.by;
             compare = compare.compare || Object.compare;
         } else {
-            by = Function.identity;
+            by = by || Function.identity;
         }
         if (order === undefined)
             order = 1;
