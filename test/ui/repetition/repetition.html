@@ -349,8 +349,20 @@
                     "element": {"#": "list13"},
                     "objects": [1, 2, 3]
                 }
-            }
+            },
+            "repetition16": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "list14"}
+                }
+            },
 
+            "slider": {
+                "prototype": "montage/ui/bluemoon/slider.reel",
+                "properties": {
+                    "element": {"#": "slider"}
+                }
+            }
     }</script>
 </head>
 <body>
@@ -463,5 +475,10 @@
     <ul class="list13" data-montage-id="list13">
         <li>B</li>
     </ul>
+
+    <h2>Repetition changed after added to the draw list but before the draw</h2>
+    <div class="list14" data-montage-id="list14">
+        <span data-montage-id="slider"></span>
+    </div>
 </body>
 </html>
