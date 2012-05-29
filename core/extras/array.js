@@ -20,8 +20,9 @@
     @returns {Boolean} whether the arrays are equivalent
 */
 Object.defineProperty(Array.prototype, "equals", {
-    value: function (that) {
-        var i = 0,
+    value: function (that, equals) {
+        var equals = equals || Object.equals,
+            i = 0,
             length = this.length,
             lhs,
             rhs;
@@ -31,7 +32,24 @@ Object.defineProperty(Array.prototype, "equals", {
         }
 
         if (!that || !Array.isArray(that)) {
-            return false;
+            if (Object.implements(that, "reduce")) {
+                var self = this;
+                return (
+                    this.length === that.length &&
+                    that.reduce(function (basis, value, index) {
+                        return (
+                            basis &&
+                            index in self &&
+                            equals(
+                                self[index],
+                                value
+                            )
+                        );
+                    }, true)
+                );
+            } else {
+                return false;
+            }
         }
 
         if (length !== that.length) {
@@ -42,7 +60,7 @@ Object.defineProperty(Array.prototype, "equals", {
                     lhs = this[i],
                         rhs = that[i];
 
-                    if (lhs !== rhs && (lhs && rhs && !Object.equals(lhs, rhs))) {
+                    if (lhs !== rhs && (lhs && rhs && !equals(lhs, rhs))) {
                         return false;
                     }
                 } else {
@@ -85,7 +103,26 @@ Object.defineProperty(Array.prototype, "compare", {
         }
 
         if (!that || !Array.isArray(that)) {
-            return 1;
+            if (Object.implements(that, "reduce")) {
+                var self = this;
+                var length = Math.min(this.length, that.length);
+                var comparison = that.reduce(function (comparison, value, index) {
+                    if (comparison === 0) {
+                        if (index >= length) {
+                            return comparison;
+                        } else {
+                            return Object.compare(self[index], that[index]);
+                        }
+                    } else {
+                        return comparison;
+                    }
+                }, 0);
+                if (comparison === 0) {
+                    return this.length - that.length;
+                }
+            } else {
+                return 1;
+            }
         }
 
         length = Math.min(this.length, that.length);
@@ -161,7 +198,7 @@ Object.defineProperty(Array.prototype, "set", {
     value: function (index, value) {
         if (+index !== index)
             throw new Error("Indicies must be numbers");
-        this.setProperty(index, value); // TODO subsume this functionality
+        this.setProperty(index, value); // TODO(kriskowal) subsume this functionality
     },
     writable: true,
     configurable: true
@@ -260,7 +297,8 @@ Object.defineProperty(Array.prototype, "has", {
 /**
     As if the array were a set, adds an element to the end of the array if it
     does not yet exist elsewhere.  This method permits arrays and sets to be
-    used generically.
+    used generically, albeit with <strong>terrible</strong> performance
+    for large arrays.
 
     @function external:Array#add
     @param {Any} value
@@ -453,8 +491,8 @@ Object.defineProperty(Array.prototype, "getProperty", {
     configurable: true
 });
 
-// TODO do we actually need this? other types of collections could implement
-// length as a getter
+// TODO(kriskowal) do we actually need this? other types of collections could
+// implement length as a getter
 /**
     Returns the length of the array.  The purpose of this method is to provide
     a generic way to access the quantity of elements in any collection.
@@ -688,47 +726,6 @@ Object.defineProperty(Array.prototype, "only", {
 });
 
 /**
-    Returns whether an array starts with a sequence of values from another
-    array, where equality is determined by <code>Object.equals</code>, which is
-    a deep, type-sensitive, polymorphic equality.
-
-    @function external:Array#startsWith
-    @returns {Boolean} whether the array starts with the given sequence of
-    values
-*/
-Object.defineProperty(Array.prototype, "startsWith", {
-    value: function (start) {
-        return (
-            this.length >= start.length &&
-            this.slice(0, start.length).equals(start)
-        );
-    },
-    writable: true,
-    configurable: true
-});
-
-/**
-    Returns whether an array ends with a sequence of values from another array,
-    where equality is determined by <code>Object.equals</code>, which is a
-    deep, type-sensitive, polymorphic equality.
-
-    @function external:Array#endsWith
-    @returns {Boolean} whether the array ends with the given sequence of
-    values
-*/
-Object.defineProperty(Array.prototype, "endsWith", {
-    value: function (end) {
-        return (
-            this.length >= end.length &&
-            this.slice(this.length - end.length, this.length)
-                .equals(end)
-        );
-    },
-    writable: true,
-    configurable: true
-});
-
-/**
     Produces a sorted version of an array, with a sensible default comparator,
     and the ability to perform a "Schwartzian Transform" so that the compared
     property of each element of the array only needs to be computed once per
@@ -756,15 +753,24 @@ Object.defineProperty(Array.prototype, "endsWith", {
     The default comparator is <code>Object.compare</code>.
     @param {Function} by is a "mapping" function for each element of the array.
     The default mapping is <code>Function.identity</code>.
+    @param {Number} order 1 for ascending, -1 for descending, 0 for waste of
+    time.
     @returns a new array with the values from the original array in
     the specified sorted order.
 */
+// TODO(kriskowal) consider an alternate implementation that pre-memoizes all
+// of the corresponding "by" computations with a weak-map.  compare for memory
+// usage and speed.
 Object.defineProperty(Array.prototype, "sorted", {
     value: function (compare, by, order) {
         compare = compare || Object.compare;
         // account for comparators generated by Function.by
-        by = by || compare.by || Function.identity;
-        compare = compare.compare || compare;
+        if (compare.by) {
+            by = compare.by;
+            compare = compare.compare || Object.compare;
+        } else {
+            by = Function.identity;
+        }
         if (order === undefined)
             order = 1;
         return this.map(function (item) {
@@ -774,11 +780,11 @@ Object.defineProperty(Array.prototype, "sorted", {
             };
         })
         .sort(function (a, b) {
-            return Object.compare(a.by, b.by) * order;
+            return compare(a.by, b.by) * order;
         })
         .map(function (pair) {
             return pair.value;
-        })
+        });
     },
     writable: true,
     configurable: true
@@ -791,20 +797,15 @@ Object.defineProperty(Array.prototype, "sorted", {
     @returns {Object} a shallow copy of this array
 */
 Object.defineProperty(Array.prototype, "clone", {
-    value: Array.prototype.slice,
-    writable: true,
-    configurable: true
-});
-
-/**
-    Creates a deep copy of this array.
-
-    @function external:Array#deepClone
-    @returns {Object} a deep copy of this array
-*/
-Object.defineProperty(Array.prototype, "deepClone", {
-    value: function () {
-        return this.map(Object.deepClone);
+    value: function (depth, memo) {
+        if (depth === undefined) {
+            depth = Infinity;
+        } else if (depth === 0) {
+            return this;
+        }
+        return this.map(function (value) {
+            return Object.clone(value, depth - 1, memo);
+        });
     },
     writable: true,
     configurable: true
@@ -825,6 +826,7 @@ Object.defineProperty(Array.prototype, "wipe", {
     configurable: true
 });
 
+// TODO(kriskowal) determine whether this has been deprecated and remove
 /**
     Returns whether an object is a canvas pixel array
 

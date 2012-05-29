@@ -39,7 +39,7 @@ Object.defineProperty(String, "isString", {
 */
 Object.defineProperty(String.prototype, "equals", {
     value: function (that) {
-        return this.valueOf() === that;
+        return this.valueOf() === Object.getValueOf(that);
     },
     writable: true,
     configurable: true
@@ -79,7 +79,7 @@ Object.defineProperty(String.prototype, "toCapitalized", {
     configurable: true
 });
 
-// TODO discover where we are currently using this
+// TODO(kriskowal) discover where/whether we are currently using this
 /**
     Does nothing, but exists so that strings may be used generically as
     potential event sources.
