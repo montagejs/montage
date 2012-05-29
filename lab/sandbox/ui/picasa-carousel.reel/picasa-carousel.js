@@ -21,6 +21,7 @@ var PicasaCarousel = exports.PicasaCarousel = Montage.create(Component, /** @len
         },
 
         flow: {
+            serializable: true,
             value: null
         },
 
