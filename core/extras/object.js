@@ -11,18 +11,23 @@
 
 var M = require("core/core"); // lazy bound because of dependency cycle
 
+var WeakMap = require("core/shim/weak-map").WeakMap;
+
 // string table, for strings that might be constructed multiple times
 // seems to reduce allocations in a version of Firefox I once heard tell
 var MODIFY = "modify";
 var STRING = "string";
 var FUNCTION = "function";
 var OBJECT = "object";
+var NUMBER = "number";
 var HAS = "has";
 var GET = "get";
 var UNDEFINED_GET = "undefinedGet";
 var SET = "set";
 var EQUALS = "equals";
 var VALUE_OF = "valueOf";
+var CLONE = "clone";
+var COMPARE = "compare";
 
 /**
     A utility object to avoid unnecessary allocations of an empty object
@@ -54,19 +59,79 @@ Object.defineProperty(Object, "isObject", {
 });
 
 /**
+    Returns the value of an any value, particularly objects that
+    implement <code>valueOf</code>.
+
+    <p>Note that, unlike the precedent of methods like
+    <code>Object.equals</code> and <code>Object.compare</code> would suggest,
+    this method is named <code>Object.getValueOf</code> instead of
+    <code>valueOf</code>.  This is a delicate issue, but the basis of this
+    decision is that the JavaScript runtime would be far more likely to
+    accidentally call this method with no arguments, assuming that it would
+    return the value of <code>Object</code> itself in various situations,
+    whereas <code>Object.equals(Object, null)</code> protects against this case
+    by noting that <code>Object</code> owns the <code>equals</code> property
+    and therefore does not delegate to it.
+
+    @function external:Object.getValueOf
+    @param {Any} value a value or object wrapping a value
+    @returns {Any} the primitive value of that object, if one exists, or passes
+    the value through
+*/
+Object.defineProperty(Object, "getValueOf", {
+    value: function (value) {
+        if (Object.implements(value, VALUE_OF)) {
+            value = value.valueOf();
+        }
+        return value;
+    }
+});
+
+/**
     A shorthand for <code>Object.prototype.hasOwnProperty.call(object,
     key)</code>.  Returns whether the object owns a property for the given key.
     It does not consult the prototype chain and works for any string (including
     "hasOwnProperty") except "__proto__".
+
+    @function external:Object.owns
     @param {Object} object
     @param {String} key
     @returns {Boolean} whether the object owns a property wfor the given key.
-    @function external:Object.owns
 */
 var owns = Object.prototype.hasOwnProperty;
 Object.defineProperty(Object, "owns", {
     value: function (object, key) {
         return owns.call(object, key);
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Returns whether a value implements a particular duck-type method.
+
+    <p>To qualify as a duck-type method, the value in question must have a
+    method by the given name on the prototype chain.  To distinguish it from
+    a property of an object literal, the property must not be owned by the
+    object directly.
+
+    <p>A value that implements a method is not necessarily an object, for
+    example, numbers implement <code>valueOf</code>, so this is function
+    does not imply <code>Object.isObject</code> of the same value.
+
+    @function external:Object.implements
+    @param {Any} value a value
+    @param {String} name a method name
+    @returns {Boolean} whether the given value implements the given method
+
+*/
+Object.defineProperty(Object, "implements", {
+    value: function (object, name) {
+        return (
+            object != null && // false only for null *and* undefined
+            typeof object[name] === FUNCTION &&
+            !owns.call(object, name)
+        );
     },
     writable: true,
     configurable: true
@@ -100,7 +165,7 @@ Object.defineProperty(Object, "has", {
             throw new Error("Object.has can't accept non-object: " + typeof object);
         }
         // forward to mapped collections that implement "has"
-        if (typeof object.has === FUNCTION && !owns.call(object, HAS)) {
+        if (Object.implements(object, HAS)) {
             return object.has(key);
         // otherwise report whether the key is on the prototype chain,
         // as long as it is not one of the methods on object.prototype
@@ -145,16 +210,13 @@ Object.defineProperty(Object, "get", {
             throw new Error("Object.get can't accept non-object: " + typeof object);
         }
         // forward to mapped collections that implement "get"
-        if (typeof object.get === FUNCTION && !owns.call(object, GET)) {
+        if (Object.implements(object, GET)) {
             return object.get(key, value);
         } else if (Object.has(object, key)) {
             return object[key];
         } else if (value !== undefined) {
             return value;
-        } else if (
-            typeof object.undefinedGet === FUNCTION &&
-            !owns.call(object, UNDEFINED_GET)
-        ) {
+        } else if (Object.implements(object, UNDEFINED_GET)) {
             return object.undefinedGet();
         }
     },
@@ -178,8 +240,7 @@ Object.defineProperty(Object, "get", {
 */
 Object.defineProperty(Object, "set", {
     value: function (object, key, value) {
-        // forward to mapped collections that implement "set"
-        if (typeof object.set === FUNCTION && !owns.call(object, SET)) {
+        if (Object.implements(object, SET)) {
             object.set(key, value);
         } else {
             object[key] = value;
@@ -218,7 +279,7 @@ Object.defineProperty(Object, "getset", {
     value: function (object, key, value) {
         // implicitly forwards to collections that implement get and set
         if (!Object.has(object, key)) {
-            Object.set(key, value);
+            Object.set(object, key, value);
         }
         return Object.get(object, key);
     },
@@ -282,6 +343,12 @@ Object.defineProperty(Object, "is", {
     Performs a polymorphic, type-sensitive deep equivalence comparison of any
     two values.
 
+    <p>As a basic principle, any value is equivalent to itself (as in
+    identity), any boxed version of itself (as a <code>new Number(10)</code> is
+    to 10), and any deep clone of itself.
+
+    <p>Equivalence has the following properties:
+
     <ul>
         <li><strong>polymorphic:</strong>
             If the given object is an instance of a type that implements a
@@ -310,37 +377,29 @@ Object.defineProperty(Object, "is", {
 */
 Object.defineProperty(Object, "equals", {
     value: function (a, b) {
-        if (typeof a !== typeof b)
-            return false;
         // unbox objects, but do not confuse object literals
-        if (
-            typeof a === OBJECT &&
-            typeof a.valueOf === FUNCTION &&
-            !owns.call(a, VALUE_OF)
-        )
-            a = a.valueOf();
-        if (
-            typeof b === OBJECT &&
-            typeof b.valueOf === FUNCTION &&
-            !owns.call(b, VALUE_OF)
-        )
-            b = b.valueOf();
+        a = Object.getValueOf(a);
+        b = Object.getValueOf(b);
         if (a === b)
             return true;
-        if (typeof a.equals === FUNCTION && !owns.call(a, EQUALS))
+        if (Object.implements(a, EQUALS))
             return a.equals(b);
         // commutative
-        if (typeof b.equals === FUNCTION && !owns.call(b, EQUALS))
+        if (Object.implements(b, EQUALS))
             return b.equals(a);
         if (typeof a === OBJECT && typeof b === OBJECT) {
-            var aKeys = Object.keys(a);
-            var bKeys = Object.keys(b);
-            return (
-                aKeys.equals(bKeys) &&
-                aKeys.every(function (key) {
-                    return Object.equals(a[key], b[key]);
-                })
-            );
+            if (Object.getPrototypeOf(a) !== Object.getPrototypeOf(b)) {
+                return false;
+            } else {
+                var aKeys = Object.keys(a);
+                var bKeys = Object.keys(b);
+                return (
+                    aKeys.equals(bKeys) &&
+                    aKeys.every(function (key) {
+                        return Object.equals(a[key], b[key]);
+                    })
+                );
+            }
         }
         return false;
     },
@@ -386,33 +445,21 @@ Object.defineProperty(Object, "equals", {
 */
 Object.defineProperty(Object, "compare", {
     value: function (a, b) {
-        if (typeof a !== typeof b)
-            return 0;
         // unbox objects, but do not confuse object literals
         // mercifully handles the Date case
-        if (
-            typeof a === OBJECT &&
-            typeof a.valueOf === FUNCTION &&
-            !owns.call(a, VALUE_OF)
-        )
-            a = a.valueOf();
-        if (
-            typeof b === OBJECT &&
-            typeof b.valueOf === FUNCTION &&
-            !owns.call(b, VALUE_OF)
-        )
-            b = b.valueOf();
+        a = Object.getValueOf(a);
+        b = Object.getValueOf(b);
         if (a === b)
             return 0;
-        if (typeof a === "number")
+        if (typeof a === NUMBER && typeof b === NUMBER)
             return a - b;
-        if (typeof a === "string")
+        if (typeof a === STRING)
             return a < b ? -1 : 1;
             // the possibility of equality elimiated above
-        if (typeof a.compare === FUNCTION)
+        if (Object.implements(a, COMPARE))
             return a.compare(b);
         // not commutative, the relationship is reversed
-        if (typeof b.compare === FUNCTION)
+        if (Object.implements(b, COMPARE))
             return -b.compare(a);
         return 0;
     },
@@ -688,39 +735,30 @@ Object.defineProperty(Object, "getPrototypeAndDescriptorDefiningProperty", {
 
     @function external:Object.clone
     @param {Any} value a value to clone
+    @param {Number} depth an optional traversal depth, defaults to infinity.
+    A value of <code>0</code> means to make no clone and return the value
+    directly.
+    @param {WeakMap} memo an optional memo of already visited objects to
+    preserve reference cycles.  The cloned object will have the exact same
+    shape as the original, but no identical objects.  If passed explicitly, the
+    weak map may be later used to associate all objects in the original object
+    graph with their corresponding member of the cloned graph.
     @returns a copy of the value
 */
 Object.defineProperty(Object, "clone", {
-    value: function (value) {
-        if (Object.isObject(value)) {
-            return value.clone();
-        } else {
+    value: function (value, depth, memo) {
+        value = Object.getValueOf(value);
+        if (depth === undefined) {
+            depth = Infinity;
+        } else if (depth === 0) {
             return value;
         }
-    },
-    writable: true,
-    configurable: true
-});
-
-/**
-    Creates a deep copy of any value.  Values, being immutable, are
-    returned without alternation.  Forwards to <code>deepClone</code>
-    on objects and arrays.
-
-    @function external:Object.deepClone
-    @param {Any} value a value to clone
-    @returns a deep copy of the value
-*/
-Object.defineProperty(Object, "deepClone", {
-    value: function (value) {
-        if (Object.isObject(value)) {
-            if ("deepClone" in value && !owns.call(value, "deepClone")) {
-                return value.deepClone();
-            } else if ("clone" in value && !owns.call(value, "clone")) {
-                return value.clone();
-            } else {
-                return Object.prototype.deepClone.call(value);
+        if (Object.isObject(value) && Object.implements(value, CLONE)) {
+            memo = memo || new WeakMap();
+            if (!memo.has(value)) {
+                memo.set(value, value.clone(depth, memo));
             }
+            return memo.get(value);
         } else {
             return value;
         }
@@ -730,38 +768,32 @@ Object.defineProperty(Object, "deepClone", {
 });
 
 /**
-    Creates a shallow copy of this object with all the same owned
+    Creates a copy of this object with all the same owned
     properties and prototype.
 
     @function external:Object#clone
+    @param {Number} depth an optional traversal depth, defaults to infinity
+    @param {WeakMap} memo an optional memo of already visited objects to break
+    reference cycles
     @returns {Object} a copy of this object with the same owned properties
     and prototype.
 */
 Object.defineProperty(Object.prototype, "clone", {
-    value: function () {
+    value: function (depth, memo) {
+        if (depth === undefined) {
+            depth = Infinity;
+        }
+        memo = memo || new WeakMap();
+        if (depth === 0) {
+            return this;
+        }
+        if (memo.has(this)) {
+            return memo.get(this);
+        }
         var clone = Object.create(Object.getPrototypeOf(this));
+        memo.set(this, clone);
         Object.forEach(this, function (value, key) {
-            clone[key] = value;
-        });
-        return clone;
-    },
-    writable: true,
-    configurable: true
-});
-
-/**
-    Creates a deep copy of this object with all the same owned properties
-    and prototype.
-
-    @function external:Object#deepClone
-    @returns {Object} a copy of this object with the same owned properties
-    and prototype.
-*/
-Object.defineProperty(Object.prototype, "deepClone", {
-    value: function () {
-        var clone = Object.create(Object.getPrototypeOf(this));
-        Object.forEach(this, function (value, key) {
-            clone[key] = Object.deepClone(value);
+            clone[key] = Object.clone(value, depth - 1, memo);
         });
         return clone;
     },

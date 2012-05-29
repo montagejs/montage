@@ -27,15 +27,3 @@ Object.defineProperty(Date.prototype, "clone", {
     configurable: true
 });
 
-/**
-    Creates a copy of a date.
-
-    @function external:Date#clone
-    @returns {Date} a new date
-*/
-Object.defineProperty(Date.prototype, "deepClone", {
-    value: Date.prototype.clone,
-    writable: true,
-    configurable: true
-});
-
