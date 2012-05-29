@@ -30,7 +30,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     delegate: {
-        serializable: true,
+        serializable: "reference",
         value: null
     },
 
