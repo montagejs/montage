@@ -1,10 +1,58 @@
+# v0.10.0
+
+-   **New property change API**
+
+    In prior Montage releases if you wanted to be notified when the value of a property changed, or an array was
+    modified, you used the addEventListener() API to register a listener object (or function). This API has been
+    replaced with addPropertyChangeListener(), which does everything that addEventListener() did, plus more.
+
+-   **Changes to data binding**
+
+    In this release, bindings can only be serialized on the source object in the binding. Practically, this means that
+    the arrow in the binding serialization can only point from right-to-left, not from left-to-right.
+    Also, the double-arrow syntax (<<->, for example) is no longer valid.
+
+-   **__debugChangeNotifications__()**
+
+    To help debug and inspect change listeners that you’ve registered on an object, call __debugChangeNotifications__()
+    This is temporary stop gap which will be replaced by better debugging tools soon.
+
+-   **KeyComposer and KeyManager**
+
+    Montage now includes a mechanism for easily listening for and responding to keyboard events, including individual
+    keys, or key combinations that you specify. It consists of two Montage objects: KeyComposer and KeyManager. You
+    create a KeyComposer object and specify the keys, or key combinations, that you want to respond to, as well as the
+    listener object that defines the necessary handlers. A default instance of the KeyManager prototype listens for
+    native key events on behalf of all active KeyComposers. It then invokes a callback method on the listener object
+    you specified.
+
+-   **TokenField**
+
+    The TokenField component is a text input component that displays tokens as its content.
+
+-   **Flow component**
+
+    The Flow component now supports selection handling and a feature called “stride”. The stride of a Flow component
+    defines points at regular intervals where scrolling should stop. For example, suppose you are creating a carousel
+    of album covers and you want the scrolling to stop when it reaches a position where the next album is always
+    positioned at the center. In this case the stride value would be the scroll distance between an element at the
+    center and the next element at the center. If you wanted scrolling to stop at every second or third album you would
+    set a stride to double or triple of that value. That way you could have, for example, a page showing 10 albums, and
+    you would be able to scroll 10 albums at a time, never stopping in the middle.
+
+-   **DynamicElement**
+
+    The DynamicElement component takes a string of plain text or HTML and inserts it into the component’s associated DOM
+    element, clearing any existing content.
+
+
 # v0.9.0
 
 -   **Draw  cycle changes**
 
     After the willDraw phase all the components needing draw are sorted by their level in the
     component hierarchy. They are then processed in reverse order. This ensures that all the
-    childComponents needing draw have drawn by the time the parent's draw is called. The didDraw 
+    childComponents needing draw have drawn by the time the parent's draw is called. The didDraw
     uses the same list but processes the componets in top down order (the reverse of draw)
 
 -   **Components**
