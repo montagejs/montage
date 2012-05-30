@@ -1,0 +1,11 @@
+{
+    "name": "mint",
+    "description": "Montage lint. Checks Montage Javascript files for coding errors.",
+    "version": "0.0.1",
+    "author": "Stuart Knightley",
+
+    "dependencies": {
+        "jshint": "0.7.x"
+    }
+}
+
