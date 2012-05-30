@@ -1,9 +1,10 @@
 
 var Selector = require("montage/core/selector").Selector;
+var Promise = require("montage/core/promise").Promise;
 var PropertyLanguage = require("montage/core/selector/property-language").PropertyLanguage;
 var ObserverSemantics = require("montage/core/selector/observer-semantics").ObserverSemantics;
 
-describe('test/core/selector/observer-spec', function () {
+describe('core/selector/observer-spec', function () {
 
     var tests = [
 
@@ -242,7 +243,6 @@ describe('test/core/selector/observer-spec', function () {
                 'a'
             ]
         }
-
     ];
 
     tests.forEach(function (test) {
@@ -274,6 +274,21 @@ describe('test/core/selector/observer-spec', function () {
             });
         });
     })
+
+    describe("observe a promise", function () {
+        it("should forward in a future turn", function () {
+            var observed = Promise.defer();
+            var postponed = Promise.defer();
+            setTimeout(function () {
+                postponed.resolve(10);
+            }, 100);
+            Selector.value.observe(postponed.promise, null, function (value) {
+                expect(value).toEqual(10);
+                observed.resolve();
+            });
+            return observed.promise.timeout(500);
+        });
+    });
 
 });
 

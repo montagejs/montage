@@ -5,6 +5,7 @@
  </copyright> */
 
 var Montage = require("core/core").Montage;
+var Promise = require("core/promise").Promise;
 var WeakMap = require("core/shim/weak-map").WeakMap;
 var Semantics = require("./semantics").Semantics;
 
@@ -169,25 +170,25 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
 
     memoizedCompile: {
         value: function (syntax) {
-            // TODO put a weak map memo of syntax to evaluator here to speed up common property compilation
             var self = this;
+            var observe;
             if (syntax.type === 'value') {
-                return function (value, parameters, callback) {
+                observe = function (value, parameters, callback) {
                     return callback(value);
                 };
             } else if (syntax.type === 'parameters') {
-                return function (value, parameters, callback) {
+                observe = function (value, parameters, callback) {
                     return callback(parameters);
                 };
             } else if (syntax.type === 'literal') {
-                return function (value, parameters, callback) {
+                observe = function (value, parameters, callback) {
                     return callback(syntax.value);
                 };
             } else if (syntax.type === 'array') {
                 var termEvaluators = syntax.terms.map(function (term) {
                     return self.compile(term, syntax);
                 });
-                return makeFixedLengthArrayObserver(termEvaluators);
+                observe = makeFixedLengthArrayObserver(termEvaluators);
             } else if (Object.has(self.compilers, syntax.type)) {
                 var compiler = self.compilers[syntax.type];
                 var length = compiler.length;
@@ -234,7 +235,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                 // functions, and so canceled observers can no longer propagate
                 // through the callback
                 var _observe = compiler.apply(self, argEvaluators);
-                return function observe(value, parameters, callback, errback) {
+                observe = function observe(value, parameters, callback, errback) {
                     var _subcancel, canceled;
                     var _callback = function (value) {
                         if (canceled) {
@@ -280,6 +281,18 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
             } else {
                 throw new Error("Can't compile: " + syntax.type);
             }
+
+            // dance to make sure that an observed promise does not get
+            // observed until fulfilled
+            return function (value, parameters, callback, errback) {
+                return observe(value, parameters, function (value) {
+                    if (Promise.isPromise(value)) {
+                        value.then(callback, errback).end();
+                    } else {
+                        return callback(value);
+                    }
+                }, errback);
+            };
         }
     },
 
