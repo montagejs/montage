@@ -229,6 +229,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
             if (!this.element) {
                 this.element = document.documentElement;
+                this.attachToParentComponent();
             }
             this.readyToShowLoader = true;
 
