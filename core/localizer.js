@@ -42,6 +42,16 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
         }
     },
 
+    /**
+        The MessageFormat object to use.
+
+        @type {MessageFormat}
+        @default null
+    */
+    messageFormat: {
+        value: null
+    },
+
     _locale: {
         enumerable: false,
         value: null
@@ -69,16 +79,6 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
             }
         }
     },
-
-    /**
-        The MessageFormat object to use.
-
-        @type {MessageFormat}
-        @default null
-    */
-    messageFormat: {
-        value: null
-    }
 
 });
 
@@ -155,6 +155,7 @@ var defaultLocalizer = exports.defaultLocalizer = DefaultLocalizer.create().init
 
     @class module:montage/core/localizer.MessageVariables
     @extends module:montage/core/core.Montage
+    @private
 */
 var MessageVariables = Montage.create(Montage, /** @lends module:montage/core/localizer.MessageVariables# */{
     /**
@@ -205,7 +206,7 @@ var MessageVariables = Montage.create(Montage, /** @lends module:montage/core/lo
     @class module:montage/core/localizer.MessageLocalizer
     @extends module:montage/core/core.Montage
 */
-var MessageLocalizer = Montage.create(Montage, /** @lends module:montage/core/localizer.MessageLocalizer# */ {
+var MessageLocalizer = exports.MessageLocalizer = Montage.create(Montage, /** @lends module:montage/core/localizer.MessageLocalizer# */ {
     /**
         Initialize the object.
 
@@ -228,6 +229,12 @@ var MessageLocalizer = Montage.create(Montage, /** @lends module:montage/core/lo
             }
             this.message = message;
             return this;
+        }
+    },
+
+    toString: {
+        value: function() {
+            return this._value;
         }
     },
 
