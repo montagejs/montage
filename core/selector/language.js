@@ -29,8 +29,9 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                 return parseExpression(callback);
             });
 
+            // scalar
             this.parseProperties();
-            this.parseLeftToRight(['startsWith', 'endsWith']);
+            this.parseLeftToRight(['startsWith', 'endsWith', 'contains']);
             this.parseLeftToRight(['pow']);
             this.parseLeftToRight(['mul', 'div', 'mod']);
             this.parseLeftToRight(['add', 'sub']);
@@ -42,11 +43,12 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             this.parseConditional();
             var parseScalar = this.precedence();
 
+            // linear
             this.parseArray();
-            this.parseRightToLeft(['has', 'contains', 'every', 'some', 'one', 'only', 'filter', 'map', 'it']);
+            this.parseLeftToRight(['has', 'every', 'some', 'one', 'only', 'filter', 'map', 'it']);
             this.parseSorted(parseScalar);
             this.parseSlice(parseScalar);
-            this.parseRightToLeft(['sum', 'count', 'average', 'unique', 'flatten', 'any', 'all']);
+            this.parseLeftToRight(['sum', 'count', 'average', 'unique', 'flatten', 'any', 'all']);
             var parseExpression = this.precedence();
 
             // TODO median, mode
