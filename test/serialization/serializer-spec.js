@@ -102,6 +102,20 @@ describe("serialization/serializer-spec", function() {
             expect(stripPP(serialization)).toBe('{"number":' + object.number + ',"string":"' + object.string + '","regexp":' + object.regexp + '}');
         });
 
+        it("should serialize an Object literal created in a different document", function() {
+            var iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            window.document.body.appendChild(iframe);
+
+            var object = new iframe.contentWindow.Object;
+            object.number = 42;
+            object.string = "string";
+            var serialization = serializer.serializeObject(object);
+
+            expect(stripPP(serialization)).toBe('{"root":{"value":{"number":42,"string":"string"}}}');
+
+        });
+
         it("should serialize a function", function() {
             var funktion = function square(x) {
                 return x*x;
