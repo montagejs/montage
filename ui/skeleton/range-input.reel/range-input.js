@@ -12,13 +12,19 @@ var Montage = require("montage").Montage,
  */
 var RangeInput = exports.RangeInput = Montage.create(Component, {
 
-    DEFAULT_WIDTH: {value: 300},
-    HANDLE_ADJUST: {value: 5},
+    DEFAULT_WIDTH: {
+        value: 300
+    },
 
-    hasTemplate: {value: true},
+    HANDLE_ADJUST: {
+        value: 5
+    },
 
     // public API
-    _min: {value: null},
+    _min: {
+        value: null
+    },
+
     min: {
         get: function() {
             return this._min;
@@ -26,73 +32,110 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
         set: function(value) {
             this._min =  String.isString(value) ? parseFloat(value) : value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
-    _max: {value: null},
+    _max: {
+        value: null
+    },
+
     max: {
-       get: function() {
-           return this._max;
-       },
-       set: function(value) {
-           this._max = String.isString(value) ? parseFloat(value) : value;
-           this.needsDraw = true;
-       }
+        get: function() {
+            return this._max;
+        },
+        set: function(value) {
+            this._max = String.isString(value) ? parseFloat(value) : value;
+            this.needsDraw = true;
+        },
+        serializable: true
    },
 
-    _step: {value: null},
+    _step: {
+        value: null
+    },
+
     step: {
-       get: function() {
-           return this._step;
-       },
-       set: function(value) {
-           this._step =  String.isString(value) ? parseFloat(value) : value;
-           this.needsDraw = true;
-       }
-   },
+        get: function() {
+            return this._step;
+        },
+        set: function(value) {
+            this._step =  String.isString(value) ? parseFloat(value) : value;
+            this.needsDraw = true;
+        },
+        serializable: true
+    },
 
-   /** Width of the slider in px. Default = 300 */
-   _width: {value: null},
-   width: {
-         get: function() {
-             return this._width;
-         },
-         set: function(value) {
-             this._width =  String.isString(value) ? parseFloat(value) : value;
-             this.needsDraw = true;
-         }
-     },
+    /** Width of the slider in px. Default = 300 */
+    _width: {
+        value: null
+    },
 
-   percent: {value: null},
+    width: {
+        get: function() {
+            return this._width;
+        },
+        set: function(value) {
+            this._width =  String.isString(value) ? parseFloat(value) : value;
+            this.needsDraw = true;
+        },
+        serializable: true
+    },
 
-   _valueSyncedWithPosition: {value: null},
-   _value: {value: null},
+    percent: {
+        value: null
+    },
+
+    _valueSyncedWithPosition: {
+        value: null
+    },
+
+    _value: {
+        value: null
+    },
+
     value: {
-       get: function() {
-           return this._value;
-       },
-       set: function(value, fromInput) {
-           this._value =  String.isString(value) ? parseFloat(value) : value;
+        get: function() {
+            return this._value;
+        },
+        set: function(value, fromInput) {
+            this._value =  String.isString(value) ? parseFloat(value) : value;
 
-           if(fromInput) {
-               this._valueSyncedWithPosition = true;
-           } else {
-               this._valueSyncedWithPosition = false;
-               this._calculatePositionFromValue();
-               this.needsDraw = true;
-           }
-       }
-   },
+            if(fromInput) {
+                this._valueSyncedWithPosition = true;
+            } else {
+                this._valueSyncedWithPosition = false;
+                this._calculatePositionFromValue();
+                this.needsDraw = true;
+            }
+        },
+        serializable: true
+    },
 
     // private
-    _handleEl: {value: null, enumerable: false},
-    _sliderLeft: {value: null, enumerable: false},
-    _sliderWidth: {value: null, enumerable: false},
+    _handleEl: {
+        value: null,
+        serializable: true
+    },
 
+    _translateComposer: {
+        value: null,
+        serializable: true
+    },
 
-    __positionX: {value: null},
+    _sliderLeft: {
+        value: null
+    },
+
+    _sliderWidth: {
+        value: null
+    },
+
+    __positionX: {
+        value: null
+    },
+
     _positionX: {
-        enumerable: false,
         get: function() {
             return this.__positionX;
         },
@@ -175,9 +218,9 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
     _addEventListeners: {
         value: function() {
             if(window.Touch) {
-                this.element.addEventListener('touchend', this, false);
+                this.element.addEventListener('touchstart', this, false);
             } else {
-                this.element.addEventListener('mouseup', this, false);
+                this.element.addEventListener('mousedown', this, false);
             }
         }
     },
@@ -185,9 +228,9 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
     _removeEventListeners: {
         value: function() {
             if(window.Touch) {
-                this.element.removeEventListener('touchend', this, false);
+                this.element.removeEventListener('touchstart', this, false);
             } else {
-                this.element.removeEventListener('mouseup', this, false);
+                this.element.removeEventListener('mousedown', this, false);
             }
         }
     },
@@ -216,17 +259,17 @@ var RangeInput = exports.RangeInput = Montage.create(Component, {
         }
     },
 
-    handleMouseup: {
+    handleMousedown: {
         value: function(e) {
             this._handleClick(e.clientX);
         }
     },
-    handleTouchend: {
+
+    handleTouchstart: {
         value: function(event) {
             this._handleClick(event.changedTouches[0].clientX);
         }
     },
-
 
     surrenderPointer: {
         value: function(pointer, composer) {

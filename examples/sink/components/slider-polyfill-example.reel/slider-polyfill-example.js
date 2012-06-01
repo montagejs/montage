@@ -8,7 +8,11 @@ var Montage = require("montage/core/core").Montage,
 
 exports.SliderPolyfillExample = Montage.create(Component, {
 
-    result: {value: null},
+    result: {
+        value: null,
+        serializable: true
+    },
+
     resultHex: {value: null},
 
     _red: {value: null},
@@ -55,7 +59,7 @@ exports.SliderPolyfillExample = Montage.create(Component, {
             return Math.round(number).toString(16);
         }
     },
-    
+
     prepareForDraw: {
         value: function() {
             // Invoke Google pretty printer on source code samples
@@ -77,5 +81,10 @@ exports.SliderPolyfillExample = Montage.create(Component, {
             this.green = 0;
             this.blue = 0;
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

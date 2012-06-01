@@ -4,6 +4,31 @@ var Montage = require("montage").Montage,
 
 exports.SplineEditor = Montage.create(Component, {
 
+    flow: {
+        serializable: true,
+        value: null
+    },
+
+    topView: {
+        serializable: true,
+        value: null
+    },
+
+    frontView: {
+        serializable: true,
+        value: null
+    },
+
+    toolbar: {
+        serializable: true,
+        value: null
+    },
+
+    parametersEditor: {
+        serializable: true,
+        value: null
+    },
+
     _cameraPosition: {
         enumerable: false,
         value: null
@@ -439,7 +464,7 @@ exports.SplineEditor = Montage.create(Component, {
         value: function () {
             var self = this;
             
-            this.spline = Object.create(FlowBezierSpline);
+            this.spline = Object.create(FlowBezierSpline).init();
             this.flow._paths = [];
             this.flow._paths.push({
                 headOffset: 0,

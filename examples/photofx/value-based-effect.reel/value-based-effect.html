@@ -21,18 +21,10 @@
                     "unpressedLabel": "OFF"
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@owner.enabled"}
+                    "pressed": {"<->": "@owner.enabled"}
                 }
             },
-            "effectName": {
-                "prototype": "montage/ui/dynamic-text.reel",
-                "properties": {
-                    "element": {"#": "effectName"}
-                },
-                "bindings": {
-                    "value": {"<<->": "@owner.name"}
-                }
-            },
+
             "valueSlider": {
                 "prototype": "montage/ui/range-input.reel",
                 "properties": {
@@ -40,9 +32,9 @@
                     "identifier": "valueSlider"
                 },
                 "bindings": {
-                    "value": {"<<->": "@owner.sliderValue"},
-                    "min": {"<<->": "@owner.minValue"},
-                    "max": {"<<->": "@owner.maxValue"}
+                    "value": {"<->": "@owner.sliderValue"},
+                    "min": {"<->": "@owner.minValue"},
+                    "max": {"<->": "@owner.maxValue"}
                 },
                 "listeners": [
                     {

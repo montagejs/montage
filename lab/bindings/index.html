@@ -12,8 +12,7 @@
     <script type="text/montage-serialization">
     {
         "repetition": {
-            "module": "montage/ui/repetition.reel",
-            "name": "Repetition",
+            "prototype": "montage/ui/repetition.reel",
             "properties": {
                 "element": {"#": "repetition"},
                 "objects": [0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,11,12,13,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,1,2,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,11,12,13,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,1,2,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,5,1,2,3,4,5,1,2,3,4,5,2,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3,4,5,0,1,2,3,4,50,1,2,3,4,5,0,1,2,3],
@@ -21,23 +20,20 @@
             }
         },
         "box": {
-            "module": "box.reel",
-            "name": "Box",
+            "prototype": "box.reel",
             "properties": {
                 "element": {"#": "box-element"},
                 "mainComponent": {"@": "mainComponent"}
             }
         },
         "animateComposer": {
-            "module": "animate-test-composer",
-            "name": "AnimateTestComposer",
+            "prototype": "animate-test-composer",
             "properties": {
 
             }
         },
         "mainComponent": {
-            "module": "main-component",
-            "name": "Main",
+            "prototype": "main-component[Main]",
             "properties": {
                 "repetitionC": {"@": "repetition"},
                 "element": {"#": "main"}

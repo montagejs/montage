@@ -19,7 +19,7 @@
                     "bindings": {
                         "selectedCountry": {"<-": "@country.contentController.selectedObjects.0"},
                         "selectedState": {"<-": "@state.contentController.selectedObjects.0"},
-                        "selectedDepts": {"<<->": "@dept.contentController.selectedObjects"}
+                        "selectedDepts": {"<->": "@dept.contentController.selectedObjects"}
                     }
                 },
                 "fname": {
@@ -28,8 +28,8 @@
                         "element": {"#": "fname"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner.firstName"},
-                        "title": {"<<->": "@owner.firstName"}
+                        "value": {"<->": "@owner.firstName"},
+                        "title": {"<->": "@owner.firstName"}
                     }
                 },
 
@@ -39,7 +39,7 @@
                         "element": {"#": "lname"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner.lastName"}
+                        "value": {"<->": "@owner.lastName"}
                     }
                 },
 
@@ -131,7 +131,7 @@
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorLeft"}}
+                        "pressed": {"<->": "@owner.justify", "converter": {"@": "justifyComparatorLeft"}}
                     }
                 },
                 "justifyCenter": {
@@ -141,7 +141,7 @@
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorCenter"}}
+                        "pressed": {"<->": "@owner.justify", "converter": {"@": "justifyComparatorCenter"}}
                     }
                 },
                 "justifyRight": {
@@ -151,7 +151,7 @@
                         "pressedClass": "success"
                     },
                     "bindings": {
-                        "pressed": {"<<->": "@owner.justify", "converter": {"@": "justifyComparatorRight"}}
+                        "pressed": {"<->": "@owner.justify", "converter": {"@": "justifyComparatorRight"}}
                     }
                 },
                 "justifySelect": {
@@ -160,7 +160,7 @@
                         "element": {"#": "justifySelect"}
                     },
                     "bindings": {
-                        "value": {"<<->": "@owner.justify"}
+                        "value": {"<->": "@owner.justify"}
                     }
                 },
                 "justifyResult": {
@@ -682,7 +682,7 @@ exports.JustifyConverter = Montage.create(Converter, {
             </section>
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
             </section>
     </div>
 <!--

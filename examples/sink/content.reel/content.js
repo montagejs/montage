@@ -9,7 +9,10 @@ var Montage = require("montage/core/core").Montage,
 
 exports.Content = Montage.create(Component, {
 
-    contentDeck: {value: null},
+    contentDeck: {
+        value: null,
+        serializable: true
+    },
 
     _selectedItem: {value: null},
     selectedItem: {
@@ -19,9 +22,11 @@ exports.Content = Montage.create(Component, {
         },
         set: function(value) {
             console.log('set selectedItem ', value, this._selectedItem);
-            this._selectedItem = value;
-            Notifier.show('Loading ... please wait');
-            this.needsDraw = true;
+            if(value !== "" && value !== this._selectedItem) {
+                this._selectedItem = value;
+                this.needsDraw = true;                
+            }
+            
         }
     },
 
@@ -35,13 +40,6 @@ exports.Content = Montage.create(Component, {
             if(componentShown && typeof componentShown.didBecomeActiveInSlot === 'function') {
                 componentShown.didBecomeActiveInSlot();
             }
-        }
-    },
-
-    draw: {
-        value: function() {
-            console.log('content draw', this.selectedItem, this.contentDeck.switchValue);
-            Notifier.hide();
         }
     }
 

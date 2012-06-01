@@ -113,42 +113,27 @@ Object.defineProperty(Object.prototype, "setProperty", {
         // TODO clean up some of the duplicated code here
 
         if (lastObjectAtPath && Array.isArray(lastObjectAtPath)) {
-            if (lastObjectAtPath !== value) {
-                // if the value does not match the object described by this propertyPath; set it as the new value
 
-                if (Array.isArray(setObject)) {
-                    // If the setObject is an array itself; splice (typically called by set) to trigger bindings, do it here to save time
-                    propertyToSetOnArray = parseInt(aPropertyPath, 10);
-                    if (!isNaN(propertyToSetOnArray)) {
-                        if (setObject.length < propertyToSetOnArray) {
-                            // TODO while I could set the value here I'm setting null and letting the splice,
-                            // which we need to do anyway to trigger bindings, do the actual setting
-                            setObject[propertyToSetOnArray] = null;
-                        }
-
-                        setObject.splice(propertyToSetOnArray, 1, value);
-
-                    } else {
-                        setObject[aPropertyPath] = value;
+            if (Array.isArray(setObject)) {
+                // If the setObject is an array itself; splice (typically called by set) to trigger bindings, do it here to save time
+                propertyToSetOnArray = parseInt(aPropertyPath, 10);
+                if (!isNaN(propertyToSetOnArray)) {
+                    if (setObject.length < propertyToSetOnArray) {
+                        // TODO while I could set the value here I'm setting null and letting the splice,
+                        // which we need to do anyway to trigger bindings, do the actual setting
+                        setObject[propertyToSetOnArray] = null;
                     }
+
+                    setObject.splice(propertyToSetOnArray, 1, value);
 
                 } else {
                     setObject[aPropertyPath] = value;
                 }
 
             } else {
-                // Otherwise, they are the same object, a mutation event probably happened
-
-                // If the object at the property we're "setting" is itself an array, see if there was an event passed along
-                // as part of a change and whether we need to call the setObject's changeProperty method
-                var changeEvent = this.setProperty.changeEvent, modify;
-
-                // For these mutation/addition/removal events, use the 'modify' attribute of this property's descriptor
-                if (changeEvent && (changeEvent.currentTarget === lastObjectAtPath) &&
-                    (modify = M.Montage.getPropertyAttribute(setObject, aPropertyPath, MODIFY))) {
-                    modify.call(setObject, changeEvent.type, changeEvent.newValue, changeEvent.prevValue);
-                }
+                setObject[aPropertyPath] = value;
             }
+
         } else if (Array.isArray(setObject)) {
             // If the setObject is an array itself; splice (typically called by set) to trigger bindings, do it here to save time
             propertyToSetOnArray = parseInt(aPropertyPath, 10);
@@ -240,3 +225,17 @@ Object.getPrototypeAndDescriptorDefiningProperty = function(anObject, propertyNa
     }
 };
 
+/**
+ Removes all properties owned by this object making the object suitable for reuse
+ @function module:montage/core/core.Object.wipe
+ */
+Object.defineProperty(Object.prototype, "wipe", {
+   value: function() {
+       var keys = Object.keys(this),
+           i = keys.length;
+
+       while(i) delete this[keys[--i]];
+
+       return this;
+   }
+});

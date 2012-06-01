@@ -12,21 +12,19 @@
         <script type="text/montage-serialization">
 {
     "translateComposer1": {
-        "prototype": "montage/ui/composer/translate-composer",
+        "prototype": "ui/composer/translate-composer",
         "properties": {
             "component": {"@": "owner"},
             "axis": "horizontal",
-            "hasBouncing": false,
             "hasMomentum": false,
             "minTranslateX": 0
         },
         "bindings": {
             "maxTranslateX": {"<-": "@owner._sliderWidth"},
-            "translateX": {"<<->": "@owner._positionX"}
+            "translateX": {"<->": "@owner._positionX"}
         }
     },
     "owner": {
-        "prototype": "montage/ui/skeleton/range-input.reel",
         "properties": {
             "element": {"#": "slider"},
             "_handleEl": {"#": "slider-handle"},

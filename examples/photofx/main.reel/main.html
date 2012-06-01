@@ -18,7 +18,7 @@
                     "selectObjectsOnAddition": true
                 },
                 "bindings": {
-                    "content": {"<<->": "@owner.photos"}
+                    "content": {"<->": "@owner.photos"}
                 }
             },
             "gridMagnifier": {
@@ -90,7 +90,8 @@
             "removeSelectionCondition": {
                 "prototype": "montage/ui/condition.reel",
                 "properties": {
-                    "element": {"#": "removeSelectionCondition"}
+                    "element": {"#": "removeSelectionCondition"},
+                    "removalStrategy": "hide"
                 },
                 "bindings": {
                     "condition": {"<-": "@photoController.selectedObjects.0"}

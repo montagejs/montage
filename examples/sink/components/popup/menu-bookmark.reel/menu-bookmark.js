@@ -6,10 +6,10 @@ var Popup = require("montage/ui/popup/popup.reel").Popup;
 var ActionSheet = require("components/popup/action-sheet.reel").ActionSheet;
 
 exports.MenuBookmark = Montage.create(Component, {
-    hasTemplate: {value: true},
 
     label: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     title: {
@@ -32,9 +32,17 @@ exports.MenuBookmark = Montage.create(Component, {
         }
     },
 
-    actionSheet: {value: null},
+    actionSheet: {
+        value: null,
+        serializable: true
+    },
+
     _actionSheetPopup: {value: null},
-    btnActionSheet: {value: null},
+
+    btnActionSheet: {
+        value: null,
+        serializable: true
+    },
 
     handleAddbookmarkAction: {
         value: function(evt) {

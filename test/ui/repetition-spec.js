@@ -31,6 +31,39 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             delegate = application.delegate;
         });
 
+        it("should expect unloaded new iterations to be present during the draw", function() {
+            var list14 = querySelector(".list14").controller,
+                willDraw = list14.willDraw,
+                draw = list14.draw,
+                didThrow = false;
+
+            spyOn(list14, "willDraw").andCallFake(function() {
+                list14._iterationTemplate._deserializer._compiledDeserializationFunctionString = null;
+                list14._iterationTemplate._deserializer._areModulesLoaded = false;
+                list14._iterationTemplate._deserializer._modules = {};
+                list14.objects.push(2);
+                if (willDraw) {
+                    return willDraw.apply(this, arguments);
+                }
+            });
+
+            spyOn(list14, "draw").andCallFake(function() {
+                try {
+                    draw.apply(this, arguments);
+                } catch (ex) {
+                    didThrow = true;
+                }
+            });
+
+
+            list14.objects = [1];
+
+            testPage.waitForComponentDraw(list14);
+            runs(function() {
+                expect(didThrow).toBe(false);
+            });
+        });
+
         describe("main document template", function() {
             it("should empty inner markup and populate with the bindings value", function() {
                 runs(function() {
@@ -121,6 +154,26 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                     runs(function() {
                         lis = querySelectorAll(".list1 > li");
                         expect(lis.length).toBe(4);
+                    });
+                });
+            });
+
+            it("should change the repetition on shift and consecutive pop", function() {
+                delegate.list1Objects = [1, 2, 3];
+                testPage.waitForComponentDraw(delegate.repetition1);
+
+                runs(function() {
+                    // sanity test
+                    var lis = querySelectorAll(".list1 > li");
+                    expect(lis.length).toBe(3);
+
+                    delegate.list1Objects.unshift(0);
+                    delegate.list1Objects.pop();
+
+                    testPage.waitForComponentDraw(delegate.repetition1);
+                    runs(function() {
+                        lis = querySelectorAll(".list1 > li");
+                        expect(lis.length).toBe(3);
                     });
                 });
             });
@@ -274,7 +327,7 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
 
             it("should draw one>three iteration on the nested repetition w/ component", function() {
                 delegate.list3Objects = [[{text: "iteration 1"}, {text: "iteration 2"}, {text: "iteration 3"}]];
-                testPage.waitForComponentDraw(delegate.repetition4);
+                testPage.waitForComponentDraw(querySelector(".list3 > li > ul.list3a").controller);
 
                 runs(function() {
                     expect(querySelectorAll(".list3 > li").length).toBe(1);
@@ -630,22 +683,22 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
                 });
             });
 
-            it("should fire refresh items once if a binding to objects is in place", function() {
-                spyOn(list13, "_refreshItems").andCallThrough();
+            it("should call update items once if a binding to objects is in place", function() {
+                spyOn(list13, "_updateItems").andCallThrough();
                 testPage.window.Object.defineBinding(list13, "objects", {
                     boundObject: object,
                     boundObjectPropertyPath: "array",
                     oneway: true
                 });
 
-                expect(list13._refreshItems.callCount).toBe(1);
+                expect(list13._updateItems.callCount).toBe(1);
             });
 
-            it("should fire refresh items once if a binding to objects is removed", function() {
-                spyOn(list13, "_refreshItems").andCallThrough();
+            it("should call update items once if a binding to objects is removed", function() {
+                spyOn(list13, "_updateItems").andCallThrough();
                 testPage.window.Object.deleteBinding(list13, "objects");
                 list13.objects.push(4);
-                expect(list13._refreshItems.callCount).toBe(1);
+                expect(list13._updateItems.callCount).toBe(1);
             });
         });
     });

@@ -106,17 +106,23 @@ var request = function(uri, method, params) {
 
 exports.TokenFieldExample = Montage.create(Component, {
 
-    json: {value: null},
-    states: {value: null},
-    members: {value: null},
-    tags: {value: null},
-    info: {value: null},
+    json: {value: null, enumerable: true, serializable: true},
+    states: {value: null, enumerable: true, serializable: true},
+    members: {value: null, enumerable: true, serializable: true},
+    tags: {value: null, enumerable: true, serializable: true},
+    info: {value: null, enumerable: true, serializable: true},
+
+    logger: {
+        value: null,
+        serializable: true
+    },
 
     _cachedStates: {value: null},
 
     prepareForDraw: {
         value: function() {
             this.states = [states[0], states[3], states[5]];
+            prettyPrint();
         }
     },
 

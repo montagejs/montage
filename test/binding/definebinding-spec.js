@@ -5,7 +5,8 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
-    Deserializer = require("montage/core/deserializer").Deserializer;
+    Deserializer = require("montage/core/deserializer").Deserializer,
+    ChangeNotification = require("montage/core/change-notification").ChangeNotification;
 
 var stripPP = function stripPrettyPrintting(str) {
     return str.replace(/\n\s*/g, "");
@@ -565,23 +566,36 @@ describe("binding/definebinding-spec", function() {
     });
 
     describe("two hop binding with boolean", function() {
-        var FormatBar = Montage.create(Montage, {boldMode: {value: null}}),
-            DocumentController = Montage.create(Montage, {boldMode: {value: null}}),
-            TextItem = Montage.create(Montage, {boldMode: {value: null}}),
-            formatBar = FormatBar.create(),
-            documentController = DocumentController.create(),
+
+        var FormatBar,
+            DocumentController,
+            TextItem,
+            formatBar,
+            documentController,
+            textItem;
+
+        beforeEach(function() {
+
+            ChangeNotification.__reset__();
+
+            FormatBar = Montage.create(Montage, {boldMode: {value: null}});
+            DocumentController = Montage.create(Montage, {boldMode: {value: null}});
+            TextItem = Montage.create(Montage, {boldMode: {value: null}});
+            formatBar = FormatBar.create();
+            documentController = DocumentController.create();
             textItem = TextItem.create();
 
-        // [formatBar] <====> [DocumentController] ----> [TextItem]
-        Object.defineBinding(formatBar, "boldMode", {
-            boundObject: documentController,
-            boundObjectPropertyPath: "boldMode"
-        });
+            // [formatBar] <====> [DocumentController] ----> [TextItem]
+            Object.defineBinding(formatBar, "boldMode", {
+                boundObject: documentController,
+                boundObjectPropertyPath: "boldMode"
+            });
 
-        Object.defineBinding(textItem, "boldMode", {
-            boundObject: documentController,
-            boundObjectPropertyPath: "boldMode",
-            oneway: true
+            Object.defineBinding(textItem, "boldMode", {
+                boundObject: documentController,
+                boundObjectPropertyPath: "boldMode",
+                oneway: true
+            });
         });
 
         it("should propagate values to all parties when the change occurs on a two-way bound object", function() {
@@ -594,8 +608,9 @@ describe("binding/definebinding-spec", function() {
         it("must not propagate values to all parties when the change occurs on a one-way bound object", function() {
             // NOTE this runs this the risk of putting this object out of sync with all the other objects bound together
             textItem.boldMode = false;
-            expect(formatBar.boldMode).toBeTruthy();
-            expect(documentController.boldMode).toBeTruthy();
+
+            expect(formatBar.boldMode).toBeNull();
+            expect(documentController.boldMode).toBeNull();
             expect(textItem.boldMode).toBeFalsy();
         });
 
@@ -604,7 +619,7 @@ describe("binding/definebinding-spec", function() {
 
             expect(formatBar.boldMode).toBeTruthy();
             expect(documentController.boldMode).toBeTruthy();
-            expect(textItem.boldMode).toBeFalsy(); // This was false from the last test
+            expect(textItem.boldMode).toBeTruthy();
 
         });
     });
@@ -659,22 +674,36 @@ describe("binding/definebinding-spec", function() {
         });
 
         describe("two hop binding with string", function() {
-            var FormatBar = Montage.create(Montage, {boldMode: {value: null}}),
-                DocumentController = Montage.create(Montage, {boldMode: {value: null}}),
-                TextItem = Montage.create(Montage, {boldMode: {value: null}}),
-                formatBar = FormatBar.create(),
-                documentController = DocumentController.create(),
+
+            var FormatBar,
+                DocumentController,
+                TextItem,
+                formatBar,
+                documentController,
+                textItem;
+
+            beforeEach(function() {
+
+                ChangeNotification.__reset__();
+
+                FormatBar = Montage.create(Montage, {boldMode: {value: null}});
+                DocumentController = Montage.create(Montage, {boldMode: {value: null}});
+                TextItem = Montage.create(Montage, {boldMode: {value: null}});
+                formatBar = FormatBar.create();
+                documentController = DocumentController.create();
                 textItem = TextItem.create();
 
-            Object.defineBinding(formatBar, "boldMode", {
-                boundObject: documentController,
-                boundObjectPropertyPath: "boldMode"
-            });
+                // [formatBar] <====> [DocumentController] ----> [TextItem]
+                Object.defineBinding(formatBar, "boldMode", {
+                    boundObject: documentController,
+                    boundObjectPropertyPath: "boldMode"
+                });
 
-            Object.defineBinding(textItem, "boldMode", {
-                boundObject: documentController,
-                boundObjectPropertyPath: "boldMode",
-                oneway: true
+                Object.defineBinding(textItem, "boldMode", {
+                    boundObject: documentController,
+                    boundObjectPropertyPath: "boldMode",
+                    oneway: true
+                });
             });
 
             it("should propagate values to all parties when the change occurs on a two-way bound object", function() {
@@ -686,8 +715,8 @@ describe("binding/definebinding-spec", function() {
 
             it("must not propagate values to all parties when the change occurs on a one-way bound object", function() {
                 textItem.boldMode = "false";
-                expect(formatBar.boldMode).toEqual("true");
-                expect(documentController.boldMode).toEqual("true");
+                expect(formatBar.boldMode).toBeNull();
+                expect(documentController.boldMode).toBeNull();
                 expect(textItem.boldMode).toEqual("false");
           });
 
@@ -695,7 +724,7 @@ describe("binding/definebinding-spec", function() {
                 documentController.boldMode = "true";
                 expect(formatBar.boldMode).toEqual("true");
                 expect(documentController.boldMode).toEqual("true");
-                expect(textItem.boldMode).toEqual("false"); // This was false from the last test
+                expect(textItem.boldMode).toEqual("true");
 
           });
         });
@@ -703,6 +732,35 @@ describe("binding/definebinding-spec", function() {
     });
 
     describe("when bound to an array", function() {
+
+        it("should not go out of its way to protect you from mutations to an object on the left making their way over to the right", function() {
+
+            var sourceObject = Alpha.create(),
+            boundObject = Omega.create();
+
+            boundObject.bar = ["a", "b", "c"];
+
+            Object.defineBinding(sourceObject, "foo", {
+                boundObject: boundObject,
+                boundObjectPropertyPath: "bar",
+                oneway: true
+            });
+
+            // Ideally, this should be avoided; but the way it works is expected
+            sourceObject.foo.push("d");
+
+            expect(sourceObject.foo.length).toBe(4);
+            expect(sourceObject.foo[0]).toBe("a");
+            expect(sourceObject.foo[1]).toBe("b");
+            expect(sourceObject.foo[2]).toBe("c");
+            expect(sourceObject.foo[3]).toBe("d");
+
+            expect(boundObject.bar.length).toBe(4); // Yep, this is a little unexpected
+            expect(boundObject.bar[0]).toBe("a");
+            expect(boundObject.bar[1]).toBe("b");
+            expect(boundObject.bar[2]).toBe("c");
+            expect(boundObject.bar[3]).toBe("d"); //but it makes sense, left and right are the same array
+        });
 
         it("should propagate additions from the bound array to the source propertyPath", function() {
 
@@ -883,59 +941,6 @@ describe("binding/definebinding-spec", function() {
 
             expect(sourceObject.foo).toBeFalsy();
             expect(boundObject.bar.length).toBe(0);
-        });
-
-        describe("when modifiying content with a 'modify' property attribute set", function() {
-
-            var verification, sourceObject, boundObject;
-
-            beforeEach(function() {
-                verification = {modified: false};
-                sourceObject = Alpha.create();
-                boundObject = Omega.create();
-
-                var modifyFunction = (function(verification) {
-                    return function(type, newValue, oldValue) {
-                        verification.modified = true;
-                    }
-                })(verification);
-
-                Montage.defineProperty(sourceObject, "foo", {
-                    enumerable: false,
-                        set: function(value) {
-                            this._foo = value;
-                        },
-                        get: function() {
-                            return this._foo;
-                        },
-                        modify: modifyFunction
-                });
-            }),
-
-            it("should invoke the 'modify' property attribute function on the source object when an observed array, of a two or more component path, is mutated", function() {
-                boundObject.bar = [["a", "b"]];
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar.0"
-                });
-
-                boundObject.bar[0].pop();
-                expect(verification.modified).toBeTruthy();
-            });
-
-            it("should invoke the 'modify' property attribute function on the source object when an observed object, of a two or more component path, is mutated", function() {
-                boundObject.bar = {x: ["a", "b"]};
-
-                Object.defineBinding(sourceObject, "foo", {
-                    boundObject: boundObject,
-                    boundObjectPropertyPath: "bar.x"
-                });
-
-                boundObject.bar.x.pop();
-                expect(verification.modified).toBeTruthy();
-            });
-
         });
 
         it("should propagate a change from the bound object when the property path includes an array index and that element is removed", function() {
@@ -1262,6 +1267,25 @@ describe("binding/definebinding-spec", function() {
                     boundObject.bar.pop();
                     expect(sourceObject.foo).toBe(false);
                 });
+
+                it("should propagate a change from false to true when the array is initially null.", function() {
+                    var sourceObject = Alpha.create(),
+                    boundObject = Omega.create();
+
+                    boundObject.bar = null;
+
+                    Object.defineBinding(sourceObject, "foo", {
+                        boundObject: boundObject,
+                        boundObjectPropertyPath: "bar.any(a)",
+                        oneway: true
+                    });
+
+                    expect(sourceObject.foo).toBeFalsy();
+
+                    boundObject.bar = [{a: false}, {a: null}, {a: true}];
+
+                    expect(sourceObject.foo).toBe(true);
+                });
             });
         });
     });
@@ -1493,85 +1517,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
                         value: null
                     },
                     bindings: {
-                        value: {"<<->": "@source.value"}
-                    }
-                },
-
-                source: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    }
-                }
-            }).deserialize(function(objs) {
-                latch = true;
-                objects = objs;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
-                var root = objects.root,
-                    source = objects.source;
-
-                source.value = 15;
-                expect(root.value).toBe(15);
-                root.value = 16;
-                expect(source.value).toBe(16);
-            });
-        });
-
-        it("should deserialize a reverse oneway binding", function() {
-            var latch, objects,
-                deserializer = Deserializer.create();
-
-            deserializer._require = require;
-            deserializer.initWithObject({
-                root: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    },
-                    bindings: {
-                        value: {"->": "@source.value"}
-                    }
-                },
-
-                source: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    }
-                }
-            }).deserialize(function(objs) {
-                latch = true;
-                objects = objs;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
-                var root = objects.root,
-                    source = objects.source;
-
-                source.value = 15;
-                expect(root.value).toBeNull();
-                root.value = 16;
-                expect(source.value).toBe(16);
-            });
-        });
-
-        it("should deserialize a reverse twoway binding", function() {
-            var latch, objects,
-                deserializer = Deserializer.create();
-
-            deserializer._require = require;
-            deserializer.initWithObject({
-                root: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    },
-                    bindings: {
-                        value: {"<->>": "@source.value"}
+                        value: {"<->": "@source.value"}
                     }
                 },
 

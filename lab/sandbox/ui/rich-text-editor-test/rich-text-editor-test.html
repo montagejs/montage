@@ -37,11 +37,11 @@
                     }
                 ],
                 "bindings": {
-                    "justify": {"<<->": "@justify.contentController.selectedIndexes", "converter": {"@": "indexesConverter"}},
-                    "fontName": {"<<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
-                    "fontSize": {"<<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}},
-                    "backColor": {"<<->": "@backcolor.contentController.selectedIndexes", "converter": {"@": "backcolorConverter"}},
-                    "foreColor": {"<<->": "@forecolor.contentController.selectedIndexes", "converter": {"@": "forecolorConverter"}}
+                    "justify": {"<->": "@justify.contentController.selectedIndexes", "converter": {"@": "indexesConverter"}},
+                    "fontName": {"<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
+                    "fontSize": {"<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}},
+                    "backColor": {"<->": "@backcolor.contentController.selectedIndexes", "converter": {"@": "backcolorConverter"}},
+                    "foreColor": {"<->": "@forecolor.contentController.selectedIndexes", "converter": {"@": "forecolorConverter"}}
                 }
             },
 
@@ -51,7 +51,7 @@
                     "element": {"#": "boldToggle"}
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@editor.bold"}
+                    "pressed": {"<->": "@editor.bold"}
                 }
             },
 
@@ -61,7 +61,7 @@
                     "element": {"#": "underlineToggle" }
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@editor.underline"}
+                    "pressed": {"<->": "@editor.underline"}
                 }
             },
 
@@ -71,7 +71,7 @@
                     "element": {"#": "italicToggle" }
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@editor.italic"}
+                    "pressed": {"<->": "@editor.italic"}
                 }
             },
 
@@ -81,7 +81,7 @@
                     "element": {"#": "strikeToggle" }
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@editor.strikeThrough"}
+                    "pressed": {"<->": "@editor.strikeThrough"}
                 }
             },
 
@@ -99,7 +99,7 @@
                     "element": {"#": "subToggle" }
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@editor.baselineShift", "converter": {"@": "subscriptConverter"}}
+                    "pressed": {"<->": "@editor.baselineShift", "converter": {"@": "subscriptConverter"}}
                 }
             },
 
@@ -117,7 +117,7 @@
                     "element": {"#": "supToggle" }
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@editor.baselineShift", "converter": {"@": "superscriptConverter"}}
+                    "pressed": {"<->": "@editor.baselineShift", "converter": {"@": "superscriptConverter"}}
                 }
             },
 
@@ -165,7 +165,7 @@
                     "element": {"#": "unorderedlistToggle" }
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
+                    "pressed": {"<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
                 }
             },
 
@@ -183,7 +183,7 @@
                     "element": {"#": "orderedlistToggle" }
                 },
                 "bindings": {
-                    "pressed": {"<<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
+                    "pressed": {"<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
                 }
             },
 
@@ -191,7 +191,6 @@
                 "prototype": "montage/ui/controller/array-controller",
                 "properties": {
                     "selectObjectsOnAddition": false,
-                    "automaticallyOrganizeObjects": false,
                     "content": [
                         {"text" : "Left", "value": "left"},
                         {"text" : "Center", "value": "center"},
@@ -220,7 +219,6 @@
                 "prototype": "montage/ui/controller/array-controller",
                 "properties": {
                     "selectObjectsOnAddition": false,
-                    "automaticallyOrganizeObjects": false,
                     "content": [
                         {"text" : "Arial", "value": "Arial"},
                         {"text" : "Arial Black", "value": "Arial Black"},
@@ -255,7 +253,6 @@
                 "prototype": "montage/ui/controller/array-controller",
                 "properties": {
                     "selectObjectsOnAddition": false,
-                    "automaticallyOrganizeObjects": false,
                     "content": [
                         {"text" : "8pt", "value": "1"},
                         {"text" : "10pt", "value": "2"},
@@ -287,7 +284,6 @@
                 "prototype": "montage/ui/controller/array-controller",
                 "properties": {
                     "selectObjectsOnAddition": false,
-                    "automaticallyOrganizeObjects": false,
                     "content": [
                         {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
                         {"text" : "Black", "value": "rgb(0, 0, 0)"},
@@ -320,7 +316,6 @@
                 "prototype": "montage/ui/controller/array-controller",
                 "properties": {
                     "selectObjectsOnAddition": false,
-                    "automaticallyOrganizeObjects": false,
                     "content": [
                     {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
                     {"text" : "Black", "value": "rgb(0, 0, 0)"},
@@ -411,7 +406,7 @@
                     "element": {"#": "checkbox-readonly"}
                 },
                 "bindings": {
-                    "checked": {"<<->": "@editor.readOnly"}
+                    "checked": {"<->": "@editor.readOnly"}
                 }
             },
 

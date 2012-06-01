@@ -9,7 +9,7 @@
             "element": {"#": "celsius"}
         },
         "bindings": {
-            "value": {"<<->": "@fahrenheitTextfield.value", "converter": {"@": "converter"}}
+            "value": {"<->": "@fahrenheitTextfield.value", "converter": {"@": "converter"}}
         }
     },
 
@@ -27,7 +27,7 @@
             "element": {"#": "barometer"}
         },
         "bindings": {
-            "value": {"<<->": "@fahrenheitTextfield.value"}
+            "value": {"<->": "@fahrenheitTextfield.value"}
         }
     }
 }

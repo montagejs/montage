@@ -115,5 +115,10 @@ exports.RangeInputExample = Montage.create(Component, {
             this.blue = 0;
             this.sharpnessAmount = 0;
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

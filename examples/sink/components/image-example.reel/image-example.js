@@ -9,7 +9,8 @@ var Montage = require("montage/core/core").Montage,
 exports.ImageExample = Montage.create(Component, {
 
     images: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     selected: {
@@ -17,8 +18,13 @@ exports.ImageExample = Montage.create(Component, {
     },
 
     prepareForDraw: {
-    	value: function() {
-    		prettyPrint();
-    	}
+        value: function() {
+            prettyPrint();
+        }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

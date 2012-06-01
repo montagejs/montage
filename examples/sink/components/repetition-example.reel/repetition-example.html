@@ -26,8 +26,7 @@
                 "#": "repetition"
             },
             "isSelectionEnabled": true,
-            "contentController": {"@": "places"},
-            "orientation": "vertical"
+            "contentController": {"@": "places"}
         }
     },
 
@@ -69,8 +68,7 @@
                 "#": "table-row"
             },
             "isSelectionEnabled": false,
-            "contentController": {"@": "controller"},
-            "axis": "horizontal"
+            "contentController": {"@": "controller"}
         }
     },
 
@@ -102,7 +100,7 @@
             "element": {"#": "selection"}
         },
         "bindings": {
-            "checked": {"<<->": "@list1.selectionAtCurrentIteration"}
+            "checked": {"<->": "@list1.selectionAtCurrentIteration"}
         }
     },
 
@@ -112,7 +110,7 @@
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {"<<->": "@owner.jsonSelectedItems"}
+            "value": {"<-": "@owner.jsonSelectedItems"}
         }
     },
 
@@ -144,7 +142,7 @@
             "element": {"#": "answerSelection"}
         },
         "bindings": {
-            "checked": {"<<->": "@list2.selectionAtCurrentIteration"}
+            "checked": {"<->": "@list2.selectionAtCurrentIteration"}
         }
     },
 
@@ -164,7 +162,7 @@
             "element": {"#": "selectedAnswer"}
         },
         "bindings": {
-            "value": {"<<->": "@owner.selectedAnswer"}
+            "value": {"<->": "@owner.selectedAnswer"}
         }
     },
 
@@ -190,7 +188,6 @@
 
 
     "owner": {
-        "prototype": "components/image-example.reel",
         "properties": {
             "element": {"#": "example-root"},
             "data": [
@@ -203,8 +200,8 @@
             ]
         },
         "bindings": {
-            "selectedItems": {"<<->": "@controller.selectedObjects"},
-            "selectedAnswer": {"<<->": "@answersController.selectedObjects.0"}
+            "selectedItems": {"<->": "@controller.selectedObjects"},
+            "selectedAnswer": {"<->": "@answersController.selectedObjects.0"}
         }
     }
 
@@ -488,11 +485,10 @@
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {"&lt;&lt;-&gt;": "@owner.jsonSelectedItems"}
+            "value": {"&lt;-&gt;": "@owner.jsonSelectedItems"}
         }
     },
     "owner": {
-        "prototype": "components/image-example.reel",
         "properties": {
             "element": {"#": "example-root"},
             "data": [
@@ -520,20 +516,27 @@ var Montage = require("montage/core/core").Montage,
 exports.RepetitionExample = Montage.create(Component, {
 
    jsonSelectedItems: {
+       dependencies: ["selectedItems"],
+       get: function() {
+           return JSON.stringify(this.selectedItems||[]);
+       }
+   },
+
+   selectedItems: {
        value: null
    },
 
-   _selectedItems: {value: null},
-
-   selectedItems: {
-       get: function(){ return this._selectedItems; },
-       set: function(v) {
-
-           this._selectedItems = v;
-           this.jsonSelectedItems = JSON.stringify(this._selectedItems||[]);
-           console.log('selected items = ', v);
-       }
+   selectedAnswer: {
+       value: null
    },
+
+    prepareForDraw: {
+       value: function() {
+           // Invoke Google pretty printer on source code samples
+           prettyPrint();
+       }
+   }
+
 });
 
                        </pre>
@@ -701,7 +704,7 @@ exports.RepetitionExample = Montage.create(Component, {
 
 
         <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/repetition-example.reel" target="_blank">View source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/repetition-example.reel" target="_blank">View source on GitHub</a>
         </section>
 
 <!--

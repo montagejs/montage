@@ -246,7 +246,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 object = stack[ix-1],
                 desc = stack[ix];
 
-            this._deserializeProperties(object, desc.properties);
+            this._deserializeProperties(object, desc.properties, true);
         }
     },
 
@@ -331,9 +331,22 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
     @param {Object} object The target of the properties.
     @param {Array} properties The property names to be deserialized.
     */
-    deserializePropertiesForObject: {value: function(object, properties) {
-        for (var key in properties) {
-            object[key] = properties[key];
+    deserializePropertiesForObject: {value: function(object, properties, checkSerializableAttribute) {
+        if (checkSerializableAttribute) {
+            for (var key in properties) {
+                if (!Montage.getPropertyAttribute(object, key, "serializable")) {
+                    if (Object.getPropertyDescriptor(object, key)) {
+                        console.warn("Unserializable property \"" + key + "\" found in the serialization of " + (object._montage_metadata ? object._montage_metadata.objectName : object) + " (" + (this._origin || window.location) + ")");
+                    } else {
+                        console.warn("Nonexistent (and therefore unserializable) property \"" + key + "\" found in the serialization of " + (object._montage_metadata ? object._montage_metadata.objectName : object) + " (" + (this._origin || window.location) + ")");
+                    }
+                };
+                object[key] = properties[key];
+            }
+        } else {
+            for (var key in properties) {
+                object[key] = properties[key];
+            }
         }
     }},
 
@@ -760,7 +773,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                     desc._units = {};
                     self._customDeserialization(object, desc);
                 } else {
-                    self._deserializeProperties(object, desc.properties);
+                    self._deserializeProperties(object, desc.properties, true);
                 }
             }
 
@@ -784,7 +797,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 } else if ("@" in value) {
                     type = "reference";
                     value = value["@"];
-                } else if (typeof value["->"] === "object") {
+                } else if ("->" in value) {
                     type = "function";
                     value = value["->"];
                 } else if ("." in value && Object.keys(value).length === 1) {
@@ -1075,7 +1088,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             object;
 
         for (var label in objects) {
-            if (label in labels) {
+            if (labels[label] != null) { // we should call deserializedFromSerialization on all instantiated objects even if they were passed as null/undefined in instances.
                 continue;
             }
             object = objects[label];
@@ -1089,13 +1102,13 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
 /**
   @private
 */
-    _deserializeProperties: {value: function(object, properties) {
+    _deserializeProperties: {value: function(object, properties, checkSerializableAttribute) {
         if (object.deserializeProperties) {
             this._pushContextObject(properties);
             object.deserializeProperties(this);
             this._popContextObject();
         } else {
-            this.deserializePropertiesForObject(object, properties);
+            this.deserializePropertiesForObject(object, properties, checkSerializableAttribute);
         }
     }},
 

@@ -36,6 +36,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     mainModule: {
         enumerable: false,
+        serializable: true,
         value: "main.reel"
     },
 
@@ -44,6 +45,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     mainName: {
         enumerable: false,
+        serializable: true,
         value: "Main"
     },
 
@@ -52,6 +54,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     includeFrameworkModules: {
         enumerable: false,
+        serializable: true,
         value: false
     },
 
@@ -60,6 +63,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     minimumBootstrappingDuration: {
         enumerable: false,
+        serializable: true,
         value: 1500
     },
 
@@ -68,6 +72,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     minimumLoadingDuration: {
         enumerable: false,
+        serializable: true,
         value: 2000
     },
 
@@ -222,7 +227,10 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
                 logger.debug(this, "templateDidLoad");
             }
 
-            this.element = document.documentElement;
+            if (!this.element) {
+                this.element = document.documentElement;
+                this.attachToParentComponent();
+            }
             this.readyToShowLoader = true;
 
             var timing = document._montageTiming,
@@ -348,7 +356,8 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
     childComponentWillPrepareForDraw: {
         value: function(child) {
-            var self = this;
+            var self = this,
+                insertionElement;
 
             // if the mainComponent is ready to draw...
             if (child === this._mainComponent) {
@@ -360,11 +369,15 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
                 // Determine old content
                 this._contentToRemove = document.createRange();
-                this._contentToRemove.selectNodeContents(document.body);
+
+                // If installing classnames on the documentElement (to affect as high a level as possible)
+                // make sure content only ends up inside the body
+                insertionElement = this.element === document.documentElement ? document.body : this.element;
+                this._contentToRemove.selectNodeContents(insertionElement);
 
                 // Add new content so mainComponent can actually draw
                 this.childComponents = [this._mainComponent];
-                document.body.appendChild(this._mainComponent.element);
+                insertionElement.appendChild(this._mainComponent.element);
 
                 var startBootstrappingTimeout = document[bootstrappingTimeoutPropertyName],
                     timing = document._montageTiming,

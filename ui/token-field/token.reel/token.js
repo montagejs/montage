@@ -8,35 +8,58 @@ var Montage = require("montage").Montage,
 
 exports.Token = Montage.create(Component, {
 
-    text: {value: null},
+    _text: {
+        value: null
+    },
 
-    allowAdHocValues: {value: null},
+    text: {
+        dependencies: ["value", "textPropertyPath"],
+        get: function() {
+            var textPropertyPath,
+                value,
+                text;
+
+            if (this._text == null) {
+                this._adHoc = false;
+                textPropertyPath = this.textPropertyPath;
+                value = this.value;
+
+                if (textPropertyPath != null && value != null) {
+                    if (typeof value[textPropertyPath] === 'undefined' && this.allowAdHocValues) {
+                        this._adHoc = true;
+                        this._text = value;
+                    } else {
+                        this._text = value[textPropertyPath];
+                    }
+                } else {
+                    this._text = value;
+                }
+            }
+
+            return this._text;
+        }
+    },
+
+    allowAdHocValues: {value: null, serializable: true},
+
+    _value: {
+        value: null
+    },
 
     value: {
+        serializable: true,
         get: function() {
             return this._value;
         },
         set: function(aValue) {
-            this._adHoc = false;
-            if(aValue) {
-               this._value = aValue;
-               if(this.textPropertyPath) {
-                   if(typeof aValue[this.textPropertyPath] == 'undefined' && this.allowAdHocValues) {
-                       this.text = aValue;
-                       this._adHoc = true;
-                   } else {
-                       this.text = this.value[this.textPropertyPath];
-                   }
-               } else {
-                   this.text = this.value;
-               }
-            }
+            this._value = aValue;
+            this._text = null;
         }
     },
 
-    textPropertyPath: {value: null},
+    textPropertyPath: {value: null, serializable: true},
 
-    tokensController: {value: null},
+    tokensController: {value: null, serializable: true},
 
     // private
 
@@ -51,7 +74,7 @@ exports.Token = Montage.create(Component, {
         }
     },
 
-    _deleteEl: {value: null},
+    _deleteEl: {value: null, serializable: true},
 
     prepareForDraw: {
         value: function() {
@@ -73,7 +96,9 @@ exports.Token = Montage.create(Component, {
 
     removeSelf: {
         value: function() {
-            this.tokensController.removeObjects(this.value);
+            this.tokensController.selectedObjects = [this.value];
+            this.tokensController.removeObjectsAtSelectedIndexes();
+            this.tokensController.selectedIndexes = [];
         }
     },
 

@@ -10,7 +10,7 @@
     <script type="text/montage-serialization">{
 
             "scrollbars": {
-                "prototype": "montage/ui/scroll-bars.reel",
+                "prototype": "ui/scroll-bars.reel",
                 "properties": {
                     "element": {
                         "#": "scrollbars"
@@ -18,7 +18,7 @@
                 }
             },
             "translateComposer1": {
-                "prototype": "montage/ui/composer/translate-composer",
+                "prototype": "ui/composer/translate-composer",
                 "properties": {
                     "component": {"@": "owner"},
                     "minTranslateX": 0,
@@ -26,8 +26,8 @@
                     "invertAxis": true
                 },
                 "bindings": {
-                    "translateX": {"<<->": "@owner.scrollX"},
-                    "translateY": {"<<->": "@owner.scrollY"},
+                    "translateX": {"<->": "@owner.scrollX"},
+                    "translateY": {"<->": "@owner.scrollY"},
                     "maxTranslateX": {"<-": "@owner._maxTranslateX"},
                     "maxTranslateY": {"<-": "@owner._maxTranslateY"},
                     "axis": {"<-": "@owner.axis"},
@@ -45,7 +45,7 @@
                 ]
             },
             "slot": {
-                "prototype": "montage/ui/slot.reel",
+                "prototype": "ui/slot.reel",
                 "properties": {
                     "element": {"#": "content"}
                 },
@@ -54,7 +54,7 @@
                 }
             },
             "owner": {
-                "prototype": "montage/ui/scroller.reel",
+                "prototype": "ui/scroller.reel",
                 "properties": {
                     "_content": {
                         "#": "content"

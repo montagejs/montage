@@ -102,6 +102,20 @@ describe("serialization/serializer-spec", function() {
             expect(stripPP(serialization)).toBe('{"number":' + object.number + ',"string":"' + object.string + '","regexp":' + object.regexp + '}');
         });
 
+        it("should serialize an Object literal created in a different document", function() {
+            var iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            window.document.body.appendChild(iframe);
+
+            var object = new iframe.contentWindow.Object;
+            object.number = 42;
+            object.string = "string";
+            var serialization = serializer.serializeObject(object);
+
+            expect(stripPP(serialization)).toBe('{"root":{"value":{"number":42,"string":"string"}}}');
+
+        });
+
         it("should serialize a function", function() {
             var funktion = function square(x) {
                 return x*x;
@@ -111,6 +125,21 @@ describe("serialization/serializer-spec", function() {
             var object = JSON.parse(serialization)["->"];
 
             expect((new Function(object.arguments, object.body))(2)).toBe(4);
+        });
+
+        it("should not serialize objects with a null value", function() {
+            var object = {number: 42, nil: null};
+            var serialization = serializer.serialize(object);
+
+            expect(stripPP(serialization)).toBe('{"number":{"value":42}}');
+        });
+
+        it("should serialize objects with a null value", function() {
+            var object = {number: 42, nil: null};
+            serializer.serializeNullValues = true;
+            var serialization = serializer.serialize(object);
+
+            expect(stripPP(serialization)).toBe('{"number":{"value":42},"nil":{"value":null}}');
         });
 
         it("should serialize array with shorthand", function() {
@@ -325,7 +354,7 @@ describe("serialization/serializer-spec", function() {
                 simple.identifier = "myprop";
 
                 serialization = serializer.serializeObject(object);
-                expect(stripPP(serialization)).toBe('{"myprop":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string"}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"myprop"}}}}');
+                expect(stripPP(serialization)).toBe('{"myprop":{"prototype":"serialization/testobjects-v2[Simple]","properties":{"number":42,"string":"string","identifier":"myprop"}},"root":{"prototype":"serialization/testobjects-v2[OneProp]","properties":{"prop":{"@":"myprop"}}}}');
             });
 
             it("should not serialize an object using its identifier property as the label if it's invalid", function() {

@@ -12,15 +12,14 @@
     <script type="text/montage-serialization">
     {
         "owner": {
-            "prototype": "montage/lab/sandbox/ui/picasa-carousel.reel",
+            "prototype": "lab/sandbox/ui/picasa-carousel.reel",
             "properties": {
                 "element": {"#": "montage-google-picasa-carousel"},
                 "flow": {"@": "flow"}
             }
         },
         "searchResultsController": {
-            "module": "montage/ui/controller/array-controller",
-            "name": "ArrayController",
+            "prototype": "ui/controller/array-controller",
             "bindings": {
                 "content": {
                     "boundObject": {"@": "owner"},
@@ -29,7 +28,7 @@
             }
         },
         "image": {
-            "prototype": "montage/lab/sandbox/ui/picasa-carousel.reel/image.reel",
+            "prototype": "lab/sandbox/ui/picasa-carousel.reel/image.reel",
             "properties": {
                 "element": {"#": "image"}
             },
@@ -42,10 +41,10 @@
             }
         },
         "flow": {
-            "module": "montage/ui/flow.reel",
-            "name": "Flow",
+            "prototype": "ui/flow.reel",
             "properties": {
                 "element": {"#": "flow"},
+                "contentController": {"@": "searchResultsController"},
                 "cameraFov": 60,
                 "stride": 1,
                 "paths": [
@@ -230,13 +229,6 @@
                     }
                 ],
                 "elementsBoundingSphereRadius": 700
-            },
-            "bindings": {
-                "objects": {
-                    "boundObject": {"@": "searchResultsController"},
-                    "boundObjectPropertyPath": "content",
-                    "oneway": true
-                }
             }
         }
     }

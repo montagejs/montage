@@ -6,18 +6,13 @@
 /**
  @module montage/core/event/mutable-event
  @requires montage
- @requires montage/core/enum
  */
-var Montage = require("montage").Montage,
-    Enum = require("core/enum").Enum;
+var Montage = require("montage").Montage;
 
 // XXX Does not presently function server-side
 if (typeof window !== "undefined") {
 
-var ChangeTypes = exports.ChangeTypes = Enum.create().initWithMembers("MODIFICATION", "ADDITION", "REMOVAL");
-
 var _eventConstructorsByType = {};
-var _changeEventConstructor = null;
 var nullDescriptor = {value: null};
 
 var wrapProperty = function(obj, key) {
@@ -84,44 +79,6 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
         }
     },
 
-   /**
-    @function
-    @returns new _changeEventConstructor()
-    */
-    changeEvent: {
-        value: function() {
-            return new _changeEventConstructor();
-        }
-    },
-
-/**
-    @function
-    @param {Event} key TODO
-    @param {Event} minus TODO
-    @returns changeEvent
-    */
-    changeEventForKeyAndValue: {
-        value: function(key, minus) {
-            var changeEvent = new _changeEventConstructor();
-            changeEvent.type = "change@" + key;
-            changeEvent.minus = minus;
-            changeEvent.plus = undefined;
-            changeEvent.propertyChange = ChangeTypes.MODIFICATION;
-            return changeEvent;
-        }
-    },
-
-    /**
-      @function
-     @param {String} plus TODO
-     @returns itself
-     */
-    withPlusValue: {
-        value: function(plus) {
-            this.plus = plus;
-            return this;
-        }
-    },
 /**
   @private
 */
@@ -220,21 +177,5 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
     }
 
 });
-/**
-  @private
-*/
-_changeEventConstructor = function() {
-};
-/**
-  @private
-*/
-_changeEventConstructor.prototype = MutableEvent.create()._initPrototypeWithEvent(document.createEvent("CustomEvent").initCustomEvent("change", true, false, null));
-// TODO this shouldn't be necessary; initWithCustomEvent should be setting the type to "change" but that doesn't seem to be the case
-// TODO should file a bug on this with some test reduction
-/**
-  @private
-*/
-_changeEventConstructor.prototype.type = "change";
-exports._Change = _changeEventConstructor;
 
 } // client-side

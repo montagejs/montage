@@ -6,15 +6,12 @@
 var Montage = require("montage").Montage;var Component = require("montage/ui/component").Component;
 
 exports.TaskEntry = Montage.create(Component, {
-    hasTemplate: {value: true},
 
     _task: {
-        enumerable: false,
         value: null
     },
 
     task: {
-        enumerable: false,
         get: function() {
             return this._task;
         },
@@ -25,21 +22,21 @@ exports.TaskEntry = Montage.create(Component, {
             }
 
             if (this._task) {
-                this._task.removeEventListener("change@completed", this, false);
+                this._task.removePropertyChangeListener("completed", this, false);
             }
 
             this._task = value;
             this.needsDraw = true;
 
             if (this.task) {
-                this._task.addEventListener("change@completed", this, false);
+                this._task.addPropertyChangeListener("completed", this, false);
             }
         }
     },
 
     completedCheckbox: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     prepareForDraw: {
@@ -55,9 +52,9 @@ exports.TaskEntry = Montage.create(Component, {
         }
     },
 
-    handleEvent: {
+    handleChange: {
         value: function() {
-            this.needsDraw = true;
+             this.needsDraw = true;
         }
     },
 

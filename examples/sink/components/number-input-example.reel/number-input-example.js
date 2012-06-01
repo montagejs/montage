@@ -17,14 +17,22 @@ exports.TempConverter = Montage.create(Converter, {
     // convert fahrenheit to celsius (showing our non-metric heritage here)
     convert: {
         value: function(value) {
-            return ((parseInt(value, 10) - 32) / 1.8).toFixed(2);
+            value = parseInt(value, 10);
+            if(!isNaN(value)) {
+                return ((value - 32) / 1.8).toFixed(2);
+            }
+            return null;
         }
     },
 
     // revert celsius to fahrenheit
     revert: {
         value: function(value) {
-            return ((1.8 * parseInt(value, 10)) + 32).toFixed(2);
+            value = parseInt(value, 10);
+            if(!isNaN(value)) {
+                return ((1.8 * value) + 32).toFixed(2);
+            }
+            return null;
         }
     }
 
@@ -36,5 +44,10 @@ exports.NumberInputExample = Montage.create(Component, {
             // Invoke Google pretty printer on source code samples
             prettyPrint();
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

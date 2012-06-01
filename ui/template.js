@@ -50,6 +50,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 /**
     @private
 */
+    _require: {value: window.require},
     _externalObjects: {value: null},
     _ownerSerialization: {value: null},
     _rootUrl: {value: null},
@@ -63,7 +64,10 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     @function
     @return {module:montage/template.Template}
     */
-    initWithDocument: {value: function(doc) {
+    initWithDocument: {value: function(doc, requireFunction) {
+        if (requireFunction) {
+            this._require = requireFunction;
+        }
         this._document = doc;
 
         return this;
@@ -165,6 +169,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     initWithModuleId: {value: function(requireFunction, moduleId, callback) {
         var self = this;
 
+        this._require = requireFunction;
         this.createHtmlDocumentFromModuleId(requireFunction, moduleId, function(doc) {
             if (!doc) {
                 throw "Template '" + moduleId + "' not found.";
@@ -191,7 +196,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     */
     serializer: {
         get: function() {
-            return this._serializer || (this._serializer = Serializer.create().initWithRequire(window.require));
+            return this._serializer || (this._serializer = Serializer.create().initWithRequire(this._require));
         }
     },
 
@@ -479,7 +484,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             // reset this property in order to use it at the extended template
             owner._templateElement = null;
 
-            Template.templateWithModuleId(window.require, templateModuleId, function(template) {
+            Template.templateWithModuleId(this._require, templateModuleId, function(template) {
                 template._partiallyInstantiateWithInstancesForDocument({owner: owner}, ownerTemplateDocument, function(objects) {
                     importNodes(owner._templateElement, element, ownerTemplateElement);
                     if (!self._isExpanded) {
@@ -602,7 +607,8 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         for (var i = 0, cssTag; (cssTag = cssTags[i]); i++) {
             if ((url = cssTag.getAttribute("href"))) {
                 if (! /^https?:\/\/|^\//.test(url)) { // TODO: look into base links...
-                    url = rootUrl + url;
+                    cssTag.href = rootUrl + url;
+                    url = cssTag.href;
                 }
 
                 if (url in fromLinks) {
@@ -617,7 +623,9 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                 var style = doc.importNode(cssTag,false);
                 style.href = url;
                 container.insertBefore(style, container.firstChild);
-                container.insertBefore(doc.createComment("Inserted from " + this._id), container.firstChild);
+                if (logger.isDebug) {
+                    container.insertBefore(doc.createComment("Inserted from " + this._id), container.firstChild);
+                }
 
                 var loadHandler = function(event) {
                     if (++self._stylesLoadedCount === self._expectedStylesLoadedCount) {
@@ -653,7 +661,9 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
             } else {
                 container.insertBefore(doc.importNode(cssTag, true), container.firstChild);
-                container.insertBefore(doc.createComment("Inserted from " + this._id), container.firstChild);
+                if (logger.isDebug) {
+                    container.insertBefore(doc.createComment("Inserted from " + this._id), container.firstChild);
+                }
             }
         }
 
@@ -711,12 +721,16 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
             scriptNode = doc.importNode(script, true);
             if (src) {
                 if (! /^https?:\/\/|^\//.test(src)) { // TODO: look into base links...
-                    scriptNode.src = src = rootUrl + src;
+                    scriptNode.src = rootUrl + src;
+                    // scriptNode.src = scriptNode.src is used to normalize the src attribute
+                    src = (scriptNode.src = scriptNode.src);
                 }
                 if (src in externalScriptsLoaded) continue;
                 externalScriptsLoaded[src] = true;
             }
-            container.appendChild(doc.createComment("Inserted from " + this._id));
+            if (logger.isDebug) {
+                container.appendChild(doc.createComment("Inserted from " + this._id));
+            }
             container.appendChild(scriptNode);
         }
 
@@ -912,7 +926,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     */
     _createDeserializer: {value: function(serialization) {
         var rootUrl = this._rootUrl ? this._rootUrl.input : window.location.href;
-        return this._deserializer = Deserializer.create().initWithStringAndRequire(this._ownerSerialization = serialization, window.require, rootUrl);
+        return this._deserializer = Deserializer.create().initWithStringAndRequire(this._ownerSerialization = serialization, this._require, rootUrl);
     }},
 
     /**

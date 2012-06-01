@@ -42,27 +42,25 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
         value: false
     },
 
-/**
-    The "typed" data value associated with the input element. When this property is set, if the component's <code>converter</code> property is non-null then its <code>revert()</code> method is invoked, passing it the newly assigned value. The <code>revert()</code> function is responsible for validating and converting the user-supplied value to its typed format. For example, in the case of a DateInput component (which extends TextInput) a user enters a string for the date (for example, "10-12-2005"). A <code>DateConverter</code> object is assigned to the component's <code>converter</code> property.
+    /**
+        The "typed" data value associated with the input element. When this property is set, if the component's <code>converter</code> property is non-null then its <code>revert()</code> method is invoked, passing it the newly assigned value. The <code>revert()</code> function is responsible for validating and converting the user-supplied value to its typed format. For example, in the case of a DateInput component (which extends TextInput) a user enters a string for the date (for example, "10-12-2005"). A <code>DateConverter</code> object is assigned to the component's <code>converter</code> property.
 
-    If the comopnent doesn't specify a converter object then the raw value is assigned to <code>value</code>.
+        If the comopnent doesn't specify a converter object then the raw value is assigned to <code>value</code>.
 
-    @type {string}
-    @default null
-*/
-value: {
-    enumerable: true,
-    serializable: true,
-    get: function() {
-        return this._value;
-    },
-    set: function(value, fromInput) {
+        @type {string}
+        @default null
+    */
+        value: {
+        get: function() {
+            return this._value;
+        },
+        set: function(value, fromInput) {
 
-        if(value !== this._value) {
-            if(this.converter) {
-                var convertedValue;
-                try {
-                    convertedValue = this.converter.revert(value);
+            if(value !== this._value) {
+                if(this.converter) {
+                    var convertedValue;
+                    try {
+                        convertedValue = this.converter.revert(value);
                         if (this.error) {
                             this.error = null;
                         }
@@ -86,7 +84,8 @@ value: {
                     this.needsDraw = true;
                 }
             }
-        }
+        },
+        serializable: true
     },
 
     // set value from user input
@@ -107,7 +106,8 @@ value: {
     @see {@link module:montage/core/converter.Converter}
 */
     converter:{
-        value: null
+        value: null,
+        serializable: true
     },
 
     _error: {
@@ -162,7 +162,8 @@ value: {
         },
         set: function(v) {
             this._updateOnInput = v;
-        }
+        },
+        serializable: true
     },
 
     // HTMLInputElement methods

@@ -89,7 +89,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         value: function(objects) {
             var serialization,
                 valueSerialization,
-                label;
+                label,
+                serializeNullValues = this.serializeNullValues;
 
             this._serializedObjects = {};
             this._serializedReferences = {};
@@ -100,14 +101,18 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             this._objectReferences = {};
 
             for (label in objects) {
-                this._objectLabels[objects[label].uuid] = label;
+                if (objects[label] != null) {
+                    this._objectLabels[objects[label].uuid] = label;
+                }
             }
 
             for (label in objects) {
-                valueSerialization = this._serializeValue(objects[label], null, 2);
-                // objects are automatically inserted as top level objects after calling _serializeValue, but native objects have to be manually inserted them.
-                if (!(label in this._serializedObjects)) {
-                    this._serializedObjects[label] = {value: valueSerialization};
+                if (objects[label] != null || serializeNullValues) {
+                    valueSerialization = this._serializeValue(objects[label], null, 2);
+                    // objects are automatically inserted as top level objects after calling _serializeValue, but native objects have to be manually inserted them.
+                    if (!(label in this._serializedObjects)) {
+                        this._serializedObjects[label] = {value: valueSerialization};
+                    }
                 }
             }
 
@@ -524,10 +529,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                     return this._serializeElement(value);
                 } else if (Array.isArray(value)) {
                     return this._serializeArray(value, indent + 1);
-                } else if (Object.getPrototypeOf(value) === Object.prototype) {
-                    return this._serializeObjectLiteral(value, null, indent + 1);
                 } else if (value.constructor === Function) {
                     return this._serializeFunction(value, indent);
+                } else if (!("getInfoForObject" in value)) { // we consider object literals the ones who aren't a Montage object
+                    return this._serializeObjectLiteral(value, null, indent + 1);
                 } else {
                     // TODO: should refactor this to handle references here, doesn't make
                     //       sense to wait until it hits _serializeObject for that to happen

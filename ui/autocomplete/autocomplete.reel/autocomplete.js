@@ -70,7 +70,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
     _delay: {value: null},
     delay: {
-        distinct: true,
         get: function(){
             return this._delay;
         },
@@ -81,7 +80,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 }
                 this._delay = value;
             }
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -89,7 +89,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     * Default = 2
     */
     minLength: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     _tokens: {value: null},
@@ -104,8 +105,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         },
         modify: function(v) {
             this._tokens = v;
-        },
-        distinct: true
+        }
     },
 
     // overridden here to get the substring/searchString
@@ -241,7 +241,6 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
     _suggestedValue: {value: null},
     suggestedValue: {
-        distinct: true,
         enumerable: false,
         get: function() {
             return this._suggestedValue;
@@ -443,7 +442,10 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
             fn.call(this);
 
             if (!this._valueSyncedWithInputField) {
-                this.value = this.tokens ? this.tokens.join(this.separator) : '';
+
+                if(this.tokens) {
+                    this.value = this.tokens.join(this.separator);
+                }
                 if(this.value && this.value.charAt(this.value.length-1) != this.separator) {
                     this.value += this.separator;
                 }

@@ -9,22 +9,30 @@ var Component = require("montage/ui/component").Component;
 exports.SearchPanel = Montage.create(Component, {
 
     photoListController: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     queryParameter: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     resultCount: {
-        enumerable: false,
-        value: 20
+        value: 20,
+        serializable: true
+    },
+    searchForm: {
+        value: null,
+        serializable: true
+    },
+
+    searchResultsList: {
+        value: null,
+        serializable: true
     },
 
     prepareForDraw: {
-        enumerable: false,
         value: function() {
             this.searchForm.identifier = "searchForm";
             this.searchForm.addEventListener("submit", this, false);
@@ -32,12 +40,10 @@ exports.SearchPanel = Montage.create(Component, {
     },
 
     _isSearching: {
-        value: false,
-        enumerable: false
+        value: false
     },
 
     isSearching: {
-        enumerable: false,
         get: function() {
             return this._isSearching;
         },
@@ -48,7 +54,8 @@ exports.SearchPanel = Montage.create(Component, {
 
             this._isSearching = value;
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     handleSearchFormSubmit: {
@@ -98,8 +105,8 @@ exports.SearchPanel = Montage.create(Component, {
     },
 
     searchResults: {
-        enumerable: false,
-        value: null
+        value: null,
+        serializable: true
     },
 
     draw: {

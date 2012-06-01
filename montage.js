@@ -108,8 +108,8 @@ if (typeof window !== "undefined") {
 
                 if ('autoPackage' in params) {
                     montageRequire.injectPackageDescription(location, {
-                        mappings: {
-                            montage: "@"
+                        dependencies: {
+                            montage: "*"
                         }
                     });
                 }
@@ -149,7 +149,7 @@ if (typeof window !== "undefined") {
                     // avoid attempting to initialize a non-object
                     if (!(object instanceof Object)) {
                     // avoid attempting to reinitialize an aliased property
-                    } else if (object.hasOwnProperty("_montage_metadata")) {
+                    } else if (object.hasOwnProperty("_montage_metadata") && !object._montage_metadata.isInstance) {
                         object._montage_metadata.aliases.push(name);
                         object._montage_metadata.objectName = name;
                     } else if (!Object.isSealed(object)) {
@@ -237,11 +237,18 @@ if (typeof window !== "undefined") {
     };
 
     var urlModuleFactory = function (require, exports) {
-        var baseElement = document.createElement("base");
-        baseElement.href = "";
-        document.querySelector("head").appendChild(baseElement);
+        var baseElement = document.querySelector("base");
+        var existingBaseElement = baseElement;
+        if (!existingBaseElement) {
+            baseElement = document.createElement("base");
+            baseElement.href = "";
+        }
+        var head = document.querySelector("head");
         var relativeElement = document.createElement("a");
         exports.resolve = function (base, relative) {
+            if (!existingBaseElement) {
+                head.appendChild(baseElement);
+            }
             base = String(base);
             if (!/^[\w\-]+:/.test(base)) { // isAbsolute(base)
                 throw new Error("Can't resolve from a relative location: " + JSON.stringify(base) + " " + JSON.stringify(relative));
@@ -251,6 +258,9 @@ if (typeof window !== "undefined") {
             relativeElement.href = relative;
             var resolved = relativeElement.href;
             baseElement.href = restore;
+            if (!existingBaseElement) {
+                head.removeChild(baseElement);
+            }
             return resolved;
         };
     };

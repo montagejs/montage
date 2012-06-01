@@ -79,6 +79,7 @@ var ChangeNotification = exports.ChangeNotification = Object.create(Montage, {
 
                     functionName = "handle" + identifier + (beforeChange ? "WillChange" : "Change");
                     if (typeof listener[functionName] === "function") {
+                        functionDescriptor.listenerFunctionName = functionName;
                         functionDescriptor.listenerFunction = listener[functionName];
                         functionDescriptor.listenerTarget = listener;
                     }
@@ -87,6 +88,7 @@ var ChangeNotification = exports.ChangeNotification = Object.create(Montage, {
                 if (!functionDescriptor.listenerFunction) {
                     functionName = "handle" + (beforeChange ? "WillChange" : "Change");
                     if (typeof listener[functionName] === "function") {
+                        functionDescriptor.listenerFunctionName = functionName;
                         functionDescriptor.listenerFunction = listener[functionName];
                         functionDescriptor.listenerTarget = listener;
                     }
@@ -185,7 +187,7 @@ var ChangeNotification = exports.ChangeNotification = Object.create(Montage, {
     }
 });
 
-var ChangeNotificationDescriptor = Object.create(Object.prototype, {
+var ChangeNotificationDescriptor = Montage.create(Montage, {
     target: {value: null},
     propertyPath: {value: null},
     willChangeListeners: {value: null},
@@ -203,6 +205,7 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
     dependentDescriptorsIndex: {value: null},
     mutationDependencyIndex: {value: null},
     mutationListenersCount: {value: 0},
+    observedDependentProperties: {value: null},
 
     initWithTargetPath: {
         value: function(target, path) {
@@ -214,7 +217,8 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
     },
     registerListener: {
         value: function(listener, beforeChange, mutation) {
-            var listenerKey = listener.uuid;
+            var listenerKey = listener.uuid,
+                listeners;
 
             if (beforeChange) {
                 listeners = this.willChangeListeners;
@@ -245,7 +249,8 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
     },
     unregisterListener: {
         value: function(listener, beforeChange) {
-            var listenerKey = listener.uuid;
+            var listenerKey = listener.uuid,
+                listeners;
 
             if (beforeChange) {
                 listeners = this.willChangeListeners;
@@ -513,7 +518,7 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                     }
                 } while (targetIx != -1);
                 if (targetIx == -1) {
-                    throw "getProperty target not found in dependencies";
+                    throw "getProperty target (" + this.target.uuid + ":" + propertyName + ") not found in dependencies for " + this.propertyPath;
                 }
 
                 delete dependencyDescriptor.dependentDescriptorsIndex[this.uuid];
@@ -531,7 +536,14 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
             var listener,
                 dependentDescriptorsIndex = this.dependentDescriptorsIndex,
                 dependenciesIndex = notification._dependenciesIndex,
-                isMutationNotification;
+                isMutationNotification,
+                uuid = this.uuid;
+
+            // we need to stop circular property dependencies.
+            // e.g.: object.foo depends on object.bar and object.bar depends on object.foo.
+            if (notification[uuid]) {
+                return;
+            }
 
             // TODO: maybe I should replicate this
             if (arguments.length < 2) {
@@ -561,7 +573,9 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
                         if (dependentDescriptorsIndex) {
                             notification._dependenciesIndex = dependentDescriptorsIndex[key];
                         }
+                        notification[uuid] = true;
                         listener.listenerFunction.call(listener.listenerTarget, notification);
+                        notification[uuid] = false;
                     }
                 }
                 notification._dependenciesIndex = dependenciesIndex;
@@ -573,6 +587,7 @@ var ChangeNotificationDescriptor = Object.create(Object.prototype, {
 var ChangeNotificationFunctionDescriptor = Object.create(null, {
     listenerTarget: {writable: true, value: null},
     listenerFunction: {writable: true, value: null},
+    listenerFunctionName: {writable: true, value: null},
     listensToMutation: {writable: true, value: false}
 });
 
@@ -627,6 +642,7 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
                     notification;
 
                 if (!descriptor) {
+                    this[prefixedPropertyName] = value;
                     return;
                 }
 
@@ -677,12 +693,14 @@ var ObjectPropertyChangeDispatcherManager = Object.create(null, {
                     notification;
 
                 if (!descriptor) {
+                    originalSetter.apply(this, arguments);
                     return;
                 }
 
                 previousValue = this[propertyName];
                 if (previousValue === value) {
-                    // Nothing to do here
+                    originalSetter.apply(this, arguments);
+                    // Nothing more to do here
                     return;
                 }
 
@@ -752,12 +770,13 @@ Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
         for (i = 0; i < callbackArgumentIndex; i++) {
             iProperty = arguments[i];
             descriptor = ChangeNotification.getPropertyChangeDescriptor(this, iProperty);
-            if (descriptor) {
+            if (descriptor && !descriptor.isActive) {
                 notification = Object.create(PropertyChangeNotification);
                 observedProperties.push(iProperty, descriptor, notification);
 
                 notification.target = this;
-                notification.minus = this[iProperty];
+                notification.minus = this.getProperty(iProperty);
+                descriptor.isActive = true;
                 descriptor.handleWillChange(notification);
             }
         }
@@ -769,8 +788,9 @@ Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
             descriptor = observedProperties[i+1];
             notification = observedProperties[i+2];
 
-            notification.plus = this[iProperty];
+            notification.plus = this.getProperty(iProperty);
             descriptor.handleChange(notification);
+            descriptor.isActive = false;
         }
 
     }
@@ -814,9 +834,19 @@ Object.defineProperty(Object.prototype, "addPropertyChangeListener", {
             // TODO should adding a dispatcher on a dependent property also be subjected to checking for
             // automaticDispatchPropertyChangeListener, probably
             if (dependentPropertyPaths) {
-                for (i = 0; (iPath = dependentPropertyPaths[i]); i++) {
-                        descriptor.addDependency(this, iPath, false, true);
 
+                if (!descriptor.observedDependentProperties) {
+                    descriptor.observedDependentProperties = {};
+                }
+
+                for (i = 0; (iPath = dependentPropertyPaths[i]); i++) {
+
+                    if (!descriptor.observedDependentProperties[iPath]) {
+                        descriptor.observedDependentProperties[iPath] = true;
+
+                        this.addPropertyChangeListener(iPath, descriptor, beforeChange, false);
+                        descriptor.registerDependency(this, iPath, null);
+                    }
                 }
             }
         }
@@ -857,16 +887,16 @@ var PrefixedPropertyDescriptor = {
     configurable: true
 };
 
-var PropertyChangeNotification = Object.create(null, {
-    phase: {writable: true, value: null},
-    target: {writable: true, value: null},
-    propertyPath: {writable: true, value: null},
-    minus: {writable: true, value: null},
-    plus: {writable: true, value: null},
-    currentTarget: {writable: true, value: null},
-    currentPropertyPath: {writable: true, value: null},
-    isMutation: {writable: true, value: false}
-});
+var PropertyChangeNotification = exports.PropertyChangeNotification = {
+    phase: null,
+    target: null,
+    propertyPath: null,
+    minus: null,
+    plus: null,
+    currentTarget: null,
+    currentPropertyPath: null,
+    isMutation: false
+};
 
 var ChangeNotificationDispatchingArray = exports.ChangeNotificationDispatchingArray = [];
 var _index_array_regexp = /^[0-9]+$/;
@@ -874,13 +904,15 @@ var _unobservable_array_property_regexp = /^length$/;
 Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
     value: function(path, listener, beforeChange, ignoreMutation) {
         var listenChange, listenIndexChange, listenFunctionChange,
-            descriptor;
+            descriptor,
+            dotIndex;
 
         if (!listener) {
             return;
         }
 
-        if (path == null || path.indexOf(".") == -1) {
+        if (path == null || (dotIndex = path.indexOf(".")) == -1) {
+
 
             if (_unobservable_array_property_regexp.test(path)) {
                 return;
@@ -905,6 +937,12 @@ Object.defineProperty(Array.prototype, "addPropertyChangeListener", {
             }
         } else {
             Object.prototype.addPropertyChangeListener.apply(this, arguments);
+            // We need to do this because the Object.prototype.addPropertyChangeListener doesn't create dependencies
+            // for no-dot paths, but in array array.path will have dependencies when path is not an index or null.
+            if (dotIndex == -1) {
+                descriptor = ChangeNotification.getPropertyChangeDescriptor(this, path);
+                descriptor.setupDependencies(this, path, beforeChange, !ignoreMutation);
+            }
         }
     }
 });
@@ -914,6 +952,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayChangeN
     configurable: false,
     value: function(methodName, methodArguments, index, howManyToRemove, newValues) {
         var descriptor = ChangeNotification.getPropertyChangeDescriptor(this, null),
+            result,
             notification,
             indexNotification = Object.create(PropertyChangeNotification),
             delta,
@@ -935,6 +974,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "_dispatchArrayChangeN
             notification = Object.create(PropertyChangeNotification);
             notification.target = this;
             notification.minus = oldValues;
+            notification.plus = newValues;
             notification.index = index;
             notification.isMutation = true;
             // dispatch mutation notification
@@ -1230,6 +1270,7 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "sort", {
             indexNotification,
             oldValue,
             newValue,
+            indexArray,
             _sortIndexArray,
             _sortIndexArrayLength;
 
@@ -1308,3 +1349,112 @@ Object.defineProperty(ChangeNotificationDispatchingArray, "sort", {
         }
     }
 });
+
+Object.defineProperty(ChangeNotificationDispatchingArray, "_wipe", {
+    enumerable: false,
+    configurable: true,
+    value: Array.prototype.wipe
+});
+
+/**
+ Removes all members of this array making the object suitable for reuse
+ @function module:montage/core/core.Array.wipe
+ */
+Object.defineProperty(ChangeNotificationDispatchingArray, "wipe", {
+    enumerable: false,
+    configurable: true,
+    value: function() {
+        this._dispatchArrayChangeNotification("_wipe", arguments, this.length, 0, Array.prototype.slice.call(arguments, 0));
+        return this;
+    }
+});
+
+if (typeof define === "function") {
+// ugly code is ugly
+Object.defineProperty(Object.prototype, "__debugChangeNotifications__", {
+    enumerable: false,
+    configurable: false,
+    value: function() {
+        var registry = ChangeNotification._descriptorsRegistry[this.uuid],
+            path,
+            log = [];
+
+        if (registry) {
+            for (path in registry) {
+                log.push('"'+path+'"', registry[path]);
+
+                var dependencies = registry[path].dependencies;
+                if (dependencies) {
+                    log.push("\n\tlistens to ");
+                    for (var i = 0; i < dependencies.length; i += 3) {
+                        if (dependencies[i+1] == null) {
+                            log.push("mutation @", dependencies[i]);
+                        } else {
+                            log.push("\"" + dependencies[i+1] + "\" @", dependencies[i]);
+                        }
+                        log.push("\n\t           ");
+                    }
+                    log.pop();
+                }
+
+                var changeListeners = registry[path].changeListeners;
+                var bindings = [];
+                for (var key in changeListeners) {
+                    var listenerTarget = changeListeners[key].listenerTarget;
+                    var listenerFunctionName = changeListeners[key].listenerFunctionName;
+                    var info = Montage.getInfoForObject(listenerTarget);
+                    if (info.objectName === "PropertyChangeBindingListener") {
+                        if (listenerTarget.bindingOrigin === this && listenerTarget.bindingPropertyPath === path) {
+                            bindings.push("\"" + listenerTarget.targetPropertyPath + "\" @ " + (Montage.getInfoForObject(listenerTarget.target).objectName || "<object>") + "(", listenerTarget.target, ")");
+                        } else {
+                            bindings.push("\"" + listenerTarget.bindingPropertyPath + "\" @ " + (Montage.getInfoForObject(listenerTarget.bindingOrigin).objectName || "<object>") + "(", listenerTarget.bindingOrigin, ")");
+                        }
+
+                        bindings.push("\n\t            ");
+                    }
+                }
+
+                var listeners = [];
+                (function gatherListeners(descriptor, withBindings) {
+                    var changeListeners = descriptor.changeListeners;
+                    for (var key in changeListeners) {
+                        var listenerTarget = changeListeners[key].listenerTarget,
+                            listenerFunctionName = changeListeners[key].listenerFunctionName,
+                            info = Montage.getInfoForObject(listenerTarget);
+
+                        if (info.objectName !== "PropertyChangeBindingListener") {
+                            if (descriptor.dependentDescriptorsIndex && key in descriptor.dependentDescriptorsIndex) {
+                                listeners.push('"'+listenerTarget.propertyPath + "\" (", listenerTarget ,")", "-> ");
+
+                            } else {
+                                listeners.push(listenerFunctionName ? listenerFunctionName : "<function>", "@ " + info.objectName + " (", listenerTarget, ")");
+                            }
+                            gatherListeners(listenerTarget, true);
+                            listeners.push("\n\t               ");
+                        } else if (withBindings) {
+                            listeners.push("\"" + listenerTarget.bindingPropertyPath + "\" @ " + Montage.getInfoForObject(listenerTarget.bindingOrigin).objectName + "(", listenerTarget.bindingOrigin, ")");
+                        }
+                    }
+                })(registry[path]);
+
+                if (listeners.length > 0) {
+                    listeners.pop();
+                    log.push("\n\tis listened by ");
+                    log.push.apply(log, listeners);
+                }
+                if (bindings.length > 0) {
+                    bindings.pop();
+                    log.push("\n\tis bound to ");
+                    log.push.apply(log, bindings);
+                }
+
+                log.push("\n\n");
+            }
+
+            console.log.apply(console, log);
+        } else {
+            console.log("No change listeners installed.");
+        }
+    }
+});
+}

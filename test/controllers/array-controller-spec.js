@@ -53,6 +53,10 @@ describe("controllers/array-controller-spec.js", function() {
             expect(arrayController.content).toBe(content);
         });
 
+        it("should initialize content", function() {
+            arrayController.addObjects("Foo");
+            expect(arrayController.content).toEqual(["Foo"]);
+        });
     });
 
     describe("when used in bindings", function() {
@@ -189,13 +193,28 @@ describe("controllers/array-controller-spec.js", function() {
                 expect(arrayController.content.length).toBe(0);
             });
 
-            it("should provide a way to remove selected objects from the managed collection", function() {
+            it("should provide a way to remove selected objects from the managed collection", function() {;
                 arrayController.selectedContentIndexes = [0,1];
                 arrayController.remove();
 
                 expect(arrayController.content.length).toBe(0);
-                expect(arrayController.selectedObjects).toBe(null);
-                expect(arrayController.selectedContentIndexes).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
+                expect(arrayController.selectedContentIndexes.length).toBe(0);
+            });
+
+            it("should remove objects at the selected indices", function() {
+                arrayController.selectedIndexes = [1];
+                arrayController.removeObjectsAtSelectedIndexes();
+
+                expect(arrayController.content.length).toBe(1);
+                expect(arrayController.content.indexOf(bob)).toBe(-1);
+            });
+
+            it("should remove objects at the specified indices", function() {
+                arrayController.removeObjectsAtIndexes([0,1]);
+                expect(arrayController.content.length).toBe(0);
+                expect(arrayController.content.indexOf(bob)).toBe(-1);
+                expect(arrayController.content.indexOf(alice)).toBe(-1);
             });
 
         });
@@ -250,14 +269,14 @@ describe("controllers/array-controller-spec.js", function() {
 
             it("should allow removing a selection by passing a falsy value other than zero as a selection content index", function() {
                 arrayController.selectedContentIndexes = null;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 arrayController.selectedContentIndexes = false;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 var notDefined;
                 arrayController.selectedContentIndexes = notDefined;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 arrayController.selectedContentIndexes = [0];
                 expect(arrayController.selectedObjects.length).toBe(1);
@@ -266,14 +285,14 @@ describe("controllers/array-controller-spec.js", function() {
 
             it("should allow removing a selection by passing a falsy value other than zero as a selection index", function() {
                 arrayController.selectedIndexes = null;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 arrayController.selectedIndexes = false;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 var notDefined;
                 arrayController.selectedIndexes = notDefined;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 arrayController.selectedIndexes = [0];
                 expect(arrayController.selectedObjects.length).toBe(1);
@@ -330,7 +349,7 @@ describe("controllers/array-controller-spec.js", function() {
 
             //TODO not sure if we care to select new objects we may find out about via bindings to the content or anything
 
-        })
+        });
 
 
     });
@@ -465,6 +484,14 @@ describe("controllers/array-controller-spec.js", function() {
         });
 
         describe("when not automatically organizing objects", function() {
+
+            beforeEach(function() {
+                arrayController.automaticallyOrganizeObjects = false;
+            });
+
+            afterEach(function() {
+                arrayController.automaticallyOrganizeObjects = true;
+            });
 
             it("should not organize objects when the sort function is set", function() {
                 arrayController.sortFunction = sortByHome;
@@ -614,7 +641,7 @@ describe("controllers/array-controller-spec.js", function() {
 
                 it("should select the indexes for objects that were found", function() {
                     arrayController.selectedObjects = [david, frank];
-                    expect(arrayController.selectedIndexes).toEqual([3,5])
+                    expect(arrayController.selectedIndexes).toEqual([3,5]);
                     expect(arrayController.selectedContentIndexes).toEqual([3,5]);
                 });
 
@@ -634,7 +661,7 @@ describe("controllers/array-controller-spec.js", function() {
 
                 it("should select the indexes for objects that were found", function() {
                     arrayController.selectedObjects = [david, frank];
-                    expect(arrayController.selectedIndexes).toEqual([1,2])
+                    expect(arrayController.selectedIndexes).toEqual([1,2]);
                     expect(arrayController.selectedContentIndexes).toEqual([3,5]);
                 });
 
@@ -699,36 +726,19 @@ describe("controllers/array-controller-spec.js", function() {
             arrayController.filterFunction = filterNewEnglandOnly;
 
             var changeHandler = {
-                handleEvent: function(event) {
+                handleChange: function(event) {
                     expect(event.plus.length).toBe(2);
                     expect(event.plus[0]).toBe(alice);
                     expect(event.plus[1]).toBe(frank);
                 }
             };
-            spyOn(changeHandler, "handleEvent").andCallThrough();
+            spyOn(changeHandler, "handleChange").andCallThrough();
 
-            arrayController.addPropertyChangeListener("organizedObjects", changeHandler, true);
-
-            arrayController.organizeObjects();
-
-            expect(changeHandler.handleEvent).toHaveBeenCalled();
-
-        });
-
-        it("should dispatch a change event for which the prevValue is always separate from newValue", function() {
-
-            var changeHandler = {
-                handleEvent: function(event) {
-                    expect(event.minus).not.toBe(event.plus);
-                }
-            };
-            spyOn(changeHandler, "handleEvent").andCallThrough();
-
-            arrayController.addPropertyChangeListener("organizedObjects", changeHandler, true);
+            arrayController.addPropertyChangeListener("organizedObjects", changeHandler);
 
             arrayController.organizeObjects();
 
-            expect(changeHandler.handleEvent).toHaveBeenCalled();
+            expect(changeHandler.handleChange).toHaveBeenCalled();
 
         });
 

@@ -21,6 +21,7 @@ var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     PROTO = "__proto__",
     VALUE = "value",
     ENUMERABLE = "enumerable",
+    DISTINCT = "distinct",
     SERIALIZABLE = "serializable",
     MODIFY = "modify";
 
@@ -63,10 +64,6 @@ Object.defineProperty(Montage, "create", {
 
             var newObject = Object.create(typeof aPrototype === "undefined" ? this : aPrototype);
 
-            if (newObject._dependenciesForProperty) {
-                newObject._dependencyListeners = {};
-            }
-
             if (typeof newObject.didCreate === "function") {
                 newObject.didCreate();
             }
@@ -80,36 +77,7 @@ Object.defineProperty(Montage, "create", {
     }
 });
 
-/**
-     Removes all properties owned by this object making the object suitable for reuse
-     @function module:montage/core/core.Object.wipe
-     */
-Object.defineProperty(Object.prototype, "wipe", {
-   value: function() {
-       var keys = Object.keys(this),
-           keyCount = keys.length,
-           i;
-
-       for (i = 0; i < keyCount; i++) {
-           delete this[keys[i]];
-       }
-
-       return this;
-   }
-});
-
-/**
-     Removes all members of this array making the object suitable for reuse
-     @function module:montage/core/core.Array.wipe
-     */
-Object.defineProperty(Array.prototype, "wipe", {
-   value: function() {
-       this.length = 0;
-       return this;
-   }
-});
-
-var extendedPropertyAttributes = [SERIALIZABLE, MODIFY];
+var extendedPropertyAttributes = [SERIALIZABLE];
 
 // Extended property attributes, the property name format is "_" + attributeName + "AttributeProperties"
 /**
@@ -141,13 +109,21 @@ extendedPropertyAttributes.forEach(function(name) {
 Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
-        var dependencies = descriptor.dependencies;
+
+        var dependencies = descriptor.dependencies,
+            isValueDescriptor = (VALUE in descriptor);
+
+        if (DISTINCT in descriptor && !isValueDescriptor) {
+            throw ("Cannot use distinct attribute on non-value property '" + prop + "'");
+        }
+
+
         //reset defaults appropriately for framework.
         if (PROTO in descriptor) {
-            descriptor.__proto__ = (VALUE in descriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
+            descriptor.__proto__ = (isValueDescriptor ? (typeof descriptor.value === "function" ? _defaultFunctionValueProperty : _defaultObjectValueProperty) : _defaultAccessorProperty);
         } else {
             var defaults;
-            if (VALUE in descriptor) {
+            if (isValueDescriptor) {
                 if (typeof descriptor.value === "function") {
                     defaults = _defaultFunctionValueProperty;
                 } else {
@@ -182,13 +158,9 @@ Object.defineProperty(Montage, "defineProperty", {
             getAttributeProperties(obj, SERIALIZABLE)[prop] = descriptor.serializable;
         }
 
-        if (MODIFY in descriptor) {
-            getAttributeProperties(obj, MODIFY)[prop] = descriptor.modify;
-        }
-
         //this is added to enable value properties with [] or Objects that are new for every instance
         if (descriptor.distinct === true && typeof descriptor.value === "object") {
-            (function(internalProperty, value) {
+            (function(prop,internalProperty, value, obj) {
                 Object.defineProperty(obj, internalProperty, {
                     enumerable: false,
                     configurable: true,
@@ -299,7 +271,7 @@ Object.defineProperty(Montage, "defineProperty", {
                         }
                     });
                 }
-            })(UNDERSCORE + prop, descriptor.value);
+            })(prop, UNDERSCORE + prop, descriptor.value, obj);
 
         } else {
             return Object.defineProperty(obj, prop, descriptor);
@@ -485,7 +457,7 @@ Montage.defineProperty(Montage, "getInfoForObject", {
         var metadata;
         var instanceMetadataDescriptor;
 
-        if (object.hasOwnProperty("_montage_metadata")) {
+        if (hasOwnProperty.call(object, "_montage_metadata")) {
             return object._montage_metadata;
         } else {
             metadata = object._montage_metadata || (object.constructor && object.constructor._montage_metadata) || null;
@@ -545,6 +517,8 @@ Object.defineProperty(Montage, "__OBJECT_COUNT", {
 
 var UUID = require("core/uuid");
 
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+
 var uuidGetGenerator = function() {
 
     var uuid = UUID.generate(),
@@ -590,7 +564,7 @@ var uuidGetGenerator = function() {
 };
 
 var defaultUuidGet = function defaultUuidGet() {
-    return (this.hasOwnProperty("_uuid") ? this._uuid : uuidGetGenerator.call(this));
+    return (hasOwnProperty.call(this, "_uuid") ? this._uuid : uuidGetGenerator.call(this));
 };
 
 /**
@@ -614,6 +588,11 @@ Object.defineProperty(Object.prototype, "uuid", {
     }
 });
 
+Montage.defineProperty(Montage, "identifier", {
+    value: null,
+    serializable: true
+});
+
 /**
      Returns true if two objects are equal, otherwise returns false.
      @function module:montage/core/core.Montage#equals
@@ -625,6 +604,8 @@ Object.defineProperty(Montage, "equals", {
         return this === anObject || this.uuid === anObject.uuid;
     }
 });
+
+
 
 /*
  * If it exists this method calls the method named with the identifier prefix.

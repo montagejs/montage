@@ -4,6 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage;
+var ChangeNotification = require("montage/core/change-notification").ChangeNotification;
 
 var Person = Montage.create(Montage, {
 
@@ -138,6 +139,8 @@ describe("binding/dependent-properties-spec", function() {
         var person;
 
         beforeEach(function() {
+            ChangeNotification.__reset__();
+
             person = Person.create();
         });
 
@@ -164,6 +167,33 @@ describe("binding/dependent-properties-spec", function() {
 
                 person.children.pop();
                 expect(personInformation.count).toBe(1);
+            });
+
+            it("should be dependent on newly added members to an array that is along a dependent property path", function() {
+                var personInformation = {};
+
+                var baby = Person.create(),
+                    baby2 = Person.create();
+
+                baby.atHome = true;
+
+                // childrenAtHome depends upon "children.atHome"
+                person.addPropertyChangeListener("childrenAtHome.count()", function(change) {
+                    personInformation.count = person.getProperty("childrenAtHome.count()");
+                })
+
+                person.children.push(baby);
+                expect(personInformation.count).toBe(1);
+
+                person.children.push(baby2);
+                expect(personInformation.count).toBe(1);
+
+                baby2.atHome = true;
+                expect(personInformation.count).toBe(2);
+
+            });
+
+            it("TODO must no longer be dependent on removed members of an array that is along a dependent property path", function() {
             });
 
         });
@@ -485,30 +515,27 @@ describe("binding/dependent-properties-spec", function() {
                     });
 
                     var personObserver = {
-                        handleEvent: function(evt) {}
+                        handleChange: function(evt) {}
                     }
 
                     var childObserver = {
-                        handleEvent: function() {}
+                        handleChange: function() {}
                     }
 
-                    spyOn(personObserver, "handleEvent").andCallThrough();
-                    spyOn(childObserver, "handleEvent");
+                    spyOn(personObserver, "handleChange").andCallThrough();
+                    spyOn(childObserver, "handleChange");
 
                     person.addPropertyChangeListener("name", personObserver, false);
                     child.addPropertyChangeListener("name", childObserver, false);
 
-                    window.hey = true;
                     child.firstName = "Robert";
 
                     // Parent should be unaffected by the dependency;
-                    // It was given the chance to handle the change@name that bubbled up from the child
-                    // It must not use the dependency listener for firstName
-                    expect(personObserver.handleEvent.callCount).toBe(1);
+                    expect(personObserver.handleChange.callCount).toBe(0);
                     expect(personInformation.name).toBe("Alice Allman");
                     expect(person.name).toBe("Alice Allman");
 
-                    expect(childObserver.handleEvent).toHaveBeenCalled();
+                    expect(childObserver.handleChange).toHaveBeenCalled();
                     expect(childInformation.name).toBe("Robert Baggins");
                     expect(child.name).toBe("Robert Baggins");
 
@@ -519,5 +546,70 @@ describe("binding/dependent-properties-spec", function() {
         });
 
     });
+
+    describe("an object with a circular dependency", function() {
+
+        var Example, example;
+
+        Example = Montage.create(Montage, {
+
+            _foo: {
+                value: "foo"
+            },
+
+            foo: {
+                dependencies: ["baz"],
+                get: function() {
+                    return "foo (" + this._foo + ") reports baz: " + this._baz;
+                },
+                set: function(value) {
+                    this._foo = value;
+                }
+            },
+
+            _bar: {
+                value: "bar"
+            },
+
+            bar: {
+                dependencies: ["foo"],
+                get: function() {
+                    return "bar (" + this._bar + ") reports foo: " + this._foo;
+                },
+                set: function(value) {
+                    this._bar = value;
+                }
+
+            },
+
+            _baz: {
+                value: "baz"
+            },
+
+            baz: {
+                dependencies: ["bar"],
+                get: function() {
+                    return "baz (" + this._baz + ") reports bar: " + this._bar;
+                },
+                set: function(value) {
+                    this._baz = value;
+                }
+            }
+
+        });
+
+        beforeEach(function() {
+            example = Example.create();
+        });
+
+        it("should allow installing listeners on properties involved in the cycle without looping infinitely", function() {
+            expect(function() {
+                example.addPropertyChangeListener("foo", function() {});
+                example.addPropertyChangeListener("bar", function() {});
+                example.addPropertyChangeListener("baz", function() {});
+            }).not.toThrow();
+        });
+
+    })
 
 });

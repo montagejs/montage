@@ -34,13 +34,16 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         ]
     },
 
+    _WHEEL_POINTER: {
+        value: "wheel",
+        writable: false
+    },
+
     _externalUpdate: {
-        enumerable: false,
         value: true
     },
 
     isAnimating: {
-        enumerable: false,
         value: false
     },
 
@@ -54,7 +57,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _pointerSpeedMultiplier: {
-        enumerable: false,
         value: 1
     },
 
@@ -69,7 +71,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             this._pointerSpeedMultiplier = value;
-        }
+        },
+        serializable: true
     },
 
     pointerStartEventPosition: {
@@ -105,11 +108,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this.translateX = this._translateX;
                 this.translateY = this._translateY;
             }
-        }
+        },
+        serializable: true
     },
 
     _translateX: {
-        enumerable: false,
         value: 0
     },
     /**
@@ -140,11 +143,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._translateX = tmp;
             }
-        }
+        },
+        serializable: true
     },
 
     _translateY: {
-        enumerable: false,
         value: 0
     },
     /**
@@ -175,11 +178,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._translateY = tmp;
             }
-        }
+        },
+        serializable: true
     },
 
     _minTranslateX: {
-        enumerable: false,
         value: null
     },
     /**
@@ -203,10 +206,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._minTranslateX = value;
             }
-        }
+        },
+        serializable: true
     },
     _maxTranslateX: {
-        enumerable: false,
         value: null
     },
     /**
@@ -230,11 +233,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._maxTranslateX = value;
             }
-        }
+        },
+        serializable: true
     },
 
     _minTranslateY: {
-        enumerable: false,
         value: null
     },
     /**
@@ -258,10 +261,10 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._minTranslateY = value;
             }
-        }
+        },
+        serializable: true
     },
     _maxTranslateY: {
-        enumerable: false,
         value: null
     },
     /**
@@ -285,11 +288,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._maxTranslateY = value;
             }
-        }
+        },
+        serializable: true
     },
 
     _axis: {
-        enumerable: false,
         value: "both"
     },
     /**
@@ -315,7 +318,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this._axis = "both";
                 break;
             }
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -337,11 +341,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         set: function(value) {
             this.invertXAxis = value;
             this.invertYAxis = value;
-        }
+        },
+        serializable: true
     },
     _invertXAxis: {
-        value: false,
-        enumerable: false
+        value: false
     },
     /**
         Invert direction of translation along the X axis.
@@ -356,11 +360,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             this._invertXAxis = !!value;
-        }
+        },
+        serializable: true
     },
     _invertYAxis: {
-        value: false,
-        enumerable: false
+        value: false
     },
     /**
         Invert direction of translation along the Y axis.
@@ -375,7 +379,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             this._invertYAxis = !!value;
-        }
+        },
+        serializable: true
     },
 
     /**
@@ -385,15 +390,16 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         @default 500
     */
     startTranslateSpeed: {
-        value: 500
+        value: 500,
+        serializable: true
     },
 
     startTranslateRadius: {
-        value: 8
+        value: 8,
+        serializable: true
     },
 
     _hasMomentum: {
-        enumerable: false,
         value: true
     },
 
@@ -408,11 +414,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             this._hasMomentum = value ? true : false;
-        }
+        },
+        serializable: true
     },
 
     __momentumDuration: {
-        enumerable: false,
         value: 650
     },
 
@@ -425,32 +431,26 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             if (this.__momentumDuration < 1) {
                 this.__momentumDuration = 1;
             }
-        },
-        enumerable: false
+        }
     },
 
     _pointerX: {
-        enumerable: false,
         value: null
     },
 
     _pointerY: {
-        enumerable: false,
         value: null
     },
 
     _touchIdentifier: {
-        enumerable: false,
         value: null
     },
 
     _isFirstMove: {
-        enumerable: false,
         value: false
     },
 
     _start: {
-        enumerable: false,
         value: function(x, y, target) {
             this.pointerStartEventPosition = {
                 pageX: x,
@@ -472,7 +472,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _observedPointer: {
-        enumerable: false,
         value: null
     },
 
@@ -489,7 +488,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     captureMousedown: {
-        enumerable: false,
         value: function(event) {
             if (event.button !== 0) {
                 return;
@@ -515,9 +513,8 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     @private
     */
     handleMousedown: {
-        enumerable: false,
         value: function(event) {
-            if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer, this)) {
+            if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer)) {
                 this.eventManager.claimPointer(this._observedPointer, this);
                 this._start(event.clientX, event.clientY, event.target);
             }
@@ -526,7 +523,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     captureMousemove: {
-        enumerable: false,
         value: function(event) {
 
             if (this.eventManager.isPointerClaimedByComponent(this._observedPointer, this)) {
@@ -546,7 +542,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     captureMouseup: {
-        enumerable: false,
         value: function(event) {
             this._end(event);
         }
@@ -571,7 +566,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     captureTouchstart: {
-        enumerable: false,
         value: function(event) {
             if (this._shouldPreventDefault(event)) {
                 event.preventDefault();
@@ -606,7 +600,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     captureTouchmove: {
-        enumerable: false,
         value: function(event) {
 
             var i = 0, len = event.changedTouches.length;
@@ -627,7 +620,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     captureTouchend: {
-        enumerable: false,
         value: function(event) {
             var i = 0, len = event.changedTouches.length;
             while (i < len && !this.eventManager.isPointerClaimedByComponent(event.changedTouches[i].identifier, this)) {
@@ -704,35 +696,44 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _translateEndTimeout: {
-        enumerable: false,
         value: null
     },
 
+    captureMousewheel: {
+        value: function(event) {
+            if (!this.eventManager.componentClaimingPointer(this._WHEEL_POINTER)) {
+                this.eventManager.claimPointer(this._WHEEL_POINTER, this.component);
+            }
+        }
+    },
+
     handleMousewheel: {
-        enumerable: false,
         value: function(event) {
             var self = this;
 
-            var oldTranslateY = this._translateY;
-            this._dispatchTranslateStart();
-            this.translateY = this._translateY - ((event.wheelDeltaY * 20) / 120);
-            this._dispatchTranslate();
-            window.clearTimeout(this._translateEndTimeout);
-            this._translateEndTimeout = window.setTimeout(function() {
-                self._dispatchTranslateEnd();
-            }, 400);
+            // If this composers' component is claiming the "wheel" pointer then handle the event
+            if (this.eventManager.isPointerClaimedByComponent(this._WHEEL_POINTER, this.component)) {
+                var oldTranslateY = this._translateY;
+                this._dispatchTranslateStart();
+                this.translateY = this._translateY - ((event.wheelDeltaY * 20) / 120);
+                this._dispatchTranslate();
+                window.clearTimeout(this._translateEndTimeout);
+                this._translateEndTimeout = window.setTimeout(function() {
+                    self._dispatchTranslateEnd();
+                }, 400);
 
-            // If we're not at one of the extremes (i.e. the scroll actully
-            // changed the translate) then we want to preventDefault to stop
-            // the page scrolling.
-            if (oldTranslateY !== this._translateY) {
-                event.preventDefault();
+                // If we're not at one of the extremes (i.e. the scroll actually
+                // changed the translate) then we want to preventDefault to stop
+                // the page scrolling.
+                if (oldTranslateY !== this._translateY && this._shouldPreventDefault(event)) {
+                    event.preventDefault();
+                }
+                this.eventManager.forfeitPointer(this._WHEEL_POINTER, this.component);
             }
         }
     },
 
     _move: {
-        enumerable: false,
         value: function(x, y) {
             var pointerDelta;
 
@@ -762,7 +763,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _bezierTValue: {
-        enumerable: false,
         value: function(x, p1x, p1y, p2x, p2y) {
             var a = 1 - 3 * p2x + 3 * p1x,
                 b = 3 * p2x - 6 * p1x,
@@ -783,7 +783,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _dispatchTranslateStart: {
-        enumerable: false,
         value: function(x, y) {
             var translateStartEvent = document.createEvent("CustomEvent");
 
@@ -795,7 +794,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _dispatchTranslateEnd: {
-        enumerable: false,
         value: function() {
             var translateEndEvent = document.createEvent("CustomEvent");
 
@@ -807,7 +805,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _dispatchTranslate: {
-        enumerable: false,
         value: function() {
             var translateEvent = document.createEvent("CustomEvent");
             translateEvent.initCustomEvent("translate", true, true, null);
@@ -831,15 +828,18 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     endY: {value: null, enumerable: false},
 
     translateStrideX: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     translateStrideY: {
-        value: null
+        value: null,
+        serializable: true
     },
 
     translateStrideDuration: {
-        value: 330
+        value: 330,
+        serializable: true
     },
 
     _animationInterval: {
@@ -893,13 +893,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
             } else {
                 this._dispatchTranslateEnd();
             }
-        },
-        enumerable: false
+        }
     },
 
 
     _end: {
-        enumerable: false,
         value: function (event) {
 
             this.startTime=Date.now();
@@ -958,6 +956,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this._element.addEventListener("mousedown", this, true);
                 this._element.addEventListener("mousedown", this, false);
                 this._element.addEventListener("mousewheel", this, false);
+                this._element.addEventListener("mousewheel", this, true);
             }
 
             this.eventManager.isStoringPointerEvents = true;

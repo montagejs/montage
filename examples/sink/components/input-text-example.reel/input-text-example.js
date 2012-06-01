@@ -65,5 +65,10 @@ exports.InputTextExample = Montage.create(Component, {
         value: function(event) {
             this.phoneReadOnly = false;
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

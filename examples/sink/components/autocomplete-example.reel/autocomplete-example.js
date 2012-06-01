@@ -177,6 +177,7 @@ exports.AutocompleteExample = Montage.create(Component, {
     prepareForDraw: {
         value: function() {
             this.states = "California";
+            prettyPrint();
         }
     },
 
@@ -190,5 +191,10 @@ exports.AutocompleteExample = Montage.create(Component, {
                 members: this.members
             });
         }
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });

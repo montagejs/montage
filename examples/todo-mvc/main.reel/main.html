@@ -18,7 +18,7 @@
 
                 },
                 "bindings": {
-                    "content": {"<<->": "@owner.tasks"}
+                    "content": {"<->": "@owner.tasks"}
                 }
             },
             "taskNoteField": {
@@ -37,7 +37,7 @@
                     }
                 },
                 "bindings": {
-                    "task": {"<<->": "@taskRepetition.objectAtCurrentIteration"}
+                    "task": {"<-": "@taskRepetition.objectAtCurrentIteration"}
                 }
             },
             "taskRepetition": {
@@ -96,7 +96,7 @@
                     "element": {"#": "markAllCompleteButton"}
                 },
                 "bindings": {
-                    "value": {"<-": "@owner.unfinishedTasks", "converter": {"@": "markAllReadValueConverter"}}
+                    "label": {"<-": "@owner.unfinishedTasks", "converter": {"@": "markAllReadValueConverter"}}
                 }
             },
 

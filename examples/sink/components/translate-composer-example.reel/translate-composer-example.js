@@ -52,5 +52,20 @@ exports.TranslateComposerExample = Montage.create(Component, {
         value: function(event) {
             console.log(event.type);
         }
+    },
+
+    translate_composer: {
+        value: null,
+        serializable: true
+    },
+
+    example: {
+        value: null,
+        serializable: true
+    },
+
+    logger: {
+        value: null,
+        serializable: true
     }
 });
