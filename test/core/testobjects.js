@@ -15,6 +15,11 @@ var Proto = exports.Proto = Montage.create(Montage, {
     prototypeUuid: {value: "b"}
 }, module);
 
+var FunkyProto = exports.FunkyProto = Montage.create(Montage, {
+    firstUuid: {value: null},
+});
+Montage.getInfoForObject(FunkyProto);
+
 var SubProto = exports.SubProto = Montage.create(Proto, {
     subProto: {value: null},
     prototypeUuid: {value: "c"}
