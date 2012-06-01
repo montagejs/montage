@@ -1337,13 +1337,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         file = item.getAsFile();
 
                         response = true;
+                        delegateMethod = thisRef._delegateMethod("shouldPasteFile");
 
                         if (window.FileReader) {
                             reader = new FileReader();
                             reader.onload = function() {
                                 data = reader.result;
 
-                                thisRef._delegateMethod("shouldPasteFile");
                                 if (delegateMethod) {
                                     response = delegateMethod.call(thisRef.delegate, thisRef, file, data);
                                 }
