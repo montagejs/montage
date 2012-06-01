@@ -13,7 +13,8 @@ var Montage = require("montage").Montage,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
     RichTextLinkPopup = require("../overlays/rich-text-linkpopup.reel").RichTextLinkPopup,
     RichTextResizer = require("../overlays/rich-text-resizer.reel").RichTextResizer,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager,
+    ChangeNotification = require("core/change-notification").ChangeNotification,
+    PropertyChangeNotification = require("core/change-notification").PropertyChangeNotification,
     defaultUndoManager = require("core/undo-manager").defaultUndoManager;
 
 /**
@@ -436,6 +437,19 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     */
     _foreColor: { value: "" },
 
+    _dispatchFakePropertyChange: {
+        value: function(descriptor, propertyName, minus, plus) {
+            if (descriptor && minus !== plus) {
+                var notification = Object.create(PropertyChangeNotification);
+
+                notification.target = this;
+                notification.propertyPath = propertyName;
+                notification.minus = minus;
+                notification.plus = plus;
+                descriptor.handleChange(notification);
+            }
+        }
+    },
 
     /**
       Description TODO
@@ -463,6 +477,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 state,
                 prevState,
                 method,
+                descriptor,
                 i;
 
             if (this._innerElement == document.activeElement) {
@@ -477,12 +492,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         continue;
                     }
 
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@" + propertyName, this)) {
+                    descriptor = ChangeNotification.getPropertyChangeDescriptor(this, propertyName);
+                    if (descriptor) {
                         prevState = this["_" + propertyName];
                         state = method.call(this, propertyName, commandName);
                         if (state !== prevState) {
                             this["_" + propertyName] = state;
-                            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue(propertyName , prevState).withPlusValue(state));
+                            this._dispatchFakePropertyChange(descriptor, propertyName, prevState, state);
                         }
                     }
                 }
@@ -543,6 +559,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 content,
                 contentChanged,
                 prevValue,
+                descriptor,
                 i;
 
             if (this._needsAssingValue || this._needsAssignOriginalContent) {
@@ -566,11 +583,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     if (this._value && !this._dirtyValue) {
                         editorInnerElement.innerHTML = this._value;
                         // Since this property affects the textValue, we need to fire a change event for it as well
-                        if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
+                        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "textValue");
+                        if (descriptor) {
                             prevValue = this._textValue;
-                            if (this.textValue !== prevValue) {
-                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(this.textValue));
-                            }
+                            this._dispatchFakePropertyChange(descriptor, "textValue", prevValue, this.textValue);
                         }
                     } else if (this._textValue && !this._dirtyTextValue) {
                         if (editorInnerElement.innerText) {
@@ -579,11 +595,10 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                             editorInnerElement.textContent = this._textValue;
                         }
                         // Since this property affects the value, we need to fire a change event for it as well
-                        if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
+                        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "value");
+                        if (descriptor) {
                             prevValue = this._value;
-                            if (this.value !== prevValue) {
-                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(this.value));
-                            }
+                            this._dispatchFakePropertyChange(descriptor, "value", prevValue, this.value);
                         }
                     }
                 } else if (this._needsAssignOriginalContent) {
@@ -599,17 +614,15 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         }
                     }
                     if (contentChanged) {
-                        if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", this)) {
+                        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "value");
+                        if (descriptor) {
                             prevValue = this._value;
-                            if (this.value !== prevValue) {
-                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(this.value));
-                            }
+                            this._dispatchFakePropertyChange(descriptor, "value", prevValue, this.value)
                         }
-                        if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", this)) {
+                        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "textValue");
+                        if (descriptor) {
                             prevValue = this._textValue;
-                            if (this.textValue !== prevValue) {
-                                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(this.textValue));
-                            }
+                            this._dispatchFakePropertyChange(descriptor, "textValue", prevValue, this.textValue)
                         }
 
                         // Clear the cached value in order to force an editorChange event

@@ -13,8 +13,7 @@
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+    ChangeNotification = require("core/change-notification").ChangeNotification;
 
 /**
     @classdesc The RichTextEditor component is a lightweight Montage component that provides basic HTML editing capability. It wraps the HTML5 <code>contentEditable</code> property and largely relies on the browser's support of <code><a href="http://www.quirksmode.org/dom/execCommand.html" target="_blank">execCommand</a></code>.
@@ -641,28 +640,29 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     markDirty: {
         enumerable: false,
         value: function() {
-            var thisRef = this,
-                prevValue;
-                var updateValues = function() {
-                    clearTimeout(thisRef._forceUpdateValuesTimeout);
-                    delete thisRef._forceUpdateValuesTimeout;
-                    clearTimeout(thisRef._updateValuesTimeout);
-                    delete thisRef._updateValuesTimeout;
+            var thisRef = this;
 
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", thisRef)) {
-                        prevValue = thisRef._value;
-                        if (thisRef.value !== prevValue) {
-                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(thisRef.value));
-                        }
-                    }
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", thisRef)) {
-                        prevValue = thisRef._textValue;
-                        if (thisRef.textValue !== prevValue) {
-                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(thisRef.textValue));
-                        }
-                    }
-                    thisRef._dispatchEditorEvent("editorChange");
-                };
+            var updateValues = function() {
+                var prevValue,
+                    descriptor;
+
+                clearTimeout(thisRef._forceUpdateValuesTimeout);
+                delete thisRef._forceUpdateValuesTimeout;
+                clearTimeout(thisRef._updateValuesTimeout);
+                delete thisRef._updateValuesTimeout;
+
+                descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "value");
+                if (descriptor) {
+                    prevValue = thisRef._value;
+                    thisRef._dispatchFakePropertyChange(descriptor, "value", prevValue, thisRef.value);
+                }
+                descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "textValue");
+                if (descriptor) {
+                    prevValue = thisRef._textValue;
+                    thisRef._dispatchFakePropertyChange(descriptor, "value", prevValue, thisRef.textValue);
+                }
+                thisRef._dispatchEditorEvent("editorChange");
+            };
 
             if (!this._needsAssingValue) {
                 // Clear the cached value
