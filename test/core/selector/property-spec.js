@@ -246,10 +246,6 @@ describe('core/selector/property-spec', function () {
                 expectEvaluation('a.b', {a: {b: 10}}).toEqual(10);
             });
 
-            it('handles null properties', function () {
-                expectEvaluation('a.b', {a: 10}).toEqual(undefined);
-            });
-
         });
 
         describe('indicies', function() {

@@ -109,7 +109,20 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
         }
     },
 
+    memo: {
+        value: {}
+    },
+
     parse: {
+        value: function (string) {
+            if (!Object.owns(this.memo, string)) {
+                this.memo[string] = this.memoizedParse(string);
+            }
+            return this.memo[string]
+        }
+    },
+
+    memoizedParse: {
         value: function (string) {
             var self = this;
             var syntax;
@@ -316,6 +329,9 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                 this.reemit(syntax.args[1], emit);
                 emit(tokens.end);
             } else {
+                if (!(syntax.type in tokens)) {
+                    throw new Error("No such syntax type: " + syntax.type);
+                }
                 emit(tokens.begin);
                 this.reemit(syntax.args[0], emit);
                 emit(tokens[syntax.type]);

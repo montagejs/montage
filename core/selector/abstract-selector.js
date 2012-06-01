@@ -28,7 +28,16 @@ function makeSelector(language) {
     var extraTokenEmitterNames = Object.keys(tokenEmitterProperties);
 
     // Proxied properties of the underlying selector
-    ['tokens', 'evaluate', 'compile', 'parser', 'syntax']
+    [
+        'tokens',
+        'evaluate',
+        'compile',
+        'observe',
+        'compileObserver',
+        'parser',
+        'syntax',
+        'representation'
+    ]
     .forEach(function (name) {
         tokenEmitterProperties[name] = {get: function () {
             return this.selector[name];
@@ -155,33 +164,50 @@ var selectorProperties = {
         }
     },
 
+    representation: {
+        value: function () {
+            if (!this.parser) {
+                return 'Selector.value';
+            } else {
+                return this.parser.representation();
+            }
+        }
+    },
+
     compile: {
-        value: function (parameters) {
+        value: function () {
             if (!this.parser) {
                 return function (value) {
                     return value;
                 };
             } else {
-                return this.language.semantics.compile(
-                    this.syntax,
-                    parameters
-                );
+                return this.language.semantics.compile(this.syntax);
             }
         }
     },
 
     evaluate: {
-        value: function (value, parameters, visitor) {
+        value: function (value, parameters) {
+            return this.compile()(value, parameters);
+        }
+    },
+
+    compileObserver: {
+        value: function () {
             if (!this.parser) {
-                return value;
+                return function (value, parameters, callback) {
+                    callback(value);
+                    return function () {};
+                };
             } else {
-                return this.language.semantics.evaluate(
-                    this.syntax,
-                    value,
-                    parameters,
-                    visitor
-                );
+                return this.language.observerSemantics.compile(this.syntax);
             }
+        }
+    },
+
+    observe: {
+        value: function (value, parameters, callback, errback) {
+            return this.compileObserver()(value, parameters, callback, errback);
         }
     }
 

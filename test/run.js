@@ -44,6 +44,11 @@ if (spec) {
         "core/next-tick-spec",
         "core/selector-spec",
 
+        "core/extras/array",
+        "core/extras/function",
+        "core/extras/object",
+        "core/extras/string",
+
         "data/blueprint-spec",
         "data/context-spec",
         "data/store-spec",

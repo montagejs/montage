@@ -42,7 +42,7 @@
 */
 
  /**
-  * This {@code WeakMap} emulation is observably equivalent to the
+  * This <code>WeakMap</code> emulation is observably equivalent to the
  * ES-Harmony WeakMap, but with leakier garbage collection properties.
  *
  * As with true WeakMaps, in this emulation, a key does not

@@ -28,7 +28,7 @@ var Parser = exports.Parser = Montage.create(Montage, {
                 return this;
             } catch (exception) {
                 if (exception instanceof SyntaxError) {
-                    throw new SyntaxError(exception.message + ' at ' + this.format());
+                    throw new SyntaxError(exception.message + ' at ' + this.representation());
                 } else {
                     throw exception;
                 }
@@ -47,7 +47,7 @@ var Parser = exports.Parser = Montage.create(Montage, {
         serializable: true
     },
 
-    format: {
+    representation: {
         value: function () {
             return this.tokens.reduce(function (hither, token) {
                 if (token.type === 'literal') {

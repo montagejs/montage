@@ -7,12 +7,17 @@
 var Montage = require("montage").Montage;
 var AbstractLanguage = require("./abstract-language").AbstractLanguage;
 var Semantics = require("./semantics").Semantics;
+var ObserverSemantics = require("./observer-semantics").ObserverSemantics;
 var PropertyLanguage = require("./property-language").PropertyLanguage;
 
 var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
 
     semantics: {
         value: Semantics
+    },
+
+    observerSemantics: {
+        value: ObserverSemantics
     },
 
     grammar: {
@@ -24,8 +29,9 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                 return parseExpression(callback);
             });
 
+            // scalar
             this.parseProperties();
-            this.parseLeftToRight(['startsWith', 'endsWith']);
+            this.parseLeftToRight(['startsWith', 'endsWith', 'contains']);
             this.parseLeftToRight(['pow']);
             this.parseLeftToRight(['mul', 'div', 'mod']);
             this.parseLeftToRight(['add', 'sub']);
@@ -37,14 +43,15 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             this.parseConditional();
             var parseScalar = this.precedence();
 
+            // linear
             this.parseArray();
-            this.parseRightToLeft(['has', 'contains', 'every', 'some', 'one', 'only', 'filter', 'map', 'it']);
+            this.parseLeftToRight(['has', 'every', 'some', 'one', 'only', 'filter', 'map', 'it']);
             this.parseSorted(parseScalar);
             this.parseSlice(parseScalar);
-            this.parseRightToLeft(['sum', 'count', 'average', 'unique', 'flatten']);
+            this.parseLeftToRight(['sum', 'count', 'average', 'unique', 'flatten', 'any', 'all']);
             var parseExpression = this.precedence();
 
-            // TODO median, mode, flatten, any, all
+            // TODO median, mode
 
             // extra
 
@@ -69,6 +76,15 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             'true': true,
             'false': false
         }
+    },
+
+    selectorForwardsToSemantics: {
+        value: [
+            "compile",
+            "evaluate",
+            "compileObserver",
+            "observe"
+        ]
     },
 
     selectorExtras: {
