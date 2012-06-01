@@ -9,7 +9,6 @@
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
     RichTextLinkPopup = require("../overlays/rich-text-linkpopup.reel").RichTextLinkPopup,
     RichTextResizer = require("../overlays/rich-text-resizer.reel").RichTextResizer,
@@ -437,16 +436,21 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     */
     _foreColor: { value: "" },
 
-    _dispatchFakePropertyChange: {
-        value: function(descriptor, propertyName, minus, plus) {
-            if (descriptor && minus !== plus) {
-                var notification = Object.create(PropertyChangeNotification);
+    _dispatchPropertyChange: {
+        value: function(descriptor, previousValue, newValue) {
+            var notification;
+
+            if (descriptor && !descriptor.isActive && previousValue !== newValue) {
+                notification = Object.create(PropertyChangeNotification);
 
                 notification.target = this;
-                notification.propertyPath = propertyName;
-                notification.minus = minus;
-                notification.plus = plus;
+                notification.minus = previousValue;
+                descriptor.isActive = true;
+                descriptor.handleWillChange(notification);
+
+                notification.plus = newValue;
                 descriptor.handleChange(notification);
+                descriptor.isActive = false;
             }
         }
     },
@@ -498,7 +502,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         state = method.call(this, propertyName, commandName);
                         if (state !== prevState) {
                             this["_" + propertyName] = state;
-                            this._dispatchFakePropertyChange(descriptor, propertyName, prevState, state);
+                            this._dispatchPropertyChange(descriptor, prevState, state);
                         }
                     }
                 }
@@ -586,7 +590,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "textValue");
                         if (descriptor) {
                             prevValue = this._textValue;
-                            this._dispatchFakePropertyChange(descriptor, "textValue", prevValue, this.textValue);
+                            this._dispatchPropertyChange(descriptor, prevValue, this.textValue);
                         }
                     } else if (this._textValue && !this._dirtyTextValue) {
                         if (editorInnerElement.innerText) {
@@ -598,7 +602,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "value");
                         if (descriptor) {
                             prevValue = this._value;
-                            this._dispatchFakePropertyChange(descriptor, "value", prevValue, this.value);
+                            this._dispatchPropertyChange(descriptor, prevValue, this.value);
                         }
                     }
                 } else if (this._needsAssignOriginalContent) {
@@ -617,12 +621,12 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "value");
                         if (descriptor) {
                             prevValue = this._value;
-                            this._dispatchFakePropertyChange(descriptor, "value", prevValue, this.value)
+                            this._dispatchPropertyChange(descriptor, prevValue, this.value)
                         }
                         descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "textValue");
                         if (descriptor) {
                             prevValue = this._textValue;
-                            this._dispatchFakePropertyChange(descriptor, "textValue", prevValue, this.textValue)
+                            this._dispatchPropertyChange(descriptor, prevValue, this.textValue)
                         }
 
                         // Clear the cached value in order to force an editorChange event
@@ -772,12 +776,14 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 savedRange,
                 timer;
 
-            this._hasFocus = true;
-            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("hasFocus" , false).withPlusValue(true));
+            this.dispatchPropertyChange("hasFocus", function() {
+                thisRef._hasFocus = true;
+            });
             isActive = (content && content === document.activeElement);
             if (isActive != this._isActiveElement) {
-                this._isActiveElement = isActive;
-                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , false).withPlusValue(true));
+                this.dispatchPropertyChange("isActiveElement", function() {
+                    thisRef._isActiveElement = isActive;
+                });
             }
 
             if (this._setCaretAtEndOfContent) {
@@ -853,16 +859,19 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     handleBlur: {
         enumerable: false,
         value: function() {
-            var el = this.element,
+            var thisRef = this,
+                el = this.element,
                 content = this._innerElement,
                 isActive;
 
-            this._hasFocus = false;
-            this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("hasFocus" , true).withPlusValue(false));
+            this.dispatchPropertyChange("hasFocus", function() {
+                thisRef._hasFocus = false;
+            });
             isActive = (content && content === document.activeElement);
             if (isActive != this._isActiveElement) {
-                this._isActiveElement = isActive;
-                this.dispatchEvent(MutableEvent.changeEventForKeyAndValue("isActiveElement" , !isActive).withPlusValue(isActive));
+                this.dispatchPropertyChange("isActiveElement", function() {
+                    thisRef._isActiveElement = isActive;
+                });
             }
 
             // Force a selectionchange when we lose the focus

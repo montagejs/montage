@@ -654,12 +654,12 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "value");
                 if (descriptor) {
                     prevValue = thisRef._value;
-                    thisRef._dispatchFakePropertyChange(descriptor, "value", prevValue, thisRef.value);
+                    thisRef._dispatchPropertyChange(descriptor, prevValue, thisRef.value);
                 }
                 descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "textValue");
                 if (descriptor) {
                     prevValue = thisRef._textValue;
-                    thisRef._dispatchFakePropertyChange(descriptor, "value", prevValue, thisRef.textValue);
+                    thisRef._dispatchPropertyChange(descriptor, prevValue, thisRef.textValue);
                 }
                 thisRef._dispatchEditorEvent("editorChange");
             };
