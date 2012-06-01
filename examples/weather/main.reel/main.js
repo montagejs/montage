@@ -41,12 +41,14 @@ var request = function(uri, method, params) {
 
 exports.Main = Montage.create(Component, {
 
-    currentConditionsEl: {value: null},
+    currentConditionsEl: {value: null, serializable: true},
     
-    zipTxtValue: {value: null},
+    zipTxt: {value: null, serializable: true},
+    zipTxtValue: {value: null, serializable: true},
 
     _zip: {value: null},
     zip: {
+        serializable: true,
         get: function() {return this._zip;},
         set: function(value) {
             this._zip = value;
@@ -59,6 +61,7 @@ exports.Main = Montage.create(Component, {
     },
 
     error: {
+        serializable: true,
         get: function() {
             return this._error;
         },
@@ -104,6 +107,12 @@ exports.Main = Montage.create(Component, {
 
         }
     },
+    
+    prepareForDraw: {
+        value: function() {
+            this.zipTxt.addEventListener('keyup', this);
+        }
+    },
 
     draw: {
         value: function() {
@@ -115,14 +124,30 @@ exports.Main = Montage.create(Component, {
             }
         }
     },
-
-    handleGoButtonAction: {
+    
+    _getWeather: {
         value: function() {
-            console.log('go button clicked ', this.zipTxtValue);
             if(this.zipTxtValue) {
                 // also validate if valid zip
                 this.zip = this.zipTxtValue;
             }
+        }
+    },
+
+    handleGoButtonAction: {
+        value: function() {
+            console.log('go button clicked ', this.zipTxtValue);
+            this._getWeather();
+        }
+    },
+    
+    handleKeyup: {
+        value: function(e) {
+            var code = e.keyCode;
+            if(13 === code) {
+                this._getWeather();
+            }
+            
         }
     }
 

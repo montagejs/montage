@@ -18,12 +18,14 @@
                 "prototype": "main.reel",
                 "properties": {
                     "element": {"#": "main"},
-                    "currentConditionsEl": {"#": "current-conditions"}
+                    "currentConditionsEl": {"#": "current-conditions"},
+                    "zipTxt": {"#": "zip"}
                 },
                 "bindings": {
                     "zip": {
                         "<->": "@application.state.zip"
-                    }
+                    },
+                    "zipTxtValue": {"<-" : "@zip.value"}
                 }
             },
 
@@ -33,7 +35,7 @@
                     "element": {"#": "zip"}
                 },
                 "bindings": {
-                    "value": {"->": "@owner.zipTxtValue"}
+                    "value": {"<-": "@owner.zip"}
                 }
             },
             "goButton": {

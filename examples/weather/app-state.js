@@ -10,14 +10,20 @@
  */
 var Montage = require("montage").Montage;
 
-var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
+var AppState = exports.AppState = Montage.create(Montage, {
+    
+    zip: {
+        value: null,
+        enumerable: true,
+        serializable: true
+    },
     
     // Utility methods to deal with URL
     _getHash: {
         value: function() {
             var hash = window.location.hash;
-            if(hash && hash.length > 0 && hash.indexOf('#') == 0) {
-                hash = hash.substring(hash.indexOf('#')+1);
+            if(hash && hash.length > 0 && hash.indexOf('#!/') == 0) {
+                hash = hash.substring(hash.indexOf('#')+3);
             }
             return hash;
         }
@@ -25,18 +31,18 @@ var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
 
     // Delegate methods to manage Application State
     getUrlFromState: {
-        value: function(state) {
+        value: function() {
+            console.log('return URL for current State');
             return {
-                hash: '#' + state.zip
+                hash: '#!/' + this.zip
             };
         }
     },
 
-    getStateFromUrl: {
+    updateStateFromUrl: {
         value: function(location) {
-            return {
-                zip: this._getHash(location)
-            };
+            console.log('updating AppState from URL', location.hash);
+            this.zip = this._getHash(location);            
         }
     }
 });

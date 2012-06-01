@@ -19,15 +19,13 @@
             "owner": {
                 "prototype": "montage/ui/loader.reel"
             },
-            "stateDelegate": {
-                "prototype": "app-delegate"
+            "appState": {
+                "prototype": "app-state"
             },
             "application": {
                 "prototype": "montage/ui/application",
                 "properties": {
-                    "delegate": {"@": "stateDelegate"},
-                    "stateKeys": ["zip"],
-                    "stateDelegate": {"@": "stateDelegate"}
+                    "state": {"@": "appState"}
                 }
             }
         }

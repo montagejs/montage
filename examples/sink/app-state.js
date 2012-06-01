@@ -1,6 +1,11 @@
 var Montage = require("montage").Montage;
 
-exports.AppDelegate = Montage.create(Montage, {
+exports.AppState = Montage.create(Montage, {
+    
+    selectedItem: {
+        serializable: true,
+        value: null
+    },
 
 
     // Utility methods to deal with URL
@@ -16,18 +21,16 @@ exports.AppDelegate = Montage.create(Montage, {
 
     // Delegate methods to manage Application State
     getUrlFromState: {
-        value: function(state) {
+        value: function() {
             return {
-                hash: '#' + state.selectedItem
+                hash: '#' + this.selectedItem
             };
         }
     },
 
-    getStateFromUrl: {
+    updateStateFromUrl: {
         value: function(location) {
-            return {
-                selectedItem: this._getHash(location)
-            };
+            this.selectedItem = this._getHash(location);            
         }
     }
 
