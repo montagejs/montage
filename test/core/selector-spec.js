@@ -209,7 +209,7 @@ describe('core/selector-spec', function () {
         describe("linear:", function () {
 
             it("supports syntax for evaluation of every element in collection", function () {
-                assert(Selector.some.every.equals(10).syntax, {
+                assert(Selector.some.begin.every.equals(10).end.syntax, {
                     type: "some",
                     args: [
                         {type: "value"},
@@ -411,10 +411,18 @@ describe('core/selector-spec', function () {
         describe("planar:", function () {
 
             it("evaluates comparison of nested arrays", function () {
-                assert(Selector.some.every.equals(10).evaluate([
+                assert(Selector.some.begin.every.equals(10).end.evaluate([
                     [20, 20, 20],
                     [10, 10, 10]
                 ]), true)
+            });
+
+            it("evaluates a filter of a filter", function () {
+                assert(Selector.filter.not.mod(2).filter.not.mod(3).evaluate([
+                    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+                ]), [
+                    6, 12
+                ]);
             });
 
         });
