@@ -20,6 +20,8 @@ var KEY_KEY = "_",
     DEFAULT_MESSAGE_KEY = "_default",
     LOCALE_STORAGE_KEY = "montage_locale";
 
+// This is not a strict match for the grammar in http://tools.ietf.org/html/rfc5646,
+// but it's good enough for our purposes.
 var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 
 /**
@@ -38,6 +40,25 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     init: {
         value: function(locale) {
             this.locale = locale;
+
+            return this;
+        }
+    },
+
+    /**
+        Initialize the object
+
+        @function
+        @param {String} locale The RFC-5646 language tag this localizer should use.
+        @param {Object} messages A map from keys to messages. Each message should either be a string or an object with a "message" property.
+        @returns {Localizer} The Localizer object it was called on.
+    */
+
+    initWithMessages: {
+        value: function(locale, messages) {
+            this.locale = locale;
+            this.messages = messages;
+
             return this;
         }
     },
@@ -50,6 +71,29 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     */
     messageFormat: {
         value: null
+    },
+
+    _messages: {
+        enumerable: false,
+        value: {}
+    },
+    /**
+
+        @type {Object} A map from keys to messages.
+        @default {}
+    */
+    messages: {
+        get: function() {
+            return this._messages;
+        },
+        set: function(value) {
+            if (this._messages !== value) {
+                if (typeof value !== "object") {
+                    throw new TypeError(value, " is not an object");
+                }
+                this._messages = value;
+            }
+        }
     },
 
     _locale: {
@@ -79,6 +123,25 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
             }
         }
     },
+
+    getMessageFromKey: {
+        value: function(key) {
+            var message, type;
+            var messages = this._messages;
+            if (messages.hasOwnProperty(key)) {
+                message = messages[key];
+                type = typeof message;
+                if (type === "string") {
+                    return message;
+                } else if (type === "object" && message.hasOwnProperty("message")) {
+                    return message.message;
+                } else {
+                    console.warn("Key '" + key + "' in ", messages, " is not a string or an object with a 'message' property.");
+                }
+            }
+            return null;
+        }
+    }
 
 });
 
@@ -327,8 +390,7 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
         defaultMessage = desc[DEFAULT_MESSAGE_KEY];
         delete desc[DEFAULT_MESSAGE_KEY];
 
-        // TODO look up key
-        var message = defaultMessage || key;
+        var message = defaultLocalizer.getMessageFromKey(key) || defaultMessage || key;
 
         // only set variables here once KEY_KEY and DEFAULT_MESSAGE_KEY have been removed
         variables = Object.keys(desc);

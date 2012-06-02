@@ -27,10 +27,13 @@ describe("core/localizer-spec", function() {
     }
 
     describe("Localizer", function(){
+        var l;
+        beforeEach(function() {
+            l = Localizer.Localizer.create().init("en");
+        });
 
         describe("locale", function() {
             it("can't be set to an invalid tag", function() {
-                var l = Localizer.Localizer.create().init("en");
                 var threw = false;
                 try {
                     l.locale = "123-en-US";
@@ -42,23 +45,64 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        describe("defaultLocalizer", function() {
-            beforeEach(function() {
-                Localizer.defaultLocalizer.reset();
+        describe("messages", function() {
+            it("can't be set to a non-object", function() {
+                var threw = false;
+                try {
+                    l.messages = "hello";
+                } catch (e) { threw = true; }
+                expect(l.messages).not.toBe("hello");
+                expect(threw).toBe(true);
             });
+            it("can be set to an object", function() {
+                var input = {"hello": "ahoy!"};
+                l.messages = input;
 
-            describe("locale", function() {
-                it("defaults to navigator.language", function() {
-                    expect(Localizer.defaultLocalizer.locale).toBe(window.navigator.language);
-                });
-                it("saves the value to local storage", function() {
-                    Localizer.defaultLocalizer.locale = "en-x-test";
-                    expect(Localizer.defaultLocalizer.locale).toBe("en-x-test");
-                    expect(window.localStorage.getItem("montage_locale")).toBe("en-x-test");
-                });
+                expect(l.messages).toBe(input);
             });
         });
 
+        describe("getMessageFromKey", function() {
+            beforeEach(function() {
+                l.messages = {
+                    "hello": "Hei!",
+                    "love you": {"message": "Jeg elsker deg"},
+                    "array": [],
+                    "wrong object": {"string": "nope"}
+                };
+            });
+
+            it("gets the message in an object", function() {
+                expect(l.getMessageFromKey("love you")).toBe("Jeg elsker deg");
+            });
+            it("returns null if no message could be found", function() {
+                expect(l.getMessageFromKey("goodbye")).toBe(null);
+            });
+            it("returns null if no message could be found", function() {
+                expect(l.getMessageFromKey("goodbye")).toBe(null);
+            });
+            it("skips keys with incorrect values", function() {
+                expect(l.getMessageFromKey("array")).toBe(null);
+                expect(l.getMessageFromKey("wrong object")).toBe(null);
+            });
+        });
+    });
+
+    describe("defaultLocalizer", function() {
+        beforeEach(function() {
+            Localizer.defaultLocalizer.reset();
+        });
+
+        describe("locale", function() {
+            it("defaults to navigator.language", function() {
+                expect(Localizer.defaultLocalizer.locale).toBe(window.navigator.language);
+            });
+            it("saves the value to local storage", function() {
+                Localizer.defaultLocalizer.locale = "en-x-test";
+                expect(Localizer.defaultLocalizer.locale).toBe("en-x-test");
+                expect(window.localStorage.getItem("montage_locale")).toBe("en-x-test");
+            });
+        });
     });
 
     describe("serialization", function() {
