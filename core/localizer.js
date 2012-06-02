@@ -330,23 +330,22 @@ var MessageLocalizer = exports.MessageLocalizer = Montage.create(Montage, /** @l
         Initialize the object.
 
         @function
-        @param {MessageFormat} messageFormat  The message format object to use
-        for compiling and localizing the message.
-        @param {String} message The ICU formated message to localize.
+        @param {Function} messageFunction A function that takes an object argument
+                        mapping variables to values and returns a string. Usually
+                        the output of Localizer#localize.
         @param {Array[String]} variables  Array of variable names that are
         needed for the message. These properties must then be bound to.
         @returns {MessageLocalizer} the MessageLocalizer it was called on
     */
     init: {
-        value: function(messageFormat, message, variables) {
-            this._messageFormat = messageFormat;
+        value: function(messageFunction, variables) {
             if (variables && variables.length !== 0) {
                 this.variables = MessageVariables.create().init(this);
                 for (var i = 0, len = variables.length; i < len; i++) {
                     this.variables[variables[i]] = null;
                 }
             }
-            this.message = message;
+            this.messageFunction = messageFunction;
             return this;
         }
     },
@@ -366,31 +365,27 @@ var MessageLocalizer = exports.MessageLocalizer = Montage.create(Montage, /** @l
         value: null,
     },
 
-    _message: {
+    _messageFunction: {
         enumerable: false,
         value: null
     },
     /**
-        The ICU formated message to localize.
-        @type {String}
+        A function that takes an object argument mapping variables to values
+        and returns a string. Usually the output of Localizer#localize.
+
+        @type {Function}
         @default null
     */
-    message: {
+    messageFunction: {
         get: function() {
-            return this._message;
+            return this._messageFunction;
         },
         set: function(value) {
-            if (this._message !== value) {
-                this._message = value;
-                this._messageFn = this._messageFormat.compile(value);
+            if (this._messageFunction !== value) {
+                this._messageFunction = value;
                 this.render();
             }
         }
-    },
-
-    // compiled message function
-    _messageFn: {
-        value: null
     },
 
     /**
@@ -405,22 +400,16 @@ var MessageLocalizer = exports.MessageLocalizer = Montage.create(Montage, /** @l
         value: null
     },
 
-    // The MessageFormat object we are using to render
-    _messageFormat: {
-        value: null
-    },
-
     /**
-        Renders the {@link message} and {@link variables} to {@link value}.
+        Renders the {@link messageFunction} and {@link variables} to {@link value}.
         @function
     */
     render: {
         value: function() {
             try {
-                // TODO maybe optimise this if there are no variables
-                this.value = this._messageFn(this.variables);
+                this.value = this._messageFunction(this.variables);
             } catch(e) {
-                console.error(e.message, this._message);
+                console.error(e.message, this.variables, this._messageFunction.toString());
             }
         }
     }
@@ -430,6 +419,7 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
     for (var prop in properties) {
         var desc = properties[prop],
             key,
+            messageFunction,
             defaultMessage,
             variables;
 
@@ -446,11 +436,18 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
         defaultMessage = desc[DEFAULT_MESSAGE_KEY];
         delete desc[DEFAULT_MESSAGE_KEY];
 
-        var message = defaultLocalizer.getMessageFromKey(key) || defaultMessage || key;
-
         // only set variables here once KEY_KEY and DEFAULT_MESSAGE_KEY have been removed
         variables = Object.keys(desc);
-        var messageLocalizer = MessageLocalizer.create().init(defaultLocalizer.messageFormat, message, variables);
+
+        messageFunction = defaultLocalizer.localize(key, defaultMessage);
+        if (typeof messageFunction === "string") {
+            // no point creating a new object and a binding when we just have
+            // a string
+            object[prop] = messageFunction;
+            continue;
+        }
+
+        var messageLocalizer = MessageLocalizer.create().init(messageFunction, variables);
 
         for (var i = 0, len = variables.length; i < len; i++) {
             var variable = variables[i];

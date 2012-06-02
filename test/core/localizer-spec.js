@@ -180,13 +180,10 @@ describe("core/localizer-spec", function() {
                 });
             });
 
-            it("creates a binding from the localizer to the object", function() {
+            it("localizes a string", function() {
                 testDeserializer({
                     test: {
                         prototype: "montage/ui/dynamic-text.reel",
-                        properties: {
-                            defaultValue: "fail"
-                        },
                         localizations: {
                             value: {
                                 "_": "hello",
@@ -197,6 +194,34 @@ describe("core/localizer-spec", function() {
                 }, function(objects) {
                     var test = objects.test;
                     expect(test.value).toBe("Hello");
+                });
+            });
+
+            it("creates a binding from the localizer to the object", function() {
+                testDeserializer({
+                    input: {
+                        prototype: "montage",
+                        properties: {
+                            "thing": "World"
+                        }
+                    },
+
+                    test: {
+                        prototype: "montage/ui/dynamic-text.reel",
+                        properties: {
+                            defaultValue: "fail"
+                        },
+                        localizations: {
+                            value: {
+                                "_": "hello_thing",
+                                "_default": "Hello {thing}",
+                                "thing": "@input.thing"
+                            }
+                        }
+                    }
+                }, function(objects) {
+                    var test = objects.test;
+                    expect(test.value).toBe("Hello World");
                     expect(test._bindingDescriptors.value).toBeDefined();
                 });
             });
