@@ -141,6 +141,62 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
             }
             return null;
         }
+    },
+
+    // Caches the compiled functions from strings
+    _compiledMessageCache: {
+        value: {}
+    },
+
+    /**
+        Localize a key
+
+        @function
+        @param {String} key The key to the string in the {@link messages} object.
+        @param {String} default The value to use if key does not exist.
+        @returns {Function|String} If the message contains variables then a function is returned, otherwise a localized string is returned.
+    */
+    localize: {
+        value: function(key, defaultMessage) {
+            var message, type;
+
+            if (key in this._messages) {
+                message = this._messages[key];
+                type = typeof message;
+
+                if (type === "function") {
+                    return message;
+                } else if (type === "object") {
+                    if (!("message" in message)) {
+                        throw new Error(message, "does not contain a 'message' property");
+                    }
+
+                    message = message.message;
+                }
+            } else {
+                message = defaultMessage;
+            }
+
+            if (!message) {
+                return null;
+            }
+
+            if (message in this._compiledMessageCache) {
+                return this._compiledMessageCache[message];
+            }
+
+            var ast = this.messageFormat.parse(message);
+            // if we have a simple string then just return it
+            if (ast.program && ast.program.statements && ast.program.statements.length === 1 && ast.program.statements[0].type === "string") {
+                this._compiledMessageCache[message] = message;
+                return message;
+            }
+
+            var compiled = (new Function('MessageFormat', 'return ' + this.messageFormat.precompile(ast))(MessageFormat));
+            this._compiledMessageCache[message] = compiled;
+
+            return compiled;
+        }
     }
 
 });

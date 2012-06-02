@@ -86,6 +86,60 @@ describe("core/localizer-spec", function() {
                 expect(l.getMessageFromKey("wrong object")).toBe(null);
             });
         });
+
+        describe("localize", function() {
+            beforeEach(function() {
+                l.messages = {
+                    "hello_name": "Hei {name}!",
+                    "hello_name_function": function(d){
+                        var r = "";
+                        r += "Hei ";
+                        if(!d){
+                        throw new Error("MessageFormat: No data passed to function.");
+                        }
+                        r += d["name"];
+                        r += "!";
+                        return r;
+                    },
+                    "love you": {"message": "Jeg elsker deg"},
+                    "wrong object": {"string": "nope"}
+                };
+            });
+
+            it("returns a string for simple messages", function() {
+                expect(l.localize("love you")).toBe("Jeg elsker deg");
+            });
+            it("returns a function if it takes variables", function() {
+                var fn = l.localize("hello_name");
+                expect(typeof fn).toBe("function");
+                expect(fn({name: "Ingrid"})).toBe("Hei Ingrid!");
+            });
+            it("caches the compiled functions", function() {
+                var fn = l.localize("hello_name");
+                var fn2 = l.localize("hello_name");
+                expect(fn).toBe(fn2);
+            });
+            it("returns precompiled functions", function() {
+                var fn = l.localize("hello_name_function");
+                expect(typeof fn).toBe("function");
+                expect(fn({name: "Ingrid"})).toBe("Hei Ingrid!");
+            });
+            it("uses the default if the key does not exist", function() {
+                expect(l.localize("missing", "Missing key")).toBe("Missing key");
+            });
+            it("returns null if the key does not exist and no fallback is given", function() {
+                expect(l.localize("missing")).toBe(null);
+            });
+            it("throws if the message object does not contain a 'message' property", function() {
+                var threw = false;
+                try {
+                    l.localize("wrong object");
+                } catch (e) {
+                    threw = true;
+                }
+                expect(threw).toBe(true);
+            });
+        });
     });
 
     describe("defaultLocalizer", function() {
