@@ -533,7 +533,7 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
         var serialization = this._serialization,
             moduleIds = this._requiredModuleIds = [],
             modules = this._modules,
-            desc, moduleId, name, objectLocation;
+            desc, moduleId;
 
         for (var label in serialization) {
             desc = serialization[label];
@@ -542,16 +542,8 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             if ("module" in desc) {
                 moduleId = desc.module;
             } else if ("prototype" in desc || "object" in desc) {
-                name = desc.prototype || desc.object
-                objectLocation = name.split("[");
-                moduleId = objectLocation[0];
-                desc.module = moduleId;
-                if (objectLocation.length == 2) {
-                    desc.name = objectLocation[1].slice(0, -1);
-                } else {
-                    this._findObjectNameRegExp.test(moduleId);
-                    desc.name = RegExp.$1.replace(this._toCamelCaseRegExp, this._replaceToCamelCase);
-                }
+                Deserializer.parseForModuleAndName(desc.prototype || desc.object, desc);
+                moduleId = desc.module;
             }
 
             if (moduleId && !modules[moduleId] && moduleIds.indexOf(moduleId) == -1) {
@@ -559,6 +551,32 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
             }
         }
     }},
+
+    /**
+     Sets the module loader used during deserialization.
+     @function
+     @param {String} name The string representing a module/name pair, such as "my-module[MyModule]".
+     @param {Object} description The description object on which the parseForModuleAndName will populate the module and name properties. [Optional]
+     @returns {Object} The description object with module and name properties populated.
+     */
+    parseForModuleAndName: {
+        value: function(name, desc) {
+            var objectLocation, moduleId;
+            if (typeof desc === "undefined") {
+                desc = {};
+            }
+            objectLocation = name.split("[");
+            desc.module =  moduleId = objectLocation[0];
+            if (objectLocation.length == 2) {
+                desc.name = objectLocation[1].slice(0, -1);
+            } else {
+                Deserializer._findObjectNameRegExp.test(moduleId);
+                desc.name = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase);
+            }
+            return desc;
+        }
+    },
+
 /**
   @private
 */
