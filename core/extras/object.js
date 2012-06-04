@@ -497,52 +497,9 @@ Object.defineProperty(Object, "compare", {
     @function external:Object#getProperty
 */
 Object.defineProperty(Object.prototype, "getProperty", {
-    value: function(aPropertyPath, unique, preserve, visitedComponentCallback, currentIndex) {
-        var dotIndex,
-            result,
-            currentPathComponent,
-            nextDotIndex,
-            remainingPath = null;
-
-        if (aPropertyPath == null) {
-            return;
-        }
-
-        dotIndex = aPropertyPath.indexOf(".", currentIndex);
-        currentIndex = currentIndex || 0;
-        currentPathComponent = aPropertyPath.substring(currentIndex, (dotIndex === -1 ? aPropertyPath.length : dotIndex));
-
-        if (currentPathComponent in this) {
-            result = this[currentPathComponent];
-        } else {
-            result = typeof this.undefinedGet === FUNCTION ? this.undefinedGet(currentPathComponent) : undefined;
-        }
-
-        if (visitedComponentCallback) {
-            nextDotIndex = aPropertyPath.indexOf(".", currentIndex);
-            if (nextDotIndex != -1) {
-                remainingPath = aPropertyPath.substr(nextDotIndex+1);
-            }
-            visitedComponentCallback(this, currentPathComponent, result, null, remainingPath);
-        }
-
-        if (visitedComponentCallback && result && -1 === dotIndex) {
-
-            // We resolved the last object on the propertyPath, be sure to give the visitor a chance to handle this one
-            //visitedComponentCallback(result, null, null, null, null);
-
-        } else if (result && dotIndex !== -1) {
-            // We resolved that component of the path, but there's more path components; go to the next
-
-            if (result.getProperty) {
-                result = result.getProperty(aPropertyPath, unique, preserve, visitedComponentCallback, dotIndex + 1);
-            } else {
-                // TODO track when this happens, right now it's only happening with CanvasPixelArray in WebKit
-                result = Object.prototype.getProperty.call(result, aPropertyPath, unique, preserve, visitedComponentCallback, dotIndex + 1);
-            }
-        }
-        // Otherwise, we reached the end of the propertyPath, or at least as far as we could; stop
-        return result;
+    value: function(aPropertyPath) {
+        var PropertyLanguage = require('core/selector/property-language').PropertyLanguage;
+        return PropertyLanguage.evaluate(aPropertyPath, this);
     },
     writable: true,
     configurable: true

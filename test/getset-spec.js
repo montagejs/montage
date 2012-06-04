@@ -45,6 +45,7 @@ var departments = model.departments;
 var motorola = model.motorola;
 
 describe("getset-spec", function() {
+
     describe("getProperty() on Object", function() {
 
         it("should return a property one level down", function() {
@@ -53,29 +54,6 @@ describe("getset-spec", function() {
 
         it("should return a property two levels down", function() {
             expect(motorola.getProperty("bigBoss.managerName")).toEqual("MANAGER0");
-        });
-
-        describe("with a visitor callback", function() {
-
-            var visitor;
-
-            beforeEach(function() {
-                visitor = {
-                    visit: function(context, key, value, index, remainingPath) {
-                    }
-               }
-            });
-
-            it ("should call a specified visitor callback on each component of the property path, providing the context, key, and value", function() {
-                spyOn(visitor, "visit").andCallThrough();
-
-                var managerName = motorola["bigBoss"]["managerName"];
-                expect(motorola.getProperty("bigBoss.managerName", false, false, visitor.visit)).toBe(managerName);
-
-                expect(visitor.visit).toHaveBeenCalledWith(motorola, "bigBoss", motorola["bigBoss"], null, "managerName");
-                expect(visitor.visit).toHaveBeenCalledWith(motorola["bigBoss"], "managerName", managerName, null, null);
-            });
-
         });
 
     });
@@ -131,7 +109,7 @@ describe("getset-spec", function() {
         });
 
         it("should return the item at index for a numeric index", function() {
-            expect(motorola.departments.getProperty(0)).toBe(department0);
+            expect(motorola.departments.getProperty("0")).toBe(department0);
         });
 
         it("should return the property of object at index", function() {
@@ -139,13 +117,13 @@ describe("getset-spec", function() {
         });
 
         it("should support doing a sum of a single-level path", function() {
-            var result = motorola.getProperty("departments.employees.sum(employeeSalary)", false, true);
+            var result = motorola.getProperty("departments.map(employees.sum(employeeSalary))");
             expect(result[0]).toBe(employee01.employeeSalary + employee02.employeeSalary + employee03.employeeSalary);
         });
 
 
         it ("should return the length of the array members if length is on the propertyPath", function() {
-            var result = [0, 1, 2, "hello"].getProperty("length", false, true);
+            var result = [0, 1, 2, "hello"].getProperty("map(length)", false, true);
             expect(result.length).toBe(4);
 
             expect(result[0]).toBeUndefined();
@@ -157,24 +135,34 @@ describe("getset-spec", function() {
         describe("while not preserving the structure of the arrays encountered", function() {
 
             it ("the result should be flattened when only a single value is found", function() {
-                var result = [{x: [{y: 1}]}].getProperty("x.y", false, false);
+                var result = [{x: [{y: 1}]}].getProperty("flatten(x).map(y)");
                 expect(result).toEqual([1]);
             });
 
             it ("the result should be flattened when multiple value are found", function() {
-                var result = [{x: [{y: 1}, {y: 2}]}].getProperty("x.y", false, false);
+                var result = [{x: [{y: 1}, {y: 2}]}].getProperty("flatten(x).map(y)");
                 expect(result).toEqual([1, 2]);
             });
 
             it("should perform a function on the preserved structure", function() {
-                var result = motorola.getProperty("departments.employees.sum(employeeSalary)", false, false);
+                var result = motorola.getProperty("departments.map(employees.sum(employeeSalary))");
                 expect(result).toEqual([ 3, 18, 34, 36 ]);
             });
 
             it("should perform a function on the flattened structure", function() {
-                var result = motorola.getProperty("departments.sum(employees.employeeSalary)", false, false);
-                expect(result).toBe(allEmployees.getProperty("sum(employeeSalary)"));
+                var result;
+
+                result = motorola.getProperty("departments.map(employees.map(employeeSalary)).sum()");
                 expect(result).toBe(91);
+
+                result = motorola.getProperty("departments.flatten(employees.map(employeeSalary)).sum()");
+                expect(result).toEqual(91);
+
+                result =  motorola.getProperty("departments.map(employees).flatten().sum(employeeSalary)");
+                expect(result).toEqual(91);
+
+                result = motorola.getProperty("departments.map(employees).flatten().map(employeeSalary).sum()");
+                expect(result).toEqual(91);
             });
 
             it("should remove duplicates when unique is true", function() {
@@ -197,7 +185,7 @@ describe("getset-spec", function() {
                     engineering.employees.push(georgia);
                     marketing.employees.push(georgia);
 
-                result = company.getProperty("departments.employees.name", true)
+                result = company.getProperty("departments.flatten(employees).unique(name)");
                 expect(result).toEqual(['Alice', 'Bob', 'Carol', 'Georgia', 'David', 'Eve', 'Frank']);
             });
 
@@ -206,22 +194,22 @@ describe("getset-spec", function() {
         describe("while preserving the structure of the arrays encountered", function() {
 
             it ("the result should not be flattened when only a single value is found", function() {
-                var result = [{x: [{y: 1}]}].getProperty("x.y", false, true);
+                var result = [{x: [{y: 1}]}].getProperty("map(x.map(y))");
                 expect(result).toEqual([[1]]);
             });
 
             it ("the result should be flattened when multiple value are found", function() {
-                var result = [{x: [{y: 1}, {y: 2}]}].getProperty("x.y", false, true);
+                var result = [{x: [{y: 1}, {y: 2}]}].getProperty("map(x.map(y))");
                 expect(result).toEqual([[1, 2]]);
             });
 
             it("should perform a function on the preserved structure", function() {
-                var result = motorola.getProperty("departments.employees.sum(employeeSalary)", false, true);
+                var result = motorola.getProperty("departments.map(employees.sum(employeeSalary))");
                 expect(result).toEqual([ 3, 18, 34, 36 ]);
             });
 
             it("should perform a function on the flattened structure", function() {
-                var result = motorola.getProperty("departments.sum(employees.employeeSalary)", false, true);
+                var result = motorola.getProperty("departments.sum(employees.map(employeeSalary))");
                 expect(result).toBe(allEmployees.getProperty("sum(employeeSalary)"));
                 expect(result).toBe(91);
             });
@@ -258,108 +246,6 @@ describe("getset-spec", function() {
                 array[10000] = 42;
                 expect(array.getProperty("count()")).toBe(10001);
             });
-        });
-
-        describe("with a visitor callback", function() {
-
-            var visitor, expectedVisitorArguments, visitIndex;
-
-            beforeEach(function() {
-
-                visitIndex = 0;
-
-                visitor = {
-                    visit: function(context, key, value, index) {
-
-                        expect(context).toBe(expectedVisitorArguments[visitIndex].context);
-                        expect(key).toBe(expectedVisitorArguments[visitIndex].key);
-                        expect(value).toBe(expectedVisitorArguments[visitIndex].value);
-                        expect(index).toBe(expectedVisitorArguments[visitIndex].index);
-
-                        visitIndex++;
-                    }
-               }
-            });
-
-            it("should call a specified visitor callback on each component of the property path, providing the context, key, and value", function() {
-                spyOn(visitor, "visit");
-
-                var department = motorola["departments"][0];
-
-                expect(motorola.getProperty("departments.0", false, false, visitor.visit)).toBe(department);
-
-                expect(visitor.visit).toHaveBeenCalledWith(motorola, "departments", motorola["departments"], null, "0");
-                expect(visitor.visit).toHaveBeenCalledWith(motorola["departments"], "0", department, null, null);
-            });
-
-            it("should call a specified visitor callback on each component of the property path with an operator, providing the context, key, and value", function() {
-                spyOn(visitor, "visit");
-
-                var data = [{a: {b: 0}}, {a: {b: 1}}, {a: {b: 2}}, {a: {b: 3}}, {a: {b: 4}}];
-                expect(data.getProperty("sum(a.b)", false, false, visitor.visit)).toBe(10);
-
-                expect(visitor.visit).toHaveBeenCalledWith(data, "sum()", null, null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[0], "a", data[0]["a"], null, "b");
-                expect(visitor.visit).toHaveBeenCalledWith(data[0]["a"], "b", data[0]["a"]["b"], null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[1], "a", data[1]["a"], null, "b");
-                expect(visitor.visit).toHaveBeenCalledWith(data[1]["a"], "b", data[1]["a"]["b"], null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[2], "a", data[2]["a"], null, "b");
-                expect(visitor.visit).toHaveBeenCalledWith(data[2]["a"], "b", data[2]["a"]["b"], null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[3], "a", data[3]["a"], null, "b");
-                expect(visitor.visit).toHaveBeenCalledWith(data[3]["a"], "b", data[3]["a"]["b"], null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[4], "a", data[4]["a"], null, "b");
-                expect(visitor.visit).toHaveBeenCalledWith(data[4]["a"], "b", data[4]["a"]["b"], null, null);
-            });
-
-            it("should call a specified visitor callback on each component of the property path with nested operators, providing the context, key, and value", function() {
-                spyOn(visitor, "visit");
-
-                var data = [{a: {b: [0,1,2,3,4]}}, {a: {b: [0,1,2,3,4]}}, {a: {b: [0,1,2,3,4]}}, {a: {b: [0,1,2,3,4]}}, {a: {b: [0,1,2,3,4]}}];
-                expect(data.getProperty("sum(a.b.sum())", false, false, visitor.visit)).toBe(50);
-
-                expect(visitor.visit).toHaveBeenCalledWith(data, "sum()", null, null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[0], "a", data[0]["a"], null, "b.sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[0]["a"], "b", data[0]["a"]["b"], null, "sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[0]["a"]["b"], "sum()", null, null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[1], "a", data[1]["a"], null, "b.sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[1]["a"], "b", data[1]["a"]["b"], null, "sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[1]["a"]["b"], "sum()", null, null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[2], "a", data[2]["a"], null, "b.sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[2]["a"], "b", data[2]["a"]["b"], null, "sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[2]["a"]["b"], "sum()", null, null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[3], "a", data[3]["a"], null, "b.sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[3]["a"], "b", data[3]["a"]["b"], null, "sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[3]["a"]["b"], "sum()", null, null, null);
-                expect(visitor.visit).toHaveBeenCalledWith(data[4], "a", data[4]["a"], null, "b.sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[4]["a"], "b", data[4]["a"]["b"], null, "sum()");
-                expect(visitor.visit).toHaveBeenCalledWith(data[4]["a"]["b"], "sum()", null, null, null);
-            });
-
-            it("should call a specified visitor callback correctly for each member of an array encountered in the specified property path", function() {
-
-                spyOn(visitor, "visit").andCallThrough();
-
-                var first = {foo: "first here"};
-                var second = {foo: "second here"};
-                var third = {foo: "third here"};
-                var myArray = [first, second];
-                var owner = {array : myArray};
-
-                expectedVisitorArguments = [
-                    {context: owner, key: "array", value: myArray, index: null},
-                    // When encountering the array, we want to make sure we indicate we did so, but we're not
-                    // accessing any key on this array, so we explicitly pass null along as an indication
-                    {context: myArray, key: null, index: null},
-                    {context: first, key: "foo", value: "first here", index: null},
-                    {context: second, key: "foo", value: "second here", index: null},
-                ];
-
-                owner.getProperty("array.foo", false, false, visitor.visit);
-
-                expect(visitor.visit).toHaveBeenCalled();
-                expect(visitIndex).toBe(4);
-            });
-
         });
 
     });
