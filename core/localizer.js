@@ -124,25 +124,6 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
         }
     },
 
-    getMessageFromKey: {
-        value: function(key) {
-            var message, type;
-            var messages = this._messages;
-            if (messages.hasOwnProperty(key)) {
-                message = messages[key];
-                type = typeof message;
-                if (type === "string") {
-                    return message;
-                } else if (type === "object" && message.hasOwnProperty("message")) {
-                    return message.message;
-                } else {
-                    console.warn("Key '" + key + "' in ", messages, " is not a string or an object with a 'message' property.");
-                }
-            }
-            return null;
-        }
-    },
-
     // Caches the compiled functions from strings
     _compiledMessageCache: {
         value: {}

@@ -62,31 +62,6 @@ describe("core/localizer-spec", function() {
             });
         });
 
-        describe("getMessageFromKey", function() {
-            beforeEach(function() {
-                l.messages = {
-                    "hello": "Hei!",
-                    "love you": {"message": "Jeg elsker deg"},
-                    "array": [],
-                    "wrong object": {"string": "nope"}
-                };
-            });
-
-            it("gets the message in an object", function() {
-                expect(l.getMessageFromKey("love you")).toBe("Jeg elsker deg");
-            });
-            it("returns null if no message could be found", function() {
-                expect(l.getMessageFromKey("goodbye")).toBe(null);
-            });
-            it("returns null if no message could be found", function() {
-                expect(l.getMessageFromKey("goodbye")).toBe(null);
-            });
-            it("skips keys with incorrect values", function() {
-                expect(l.getMessageFromKey("array")).toBe(null);
-                expect(l.getMessageFromKey("wrong object")).toBe(null);
-            });
-        });
-
         describe("localize", function() {
             beforeEach(function() {
                 l.messages = {
