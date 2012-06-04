@@ -11,38 +11,47 @@
 var Montage = require("montage").Montage;
 
 var AppState = exports.AppState = Montage.create(Montage, {
-    
+
     zip: {
         value: null,
         enumerable: true,
         serializable: true
     },
     
-    // Utility methods to deal with URL
     _getHash: {
-        value: function() {
-            var hash = window.location.hash;
+        value: function(location) {
+            var hash = location.hash;
             if(hash && hash.length > 0 && hash.indexOf('#!/') == 0) {
                 hash = hash.substring(hash.indexOf('#')+3);
             }
             return hash;
         }
     },
-
+    
     // Delegate methods to manage Application State
     getUrlFromState: {
         value: function() {
             console.log('return URL for current State');
             return {
-                hash: '#!/' + this.zip
+                url: "./" + this.zip,
+                title: 'Weather Forecast for ' + this.zip
             };
         }
     },
 
     updateStateFromUrl: {
-        value: function(location) {
-            console.log('updating AppState from URL', location.hash);
-            this.zip = this._getHash(location);            
+        value: function(location, savedState) {
+            console.log('updating AppState from URL');
+            if(savedState) {
+                this.zip = state.zip;
+            } else {
+                // if pushState is not used
+                var hash = this._getHash(location);
+                if(hash) {
+                    this.zip = hash;
+                }
+            }
+            
         }
     }
 });

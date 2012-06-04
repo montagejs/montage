@@ -137,6 +137,11 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: null
     },
 
+    useHash: {
+        value: true,
+        serializable: true
+    },
+
     state: {
         serializable: true,
         value: null
@@ -161,15 +166,23 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 require("ui/component").__root__.needsDraw = true;
 
                 if(self.state) {
-                    for(var p in self.state) {
-                        self.state.addPropertyChangeListener(p, function() {
+                    var serializableProperties = Montage.getSerializablePropertyNames(self.state);
+                    for(var i=0; i< serializableProperties.length; i++) {
+                        self.state.addPropertyChangeListener(serializableProperties[i], function() {
                             self._updateUrlFromState();
                         });
                     }
-                    window.onhashchange = function(event) {
-                        event.preventDefault();
-                        self._updateStateFromUrl();
-                    };
+                    if(typeof window.history.pushState !== "undefined") {
+                        window.onpopstate = function(event) {
+                            var state = event.state;
+                            self._updateStateFromUrl(state);
+                        };
+                    } else {
+                        window.onhashchange = function(event) {
+                            event.preventDefault();
+                            self._updateStateFromUrl();
+                        };
+                    }
 
                     // initial state from URL
                     self._updateStateFromUrl();
@@ -185,12 +198,28 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
     _synching : {value: null},
     _updateStateFromUrl: {
-        value: function() {
+        value: function(aState) {
             if(this.state) {
                 this._synching = true;
-                this.state.updateStateFromUrl(window.location);
+                this.state.updateStateFromUrl(window.location, aState);
                 this._synching = false;
             }
+        }
+    },
+
+    _getSerializedState: {
+        value: function() {
+            var state = this.state, result;
+            if(state) {
+                result = {};
+                var serializableProperties = Montage.getSerializablePropertyNames(state);
+                var i=0, len = serializableProperties.length, p;
+                for(i; i< len; i++) {
+                    p = serializableProperties[i];
+                    result[p] = state[p];
+                }
+            }
+            return result;
         }
     },
 
@@ -198,15 +227,22 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: function() {
             if(this.state) {
                 if(!this._synching) {
-                    var url = this.state.getUrlFromState();
+                    var newLocation = this.state.getUrlFromState();
                     this._synching = true;
-                    if(String.isString(url)) {
-                        window.location = url;
-                    } else {
-                        if(url.hash) {
-                            window.location.hash = url.hash;
+
+                    if(newLocation) {
+                        if(typeof window.history.pushState !== 'undefined') {
+                            var url, title;
+                            if(String.isString(newLocation)) {
+                                url = newLocation;
+                            } else {
+                                url = newLocation.url;
+                                title = newLocation.title;
+                            }
+                            var serializedState = this._getSerializedState();
+                            window.history.pushState(serializedState, title, url);
                         } else {
-                            // todo
+                            window.location.hash = newLocation.url;
                         }
                     }
                     this._synching = false;

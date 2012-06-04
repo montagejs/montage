@@ -42,7 +42,7 @@ var request = function(uri, method, params) {
 exports.Main = Montage.create(Component, {
 
     currentConditionsEl: {value: null, serializable: true},
-    
+
     zipTxt: {value: null, serializable: true},
     zipTxtValue: {value: null, serializable: true},
 
@@ -51,8 +51,12 @@ exports.Main = Montage.create(Component, {
         serializable: true,
         get: function() {return this._zip;},
         set: function(value) {
-            this._zip = value;
-            this.getWeatherForZip();
+            if(value && value !== this._zip) {
+                this._zip = value;
+                this.getWeatherForZip();
+
+            }
+
         }
     },
 
@@ -107,7 +111,7 @@ exports.Main = Montage.create(Component, {
 
         }
     },
-    
+
     prepareForDraw: {
         value: function() {
             this.zipTxt.addEventListener('keyup', this);
@@ -124,7 +128,7 @@ exports.Main = Montage.create(Component, {
             }
         }
     },
-    
+
     _getWeather: {
         value: function() {
             if(this.zipTxtValue) {
@@ -140,14 +144,14 @@ exports.Main = Montage.create(Component, {
             this._getWeather();
         }
     },
-    
+
     handleKeyup: {
         value: function(e) {
             var code = e.keyCode;
             if(13 === code) {
                 this._getWeather();
             }
-            
+
         }
     }
 

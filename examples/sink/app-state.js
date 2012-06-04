@@ -23,7 +23,7 @@ exports.AppState = Montage.create(Montage, {
     getUrlFromState: {
         value: function() {
             return {
-                hash: '#' + this.selectedItem
+                url: '#' + (this.selectedItem || '')
             };
         }
     },

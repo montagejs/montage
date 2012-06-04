@@ -22,7 +22,7 @@ exports.Content = Montage.create(Component, {
         },
         set: function(value) {
             console.log('set selectedItem ', value, this._selectedItem);
-            if(value !== "" && value !== this._selectedItem) {
+            if(value && value !== "" && value !== this._selectedItem) {
                 this._selectedItem = value;
                 this.needsDraw = true;                
             }
