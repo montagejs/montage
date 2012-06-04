@@ -296,6 +296,10 @@ describe('core/selector-spec', function () {
                 assert(Selector.property("foo").evaluate({foo: 10}), 10);
             });
 
+            it("evaluates the length property of an array", function () {
+                assert(Selector.property("length").evaluate([1, 2, 3]), 3);
+            });
+
             it("evaluates comparison of property of implied subject", function () {
                 assert(Selector.property("foo").equals("foo").evaluate({"foo": "foo"}), true);
             });

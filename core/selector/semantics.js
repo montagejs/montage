@@ -13,6 +13,11 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
 
             // from highest to lowest precedence
 
+            // properties
+            get: function (object, key) {
+                return object[key];
+            },
+
             // unary
             not: function (a) {
                 return !a;
@@ -116,19 +121,6 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
 
     evaluators: {
         value: {
-
-            // properties
-            get: function (evaluateObject, evaluateKey) {
-
-                return function (value, parameters) {
-                    var object = evaluateObject(value, parameters);
-                    var key = evaluateKey(value, parameters);
-                    if (object == null) { // iff null or undefined
-                        return object;
-                    }
-                    return Object.get(object, key);
-                };
-            },
 
             // ternary conditional
             "if": function (guard, consequent, alternate) {
