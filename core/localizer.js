@@ -130,16 +130,44 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
     },
 
     /**
-        Localize a key
+        <p>Localize a key and return a message function.</p>
+
+        <p>If the message is a precompiled function then this is returned
+        directly. Otherwise the message string is compiled to a function with
+        <a href="https://github.com/SlexAxton/messageformat.js#readme">
+        messageformat.js</a>. The resulting function takes an object mapping
+        from variables in the message to their values. Example:</p>
+
+        <pre><code>
+var hi = defaultLocalizer.localize("hello_name", "Hello, {name}!");
+console.log(hi({name: "World"})); // => "Hello, World!""
+console.log(hi()); // => Error: MessageFormat: No data passed to function.
+        </code></pre>
+
+        <p>If the message for the key is "simple", i.e. it does not contain any
+        variables, then the function will implement a custom <code>toString</code>
+        function that also returns the message. This means that you can use
+        the function like a string. Example:</p>
+        <pre><code>
+var hi = defaultLocalizer.localize("hello", "Hello");
+// Concatenating an object to a string calls its toString
+myObject.hello = "" + hi;
+var y = "The greeting '" + hi + "' is used in this locale";
+// textContent only accepts strings and so calls toString
+button.textContent = hi;
+// and use as a function also works.
+var z = hi();
+        </code></pre>
 
         @function
         @param {String} key The key to the string in the {@link messages} object.
         @param {String} default The value to use if key does not exist.
-        @returns {Function|String} If the message contains variables then a function is returned, otherwise a localized string is returned.
+        @returns {Function} A function that accepts an object mapping variables
+                            in the message string to values.
     */
     localize: {
         value: function(key, defaultMessage) {
-            var message, type;
+            var message, type, compiled;
 
             if (key in this._messages) {
                 message = this._messages[key];
@@ -167,15 +195,17 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
             }
 
             var ast = this.messageFormat.parse(message);
-            // if we have a simple string then just return it
+            // if we have a simple string then create a very simple function,
+            // and set it as its own toString so that it behaves a bit like
+            // a string
             if (ast.program && ast.program.statements && ast.program.statements.length === 1 && ast.program.statements[0].type === "string") {
-                this._compiledMessageCache[message] = message;
-                return message;
+                compiled = function() { return message; };
+                compiled.toString = compiled;
+            } else {
+                compiled = (new Function('MessageFormat', 'return ' + this.messageFormat.precompile(ast))(MessageFormat));
             }
 
-            var compiled = (new Function('MessageFormat', 'return ' + this.messageFormat.precompile(ast))(MessageFormat));
             this._compiledMessageCache[message] = compiled;
-
             return compiled;
         }
     }
@@ -421,10 +451,10 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
         variables = Object.keys(desc);
 
         messageFunction = defaultLocalizer.localize(key, defaultMessage);
-        if (typeof messageFunction === "string") {
-            // no point creating a new object and a binding when we just have
-            // a string
-            object[prop] = messageFunction;
+        // if the messageFunction has its own toString property, then it is a
+        // simple string and there's no point creating and bindings
+        if (messageFunction.hasOwnProperty("toString")) {
+            object[prop] = messageFunction();
             continue;
         }
 

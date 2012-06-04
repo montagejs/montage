@@ -81,8 +81,10 @@ describe("core/localizer-spec", function() {
                 };
             });
 
-            it("returns a string for simple messages", function() {
-                expect(l.localize("love you")).toBe("Jeg elsker deg");
+            it("returns a function with toString for simple messages", function() {
+                var x = l.localize("love you");
+                expect(x()).toBe("Jeg elsker deg");
+                expect("" + x).toBe("Jeg elsker deg");
             });
             it("returns a function if it takes variables", function() {
                 var fn = l.localize("hello_name");
@@ -100,7 +102,7 @@ describe("core/localizer-spec", function() {
                 expect(fn({name: "Ingrid"})).toBe("Hei Ingrid!");
             });
             it("uses the default if the key does not exist", function() {
-                expect(l.localize("missing", "Missing key")).toBe("Missing key");
+                expect(l.localize("missing", "Missing key")()).toBe("Missing key");
             });
             it("returns null if the key does not exist and no fallback is given", function() {
                 expect(l.localize("missing")).toBe(null);
