@@ -18,18 +18,24 @@ var AbstractSemantics = exports.AbstractSemantics = Montage.create(Montage, {
             // convert the declared operators into evaluators
             Object.forEach(operators, function (operate, name) {
                 self.evaluators[name] = function () { // ...args
-                    var args = Array.prototype.slice.call(
+                    var argEvaluators = Array.prototype.slice.call(
                         arguments,
                         0,
                         operate.length
                     );
                     return function (value, parameters, visitor) {
-                        return operate.apply(
-                            operators,
-                            args.map(function (argument) {
-                                return argument(value, parameters, visitor);
-                            })
-                        );
+                        var nulled = false;
+                        var args = argEvaluators.map(function (evaluateArg) {
+                            var arg = evaluateArg(value, parameters, visitor);
+                            if (arg == null) { // iff null or undefined
+                                nulled = arg;
+                            }
+                            return arg;
+                        });
+                        if (nulled == null) { // iff null or undefined
+                            return nulled;
+                        }
+                        return operate.apply(operators, args);
                     };
                 };
                 self.evaluatorArgumentLengths[name] = operate.length;

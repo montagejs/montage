@@ -123,6 +123,9 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
                 return function (value, parameters) {
                     var object = evaluateObject(value, parameters);
                     var key = evaluateKey(value, parameters);
+                    if (object == null) { // iff null or undefined
+                        return object;
+                    }
                     return Object.get(object, key);
                 };
             },
@@ -157,8 +160,11 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
 
             sorted: function (collection, by, descending) {
                 return function (value, parameters) {
-                    return collection(value, parameters)
-                    .sorted(Object.compare, function (item) {
+                    var result = collection(value, parameters);
+                    if (result == null) { // iff null or undefined
+                        return result;
+                    }
+                    return result.sorted(Object.compare, function (item) {
                         return by(item, parameters);
                     }, descending() ? -1 : 1);
                 };
@@ -206,8 +212,11 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
 function makeReductionCompiler(name) {
     return function (collection, relation) {
         return function (value, parameters, visitor) {
-            return collection(value, parameters, visitor)
-            [name](function (object) {
+            var result = collection(value, parameters, visitor);
+            if (result == null) { // iff null or undefined
+                return result;
+            }
+            return result[name](function (object) {
                 return relation(object, parameters, visitor);
             });
         };
@@ -220,10 +229,11 @@ function makeNoArgumentsMethodCompiler(name) {
     return function (collection, modify) {
         var self = this;
         return function (value, parameters, visitor) {
-            return modify(
-                collection(value, parameters, visitor)[name](),
-                parameters
-            );
+            var result = collection(value, parameters, visitor);
+            if (result == null) { // iff null or undefined
+                return result;
+            }
+            return modify(result[name](), parameters);
         };
     };
 }

@@ -284,7 +284,8 @@ describe('core/selector-spec', function () {
             });
 
             it("evaluates comparison of implied subject to constant", function () {
-                assert(Selector.true.or.evaluate(), true);
+                assert(Selector.true.or.evaluate(false), true);
+                assert(Selector.true.or.evaluate(), undefined); // quirk
             });
 
             it("evaluates comparison of implied subject to parameter", function () {
@@ -339,6 +340,12 @@ describe('core/selector-spec', function () {
                     );
                 });
 
+            });
+
+            describe("null poison pill:", function () {
+                it("should propagate null", function () {
+                    expect(Selector.property("a.b.c.sum()").evaluate(null)).toBe(null);
+                });
             });
 
         });
