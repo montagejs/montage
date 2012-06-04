@@ -129,9 +129,11 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 overlayParent,
                 overlayNextSibling;
 
-            if (this._dirtyValue) {
+            if (this._dirtyValue && !this._value_locked) {
+                this._value_locked = true;
+
                 if (contentNode) {
-                    // Temporary orphran the overlay slot while retrieving the content
+                    // Temporary orphan the overlay slot while retrieving the content
                     overlayElement = contentNode.querySelector(".montage-editor-overlay");
                     if (overlayElement) {
                         overlayParent = overlayElement.parentNode;
@@ -157,8 +159,15 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                     overlayParent.insertBefore(overlayElement, overlayNextSibling);
                 }
 
-                this._value = content;
+                if (this._value != content) {
+                    this.dispatchPropertyChange("value", function(){
+                        console.log("VALUE CHANGED")
+                        this._value = content;
+                    });
+                }
+
                 this._dirtyValue = false;
+                this._value_locked = false;
             }
             return this._value;
         },
@@ -191,13 +200,16 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         enumerable: true,
         get: function() {
             var contentNode = this._innerElement,
+                content = "",
                 overlayElement = null,
                 overlayParent,
                 overlayNextSibling;
 
-            if (this._dirtyTextValue) {
+            if (this._dirtyTextValue && !this._textValue_locked) {
+                this._textValue_locked = true;
+
                 if (contentNode) {
-                    // Temporary orphran the overlay slot in order to retrieve the content
+                    // Temporary orphan the overlay slot in order to retrieve the content
                     overlayElement = contentNode.querySelector(".montage-editor-overlay");
                     if (overlayElement) {
                         overlayParent = overlayElement.parentNode;
@@ -205,17 +217,22 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                         overlayParent.removeChild(overlayElement);
                     }
 
-                    this._textValue = this._innerText(contentNode);
+                    content = this._innerText(contentNode);
 
                      // restore the overlay
                     if (overlayElement) {
                         overlayParent.insertBefore(overlayElement, overlayNextSibling);
                     }
-                } else {
-                    this._textValue = "";
+                }
+
+                if (this._textValue != content) {
+                    this.dispatchPropertyChange("textValue", function(){
+                        this._textValue = content;
+                    });
                 }
 
                 this._dirtyTextValue = false;
+                this._textValue_locked = false;
             }
             return this._textValue;
         },
@@ -643,7 +660,7 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
             var thisRef = this;
 
             var updateValues = function() {
-                var prevValue,
+                var value,
                     descriptor;
 
                 clearTimeout(thisRef._forceUpdateValuesTimeout);
@@ -651,15 +668,17 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 clearTimeout(thisRef._updateValuesTimeout);
                 delete thisRef._updateValuesTimeout;
 
-                descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "value");
-                if (descriptor) {
-                    prevValue = thisRef._value;
-                    thisRef._dispatchPropertyChange(descriptor, prevValue, thisRef.value);
+                if (thisRef._dirtyValue) {
+                    descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "value");
+                    if (descriptor) {
+                        value = thisRef.value;  // Will force to update the value and send a property change notification
+                    }
                 }
-                descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "textValue");
-                if (descriptor) {
-                    prevValue = thisRef._textValue;
-                    thisRef._dispatchPropertyChange(descriptor, prevValue, thisRef.textValue);
+                if (thisRef._dirtyTextValue) {
+                    descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "textValue");
+                    if (descriptor) {
+                        value = thisRef.textValue;  // Will force to update the value and send a property change notification
+                    }
                 }
                 thisRef._dispatchEditorEvent("editorChange");
             };

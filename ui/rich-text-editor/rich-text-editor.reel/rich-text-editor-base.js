@@ -254,9 +254,17 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     // Commands Helpers
     _getState: {
         value: function(property, command) {
-            var state;
+            var state,
+                savedActiveElement = document.activeElement,
+                editorElement = this._innerElement;
 
-            if (this._innerElement == document.activeElement) {
+            if (editorElement && !this["_" + property + "_locked"]) {
+
+                // Make sure we are the active element before calling execCommand
+                if (editorElement && editorElement != savedActiveElement) {
+                    editorElement.focus();
+                }
+
                 state = document.queryCommandValue(command);
                 // Convert string to boolean
                 if (state == "true") {
@@ -264,9 +272,15 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 } if (state == "false") {
                     state = false;
                 }
+
+                // Reset the focus
+                if (editorElement && editorElement != savedActiveElement) {
+                    savedActiveElement.focus();
+                }
+
                 return state;
             } else {
-                return this["_" + property];
+               return this["_" + property];
             }
         }
     },
@@ -320,13 +334,26 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _baselineShiftGetState: {
         enumerable: false,
         value: function() {
-            if (this._innerElement == document.activeElement) {
+            var savedActiveElement = document.activeElement,
+            editorElement = this._innerElement;
+
+            if (editorElement && !this._baselineShift_locked) {
+                 // Make sure we are the active element before calling execCommand
+                if (editorElement != savedActiveElement) {
+                    editorElement.focus();
+                }
+
                 if (this._getState("baselineShift", "subscript")) {
                    return "subscript"
                 } else if (this._getState("baselineShift", "superscript")) {
                     return "superscript"
                 } else {
                     return "baseline";     // default
+                }
+
+                 // Reset the focus
+                if (editorElement != savedActiveElement) {
+                    savedActiveElement.focus();
                 }
             } else {
                 return this._baselineShift;
@@ -347,13 +374,26 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _listStyleGetState: {
         enumerable: false,
         value: function() {
-            if (this._innerElement == document.activeElement) {
+            var savedActiveElement = document.activeElement,
+            editorElement = this._innerElement;
+
+            if (editorElement && !this._listStyle_locked) {
+                // Make sure we are the active element before calling execCommand
+                if (editorElement != savedActiveElement) {
+                    editorElement.focus();
+                }
+
                 if (this._getState("listStyle", "insertorderedlist")) {
                    return "ordered"
                 } else if (this._getState("listStyle", "insertunorderedlist")) {
                     return "unordered"
                 } else {
                     return "none";     // default
+                }
+
+                 // Reset the focus
+                if (editorElement != savedActiveElement) {
+                    savedActiveElement.focus();
                 }
             } else {
                 return this._listStyle;
@@ -373,7 +413,15 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _justifyGetState: {
         enumerable: false,
         value: function() {
-            if (this._innerElement == document.activeElement) {
+            var savedActiveElement = document.activeElement,
+            editorElement = this._innerElement;
+
+            if (editorElement && !this._justify_locked) {
+                // Make sure we are the active element before calling execCommand
+                if (editorElement != savedActiveElement) {
+                    editorElement.focus();
+                }
+
                 if (this._getState("justify", "justifyleft")) {
                    return "left"
                 } else if (this._getState("justify", "justifycenter")) {
@@ -384,6 +432,11 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     return "full"
                 } else {
                     return "left";     // default
+                }
+
+                // Reset the focus
+                if (editorElement != savedActiveElement) {
+                    savedActiveElement.focus();
                 }
             } else {
                 return this._justify;
@@ -404,12 +457,12 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _fontNameGetState: {
         enumerable: false,
         value: function() {
-            this._fontName = this._getState("fontName", "fontname");
-            if (this._fontName) {
-                this._fontName = this._fontName.replace(/\"|\'/g, "");
+            var fontName = this._getState("fontName", "fontname");
+            if (fontName) {
+                fontName = fontName.replace(/\"|\'/g, "");
             }
 
-            return this._fontName;
+            return fontName;
         }
     },
     /**
@@ -436,25 +489,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     */
     _foreColor: { value: "" },
 
-    _dispatchPropertyChange: {
-        value: function(descriptor, previousValue, newValue) {
-            var notification;
-
-            if (descriptor && !descriptor.isActive && previousValue !== newValue) {
-                notification = Object.create(PropertyChangeNotification);
-
-                notification.target = this;
-                notification.minus = previousValue;
-                descriptor.isActive = true;
-                descriptor.handleWillChange(notification);
-
-                notification.plus = newValue;
-                descriptor.handleChange(notification);
-                descriptor.isActive = false;
-            }
-        }
-    },
-
     /**
       Description TODO
      @type {Function}
@@ -462,7 +496,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     _updateStates: {
         enumerable: true,
         value: function() {
-            var commands = [{property: "bold"},
+            var thisRef = this,
+                commands = [{property: "bold"},
                             {property: "underline"},
                             {property: "italic"},
                             {property: "strikeThrough"},
@@ -484,29 +519,29 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 descriptor,
                 i;
 
-            if (this._innerElement == document.activeElement) {
-                for (i = 0; i < nbrCommands; i ++) {
-                    command = commands[i];
+            for (i = 0; i < nbrCommands; i ++) {
+                command = commands[i];
 
-                    if (typeof command == "object") {
-                        propertyName = command.property;
-                        commandName = command.name || propertyName.toLowerCase();
-                        method = command.method || this._getState;
-                    } else {
-                        continue;
-                    }
-
-                    descriptor = ChangeNotification.getPropertyChangeDescriptor(this, propertyName);
-                    if (descriptor) {
-                        prevState = this["_" + propertyName];
-                        state = method.call(this, propertyName, commandName);
-                        if (state !== prevState) {
-                            this["_" + propertyName] = state;
-                            this._dispatchPropertyChange(descriptor, prevState, state);
-                        }
-                    }
+                if (typeof command == "object") {
+                    propertyName = command.property;
+                    commandName = command.name || propertyName.toLowerCase();
+                    method = command.method || this._getState;
+                } else {
+                    continue;
                 }
 
+                descriptor = ChangeNotification.getPropertyChangeDescriptor(this, propertyName);
+                if (descriptor) {
+                    prevState = this["_" + propertyName];
+                    state = method.call(this, propertyName, commandName);
+                    if (state !== prevState) {
+                        this["_" + propertyName + "_locked"] = true;
+                        this.dispatchPropertyChange(propertyName, function() {
+                            thisRef["_" + propertyName] = state;
+                        });
+                        thisRef["_" + propertyName + "_locked"] = false;
+                    }
+                }
             }
         }
     },
@@ -586,23 +621,11 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                     // Set the contentEditable value
                     if (this._value && !this._dirtyValue) {
                         editorInnerElement.innerHTML = this._value;
-                        // Since this property affects the textValue, we need to fire a change event for it as well
-                        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "textValue");
-                        if (descriptor) {
-                            prevValue = this._textValue;
-                            this._dispatchPropertyChange(descriptor, prevValue, this.textValue);
-                        }
                     } else if (this._textValue && !this._dirtyTextValue) {
                         if (editorInnerElement.innerText) {
                             editorInnerElement.innerText = this._textValue;
                         } else {
                             editorInnerElement.textContent = this._textValue;
-                        }
-                        // Since this property affects the value, we need to fire a change event for it as well
-                        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "value");
-                        if (descriptor) {
-                            prevValue = this._value;
-                            this._dispatchPropertyChange(descriptor, prevValue, this.value);
                         }
                     }
                 } else if (this._needsAssignOriginalContent) {
@@ -618,17 +641,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                         }
                     }
                     if (contentChanged) {
-                        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "value");
-                        if (descriptor) {
-                            prevValue = this._value;
-                            this._dispatchPropertyChange(descriptor, prevValue, this.value)
-                        }
-                        descriptor = ChangeNotification.getPropertyChangeDescriptor(this, "textValue");
-                        if (descriptor) {
-                            prevValue = this._textValue;
-                            this._dispatchPropertyChange(descriptor, prevValue, this.textValue)
-                        }
-
                         // Clear the cached value in order to force an editorChange event
                         this._dirtyValue = true;
                         this._dirtyTextValue = true;
