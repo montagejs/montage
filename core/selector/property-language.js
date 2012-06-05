@@ -11,7 +11,7 @@ var LANGUAGE = require('./language'); // late bound for dependency cycle
 
 var VALUE = 'value';
 var LITERAL = 'literal';
-var GET = 'get';
+var GET_PROPERTY = 'getProperty';
 var BEGIN = 'begin';
 var END = 'end';
 var MAP = 'map';
@@ -170,7 +170,7 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                             });
                         } else {
                             return consequent({
-                                type: GET,
+                                type: GET_PROPERTY,
                                 arg: token
                             });
                         }
@@ -306,9 +306,9 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
         value: function (syntax, emit, tokens) {
             tokens = tokens || LANGUAGE.Language.tokens;
             if (syntax.type === VALUE) {
-            } else if (syntax.type === GET) {
+            } else if (syntax.type === GET_PROPERTY) {
                 this.reemit(syntax.args[0], emit);
-                emit(tokens.get)
+                emit(tokens.getProperty)
                 emit(syntax.args[1]);
             } else if (syntax.type === ARRAY) {
                 emit(tokens.array);
@@ -329,7 +329,7 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
                 this.reemit(syntax.args[1], emit);
                 emit(tokens.end);
             } else {
-                if (!(syntax.type in tokens)) {
+                if (!Object.has(tokens, syntax.type)) {
                     throw new Error("No such syntax type: " + syntax.type);
                 }
                 emit(tokens.begin);

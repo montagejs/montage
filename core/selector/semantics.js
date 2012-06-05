@@ -14,8 +14,8 @@ var Semantics = exports.Semantics = AbstractSemantics.create(AbstractSemantics, 
             // from highest to lowest precedence
 
             // properties
-            get: function (object, key) {
-                return object[key];
+            getProperty: function (object, name) {
+                return object[name];
             },
 
             // unary

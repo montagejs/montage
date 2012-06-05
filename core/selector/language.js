@@ -101,7 +101,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                         })
                         return self;
                     } catch (exception) {
-                        throw exception;
+                        throw exception; // TODO remove
                         throw new SyntaxError(
                             "Can't parse property: " + JSON.stringify(path) + ": " +
                             exception.message
@@ -166,19 +166,8 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                     });
                 } else if (token.type === 'value') {
                     return callback(self.tokens.value, negated);
-                } else if (token.type === 'parameter') {
-                    return self.parseIdentifier(function (name) {
-                        var syntax = name.split(".").reduce(function (previous, name) {
-                            return {
-                                type: 'get',
-                                args: [previous, {
-                                    type: 'literal',
-                                    value: name
-                                }]
-                            }
-                        }, {type: 'parameters'})
-                        return callback(syntax, negated);
-                    })
+                } else if (token.type === 'parameters') {
+                    return rewindNegation(callback(self.tokens.parameters));
                 } else if (token.type === 'literal') {
                     return callback(token, negated);
                 } else if (self.constants[token.type]) {
@@ -217,13 +206,13 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
     parseProperties: {
         value: function () {
             var self = this;
-            self.requireTokens(['get']);
+            self.requireTokens(['getProperty']);
             var parseSelf = self.precedence(function (parsePrevious) {
                 return function (callback, previous) {
                     return function (token) {
-                        if (token.type === 'get') {
+                        if (token.type === 'getProperty') {
                             return self.expect('literal', function (literal) {
-                                previous = self.makeSyntax('get', [previous || self.tokens.value, literal]);
+                                previous = self.makeSyntax('getProperty', [previous || self.tokens.value, literal]);
                                 return parseSelf(callback, previous);
                             });
                         } else if (previous) {

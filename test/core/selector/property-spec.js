@@ -15,7 +15,7 @@ describe('core/selector/property-spec', function () {
 
             it('makes syntax tree for "a"', function () {
                 expectSyntax('a').toEqual({
-                    type: 'get',
+                    type: 'getProperty',
                     args: [
                         {type: 'value'},
                         {type: 'literal', value: 'a'}
@@ -25,10 +25,10 @@ describe('core/selector/property-spec', function () {
 
             it('makes syntax tree for "a.b"', function () {
                 expectSyntax('a.b').toEqual({
-                    type: 'get',
+                    type: 'getProperty',
                     args: [
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 'a'}
@@ -45,10 +45,10 @@ describe('core/selector/property-spec', function () {
 
             it('makes syntax tree for "array.0"', function () {
                 expectSyntax('array.0').toEqual({
-                    type: 'get',
+                    type: 'getProperty',
                     args: [
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 'array'}
@@ -74,14 +74,14 @@ describe('core/selector/property-spec', function () {
                     type: 'map',
                     args: [
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 'array'}
                             ]
                         },
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 'foo'}
@@ -111,7 +111,7 @@ describe('core/selector/property-spec', function () {
                     type: 'sorted',
                     args: [
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 'array'}
@@ -131,14 +131,14 @@ describe('core/selector/property-spec', function () {
                             type: 'map',
                             args: [
                                 {
-                                    type: 'get',
+                                    type: 'getProperty',
                                     args: [
                                         {type: 'value'},
                                         {type: 'literal', value: 'array'}
                                     ]
                                 },
                                 {
-                                    type: 'get',
+                                    type: 'getProperty',
                                     args: [
                                         {type: 'value'},
                                         {type: 'literal', value: 'foo'}
@@ -162,14 +162,14 @@ describe('core/selector/property-spec', function () {
                     type: 'array',
                     terms: [
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 'a'}
                             ]
                         },
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 'b'}
@@ -184,21 +184,21 @@ describe('core/selector/property-spec', function () {
                     type: 'array',
                     terms: [
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 10}
                             ]
                         },
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 20}
                             ]
                         },
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 30}
@@ -213,7 +213,7 @@ describe('core/selector/property-spec', function () {
                     type: 'array',
                     terms: [
                         {
-                            type: 'get',
+                            type: 'getProperty',
                             args: [
                                 {type: 'value'},
                                 {type: 'literal', value: 10}
@@ -404,9 +404,9 @@ describe('core/selector/property-spec', function () {
 
             it('merges property tokens with surrounding syntax', function () {
                 expect(Selector.property('a.b').equals('c').tokens).toEqual([
-                    {type: 'get'},
+                    {type: 'getProperty'},
                     {type: 'literal', value: 'a'},
-                    {type: 'get'},
+                    {type: 'getProperty'},
                     {type: 'literal', value: 'b'},
                     {type: 'equals'},
                     {type: 'literal', value: 'c'},

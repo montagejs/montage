@@ -81,7 +81,7 @@ describe('core/selector-spec', function () {
                     "type": "and",
                     "args": [
                         {
-                            "type": "get",
+                            "type": "getProperty",
                             "args": [
                                 {
                                     "type": "parameters",
@@ -93,7 +93,7 @@ describe('core/selector-spec', function () {
                             ]
                         },
                         {
-                            "type": "get",
+                            "type": "getProperty",
                             "args": [
                                 {
                                     "type": "parameters",
@@ -175,10 +175,10 @@ describe('core/selector-spec', function () {
                         type: 'equals',
                         args: [
                             {
-                                type: 'get',
+                                type: 'getProperty',
                                 args: [
                                     {
-                                        type: 'get',
+                                        type: 'getProperty',
                                         args: [
                                             {type: 'value'},
                                             {type: 'literal', value: 'a'}
@@ -725,7 +725,7 @@ describe('core/selector-spec', function () {
 
             it('parses single parameter', function () {
                 assert(Selector.parameter('a').syntax, {
-                    type: 'get',
+                    type: 'getProperty',
                     args: [
                         {type: 'parameters'},
                         {type: 'literal', value: 'a'}
@@ -773,10 +773,10 @@ describe('core/selector-spec', function () {
                             "type": "equals",
                             "args": [
                                 {
-                                    "type": "get",
+                                    "type": "getProperty",
                                     "args": [
                                         {
-                                            "type": "get",
+                                            "type": "getProperty",
                                             "args": [
                                                 {
                                                     "type": "value"
@@ -803,7 +803,7 @@ describe('core/selector-spec', function () {
                             "type": "equals",
                             "args": [
                                 {
-                                    "type": "get",
+                                    "type": "getProperty",
                                     "args": [
                                         {
                                             "type": "value"
@@ -957,7 +957,5 @@ describe('core/selector-spec', function () {
             expect(Selector.flatten.unique.evaluate([[1, 2], [3, 2]])).toEqual([1, 2, 3]);
         });
     });
-
-    require("./selector/property-spec");
 
 });

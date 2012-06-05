@@ -47,17 +47,21 @@ var AbstractLanguage = exports.AbstractLanguage = Montage.create(Montage, {
         value: function (names) {
             var self = this;
             return names.reduce(function (accumulated, name) {
-                if (!self.tokens[name]) {
-                    self.tokens[name] =
-                        self.tokenMemo[name] =
-                        self.tokenMemo[name] || {type: name};
+                if (!Object.has(self.tokens, name)) {
+                    self.tokens[name] = Object.getset(
+                        self.tokenMemo,
+                        name,
+                        {type: name}
+                    );
                     self.tokenNames.push(name);
-                    if (self.reverseAliases[name]) {
-                        return accumulated
+                    if (Object.has(self.reverseAliases, name)) {
+                        return (
+                            accumulated
                             .concat([name])
                             .concat(
                                 self.requireTokens(self.reverseAliases[name])
-                            );
+                            )
+                        );
                     }
                 }
                 return accumulated.concat([name]);

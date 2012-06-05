@@ -42,12 +42,15 @@ if (spec) {
         "core/promise-queue-spec",
         "core/promise-connection-spec",
         "core/next-tick-spec",
-        "core/selector-spec",
 
         "core/extras/array",
         "core/extras/function",
         "core/extras/object",
         "core/extras/string",
+
+        "core/selector-spec",
+        "core/selector/observer-spec",
+        "core/selector/property-spec",
 
         "data/blueprint-spec",
         "data/context-spec",

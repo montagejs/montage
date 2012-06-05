@@ -25,7 +25,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
         value: {
 
             // properties
-            get: function (observeObject, observeKey) {
+            getProperty: function (observeObject, observeKey) {
 
                 return function (value, parameters, callback, errback) {
                     return observeKey(
@@ -43,7 +43,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                                         if (_cancel) {
                                             _cancel();
                                         }
-                                        _cancel = callback(Object.get(object, key));
+                                        _cancel = callback(object[key]);
                                     };
 
                                     onchange();
@@ -190,7 +190,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                 });
                 observe = makeFixedLengthArrayObserver(termEvaluators);
             } else if (Object.has(self.compilers, syntax.type)) {
-                var compiler = self.compilers[syntax.type];
+                var compiler = Object.get(self.compilers, syntax.type);
                 var length = compiler.length;
                 var argEvaluators = syntax.args.map(function (child) {
                     return self.compile(child, syntax);
@@ -302,7 +302,9 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
 var compilers = ObserverSemantics.compilers;
 var operators = Semantics.operators;
 Object.forEach(operators, function (operator, name) {
-    compilers[name] = makeOperatorCompiler(operator);
+    if (!Object.has(compilers, name)) {
+        compilers[name] = makeOperatorCompiler(operator);
+    }
 });
 
 function makeOperatorCompiler(operator) {
