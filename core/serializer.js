@@ -116,7 +116,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 }
             }
 
-            serialization = this._getSerialization(this._serializedObjects);
+            this._cleanupExternalObjects();
+            serialization = this._getSerialization(this._serializedObjects, this._externalObjects);
             //console.log(serialization);
             // save the require used for this serialization
             this._require = require;
@@ -291,17 +292,22 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
      @returns {object} The dictionary of external objects {label: object}
      */
     getExternalObjects: {value: function() {
-        var externalObjects = this._externalObjects;
+        return this._externalObjects;
+    }},
 
-        for (var label in externalObjects) {
-            var object = externalObjects[label];
-            if (this._serializedObjects[label]) {
-                delete externalObjects[label];
+    _cleanupExternalObjects: {
+        value: function() {
+            var externalObjects = this._externalObjects,
+                serializedObjects = this._serializedObjects;
+
+            for (var label in externalObjects) {
+                var object = externalObjects[label];
+                if (serializedObjects[label]) {
+                    delete externalObjects[label];
+                }
             }
         }
-
-        return externalObjects;
-    }},
+    },
 
     /**
      Returns a list of the external elements that were referenced in the last serialization.
@@ -315,7 +321,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     /**
      @private
      */
-    _getSerialization: {value: function(objects) {
+    _getSerialization: {value: function(objects, externalObjects) {
         var objectsString = [],
             propsString,
             serialization = "",
@@ -335,6 +341,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 propsString.push('"' + prop + '":' + object[prop]);
             }
             objectsString.push('"' + key + '":{\n    ' + propsString.join(",\n    ") + '}');
+        }
+
+        for (var key in externalObjects) {
+            objectsString.push('"' + key + '":{}');
         }
 
         if (objectsString.length > 0) {
