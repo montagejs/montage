@@ -319,10 +319,21 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     */
     instantiateWithOwnerAndDocument: {
         value: function(owner, targetDocument, callback) {
+            return this.instantiateWithInstancesAndDocument({owner: owner}, targetDocument, callback);
+        }
+    },
+
+    instantiateWithInstancesAndDocument: {
+        value: function(instances, targetDocument, callback) {
             var self = this;
 
-            this._partiallyInstantiateWithInstancesForDocument({owner: owner}, targetDocument, function(objects) {
+            this._partiallyInstantiateWithInstancesForDocument(instances, targetDocument, function(objects) {
                 if (objects) {
+                    // TODO: this should be in the same function that creates them but
+                    // then I would always have to create another function just for
+                    // that... let's sneak it in here for the time being..
+                    delete instances.application;
+                    delete instances.template;
                     self._invokeTemplateDidLoad(objects);
                 }
                 self.waitForStyles(function() {
