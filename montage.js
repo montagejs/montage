@@ -149,7 +149,7 @@ if (typeof window !== "undefined") {
                     // avoid attempting to initialize a non-object
                     if (!(object instanceof Object)) {
                     // avoid attempting to reinitialize an aliased property
-                    } else if (object.hasOwnProperty("_montage_metadata")) {
+                    } else if (object.hasOwnProperty("_montage_metadata") && !object._montage_metadata.isInstance) {
                         object._montage_metadata.aliases.push(name);
                         object._montage_metadata.objectName = name;
                     } else if (!Object.isSealed(object)) {

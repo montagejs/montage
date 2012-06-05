@@ -45,5 +45,14 @@ function() {
             expect(info.isInstance).toBeTruthy();
             expect(info.moduleId).toBe("core/testobjects");
         });
+
+        it("should describe a class object that accessed getInfoForObject before being exported",
+        function() {
+            var info = Montage.getInfoForObject(objects.FunkyProto);
+
+            expect(info.objectName).toBe("FunkyProto");
+            expect(info.isInstance).toBeFalsy();
+            expect(info.moduleId).toBe("core/testobjects");
+        });
     });
 });

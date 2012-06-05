@@ -31,7 +31,8 @@
             "componentToBeCleaned": {"@": "componentToBeCleaned"},
             "text1": {"@": "text1"},
             "componentDrawsParent": {"@": "componentDrawsParent"},
-            "componentParent": {"@": "componentParent"}
+            "componentParent": {"@": "componentParent"},
+            "componentWithDelegate": {"@": "componentWithDelegate"}
         }
     },
     "repetition": {
@@ -170,6 +171,13 @@
         "prototype": "montage/ui/component",
         "properties": {
             "element": {"#": "parentComponent"},
+            "hasTemplate": false
+        }
+    },
+    "componentWithDelegate": {
+        "prototype": "montage/ui/component",
+        "properties": {
+            "delegate": {"@": "owner"},
             "hasTemplate": false
         }
     },

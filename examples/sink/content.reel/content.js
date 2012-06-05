@@ -27,7 +27,6 @@ exports.Content = Montage.create(Component, {
         },
         set: function(value) {
             this._selectedItem = value;
-            Notifier.show('Loading ... please wait');
             this.needsDraw = true;
         }
     },
@@ -42,12 +41,6 @@ exports.Content = Montage.create(Component, {
             if(componentShown && typeof componentShown.didBecomeActiveInSlot === 'function') {
                 componentShown.didBecomeActiveInSlot();
             }
-        }
-    },
-
-    draw: {
-        value: function() {
-            Notifier.hide();
         }
     }
 

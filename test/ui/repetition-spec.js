@@ -31,6 +31,39 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             delegate = application.delegate;
         });
 
+        it("should expect unloaded new iterations to be present during the draw", function() {
+            var list14 = querySelector(".list14").controller,
+                willDraw = list14.willDraw,
+                draw = list14.draw,
+                didThrow = false;
+
+            spyOn(list14, "willDraw").andCallFake(function() {
+                list14._iterationTemplate._deserializer._compiledDeserializationFunctionString = null;
+                list14._iterationTemplate._deserializer._areModulesLoaded = false;
+                list14._iterationTemplate._deserializer._modules = {};
+                list14.objects.push(2);
+                if (willDraw) {
+                    return willDraw.apply(this, arguments);
+                }
+            });
+
+            spyOn(list14, "draw").andCallFake(function() {
+                try {
+                    draw.apply(this, arguments);
+                } catch (ex) {
+                    didThrow = true;
+                }
+            });
+
+
+            list14.objects = [1];
+
+            testPage.waitForComponentDraw(list14);
+            runs(function() {
+                expect(didThrow).toBe(false);
+            });
+        });
+
         describe("main document template", function() {
             it("should empty inner markup and populate with the bindings value", function() {
                 runs(function() {
