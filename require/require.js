@@ -183,8 +183,8 @@
             // Modules should never have a return value.
             if (returnValue !== void 0) {
                 console.warn(
-                    'require: module ' + JSON.stringify(topId) +
-                    ' returned a value.'
+                    "require: module " + JSON.stringify(topId) +
+                    " returned a value."
                 );
             }
 
@@ -273,6 +273,10 @@
                 Require.injectPackageDescription(location, description, config);
             };
 
+            require.injectPackageDescriptionLocation = function (location, descriptionLocation) {
+                Require.injectPackageDescriptionLocation(location, descriptionLocation, config);
+            };
+
             require.identify = identify;
             require.inject = inject;
             require.progress = Require.progress;
@@ -297,17 +301,35 @@
     };
 
     Require.injectPackageDescription = function (location, description, config) {
-        var descriptions = config.descriptions = config.descriptions || {};
+        var descriptions =
+            config.descriptions =
+                config.descriptions || {};
         descriptions[location] = Promise.call(function () {
             return description;
         });
     };
 
+    Require.injectPackageDescriptionLocation = function (location, descriptionLocation, config) {
+        var descriptionLocations =
+            config.descriptionLocations =
+                config.descriptionLocations || {};
+        descriptionLocations[location] = descriptionLocation;
+    };
+
     Require.loadPackageDescription = function (location, config) {
-        var descriptions = config.descriptions = config.descriptions || {};
+        var descriptions =
+            config.descriptions =
+                config.descriptions || {};
         if (descriptions[location] === void 0) {
-            var jsonPath = URL.resolve(location, 'package.json');
-            descriptions[location] = Require.read(jsonPath)
+            var descriptionLocations =
+                config.descriptionLocations =
+                    config.descriptionLocations || {};
+            if (descriptionLocations[location]) {
+                descriptionLocation = descriptionLocations[location];
+            } else {
+                descriptionLocation = URL.resolve(location, "package.json");
+            }
+            descriptions[location] = Require.read(descriptionLocation)
             .then(function (json) {
                 try {
                     return JSON.parse(json);
