@@ -13,8 +13,26 @@ var Montage = require("montage").Montage,
     RichTextLinkPopup = require("../overlays/rich-text-linkpopup.reel").RichTextLinkPopup,
     RichTextResizer = require("../overlays/rich-text-resizer.reel").RichTextResizer,
     ChangeNotification = require("core/change-notification").ChangeNotification,
-    PropertyChangeNotification = require("core/change-notification").PropertyChangeNotification,
     defaultUndoManager = require("core/undo-manager").defaultUndoManager;
+
+
+/** static variables, constants
+ */
+var COMMANDS = [
+        {property: "bold"},
+        {property: "underline"},
+        {property: "italic"},
+        {property: "strikeThrough"},
+        {property: "baselineShift", method: this._baselineShiftGetState},
+        {property: "justify", method: this._justifyGetState},
+        {property: "listStyle", method: this._listStyleGetState},
+        {property: "fontName", method: this._fontNameGetState},
+        {property: "fontSize"},
+        {property: "backColor"},
+        {property: "foreColor"}
+    ],
+    NBR_COMMANDS = COMMANDS.length;
+
 
 /**
     @class module:"montage/ui/rich-text-editor.reel".RichTextEditorBase
@@ -497,19 +515,6 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         enumerable: true,
         value: function() {
             var thisRef = this,
-                commands = [{property: "bold"},
-                            {property: "underline"},
-                            {property: "italic"},
-                            {property: "strikeThrough"},
-                            {property: "baselineShift", method: this._baselineShiftGetState},
-                            {property: "justify", method: this._justifyGetState},
-                            {property: "listStyle", method: this._listStyleGetState},
-                            {property: "fontName", method: this._fontNameGetState},
-                            {property: "fontSize"},
-                            {property: "backColor"},
-                            {property: "foreColor"}
-                ],
-                nbrCommands = commands.length,
                 command,
                 commandName,
                 propertyName,
@@ -519,8 +524,8 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 descriptor,
                 i;
 
-            for (i = 0; i < nbrCommands; i ++) {
-                command = commands[i];
+            for (i = 0; i < NBR_COMMANDS; i ++) {
+                command = COMMANDS[i];
 
                 if (typeof command == "object") {
                     propertyName = command.property;
