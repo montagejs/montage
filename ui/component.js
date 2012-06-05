@@ -35,6 +35,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
+    templateObjects: {
+        value: null
+    },
+
     parentProperty: {
         serializable: true,
         value: "parentComponent"
@@ -884,9 +888,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
         if (!this._isTemplateInstantiated) {
             this._loadTemplate(function(template) {
+                var instances = self.templateObjects;
+
+                if (instances) {
+                    instances.owner = self;
+                } else {
+                    instances = {owner: self};
+                }
+
                 // this actually also serves as isTemplateInstantiating
                 self._isTemplateInstantiated = true;
-                template.instantiateWithComponent(self, function() {
+                template.instantiateWithInstancesAndDocument(instances, self._element.ownerDocument, function() {
                     if (callback) {
                         callback();
                     }
