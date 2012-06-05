@@ -27,14 +27,12 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
             // properties
             getProperty: function (observeObject, observeKey) {
 
-                return function (value, parameters, callback, errback) {
+                return function (value, callback, errback, parameters) {
                     return observeKey(
                         value,
-                        parameters,
                         function keyChange(key) {
                             return observeObject(
                                 value,
-                                parameters,
                                 function objectChange(object) {
 
                                     var _cancel;
@@ -58,43 +56,45 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                                     };
 
                                 },
-                                errback
+                                errback,
+                                parameters
                             );
                         },
-                        errback
+                        errback,
+                        parameters
                     );
 
                 };
             },
 
             "if": function (observeGuard, observeConsequent, observeAlternate) {
-                return function (value, parameters, callback, errback) {
-                    return observeGuard(value, parameters, function (guard) {
+                return function (value, callback, errback, parameters) {
+                    return observeGuard(value, function (guard) {
                         if (guard === true) {
-                            return observeConsequent(value, parameters, callback, errback);
+                            return observeConsequent(value, callback, errback, parameters);
                         } else if (guard === false) {
-                            return observeAlternate(value, parameters, callback, errback);
+                            return observeAlternate(value, callback, errback, parameters);
                         } else {
                             errback(new Error("Expected true or false"));
                         }
-                    }, errback);
+                    }, errback, parameters);
                 };
             },
 
             it: function (observeIt, observeTransform) {
-                return function (value, parameters, callback, errback) {
+                return function (value, callback, errback, parameters) {
                     return observeIt(
                         value,
-                        parameters,
                         function (it) {
                             return observeTransform(
                                 it,
-                                parameters,
                                 callback,
-                                errback
+                                errback,
+                                parameters
                             );
                         },
-                        errback
+                        errback,
+                        parameters
                     );
                 };
             },
@@ -173,15 +173,15 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
             var self = this;
             var observe;
             if (syntax.type === 'value') {
-                observe = function (value, parameters, callback) {
+                observe = function (value, callback) {
                     return callback(value);
                 };
             } else if (syntax.type === 'parameters') {
-                observe = function (value, parameters, callback) {
+                observe = function (value, callback, errback, parameters) {
                     return callback(parameters);
                 };
             } else if (syntax.type === 'literal') {
-                observe = function (value, parameters, callback) {
+                observe = function (value, callback) {
                     return callback(syntax.value);
                 };
             } else if (syntax.type === 'array') {
@@ -200,12 +200,11 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                 // converting all argEvaluators into lower-case argEvaluators.
                 if (syntax.insensitive) {
                     argEvaluators = argEvaluators.map(function (observeArg) {
-                        return function (value, parameters, callback, errback) {
+                        return function (value, callback, errback, parameters) {
                             var subcancel;
                             var cancel = observeArg.call(
                                 self,
                                 value,
-                                parameters,
                                 function _callback(value) {
                                     if (subcancel) {
                                         subcancel();
@@ -217,7 +216,8 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                                         subcancel();
                                     }
                                     subcancel = errback(exception);
-                                }
+                                },
+                                parameters
                             );
                             return function () {
                                 if (subcancel) {
@@ -235,7 +235,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                 // functions, and so canceled observers can no longer propagate
                 // through the callback
                 var _observe = compiler.apply(self, argEvaluators);
-                observe = function observe(value, parameters, callback, errback) {
+                observe = function observe(value, callback, errback, parameters) {
                     var _subcancel, canceled;
                     var _callback = function (value) {
                         if (canceled) {
@@ -274,7 +274,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                             _cancel();
                         }
                     };
-                    var _cancel = _observe(value, parameters, _callback, _errback);
+                    var _cancel = _observe(value, _callback, _errback, parameters);
                     return cancel;
                 };
 
@@ -284,14 +284,14 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
 
             // dance to make sure that an observed promise does not get
             // observed until fulfilled
-            return function (value, parameters, callback, errback) {
-                return observe(value, parameters, function (value) {
+            return function (value, callback, errback, parameters) {
+                return observe(value, function (value) {
                     if (Promise.isPromise(value)) {
                         value.then(callback, errback).end();
                     } else {
                         return callback(value);
                     }
-                }, errback);
+                }, errback, parameters);
             };
         }
     },
@@ -311,14 +311,14 @@ function makeOperatorCompiler(operator) {
     return function () {
         var argumentObservers = Array.prototype.slice.call(arguments, 0, operator.length);
         var observeArguments = makeFixedLengthArrayObserver(argumentObservers);
-        return function (value, parameters, callback, errback) {
+        return function (value, callback, errback, parameters) {
             return observeArguments(
                 value,
-                parameters,
                 function (args) {
                     return callback(operator.apply(Semantics, args));
                 },
-                errback
+                errback,
+                parameters
             );
         };
     };
@@ -328,10 +328,9 @@ function makeOperatorCompiler(operator) {
 // 'sum', 'count', 'any', 'all'
 function makeNoArgumentsMethodCompiler(name) {
     return function (observeCollection, observeContinuation) {
-        return function (value, parameters, callback, errback) {
+        return function (value, callback, errback, parameters) {
             return observeCollection(
                 value,
-                parameters,
                 function (collection) {
 
                     var _subcancel;
@@ -346,9 +345,9 @@ function makeNoArgumentsMethodCompiler(name) {
                         try {
                             _subcancel = observeContinuation(
                                 collection[name](),
-                                parameters,
                                 callback,
-                                errback
+                                errback,
+                                parameters
                             );
                         } catch (exception) {
                             _subcancel = errback(exception);
@@ -364,7 +363,8 @@ function makeNoArgumentsMethodCompiler(name) {
                         collection.removePropertyChangeListener(null, onchange);
                     };
                 },
-                errback
+                errback,
+                parameters
             );
         };
     };
@@ -372,10 +372,9 @@ function makeNoArgumentsMethodCompiler(name) {
 
 function makeReductionCompiler(operation, makeBasis) {
     return function (observeCollection, observeTranslation) {
-        return function (value, parameters, callback, errback) {
+        return function (value, callback, errback, parameters) {
             return observeCollection(
                 value,
-                parameters,
                 function (collection) {
                     var subcancel;
 
@@ -401,7 +400,6 @@ function makeReductionCompiler(operation, makeBasis) {
                         collection.forEach(function (item, index) {
                             cancelers.push(observeTranslation(
                                 item,
-                                parameters,
                                 function (mappedItem) {
                                     if (count >= 0) {
                                         basis = operation(basis, mappedItem, index, item);
@@ -414,7 +412,8 @@ function makeReductionCompiler(operation, makeBasis) {
                                         onchange();
                                     }
                                 },
-                                errback
+                                errback,
+                                parameters
                             ));
                         });
                     };
@@ -433,7 +432,8 @@ function makeReductionCompiler(operation, makeBasis) {
                     };
 
                 },
-                errback
+                errback,
+                parameters
             );
         };
     };
@@ -442,17 +442,23 @@ function makeReductionCompiler(operation, makeBasis) {
 function makeFixedLengthArrayObserver(observers) {
     var array = new Array(observers.length);
     var observer = makeIncrementalFixedLengthArrayObserver(observers);
-    return function (value, parameters, callback, errback) {
-        return observer(value, parameters, function () {
-            callback(array);
-        }, errback, function (item, index) {
-            array[index] = item;
-        });
+    return function (value, callback, errback, parameters) {
+        return observer(
+            value,
+            function _callback() {
+                callback(array);
+            },
+            errback,
+            function _itemback(item, index) {
+                array[index] = item;
+            },
+            parameters
+        );
     };
 }
 
 function makeIncrementalFixedLengthArrayObserver(observers) {
-    return function (value, parameters, callback, errback, itemback) {
+    return function (value, callback, errback, itemback, parameters) {
         var canceled = false;
         var cancelers = [];
         var _callback = function () {
@@ -478,7 +484,7 @@ function makeIncrementalFixedLengthArrayObserver(observers) {
         };
         var count = observers.length;
         observers.forEach(function (observe, index) {
-            cancelers.push(observe(value, parameters, function onchange(item) {
+            cancelers.push(observe(value, function onchange(item) {
                 if (itemback) {
                     itemback(item, index);
                 }
@@ -486,7 +492,7 @@ function makeIncrementalFixedLengthArrayObserver(observers) {
                 if (count <= 0) {
                     _callback();
                 }
-            }, _errback));
+            }, _errback, parameters));
         });
         return cancel;
     };

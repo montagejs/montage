@@ -96,7 +96,7 @@ var AbstractLanguage = exports.AbstractLanguage = Montage.create(Montage, {
         value: function (type, args, insensitive, negated) {
             var self = this;
 
-            while (self.aliases.hasOwnProperty(type)) {
+            while (Object.has(self.aliases, type)) {
                 type = self.aliases[type];
             }
             var syntax = {

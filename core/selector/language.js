@@ -30,7 +30,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             });
 
             // scalar
-            this.parseProperties();
+            this.parseLeftToRight(['getProperty']);
             this.parseLeftToRight(['startsWith', 'endsWith', 'contains']);
             this.parseLeftToRight(['pow']);
             this.parseLeftToRight(['mul', 'div', 'mod']);
@@ -90,7 +90,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
     selectorExtras: {
         value: {
 
-            // Shorthand for chained gets
+            // Shorthand for chained property gets
             property: {
                 value: function (path) {
                     try {
@@ -101,11 +101,26 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                         })
                         return self;
                     } catch (exception) {
-                        throw exception; // TODO remove
-                        throw new SyntaxError(
-                            "Can't parse property: " + JSON.stringify(path) + ": " +
-                            exception.message
-                        );
+                        exception.message = "Can't parse property, " + JSON.stringify(path) + ": " + exception.message;
+                        throw exception;
+                    }
+                }
+            },
+
+            // Shorthand for chained parameter property gets
+            parameter: {
+                value: function (path) {
+                    try {
+                        var self = this;
+                        self = self.emit(self.language.tokens.parameters);
+                        var syntax = PropertyLanguage.parse(path);
+                        PropertyLanguage.reemit(syntax, function (token) {
+                            self = self.emit(token);
+                        })
+                        return self;
+                    } catch (exception) {
+                        exception.message = "Can't parse parameter, " + JSON.stringify(path) + ": " + exception.message;
+                        throw exception;
                     }
                 }
             },
@@ -170,8 +185,8 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                     return rewindNegation(callback(self.tokens.parameters));
                 } else if (token.type === 'literal') {
                     return callback(token, negated);
-                } else if (self.constants[token.type]) {
-                    return callback(self.constantSyntax[token.type], negated);
+                } else if (Object.has(self.constants, token.type)) {
+                    return callback(Object.get(self.constantSyntax, token.type), negated);
                 } else {
                     return rewindNegation(
                         callback(
@@ -187,7 +202,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
     parsePrimary: {
         value: function (parseExpression) {
             var self = this;
-            self.requireTokens(['begin', 'end', 'value', 'literal', 'parameter', 'not']);
+            self.requireTokens(['begin', 'end', 'value', 'literal', 'parameters', 'not']);
             return self.precedence(function () { // first level of precedence
                 return function (callback) {
                     return self.optional('not', function (negated, rewindNegation) {
@@ -200,30 +215,6 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                     });
                 }
             });
-        }
-    },
-
-    parseProperties: {
-        value: function () {
-            var self = this;
-            self.requireTokens(['getProperty']);
-            var parseSelf = self.precedence(function (parsePrevious) {
-                return function (callback, previous) {
-                    return function (token) {
-                        if (token.type === 'getProperty') {
-                            return self.expect('literal', function (literal) {
-                                previous = self.makeSyntax('getProperty', [previous || self.tokens.value, literal]);
-                                return parseSelf(callback, previous);
-                            });
-                        } else if (previous) {
-                            return callback(previous)(token);
-                        } else {
-                            return parsePrevious(callback)(token);
-                        }
-                    }
-                };
-            });
-            return parseSelf;
         }
     },
 

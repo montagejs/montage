@@ -262,8 +262,9 @@ describe('core/selector/observer-spec', function () {
                 var spy = jasmine.createSpy();
                 var cancel = test.selector.observe(
                     test.object,
-                    test.parameters,
-                    spy
+                    spy,
+                    null,
+                    test.parameters
                 );
                 if (test.test) {
                     test.test(test.object, test.parameters, cancel);
@@ -282,7 +283,7 @@ describe('core/selector/observer-spec', function () {
             setTimeout(function () {
                 postponed.resolve(10);
             }, 100);
-            Selector.value.observe(postponed.promise, null, function (value) {
+            Selector.value.observe(postponed.promise, function (value) {
                 expect(value).toEqual(10);
                 observed.resolve();
             });

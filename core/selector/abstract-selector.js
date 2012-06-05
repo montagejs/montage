@@ -195,9 +195,9 @@ var selectorProperties = {
     compileObserver: {
         value: function () {
             if (!this.parser) {
-                return function (value, parameters, callback) {
+                return function (value, callback) {
                     callback(value);
-                    return function () {};
+                    return Function.noop;
                 };
             } else {
                 return this.language.observerSemantics.compile(this.syntax);
@@ -206,8 +206,8 @@ var selectorProperties = {
     },
 
     observe: {
-        value: function (value, parameters, callback, errback) {
-            return this.compileObserver()(value, parameters, callback, errback);
+        value: function (value, callback, errback, parameters) {
+            return this.compileObserver()(value, callback, errback, parameters);
         }
     }
 

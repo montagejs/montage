@@ -7,6 +7,7 @@
 var AbstractLanguage = require('./abstract-language').AbstractLanguage;
 var Parser = require('./parser').Parser;
 var Semantics = require('./semantics').Semantics;
+var ObserverSemantics = require('./observer-semantics').ObserverSemantics;
 var LANGUAGE = require('./language'); // late bound for dependency cycle
 
 var VALUE = 'value';
@@ -25,6 +26,10 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
 
     semantics: {
         value: Semantics
+    },
+
+    observerSemantics: {
+        value: ObserverSemantics
     },
 
     stringToToken: {
@@ -355,6 +360,19 @@ var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(Abstra
     evaluate: {
         value: function (string, value) {
             return this.compile(string)(value);
+        }
+    },
+
+    compileObserver: {
+        value: function () {
+            var syntax = this.parse(string);
+            return this.observerSemantics.compile(syntax);
+        }
+    },
+
+    observe: {
+        value: function () {
+            return this.compileObserver().apply(void 0, arguments);
         }
     }
 
