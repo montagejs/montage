@@ -1,0 +1,67 @@
+
+
+/* App ----------------------------------- */
+
+.app {
+    width: 800px;
+    height: 383px;
+    resize: both;
+    overflow: hidden;
+    border: 1px solid hsl(0,0%,70%);
+	margin-bottom: 100px;
+}
+
+.nav {
+	border-right: 1px solid hsl(0,0%,70%);
+}
+
+.side {
+	border-right: 1px solid hsl(0,0%,70%);
+}
+
+
+.title {
+    margin: 0;
+    font-size: 16px;
+    padding: 10px 15px;
+	background: hsl(0,0%,95%);
+    border-bottom: 1px solid hsl(0,0%,80%);
+}
+
+.reply {
+    padding: 15px;
+	background-color: hsl(0,0%,90%);
+    border-bottom: 1px solid hsl(0,0%,80%);
+    text-align: right;
+}
+
+.reply textarea.skeleton {
+    width: 100%;
+    height: 60px;
+}
+
+.buttons {
+    margin-top: 5px;
+    text-align: right;
+}
+
+.detail {
+    padding: 15px;
+	background-color: hsl(0,0%,100%);
+}
+
+
+
+/* Scrollbar -------------------------------- */
+
+::-webkit-scrollbar {
+    -webkit-appearance: none;
+    width: 0px;
+    height: 4px;
+    background-color: hsl(0,0%,80%);
+}
+
+::-webkit-scrollbar-thumb {
+    background-clip:padding-box;
+    background-color: hsl(0,0%,60%);
+}

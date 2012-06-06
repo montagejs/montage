@@ -1,0 +1,313 @@
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+ 
+<!DOCTYPE html>
+<html>
+
+<head>
+	<title>Montage Layout Styleguide</title>
+	<meta charset="utf-8">
+    <link rel="stylesheet" href="../../../../skeleton/_style-guide/css/skeleton.css">
+    <link rel="stylesheet" href="../../../../skeleton/_style-guide/assets/icons/font-awesome.css">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="layout.css">
+    <link rel="stylesheet" href="splitter.css">
+    <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+    
+    <h1>
+        <span class="txt">Montage</span>
+        <span class="highlight">Layout</span>
+    </h1>
+    
+    <p class="hint">A couple (possible) layout components to match the <span class="highlight">Splitter</span> and <span class="highlight">Skeleton</span>.</p>
+        
+    <h2>Components</h2>
+    
+
+    
+    <h3>Bars</h3>
+    
+    <div class="montage-bar">
+        <button class="skeleton">Button 1</button>
+        <button class="skeleton">Button 2</button>
+        <button class="skeleton">Button 3</button>
+    </div>
+    <div class="montage-bar montage-bar-menu">
+        <a href="">Overview</a>
+        <a href="">Features</a>
+        <a href="">Download</a>
+        <a href="">FAQ</a>
+        <a href="">Login</a>
+    </div>
+    <div class="montage-bar montage-flex-pack-start">
+        <button class="skeleton">Back</button>
+        <h1 class="montage-bar-title montage-splitter-flex">Title</h1>
+        <button class="skeleton">Add</button>
+    </div>
+    <div class="montage-bar montage-flex-pack-justify">
+        <div>
+            <button class="skeleton">Button 1</button>
+            <button class="skeleton">Button 2</button>
+            <button class="skeleton">Button 3</button>
+        </div>
+        <div class="skeleton-input-button">
+            <input type="search" class="skeleton"><button class="skeleton">Search</button>
+        </div>
+    </div>
+    
+    
+    <h3>Paging</h3>
+    
+    <div class="montage-paging">
+        <button class="skeleton icon-chevron-left"></button>
+        <button class="skeleton">1</button>
+        <button class="skeleton">2</button>
+        <button class="skeleton">9</button>
+        <button class="skeleton selected">10</button>
+        <button class="skeleton">11</button>
+        <button class="skeleton">22</button>
+        <button class="skeleton">23</button>
+        <button class="skeleton icon-chevron-right"></button>
+    </div>
+    
+    <ul class="montage-paging">
+        <li class="montage-paging-dot"></li>
+        <li class="montage-paging-dot selected"></li>
+        <li class="montage-paging-dot"></li>
+        <li class="montage-paging-dot"></li>
+        <li class="montage-paging-dot"></li>
+    </ul>
+    
+    
+    
+    
+    <h3>Tabs</h3>
+    
+    <ul class="montage-tabs">
+        <li class="montage-tab">Tab 1</li>
+        <li class="montage-tab">Tab 2</li>
+        <li class="montage-tab">Tab 3</li>
+        <li class="montage-tab">Tab 4</li>
+        <li class="montage-tab">Tab 5</li>
+    </ul>
+    
+    <ul class="montage-tabs montage-tabs-flex">
+        <li class="montage-tab">Tab 1</li>
+        <li class="montage-tab">Tab 2</li>
+        <li class="montage-tab">Tab 3</li>
+        <li class="montage-tab">Tab 4</li>
+        <li class="montage-tab">Tab 5</li>
+    </ul>
+    
+    
+
+    <h3>Side-Bars, Lists</h3>
+    
+    <div class="verticals montage-splitterRow">
+        
+        <div class="montage-bar montage-bar-vertical">
+            <i class="skeleton icon-heart"></i>
+            <i class="skeleton icon-star"></i>
+            <i class="skeleton icon-tag"></i>
+            <i class="skeleton icon-chevron-up"></i>
+            <i class="skeleton icon-chevron-down"></i>
+        </div>
+        
+        <div class="montage-bar montage-bar-vertical">
+            <button class="skeleton icon-heart"></button>
+            <button class="skeleton icon-star"></button>
+            <button class="skeleton icon-tag"></button>
+            <div class="montage-bar-side-divider"></div>
+            <button class="skeleton icon-chevron-up"></button>
+            <button class="skeleton icon-chevron-down"></button>
+        </div>
+        
+        <ul class="montage-list montage-splitter-flex">
+            <li class="montage-list-item">Email 1</li>
+            <li class="montage-list-item">Email 2</li>
+            <li class="montage-list-item">Email 3</li>
+            <li class="montage-list-item">Email 4</li>
+            <li class="montage-list-item">Email 5</li>
+            <li class="montage-list-item">Email 6</li>
+            <li class="montage-list-item">Email 7</li>
+            <li class="montage-list-item">Email 8</li>
+            <li class="montage-list-item">Email 9</li>
+        </ul>
+        
+        <ul class="montage-list montage-splitter-flex">
+            <li class="montage-list-item checked">
+                <input id="checkbox1" type="checkbox" class="skeleton" checked>
+                <label for="checkbox1" class="montage-label">Option 1</label>
+            </li>
+            <li class="montage-list-item checked">
+                <input id="checkbox2" type="checkbox" class="skeleton" checked>
+                <label for="checkbox2" class="montage-label">Option 2</label>
+            </li>
+            <li class="montage-list-item">
+                <input id="checkbox3" type="checkbox" class="skeleton">
+                <label for="checkbox3" class="montage-label">Option 3</label>
+            </li>
+            <li class="montage-list-item checked">
+                <input id="checkbox4" type="checkbox" class="skeleton" checked>
+                <label for="checkbox4" class="montage-label">Option 4</label>
+            </li>
+            <li class="montage-list-item">
+                <input id="checkbox5" type="checkbox" class="skeleton">
+                <label for="checkbox5" class="montage-label">Option 5</label>
+            </li>
+            <li class="montage-list-item">
+                <input id="checkbox6" type="checkbox" class="skeleton">
+                <label for="checkbox6" class="montage-label">Option 6</label>
+            </li>
+            <li class="montage-list-item checked">
+                <input id="checkbox7" type="checkbox" class="skeleton" checked>
+                <label for="checkbox7" class="montage-label">Option 7</label>
+            </li>
+            <li class="montage-list-item checked">
+                <input id="checkbox8" type="checkbox" class="skeleton" checked>
+                <label for="checkbox8" class="montage-label">Option 8</label>
+            </li>
+            <li class="montage-list-item">
+                <input id="checkbox9" type="checkbox" class="skeleton">
+                <label for="checkbox9" class="montage-label">Option 9</label>
+            </li>
+            
+        </ul>
+        
+        <ul class="montage-list montage-splitter-flex">
+            <li class="montage-list-item"><label>Setting 1</label>
+                <span class="skeleton-toggle"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+            <li class="montage-list-item"><label>Setting 2</label>
+                <span class="skeleton-toggle selected"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+            <li class="montage-list-item"><label>Setting 3</label>
+                <span class="skeleton-toggle"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+            <li class="montage-list-item"><label>Setting 4</label>
+                <span class="skeleton-toggle"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+            <li class="montage-list-item"><label>Setting 5</label>
+                <span class="skeleton-toggle selected"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+            <li class="montage-list-item"><label>Setting 6</label>
+                <span class="skeleton-toggle"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+            <li class="montage-list-item"><label>Setting 7</label>
+                <span class="skeleton-toggle"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+            <li class="montage-list-item"><label>Setting 8</label>
+                <span class="skeleton-toggle"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+            <li class="montage-list-item"><label>Setting 9</label>
+                <span class="skeleton-toggle"><span class="skeleton-toggle-thumb"></span></span>
+            </li>
+        </ul>
+        
+        
+    
+    </div>      
+    
+    
+    <h3>Table</h3>
+    
+    <table class="montage-table">
+        <tr>
+            <td>Cell</td>
+            <td>Cell</td>
+            <td>Cell</td>
+        </tr>
+        <tr>
+            <td>Cell</td>
+            <td>Cell</td>
+            <td>Cell</td>
+        </tr>
+        <tr>
+            <td>Cell</td>
+            <td>Cell</td>
+            <td>Cell</td>
+        </tr>
+        <tr>
+            <td>Cell</td>
+            <td>Cell</td>
+            <td>Cell</td>
+        </tr>
+        <tr>
+            <td>Cell</td>
+            <td>Cell</td>
+            <td>Cell</td>
+        </tr>
+    </table>
+    
+    
+    
+    <h2>Example App</h2>
+    
+    <h3>Mail</h3>
+    
+    <div class="app montage-splitterRow">        
+        
+        <!--<nav class="nav montage-bar montage-bar-vertical montage-flex-pack-start">
+            <i class="skeleton icon-heart"></i>
+            <i class="skeleton icon-star"></i>
+            <i class="skeleton icon-tag"></i>
+            <i class="skeleton icon-chevron-up"></i>
+            <i class="skeleton icon-chevron-down"></i>
+        </nav>-->
+        
+        <nav class="nav montage-bar montage-bar-vertical montage-flex-pack-start">
+            <button class="skeleton icon-heart"></button>
+            <button class="skeleton icon-star"></button>
+            <button class="skeleton icon-tag"></button>
+            <div class="montage-bar-side-divider"></div>
+            <button class="skeleton icon-chevron-up"></button>
+            <button class="skeleton icon-chevron-down"></button>
+        </nav>
+        
+        <aside class="side montage-splitterCol" style="-webkit-box-flex:.5;">
+            <header class="montage-bar">Header</header>
+            <ul class="montage-list" style="-webkit-box-flex:1;">
+                <li class="montage-list-item">Email1</li>
+                <li class="montage-list-item">Email2</li>
+                <li class="montage-list-item">Email3</li>
+                <li class="montage-list-item">Email4</li>
+                <li class="montage-list-item">Email5</li>
+                <li class="montage-list-item">Email6</li>
+                <li class="montage-list-item">Email7</li>
+                <li class="montage-list-item">Email8</li>
+                <li class="montage-list-item">Email9</li>
+            </ul>
+            <footer class="montage-bar">Footer</footer>
+        </aside>
+        
+        <section class="montage-splitterCol" style="-webkit-box-flex:1;">
+            <header class="montage-bar">Header</header>
+            <h1 class="title">Title</h1>
+            <div class="reply">
+                <textarea class="skeleton">Reply</textarea>
+                <div class="buttons">
+                    <button class="skeleton cancel">Cancel</button>
+                    <button class="skeleton send">Send</button>
+                </div>
+            </div>
+            <div class="detail" style="-webkit-box-flex:1;">
+                <p>An example app based on the components above, Splitter and Skeleton</p>
+                <p>Could be a Mail App.</p>
+                <p>PS. You can drag my bottom right corner.</p>
+            </div>
+            <footer class="montage-bar">Footer</footer>
+        </section>
+        
+    </div>
+    
+    
+    
+    
+</body>
+</html>

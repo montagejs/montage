@@ -1,0 +1,90 @@
+/* @override http://localhost:8082/montage/lab/sandbox/ui/splitter/_example/index.css */
+
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+@import url(http://fonts.googleapis.com/css?family=Homenaje);
+
+body {
+    margin: 0;
+    color: #444;
+    font: 13px/1.231 sans-serif;
+	background-color: hsl(200,0%,90%);
+	padding: 30px;
+}
+
+body > h1, body > h2, body > h3 {
+    margin: 50px 0 0 0;
+    text-align: center;
+    line-height: 60px;
+    color: #aaa;
+    font-family: 'Homenaje', sans-serif ;
+}
+
+body > h1 {
+    font-size: 50px;
+}
+
+body > h2 {
+    margin: 100px 0 0 0;
+    font-size: 30px;
+    color: #555;
+    border-bottom: 1px dashed #aaa;
+}
+
+body > h3 {
+    font-size: 20px;
+}
+
+.highlight {
+    color: hsl(200,100%,50%);
+}
+
+.hint {
+    font-size: 14px;
+    text-align: center;
+    color: hsl(0,0%,50%);
+    margin-bottom: 50px;
+}
+
+
+/* Non component styles */
+
+body > .montage-bar,
+body > .montage-tabs,
+body > .montage-paging {
+    margin-bottom: 50px;
+}
+
+.verticals {
+    height: 350px;
+}
+
+.verticals > div {
+    height: 100%;
+}
+
+.verticals > div,
+.verticals > ul {
+    margin-right: 40px;
+}
+
+.verticals > ul:last-child {
+    margin-right: 0px;
+}
+
+
+/* Toggle */
+.montage-list-item > .skeleton-toggle  {
+    background: hsl(0,0%,90%);
+}
+.montage-list-item > .skeleton-toggle.selected  {
+    background: hsl(0,0%,70%);
+    border-color: hsl(0,0%,70%);
+}
+.montage-list-item > .skeleton-toggle.selected > .skeleton-toggle-thumb  {
+    left: 24px;
+}
