@@ -4,13 +4,10 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage;
+var ObjectId = require("montage/data/object-id").ObjectId;
+var logger = require("montage/core/logger").logger("test-object-id");
 
-var BinderHelper = require("data/object/binderhelper").BinderHelper;
-var binder = BinderHelper.companyBinder();
-var blueprint = binder.blueprintForPrototype("Person", "data/object/person");
+var TestObjectId = exports.TestObjectId = Montage.create(ObjectId, {
 
-var Person = exports.Person = blueprint.create(Montage, {
-
-    // Token class
 
 });

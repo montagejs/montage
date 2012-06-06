@@ -41,11 +41,8 @@ if (typeof window !== "undefined") {
     }
 })(function (require, exports, module) {
 
-    // The global context object, works for the browser and for node.
-    // XXX Will not work in strict mode
-    var global = (function() {
-        return this;
-    })();
+    // The global context object
+    var global = new Function("return this")();
 
     /**
      * Initializes Montage and creates the application singleton if
@@ -106,12 +103,22 @@ if (typeof window !== "undefined") {
                     });
                 };
 
-                if ('autoPackage' in params) {
+                if ("autoPackage" in params) {
                     montageRequire.injectPackageDescription(location, {
                         dependencies: {
                             montage: "*"
                         }
                     });
+                }
+
+                // handle explicit package.json location
+                if (location.slice(location.length - 5) === ".json") {
+                    var packageDescriptionLocation = location;
+                    location = URL.resolve(location, ".");
+                    montageRequire.injectPackageDescriptionLocation(
+                        location,
+                        packageDescriptionLocation
+                    );
                 }
 
                 return montageRequire.loadPackage(location)
@@ -269,7 +276,7 @@ if (typeof window !== "undefined") {
 
         getConfig: function() {
             return {
-                location: '' + window.location
+                location: "" + window.location
             };
         },
 
@@ -379,7 +386,7 @@ if (typeof window !== "undefined") {
                 }
             };
 
-            global.bootstrap('core/mini-url', urlModuleFactory);
+            global.bootstrap("core/mini-url", urlModuleFactory);
 
             // miniature module system
             var bootModules = {};

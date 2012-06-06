@@ -17,7 +17,7 @@ Require.getLocation = function() {
     return URL.resolve(window.location, ".");
 };
 
-Require.overlays = ["browser", "montage"];
+Require.overlays = ["window", "browser", "montage"];
 
 // Due to crazy variabile availability of new and old XHR APIs across
 // platforms, this implementation registers every known name for the event
@@ -116,8 +116,6 @@ Require.Compiler = function (config) {
         // module.factory = new Function("require", "exports", "module", module.text + "\n//*/"+sourceURLComment);
 
         module.factory.displayName = displayName;
-
-        return module;
     }
 };
 

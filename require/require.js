@@ -8,12 +8,24 @@
 
     // Boostrapping Browser
     if (typeof bootstrap !== "undefined") {
-        bootstrap("require/require", function (require, exports) {
-            var Promise = require("core/promise").Promise;
-            var URL = require("core/mini-url");
-            definition(exports, Promise, URL);
-            require("require/browser");
-        });
+
+        // Window
+        if (typeof window !== "undefined") {
+            bootstrap("require/require", function (require, exports) {
+                var Promise = require("core/promise").Promise;
+                var URL = require("core/mini-url");
+                definition(exports, Promise, URL);
+                require("require/browser");
+            });
+
+        // Worker
+        } else {
+            bootstrap("require/require", function (require, exports) {
+                var Promise = require("core/promise").Promise;
+                var URL = require("core/url");
+                definition(exports, Promise, URL);
+            });
+        }
 
     // Node Server
     } else if (typeof process !== "undefined") {
@@ -183,8 +195,8 @@
             // Modules should never have a return value.
             if (returnValue !== void 0) {
                 console.warn(
-                    'require: module ' + JSON.stringify(topId) +
-                    ' returned a value.'
+                    "require: module " + JSON.stringify(topId) +
+                    " returned a value."
                 );
             }
 
@@ -258,6 +270,8 @@
                 return resolve(id, viaId);
             };
 
+            require.getModule = getModule;
+
             require.load = load;
             require.deepLoad = deepLoad;
 
@@ -269,8 +283,16 @@
                 }
             };
 
+            require.getPackage = function (dependency) {
+                return config.getPackage(dependency, config);
+            };
+
             require.injectPackageDescription = function (location, description) {
                 Require.injectPackageDescription(location, description, config);
+            };
+
+            require.injectPackageDescriptionLocation = function (location, descriptionLocation) {
+                Require.injectPackageDescriptionLocation(location, descriptionLocation, config);
             };
 
             require.identify = identify;
@@ -282,6 +304,8 @@
             });
 
             require.config = config;
+
+            require.read = Require.read;
 
             return require;
         }
@@ -297,17 +321,35 @@
     };
 
     Require.injectPackageDescription = function (location, description, config) {
-        var descriptions = config.descriptions = config.descriptions || {};
+        var descriptions =
+            config.descriptions =
+                config.descriptions || {};
         descriptions[location] = Promise.call(function () {
             return description;
         });
     };
 
+    Require.injectPackageDescriptionLocation = function (location, descriptionLocation, config) {
+        var descriptionLocations =
+            config.descriptionLocations =
+                config.descriptionLocations || {};
+        descriptionLocations[location] = descriptionLocation;
+    };
+
     Require.loadPackageDescription = function (location, config) {
-        var descriptions = config.descriptions = config.descriptions || {};
+        var descriptions =
+            config.descriptions =
+                config.descriptions || {};
         if (descriptions[location] === void 0) {
-            var jsonPath = URL.resolve(location, 'package.json');
-            descriptions[location] = Require.read(jsonPath)
+            var descriptionLocations =
+                config.descriptionLocations =
+                    config.descriptionLocations || {};
+            if (descriptionLocations[location]) {
+                descriptionLocation = descriptionLocations[location];
+            } else {
+                descriptionLocation = URL.resolve(location, "package.json");
+            }
+            descriptions[location] = Require.read(descriptionLocation)
             .then(function (json) {
                 try {
                     return JSON.parse(json);
@@ -447,6 +489,7 @@
 
         // overlay
         var overlay = description.overlay || {};
+        var layer;
         Require.overlays.forEach(function (engine) {
             if (overlay[engine]) {
                 var layer = overlay[engine];

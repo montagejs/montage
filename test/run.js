@@ -45,12 +45,8 @@ if (spec) {
         "core/selector-spec",
 
         "data/blueprint-spec",
-        "data/context-spec",
         "data/store-spec",
-        "data/selector/property-spec",
-        "data/selector/query-spec",
-        "data/selector/selector-spec",
-        "data/selector/string-selector-spec",
+        "data/context-spec",
         "data/transactionmanager-spec",
 
         "events/eventmanager-spec",
