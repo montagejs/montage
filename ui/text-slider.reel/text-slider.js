@@ -51,6 +51,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     converter: {
+        serializable: true,
         get: function() {
             return this._converter;
         },
@@ -72,6 +73,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 0
     */
     value: {
+        serializable: true,
         get: function() {
             return this._value;
         },
@@ -127,6 +129,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     minValue: {
+        serializable: true,
         get: function() {
             return this._minValue;
         },
@@ -151,6 +154,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     maxValue: {
+        serializable: true,
         get: function() {
             return this._maxValue;
         },
@@ -172,6 +176,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 0.1
     */
     smallStepSize: {
+        serializable: true,
         enumerable: false,
         value: 0.1
     },
@@ -182,6 +187,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 1
     */
     stepSize: {
+        serializable: true,
         enumerable: false,
         value: 1
     },
@@ -192,6 +198,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 10
     */
     largeStepSize: {
+        serializable: true,
         enumerable: false,
         value: 10
     },
@@ -207,6 +214,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     unit: {
+        serializable: true,
         get: function() {
             return this._unit;
         },
@@ -223,6 +231,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         value: []
     },
     units: {
+        serializable: true,
         get: function() {
             return this._units;
         },
@@ -258,15 +267,18 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     // private
 
     _inputElement: {
+        serializable: true,
         enumerable: false,
         value: null
     },
 
     _pressComposer: {
+        serializable: true,
         enumerable: false,
         value: null
     },
     _translateComposer: {
+        serializable: true,
         enumerable: false,
         value: null
     },
