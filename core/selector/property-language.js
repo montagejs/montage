@@ -6,8 +6,6 @@
 
 var AbstractLanguage = require('./abstract-language').AbstractLanguage;
 var Parser = require('./parser').Parser;
-var Semantics = require('./semantics').Semantics;
-var ObserverSemantics = require('./observer-semantics').ObserverSemantics;
 var LANGUAGE = require('./language'); // late bound for dependency cycle
 
 var VALUE = 'value';
@@ -24,12 +22,18 @@ var SORTED = 'sorted';
 
 var PropertyLanguage = exports.PropertyLanguage = AbstractLanguage.create(AbstractLanguage, {
 
+    // lazy because of dependency cycle
     semantics: {
-        value: Semantics
+        get: function () {
+            return require('./semantics').Semantics;
+        }
     },
 
+    // lazy because of dependency cycle
     observerSemantics: {
-        value: ObserverSemantics
+        get: function () {
+            return require('./observer-semantics').ObserverSemantics;
+        }
     },
 
     stringToToken: {

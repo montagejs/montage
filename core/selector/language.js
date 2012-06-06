@@ -6,18 +6,22 @@
 
 var Montage = require("montage").Montage;
 var AbstractLanguage = require("./abstract-language").AbstractLanguage;
-var Semantics = require("./semantics").Semantics;
-var ObserverSemantics = require("./observer-semantics").ObserverSemantics;
-var PropertyLanguage = require("./property-language").PropertyLanguage;
+var PL = require("./property-language");
 
 var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
 
+    // lazy because of dependency cycle
     semantics: {
-        value: Semantics
+        get: function () {
+            return require('./semantics').Semantics;
+        }
     },
 
+    // lazy because of dependency cycle
     observerSemantics: {
-        value: ObserverSemantics
+        get: function () {
+            return require('./observer-semantics').ObserverSemantics;
+        }
     },
 
     grammar: {
@@ -95,8 +99,8 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                 value: function (path) {
                     try {
                         var self = this;
-                        var syntax = PropertyLanguage.parse(path);
-                        PropertyLanguage.reemit(syntax, function (token) {
+                        var syntax = PL.PropertyLanguage.parse(path);
+                        PL.PropertyLanguage.reemit(syntax, function (token) {
                             self = self.emit(token);
                         })
                         return self;
@@ -113,8 +117,8 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                     try {
                         var self = this;
                         self = self.emit(self.language.tokens.parameters);
-                        var syntax = PropertyLanguage.parse(path);
-                        PropertyLanguage.reemit(syntax, function (token) {
+                        var syntax = PL.PropertyLanguage.parse(path);
+                        PL.PropertyLanguage.reemit(syntax, function (token) {
                             self = self.emit(token);
                         })
                         return self;
