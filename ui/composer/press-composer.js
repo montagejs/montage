@@ -76,6 +76,19 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     },
 
     /**
+    Delegate that implements <code>surrenderPointer</code>. See Component for
+    explanation of what this method should do.
+
+    @type {Object}
+    @default null
+    */
+    delegate: {
+        serializable: true,
+        value: null
+    },
+
+
+    /**
     Cancel the current press.
 
     Can be used in a "longPress" event handler to prevent the "press" event
