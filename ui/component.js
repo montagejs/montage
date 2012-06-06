@@ -1987,7 +1987,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     }
 });
 
-rootComponent.init().element = document;
+rootComponent.init();
 //if(window.parent && window.parent.jasmine) {
 exports.__root__ = rootComponent;
 //}

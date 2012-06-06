@@ -35,8 +35,8 @@ exports.Template = Object.create(TemplateBase, {
         value: function() {
             TemplateBase.finish.apply(this, arguments);
             console.log("Direct Link:");
-            console.log("http://localhost:8081/m-js/test/run.html?spec=ui%2F" + this.variables.name + "-spec");
-            childProcess.exec("open http://localhost:8081/m-js/test/run.html?spec=ui%2F" + this.variables.name + "-spec");
+            console.log("http://localhost:8081/montage/test/run.html?spec=ui%2F" + this.variables.name + "-spec");
+            childProcess.exec("open http://localhost:8081/montage/test/run.html?spec=ui%2F" + this.variables.name + "-spec");
         }
     }
 
