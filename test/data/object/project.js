@@ -3,8 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-var Montage = require("montage/core").Montage;
-var logger = require("montage/logger").logger("project");
+var Montage = require("montage").Montage;
 
 var BinderHelper = require("data/object/binderhelper").BinderHelper;
 var binder = BinderHelper.companyBinder();

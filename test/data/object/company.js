@@ -4,7 +4,6 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage;
-var logger = require("montage/core/logger").logger("Company");
 
 var BinderHelper = require("data/object/binderhelper").BinderHelper;
 var binder = BinderHelper.companyBinder();
