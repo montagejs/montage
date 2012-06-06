@@ -103,9 +103,9 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
       @default null
     */
     identifier: {
-        get: function() {
-            return this._identifier;
-        },
+       get: function() {
+           return this._identifier;
+       },
         set: function(identifier) {
             this._identifier = identifier;
         }
@@ -234,7 +234,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
                         this._keyRegistered = true;
                     }
                 } else if (component && typeof component.addComposer !== "function") {
-                    // this keyComposer is associated with an element, let's make it a global key
+                    // this keyComposer is not associated with an element, let's make it a global key
                     if (!this.element) {
                         this.element = window;
                     }
@@ -264,11 +264,15 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
         value: function() {
             var component = this.component;
 
+            if (this.identifier === null) {
+                this.identifier = Montage.getInfoForObject(this).label;
+            }
+
             if (component) {
                 if (typeof component.addComposer == "function") {
                     component.addComposer(this);
                 } else if (!this._isLoaded) {
-                    // this keyComposer is associated with an element, let's make it a global key
+                    // this keyComposer is not associated with an element, let's make it a global key
                     if (!this.element) {
                         this.element = window;
                     }
