@@ -31,7 +31,7 @@ try {
  @class module:montage/core/deserializer.Deserializer
  @extends module:montage/core/core.Montage
  */
-var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deserializer.Deserializer# */ {
+var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends module:montage/core/deserializer.Deserializer# */ {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
 
     _objects: {value: null},
@@ -1160,8 +1160,4 @@ function deserialize(serialization, require, origin) {
     return deferred.promise;
 }
 
-if (typeof exports !== "undefined") {
-    exports.Deserializer = Deserializer;
-    exports.deserialize = deserialize;
-}
-
+exports.deserialize = deserialize;
