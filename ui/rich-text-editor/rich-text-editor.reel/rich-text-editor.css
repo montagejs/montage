@@ -13,6 +13,7 @@
 
 .montage-editor {
     position: relative;
+    height: inherit;
     outline:  none;
     overflow: auto;
 
