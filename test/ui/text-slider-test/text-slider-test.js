@@ -5,4 +5,17 @@
  </copyright> */
 var Montage = require("montage").Montage;
 
-var TextSliderTest = exports.TextSliderTest = Montage.create(Montage, {});
+var TextSliderTest = exports.TextSliderTest = Montage.create(Montage, {
+    number: {
+        serializable: true
+    },
+    percent: {
+        serializable: true
+    },
+    multiple: {
+        serializable: true
+    },
+    hex: {
+        serializable: true
+    }
+});
