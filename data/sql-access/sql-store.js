@@ -4,25 +4,25 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
- @module montage/data/sqlaccess/sqlstore
+ @module montage/data/sql-access/sql-store
  @requires montage/core/core
  @requires montage/data/store
  @requires montage/core/logger
- @requires data/sqlaccess/sqlmapping
+ @requires data/sql-access/sql-mapping
  */
 var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
-var SqlBinderMapping = require("data/sqlaccess/sqlmapping").SqlBinderMapping;
-var SqlBlueprintMapping = require("data/sqlaccess/sqlmapping").SqlBlueprintMapping;
-var SqlAttributeMapping = require("data/sqlaccess/sqlmapping").SqlAttributeMapping;
-var SqlAssociationMapping = require("data/sqlaccess/sqlmapping").SqlAssociationMapping;
-var logger = require("core/logger").logger("sqlstore");
+var SqlBinderMapping = require("data/sql-access/sql-mapping").SqlBinderMapping;
+var SqlBlueprintMapping = require("data/sql-access/sql-mapping").SqlBlueprintMapping;
+var SqlAttributeMapping = require("data/sql-access/sql-mapping").SqlAttributeMapping;
+var SqlAssociationMapping = require("data/sql-access/sql-mapping").SqlAssociationMapping;
+var logger = require("core/logger").logger("sql-store");
 
 /**
- @class module:montage/data/sqlaccess/sqlstore.SqlStore
+ @class module:montage/data/sql-access/sql-store.SqlStore
  @extends module:montage/data/store.Store
  */
-var SqlStore = exports.SqlStore = Montage.create(Store, /** @lends module:montage/data/sqlaccess/sqlstore.SqlStore# */ {
+var SqlStore = exports.SqlStore = Montage.create(Store, /** @lends module:montage/data/sql-access/sql-store.SqlStore# */ {
 
     /**
      Description TODO

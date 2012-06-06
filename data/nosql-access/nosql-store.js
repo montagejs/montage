@@ -4,24 +4,24 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
- @module montage/data/nosqlaccess/nosqlstore
+ @module montage/data/nosql-access/nosql-store
  @requires montage/core/core
  @requires montage/data/store
  @requires montage/core/logger
- @requires data/nosqlaccess/nosqlmapping
+ @requires data/nosql-access/nosql-mapping
  */
 var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
-var NoSqlBinderMapping = require("data/nosqlaccess/nosqlmapping").NoSqlBinderMapping;
-var NoSqlBlueprintMapping = require("data/nosqlaccess/nosqlmapping").NoSqlBlueprintMapping;
-var NoSqlAttributeMapping = require("data/nosqlaccess/nosqlmapping").NoSqlAttributeMapping;
-var NoSqlAssociationMapping = require("data/nosqlaccess/nosqlmapping").NoSqlAssociationMapping;
-var logger = require("core/logger").logger("nosqlstore");
+var NoSqlBinderMapping = require("data/nosql-access/nosql-mapping").NoSqlBinderMapping;
+var NoSqlBlueprintMapping = require("data/nosql-access/nosql-mapping").NoSqlBlueprintMapping;
+var NoSqlAttributeMapping = require("data/nosql-access/nosql-mapping").NoSqlAttributeMapping;
+var NoSqlAssociationMapping = require("data/nosql-access/nosql-mapping").NoSqlAssociationMapping;
+var logger = require("core/logger").logger("nosql-store");
 /**
- @class module:montage/data/nosqlaccess/nosqlstore.NoSqlStore
+ @class module:montage/data/nosql-access/nosql-store.NoSqlStore
  @extends module:montage/data/store.Store
  */
-var NoSqlStore = exports.NoSqlStore = Montage.create(Store, /** @lends module:montage/data/nosqlaccess/nosqlstore.NoSqlStore# */ {
+var NoSqlStore = exports.NoSqlStore = Montage.create(Store, /** @lends module:montage/data/nosql-access/nosql-store.NoSqlStore# */ {
 
     /**
      Create a new binder mapping.

@@ -9,7 +9,6 @@
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
-// var Selector = require("data/selector").Selector;
 var logger = require("core/logger").logger("restrictions");
 /**
  @class module:montage/data/restriction.Restriction

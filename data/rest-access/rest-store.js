@@ -4,28 +4,28 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
- @module montage/data/restaccess/reststore
+ @module montage/data/rest-access/rest-store
  @requires montage/core/core
  @requires montage/data/store
  @requires montage/core/logger
  @requires montage/core/promise
- @requires data/restaccess/restmapping
+ @requires data/rest-access/rest-mapping
  */
 var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
 var Promise = require("core/promise").Promise;
-var RestBinderMapping = require("data/restaccess/restmapping").RestBinderMapping;
-var RestBlueprintMapping = require("data/restaccess/restmapping").RestBlueprintMapping;
-var RestAttributeMapping = require("data/restaccess/restmapping").RestAttributeMapping;
-var RestAssociationMapping = require("data/restaccess/restmapping").RestAssociationMapping;
+var RestBinderMapping = require("data/rest-access/rest-mapping").RestBinderMapping;
+var RestBlueprintMapping = require("data/rest-access/rest-mapping").RestBlueprintMapping;
+var RestAttributeMapping = require("data/rest-access/rest-mapping").RestAttributeMapping;
+var RestAssociationMapping = require("data/rest-access/rest-mapping").RestAssociationMapping;
 
-var logger = require("core/logger").logger("reststore");
+var logger = require("core/logger").logger("rest-store");
 
 /**
- @class module:montage/data/restaccess/reststore.RestStore
+ @class module:montage/data/rest-access/rest-store.RestStore
  @extends module:montage/data/store.Store
  */
-var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:montage/data/restaccess/reststore.RestStore# */ {
+var RestStore = exports.RestStore = Montage.create(Store, /** @lends module:montage/data/rest-access/rest-store.RestStore# */ {
 
     /**
      Create a new binder mapping.

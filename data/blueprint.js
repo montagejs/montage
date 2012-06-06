@@ -7,18 +7,18 @@
  @module montage/data/blueprint
  @requires montage/core/core
  @requires montage/data/store
- @requires montage/data/objectid
+ @requires montage/data/object-id
  @requires data/query
  @requires core/exception
- @requires data/objectproperty
+ @requires data/object-property
  @requires core/promise
  @requires core/logger
  */
 var Montage = require("montage").Montage;
 var MappingFolder = require("data/mapping").MappingFolder;
-var TemporaryObjectId = require("data/objectid").TemporaryObjectId;
+var TemporaryObjectId = require("data/object-id").TemporaryObjectId;
 var Query = require("data/query").Query;
-var ObjectProperty = require("data/objectproperty").ObjectProperty;
+var ObjectProperty = require("data/object-property").ObjectProperty;
 var Promise = require("core/promise").Promise;
 var Exception = require("core/exception").Exception;
 var logger = require("core/logger").logger("blueprint");

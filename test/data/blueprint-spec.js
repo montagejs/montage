@@ -8,7 +8,7 @@ var Attribute = require("montage/data/blueprint").Attribute;
 var Association = require("montage/data/blueprint").Association;
 var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
-var ChangeContext = require("montage/data/changecontext").ChangeContext;
+var ChangeContext = require("montage/data/change-context").ChangeContext;
 
 var Serializer = require("montage/core/serializer").Serializer;
 var Deserializer = require("montage/core/deserializer").Deserializer;

@@ -4,14 +4,14 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
- @module montage/data/transactionid
+ @module montage/data/transaction-id
  @requires montage/core/core
  @requires montage/core/uuid
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
 var Uuid = require("core/uuid").Uuid;
-var logger = require("core/logger").logger("transactionid");
+var logger = require("core/logger").logger("transaction-id");
 /**
  @private
  */
@@ -25,10 +25,10 @@ var _lastNanos = 1;
  */
 var _transactionManagerInstance = null;
 /**
- @class module:montage/data/transactionid.TransactionId
+ @class module:montage/data/transaction-id.TransactionId
  @extends module:montage/core/core.Montage
  */
-var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends module:montage/data/transactionid.TransactionId# */ {
+var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends module:montage/data/transaction-id.TransactionId# */ {
 
     _mappingFolderName:{
         serializable:true,
@@ -163,9 +163,9 @@ var TransactionId = exports.TransactionId = Montage.create(Montage, /** @lends m
 
 });
 /**
- @class module:montage/data/transactionid.TransactionManager
+ @class module:montage/data/transaction-id.TransactionManager
  */
-var TransactionManager = exports.TransactionManager = Montage.create(Montage, /** @lends module:montage/data/transactionid.TransactionManager# */ {
+var TransactionManager = exports.TransactionManager = Montage.create(Montage, /** @lends module:montage/data/transaction-id.TransactionManager# */ {
 
     /*
      * @private

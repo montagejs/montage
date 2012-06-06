@@ -4,8 +4,8 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage;
-var TransactionId = require("montage/data/transactionid").TransactionId;
-var TransactionManager = require("montage/data/transactionid").TransactionManager;
+var TransactionId = require("montage/data/transaction-id").TransactionId;
+var TransactionManager = require("montage/data/transaction-id").TransactionManager;
 var logger = require("montage/core/logger").logger("transactionmanager-spec");
 
 describe("data/transactionmanager-spec",

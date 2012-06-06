@@ -10,9 +10,9 @@
  @requires montage/data/mapping
  @requires montage/data/query
  @requires montage/data/restriction
- @requires montage/data/transactionid
- @requires montage/data/objectid
- @requires montage/data/controllistener
+ @requires montage/data/transaction-id
+ @requires montage/data/object-id
+ @requires montage/data/control-listener
  @requires montage/core/serializer
  @requires montage/core/deserializer
  @requires montage/core/promise
@@ -25,12 +25,12 @@ var BinderMapping = require("data/mapping").BinderMapping;
 var BlueprintMapping = require("data/mapping").BlueprintMapping;
 var AttributeMapping = require("data/mapping").AttributeMapping;
 var AssociationMapping = require("data/mapping").AssociationMapping;
-var StoreConnectionInformation = require("data/storeconnectioninformation").StoreConnectionInformation;
+var StoreConnectionInformation = require("data/store-connection-information").StoreConnectionInformation;
 var Query = require("data/query").Query;
 var Restriction = require("data/restriction").Restriction;
-var TransactionId = require("data/transactionid").TransactionId;
-var ObjectId = require("data/objectid").ObjectId;
-var TemporaryObjectId = require("data/objectid").TemporaryObjectId;
+var TransactionId = require("data/transaction-id").TransactionId;
+var ObjectId = require("data/object-id").ObjectId;
+var TemporaryObjectId = require("data/object-id").TemporaryObjectId;
 var Serializer = require("core/serializer").Serializer;
 var Deserializer = require("core/deserializer").Deserializer;
 var Promise = require("core/promise").Promise;

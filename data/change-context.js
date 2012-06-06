@@ -8,7 +8,7 @@
  @requires montage/core/core
  @requires montage/data/store
  @requires montage/data/blueprint
- @requires montage/data/objectproperty
+ @requires montage/data/object-property
  @requires montage/core/shim/weak-map
  @requires montage/core/shim/structures
  @requires montage/core/exception
@@ -18,18 +18,18 @@
 var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
 var Blueprint = require("data/blueprint").Blueprint;
-var ObjectProperty = require("data/objectproperty").ObjectProperty;
+var ObjectProperty = require("data/object-property").ObjectProperty;
 // TODO [June 5 2011 PJYF] This is temporary implementation of WeakMap to let the browser catch up.
 var WeakMap = require("core/shim/weak-map").WeakMap;
 var Set = require("core/shim/structures").Set;
 var Exception = require("core/exception").Exception;
 var Promise = require("core/promise").Promise;
-var logger = require("core/logger").logger("changecontext");
+var logger = require("core/logger").logger("change-context");
 /**
- @class module:montage/data/changecontext.ChangeContext
+ @class module:montage/data/change-context.ChangeContext
  @extends module:montage/data/store.Store
  */
-var ChangeContext = exports.ChangeContext = Montage.create(Store, /** @lends module:montage/data/changecontext.ChangeContext# */ {
+var ChangeContext = exports.ChangeContext = Montage.create(Store, /** @lends module:montage/data/change-context.ChangeContext# */ {
     /**
      Collection of object inserted in this context since the last save.
      @private

@@ -4,17 +4,17 @@ No rights, expressed or implied, whatsoever to this software are provided by Mot
 (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
 </copyright> */
 /**
-	@module montage/data/controllistener
+	@module montage/data/control-listener
     @requires montage/core/core
     @requires montage/core/logger
 */
 var Montage = require("montage").Montage;
 var logger = require("core/logger").logger("controlListener");
 /**
-    @class module:montage/data/controllistener.ControlListener
+    @class module:montage/data/control-listener.ControlListener
     @extends module:montage/core/core.Montage
 */
-var ControlListener = exports.ControlListener = Montage.create(Montage,/** @lends module:montage/data/controllistener.ControlListener# */ {
+var ControlListener = exports.ControlListener = Montage.create(Montage,/** @lends module:montage/data/control-listener.ControlListener# */ {
 /**
     Description TODO
     @function

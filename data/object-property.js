@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
- @module montage/data/objectproperty
+ @module montage/data/object-property
  @requires montage/data/pledge
  @requires montage/core/core
  @requires montage/core/exception
@@ -14,17 +14,17 @@ var Montage = require("montage").Montage;
 var Exception = require("core/exception").Exception;
 var Pledge = require("data/pledge").Pledge;
 var PledgedSortedSet = require("data/pledge").PledgedSortedSet;
-var logger = require("core/logger").logger("objectproperty");
+var logger = require("core/logger").logger("object-property");
 /**
  Description TODO
  @private
  */
 var _objectPropertyManager = null;
 /**
- @class module:montage/data/objectproperty.ObjectProperty
+ @class module:montage/data/object-property.ObjectProperty
  @extends module:montage/core/core.Montage
  */
-var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends module:montage/data/objectproperty.ObjectProperty# */ {
+var ObjectProperty = exports.ObjectProperty = Montage.create(Montage, /** @lends module:montage/data/object-property.ObjectProperty# */ {
     /**
      Description TODO
      @function

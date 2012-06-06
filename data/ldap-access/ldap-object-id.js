@@ -4,17 +4,17 @@ No rights, expressed or implied, whatsoever to this software are provided by Mot
 (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
 </copyright> */
 /**
-	@module montage/data/ldapaccess/ldapobjectid
+	@module montage/data/ldap-access/ldap-object-id
     @requires montage/core/core
     @requires montage/core/logger
 */
 var Montage = require("montage").Montage;
-var logger = require("core/logger").logger("ldapobjectid");
+var logger = require("core/logger").logger("ldap-object-id");
 /**
-    @class module:montage/data/ldapaccess/ldapobjectid.LdapObjectId
+    @class module:montage/data/ldap-access/ldap-object-id.LdapObjectId
     @extends module:montage/core/core.Montage
 */
-var LdapObjectId = exports.LdapObjectId = Montage.create(Montage,/** @lends module:montage/data/ldapaccess/ldapobjectid.LdapObjectId # */ {
+var LdapObjectId = exports.LdapObjectId = Montage.create(Montage,/** @lends module:montage/data/ldap-access/ldap-object-id.LdapObjectId # */ {
 
 
 });

@@ -4,19 +4,19 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
- @module montage/data/objectid
+ @module montage/data/object-id
  @requires montage/core/core
  @requires montage/core/uuid
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
 var Uuid = require("core/uuid").Uuid;
-var logger = require("core/logger").logger("objectid");
+var logger = require("core/logger").logger("objectId");
 /**
- @class module:montage/data/objectid.ObjectId
+ @class module:montage/data/object-id.ObjectId
  @extends module:montage/core/core.Montage
  */
-var ObjectId = exports.ObjectId = Montage.create(Montage, /** @lends module:montage/data/objectid.ObjectId# */ {
+var ObjectId = exports.ObjectId = Montage.create(Montage, /** @lends module:montage/data/object-id.ObjectId# */ {
     /**
      Description TODO
      @type {Property}
@@ -52,9 +52,9 @@ var ObjectId = exports.ObjectId = Montage.create(Montage, /** @lends module:mont
 
 });
 /**
- @class module:montage/data/objectid.TemporaryObjectId
+ @class module:montage/data/object-id.TemporaryObjectId
  */
-var TemporaryObjectId = exports.TemporaryObjectId = Montage.create(ObjectId, /** @lends module:montage/data/objectid.TemporaryObjectId# */ {
+var TemporaryObjectId = exports.TemporaryObjectId = Montage.create(ObjectId, /** @lends module:montage/data/object-id.TemporaryObjectId# */ {
     /**
      Description TODO
      @type {Property}

@@ -4,24 +4,24 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
- @module montage/data/ldapaccess/ldapstore
+ @module montage/data/ldap-access/ldap-store
  @requires montage/core/core
  @requires montage/data/store
  @requires montage/core/logger
- @requires data/ldapaccess/ldapmapping
+ @requires data/ldap-access/ldap-mapping
  */
 var Montage = require("montage").Montage;
 var Store = require("data/store").Store;
-var LdapBinderMapping = require("data/ldapaccess/ldapmapping").LdapBinderMapping;
-var LdapBlueprintMapping = require("data/ldapaccess/ldapmapping").LdapBlueprintMapping;
-var LdapAttributeMapping = require("data/ldapaccess/ldapmapping").LdapAttributeMapping;
-var LdapAssociationMapping = require("data/ldapaccess/ldapmapping").LdapAssociationMapping;
-var logger = require("core/logger").logger("ldapstore");
+var LdapBinderMapping = require("data/ldap-access/ldap-mapping").LdapBinderMapping;
+var LdapBlueprintMapping = require("data/ldap-access/ldap-mapping").LdapBlueprintMapping;
+var LdapAttributeMapping = require("data/ldap-access/ldap-mapping").LdapAttributeMapping;
+var LdapAssociationMapping = require("data/ldap-access/ldap-mapping").LdapAssociationMapping;
+var logger = require("core/logger").logger("ldap-store");
 /**
- @class module:montage/data/ldapaccess/ldapstore.LdapStore
+ @class module:montage/data/ldap-access/ldap-store.LdapStore
  @extends module:montage/core/core.Montage
  */
-var LdapStore = exports.LdapStore = Montage.create(Store, /** @lends module:montage/data/ldapaccess/ldapstore.LdapStore# */ {
+var LdapStore = exports.LdapStore = Montage.create(Store, /** @lends module:montage/data/ldap-access/ldap-store.LdapStore# */ {
 
     /**
      Create a new binder mapping.

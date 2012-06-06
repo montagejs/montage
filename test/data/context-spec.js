@@ -6,10 +6,10 @@
 var Montage = require("montage").Montage;
 var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
-var ChangeContext = require("montage/data/changecontext").ChangeContext;
+var ChangeContext = require("montage/data/change-context").ChangeContext;
 var Store = require("montage/data/store").Store;
 var StoreManager = require("montage/data/store").StoreManager;
-var TransactionId = require("montage/data/transactionid").TransactionId;
+var TransactionId = require("montage/data/transaction-id").TransactionId;
 var logger = require("montage/core/logger").logger("context-spec");
 
 var BinderHelper = require("data/object/binderhelper").BinderHelper;

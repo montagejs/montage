@@ -4,17 +4,17 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
- @module montage/data/storeconnectioninformation
+ @module montage/data/store-connection-information
  @requires montage/core/core
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
-var logger = require("core/logger").logger("storeconnectioninformation");
+var logger = require("core/logger").logger("store-connection-information");
 /**
- @class module:montage/data/storeconnectioninformation.StoreConnectionInformation
+ @class module:montage/data/store-connection-information.StoreConnectionInformation
  @extends module:montage/core/core.Montage
  */
-var StoreConnectionInformation = exports.StoreConnectionInformation = Montage.create(Montage, /** @lends module:montage/data/storeconnectioninformation.StoreConnectionInformation# */ {
+var StoreConnectionInformation = exports.StoreConnectionInformation = Montage.create(Montage, /** @lends module:montage/data/store-connection-information.StoreConnectionInformation# */ {
 
     initWithNameAndInformation:{
         value:function (name, url, username, password) {

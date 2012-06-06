@@ -6,7 +6,7 @@
 /**
  @module montage/data/mapping
  @requires montage/data/blueprint
- @requires montage/data/storeconnectioninformation
+ @requires montage/data/store-connection-information
  @requires montage/core/core
  @requires montage/core/logger
  */
@@ -15,7 +15,7 @@ var Blueprint = require("data/blueprint").Blueprint;
 var BlueprintBinder = require("data/blueprint").BlueprintBinder;
 var Attribute = require("data/blueprint").Attribute;
 var Association = require("data/blueprint").Association;
-var StoreConnectionInformation = require("data/storeconnectioninformation").StoreConnectionInformation;
+var StoreConnectionInformation = require("data/store-connection-information").StoreConnectionInformation;
 var logger = require("core/logger").logger("mapping");
 /**
  * A mapping is an abstract class that is defined by each access store to represent the way to map an object or a property in the backing store.

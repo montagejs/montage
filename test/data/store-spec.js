@@ -8,7 +8,7 @@ var Blueprint = require("montage/data/blueprint").Blueprint;
 var BlueprintBinder = require("montage/data/blueprint").BlueprintBinder;
 var Store = require("montage/data/store").Store;
 var StoreManager = require("montage/data/store").StoreManager;
-var TransactionId = require("montage/data/transactionid").TransactionId;
+var TransactionId = require("montage/data/transaction-id").TransactionId;
 
 var Serializer = require("montage/core/serializer").Serializer;
 var Deserializer = require("montage/core/deserializer").Deserializer;
