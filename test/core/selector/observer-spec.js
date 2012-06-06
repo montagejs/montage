@@ -258,21 +258,43 @@ describe('core/selector/observer-spec', function () {
             representation = test.selector.representation();
         }
         describe(representation, function () {
+
             it('can be observed and canceled', function () {
                 var spy = jasmine.createSpy();
+                var object = Object.clone(test.object);
                 var cancel = test.selector.observe(
-                    test.object,
+                    object,
                     spy,
                     null,
                     test.parameters
                 );
                 if (test.test) {
-                    test.test(test.object, test.parameters, cancel);
+                    test.test(object, test.parameters, cancel);
+                }
+                expect(spy.argsForCall.map(function (args) {
+                    return args[0];
+                })).toEqual(test.values.slice(1));
+            });
+
+            it('can propagate initial value', function () {
+                var spy = jasmine.createSpy();
+                var object = Object.clone(test.object);
+                var cancel = test.selector.observe(
+                    object,
+                    spy,
+                    null,
+                    test.parameters,
+                    false, // beforeChange
+                    true // initialize
+                );
+                if (test.test) {
+                    test.test(object, test.parameters, cancel);
                 }
                 expect(spy.argsForCall.map(function (args) {
                     return args[0];
                 })).toEqual(test.values);
             });
+
         });
     })
 

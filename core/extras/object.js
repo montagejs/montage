@@ -498,8 +498,12 @@ Object.defineProperty(Object, "compare", {
 */
 Object.defineProperty(Object.prototype, "getProperty", {
     value: function(aPropertyPath) {
-        var PropertyLanguage = require('core/selector/property-language').PropertyLanguage;
-        return PropertyLanguage.evaluate(aPropertyPath, this);
+        if (aPropertyPath == null) {
+            return this;
+        } else {
+            var PropertyLanguage = require('core/selector/property-language').PropertyLanguage;
+            return PropertyLanguage.evaluate(aPropertyPath, this);
+        }
     },
     writable: true,
     configurable: true

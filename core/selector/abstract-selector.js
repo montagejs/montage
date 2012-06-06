@@ -206,8 +206,8 @@ var selectorProperties = {
     },
 
     observe: {
-        value: function (value, callback, errback, parameters) {
-            return this.compileObserver()(value, callback, errback, parameters);
+        value: function () {
+            return this.compileObserver().apply(void 0, arguments);
         }
     }
 
