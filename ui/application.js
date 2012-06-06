@@ -150,6 +150,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 rootComponent = exports.__root__;
                 rootComponent.element = document;
                 template.instantiateWithOwnerAndDocument(null, window.document, function() {
+                    self.callDelegateMethod("willFinishLoading", self);
                     rootComponent.needsDraw = true;
                     if (callback) {
                         callback(self);

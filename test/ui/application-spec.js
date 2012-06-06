@@ -38,6 +38,14 @@ var testPage = TestPageLoader.queueTest("application-test", {src: "ui/applicatio
             expect(testPage.loaded).toBe(true);
         });
 
+        describe("Application", function() {
+            describe("delegate", function() {
+                it("should have willFinishLoading method called", function() {
+                    expect(test.testedComponent.application.delegate.willFinishLoadingCalled).toBeTruthy();
+                });
+
+            });
+        });
     });
 });
 
