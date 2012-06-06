@@ -139,7 +139,8 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
             }
 
             this.needsDraw = true;
-        }
+        },
+        serializable: true
     },
 
     /**
