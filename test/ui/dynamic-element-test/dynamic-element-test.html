@@ -14,7 +14,8 @@
             "test": {
                 "object": "ui/dynamic-element-test/dynamic-element-test[theTest]",
                 "properties": {
-                    "dynamicElement": {"@": "dynamicElement"}
+                    "dynamicElement": {"@": "dynamicElement"},
+                    "dynamicElementClassList": {"@": "dynamicElementClassList"}
                 }
             },
 
@@ -23,6 +24,17 @@
                 "properties": {
                     "element": {"#": "dynamicElement"},
                     "allowedTagNames": ["div"]
+                }
+            },
+
+            "dynamicElementClassList": {
+                "prototype": "montage/ui/dynamic-element.reel",
+                "properties": {
+                    "element": {"#": "dynamicElementClassList"}
+                },
+                "bindings": {
+                    "classList.class1": {"<-": "@test.class1"},
+                    "classList.class2": {"<-": "@test.class2"}
                 }
             }
         }
@@ -33,6 +45,7 @@
     <h1>DynamicElement test</h1>
 
     <div data-montage-id="dynamicElement"><div id="bar2"></div></div>
+    <div data-montage-id="dynamicElementClassList"></div>
 
 </body>
 </html>
