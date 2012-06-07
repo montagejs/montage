@@ -228,69 +228,6 @@ describe("core/extras/object", function () {
 
     });
 
-    describe("Object.getset", function () {
-
-        it("should get an already set value", function () {
-            var object = {a: 10};
-            expect(Object.getset(object, 'a', 20)).toEqual(10);
-        });
-
-        it("should memoize a new value", function () {
-            var object = {};
-            expect(Object.getset(object, 'a', 10)).toEqual(10);
-        });
-
-        describe("should delegate to 'has', 'get', and 'set' methods", function () {
-
-            // common fixture
-            var has = false, key = "a", value = 10;
-            var Type = Object.create(Object.prototype, {
-                has: {
-                    value: function () {
-                        return has;
-                    }
-                },
-                get: {
-                    value: function (_key) {
-                        expect(_key).toEqual(key);
-                        return value;
-                    }
-                },
-                set: {
-                    value: function (_key, _value) {
-                        expect(_key).toEqual(key);
-                        value = _value;
-                    }
-                }
-            });
-            var instance = Object.create(Type);
-
-            it("should set a non-existent value", function () {
-                has = false;
-                key = "a";
-                expect(Object.getset(instance, "a", 20)).toEqual(20);
-            });
-
-            it("should get a pre-existing value", function () {
-                has = true;
-                key = "a";
-                value = 10;
-                expect(Object.getset(instance, "a", 20)).toEqual(10);
-            });
-
-        });
-
-        it("should not confuse content with methods", function () {
-            var object = {
-                has: function () {},
-                get: function () {},
-                set: function () {}
-            };
-            expect(Object.getset(object, "has")).toBe(object.has);
-        });
-
-    });
-
     describe("Object.forEach", function () {
 
         it("should iterate the owned properties of an object", function () {

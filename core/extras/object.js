@@ -251,43 +251,6 @@ Object.defineProperty(Object, "set", {
 });
 
 /**
-    Gets the value for a given key on an object.  If the object does not have a
-    value for the given key, sets the value to the given fallback value before
-    returning it.
-
-    <p>This method works best for object literals where unconditionally
-    constructing the default value is not particularly wasteful (pure values or
-    empty object literals).  In other situations, it would be better to
-    implement <code>undefinedGet</code> on the object or create an object with
-    a custom <code>get</code> method that constructs and memoizes the default
-    value only when the key is missing.
-
-    <p>If the given object is an instance of a type that implements a methods
-    named "has", "get", and "set", this function defers to the collection, so
-    this method can be used to generically handle objects, arrays, or other
-    collections.  As such, the key domain varies by the object type.  This
-    method does not defer to a "getset" method since no sensible variation of
-    "getset" would not be equivalent to using "has", "get", and "set"
-    internally.
-
-    @param {Object} object
-    @param {String} key
-    @param {Any} value the fallback
-    @function external:Object.getset
-*/
-Object.defineProperty(Object, "getset", {
-    value: function (object, key, value) {
-        // implicitly forwards to collections that implement get and set
-        if (!Object.has(object, key)) {
-            Object.set(object, key, value);
-        }
-        return Object.get(object, key);
-    },
-    writable: true,
-    configurable: true
-});
-
-/**
     Iterates over the owned properties of an object.
 
     @function external:Object.forEach
