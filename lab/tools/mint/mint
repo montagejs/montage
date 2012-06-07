@@ -14,15 +14,43 @@ var linters = require("./linters"),
 
 global.debug = false;
 
-var run = exports.run = function(filenames) {
-    var problems = {};
+var run = exports.run = function(filenames, problems) {
+    problems = problems || {};
 
     for (var i = 0, len = filenames.length; i < len; i++) {
         var filename = filenames[i],
             filePath = path.resolve(filename);
 
         if (!path.existsSync(filename)) {
-            console.error("Error: '" + filename + "' does not exist. Skipping.");
+            if (global.debug){ console.error("Info: '" + filename + "' does not exist. Skipping."); }
+            continue;
+        }
+
+        // Skip dotfiles.
+        // fs.readdirSync doesn't include "." and ".." in its output, so if we
+        // have them it's because the user passed them in explicitly. It's
+        // likely they want to check the current or parent directory so don't
+        // skip in that case.
+        if (path.basename(filename).indexOf(".") === 0 && filename !== "." && filename !== "..") {
+            if (global.debug){ console.error("Info: " + filename + " is a dotfile. Skipping."); }
+            continue;
+        }
+        if (path.basename(filename) === "node_modules") {
+            if (global.debug){ console.error("Info: Skipping " + filename); }
+            continue;
+        }
+
+        // recurse into sub-directories
+        if (fs.statSync(filename).isDirectory()) {
+            var subProblems = run(fs.readdirSync(filename).map(function(f) {
+                // prefix filename with the path
+                return path.join(filename, f);
+            }), problems);
+            continue;
+        }
+
+        if (path.extname(filename) !== ".js") {
+            if (global.debug){ console.error("Info: " + filename + " is not a JavaScript file. Skipping."); }
             continue;
         }
 
