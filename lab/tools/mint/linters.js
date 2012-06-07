@@ -22,6 +22,9 @@ exports.jshint = function(path, source, jshint) {
     if (jshint.errors) {
         var problems = [];
         for (var i = 0, len = jshint.errors.length; i < len; i++) {
+            if (!error) {
+                break;
+            }
             var error = jshint.errors[i];
             var prob = {
                 line: error.line,
