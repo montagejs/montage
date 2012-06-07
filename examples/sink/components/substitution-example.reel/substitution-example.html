@@ -100,33 +100,35 @@
 
         <style>
 
-       .tabsnav {
-           list-style: none;
-           padding: 0;
-           margin: 0;
-           border-bottom: 1px solid #ddd;
-           padding-bottom: 2px;
-       }
-       .tabsnav li {
-           padding: 5px 10px;
-           display: inline;
-           margin: 0px;
-       }
-       .tabsnav a {
-           text-decoration: none;
-        }
-
-       .tabsnav li.selected {
-           background-color: #fff;
-           border: 1px solid #ddd;
-           border-bottom: none;
-       }
-
-h1.substitution-content {
-    height: 200px;
-    text-align: center;
-    margin-top: 100px;
-}
+           .tabsnav {
+               list-style: none;
+               padding: 0;
+               margin: 0;
+               border-bottom: 1px solid #ddd;
+           }
+           
+           .tabsnav li {
+               display: inline-block;
+               padding: 5px 10px;
+               margin: 0px;
+               border: 1px solid transparent;
+               border-bottom: none;
+           }
+           
+           .tabsnav a {
+               text-decoration: none;
+           }
+           
+           .tabsnav li.selected {
+               background-color: #fff;
+               border-color: #ddd;
+           }
+           
+           h1.substitution-content {
+               height: 100px;
+               text-align: center;
+               margin-top: 50px;
+           }
 
         </style>
     </head>
@@ -273,27 +275,34 @@ h1.substitution-content {
                        <div class="accordion-inner montage-hidden">
                            <pre class="prettyprint" >
 .tabsnav {
-   list-style: none;
-   padding: 0;
-   margin: 0;
-   border-bottom: 1px solid #ddd;
-   padding-bottom: 2px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
 }
+
 .tabsnav li {
-   padding: 5px 10px;
-   display: inline;
-   margin: 0px;
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0px;
+    border: 1px solid transparent;
+    border-bottom: none;
 }
+
 .tabsnav a {
-   text-decoration: none;
+    text-decoration: none;
 }
 
 .tabsnav li.selected {
-   background-color: #fff;
-   border: 1px solid #ddd;
-   border-bottom: none;
+    background-color: #fff;
+    border-color: #ddd;
 }
 
+h1.substitution-content {
+    height: 100px;
+    text-align: center;
+    margin-top: 50px;
+}
                            </pre>
                        </div>
                    </li>
