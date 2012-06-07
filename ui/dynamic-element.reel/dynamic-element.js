@@ -85,7 +85,9 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
     },
 
     /**
-        The innerHTML displayed as the content of the DynamicElement
+        The classList of the component's element, the purpose is to mimic the element's API but to also respect the draw.
+        It can also be bound to by binding each class as a property.
+        example to toggle the complete class: "classList.complete" : { "<-" : "@owner.isCompete"}
         @type {Property}
         @default null
     */
