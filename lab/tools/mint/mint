@@ -14,12 +14,14 @@ var linters = require("./linters"),
 
 global.debug = false;
 
-var run = exports.run = function(filenames, problems) {
+var run = exports.run = function(filenames, ignore, problems) {
+    ignore = ignore || ["node_modules", "test"];
     problems = problems || {};
 
     for (var i = 0, len = filenames.length; i < len; i++) {
         var filename = filenames[i],
-            filePath = path.resolve(filename);
+            filePath = path.resolve(filename),
+            basename = path.basename(filename);
 
         if (!path.existsSync(filename)) {
             if (global.debug){ console.error("Info: '" + filename + "' does not exist. Skipping."); }
@@ -31,12 +33,12 @@ var run = exports.run = function(filenames, problems) {
         // have them it's because the user passed them in explicitly. It's
         // likely they want to check the current or parent directory so don't
         // skip in that case.
-        if (path.basename(filename).indexOf(".") === 0 && filename !== "." && filename !== "..") {
+        if (basename.indexOf(".") === 0 && basename !== "." && basename !== "..") {
             if (global.debug){ console.error("Info: " + filename + " is a dotfile. Skipping."); }
             continue;
         }
-        if (path.basename(filename) === "node_modules") {
-            if (global.debug){ console.error("Info: Skipping " + filename); }
+        if (ignore.indexOf(basename) !== -1) {
+            if (global.debug){ console.error("Info: Ignoring " + filename); }
             continue;
         }
 
@@ -45,7 +47,7 @@ var run = exports.run = function(filenames, problems) {
             var subProblems = run(fs.readdirSync(filename).map(function(f) {
                 // prefix filename with the path
                 return path.join(filename, f);
-            }), problems);
+            }), ignore, problems);
             continue;
         }
 
@@ -83,13 +85,15 @@ function usage() {
     console.log("mint checks Montage Javascript files for coding errors.");
     console.log();
     console.log("\t--solution\tshow solutions along with problems");
+    console.log("\t--ignore  \tcomma-separated list of filenames to ignore. Ignores node_modules and test by default");
     console.log("\t--debug   \tshow debug messages, such as skipped files");
 }
 
 if (!module.parent) {
     // this is the main module
     var args = process.argv.slice(2),
-        solution = false;
+        solution = false,
+        ignore = null;
 
     if (args.length === 0) {
         usage();
@@ -105,11 +109,14 @@ if (!module.parent) {
         global.debug = true;
         args.splice(argPos, 1);
     }
+    if ((argPos = args.indexOf("--ignore")) !== -1) {
+        ignore = args.splice(argPos, 2)[1].split(",");
+    }
 
     var colors = require("./lib/termcolors").colors;
     var codeRe = /`([^`]+)`/g;
 
-    var problems = run(args);
+    var problems = run(args, ignore);
     for (var filename in problems) {
         for (var i = 0, len = problems[filename].length; i < len; i++) {
             var p = problems[filename][i];
