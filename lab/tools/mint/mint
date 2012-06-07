@@ -12,6 +12,7 @@ var fs = require("fs"),
 var linters = require("./linters"),
     linterNames = Object.keys(linters);
 
+global.debug = false;
 
 var run = exports.run = function(filenames) {
     var problems = {};
@@ -49,11 +50,12 @@ var lint = exports.lint = function(filePath, source) {
 };
 
 function usage() {
-    console.log("Usage: mint [--solution] filenames...");
+    console.log("Usage: mint [ options ] filenames...");
     console.log();
     console.log("mint checks Montage Javascript files for coding errors.");
     console.log();
     console.log("\t--solution\tshow solutions along with problems");
+    console.log("\t--debug   \tshow debug messages, such as skipped files");
 }
 
 if (!module.parent) {
@@ -65,9 +67,15 @@ if (!module.parent) {
         usage();
         process.exit();
     }
-    if (args[0] === "--solution") {
+
+    var argPos = 0;
+    if ((argPos = args.indexOf("--solution")) !== -1) {
         solution = true;
-        args.shift();
+        args.splice(argPos, 1);
+    }
+    if ((argPos = args.indexOf("--debug")) !== -1) {
+        global.debug = true;
+        args.splice(argPos, 1);
     }
 
     var colors = require("./lib/termcolors").colors;
