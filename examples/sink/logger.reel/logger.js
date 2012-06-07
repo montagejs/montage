@@ -80,7 +80,7 @@ exports.Logger = Montage.create(Component, {
         var self = this;
         window.setTimeout(function() {
           self.needsDraw = true;
-        }, 300);
+        }, 100);
       } else {
         this.element.classList.remove("logger-hilight");
       }

@@ -10,13 +10,13 @@
         <script type="text/montage-serialization">{
 
                 "veg": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "veg"}
                     }
                 },
                 "fruit": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "fruit"}
                     }
@@ -34,21 +34,21 @@
                 },
 
                 "vegCarrot": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "veg-carrot"}
                     },
                     "bindings": {"@": "vegBinding"}
                 },
                 "vegPotato": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "veg-potato"}
                     },
                     "bindings": {"@": "vegBinding"}
                 },
                 "vegBroccoli": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "veg-broccoli"}
                     },
@@ -56,21 +56,21 @@
                 },
 
                 "fruitApple": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "fruit-apple"}
                     },
                     "bindings": {"@": "fruitBinding"}
                 },
                 "fruitBanana": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "fruit-banana"}
                     },
                     "bindings": {"@": "fruitBinding"}
                 },
                 "fruitPear": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "fruit-pear"}
                     },
@@ -87,14 +87,14 @@
                     ]
                 },
                 "listenOn": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "listen-on"}
                     },
                     "listeners": {"@":"logListener"}
                 },
                 "listenOff": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "listen-off"}
                     },
@@ -139,7 +139,7 @@
                 },
 
                 "answerSelection": {
-                    "prototype": "montage/ui/radio-button.reel",
+                    "prototype": "montage/ui/input-radio.reel",
                     "properties": {
                         "element": {"#": "answer-selection"}
                     },
@@ -220,9 +220,9 @@
         <div data-montage-id="radio-button-example" class="radio-button-example">
             <div class="row">
                 <div class="span12">
-                    <h3>RadioButton</h3>
+                    <h3>Input Radio</h3>
                     <p>
-                        The RadioButton component wraps an HTML radio utton input type with custom styles and functionality.
+                        The InputRadio component wraps an HTML radio utton input type with custom styles and functionality.
                     </p>
                 </div>
             </div>
@@ -286,13 +286,13 @@
                         <pre class="prettyprint" >
 {
     "veg": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "veg"}
         }
     },
     "fruit": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "fruit"}
         }
@@ -310,21 +310,21 @@
     },
 
     "vegCarrot": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "veg-carrot"}
         },
         "bindings": {"@": "veg-binding"}
     },
     "vegPotato": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "veg-potato"}
         },
         "bindings": {"@": "veg-binding"}
     },
     "vegBroccoli": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "veg-broccoli"}
         },
@@ -332,21 +332,21 @@
     },
 
     "fruitApple": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "fruit-apple"}
         },
         "bindings": {"@": "fruit-binding"}
     },
     "fruitBanana": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "fruit-banana"}
         },
         "bindings": {"@": "fruit-binding"}
     },
     "fruitPear": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "fruit-pear"}
         },
@@ -372,7 +372,7 @@
 
 
 
-            <h4>Demo: Using Radiobutton in a Repetition</h4>
+            <h4>Demo: Using InputRadio in a Repetition</h4>
 
 
             <div class="demo radiobutton2">
@@ -447,7 +447,7 @@
     },
 
     "answerSelection": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "answer-selection"}
         },
@@ -500,7 +500,7 @@
 
 
 
-       <h4>Demo: Listening to RadioButton clicks</h4>
+       <h4>Demo: Listening to InputRadio clicks</h4>
 
         <div class="demo">
             <div class="app">
@@ -535,14 +535,14 @@
         ]
     },
     "listenOn": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "listen-on"}
         },
         "listeners": {"@":"logListener"}
     },
     "listenOff": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "listen-off"}
         },
@@ -564,7 +564,7 @@
         </section>
 
         <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/radio-button-example.reel" target="_blank">View source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/radio-button-example.reel" target="_blank">View source on GitHub</a>
         </section>
 
             <div data-montage-id="logger"></div>

@@ -1,0 +1,35 @@
+.main {
+    margin: 0 auto;
+}
+.main p {
+    margin: 5px 0;
+}
+.logger {
+    position: fixed;
+    bottom: 0;
+    width: 80%;
+    left: 10%;
+}
+
+.main .left {
+    float: left;
+    width: 40%;
+}
+table{width:100%;margin-bottom:18px;}
+th,td{padding:8px;line-height:18px;text-align:left;border-top:1px solid #ddd;}
+th{font-weight:bold;vertical-align:bottom;}
+td{vertical-align:top;}
+.condensed-table th,.condensed-table td{padding:4px 5px;}
+.bordered-table{border:1px solid #ddd;border-collapse:separate;-webkit-border-radius:4px;-moz-border-radius:4px;border-radius:4px;}.bordered-table th+th,.bordered-table td+td,.bordered-table th+td,.bordered-table td+th{border-left:1px solid #ddd;}
+.bordered-table thead:first-child tr:first-child th,.bordered-table tbody:first-child tr:first-child td{border-top:0;}
+.bordered-table thead:first-child tr:first-child th:first-child,.bordered-table tbody:first-child tr:first-child td:first-child{-webkit-border-radius:4px 0 0 0;-moz-border-radius:4px 0 0 0;border-radius:4px 0 0 0;}
+.bordered-table thead:first-child tr:first-child th:last-child,.bordered-table tbody:first-child tr:first-child td:last-child{-webkit-border-radius:0 4px 0 0;-moz-border-radius:0 4px 0 0;border-radius:0 4px 0 0;}
+.bordered-table thead:last-child tr:last-child th:first-child,.bordered-table tbody:last-child tr:last-child td:first-child{-webkit-border-radius:0 0 0 4px;-moz-border-radius:0 0 0 4px;border-radius:0 0 0 4px;}
+.bordered-table thead:last-child tr:last-child th:last-child,.bordered-table tbody:last-child tr:last-child td:last-child{-webkit-border-radius:0 0 4px 0;-moz-border-radius:0 0 4px 0;border-radius:0 0 4px 0;}
+.striped-table tbody tr:nth-child(odd) td,.striped-table tbody tr:nth-child(odd) th{background-color:#f9f9f9;}
+table .header{cursor:pointer;}table .header:after{content:"";float:right;margin-top:7px;border-width:0 4px 4px;border-style:solid;border-color:#000 transparent;visibility:hidden;}
+table .headerSortUp,table .headerSortDown{background-color:rgba(141, 192, 219, 0.25);text-shadow:0 1px 1px rgba(255, 255, 255, 0.75);}
+table .header:hover:after{visibility:visible;}
+table .headerSortDown:after,table .headerSortDown:hover:after{visibility:visible;filter:alpha(opacity=60);-moz-opacity:0.6;opacity:0.6;}
+table .headerSortUp:after{border-bottom:none;border-left:4px solid transparent;border-right:4px solid transparent;border-top:4px solid #000;visibility:visible;-webkit-box-shadow:none;-moz-box-shadow:none;box-shadow:none;filter:alpha(opacity=60);-moz-opacity:0.6;opacity:0.6;}
+

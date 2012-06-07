@@ -22,7 +22,7 @@
                 }
             },
             "taskNoteField": {
-                "prototype": "montage/ui/textfield.reel",
+                "prototype": "montage/ui/input-text.reel",
                 "properties": {
                     "element": {
                         "#": "taskNoteField"
@@ -83,7 +83,8 @@
             "markAllCompleteConditional": {
                 "prototype": "montage/ui/condition.reel",
                 "properties": {
-                    "element": {"#": "markAllCompleteForm"}
+                    "element": {"#": "markAllCompleteForm"},
+                    "removalStrategy": "hide"
                 },
                 "bindings": {
                     "condition": {"<-": "@owner.tasksController.organizedObjects.count()"}

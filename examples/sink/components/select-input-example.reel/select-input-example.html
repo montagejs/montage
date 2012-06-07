@@ -23,7 +23,7 @@
                     }
                 },
                 "fname": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "fname"}
                     },
@@ -34,7 +34,7 @@
                 },
 
                 "lname": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "lname"}
                     },
@@ -44,7 +44,7 @@
                 },
 
                 "dept": {
-                    "prototype": "montage/ui/select-input.reel",
+                    "prototype": "montage/ui/select.reel",
                     "properties": {
                         "element": {"#": "dept"},
                         "textPropertyPath": "name",
@@ -66,7 +66,7 @@
                 },
 
                 "state": {
-                    "prototype": "montage/ui/select-input.reel",
+                    "prototype": "montage/ui/select.reel",
                     "properties": {
                         "element": {"#": "state"},
                         "contentController": {"@": "statesController"},
@@ -76,7 +76,7 @@
                 },
 
                 "country": {
-                    "prototype": "montage/ui/select-input.reel",
+                    "prototype": "montage/ui/select.reel",
                     "properties": {
                         "element": {"#": "country"}
                     }
@@ -155,7 +155,7 @@
                     }
                 },
                 "justifySelect": {
-                    "prototype": "montage/ui/select-input.reel",
+                    "prototype": "montage/ui/select.reel",
                     "properties": {
                         "element": {"#": "justifySelect"}
                     },
@@ -202,15 +202,15 @@
                 padding: 5px;
             }
 
-            .select-input-example div.echo {
-                width: 400px;
+            .select-input-example .form-stacked label {
+                margin-top: 10px;
             }
         </style>
     </head>
     <body>
         <div data-montage-id="select-input-example" class="select-input-example">
             <div class="row">
-                <div class="span8">
+                <div class="span12">
                     <h3>Select Input</h3>
                     <p>
                         The Select Input component wraps an HTML <code>&lt;select&gt;</code> field.
@@ -252,12 +252,12 @@
                          <option>Please select a country...</option>
                      </select>
 
-                     <div style="margin-top: 10px;">
+                     <div style="margin-top: 20px;">
                          <button class="btn" data-montage-id="update" type="button">Update</button>
                     </div>
                  </form>
 
-                 <div data-montage-id="echo"></div>
+                 <div data-montage-id="echo" class="echo"></div>
 
 
             </div>
@@ -322,7 +322,7 @@
  },
 
  "fname": {
-     "prototype": "montage/ui/textfield.reel",
+     "prototype": "montage/ui/input-text.reel",
      "properties": {
          "element": {"#": "fname"}
      },
@@ -333,7 +333,7 @@
  },
 
  "lname": {
-     "prototype": "montage/ui/textfield.reel",
+     "prototype": "montage/ui/input-text.reel",
      "properties": {
          "element": {"#": "lname"}
      },
@@ -343,7 +343,7 @@
  },
 
  "dept": {
-     "prototype": "montage/ui/select-input.reel",
+     "prototype": "montage/ui/select.reel",
      "properties": {
          "element": {"#": "dept"},
          "textPropertyPath": "name",
@@ -365,7 +365,7 @@
  },
 
  "state": {
-     "prototype": "montage/ui/select-input.reel",
+     "prototype": "montage/ui/select.reel",
      "properties": {
          "element": {"#": "state"},
          "contentController": {"@": "statesController"},
@@ -375,7 +375,7 @@
  },
 
  "country": {
-     "prototype": "montage/ui/select-input.reel",
+     "prototype": "montage/ui/select.reel",
      "properties": {
          "element": {"#": "country"}
      }
@@ -634,7 +634,7 @@ exports.SelectInputExample = Montage.create(Component, {
     }
 },
 "justifySelect": {
-    "prototype": "montage/ui/select-input.reel",
+    "prototype": "montage/ui/select.reel",
     "properties": {
         "element": {"#": "justifySelect"}
     },
@@ -682,7 +682,7 @@ exports.JustifyConverter = Montage.create(Converter, {
             </section>
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/select-input-example.reel" target="_blank">View source on GitHub</a>
             </section>
     </div>
 <!--

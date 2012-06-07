@@ -27,7 +27,7 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
             describe("once loaded", function() {
 
                 it("select should have the Select element attributes", function() {
-                    // these attributes are defined at the NumberInput/RangeInput
+                    // these attributes are defined at the InputNumber/RangeInput
                     var instance = test.dept;
 
                     expect(instance._getElementAttributeDescriptor('multiple')).not.toBe(undefined);
@@ -37,7 +37,7 @@ var testPage = TestPageLoader.queueTest("select-input-test", function() {
                 });
 
                 it("select should have the element attributes defined by NativeControl", function() {
-                    // these attributes are defined at the NumberInput/RangeInput
+                    // these attributes are defined at the InputNumber/RangeInput
                     var instance = testPage.test.dept;
 
                     expect(instance._getElementAttributeDescriptor('placeholder')).toBe(undefined);;

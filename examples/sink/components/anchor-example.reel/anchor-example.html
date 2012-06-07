@@ -18,7 +18,7 @@
     },
 
     "linkTextInput": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "linkText"},
             "value": "Motorola"
@@ -26,7 +26,7 @@
     },
 
     "urlTextInput": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "linkURL"},
             "value": "http://www.motorola.com"
@@ -146,26 +146,22 @@
                         <h4>Example - binding to Anchor properties</h4>
 <!--                                     <p>
                                         The <code>textContent</code> and <code>href</code> properties of the Anchor component below are bound to the values of the two input text fields. Changing the text in either field updates the anchor's text and link. </p> -->
-                            <div class="demo">
-                                    <div class="app">
-                                        Link text:
-                                        <input data-montage-id="linkText" autofocus type="text" name="" value="">
-                                        URL:
-                                        <input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://...">
-                                        <p><a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
-                                     </div>
+                        <div class="demo">
+                            Link text: <input data-montage-id="linkText" autofocus type="text" name="" value="">
+                            URL: <input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://...">
+                            <p style="margin-top: 10px;"><a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
+                        </div>
+
 
                         <ul data-montage-id="anchorAccordion1" class="accordion">
-                             <li class="accordion-group">
+                            <li class="accordion-group">
                                  <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                  <div class="accordion-inner montage-hidden" >
                                      <pre class="prettyprint" >
+Link text: &lt;input data-montage-id="linkText" autofocus type="text" name="" value=""&gt;
+URL: &lt;input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
 
- Link text:
- &lt;input data-montage-id="linkText" autofocus type="text" name="" value=""&gt;
- URL:
- &lt;input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
- &lt;a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
                                     </pre>
                                  </div>
                              </li>
@@ -174,32 +170,32 @@
                                  <div class="accordion-inner montage-hidden">
                                      <pre class="prettyprint" >
 {
-    "link1" : {
-        "prototype": "montage/ui/anchor.reel",
-        "properties": {
-            "element": {"#": "link1"}
-        },
-        "bindings": {
-            "textContent": {"&lt;&lt;-&gt;": "@linkTextInput.value"},
-            "href": {"&lt;&lt;-&gt;": "@urlTextInput.value"}
-        }
-    },
+"link1" : {
+   "prototype": "montage/ui/anchor.reel",
+   "properties": {
+       "element": {"#": "link1"}
+   },
+   "bindings": {
+       "textContent": {"&lt;&lt;-&gt;": "@linkTextInput.value"},
+       "href": {"&lt;&lt;-&gt;": "@urlTextInput.value"}
+   }
+},
 
-    "linkTextInput": {
-        "prototype": "montage/ui/textfield.reel",
-        "properties": {
-           "element": {"#": "linkText"},
-           "value": "Motorola"
-        }
-    },
+"linkTextInput": {
+   "prototype": "montage/ui/input-text.reel",
+   "properties": {
+       "element": {"#": "linkText"},
+       "value": "Motorola"
+   }
+},
 
-    "urlTextInput": {
-        "prototype": "montage/ui/textfield.reel",
-        "properties": {
-            "element": {"#": "linkURL"},
-            "value": "http://www.motorola.com"
-        }
-    }
+"urlTextInput": {
+   "prototype": "montage/ui/input-text.reel",
+   "properties": {
+       "element": {"#": "linkURL"},
+       "value": "http://www.motorola.com"
+   }
+}
 }
               </pre>
 
@@ -219,33 +215,28 @@ a[icon="external"] {
                              </li>
                          </ul>
 
-                            </div>
-
 
                         <h4>Generating a list of links</h4>
+                        <p>This example generates uses the Anchor and Repetition components to generate a table of links.</p>
 
-
-                                <p>
-                                     This example generates uses the Anchor and Repetition components to generate a table of links.
-                                 </p>
-
-                            <div class="demo">
-                                <table data-montage-id="list1" class="bordered-table">
-                                    <thead>
-                                        <tr>
-                                            <th>Name</th>
-                                            <th>Description</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody data-montage-id="table-row">
-                                        <tr>
-                                            <td><a data-montage-id="link" target="_blank"></a></td>
-                                            <td><span data-montage-id="desc"></span></td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-
-                       <ul data-montage-id="anchorAccordion2" class="accordion">
+                        <div class="demo">
+                            <table data-montage-id="list1" class="bordered-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-montage-id="table-row">
+                                    <tr>
+                                        <td><a data-montage-id="link" target="_blank"></a></td>
+                                        <td><span data-montage-id="desc"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        
+                        <ul data-montage-id="anchorAccordion2" class="accordion">
                             <li class="accordion-group">
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
@@ -334,61 +325,11 @@ a[icon="external"] {
                                 </div>
                             </li>
                         </ul>
-
-                    </div>
+                        
 
                     <section>
                         <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/anchor-example.reel" target="_blank">View source on GitHub</a>
                     </section>
-<!--
-
-                    <section>
-                        <h4>Component Properties</h4>
-                        <table>
-                          <thead>
-                            <tr>
-                              <th>Name</th>
-                              <th>Description</th>
-                            </tr>
-                          </thead>
-                          <tbody>
-                            <tr>
-                              <td>textContent</td>
-                              <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                            </tr>
-                            <tr>
-                              <td>href</td>
-                              <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                            </tr>
-                            <tr>
-                              <td>hreflang</td>
-                              <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                            </tr>
-                            <tr>
-                              <td>media</td>
-                              <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
-                            </tr>
-                            <tr>
-                              <td>rel</td>
-                              <td>...</td>
-                            </tr>
-                            <tr>
-                              <td>target</td>
-                              <td>...</td>
-                            </tr>
-                            <tr>
-                              <td>type</td>
-                              <td>...</td>
-                            </tr>
-
-                          </tbody>
-                        </table>
-                        <p>
-                            <a href="" target="_blank">View full Documentation</a>
-                        </p>
-                    </section>
-
- -->
 
     </div>
 

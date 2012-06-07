@@ -67,16 +67,6 @@
                 "properties": {
                 }
             },
-            "slider": {
-                "prototype": "components/slider-example.reel",
-                "properties": {
-                }
-            },
-            "tabs": {
-                "prototype": "components/tabs-example.reel",
-                "properties": {
-                }
-            },
             "substitution": {
                 "prototype": "components/substitution-example.reel",
                 "properties": {
@@ -92,18 +82,8 @@
                 "properties": {
                 }
             },
-            "rangeInput": {
-                "prototype": "components/range-input-example.reel",
-                "properties": {
-                }
-            },
-            "rangeInput2": {
-                "prototype": "components/range-input-example2.reel",
-                "properties": {
-                }
-            },
-            "montageSlider": {
-                "prototype": "components/montage-slider.reel",
+            "inputRange": {
+                "prototype": "components/input-range-example.reel",
                 "properties": {
                 }
             },
@@ -124,11 +104,6 @@
             },
             "scroller": {
                 "prototype": "components/scroller-example.reel",
-                "properties": {
-                }
-            },
-            "sliderPolyfill": {
-                "prototype": "components/slider-polyfill-example.reel",
                 "properties": {
                 }
             },
@@ -168,13 +143,14 @@
                         "inputText": {"@": "inputText"},
                         "textarea": {"@": "textarea"},
                         "numberInput": {"@": "numberInput"},
-                        "rangeInput2": {"@": "rangeInput2"},
+                        "rangeInput2": {"@": "inputRange"},
+                        "inputRange": {"@": "inputRange"},
                         "selectInput": {"@": "selectInput"},
                         "anchor": {"@": "anchor"},
                         "substitution": {"@": "substitution"},
                         "scroller": {"@": "scroller"},
                         "montageSlider": {"@": "montageSlider"},
-                        "sliderPolyfill": {"@": "sliderPolyfill"},
+                        "nativeInputRange": {"@": "nativeInputRange"},
                         "translateComposer": {"@": "translateComposer"},
                         "autocomplete": {"@": "autocomplete"},
                         "tokenField": {"@": "tokenField"}
@@ -199,7 +175,7 @@
 <body>
 
     <div data-montage-id="content" class="content">
-        <h5>Please select a Component to view</h5>
+        <h5 class="firstrun">← Please select a Component</h5>
     </div>
 
 </body>

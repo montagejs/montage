@@ -42,13 +42,19 @@
             "underline": {"<-": "@underline.pressed"}
         }
     },
+    "displayStyle": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "display"}
+        }
+    },    
 
     "values": {
         "prototype": "montage/ui/toggle-button.reel",
         "properties": {
             "element": {"#": "values"},
             "pressed": true,
-            "pressedClass": "active",
+            "pressedClass": "success",
             "pressedLabel": "On",
             "unpressedLabel": "Off"
         },
@@ -96,9 +102,11 @@
 
     }</script>
     <style type="text/css">
-        .font-styles button {
-            height: 2.5em;
-            width: 3em;
+        .values-btn {
+            background-color: hsl(0,100%,80%);
+        }
+        .values-btn.success {
+            background-color: hsl(100,100%,80%);
         }
     </style>
     </head>
@@ -118,12 +126,12 @@
             <div class="demo demo1">
 
                 <div class="app">
-                    <div class="btn-group font-styles" style="display: inline-block">
-                        <button class="btn font-styles" data-montage-id="bold" style="font-weight: bold;">B</button>
-                        <button class="btn font-styles" data-montage-id="italic" style="font-family: serif; font-style: italic;">I</button>
-                        <button class="btn font-styles" data-montage-id="underline" style="text-decoration: underline;">U</button>
+                    <div class="montage-buttonGroup font-styles" style="margin-bottom: 10px;">
+                        <button class="font-styles" data-montage-id="bold" style="font-weight: bold;">B</button>
+                        <button class="font-styles" data-montage-id="italic" style="font-family: serif; font-style: italic;">I</button>
+                        <button class="font-styles" data-montage-id="underline" style="text-decoration: underline;">U</button>
                     </div>
-                    <div><input type="text" data-montage-id="display" value="This is some example text" /></div>
+                    <input type="text" data-montage-id="display" value="This is some example text" />
                 </div>
             </div>
 
@@ -134,12 +142,12 @@
                                 <div class="accordion-inner montage-hidden" >
                                     <p>This example's markup defines three <code>&lt;button></code> elements.</p>
                                     <pre class="prettyprint" >
-&lt;div class="btn-group font-styles"&gt;
-    &lt;button class="btn font-styles" data-montage-id="bold"&gt;B&lt;/button&gt;
-    &lt;button class="btn font-styles" data-montage-id="italic" &gt;I&lt;/button&gt;
-    &lt;button class="btn font-styles" data-montage-id="underline" &gt;U&lt;/button&gt;
+&lt;div class="montage-buttonGroup font-styles"&gt;
+    &lt;button class="font-styles" data-montage-id="bold"&gt;B&lt;/button&gt;
+    &lt;button class="font-styles" data-montage-id="italic" &gt;I&lt;/button&gt;
+    &lt;button class="font-styles" data-montage-id="underline" &gt;U&lt;/button&gt;
 &lt;/div&gt;
-&lt;div&gt;&lt;input type="text" data-montage-id="display" value="This is some example text"&gt;&lt;/div&gt;
+&lt;input type="text" data-montage-id="display" value="This is some example text"&gt;
 </pre>
                                 </div>
                             </li>
@@ -187,7 +195,7 @@
                                 </div>
                             </li>
                             <li class="accordion-group">
-                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript: StyleElement</a></div>
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript: StyleElement</a></div>
                                 <div class="accordion-inner montage-hidden">
                                     <pre class="prettyprint">
 var Montage = require("montage/core/core").Montage,
@@ -252,7 +260,7 @@ exports.StyleElement = Montage.create(Component, {
 
                 <div class="demo demo2 sourceview">
                 <div class="app">
-                    <button class="btn" style="width: 5em" data-montage-id="values"></button>
+                    <button class="values-btn" style="width: 5em" data-montage-id="values"></button>
                 </div>
                 </div>
 
@@ -262,7 +270,7 @@ exports.StyleElement = Montage.create(Component, {
                                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                                 <div class="accordion-inner montage-hidden" >
                                                     <pre class="prettyprint">
-&lt;button class="btn" style="width: 5em" data-montage-id="values"&gt;&lt;/button&gt;
+&lt;button class="values-btn" style="width: 5em" data-montage-id="values"&gt;&lt;/button&gt;
                                                     </pre>
                                                 </div>
                                             </li>
@@ -276,7 +284,7 @@ exports.StyleElement = Montage.create(Component, {
         "properties": {
             "element": {"#": "values"},
             "pressed": true,
-            "pressedClass": "active",
+            "pressedClass": "success",
             "pressedLabel": "On",
             "unpressedLabel": "Off"
         },
@@ -302,8 +310,11 @@ exports.StyleElement = Montage.create(Component, {
                                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
                                                 <div class="accordion-inner montage-hidden">
                                                     <pre class="prettyprint" >
-.btn.active {
-    box-shadow:inset 0 2px 4px rgba(0, 0, 0, 0.25),0 1px 2px rgba(0, 0, 0, 0.05);
+.values-btn {
+    background-color: hsl(0,100%,80%);
+}
+.values-btn.success {
+    background-color: hsl(100,100%,80%);
 }
                                                     </pre>
                                                 </div>

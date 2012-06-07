@@ -68,7 +68,8 @@ exports.SubstitutionDelegate = Montage.create(Montage, {
         value: function(contentToAppend, nodeToAppend) {
             var element = document.createElement("div");
             if (contentToAppend.switchValue === "boolean") {
-                element = document.createElement("button");
+                element = document.createElement("input");
+                element.setAttribute("type", "radio");
             } else if (contentToAppend.switchValue === "check") {
                 element = document.createElement("input");
                 element.setAttribute("type", "checkbox");
