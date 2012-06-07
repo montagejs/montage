@@ -148,6 +148,19 @@ var testPage = TestPageLoader.queueTest("dynamic-element-test", function() {
                         expect(test.dynamicElementClassList.classList.contains("myclass")).toBeTruthy();
                     });
                 });
+                describe("with classes in original element", function() {
+                    it("should correctly add a class based on markup", function() {
+                        expect(test.dynamicElementClassInMarkup.classList.contains("markupClass1")).toBeTruthy();
+                        expect(test.dynamicElementClassInMarkup.classList.contains("markupClass2")).toBeTruthy();
+                    });
+                    it("should be able to change those classes as if they were added via the compoent", function() {
+                        test.dynamicElementClassInMarkup.classList.toggle("markupClass1");
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(test.dynamicElementClassInMarkup.element.classList.contains("markupClass1")).toBeFalsy();
+                        })
+                    });
+                });
             });
 
         });

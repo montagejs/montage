@@ -92,7 +92,8 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
     classList: {
         get: function() {
             if (this._classList === null) {
-                this._classList = ClassList.newWithComponent(this)
+                var className = this.element.className;
+                this._classList = ClassList.newWithComponent(this, (className.length !== 0 ? this.element.className.split(" ") : null));
             }
             return this._classList;
         }
@@ -174,10 +175,17 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
 var ClassList = Montage.create(Montage, {
 
     newWithComponent: {
-        value: function(component) {
-            var aClassList = ClassList.create();
+        value: function(component, classes) {
+            var aClassList = ClassList.create(),
+                aClass, i = 0;
             aClassList._component = component;
             aClassList._classes = {};
+            if (classes !== null) {
+                while (aClass =  classes[i++]) {
+                    aClassList.add(aClass);
+                }
+            }
+
             return aClassList;
         }
     },

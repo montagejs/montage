@@ -18,6 +18,11 @@ var Test = exports.TestController = Montage.create(TestController, {
         serializable: true
     },
 
+    dynamicElementClassInMarkup: {
+        value: null,
+        serializable: true
+    },
+
     class1: {
         value: true
     },

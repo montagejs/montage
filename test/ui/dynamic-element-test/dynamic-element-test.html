@@ -15,7 +15,8 @@
                 "object": "ui/dynamic-element-test/dynamic-element-test[theTest]",
                 "properties": {
                     "dynamicElement": {"@": "dynamicElement"},
-                    "dynamicElementClassList": {"@": "dynamicElementClassList"}
+                    "dynamicElementClassList": {"@": "dynamicElementClassList"},
+                    "dynamicElementClassInMarkup": {"@": "dynamicElementClassInMarkup"}
                 }
             },
 
@@ -36,6 +37,12 @@
                     "classList.class1": {"<-": "@test.class1"},
                     "classList.class2": {"<-": "@test.class2"}
                 }
+            },
+            "dynamicElementClassInMarkup": {
+                "prototype": "montage/ui/dynamic-element.reel",
+                "properties": {
+                    "element": {"#": "dynamicElementClassInMarkup"}
+                }
             }
         }
     </script>
@@ -46,6 +53,6 @@
 
     <div data-montage-id="dynamicElement"><div id="bar2"></div></div>
     <div data-montage-id="dynamicElementClassList"></div>
-
+    <div data-montage-id="dynamicElementClassInMarkup" class="markupClass1 markupClass2"></div>
 </body>
 </html>
