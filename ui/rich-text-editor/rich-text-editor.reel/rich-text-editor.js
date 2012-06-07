@@ -161,7 +161,6 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
 
                 if (this._value != content) {
                     this.dispatchPropertyChange("value", function(){
-                        console.log("VALUE CHANGED")
                         this._value = content;
                     });
                 }
