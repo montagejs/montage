@@ -75,7 +75,7 @@
                 }
             },
             "textfield1": {
-                "prototype": "ui/repetition/input-text.reel[TextField]",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield1"}
                 },
@@ -93,7 +93,7 @@
                 }
             },
             "textfield2": {
-                "prototype": "ui/repetition/input-text.reel[TextField]",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield2"}
                 },
@@ -144,7 +144,7 @@
                 }
             },
             "textfield3": {
-                "prototype": "ui/repetition/input-text.reel[TextField]",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield4"},
                     "text": "X here"
@@ -215,7 +215,7 @@
                 }
             },
             "textfield4": {
-                "prototype": "ui/repetition/input-text.reel[TextField]",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield5"}
                 },
@@ -247,7 +247,7 @@
                 }
             },
             "textfield5": {
-                "prototype": "ui/repetition/input-text.reel[TextField]",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield6"}
                 },
@@ -270,7 +270,7 @@
                 }
             },
             "textfield6": {
-                "prototype": "ui/repetition/input-text.reel[TextField]",
+                "prototype": "ui/repetition/textfield.reel[TextField]",
                 "properties": {
                     "element": {"#": "textfield7"}
                 }
@@ -349,20 +349,8 @@
                     "element": {"#": "list13"},
                     "objects": [1, 2, 3]
                 }
-            },
-            "repetition16": {
-                "prototype": "montage/ui/repetition.reel",
-                "properties": {
-                    "element": {"#": "list14"}
-                }
-            },
-
-            "slider": {
-                "prototype": "montage/ui/bluemoon/slider.reel",
-                "properties": {
-                    "element": {"#": "slider"}
-                }
             }
+
     }</script>
 </head>
 <body>
@@ -475,10 +463,5 @@
     <ul class="list13" data-montage-id="list13">
         <li>B</li>
     </ul>
-
-    <h2>Repetition changed after added to the draw list but before the draw</h2>
-    <div class="list14" data-montage-id="list14">
-        <span data-montage-id="slider"></span>
-    </div>
 </body>
 </html>
