@@ -40,42 +40,6 @@ var isDef = function(obj) {
 };
 exports.isDef = isDef;
 
-
-var startsWith = exports.startsWith = function(str) {
-    return str.lastIndexOf(prefix, 0) === 0;
-};
-var endsWith = exports.endsWith = function(str) {
-    var l = str.length - suffix.length;
-    return l >= 0 && str.indexOf(suffix, l) == l;
-};
-
-/**
- Truncates a string to a certain length and adds '...' if necessary.<br>
- The length also accounts for the ellipsis, so a maximum length of 10 and a string<br>
- 'Hello World!' produces 'Hello W...'.
- @function
- @param {String} str The string to truncate.
- @param {Number} chars Max number of characters.
- @param {Boolean} opt_protectEscapedCharacters Whether to protect escaped characters from being cut off in the middle.
- @return {String} The truncated {@code str} string.
- */
-var truncate = exports.truncate = function(str, chars, opt_protectEscapedCharacters) {
-    if (opt_protectEscapedCharacters) {
-        goog.string.unescapeEntities(this);
-    }
-
-    if (str.length > chars) {
-        return str.substring(0, chars - 3) + '…';
-    }
-
-    if (opt_protectEscapedCharacters) {
-        str.htmlEscape(this);
-    }
-
-    return this;
-};
-
-
 // Validators
 /**
  Base validator object.
