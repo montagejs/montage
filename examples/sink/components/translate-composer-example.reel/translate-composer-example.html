@@ -87,36 +87,49 @@
 
     }</script>
 
-<style type="text/css">
-    .wrap {
-        position: relative;
-        background-color: #CCC;
-        width: 450px;
-        height: 250px;
-        overflow: hidden;
-        float: left;
-    }
-    .mover {
-        background: #C00;
-        position: absolute;
-        width: 100px;
-        height: 100px;
-        text-align: center;
-        color: white;
-    }
-    .clear { clear: both; }
-    .controls div, select {
-        margin-bottom: 5px;
-        margin-left: 5px;
-    }
-    .controls label {
-        float: none;
-    }
-</style>
+    <style type="text/css">
+        .translate-composer-example {
+            position: relative;
+        }
+        
+        .translate-composer-example .wrap {
+            position: relative;
+            background-color: #ddd;
+            width: 450px;
+            height: 250px;
+            overflow: hidden;
+        }
+        
+        .translate-composer-example .mover {
+            background: #000;
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            text-align: center;
+            color: white;
+            font-size: 18px;
+            line-height: 100px;
+            cursor: move;
+        }
+        
+        .translate-composer-example .controls {
+            position: absolute;
+            left: 480px;
+            top: 20px;
+        }
+    
+        .translate-composer-example .controls .momentum {
+            margin: 10px 0;
+        }
+        
+        .translate-composer-example .controls code {
+            display: block;
+        }
+    </style>
 
 </head>
 <body>
-        <div data-montage-id="example-div">
+    <div data-montage-id="example-div">
         <div class="row ">
             <div class="span12">
                 <h3>TranslateComposer</h3>
@@ -125,25 +138,26 @@
                 </p>
             </div>
         </div>
-            <div class="demo">
-<div class="wrap">
-    <div class="mover" data-montage-id="example">Drag me</div>
-</div>
-<div class="controls">
-    Axis:
-    <select data-montage-id="axis" required>
-        <option value="both" selected="true">Both</option>
-        <option value="horizontal" >Horizontal</option>
-        <option value="vertical">Vertical</option>
-    </select>
-    <div>
-        <label for="cb1"><input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" id="cb1" /> Momentum </label>
-    </div>
-    <code>translateX: <span data-montage-id="x_value"></span></code>
-    <code>translateY: <span data-montage-id="y_value"></span></code>
-</div><!-- / -->
-            <div class="clear"></div>
+        
+        <div class="demo translate-composer-example">
+            <div class="wrap">
+                <div class="mover" data-montage-id="example">Drag me</div>
             </div>
+            <div class="controls">
+                Axis:
+                <select data-montage-id="axis" required>
+                    <option value="both" selected="true">Both</option>
+                    <option value="horizontal" >Horizontal</option>
+                    <option value="vertical">Vertical</option>
+                </select>
+                <div class="momentum">
+                    <label for="cb1"><input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" id="cb1" /> Momentum </label>
+                </div>
+                <code>translateX: <span data-montage-id="x_value"></span></code>
+                <code>translateY: <span data-montage-id="y_value"></span></code>
+            </div>
+        </div>
+        
                     <section>
                        <ul data-montage-id="translateAccordion1" class="accordion">
                             <li class="accordion-group">
@@ -153,6 +167,7 @@
 &lt;div class="wrap"&gt;
     &lt;div class="mover" data-montage-id="example"&gt;Drag me&lt;/div&gt;
 &lt;/div&gt;
+
 &lt;div class="controls"&gt;
     Axis:
     &lt;select data-montage-id="axis" required&gt;
@@ -160,7 +175,7 @@
         &lt;option value="horizontal" &gt;Horizontal&lt;/option&gt;
         &lt;option value="vertical"&gt;Vertical&lt;/option&gt;
     &lt;/select&gt;
-    &lt;div&gt;
+    &lt;div class="momentum"&gt;
         &lt;label for="cb1"&gt;&lt;input type="checkbox" data-montage-id="checkboxMomentum" data-montage-id="cb1" id="cb1" /&gt; Momentum &lt;/label&gt;
     &lt;/div&gt;
     &lt;code&gt;translateX: &lt;span data-montage-id="x_value"&gt;&lt;/span&gt;&lt;/code&gt;
@@ -257,21 +272,42 @@
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
                                 <div class="accordion-inner montage-hidden" >
                                     <pre class="prettyprint" >
-.wrap {
+.translate-composer-example {
     position: relative;
-    background-color: #CCC;
-    width: 450px;
-    height: 450px;
-    overflow: hidden;
-    float: left;
 }
-.mover {
-    background: #C00;
+
+.translate-composer-example .wrap {
+    position: relative;
+    background-color: #ddd;
+    width: 450px;
+    height: 250px;
+    overflow: hidden;
+}
+
+.translate-composer-example .mover {
+    background: #000;
     position: absolute;
     width: 100px;
     height: 100px;
     text-align: center;
     color: white;
+    font-size: 18px;
+    line-height: 100px;
+    cursor: move;
+}
+
+.translate-composer-example .controls {
+    position: absolute;
+    left: 480px;
+    top: 20px;
+}
+
+.translate-composer-example .controls .momentum {
+    margin: 10px 0;
+}
+
+.translate-composer-example .controls code {
+    display: block;
 }
                                    </pre>
                                 </div>
