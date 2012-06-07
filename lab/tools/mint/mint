@@ -14,6 +14,16 @@ var linters = require("./linters"),
 
 global.debug = false;
 
+/**
+    @function
+    @param filenames {Array[String]} An array of filenames to lint
+    @param [ignore] {Array[String]} An array of filenames to ignore, by default
+                                    "node_modules" and "test" are ignored
+    @param [problems] {Object} The object to insert the problems into
+    @returns {Object} An object mapping filenames to an array of objects containing problems.
+                      Each object has "problem", "line" and "solution" properties. e.g.
+                      {"file.js": [{problem: "...", line: 1, solution: "..."}, ...], ...}
+*/
 var run = exports.run = function(filenames, ignore, problems) {
     ignore = ignore || ["node_modules", "test"];
     problems = problems || {};
