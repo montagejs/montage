@@ -9,7 +9,26 @@ var Montage = require("montage").Montage,
 var Test = exports.TestController = Montage.create(TestController, {
 
     dynamicElement: {
-        value: null
+        value: null,
+        serializable: true
+    },
+
+    dynamicElementClassList: {
+        value: null,
+        serializable: true
+    },
+
+    dynamicElementClassInMarkup: {
+        value: null,
+        serializable: true
+    },
+
+    class1: {
+        value: true
+    },
+
+    class2: {
+        value: false
     }
 });
 exports.theTest = Test.create();
