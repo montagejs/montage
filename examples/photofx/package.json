@@ -3,5 +3,9 @@
     "version": "0.0.0",
     "mappings": {
         "montage": "../../"
-    }
+    },
+    "bundle": [
+        "main.reel"
+    ],
+    "shard": 4
 }

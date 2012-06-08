@@ -146,7 +146,8 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             // assign to the exports so that it is available in the deserialization of the template
             exports.application = self;
 
-            require.async("ui/component").then(function(exports) {
+            require.async("ui/component")
+            .end(function(exports) {
                 rootComponent = exports.__root__;
                 rootComponent.element = document;
                 template.instantiateWithOwnerAndDocument(null, window.document, function() {
@@ -155,9 +156,8 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                     if (callback) {
                         callback(self);
                     }
-
                 });
-            }).end();
+            })
         }
     },
 

@@ -20,14 +20,27 @@ var urlToPath = function (url) {
     return parsed.path;
 };
 
-Require.read = function (url) {
+Require.read = function (location) {
     var deferred = Promise.defer();
-    var path = urlToPath(url);
+    var path = urlToPath(location);
     FS.readFile(path, "utf-8", function (error, text) {
         if (error) {
             deferred.reject(new Error(error));
         } else {
             deferred.resolve(text);
+        }
+    });
+    return deferred.promise;
+};
+
+Require.isFile = function (location) {
+    var deferred = Promise.defer();
+    var path = urlToPath(location);
+    FS.stat(path, function (error, stat) {
+        if (error) {
+            deferred.resolve(false);
+        } else {
+            deferred.resolve(stat.isFile());
         }
     });
     return deferred.promise;

@@ -78,8 +78,41 @@ if (typeof window !== "undefined") {
             };
 
             var location = URL.resolve(config.location, params["package"] || ".");
+            var applicationHash = params.applicationHash;
 
-            Require.loadPackage(montageLocation, config)
+            if (typeof BUNDLE === "object") {
+                var bundleDefinitions = {};
+                var getDefinition = function (name) {
+                    return bundleDefinitions[name] =
+                        bundleDefinitions[name] ||
+                            Promise.Promise.defer();
+                };
+                global.bundleLoaded = function (name) {
+                    getDefinition(name).resolve();
+                };
+                var preloading = Promise.Promise.defer();
+                config.preloaded = preloading.promise;
+                // preload bundles sequentially
+                var preloaded = Promise.Promise.resolve();
+                BUNDLE.forEach(function (bundleLocations) {
+                    preloaded = preloaded.then(function () {
+                        return Promise.Promise.all(bundleLocations.map(function (bundleLocation) {
+                            browser.load(bundleLocation);
+                            return getDefinition(bundleLocation).promise;
+                        }));
+                    });
+                });
+                // then release the module loader to run normally
+                preloading.resolve(preloaded.then(function () {
+                    delete BUNDLE;
+                    delete bundleLoaded;
+                }));
+            }
+
+            Require.loadPackage({
+                location: montageLocation,
+                hash: params.montageHash
+            }, config)
             .then(function (montageRequire) {
                 montageRequire.inject("core/promise", Promise);
                 montageRequire.inject("core/next-tick", Clock);
@@ -121,8 +154,12 @@ if (typeof window !== "undefined") {
                     );
                 }
 
-                return montageRequire.loadPackage(location)
+                return montageRequire.loadPackage({
+                    location: location,
+                    hash: applicationHash
+                })
                 .then(function (applicationRequire) {
+
                     global.require = applicationRequire;
                     global.montageRequire = montageRequire;
                     platform.initMontage(montageRequire, applicationRequire, params);
@@ -216,14 +253,22 @@ if (typeof window !== "undefined") {
         return function(module) {
             if (!module.location)
                 return;
-            var match = module.location.match(/(.*\/)?(?=[^\/]+\.html$)/);
+            var match = module.location.match(/(.*\/)?(?=[^\/]+\.html(?:\.load\.js)?$)/);
             if (match) {
                 module.dependencies = module.dependencies || [];
                 module.exports = {
                     directory: match[1],
-                    root: match, // deprecated
                     content: module.text
                 };
+                // XXX deprecated
+                Object.defineProperty(module.exports, "root", {
+                    get: function () {
+                        if (typeof console === "object") {
+                            console.warn("'root' property is deprecated on template modules.  Use 'directory' instead of root[1]");
+                        }
+                        return match;
+                    }
+                });
                 return module;
             } else {
                 compile(module);
@@ -273,6 +318,16 @@ if (typeof window !== "undefined") {
     };
 
     var browser = {
+
+        load: function (location) {
+            var script = document.createElement("script");
+            script.src = location;
+            script.onload = function () {
+                // remove clutter
+                script.parentNode.removeChild(script);
+            };
+            document.getElementsByTagName("head")[0].appendChild(script);
+        },
 
         getConfig: function() {
             return {
@@ -361,14 +416,7 @@ if (typeof window !== "undefined") {
             // otherwise, these scripts will be inlined after already
             if (typeof BUNDLE === "undefined") {
                 pending.forEach(function(name) {
-                    var url = params.montageLocation + name + ".js";
-                    var script = document.createElement("script");
-                    script.src = url;
-                    script.onload = function () {
-                        // remove clutter
-                        script.parentNode.removeChild(script);
-                    };
-                    document.getElementsByTagName("head")[0].appendChild(script);
+                    browser.load(params.montageLocation + name + ".js");
                 });
             }
 
@@ -417,53 +465,63 @@ if (typeof window !== "undefined") {
         },
 
         initMontage: function (montageRequire, applicationRequire, params) {
-            var Promise, defaultEventManager, application;
 
-            montageRequire.async("core/promise").then(function(exports) {
-                Promise = exports.Promise;
-                Promise.all([
-                    montageRequire.async("core/event/event-manager"),
-                    montageRequire.async("core/deserializer")
-                ]).then(function(exportsArray) {
-                    // Load the event-manager
-                    defaultEventManager = exportsArray[0].EventManager.create().initWithWindow(window);
+            var dependencies = [
+                "core/event/event-manager",
+                "core/deserializer"
+            ];
 
-                    // montageWillLoad is mostly for testing purposes
-                    if (typeof global.montageWillLoad === "function") {
-                        global.montageWillLoad();
-                    }
+            if (typeof window !== "undefined") {
+                dependencies.push("core/event/binding");
+            }
 
-                    // Load the application
+            var Promise = montageRequire("core/promise").Promise;
 
-                    var appProto = applicationRequire.packageDescription.applicationPrototype,
-                        applicationDescription, appModulePromise;
-                    if (appProto) {
-                        applicationDescription = exportsArray[1].Deserializer.parseForModuleAndName(appProto);
-                        appModulePromise = applicationRequire.async(applicationDescription.module);
-                    } else {
-                        appModulePromise = montageRequire.async("ui/application");
-                    }
+            return Promise.all(dependencies.map(montageRequire.deepLoad))
+            .then(function () {
 
-                    if (typeof window !== "undefined") {
-                        montageRequire.async("core/event/binding").end();
-                    }
+                dependencies.forEach(montageRequire);
 
-                    appModulePromise.then(function(exports) {
-                        application = exports[(applicationDescription ? applicationDescription.name : "Application")].create();
-                        window.document.application = application;
-                        defaultEventManager.application = application;
-                        application.eventManager = defaultEventManager;
-                        application._load(applicationRequire, function() {
-                            if (params.module) {
-                                // If a module was specified in the config then we initialize it now
-                                applicationRequire.async(params.module).end();
-                            }
-                        });
-                    }).end();
+                var EventManager = montageRequire("core/event/event-manager").EventManager;
+                var Deserializer = montageRequire("core/deserializer").Deserializer;
+                var defaultEventManager, application;
 
-                }).end();
+                // Load the event-manager
+                defaultEventManager = EventManager.create().initWithWindow(window);
 
-            });
+                // montageWillLoad is mostly for testing purposes
+                if (typeof global.montageWillLoad === "function") {
+                    global.montageWillLoad();
+                }
+
+                // Load the application
+
+                var appProto = applicationRequire.packageDescription.applicationPrototype,
+                    applicationDescription, appModulePromise;
+                if (appProto) {
+                    applicationDescription = Deserializer.parseForModuleAndName(appProto);
+                    appModulePromise = applicationRequire.async(applicationDescription.module);
+                } else {
+                    appModulePromise = montageRequire.async("ui/application");
+                }
+
+                return appModulePromise.then(function(exports) {
+                    application = exports[(applicationDescription ? applicationDescription.name : "Application")].create();
+                    window.document.application = application;
+                    defaultEventManager.application = application;
+                    application.eventManager = defaultEventManager;
+                    application._load(applicationRequire, function() {
+                        if (params.module) {
+                            // If a module was specified in the config then we initialize it now
+                            applicationRequire.async(params.module)
+                            .end();
+                        }
+                    });
+                })
+
+            })
+            .end();
+
         }
     };
 

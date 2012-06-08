@@ -7,9 +7,7 @@
         "browser": {
             "main": "core/core",
             "exclude": [
-                "lab/benchmarks",
-                "lab/sandbox",
-                "lab/tools",
+                "lab",
                 "examples",
                 "require/test",
                 "require/tests",

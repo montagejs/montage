@@ -74,12 +74,12 @@
         // produces an entry in the module state table, which gets built
         // up through loading and execution, ultimately serving as the
         // ``module`` free variable inside the corresponding module.
-        function getModule(id) {
+        function getModuleDescriptor(id) {
             if (!has(modules, id)) {
                 modules[id] = {
                     id: id,
                     display: config.location + "#" + id, // EXTENSION
-                    require: require,
+                    require: require
                 };
             }
             return modules[id];
@@ -90,7 +90,7 @@
         // in the bootstrapping process and can be trivially injected into
         // the system.
         function inject(id, exports) {
-            var module = getModule(id)
+            var module = getModuleDescriptor(id);
             module.exports = exports;
             module.location = URL.resolve(config.location, id);
             module.directory = URL.resolve(module.location, ".");
@@ -98,7 +98,7 @@
 
         // Ensures a module definition is loaded, compiled, analyzed
         var load = memoize(function (topId, viaId) {
-            var module = getModule(topId);
+            var module = getModuleDescriptor(topId);
             return Promise.call(function () {
                 // if not already loaded, already instantiated, or
                 // configured as a redirection to another module
@@ -125,13 +125,16 @@
                 if (module.redirect !== void 0) {
                     dependencies.push(module.redirect);
                 }
+                if (module.extraDependencies !== void 0) {
+                    Array.prototype.push.apply(module.dependencies, module.extraDependencies);
+                }
             });
         });
 
         // Load a module definition, and the definitions of its transitive
         // dependencies
         function deepLoad(topId, viaId, loading) {
-            var module = getModule(topId);
+            var module = getModuleDescriptor(topId);
             // this is a memo of modules already being loaded so we don’t
             // data-lock on a cycle of dependencies.
             loading = loading || {};
@@ -144,20 +147,20 @@
                 // load the transitive dependencies using the magic of
                 // recursion.
                 return Promise.all(module.dependencies.map(function (depId) {
-                    depId = resolve(depId, topId)
+                    depId = resolve(depId, topId);
                     // create dependees set, purely for debug purposes
-                    var module = getModule(depId);
+                    var module = getModuleDescriptor(depId);
                     var dependees = module.dependees = module.dependees || {};
                     dependees[topId] = true;
                     return deepLoad(depId, topId, loading);
-                }))
-            })
+                }));
+            });
         }
 
         // Initializes a module by executing the factory function with a new
         // module "exports" object.
         function getExports(topId, viaId) {
-            var module = getModule(topId);
+            var module = getModuleDescriptor(topId);
 
             // handle redirects
             if (module.redirect !== void 0) {
@@ -223,7 +226,7 @@
                 var candidate = config.getPackage(location);
                 var id1 = candidate.identify(id2, require2, true);
                 if (id1 === null) {
-                    continue
+                    continue;
                 } else if (id1 === "") {
                     return name;
                 } else {
@@ -253,7 +256,10 @@
             // (even with synchronous loaders)
             require.async = function(id, callback) {
                 var topId = resolve(id, viaId);
+                var module = getModuleDescriptor(id);
                 return deepLoad(topId, viaId)
+                // conconditionally require the module, but if there's an
+                // error, throw it in a separate turn so it gets logged
                 .then(function () {
                     return require(topId);
                 }, function (reason, error) {
@@ -262,6 +268,8 @@
                     });
                     return require(topId);
                 })
+                // handle the callback if provided, by breaking out of the
+                // promise system using nextTick
                 .then(function (exports) {
                     if (callback) {
                         nextTick(function () {
@@ -283,8 +291,8 @@
                 return resolve(id, viaId);
             };
 
-            require.getModule = getModule;
-
+            require.getModule = getModuleDescriptor; // XXX deprecated, use:
+            require.getModuleDescriptor = getModuleDescriptor;
             require.load = load;
             require.deepLoad = deepLoad;
 
@@ -349,7 +357,8 @@
         descriptionLocations[location] = descriptionLocation;
     };
 
-    Require.loadPackageDescription = function (location, config) {
+    Require.loadPackageDescription = function (dependency, config) {
+        var location = dependency.location;
         var descriptions =
             config.descriptions =
                 config.descriptions || {};
@@ -378,8 +387,9 @@
         return descriptions[location];
     };
 
-    Require.loadPackage = function (location, config) {
-        location = URL.resolve(location, ".");
+    Require.loadPackage = function (dependency, config) {
+        dependency = normalizeDependency(dependency, config);
+        var location = dependency.location;
         config = config || {};
         var loadingPackages = config.loadingPackages = config.loadingPackages || {};
         var loadedPackages = config.packages = {};
@@ -388,10 +398,11 @@
         config.getPackage = function (dependency) {
             dependency = normalizeDependency(dependency, config);
             var location = dependency.location;
-            if (!loadedPackages[location])
+            if (!loadedPackages[location]) {
                 throw new Error(
                     "Dependency is not loaded: " + JSON.stringify(location)
                 );
+            }
             return loadedPackages[location];
         };
 
@@ -399,7 +410,7 @@
             dependency = normalizeDependency(dependency, viaConfig);
             var location = dependency.location;
             if (!loadingPackages[location]) {
-                loadingPackages[location] = Require.loadPackageDescription(location, config)
+                loadingPackages[location] = Require.loadPackageDescription(dependency, config)
                 .then(function (packageDescription) {
                     var subconfig = configurePackage(
                         location,
@@ -414,7 +425,7 @@
             return loadingPackages[location];
         };
 
-        var pkg = config.loadPackage(location);
+        var pkg = config.loadPackage(dependency);
         pkg.location = location;
         pkg.async = function (id, callback) {
             return pkg.then(function (require) {
@@ -448,8 +459,9 @@
                 dependency.name === void 0
             ) {
                 throw new Error(
-                    "name, version, or location required for dependency: " +
-                    JSON.stringify(dependency) + " from " + location
+                    "name or location required for dependency: " +
+                    JSON.stringify(dependency) + " from " + config.location +
+                    " unless already found by name."
                 );
             }
             dependency.location = URL.resolve(
@@ -620,7 +632,7 @@
 
     // Tests whether the location or URL is a absolute.
     Require.isAbsolute = function(location) {
-        return /^[\w\-]+:/.test(location);
+        return (/^[\w\-]+:/).test(location);
     };
 
     // Extracts dependencies by parsing code and looking for "require" (currently using a simple regexp)
@@ -659,7 +671,7 @@
                 module.text = module.text.replace(/^#!/, "//#!");
             }
             compile(module);
-        }
+        };
     };
 
     Require.LintCompiler = function(config, compile) {
@@ -733,7 +745,7 @@
             if (id.indexOf(config.name) === 0 && id.charAt(config.name.length) === "/") {
                 console.warn("Package reflexive module ignored:", id);
             }
-            var i, prefix
+            var i, prefix;
             for (i = 0; i < length; i++) {
                 prefix = prefixes[i];
                 if (
@@ -782,7 +794,7 @@
             } else {
                 return loadWithExtension(id, module);
             }
-        }
+        };
     };
 
     // Attempts to load using multiple base paths (or one absolute path) with a
