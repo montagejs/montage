@@ -64,6 +64,26 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             });
         });
 
+        it("should remove the correct child components when removing an iteration", function() {
+            var list15 = querySelector(".list15").controller;
+
+            list15.objects.unshift(1);
+            testPage.waitForComponentDraw(list15);
+            runs(function() {
+                expect(list15.childComponents[0].text).toBe(1);
+                list15.objects.unshift(0);
+                testPage.waitForComponentDraw(list15);
+                runs(function() {
+                    expect(list15.childComponents[0].text).toBe(1);
+                    expect(list15.childComponents[1].text).toBe(0);
+
+                    list15.objects.shift();
+                    expect(list15.childComponents.length).toBe(1);
+                    expect(list15.childComponents[0].text).toBe(1);
+                });
+            });
+        });
+
         describe("main document template", function() {
             it("should empty inner markup and populate with the bindings value", function() {
                 runs(function() {
