@@ -150,48 +150,40 @@
     </script>
 
     <style type="text/css">
-
         #custom-alert-dialog {
             width: 400px;
             height: 500px;
         }
-
-
-        .menu {
-            display: inline-block;
-            width:32px;
-            height:32px;
-            border-radius:32px;
-            -moz-border-radius:32px;
-            -webkit-border-radius:32px;
-            border:2px solid #ccc;
-            padding: 16px;
-            background:#fff;
-            text-align:center;
-            color:#fff
-        }
-        .menu:hover{
-            display: inline-block;
-            width:32px;
-            height:32px;
-            border-radius:32px;
-            -moz-border-radius:32px;
-            -webkit-border-radius:32px;
-            border:2px solid #ccc;
-            padding: 16px;
-            background:#ccc;
-            text-align:center;
-            color:#fff
-        }
-        .menu .nav {
-            padding-top:37px
-        }
-
+        
         .popup-example-root section {
-            margin: 5px 0;
+            margin: 0 0 20px 0;
+        }
+                
+        .popups .menu {
+            background: hsl(0,0%,85%);
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0;
         }
 
-
+        .popups .menu-item {
+            width: 20px;
+            height: 20px;
+            padding: 10px;
+            margin: 10px 10px 0 0;
+            border-radius: 4px;
+            background-color: hsl(0,0%,95%);
+            border: 1px solid hsl(0,0%,70%);
+            cursor: pointer;
+        }
+        
+        .popups .menu-item:hover {
+            background-color: hsl(0,0%,98%);
+        }
+        
+        .popups .menu-item:active {
+            background-color: hsl(0,0%,90%);
+        }
     </style>
 
 
@@ -250,9 +242,9 @@
             </section>
 
             <section>
-                <div class="toolbar" style="text-align: center;">
-                    <img src="images/19-gear.png" class="menu action-show-settings-menu"></a>
-                    <img src="images/09-chat-2.png" class="menu action-show-action-sheet"></a>
+                <div class="menu">
+                    <img src="images/19-gear.png" class="menu-item action-show-settings-menu" />
+                    <img src="images/09-chat-2.png" class="menu-item action-show-action-sheet" />
                 </div>
             </section>
         </div>
@@ -286,9 +278,9 @@
 &lt;/section&gt;
 
 &lt;section&gt;
-    &lt;div class="toolbar" style="text-align: center;"&gt;
-        &lt;img src="images/19-gear.png" class="menu action-show-settings-menu"&gt;&lt;/a&gt;
-        &lt;img src="images/09-chat-2.png" class="menu action-show-action-sheet"&gt;&lt;/a&gt;
+    &lt;div class="menu"&gt;
+        &lt;img src="images/19-gear.png" class="menu-item action-show-settings-menu" /&gt;
+        &lt;img src="images/09-chat-2.png" class="menu-item action-show-action-sheet" /&gt;
     &lt;/div&gt;
 &lt;/section&gt;
                         </pre>
@@ -431,47 +423,40 @@
                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
                    <div class="accordion-inner montage-hidden">
                        <pre class="prettyprint" >
-
 #custom-alert-dialog {
-   width: 400px;
-   height: 500px;
-}
-
-
-.menu {
-   display: inline-block;
-   width:32px;
-   height:32px;
-   border-radius:32px;
-   -moz-border-radius:32px;
-   -webkit-border-radius:32px;
-   border:2px solid #ccc;
-   padding: 16px;
-   background:#fff;
-   text-align:center;
-   color:#fff
-}
-.menu:hover{
-   display: inline-block;
-   width:32px;
-   height:32px;
-   border-radius:32px;
-   -moz-border-radius:32px;
-   -webkit-border-radius:32px;
-   border:2px solid #ccc;
-   padding: 16px;
-   background:#ccc;
-   text-align:center;
-   color:#fff
-}
-.menu .nav {
-   padding-top:37px
+    width: 400px;
+    height: 500px;
 }
 
 .popup-example-root section {
-   margin: 5px 0;
+    margin: 0 0 20px 0;
+}
+        
+.popups .menu {
+    background: hsl(0,0%,85%);
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0;
 }
 
+.popups .menu-item {
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    margin: 10px 10px 0 0;
+    border-radius: 4px;
+    background-color: hsl(0,0%,95%);
+    border: 1px solid hsl(0,0%,70%);
+    cursor: pointer;
+}
+
+.popups .menu-item:hover {
+    background-color: hsl(0,0%,98%);
+}
+
+.popups .menu-item:active {
+    background-color: hsl(0,0%,90%);
+}
                        </pre>
                    </div>
                </li>
