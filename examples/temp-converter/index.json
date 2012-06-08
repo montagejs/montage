@@ -22,7 +22,7 @@
     },
     
     "barometer": {
-        "prototype": "montage/ui/range-input.reel",
+        "prototype": "montage/ui/native/input-range.reel",
         "properties": {
             "element": {"#": "barometer"}
         },
