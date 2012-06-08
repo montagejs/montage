@@ -1,0 +1,15 @@
+.montage-text-slider-input {
+    display: none;
+}
+
+.montage-text-slider-editing .montage-text-slider-input {
+    display: inherit;
+}
+
+.montage-text-slider-value {
+    border-bottom: 1px dotted #000;
+}
+
+.montage-text-slider-editing .montage-text-slider-value, .montage-text-slider-editing .montage-text-slider-label {
+    display: none;
+}

@@ -58,9 +58,9 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     load: {
         value: function() {
             if (window.Touch) {
-                this._element.addEventListener("touchstart", this);
+                this._element.addEventListener("touchstart", this, true);
             } else {
-                this._element.addEventListener("mousedown", this);
+                this._element.addEventListener("mousedown", this, true);
             }
         }
     },
@@ -74,6 +74,19 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
             }
         }
     },
+
+    /**
+    Delegate that implements <code>surrenderPointer</code>. See Component for
+    explanation of what this method should do.
+
+    @type {Object}
+    @default null
+    */
+    delegate: {
+        serializable: true,
+        value: null
+    },
+
 
     /**
     Cancel the current press.
@@ -191,16 +204,16 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                     return false;
                 }
 
-                document.addEventListener("touchend", this);
-                document.addEventListener("touchcancel", this);
+                document.addEventListener("touchend", this, false);
+                document.addEventListener("touchcancel", this, false);
             } else if (event.type === "mousedown") {
                 this._observedPointer = "mouse";
                 // Needed to cancel action event dispatch is mouseup'd when
                 // not on the component
-                document.addEventListener("mouseup", this);
+                document.addEventListener("mouseup", this, false);
                 // Needed to preventDefault if another component has claimed
                 // the pointer
-                document.addEventListener("click", this);
+                document.addEventListener("click", this, false);
             }
 
             this.component.eventManager.claimPointer(this._observedPointer, this);
@@ -239,18 +252,19 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
                 // in surrenderPointer, just end the interaction.
                 this._endInteraction(event);
                 return;
-            }
+            } else if (event.type === "mouseup") {
 
-            if (!isSurrendered && isTarget && event.type === "mouseup") {
-                this._dispatchPress(event);
-                this._endInteraction(event);
-                return;
-            }
-
-            if (!isSurrendered && !isTarget && event.type === "mouseup") {
-                this._dispatchPressCancel(event);
-                this._endInteraction(event);
-                return;
+                if (!isSurrendered && isTarget) {
+                    this._dispatchPress(event);
+                    this._endInteraction(event);
+                    return;
+                } else if (!isSurrendered && !isTarget) {
+                    this._dispatchPressCancel(event);
+                    this._endInteraction(event);
+                    return;
+                } else if (isSurrendered && !isTarget) {
+                    this._endInteraction(event);
+                }
             }
         }
     },
@@ -319,7 +333,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
 
     // Handlers
 
-    handleTouchstart: {
+    captureTouchstart: {
         value: function(event) {
             this._startInteraction(event);
         }
@@ -352,7 +366,7 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
         }
     },
 
-    handleMousedown: {
+    captureMousedown: {
         value: function(event) {
             this._startInteraction(event);
         }
