@@ -20,11 +20,14 @@ global.debug = false;
     @param [ignore] {Array[String]} An array of filenames to ignore, by default
                                     "node_modules" and "test" are ignored
     @param [problems] {Object} The object to insert the problems into
+    @param [callback] {Function} Get the result of each file as it is linted.
+                                 Is called with two arguments, the filename and
+                                 and array with the problems.
     @returns {Object} An object mapping filenames to an array of objects containing problems.
                       Each object has "problem", "line" and "solution" properties. e.g.
                       {"file.js": [{problem: "...", line: 1, solution: "..."}, ...], ...}
 */
-var run = exports.run = function(filenames, ignore, problems) {
+var run = exports.run = function(filenames, ignore, problems, callback) {
     ignore = ignore || ["node_modules", "test"];
     problems = problems || {};
 
@@ -57,7 +60,7 @@ var run = exports.run = function(filenames, ignore, problems) {
             var subProblems = run(fs.readdirSync(filename).map(function(f) {
                 // prefix filename with the path
                 return path.join(filename, f);
-            }), ignore, problems);
+            }), ignore, problems, callback);
             continue;
         }
 
@@ -66,7 +69,11 @@ var run = exports.run = function(filenames, ignore, problems) {
             continue;
         }
 
-        problems[filename] = lint(filePath, fs.readFileSync(filePath, "utf8"));
+        var p = lint(filePath, fs.readFileSync(filePath, "utf8"));
+        problems[filename] = p;
+        if (typeof callback === "function") {
+            callback(filename, p);
+        }
     }
 
     return problems;
@@ -126,15 +133,14 @@ if (!module.parent) {
     var colors = require("./lib/termcolors").colors;
     var codeRe = /`([^`]+)`/g;
 
-    var problems = run(args, ignore);
-    for (var filename in problems) {
-        for (var i = 0, len = problems[filename].length; i < len; i++) {
-            var p = problems[filename][i];
+    run(args, ignore, null, function(filename, problems) {
+        for (var i = 0, len = problems.length; i < len; i++) {
+            var p = problems[i];
             console.log(colors.brown(filename + ":" + p.line, true) + " " + p.problem);
             if (solution) {
 
                 console.log(colors.green("> ", true) + p.solution.replace(codeRe, "`" + colors.dgray("$1", true) + "`" ));
             }
         }
-    }
+    });
 }

@@ -15,6 +15,11 @@ assert.equal(result["ok.js"].length, 0, "ok.js has no problems");
 var result = mint.run(["dir"]);
 assert.equal(result["dir/ok.js"].length, 0, "can lint in subdirectories");
 
+mint.run(["ok.js"], null, null, function(filename, problems) {
+    assert.equal(filename, "ok.js", "callback gets correct filename");
+    assert.equal(problems.length, 0, "callback gets correct problems");
+});
+
 var result = mint.run(["copyright.js"]);
 assert.equal(result["copyright.js"][0].problem, "no copyright comment (or wrong copyright year)", "lints copyright statement");
 
