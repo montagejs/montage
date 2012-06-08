@@ -52,7 +52,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
 
                                     onchange();
 
-                                    object.addPropertyChangeListener(
+                                    object.addOwnPropertyChangeListener(
                                         key,
                                         onchange,
                                         beforeChange
@@ -62,7 +62,7 @@ var ObserverSemantics = exports.ObserverSemantics = Montage.create(Montage, {
                                         if (_cancel) {
                                             _cancel();
                                         }
-                                        object.removePropertyChangeListener(
+                                        object.removeOwnPropertyChangeListener(
                                             key,
                                             onchange,
                                             beforeChange
@@ -454,13 +454,13 @@ function makeNoArgumentsMethodCompiler(name) {
                         }
                     };
 
-                    collection.addPropertyChangeListener(null, onchange, beforeChange);
+                    collection.addOwnPropertyChangeListener(null, onchange, beforeChange);
 
                     onchange();
 
                     return function cancel() {
                         subcancel();
-                        collection.removePropertyChangeListener(null, onchange, beforeChange);
+                        collection.removeOwnPropertyChangeListener(null, onchange, beforeChange);
                     };
                 },
                 errback,
@@ -528,7 +528,7 @@ function makeReductionCompiler(operation, makeBasis) {
                     };
 
                     // changes to the shape of the array
-                    collection.addPropertyChangeListener(null, onchange, beforeChange);
+                    collection.addOwnPropertyChangeListener(null, onchange, beforeChange);
 
                     onchange();
 
@@ -537,7 +537,7 @@ function makeReductionCompiler(operation, makeBasis) {
                             subcancel();
                             subcancel = void 0;
                         }
-                        collection.removePropertyChangeListener(null, onchange, beforeChange);
+                        collection.removeOwnPropertyChangeListener(null, onchange, beforeChange);
                     };
 
                 },

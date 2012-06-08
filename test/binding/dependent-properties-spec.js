@@ -102,7 +102,7 @@ var Person = Montage.create(Montage, {
     },
 
     childrenAtHome: {
-        dependencies: ["children.atHome"],
+        dependencies: ["children.map(atHome)"],
         get: function() {
             return this.children.filter(function(element) {
                 return !!element.atHome;
@@ -155,8 +155,8 @@ describe("binding/dependent-properties-spec", function() {
                 person.children = [baby, baby2];
 
                 // childrenAtHome depends upon "children.atHome"
-                person.addPropertyChangeListener("childrenAtHome.count()", function(change) {
-                    personInformation.count = person.getProperty("childrenAtHome.count()");
+                person.addPropertyChangeListener("childrenAtHome.length", function(change) {
+                    personInformation.count = person.getProperty("childrenAtHome.length");
                 })
 
                 baby.atHome = true;
@@ -178,8 +178,8 @@ describe("binding/dependent-properties-spec", function() {
                 baby.atHome = true;
 
                 // childrenAtHome depends upon "children.atHome"
-                person.addPropertyChangeListener("childrenAtHome.count()", function(change) {
-                    personInformation.count = person.getProperty("childrenAtHome.count()");
+                person.addPropertyChangeListener("childrenAtHome.length", function(change) {
+                    personInformation.count = person.getProperty("childrenAtHome.length");
                 })
 
                 person.children.push(baby);
@@ -395,7 +395,7 @@ describe("binding/dependent-properties-spec", function() {
                     // childrenAtHome depends upon "children.atHome"
                     Object.defineBinding(personInformation, "count", {
                         boundObject: person,
-                        boundObjectPropertyPath: "childrenAtHome.count()",
+                        boundObjectPropertyPath: "childrenAtHome.length",
                         oneway: true
                     });
 
@@ -422,7 +422,7 @@ describe("binding/dependent-properties-spec", function() {
                     // childrenAtHome depends upon "children.atHome"
                     Object.defineBinding(personInformation, "count", {
                         boundObject: person,
-                        boundObjectPropertyPath: "childrenAtHome.count()",
+                        boundObjectPropertyPath: "childrenAtHome.length",
                         oneway: true
                     });
 
