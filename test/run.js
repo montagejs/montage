@@ -79,6 +79,7 @@ if (spec) {
         "ui/text-slider-spec",
         "ui/scroller-spec",
         "ui/list-spec",
+        "ui/native-control-spec",
         "ui/number-input-spec",
         "ui/popup-spec",
         "ui/popup-in-window-spec",
