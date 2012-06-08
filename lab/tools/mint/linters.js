@@ -46,14 +46,36 @@ exports.jshint = function(path, source, jshint) {
 // problem: undefined variables usage, hence creating globals
 exports.globals = function(path, source, jshint) {
     if (jshint.implieds && jshint.implieds.length !== 0) {
-        var problems = [];
+        var problems = [], sourceLines = source.split("\n");
         for (var g in jshint.implieds) {
-            var impliedGlobal = jshint.implieds[g];
-            problems.push({
-                line: impliedGlobal.line[0],
-                problem: "'" + impliedGlobal.name + "' is not defined and is probably creating a global",
-                solution: "add `var` or a comment `/*global " + impliedGlobal.name + " */`"
-            });
+            var impliedGlobal = jshint.implieds[g],
+                isSetOnLine = false;
+
+            for (var l = 0, len = impliedGlobal.line.length; l < len; l++) {
+                // heuristic: if the line contains an "=" then it's creating the
+                // global, otherwise it's just using it
+                // -1 because line 1 is index 0
+                if (sourceLines[impliedGlobal.line[l] - 1].indexOf("=") !== -1) {
+                    // console.log(path, l, impliedGlobal.line[l], impliedGlobal.name);
+                    // console.log(sourceLines[impliedGlobal.line[l]-1]);
+                    isSetOnLine = impliedGlobal.line[l];
+                    break;
+                }
+            }
+
+            if (isSetOnLine) {
+                problems.push({
+                    line: isSetOnLine,
+                    problem: "'" + impliedGlobal.name + "' is not defined and probably creating a global",
+                    solution: "add `var`.\n  If intentionally creating a global add `/*global " + impliedGlobal.name + " */` after the copyright statement"
+                });
+            } else {
+                problems.push({
+                    line: impliedGlobal.line[0],
+                    problem: "'" + impliedGlobal.name + "' is not defined",
+                    solution: "If intentionally using a global add `/*global " + impliedGlobal.name + " */` after the copyright statement"
+                });
+            }
         }
         return problems;
     }
