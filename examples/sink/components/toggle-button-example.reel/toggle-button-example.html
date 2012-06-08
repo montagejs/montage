@@ -103,10 +103,22 @@
     }</script>
     <style type="text/css">
         .values-btn {
+            background-color: hsl(0,100%,82%);
+        }
+        .values-btn:hover {
+            background-color: hsl(0,100%,84%);
+        }
+        .values-btn.montage-button:active {
             background-color: hsl(0,100%,80%);
         }
         .values-btn.success {
             background-color: hsl(100,100%,80%);
+        }
+        .values-btn.success:hover {
+            background-color: hsl(100,100%,88%);
+        }
+        .values-btn.success:active {
+            background-color: hsl(100,90%,80%);
         }
     </style>
     </head>
@@ -311,10 +323,22 @@ exports.StyleElement = Montage.create(Component, {
                                                 <div class="accordion-inner montage-hidden">
                                                     <pre class="prettyprint" >
 .values-btn {
+    background-color: hsl(0,100%,82%);
+}
+.values-btn:hover {
+    background-color: hsl(0,100%,84%);
+}
+.values-btn.montage-button:active {
     background-color: hsl(0,100%,80%);
 }
 .values-btn.success {
     background-color: hsl(100,100%,80%);
+}
+.values-btn.success:hover {
+    background-color: hsl(100,100%,88%);
+}
+.values-btn.success:active {
+    background-color: hsl(100,90%,80%);
 }
                                                     </pre>
                                                 </div>
