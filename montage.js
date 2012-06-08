@@ -445,7 +445,7 @@ if (typeof window !== "undefined") {
                     }
 
                     if (typeof window !== "undefined") {
-                        montageRequire.async("core/event/binding");
+                        montageRequire.async("core/event/binding").end();
                     }
 
                     appModulePromise.then(function(exports) {

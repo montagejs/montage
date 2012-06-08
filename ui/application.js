@@ -157,7 +157,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                     }
 
                 });
-            })
+            }).end();
         }
     },
 
