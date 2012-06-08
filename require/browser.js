@@ -20,6 +20,12 @@ Require.getLocation = function() {
 
 Require.overlays = ["window", "browser", "montage"];
 
+// Determine if an XMLHttpRequest was successful
+// Some versions of WebKit return 0 for successful file:// URLs
+function xhrSuccess(req) {
+    return (req.status === 200 || (req.status === 0 && req.responseText));
+}
+
 // Due to crazy variabile availability of new and old XHR APIs across
 // platforms, this implementation registers every known name for the event
 // listeners.  The promise library ascertains that the returned promise
@@ -65,12 +71,6 @@ Require.read = function (url) {
     request.send();
     return response.promise;
 };
-
-// Determine if an XMLHttpRequest was successful
-// Some versions of WebKit return 0 for successful file:// URLs
-function xhrSuccess(req) {
-    return (req.status === 200 || (req.status === 0 && req.responseText));
-}
 
 // By using a named "eval" most browsers will execute in the global scope.
 // http://www.davidflanagan.com/2010/12/global-eval-in.html

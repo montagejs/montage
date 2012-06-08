@@ -3,6 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/*global WebKitPoint */
 /**
     @module "montage/ui/bluemoon/slider.reel"
     @requires montage/core/core

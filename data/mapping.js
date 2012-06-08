@@ -445,7 +445,7 @@ var BinderMapping = exports.BinderMapping = Montage.create(Mapping, /** @lends m
                     }
                 }
             }
-            return mapping;
+            return info;
         }
     },
 
@@ -473,7 +473,7 @@ var BinderMapping = exports.BinderMapping = Montage.create(Mapping, /** @lends m
                     }
                 }
             }
-            return mapping;
+            return info;
         }
     },
 

@@ -34,6 +34,8 @@ var TemporaryObjectId = require("data/object-id").TemporaryObjectId;
 var Serializer = require("core/serializer").Serializer;
 var Deserializer = require("core/deserializer").Deserializer;
 var Promise = require("core/promise").Promise;
+var Exception = require("core/exception").Exception;
+
 var logger = require("core/logger").logger("store");
 /**
  Description TODO
@@ -342,7 +344,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                         aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
-                return this.permanentIdForObjectId$Implementation(objectId, context, aTransactionId);
+                return this.permanentIdForObjectId$Implementation(object, context, aTransactionId);
             } finally {
                 if (!hadOpenTransaction) {
                     TransactionId.manager.closeTransaction(aTransactionId);

@@ -17,6 +17,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
 
     grammar: {
         value: function () {
+            var parseScalar, parseExpression;
 
             // precedence
 
@@ -35,14 +36,14 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             this.parseLeftToRight(['and']);
             this.parseLeftToRight(['or']);
             this.parseConditional();
-            var parseScalar = this.precedence();
+            parseScalar = this.precedence();
 
             this.parseArray();
             this.parseRightToLeft(['has', 'contains', 'every', 'some', 'one', 'only', 'filter', 'map', 'it']);
             this.parseSorted(parseScalar);
             this.parseSlice(parseScalar);
             this.parseRightToLeft(['sum', 'count', 'average', 'unique', 'flatten']);
-            var parseExpression = this.precedence();
+            parseExpression = this.precedence();
 
             // TODO median, mode, flatten, any, all
 
@@ -286,7 +287,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                     return callback(previousTerms);
                 } else {
                     return parsePrevious(function (term) {
-                        terms = previousTerms.concat([term]);
+                        var terms = previousTerms.concat([term]);
                         return self.optional('comma', function (comma) {
                             if (comma) {
                                 return self.parseArrayTerms(

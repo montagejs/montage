@@ -14,6 +14,7 @@ var Montage = require("montage").Montage;
 var Exception = require("core/exception").Exception;
 var Pledge = require("data/pledge").Pledge;
 var PledgedSortedSet = require("data/pledge").PledgedSortedSet;
+var Store = require("data/pledge").Store;
 var logger = require("core/logger").logger("object-property");
 /**
  Description TODO

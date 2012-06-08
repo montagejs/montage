@@ -16,8 +16,9 @@ function connect(port, local, options) {
     return PromiseConnection.create().init(port, local, options);
 }
 
-var PromiseConnection =
-exports.PromiseConnection = Montage.create(Montage, {
+var has = Object.prototype.hasOwnProperty;
+
+var PromiseConnection = exports.PromiseConnection = Montage.create(Montage, {
 
     init: {
         value: function (port, local, options) {
@@ -59,11 +60,13 @@ exports.PromiseConnection = Montage.create(Montage, {
                 return object.map(this.encode, this);
             } else if (typeof object === "object") {
                 var newObject = {};
-                if (has.call(object, key)) {
-                    var newKey = key;
-                    if (/^[!@]$/.exec(key))
-                        newKey = key + key;
-                    newObject[newKey] = this.encode(object[key]);
+                for (var key in object) {
+                    if (has.call(object, key)) {
+                        var newKey = key;
+                        if (/^[!@]$/.exec(key))
+                            newKey = key + key;
+                        newObject[newKey] = this.encode(object[key]);
+                    }
                 }
                 return newObject;
             } else {
@@ -220,6 +223,7 @@ exports.Adapter = Montage.create(Montage, {
     },
     init: {
         value: function (port, origin) {
+            var queue;
             if (port.postMessage) {
                 // MessagePorts
                 this._send = function (message) {
@@ -250,7 +254,7 @@ exports.Adapter = Montage.create(Montage, {
             // Message ports have a start method; call it to make sure
             // that messages get sent.
             port.start && port.start();
-            var queue = this._queue = PromiseQueue.create().init();
+            queue = this._queue = PromiseQueue.create().init();
             function onmessage(event) {
                 queue.put(event.data);
             }

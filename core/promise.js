@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-/*global bootstrap */
+/*global bootstrap,Q */
 // Scope:
 //  * ES5
 //  * speed and economy of memory before safety and securability

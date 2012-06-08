@@ -18,6 +18,7 @@ var RestBinderMapping = require("data/rest-access/rest-mapping").RestBinderMappi
 var RestBlueprintMapping = require("data/rest-access/rest-mapping").RestBlueprintMapping;
 var RestAttributeMapping = require("data/rest-access/rest-mapping").RestAttributeMapping;
 var RestAssociationMapping = require("data/rest-access/rest-mapping").RestAssociationMapping;
+var TemporaryObjectId = require("data/object-id").TemporaryObjectId;
 
 var logger = require("core/logger").logger("rest-store");
 

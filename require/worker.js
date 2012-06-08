@@ -7,6 +7,7 @@
 var URL = require("core/mini-url");
 
 exports.Worker = function (package, id) {
+    var proxy;
     var worker = new Worker(
         URL.resolve(module.location, 'worker-script.js')
     );
@@ -50,7 +51,7 @@ exports.Worker = function (package, id) {
             // XXX
         }
     };
-    var proxy = {
+    proxy = {
         postMessage: function (data) {
             worker.postMessage({
                 type: "forward",

@@ -12,6 +12,7 @@ function makeSelector(language) {
     var tokens = language.tokens;
     var tokenNames = language.tokenNames;
     var semantics = language.semantics;
+    var tokenEmitterProperties;
 
     var Selector = function () {
         return makeTokenEmitter(
@@ -24,7 +25,7 @@ function makeSelector(language) {
 
     Selector.language = language;
 
-    var tokenEmitterProperties = language.selectorExtras || {};
+    tokenEmitterProperties = language.selectorExtras || {};
     var extraTokenEmitterNames = Object.keys(tokenEmitterProperties);
 
     // Proxied properties of the underlying selector
