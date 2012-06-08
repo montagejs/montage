@@ -204,15 +204,25 @@
     }</script>
 
         <style type="text/css">
-            .radio-button-example label {
-                float: none;
+            .radio-button-example .radio-group {
+                margin: 2px 0px 8px 12px;
+                padding: 5px 0px 5px 12px;
+                border-left: 1px solid #ddd;
             }
             .radio-button-example ul {
                 list-style: none;
             }
-            .radio-button-example h5 {
-                display: inline;
-                vertical-align: top;
+            .bordered-table td {
+                line-height: 24px;
+            }
+            .radio-button-example .radio.inline,
+            .radio-button-example .radio-group .radio {
+                margin-right: 10px;
+            }
+            .radio-button-example .radio input {
+                /* ToDo: label + radio combo */
+                position: relative;
+                top: -2px;
             }
         </style>
     </head>
@@ -231,26 +241,24 @@
 
             <div class="demo">
 
-                <p class="span8">What is your favorite food?</p>
-                <div class="app">
-                            <div class="span4">
-                                <label class="radio"><input type="radio" name="car" data-montage-id="veg" /> Vegetables</label>
-                                <div style="padding-left: 1em">
-                                    <label class="radio"><input type="radio" name="veg" data-montage-id="veg-carrot"> Carrot</label>
-                                    <label class="radio"><input type="radio" name="veg" data-montage-id="veg-potato"> Potato</label>
-                                    <label class="radio"><input type="radio" name="veg" data-montage-id="veg-broccoli"> Broccoli</label>
-                                </div>
-                            </div>
-                            <div class="span4">
-                                <label class="radio"><input type="radio" name="car" data-montage-id="fruit" /> Fruit</label>
-                                <div style="padding-left: 1em">
-                                    <label class="radio"><input type="radio" name="fruit" value="apple" data-montage-id="fruit-apple"> Apple</label>
-                                    <label class="radio"><input type="radio" name="fruit" value="banana" data-montage-id="fruit-banana"> Banana</label>
-                                    <label class="radio"><input type="radio" name="fruit" value="pear" data-montage-id="fruit-pear"> Pear</label>
-                                </div>
-                            </div>
-
+                <h5>What is your favorite food?</h5>
+                <div class="veg">
+                    <label class="radio"><input type="radio" name="car" data-montage-id="veg" /> Vegetables</label>
+                    <div class="radio-group">
+                        <label class="radio"><input type="radio" name="veg" data-montage-id="veg-carrot"> Carrot</label>
+                        <label class="radio"><input type="radio" name="veg" data-montage-id="veg-potato"> Potato</label>
+                        <label class="radio"><input type="radio" name="veg" data-montage-id="veg-broccoli"> Broccoli</label>
+                    </div>
                 </div>
+                <div class="fruit">
+                    <label class="radio"><input type="radio" name="car" data-montage-id="fruit" /> Fruit</label>
+                    <div class="radio-group">
+                        <label class="radio"><input type="radio" name="fruit" value="apple" data-montage-id="fruit-apple"> Apple</label>
+                        <label class="radio"><input type="radio" name="fruit" value="banana" data-montage-id="fruit-banana"> Banana</label>
+                        <label class="radio"><input type="radio" name="fruit" value="pear" data-montage-id="fruit-pear"> Pear</label>
+                    </div>
+                </div>
+                
             </div>
 
             <section>
@@ -259,19 +267,19 @@
                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
-&lt;p class="span8"&gt;What is your favorite food?&lt;/p&gt;
+&lt;h5&gt;What is your favorite food?&lt;/h5&gt;
 
-&lt;div class="span4"&gt;
+&lt;div class="veg"&gt;
     &lt;label class="radio"&gt;&lt;input type="radio" name="car" data-montage-id="veg" /&gt; Vegetables&lt;/label&gt;
-    &lt;div style="padding-left: 1em"&gt;
+    &lt;div class="radio-group"&gt;
         &lt;label class="radio"&gt;&lt;input type="radio" name="veg" data-montage-id="vegCarrot"&gt; Carrot&lt;/label&gt;
         &lt;label class="radio"&gt;&lt;input type="radio" name="veg" data-montage-id="vegPotato"&gt; Potato&lt;/label&gt;
         &lt;label class="radio"&gt;&lt;input type="radio" name="veg" data-montage-id="vegBroccoli"&gt; Broccoli&lt;/label&gt;
     &lt;/div&gt;
 &lt;/div&gt;
-&lt;div class="span4"&gt;
+&lt;div class="fruit"&gt;
     &lt;label class="radio"&gt;&lt;input type="radio" name="car" data-montage-id="fruit" /&gt; Fruit&lt;/label&gt;
-    &lt;div style="padding-left: 1em"&gt;
+    &lt;div class="radio-group"&gt;
         &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="apple" data-montage-id="fruitApple"&gt; Apple&lt;/label&gt;
         &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="banana" data-montage-id="fruitBanana"&gt; Banana&lt;/label&gt;
         &lt;label class="radio"&gt;&lt;input type="radio" name="fruit" value="pear" data-montage-id="fruitPear"&gt; Pear&lt;/label&gt;
@@ -390,7 +398,7 @@
 
                 <div>
                     <h5>You selected: </h5>
-                    <div data-montage-id="selected-answer" ></div>
+                    <div data-montage-id="selected-answer" class="echo"></div>
                 </div>
 
             </div>
