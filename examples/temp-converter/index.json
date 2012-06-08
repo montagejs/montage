@@ -4,7 +4,7 @@
     },
 
     "celsiusTextfield": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "celsius"}
         },
@@ -14,7 +14,7 @@
     },
 
     "fahrenheitTextfield": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "fahrenheit"},
             "value": "32"
@@ -22,7 +22,7 @@
     },
     
     "barometer": {
-        "prototype": "montage/ui/range-input.reel",
+        "prototype": "montage/ui/native/input-range.reel",
         "properties": {
             "element": {"#": "barometer"}
         },

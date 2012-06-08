@@ -151,9 +151,7 @@
         <!-- <h4>Basic button with event handler</h4> -->
         <p>Button with an identifier used to link it to an handler method.</p>
         <div class="demo demo1">
-            <div class="app">
-                        <button class="text btn" data-montage-id="button1">Click Me</button>
-            </div>
+            <button data-montage-id="button1">Click Me</button>
         </div>
 
         <section>
@@ -162,7 +160,7 @@
                     <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                     <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;button class="text btn" data-montage-id="button1"&gt;Click Me&lt;/button&gt;
+&lt;button data-montage-id="button1"&gt;Click Me&lt;/button&gt;
 </pre>
                     </div>
                 </li>
@@ -204,7 +202,7 @@
                     </div>
                 </li>
                 <li class="accordion-group">
-                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
                     <div class="accordion-inner montage-hidden">
                         <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
@@ -237,7 +235,7 @@ exports.ButtonExample = Montage.create(Component, {
 
 <div class="demo demo2">
         <div class="app">
-            <input type="submit" class="btn submit" data-montage-id="button2" value="Submit"/>
+            <input type="submit" data-montage-id="button2" value="Submit"/>
          </div>
 </div>
 
@@ -249,7 +247,7 @@ exports.ButtonExample = Montage.create(Component, {
                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                 <div class="accordion-inner montage-hidden" >
                                     <pre class="prettyprint" >
-&lt;input type="submit" class="btn submit" data-montage-id="button2" value="Submit"/&gt;
+&lt;input type="submit" data-montage-id="button2" value="Submit"/&gt;
             </pre>
                                 </div>
                             </li>
@@ -283,7 +281,7 @@ exports.ButtonExample = Montage.create(Component, {
                                 </div>
                             </li>
                             <li class="accordion-group">
-                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
                                 <div class="accordion-inner montage-hidden">
                                     <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage,
@@ -314,15 +312,15 @@ exports.ButtonExample = Montage.create(Component, {
 
 
             <h4>Button groups</h4>
-            <p>To create a button group, wrap the buttons in an parent element that applies appropriate CSS styles.</p>
+            <p>To create a button group, wrap the buttons in an parent element and add the CSS class <code>montage-buttonGroup</code>.</p>
 
 
 <div class="demo demo3">
     <div class="app">
-        <div class="btn-group">
-            <button class="btn" data-montage-id="copy">Copy</button>
-            <button class="btn" data-montage-id="cut">Cut</button>
-            <button class="btn" data-montage-id="paste">Paste</button>
+        <div class="montage-buttonGroup">
+            <button data-montage-id="copy">Copy</button>
+            <button data-montage-id="cut">Cut</button>
+            <button data-montage-id="paste">Paste</button>
         </div>
     </div>
 </div>
@@ -333,10 +331,10 @@ exports.ButtonExample = Montage.create(Component, {
                         <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                         <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint">
-&lt;div class="btn-group"&gt;
-    &lt;button class="btn" data-montage-id="copy"&gt;Copy&lt;/button&gt;
-    &lt;button class="btn" data-montage-id="cut"&gt;Cut&lt;/button&gt;
-    &lt;button class="btn" data-montage-id="paste"&gt;Paste&lt;/button&gt;
+&lt;div class="montage-buttonGroup"&gt;
+    &lt;button data-montage-id="copy"&gt;Copy&lt;/button&gt;
+    &lt;button data-montage-id="cut"&gt;Cut&lt;/button&gt;
+    &lt;button data-montage-id="paste"&gt;Paste&lt;/button&gt;
 &lt;/div&gt;
                     </pre>
 
@@ -388,22 +386,6 @@ exports.ButtonExample = Montage.create(Component, {
 
                         </div>
                     </li>
-                    <li class="accordion-group">
-                        <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS (partial)</a></div>
-                        <div class="accordion-inner montage-hidden">
-                            <pre class="prettyprint">
-.btn-group {
-    position:relative;zoom:1;
-}
-.btn-group:before,.btn-group:after {
-    display:table;*display:inline;content:"";zoom:1;
-}
-.btn-group:after {
-    clear:both;
-}
-                </pre>
-                        </div>
-                    </li>
                 </ul>
 
 </section>
@@ -411,6 +393,8 @@ exports.ButtonExample = Montage.create(Component, {
 
 
 
+            <!-- Will add icon support later
+            
             <h4>Adding an image icon</h4>
 
             <p>To add an image icon to a Button use CSS, either by
@@ -482,7 +466,7 @@ exports.ButtonExample = Montage.create(Component, {
             </ul>
 
 
-        </section>
+        </section>-->
 
                     <section>
                         <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/button-example.reel" target="_blank">View source on GitHub</a>

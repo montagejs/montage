@@ -24,7 +24,7 @@
 
                 },
                 "red": {
-                    "prototype": "montage/ui/skeleton/range-input.reel",
+                    "prototype": "montage/ui/skeleton/input-range.reel",
                     "properties": {
                         "element": {"#": "color-red"},
                         "width": 280
@@ -44,7 +44,7 @@
                     }
                 },
                 "green": {
-                        "prototype": "montage/ui/skeleton/range-input.reel",
+                        "prototype": "montage/ui/skeleton/input-range.reel",
                         "properties": {
                             "element": {"#": "color-green"},
                             "width": 280
@@ -54,9 +54,22 @@
                         }
                     },
                 "greenValue": {
-                    "prototype": "montage/ui/dynamic-text.reel",
-                    "properties": {
-                        "element": {"#": "greenValue"}
+                        "prototype": "montage/ui/dynamic-text.reel",
+                        "properties": {
+                            "element": {"#": "greenValue"}
+                        },
+                        "bindings": {
+                            "value": {"<-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
+                        }
+                },
+                "blue": {
+                        "prototype": "montage/ui/skeleton/input-range.reel",
+                        "properties": {
+                            "element": {"#": "color-blue"}
+                        },
+                        "bindings": {
+                            "value": {"<->": "@owner.blue"}
+                        }
                     },
                     "bindings": {
                         "value": {"<-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
@@ -150,7 +163,7 @@
     <body>
         <div data-montage-id="slider-polyfill-example" class="slider-polyfill-example">
             <div class="row">
-                <div class="span8">
+                <div class="span12">
                     <h3>Range Input Polyfill</h3>
                     <p>
                         The Range Input component wraps an HTML input "range" type.
@@ -250,7 +263,7 @@
 
     },
     "red": {
-        "prototype": "montage/ui/skeleton/range-input.reel",
+        "prototype": "montage/ui/skeleton/input-range.reel",
         "properties": {
             "element": {"#": "color-red"}
         },
@@ -269,9 +282,19 @@
         }
     },
     "green": {
+<<<<<<< HEAD
+            "prototype": "montage/ui/skeleton/input-range.reel",
+            "properties": {
+                "element": {"#": "color-green"}
+            },
+            "bindings": {
+                "value": {"&lt;&lt;-&gt;": "@owner.green"}
+            }
+=======
         "prototype": "montage/ui/skeleton/range-input.reel",
         "properties": {
             "element": {"#": "color-green"}
+>>>>>>> master
         },
         "bindings": {
             "value": {"&lt;&lt;-&gt;": "@owner.green"}
@@ -282,6 +305,16 @@
         "properties": {
             "element": {"#": "greenValue"}
         },
+<<<<<<< HEAD
+        "blue": {
+            "prototype": "montage/ui/skeleton/input-range.reel",
+            "properties": {
+                "element": {"#": "color-blue"}
+            },
+            "bindings": {
+                "value": {"&lt;&lt;-&gt;": "@owner.blue"}
+            }
+=======
         "bindings": {
             "value": {"&lt;-": "@owner.green", "converter": {"@": "roundTo2Decimals"}}
         }
@@ -290,6 +323,7 @@
         "prototype": "montage/ui/skeleton/range-input.reel",
         "properties": {
             "element": {"#": "color-blue"}
+>>>>>>> master
         },
         "bindings": {
             "value": {"&lt;&lt;-&gt;": "@owner.blue"}
@@ -332,7 +366,7 @@
                        </div>
                    </li>
                    <li class="accordion-group">
-                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
                        <div class="accordion-inner montage-hidden">
                            <pre class="prettyprint" >
 

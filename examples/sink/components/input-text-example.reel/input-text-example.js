@@ -17,7 +17,7 @@ exports.InputTextExample = Montage.create(Component, {
     url: {value: null},
     zip: {value: null},
     dob: {value: null},
-    // bound to dob Textfield.error
+    // bound to dob InputText.error
     dobError: {value: null},
 
     phoneReadOnly: {value: null},
@@ -27,6 +27,7 @@ exports.InputTextExample = Montage.create(Component, {
 
             this.firstName = "Foo";
             this.lastName = "Bar";
+            this.password = "12345";
             this.email = "foo.bar@mycompany.com";
             this.zip = "94087";
             this.url = "http://www.mycompany.com";
@@ -48,6 +49,7 @@ exports.InputTextExample = Montage.create(Component, {
                 this.json = JSON.stringify({
                     firstName: this.firstName,
                     lastName: this.lastName,
+                    password: this.password,
                     email: this.email,
                     phone: this.phone,
                     url: this.url,

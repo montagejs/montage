@@ -1,0 +1,36 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+  
+.montage-inputRadio {
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    outline: none;
+    box-sizing: border-box;
+    vertical-align: middle;
+    font-size: 12px;
+    width: 1.5em;
+    height: 1.5em;
+    border-radius: 1em;
+    border: 1px solid #b3b3b3;
+    background: #f2f2f2;
+    cursor: pointer;
+}
+ 
+.montage-inputRadio:hover {
+    background-color: #fff;
+}
+ 
+.montage-inputRadio:active {
+    background-color: #e5e5e5;
+}
+ 
+.montage-inputRadio:focus {
+    border-color: #7f7f7f;
+}
+ 
+.montage-inputRadio:checked {
+    background: #f2f2f2 url(radio.png) no-repeat center;
+}

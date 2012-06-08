@@ -2,7 +2,6 @@
 <html>
 <head>
     <title>Native slider component</title>
-    <link rel="stylesheet" href="styles.css">
     <script type="text/montage-serialization">{
 
         "red": {
@@ -56,7 +55,7 @@
         },
 
         "owner": {
-            "prototype": "components/range-input-example2.reel",
+            "prototype": "components/montage-slider.reel",
             "properties": {
                 "element": {"#": "range-input-example"},
                 "colorchip": {"#": "chip"}
@@ -70,12 +69,47 @@
         }
 
     }</script>
+    <style>
+        .montage-slider-example .chip {
+            display: inline-block;
+            width: 200px;
+            height: 200px;
+            vertical-align: top;
+            background: whitesmoke;
+            border-radius: 4px;
+            border: 6px solid white;
+            box-shadow: 0px 1px 2px hsla(0,0%,0%,.2);
+        }
+        .montage-slider-example .controls  {
+            display: inline-block;
+            margin: 0 0 0 20px;
+            list-style: none;
+        }
+        .montage-slider-example .slider-item {
+            position: relative;
+            width: 200px;
+            margin: 0px;
+            padding: 0;
+        }
+        .montage-slider-example .label {
+            position: absolute;
+            top: 15px;
+            left: 210px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            color: hsl(0,0%,100%);
+            background-color: hsl(0,0%,80%);
+        }
+        .label.red { background-color: hsl(0,100%,80%); }
+        .label.green { background-color: hsl(130,70%,70%); }
+        .label.blue { background-color: hsl(210,100%,80%); }
+    </style>
 </head>
     <body>
-        <div data-montage-id="range-input-example" class="range-input-example">
+        <div data-montage-id="range-input-example" class="montage-slider-example">
             <div class="row">
-                <div class="span8">
-                    <h3>Range Input</h3>
+                <div class="span12">
+                    <h3>Montage Slider</h3>
                     <p>
                         The Range Input component wraps an HTML input "range" type.
                     </p>
@@ -84,29 +118,25 @@
 
             <h4>Example - Color changer</h4>
             <div class="demo range1">
-                <div class="span12">
-                        <div data-montage-id="chip" class="chip">
-                        </div>
-                        <div data-montage-id="controls" class="controls">
-                            <div class="slider-item">
-                                <div data-montage-id="red"></div>
-                                <span class="label">Red</span>
-                            </div>
-                            <div class="slider-item">
-                                <div data-montage-id="green"></div>
-                                <span class="label">Green</span>
-                            </div>
-                            <div class="slider-item">
-                                <div data-montage-id="blue"></div>
-                                <span class="label">Blue</span>
-                            </div>
-                            <div class="slider-item">
-                                <div data-montage-id="alpha"></div>
-                                <span class="label">Opacity</span>
-                            </div>
-                        </div>
-
-                </div>
+                <div data-montage-id="chip" class="chip"></div>
+                <ul data-montage-id="controls" class="controls">
+                    <li class="slider-item">
+                        <div data-montage-id="red"></div>
+                        <span class="label red">Red</span>
+                    </li>
+                    <li class="slider-item">
+                        <div data-montage-id="green"></div>
+                        <span class="label green">Green</span>
+                    </li>
+                    <li class="slider-item">
+                        <div data-montage-id="blue"></div>
+                        <span class="label blue">Blue</span>
+                    </li>
+                    <li class="slider-item">
+                        <div data-montage-id="alpha"></div>
+                        <span class="label">Opacity</span>
+                    </li>
+                </ul>
             </div>
 
 
@@ -116,8 +146,7 @@
                     <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                     <div class="accordion-inner montage-hidden" >
                         <pre class="prettyprint" >
-&lt;div data-montage-id="chip" class="chip"&gt;
-&lt;/div&gt;
+&lt;div data-montage-id="chip" class="chip"&gt;&lt;/div&gt;
 &lt;div data-montage-id="controls" class="controls"&gt;
     &lt;div class="slider-item"&gt;
         &lt;div data-montage-id="red"&gt;&lt;/div&gt;
@@ -206,7 +235,7 @@
                     </div>
                 </li>
                 <li class="accordion-group">
-                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
                     <div class="accordion-inner montage-hidden">
                         <pre class="prettyprint" >
 var Montage = require("montage/core/core").Montage;
@@ -291,7 +320,7 @@ exports.MontageSlider = Montage.create(Component, {
         </section>
 
         <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/montage-slider.reel" target="_blank">View Source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/montage-slider.reel" target="_blank">View Source on GitHub</a>
         </section>
 
     </body>

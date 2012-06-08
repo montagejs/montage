@@ -19,6 +19,8 @@ var Montage = require("montage").Montage,
   @extends module:"montage/button.reel".Button
  */
 var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends module:"montage/ui/toggle-button.reel".ToggleButton# */ {
+    hasTemplate: {value: true},
+    
     _pressed: {
         value: false
     },
@@ -115,11 +117,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
     */
     label: {
         get: function() {
-            return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").get.call(this);
+            return Object.getPropertyDescriptor(Button,"label").get.call(this);
         },
         set: function(value) {
             // Call super
-            Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").set.call(this, value);
+            //Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").set.call(this, value);
+            Object.getPropertyDescriptor(Button, "label").set.call(this, value);
             if (this._pressed === true && this._label === this._unpressedLabel) {
                 this.pressed = false;
             } else if (this._pressed === false && this._label === this._pressedLabel) {

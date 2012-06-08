@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    SelectInput = require("montage/ui/select-input.reel").SelectInput,
+    SelectInput = require("montage/ui/select.reel").SelectInput,
     Converter = require("montage/core/converter/converter").Converter;
 
 

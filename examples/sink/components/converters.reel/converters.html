@@ -1,4 +1,4 @@
-    <!DOCTYPE html>
+<!DOCTYPE html>
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
@@ -17,7 +17,7 @@
         }
     },
     "textfield1": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "value": "Hello World",
             "element": {"#": "textfield1"}
@@ -97,7 +97,7 @@
         }
     },
     "textfield2": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "converter": {"@": "dateconverter1"},
             "updateOnInput": false,
@@ -187,7 +187,7 @@
         }
     },
     "textfield3": {
-        "prototype": "montage/ui/number-input.reel",
+        "prototype": "montage/ui/input-number.reel",
         "properties": {
             "element": {"#": "txt-number"}
         },
@@ -270,7 +270,7 @@
         }
     },
     "celsiusTextfield": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "celsius"}
         },
@@ -279,7 +279,7 @@
         }
     },
     "fahrenheitTextfield": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "fahrenheit"},
             "value": "32"
@@ -399,7 +399,7 @@
                     <pre class="prettyprint" >
 {
     "textfield1": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "value": "Hello World",
             "element": {"#": "textfield1"}
@@ -656,7 +656,7 @@
         }
     },
     "textfield2": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "converter": {"@": "dateconverter1"},
             "updateOnInput": false,
@@ -749,9 +749,7 @@
         </section>
 
 
-
         <h3>Custom converter: Temperature Converter</h3>
-
         <p>The following example demonstrates how to create and use a custom converter, in this case to convert from degrees C to degrees F. </p>
 
         <div class="demo temp">
@@ -799,7 +797,7 @@
         }
     },
     "celsiusTextfield": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "celsius"},
             "converter": {"@": "numberconverter5"}
@@ -809,7 +807,7 @@
         }
     },
     "fahrenheitTextfield": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "fahrenheit"},
             "value": "32"
@@ -821,7 +819,7 @@
                    </div>
                </li>
                <li class="accordion-group">
-                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
                    <div class="accordion-inner montage-hidden">
                        <pre class="prettyprint" >
 /* converters.js - Custom converter to convert from Celsius to Fahrenheit and vice-versa. */

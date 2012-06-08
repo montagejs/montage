@@ -20,7 +20,7 @@ var Montage = require("montage").Montage,
     The base class for the Checkbox component. You will not typically create this class directly but instead use the Checkbox component.
     @class module:montage/ui/text-input.CheckInput
     @extends module:montage/ui/native-control.NativeControl
-    @see module:"montage/ui/checkbox.reel".CheckBox
+    @see module:"montage/ui/input-checkbox.reel".CheckBox
 */
 var CheckInput = exports.CheckInput =  Montage.create(NativeControl, {
 
