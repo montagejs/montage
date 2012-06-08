@@ -8,7 +8,7 @@
 
 var fs = require("fs"),
     path = require("path"),
-    JSHINT = require("jshint").JSHINT;
+    JSHINT = require("./lib/jshint").JSHINT;
 var linters = require("./linters"),
     linterNames = Object.keys(linters);
 

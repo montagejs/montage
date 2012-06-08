@@ -4,8 +4,6 @@
     "version": "0.0.1",
     "author": "Stuart Knightley",
 
-    "dependencies": {
-        "jshint": "0.7.x"
-    }
+    "dependencies": {}
 }
 
