@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global bootstrap */
 // Scope:
 //  * ES5
 //  * speed and economy of memory before safety and securability
@@ -76,7 +76,7 @@ var Creatable = Object.create(Object.prototype, {
             for (var name in descriptor) {
                 var property = descriptor[name];
                 if (!property.set && !property.get) {
-                    property.writable = true
+                    property.writable = true;
                 }
                 property.configurable = true;
             }

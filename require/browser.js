@@ -3,6 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/*global bootstrap */
 bootstrap("require/browser", function (require) {
 
 var Require = require("require/require"),

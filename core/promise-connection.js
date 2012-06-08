@@ -40,7 +40,7 @@ exports.PromiseConnection = Montage.create(Montage, {
 
     log: {
         value: function (/*...args*/) {
-            logger.debug.apply(logger, ["Connection:", this.sigil].concat(Array.prototype.slice.call(arguments)))
+            logger.debug.apply(logger, ["Connection:", this.sigil].concat(Array.prototype.slice.call(arguments)));
         }
     },
 
