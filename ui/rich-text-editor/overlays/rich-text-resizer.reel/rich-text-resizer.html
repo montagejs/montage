@@ -6,25 +6,25 @@
  </copyright> -->
 <html>
 <head>
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="rich-text-resizer.css">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="rich-text-resizer.css">
     <script type="text/montage-serialization">
-        {
-            "image": {
-                "prototype": "ui/image.reel",
-                "properties": {
-                    "element": {"#": "image"}
-                }
-            },
-
-            "owner": {
-                "prototype": "ui/rich-text-editor/overlays/rich-text-resizer.reel",
-                "properties": {
-                    "element": {"#": "resizer-container"},
-                    "image": {"@": "image"}
-                }
-            }
+{
+    "image": {
+        "prototype": "ui/image.reel",
+        "properties": {
+            "element": {"#": "image"}
         }
+    },
+
+    "owner": {
+        "prototype": "ui/rich-text-editor/overlays/rich-text-resizer.reel",
+        "properties": {
+            "element": {"#": "resizer-container"},
+            "image": {"@": "image"}
+        }
+    }
+}
     </script>
 </head>
 <body>

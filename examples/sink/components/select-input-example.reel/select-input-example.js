@@ -102,6 +102,12 @@ exports.SelectInputExample = Montage.create(Component, {
     selectedDepts: {
         get: function() {return this._selectedDepts;},
         set: function(value) {
+            if(value) {
+                // remove values with empty code
+                value = value.filter(function(value, index) {
+                    return value.code;
+                });
+            }
             this._selectedDepts = (value || []);
         }
     },

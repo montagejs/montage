@@ -18,10 +18,10 @@ var Montage = require("montage").Montage,
     The base class for all text-based input components. You typically won't create instances of this prototype.
     @class module:montage/ui/text-input.TextInput
     @extends module:montage/ui/native-control.NativeControl
-    @see module:"montage/ui/date-input.reel".DateInput
-    @see module:"montage/ui/textfield.reel".Textfield
-    @see module:"montage/ui/number-input.reel".NumberInput
-    @see module:"montage/ui/range-input.reel".RangeInput
+    @see module:"montage/ui/input-date.reel".DateInput
+    @see module:"montage/ui/input-text.reel".InputText
+    @see module:"montage/ui/input-number.reel".InputNumber
+    @see module:"montage/ui/input-range.reel".RangeInput
     @see module:"montage/ui/textarea.reel".TextArea
 
 */

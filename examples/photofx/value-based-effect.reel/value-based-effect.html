@@ -24,9 +24,17 @@
                     "pressed": {"<->": "@owner.enabled"}
                 }
             },
-
+            "effectName": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "effectName"}
+                },
+                "bindings": {
+                    "value": {"<->": "@owner.name"}
+                }
+            },
             "valueSlider": {
-                "prototype": "montage/ui/range-input.reel",
+                "prototype": "montage/ui/input-range.reel",
                 "properties": {
                     "element": {"#": "valueSlider"},
                     "identifier": "valueSlider"
@@ -118,7 +126,7 @@
     <div data-montage-id="control" class="ValueBasedEffect">
         <button data-montage-id="toggle" class="btn" style="width: 60px;">ON</button>
         <div class="valueControl">
-            <input type="range" data-montage-id="valueSlider" class="slider" name="multiply"/>
+            <input type="range" data-montage-id="valueSlider" class="slider" name="multiply" />
             <div data-montage-id="valueDisplay" class="value"></div>
         </div>
 

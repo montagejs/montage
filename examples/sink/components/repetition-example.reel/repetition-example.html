@@ -26,7 +26,8 @@
                 "#": "repetition"
             },
             "isSelectionEnabled": true,
-            "contentController": {"@": "places"}
+            "contentController": {"@": "places"},
+            "orientation": "vertical"
         }
     },
 
@@ -68,7 +69,8 @@
                 "#": "table-row"
             },
             "isSelectionEnabled": false,
-            "contentController": {"@": "controller"}
+            "contentController": {"@": "controller"},
+            "axis": "horizontal"
         }
     },
 
@@ -95,7 +97,7 @@
 
 
     "selection": {
-        "prototype": "montage/ui/checkbox.reel",
+        "prototype": "montage/ui/input-checkbox.reel",
         "properties": {
             "element": {"#": "selection"}
         },
@@ -110,7 +112,7 @@
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {"<-": "@owner.jsonSelectedItems"}
+            "value": {"<->": "@owner.jsonSelectedItems"}
         }
     },
 
@@ -137,7 +139,7 @@
     },
 
     "answerSelection": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "answerSelection"}
         },
@@ -188,6 +190,7 @@
 
 
     "owner": {
+        "prototype": "components/image-example.reel",
         "properties": {
             "element": {"#": "example-root"},
             "data": [
@@ -212,7 +215,7 @@
             width: 96px;
             height: 96px;
             border: 5px solid #fff;
-
+            margin-right: 10px;
         }
 
         .repetition {
@@ -242,7 +245,7 @@
     <div data-montage-id="example-root">
 
         <div class="row">
-            <div class="span8">
+            <div class="span12">
                 <h3>Repetition</h3>
                 <p>
                     The Repetition component repeatedly generates new DOM structure from an element and its child elements, based on a collection of data objects. You can bind properties in the Repetition object's data source to properties of its child components. The List component is very similar but provides scrolling.
@@ -256,7 +259,7 @@
             <div class="repetition" data-montage-id="repetition">
                 <div class="item">
                     <img data-montage-id="thumb" class="thumb" />
-                    <h3 data-montage-id="title" class="title"></h3>
+                    <h4 data-montage-id="title" class="title"></h4>
                 </div>
             </div>
         </div>
@@ -470,7 +473,7 @@
 
 
     "selection": {
-        "prototype": "montage/ui/checkbox.reel",
+        "prototype": "montage/ui/input-checkbox.reel",
         "properties": {
             "element": {"#": "selection"}
         },
@@ -485,10 +488,11 @@
             "element": {"#": "selectedValue"}
         },
         "bindings": {
-            "value": {"&lt;-&gt;": "@owner.jsonSelectedItems"}
+            "value": {"&lt;&lt;-&gt;": "@owner.jsonSelectedItems"}
         }
     },
     "owner": {
+        "prototype": "components/image-example.reel",
         "properties": {
             "element": {"#": "example-root"},
             "data": [
@@ -516,27 +520,20 @@ var Montage = require("montage/core/core").Montage,
 exports.RepetitionExample = Montage.create(Component, {
 
    jsonSelectedItems: {
-       dependencies: ["selectedItems"],
-       get: function() {
-           return JSON.stringify(this.selectedItems||[]);
-       }
+       value: null
    },
+
+   _selectedItems: {value: null},
 
    selectedItems: {
-       value: null
-   },
+       get: function(){ return this._selectedItems; },
+       set: function(v) {
 
-   selectedAnswer: {
-       value: null
-   },
-
-    prepareForDraw: {
-       value: function() {
-           // Invoke Google pretty printer on source code samples
-           prettyPrint();
+           this._selectedItems = v;
+           this.jsonSelectedItems = JSON.stringify(this._selectedItems||[]);
+           console.log('selected items = ', v);
        }
-   }
-
+   },
 });
 
                        </pre>
@@ -636,7 +633,7 @@ table tr.selected {
     },
 
     "answerSelection": {
-        "prototype": "montage/ui/radio-button.reel",
+        "prototype": "montage/ui/input-radio.reel",
         "properties": {
             "element": {"#": "answerSelection"}
         },
@@ -704,7 +701,7 @@ exports.RepetitionExample = Montage.create(Component, {
 
 
         <section>
-            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/repetition-example.reel" target="_blank">View source on GitHub</a>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/repetition-example.reel" target="_blank">View source on GitHub</a>
         </section>
 
 <!--

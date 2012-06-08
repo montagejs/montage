@@ -8,7 +8,7 @@ var Montage = require("montage/core/core").Montage,
 
 // and here's a bunch of requires just to show this requiring things and upping the count in the loader
 require("montage/ui/button.reel");
-require("montage/ui/checkbox.reel");
+require("montage/ui/input-checkbox.reel");
 
 exports.Main = Montage.create(Component, {
 

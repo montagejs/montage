@@ -42,7 +42,6 @@
                     "switchComponents": {
                         "boolean": {"@": "toggle"},
                         "range": {"@": "slider"},
-                        "action": {"@": "button"},
                         "check": {"@": "checkbox"}
                     }
                 },
@@ -61,7 +60,7 @@
                 }
             },
             "slider": {
-                "prototype": "montage/ui/range-input.reel",
+                "prototype": "montage/ui/native/input-range.reel",
                 "properties": {
 
                 },
@@ -70,7 +69,7 @@
                 }
             },
             "checkbox": {
-                "prototype": "montage/ui/checkbox.reel",
+                "prototype": "montage/ui/native/input-checkbox.reel",
                 "properties": {
 
                 },
@@ -79,7 +78,7 @@
                 }
             },
             "addAnObjectButton": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/ui/native/button.reel",
                 "properties": {
                     "element": {"#": "button"},
                     "identifier": "addButton"

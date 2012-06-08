@@ -15,6 +15,10 @@
             "owner": {
                 "prototype": "mixed-list"
             },
+            
+            "delegate": {
+                "prototype": "mixed-list[SubstitutionDelegate]"
+            },
             "scroller": {
                 "prototype": "montage/ui/scroller.reel",
                 "properties": {
@@ -35,8 +39,9 @@
                 "prototype": "montage/ui/substitution.reel",
                 "properties": {
                     "element": {"#": "substitution"},
+                    "delegate": {"@": "delegate"},
                     "switchComponents": {
-                        "boolean": {"@": "toggle"},
+                        "boolean": {"@": "radio"},
                         "range": {"@": "slider"},
                         "check": {"@": "checkbox"}
                     }
@@ -46,13 +51,13 @@
                 }
             },
             "toggle": {
-                "prototype": "montage/ui/bluemoon/toggle.reel",
+                "prototype": "montage/ui/toggle-button.reel",
                 "bindings": {
                     "value": {"<-": "@list.objectAtCurrentIteration.value"}
                 }
             },
             "slider": {
-                "prototype": "montage/ui/bluemoon/slider.reel",
+                "prototype": "montage/ui/input-range.reel",
                 "properties": {
 
                 },
@@ -61,7 +66,16 @@
                 }
             },
             "checkbox": {
-                "prototype": "montage/ui/bluemoon/checkbox.reel",
+                "prototype": "montage/ui/input-checkbox.reel",
+                "properties": {
+
+                },
+                "bindings": {
+                    "checked": {"<-": "@list.objectAtCurrentIteration.value"}
+                }
+            },
+            "radio": {
+                "prototype": "montage/ui/input-radio.reel",
                 "properties": {
 
                 },

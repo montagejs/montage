@@ -6,25 +6,25 @@
  </copyright> -->
 <html>
 <head>
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="rich-text-linkpopup.css">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="rich-text-linkpopup.css">
     <script type="text/montage-serialization">
-        {
-            "link": {
-                "prototype": "ui/anchor.reel",
-                "properties": {
-                    "element": {"#": "link"}
-                }
-            },
-
-            "owner": {
-                "prototype": "ui/rich-text-editor/overlays/rich-text-linkpopup.reel[RichTextLinkPopup]",
-                "properties": {
-                    "element": {"#": "linkpopup-container"},
-                    "link": {"@": "link"}
-                }
-            }
+{
+    "link": {
+        "prototype": "ui/anchor.reel",
+        "properties": {
+            "element": {"#": "link"}
         }
+    },
+
+    "owner": {
+        "prototype": "ui/rich-text-editor/overlays/rich-text-linkpopup.reel[RichTextLinkPopup]",
+        "properties": {
+            "element": {"#": "linkpopup-container"},
+            "link": {"@": "link"}
+        }
+    }
+}
     </script>
 </head>
 <body>
