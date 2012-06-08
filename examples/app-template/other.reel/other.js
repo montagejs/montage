@@ -11,7 +11,7 @@ var Montage = require("montage/core/core").Montage,
 require("montage/ui/condition.reel");
 require("montage/ui/list.reel");
 require("montage/ui/scroller.reel");
-require("montage/ui/bluemoon/tabs.reel");
+require("montage/ui/tabs.reel");
 require("montage/ui/textarea.reel");
 require("montage/ui/input-text.reel");
 
