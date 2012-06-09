@@ -49,9 +49,10 @@ if (spec) {
         "data/context-spec",
         "data/transactionmanager-spec",
 
-        "events/eventmanager-spec",
-        "events/object-hierarchy-spec",
         "events/change-notification-spec",
+        "events/eventmanager-spec",
+        "events/mutable-event-spec",
+        "events/object-hierarchy-spec",
 
         "geometry/cubicbezier-spec",
         "geometry/point-spec",
