@@ -11,6 +11,7 @@
     width: 20em;
     height: 2.5em;
     padding: 0.5em;
+    vertical-align: middle;
     border: 1px solid #b3b3b3;
     border-radius: 3px;
     background-color: #fff;
@@ -25,10 +26,16 @@
 }
 
 .montage-inputText:invalid {
-    border: 1px solid #E73525;
-    border-style: dashed;
+    border: 1px dashed #E73525;
 }
 
 .montage-inputText[disabled] {
     opacity: .4;
+}
+
+.montage-inputText[readonly] {
+    background-color: #e5e5e5;
+}
+.montage-inputText[readonly]:hover {
+    border-color: #b3b3b3;
 }
