@@ -100,40 +100,42 @@
 
         <style>
 
-       .tabsnav {
-           list-style: none;
-           padding: 0;
-           margin: 0;
-           border-bottom: 1px solid #ddd;
-           padding-bottom: 2px;
-       }
-       .tabsnav li {
-           padding: 5px 10px;
-           display: inline;
-           margin: 0px;
-       }
-       .tabsnav a {
-           text-decoration: none;
-        }
-
-       .tabsnav li.selected {
-           background-color: #fff;
-           border: 1px solid #ddd;
-           border-bottom: none;
-       }
-
-h1.substitution-content {
-    height: 200px;
-    text-align: center;
-    margin-top: 100px;
-}
+           .tabsnav {
+               list-style: none;
+               padding: 0;
+               margin: 0;
+               border-bottom: 1px solid #ddd;
+           }
+           
+           .tabsnav li {
+               display: inline-block;
+               padding: 5px 10px;
+               margin: 0px;
+               border: 1px solid transparent;
+               border-bottom: none;
+           }
+           
+           .tabsnav a {
+               text-decoration: none;
+           }
+           
+           .tabsnav li.selected {
+               background-color: #fff;
+               border-color: #ddd;
+           }
+           
+           h1.substitution-content {
+               height: 100px;
+               text-align: center;
+               margin-top: 50px;
+           }
 
         </style>
     </head>
     <body>
         <div data-montage-id="substitution-example" class="substitution-example">
             <div class="row">
-                <div class="span10">
+                <div class="span12">
                     <h3>Substitution</h3>
                     <p>
                         The Substitution component provides a "slot" in which you display one of a set of predetermined components that you specify. The Substitution component's <code>switchComponents</code> property maps a list of labels to components references. When you want to display one of the components, you assign the desired string to the Substitution component's <code>switchValue</code> property. In this example, the components being displayed are simple DynamicText components.
@@ -273,27 +275,34 @@ h1.substitution-content {
                        <div class="accordion-inner montage-hidden">
                            <pre class="prettyprint" >
 .tabsnav {
-   list-style: none;
-   padding: 0;
-   margin: 0;
-   border-bottom: 1px solid #ddd;
-   padding-bottom: 2px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    border-bottom: 1px solid #ddd;
 }
+
 .tabsnav li {
-   padding: 5px 10px;
-   display: inline;
-   margin: 0px;
+    display: inline-block;
+    padding: 5px 10px;
+    margin: 0px;
+    border: 1px solid transparent;
+    border-bottom: none;
 }
+
 .tabsnav a {
-   text-decoration: none;
+    text-decoration: none;
 }
 
 .tabsnav li.selected {
-   background-color: #fff;
-   border: 1px solid #ddd;
-   border-bottom: none;
+    background-color: #fff;
+    border-color: #ddd;
 }
 
+h1.substitution-content {
+    height: 100px;
+    text-align: center;
+    margin-top: 50px;
+}
                            </pre>
                        </div>
                    </li>
