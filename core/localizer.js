@@ -14,11 +14,19 @@
 var Montage = require("montage").Montage,
     MessageFormat = require("core/messageformat"),
     logger = require("core/logger").logger("localizer"),
-    Deserializer = require("core/deserializer").Deserializer;
+    Deserializer = require("core/deserializer").Deserializer,
+    Promise = require("core/promise").Promise,
+
+    MANIFEST = require("manifest.json");
 
 var KEY_KEY = "_",
     DEFAULT_MESSAGE_KEY = "_default",
-    LOCALE_STORAGE_KEY = "montage_locale";
+    LOCALE_STORAGE_KEY = "montage_locale",
+
+    // directory name that the locales are stored under
+    LOCALES_DIRECTORY = "locales",
+    // filename (without extension) on the file that contains the messages
+    MESSAGES_FILENAME = "messages";
 
 // This is not a strict match for the grammar in http://tools.ietf.org/html/rfc5646,
 // but it's good enough for our purposes.
@@ -73,14 +81,28 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
         value: null
     },
 
+    /**
+        <p>Whether there are messages available to be used by {@link localize}.</p>
+
+        <p>Initially this is false. If messages is set or loadMessages completes
+        it is set to true. If the locale is changed or messages is set to null
+        it is set back to false.</p>
+
+        @type {Boolean}
+        @default false
+    */
+    hasMessages: {
+        value: false
+    },
+
     _messages: {
         enumerable: false,
-        value: {}
+        value: null
     },
     /**
 
         @type {Object} A map from keys to messages.
-        @default {}
+        @default null
     */
     messages: {
         get: function() {
@@ -88,10 +110,13 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
         },
         set: function(value) {
             if (this._messages !== value) {
-                if (typeof value !== "object") {
+                // != ok checking for undefined as well
+                if (value != null && typeof value !== "object") {
                     throw new TypeError(value, " is not an object");
                 }
+
                 this._messages = value;
+                this.hasMessages = !!value;
             }
         }
     },
@@ -121,6 +146,59 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
                 this._locale = value;
                 this.messageFormat = new MessageFormat(value);
             }
+        }
+    },
+
+    loadMessages: {
+        value: function(callback) {
+            this.messages = null;
+
+            var files = MANIFEST.files,
+                locales, localesMessagesP = [];
+
+            if (!(LOCALES_DIRECTORY in files)) {
+                return Promise.reject("Package does not contain a '" + LOCALES_DIRECTORY + "' directory");
+            }
+
+            locales = files[LOCALES_DIRECTORY].files;
+            // TODO: fallback through the locale tags and check for the
+            // existence of each
+            for (var locale in locales) {
+                var filename;
+                if ((filename = MESSAGES_FILENAME + ".js") in locales[locale].files) {}
+                else if ((filename = MESSAGES_FILENAME + ".json") in locales[locale].files) {}
+                else {
+                    // missing messages file
+                    if(logger.isDebug) {
+                        logger.debug("Warning: '" + LOCALES_DIRECTORY + "/" + locale + "/' does not contain '" + MESSAGES_FILENAME + ".json' or '" + MESSAGES_FILENAME + ".js'");
+                    }
+                    continue;
+                }
+
+                localesMessagesP.push(require.async(LOCALES_DIRECTORY + "/" + locale + "/" + filename));
+            }
+
+            var self = this;
+            return Promise.all(localesMessagesP).then(function(localesMessages) {
+                var messages = {};
+                // collapse the messages into one object, earlier locales
+                // taking precedence over later ones.
+                for (var i = 0, len = localesMessages.length; i < len; i++) {
+                    var localeMessages = localesMessages[i];
+                    for (var key in localeMessages) {
+                        if (!(key in messages)) {
+                            messages[key] = localeMessages[key];
+                        }
+                    }
+                }
+                self.messages = messages;
+                if (typeof callback === "function") {
+                    callback(messages);
+                }
+                return messages;
+            }, function(error) {
+                console.error("Could not load messages for '" + self.locale + "': " + error);
+            });
         }
     },
 
@@ -161,12 +239,16 @@ var z = hi();
 
         @function
         @param {String} key The key to the string in the {@link messages} object.
-        @param {String} default The value to use if key does not exist.
+        @param {String} defaultMessage The value to use if key does not exist.
         @returns {Function} A function that accepts an object mapping variables
                             in the message string to values.
     */
     localize: {
         value: function(key, defaultMessage) {
+            if (!this.hasMessages) {
+                throw new Error("Localizer for '" + this.locale + "' has no messages");
+            }
+
             var message, type, compiled;
 
             if (key in this._messages) {
@@ -207,6 +289,39 @@ var z = hi();
 
             this._compiledMessageCache[message] = compiled;
             return compiled;
+        }
+    },
+
+    /**
+        <p>Async version of {@link localize}.</p>
+
+        <p>Waits for the localizer to get messages (hasMessages === true) before
+        localizing the key. Use either the callback or the promise.</p>
+
+        @function
+        @param {String} key The key to the string in the {@link messages} object.
+        @param {String} defaultMessage The value to use if key does not exist.
+        @param {Function} [callback] Passed the message function.
+        @returns {Promise} A promise that is resolved with the message function.
+    */
+    localizeAsync: {
+        value: function(key, defaultMessage, callback) {
+            var listener, deferred, promise, self = this;
+            if (this.hasMessages) {
+                promise = Promise.resolve(this.localize(key, defaultMessage));
+                promise.then(callback);
+                return promise;
+            }
+
+            deferred = Promise.defer();
+            listener = function() {
+                deferred.resolve(self.localize(key, defaultMessage));
+                deferred.promise.then(callback);
+                self.removePropertyChangeListener("hasMessages", listener);
+            };
+
+            this.addPropertyChangeListener("hasMessages", listener);
+            return deferred.promise;
         }
     }
 
@@ -275,7 +390,7 @@ var DefaultLocalizer = Montage.create(Localizer, {
     @type {Localizer}
 */
 var defaultLocalizer = exports.defaultLocalizer = DefaultLocalizer.create().init();
-
+defaultLocalizer.loadMessages();
 
 /**
     Stores variables needed for {@link MessageLocalizer}.
@@ -450,32 +565,33 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
         // only set variables here once KEY_KEY and DEFAULT_MESSAGE_KEY have been removed
         variables = Object.keys(desc);
 
-        messageFunction = defaultLocalizer.localize(key, defaultMessage);
-        // if the messageFunction has its own toString property, then it is a
-        // simple string and there's no point creating and bindings
-        if (messageFunction.hasOwnProperty("toString")) {
-            object[prop] = messageFunction();
-            continue;
-        }
+        defaultLocalizer.localizeAsync(key, defaultMessage).then(function(messageFunction) {
+            // if the messageFunction has its own toString property, then it is a
+            // simple string and there's no point creating and bindings
+            if (messageFunction.hasOwnProperty("toString")) {
+                object[prop] = messageFunction();
+                return;
+            }
 
-        var messageLocalizer = MessageLocalizer.create().init(messageFunction, variables);
+            var messageLocalizer = MessageLocalizer.create().init(messageFunction, variables);
 
-        for (var i = 0, len = variables.length; i < len; i++) {
-            var variable = variables[i];
+            for (var i = 0, len = variables.length; i < len; i++) {
+                var variable = variables[i];
 
-            var targetPath = desc[variable];
-            var binding = {};
-            var dotIndex = targetPath.indexOf(".");
-            binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
-            binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
-            binding.oneway = true;
-            Object.defineBinding(messageLocalizer.variables, variable, binding);
-        }
+                var targetPath = desc[variable];
+                var binding = {};
+                var dotIndex = targetPath.indexOf(".");
+                binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
+                binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
+                binding.oneway = true;
+                Object.defineBinding(messageLocalizer.variables, variable, binding);
+            }
 
-        Object.defineBinding(object, prop, {
-            boundObject: messageLocalizer,
-            boundObjectPropertyPath: "value",
-            oneway: true
+            Object.defineBinding(object, prop, {
+                boundObject: messageLocalizer,
+                boundObjectPropertyPath: "value",
+                oneway: true
+            });
         });
     }
 });

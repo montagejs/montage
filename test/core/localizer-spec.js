@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-/*global require,exports,describe,beforeEach,it,expect,waitsFor,runs */
+/*global require,exports,describe,beforeEach,it,expect,waits,waitsFor,runs */
 var Montage = require("montage").Montage,
     Localizer = require("montage/core/localizer"),
     Deserializer = require("montage/core/deserializer").Deserializer;
@@ -25,6 +25,12 @@ describe("core/localizer-spec", function() {
             callback(objects);
         });
     }
+
+    describe("LocaleLoader", function() {
+        it("does something", function() {
+            var ll = Localizer.defaultLocalizer.loadMessages();
+        });
+    });
 
     describe("Localizer", function(){
         var l;
@@ -59,6 +65,16 @@ describe("core/localizer-spec", function() {
                 l.messages = input;
 
                 expect(l.messages).toBe(input);
+            });
+        });
+
+        describe("hasMessages", function() {
+            it("is false after creation", function() {
+                expect(l.hasMessages).toBe(false);
+            });
+            it("is true when messages is set", function() {
+                l.messages = {hello: "Hello"};
+                expect(l.hasMessages).toBe(true);
             });
         });
 
@@ -134,6 +150,20 @@ describe("core/localizer-spec", function() {
                 expect(window.localStorage.getItem("montage_locale")).toBe("en-x-test");
             });
         });
+
+        describe("localize", function() {
+            it("returns the message function when locale resources have loaded (callback)", function() {
+                return Localizer.defaultLocalizer.localizeAsync("hello", "fail", function(fn) {
+                    expect(fn()).toBe("Hello");
+                }).then(function(){});
+                // empty then to work with Jasmine
+            });
+            it("returns the message function when locale resources have loaded (promise)", function() {
+                return Localizer.defaultLocalizer.localizeAsync("hello", "fail").then(function(fn) {
+                    expect(fn()).toBe("Hello");
+                });
+            });
+        });
     });
 
     describe("serialization", function() {
@@ -143,7 +173,7 @@ describe("core/localizer-spec", function() {
                     test: {
                         prototype: "montage/ui/dynamic-text.reel",
                         properties: {
-                            defaultValue: "fail"
+                            value: "pass"
                         },
                         localizations: {
                             value: {
@@ -152,8 +182,11 @@ describe("core/localizer-spec", function() {
                         }
                     }
                 }, function(objects) {
-                    var test = objects.test;
-                    expect(test.value).not.toBe("Hello");
+                    waits(10); // wait for promise to be resolved
+                    runs(function() {
+                        var test = objects.test;
+                        expect(test.value).not.toBe("Hello");
+                    });
                 });
             });
 
@@ -163,23 +196,46 @@ describe("core/localizer-spec", function() {
                         prototype: "montage/ui/dynamic-text.reel",
                         localizations: {
                             value: {
-                                "_": "hello",
-                                "_default": "Hello"
+                                "_": "pass",
+                                "_default": "Pass."
                             }
                         }
                     }
                 }, function(objects) {
-                    var test = objects.test;
-                    expect(test.value).toBe("Hello");
+                    waits(10); // wait for promise to be resolved
+                    runs(function() {
+                        var test = objects.test;
+                        expect(test.value).toBe("Pass.");
+                    });
+                });
+            });
+
+            it("localizes a string and uses available resources", function() {
+                testDeserializer({
+                    test: {
+                        prototype: "montage/ui/dynamic-text.reel",
+                        localizations: {
+                            value: {
+                                "_": "hello",
+                                "_default": "fail"
+                            }
+                        }
+                    }
+                }, function(objects) {
+                    waits(10); // wait for promise to be resolved
+                    runs(function() {
+                        var test = objects.test;
+                        expect(test.value).toBe("Hello");
+                    });
                 });
             });
 
             it("creates a binding from the localizer to the object", function() {
                 testDeserializer({
                     input: {
-                        prototype: "montage",
+                        prototype: "montage/ui/dynamic-text.reel",
                         properties: {
-                            "thing": "World"
+                            "value": "World"
                         }
                     },
 
@@ -192,23 +248,26 @@ describe("core/localizer-spec", function() {
                             value: {
                                 "_": "hello_thing",
                                 "_default": "Hello {thing}",
-                                "thing": "@input.thing"
+                                "thing": "@input.value"
                             }
                         }
                     }
                 }, function(objects) {
-                    var test = objects.test;
-                    expect(test.value).toBe("Hello World");
-                    expect(test._bindingDescriptors.value).toBeDefined();
+                    waits(10); // wait for promise to be resolved
+                    runs(function() {
+                        var test = objects.test;
+                        expect(test.value).toBe("Hello World");
+                        expect(test._bindingDescriptors.value).toBeDefined();
+                    });
                 });
             });
 
             it("accepts variables for the localization", function() {
                 testDeserializer({
                     input: {
-                        prototype: "montage",
+                        prototype: "montage/ui/dynamic-text.reel",
                         properties: {
-                            "thing": "World"
+                            "value": "World"
                         }
                     },
 
@@ -221,15 +280,18 @@ describe("core/localizer-spec", function() {
                             value: {
                                 "_": "hello_thing",
                                 "_default": "Hello {thing}",
-                                "thing": "@input.thing"
+                                "thing": "@input.value"
                             }
                         }
                     }
                 }, function(objects) {
-                    var test = objects.test;
-                    expect(test.value).toBe("Hello World");
-                    objects.input.thing = "Earth";
-                    expect(test.value).toBe("Hello Earth");
+                    waits(10); // wait for promise to be resolved
+                    runs(function() {
+                        var test = objects.test;
+                        expect(test.value).toBe("Hello World");
+                        objects.input.value = "Earth";
+                        expect(test.value).toBe("Hello Earth");
+                    });
                 });
             });
         });
@@ -252,7 +314,10 @@ describe("core/localizer-spec", function() {
                         ]
                     }
                 }, function(objects) {
-                    expect(objects.other.x).toBe("pass");
+                    waits(10); // wait for promise to be resolved
+                    runs(function() {
+                        expect(objects.other.x).toBe("pass");
+                    });
                 });
             });
 
@@ -273,7 +338,10 @@ describe("core/localizer-spec", function() {
                         ]
                     }
                 }, function(objects) {
-                    expect(objects.other.x).toBe("pass");
+                    waits(10); // wait for promise to be resolved
+                    runs(function() {
+                        expect(objects.other.x).toBe("pass");
+                    });
                 });
             });
             it("uses the existing property value as a key", function() {
@@ -293,7 +361,10 @@ describe("core/localizer-spec", function() {
                         ]
                     }
                 }, function(objects) {
-                    expect(objects.other.x).toBe("pass");
+                    waits(10); // wait for promise to be resolved
+                    runs(function() {
+                        expect(objects.other.x).toBe("pass");
+                    });
                 });
             });
         });
