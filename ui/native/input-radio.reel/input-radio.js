@@ -15,7 +15,7 @@ var Montage = require("montage").Montage,
 /**
  * Wraps the a &lt;input type="radio"> element with binding support for the element's standard attributes.
    @class module:"montage/ui/input-radio.reel".InputRadio
-   @extends module:montage/check-input.CheckInput
+   @extends module:montage/ui/check-input.CheckInput
  */
 var InputRadio = exports.InputRadio = Montage.create(CheckInput, {
     _fakeCheck: {
