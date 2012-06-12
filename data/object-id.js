@@ -23,7 +23,7 @@ var ObjectId = exports.ObjectId = Montage.create(Montage, /** @lends module:mont
      @default {Boolean} false
      */
     isTemporary:{
-        get function () {
+        get: function () {
             return false;
         }
     },
