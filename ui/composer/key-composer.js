@@ -288,7 +288,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
 /**
  @class KeyManagerProxy
  @classdesc Provide a proxy for lazy load of module:montage/core/event/key-manager.KeyManager.
- @extends module:montage
+ @extends module:montage/core/core.Montage
  @private
  */
 var _keyManagerProxy= null;

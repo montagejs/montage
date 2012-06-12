@@ -20,7 +20,7 @@ var Montage = require("montage").Montage,
 /**
     Wraps a native <code>&lt;button></code> or <code>&lt;input[type="button"]></code> HTML element. The element's standard attributes are exposed as bindable properties.
     @class module:"montage/ui/button.reel".Button
-    @extends module:montage/native-control.NativeControl
+    @extends module:montage/ui/native-control.NativeControl
     @example
 <caption>JavaScript example</caption>
 var b1 = Button.create();

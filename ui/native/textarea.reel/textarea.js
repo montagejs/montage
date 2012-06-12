@@ -17,7 +17,7 @@ TextInput = require("ui/text-input").TextInput;
 /**
  * Wraps the a &lt;textarea> element with binding support for the element's standard attributes. Uses an ArrayController instance to manage the element's contents and selection.
    @class module:"montage/ui/textarea.reel".Textarea
-   @extends module:montage/text-input.TextInput
+   @extends module:montage/ui/text-input.TextInput
  */
 
 var Textarea = exports.Textarea = Montage.create(TextInput, /** @lends module:"montage/ui/textarea.reel".Textarea# */ {
