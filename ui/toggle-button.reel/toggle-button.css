@@ -5,9 +5,9 @@
  </copyright> */
 
 .montage-button.active {
-    background-color: #d0d0d0;
+    background-color: #cccccc;
 }
 
 .montage-button.active:hover {
-    background-color: #dfdfdf;
+    background-color: #d8d8d8;
 }
