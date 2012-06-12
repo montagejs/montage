@@ -22,12 +22,6 @@ exports.ProgressExample = Montage.create(Component, {
 
     _intervalId: {value: null},
 
-    draw: {
-        value: function() {
-            console.log('draw progress');
-        }
-    },
-
     didBecomeInactiveInSlot: {
         value: function() {
             if(this._intervalId) {

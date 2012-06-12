@@ -3,47 +3,116 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
 /**
-    @module "montage/ui/progress.reel"
-    @requires montage/ui/commponent
-    @requires montage/ui/native-control
+    @module "montage/ui/bluemoon/progress.reel"
+    @requires montage/core/core
+    @requires montage/ui/component
 */
-
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    NativeControl = require("ui/native-control").NativeControl;
+    NativeProgress = require("ui/native/progress.reel").Progress;
+/**
+    @class module:montage/ui/progress.Progress
+    @extends module:montage/ui/component.Component
+*/
+exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/bluemoon/progress.reel".Progress# */ {
+
+    hasTemplate: {value: true},
 
 /**
-  The Progress component wraps a native <code>&lt;progress></code> element and exposes its standard attributes as bindable properties.
-  @class module:"montage/ui/progress.reel".Progress
-  @extends module:montage/native-control.NativeControl
-
+  Description TODO
+  @private
 */
-var Progress = exports.Progress =  Montage.create(NativeControl, {
+    _barElement: {
+        enumerable: false,
+        serializable: true,
+        value: null
+    },
+/**
+  Description TODO
+  @private
+*/
+    _value: {
+        enumerable: false,
+        serializable: true,
+        value: null
+    },
+/**
+        Description TODO
+        @type {Function}
+        @default {Number} 0
+    */
+    value: {
+        serializable: true,
+        get: function() {
+            return this._value;
+        },
+        set: function(val) {
+            if(val !== this._value) {
+                this._value = String.isString(val) ? parseInt(val, 10) : val;
 
-});
+                if(this._max && (this._value > this._max)) {
+                    this._value = this._max;
+                }
+                if(this._value < 0) {
+                    this._value = 0;
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
+/**
+  Description TODO
+  @private
+*/
+    _max: {
+        enumerable: false,
+        serializable: true,
+        value: null
+    },
+/**
+        Description TODO
+        @type {Function}
+        @default {Number} 100
+    */
+    max: {
+        serializable: true,
+        get: function() {
+            return this._max;
+        },
+        set: function(val) {
+            if(val !== this._max) {
+                this._max = String.isString(val) ? parseInt(val, 10) : val;
+                if(this._max <= 0) {
+                    this._max = 1; // Prevent divide by zero errors
+                }
+                this.needsDraw = true;
+            }
+        }
+    },
 
-Progress.addAttributes( /** @lends module:"montage/ui/progress.reel".Progress# */{
+    didCreate: {
+        value: function() {
+
+            if(NativeProgress.didCreate) {
+                NativeProgress.didCreate.call(this);
+            }
+        }
+    },
 
 /**
-    The value of the id attribute of the form with which to associate the component's element.
-    @type string}
-    @default null
-*/
-    form: null,
-
-/**
-    The maximum value displayed but the progress control.
-    @type {number}
-    @default null
-*/
-    max: {dataType: 'number'},
-
-/**
-    The current value displayed but the progress control.
-    @type {number}
-    @default null
-*/
-    value: {dataType: 'number'}
+    Description TODO
+    @function
+    */
+    draw: {
+        enumerable: false,
+        value: function() {
+            var ratio = this._value / this._max;
+            // constrain to interval [0, 1]
+            ratio = Math.min(Math.max(ratio, 0), 1);
+            // map into [0, 100]
+            var percentage = ratio * 100;
+            this._barElement.style.width = percentage + '%';
+        }
+    }
 });

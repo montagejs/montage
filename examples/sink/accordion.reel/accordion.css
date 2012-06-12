@@ -1,32 +1,43 @@
+/* @override http://localhost:8082/montage/examples/sink/accordion.reel/accordion.css */
+
 .accordion {
-  margin-bottom: 18px;
-  list-style: none;
-  margin-left: 0;
+    margin-bottom: 20px;
+    list-style: none;
+    margin-left: 0;
 }
 .accordion-group {
-  margin-bottom: 2px;
-  border: 1px solid #e5e5e5;
-  -webkit-border-radius: 4px;
-  -moz-border-radius: 4px;
-  border-radius: 4px;
+    margin-bottom: -1px;
+    border: 1px solid #e5e5e5;
 }
-.accordion-heading {
-  border-bottom: 0;
+.accordion-group:hover {
+    background-color: hsl(0,0%,100%);
 }
+
+.accordion-group:last-child {
+    border-radius: 0 0 4px 4px;
+}
+
 .accordion-heading .accordion-toggle {
-  display: block;
-  padding: 8px 15px;
-  color: #08c;
-  font-size: 14px;
-  font-weight: bold;
+    display: block;
+    padding: 10px 15px;
+    color: #08c;
+    font-size: 14px;
+    font-weight: bold;
 }
 .accordion-inner {
-  padding: 9px 15px;
-  border-top: 1px solid #e5e5e5;
-  background-color: #fff;
+    padding: 10px 15px;
+    border-top: 1px solid #e5e5e5;
+    background-color: hsl(0,0%,95%);
+}
+
+.accordion-group:last-child .accordion-inner {
+    border-radius: 0 0 4px 4px;
+}
+
+.accordion-inner > pre {
+    padding: 10px 0;
 }
 
 .montage-hidden {
     display: none;
 }
-

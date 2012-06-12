@@ -6,28 +6,27 @@
  </copyright> -->
 <html>
 <head>
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="rich-text-editor.css">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="rich-text-editor.css">
     <script type="text/montage-serialization">
-        {
-            "overlay": {
-                "prototype": "ui/slot.reel",
-                "properties": {
-                    "element": {"#": "editor-slot"},
-                    "delegate": {"@": "owner"}
-                }
-            },
-
-            "owner": {
-                "prototype": "ui/rich-text-editor/rich-text-editor.reel",
-                "properties": {
-                    "element": {"#": "rich-text-editor-container"},
-                    "_overlaySlot": {"@": "overlay"}
-                }
-            }
+{
+    "overlay": {
+        "prototype": "ui/slot.reel",
+        "properties": {
+            "element": {"#": "editor-slot"},
+            "delegate": {"@": "owner"}
         }
-    </script>
+    },
 
+    "owner": {
+        "prototype": "ui/rich-text-editor/rich-text-editor.reel",
+        "properties": {
+            "element": {"#": "rich-text-editor-container"},
+            "_overlaySlot": {"@": "overlay"}
+        }
+    }
+}
+    </script>
 </head>
 <body>
     <div data-montage-id="rich-text-editor-container">
@@ -36,4 +35,3 @@
     </div>
 </body>
 </html>
-

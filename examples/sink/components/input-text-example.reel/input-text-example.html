@@ -17,11 +17,12 @@
                     "bindings": {
                         "phone": {"<->": "@phone.value"},
                         "dobError": {"<-": "@dob.error"}
+                        
                     }
                 },
 
                 "fname": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "fname"}
                     },
@@ -32,7 +33,7 @@
                 },
 
                 "lname": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "lname"}
                     },
@@ -40,9 +41,19 @@
                         "value": {"<->": "@owner.lastName"}
                     }
                 },
-
+                
+                "pwd": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "pwd"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.password"}
+                    }
+                },
+                
                 "email": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "email"}
                     },
@@ -52,7 +63,7 @@
                 },
 
                 "phone": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "phone"}
                     },
@@ -76,7 +87,7 @@
                 },
 
                 "url": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "url"}
                     },
@@ -86,7 +97,7 @@
                 },
 
                 "zip": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "zip"}
                     },
@@ -103,7 +114,7 @@
                 },
 
                 "dob": {
-                    "prototype": "montage/ui/textfield.reel",
+                    "prototype": "montage/ui/input-text.reel",
                     "properties": {
                         "element": {"#": "dob"},
                         "converter": {"@": "dateConverter"}
@@ -163,30 +174,23 @@
             .input-text-example pre.json {
                 border: 0;
             }
-
-            .input-text-example #echo {
-                width: 400px;
+            .form-stacked label {
+                margin-top: 5px;
             }
+            
         </style>
     </head>
     <body>
         <div data-montage-id="input-text-example" class="input-text-example">
             <div class="row">
-                <div class="span8">
-                    <h3>Textfield</h3>
-                    <p>
-                        The Textfield component wraps an HTML <code>&lt;input&gt;</code> text field.
-                    </p>
-<!--                     <p>
-                        <a href="" target="_blank">View Documentation</a>
-                    </p> -->
+                <div class="span12">
+                    <h3>InputText</h3>
+                    <p>The InputText component wraps an HTML <code>&lt;input&gt;</code> text field.</p>
                 </div>
             </div>
 
             <h4>Form</h4>
-            <p>
-                 An example of creating a form with Textfield components.
-                 </p>
+            <p>An example of creating a form with InputText components.</p>
 
             <div class="demo form">
                 <div class="app">
@@ -207,7 +211,7 @@
 
                          <label for="tel1">Phone Number</label>
                          <input type="tel" data-montage-id="phone" id="tel1" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
-                         <button class="btn" data-montage-id="editPhone" type="button">Edit Phone Number</button>
+                         <button data-montage-id="editPhone">Edit Phone Number</button>
 
                          <label for="zipcode">US Postal code</label>
                           <input type="text" data-montage-id="zip" id="zipcode" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
@@ -221,7 +225,7 @@
                         </div>
                      </form>
 
-                     <div data-montage-id="echo" class="prettyprint"></div>
+                     <div data-montage-id="echo" class="echo prettyprint"></div>
                  </div>
             </div>
 
@@ -250,7 +254,7 @@
 
      &lt;label for="tel1"&gt;Phone Number&lt;/label&gt;
      &lt;input type="tel" data-montage-id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" /&gt;
-     &lt;button class="btn" data-montage-id="editPhone" type="button"&gt;Edit Phone Number&lt;/button&gt;
+     &lt;button data-montage-id="editPhone"&gt;Edit Phone Number&lt;/button&gt;
 
      &lt;label for="zipcode"&gt;US Postal code&lt;/label&gt;
       &lt;input type="text" data-montage-id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/&gt;
@@ -277,12 +281,13 @@
             "element": {"#": "input-text-example"}
         },
         "bindings": {
-            "phone": {"&lt;&lt;-&gt;": "@phone.value"}
+            "phone": {"&lt;&lt;-&gt;": "@phone.value"},
+            "dobError": {"&lt;-": "@dob.error"}
         }
     },
 
     "fname": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "fname"}
         },
@@ -293,7 +298,7 @@
     },
 
     "lname": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "lname"}
         },
@@ -303,7 +308,7 @@
     },
 
     "email": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "email"}
         },
@@ -313,7 +318,7 @@
     },
 
     "phone": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "phone"}
         },
@@ -337,7 +342,7 @@
     },
 
     "url": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "url"}
         },
@@ -347,7 +352,7 @@
     },
 
     "zip": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "zip"}
         },
@@ -357,7 +362,7 @@
     },
 
     "zip": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "zip"}
         },
@@ -374,7 +379,7 @@
     },
 
     "dob": {
-        "prototype": "montage/ui/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "dob"},
             "converter": {"@": "dateConverter"}
@@ -487,7 +492,7 @@ exports.InputTextExample = Montage.create(Component, {
 
 
             <section>
-                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.10/examples/sink/components/input-text-example.reel" target="_blank">View source on GitHub</a>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/input-text-example.reel" target="_blank">View source on GitHub</a>
             </section>
 
 <!--             <section>

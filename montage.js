@@ -417,35 +417,54 @@ if (typeof window !== "undefined") {
         },
 
         initMontage: function (montageRequire, applicationRequire, params) {
-            // If a module was specified in the config then we initialize it now
-            if (params.module && params.loadApplication !== "true") {
-                applicationRequire.async(params.module)
-                .end();
-            } else {
-            // otherwise we load the application
-                montageRequire.async("ui/application", function(exports) {
-                    montageRequire.async("core/event/event-manager", function(eventManagerExports) {
+            var Promise, defaultEventManager, application;
 
-                        var defaultEventManager = eventManagerExports.defaultEventManager;
+            montageRequire.async("core/promise").then(function(exports) {
+                Promise = exports.Promise;
+                Promise.all([
+                    montageRequire.async("core/event/event-manager"),
+                    montageRequire.async("core/deserializer")
+                ]).then(function(exportsArray) {
+                    // Load the event-manager
+                    defaultEventManager = exportsArray[0].EventManager.create().initWithWindow(window);
 
-                        // montageWillLoad is mostly for testing purposes
-                        if (typeof global.montageWillLoad === "function") {
-                            global.montageWillLoad();
-                        }
-                        exports.Application.load(function(application) {
-                            window.document.application = application;
-                            defaultEventManager.application = application;
-                            application.eventManager = defaultEventManager;
+                    // montageWillLoad is mostly for testing purposes
+                    if (typeof global.montageWillLoad === "function") {
+                        global.montageWillLoad();
+                    }
+
+                    // Load the application
+
+                    var appProto = applicationRequire.packageDescription.applicationPrototype,
+                        applicationDescription, appModulePromise;
+                    if (appProto) {
+                        applicationDescription = exportsArray[1].Deserializer.parseForModuleAndName(appProto);
+                        appModulePromise = applicationRequire.async(applicationDescription.module);
+                    } else {
+                        appModulePromise = montageRequire.async("ui/application");
+                    }
+
+                    if (typeof window !== "undefined") {
+                        montageRequire.async("core/event/binding").end();
+                    }
+
+                    appModulePromise.then(function(exports) {
+                        application = exports[(applicationDescription ? applicationDescription.name : "Application")].create();
+                        window.document.application = application;
+                        defaultEventManager.application = application;
+                        application.eventManager = defaultEventManager;
+                        application._load(applicationRequire, function() {
                             if (params.module) {
-                                applicationRequire.async(params.module)
-                                .end();
+                                // If a module was specified in the config then we initialize it now
+                                applicationRequire.async(params.module).end();
                             }
                         });
-                    });
-                });
-            }
-        }
+                    }).end();
 
+                }).end();
+
+            });
+        }
     };
 
     if (typeof window !== "undefined") {

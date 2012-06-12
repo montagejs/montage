@@ -50,6 +50,13 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
 
     hasTemplate: {value: true},
 
+    didSetElement: {
+        value: function() {
+            TextInput.didSetElement.call(this);
+            this['class'] = (this['class'] || '') + ' montage-inputText';
+        }
+    },
+
     delegate: {
         value: null
     },

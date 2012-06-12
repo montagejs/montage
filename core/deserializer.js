@@ -31,7 +31,7 @@ try {
  @class module:montage/core/deserializer.Deserializer
  @extends module:montage/core/core.Montage
  */
-var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deserializer.Deserializer# */ {
+var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends module:montage/core/deserializer.Deserializer# */ {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
 
     _objects: {value: null},
@@ -561,16 +561,18 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
      */
     parseForModuleAndName: {
         value: function(name, desc) {
-            var objectLocation, moduleId;
+            var bracketIndex;
+
             if (typeof desc === "undefined") {
                 desc = {};
             }
-            objectLocation = name.split("[");
-            desc.module =  moduleId = objectLocation[0];
-            if (objectLocation.length == 2) {
-                desc.name = objectLocation[1].slice(0, -1);
+            bracketIndex = name.indexOf("[");
+            if (bracketIndex > 0) {
+                desc.module = name.substr(0, bracketIndex);
+                desc.name = name.slice(bracketIndex+1, -1);
             } else {
-                Deserializer._findObjectNameRegExp.test(moduleId);
+                desc.module = name;
+                Deserializer._findObjectNameRegExp.test(name);
                 desc.name = RegExp.$1.replace(Deserializer._toCamelCaseRegExp, Deserializer._replaceToCamelCase);
             }
             return desc;
@@ -698,23 +700,25 @@ var Deserializer = Montage.create(Montage, /** @lends module:montage/core/deseri
                 hasObject = object != null,
                 counter,
                 descString,
-                objectLocation;
+                objectLocation,
+                bracketIndex;
 
             if ("module" in desc) {
                 moduleId = desc.module;
                 objectName = name = desc.name;
             } else  if ("prototype" in desc || "object" in desc) {
-                objectLocation = (desc.prototype || desc.object).split("[");
+                bracketIndex = (desc.prototype || desc.object).indexOf("[");
                 // this code is actually only used when canEval == false,
                 // module+name are added when the modules are parsed but it's
                 // slow to redo the _serializationString in order to keep the
                 // added module+name when we do JSON.parse(_serializationString)
                 // at canEval == false.
-                moduleId = objectLocation[0];
-                if (objectLocation.length == 2) {
-                    objectName = name = objectLocation[1].slice(0, -1);
+                if (bracketIndex > 0) {
+                    moduleId = name.substr(0, bracketIndex);
+                    objectName = name = name.slice(bracketIndex+1, -1);
                 } else {
-                    self._findObjectNameRegExp.test(moduleId);
+                    moduleId = name;
+                    self._findObjectNameRegExp.test(name);
                     objectName = name = RegExp.$1.replace(self._toCamelCaseRegExp, function(_, g1) { return g1.toUpperCase() });
                 }
             }
@@ -1160,8 +1164,4 @@ function deserialize(serialization, require, origin) {
     return deferred.promise;
 }
 
-if (typeof exports !== "undefined") {
-    exports.Deserializer = Deserializer;
-    exports.deserialize = deserialize;
-}
-
+exports.deserialize = deserialize;

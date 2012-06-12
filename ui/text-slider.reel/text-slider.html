@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <title>TextSlider</title>
+    <link rel="stylesheet" href="text-slider.css" />
+
+    <script type="text/montage-serialization">
+    {
+        "value": {
+            "prototype": "ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "value"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.convertedValue"}
+            }
+        },
+        "units": {
+            "prototype": "ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "units"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.unit"}
+            }
+        },
+
+        "translateComposer": {
+            "prototype": "ui/composer/translate-composer",
+            "properties": {
+                "component": {"@": "owner"},
+                "hasMomentum": false,
+                "invertYAxis": true,
+                "allowFloats": true,
+                "startTranslateSpeed": 1
+            },
+            "bindings": {
+                "minTranslateX": {"<-": "@owner.minValue"},
+                "minTranslateY": {"<-": "@owner.minValue"},
+                "maxTranslateX": {"<-": "@owner.maxValue"},
+                "maxTranslateY": {"<-": "@owner.maxValue"}
+            },
+            "listeners": [
+                {
+                    "type": "translateStart",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "translate",
+                    "listener": {"@": "owner"}
+                },
+                {
+                    "type": "translateEnd",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "pressComposer": {
+            "prototype": "ui/composer/press-composer",
+            "properties": {
+                "component": {"@": "owner"},
+                "delegate": {"@": "owner"}
+            },
+            "listeners": [
+                {
+                    "type": "press",
+                    "listener": {"@": "owner"}
+                }
+            ]
+        },
+
+        "numberConverter": {
+            "prototype": "core/converter/number-converter"
+        },
+
+        "owner": {
+            "prototype": "ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "text-slider"},
+
+                "_inputElement": {"#": "input"},
+                "_pressComposer": {"@": "pressComposer"},
+                "_translateComposer": {"@": "translateComposer"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <span data-montage-id="text-slider" class="montage-text-slider" tabindex="0">
+        <input type="text" data-montage-id="input" class="montage-text-slider-input"/>
+        <span data-montage-id="value" class="montage-text-slider-value"></span>
+        <span data-montage-id="units" class="montage-text-slider-label"></span>
+    </span>
+</body>
+</html>

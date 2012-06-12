@@ -111,11 +111,27 @@ Montage.defineProperty(Object.prototype, "removeEventListener", {
  */
 Montage.defineProperty(Object.prototype, "dispatchEvent", {
     value: function(event) {
-        var targettedEvent = MutableEvent.fromEvent(event);
+        var targettedEvent = event;
+
+        if (!MutableEvent.isPrototypeOf(event)) {
+             targettedEvent = MutableEvent.fromEvent(event);
+        }
+
         targettedEvent.target = this;
         defaultEventManager.handleEvent(targettedEvent);
     },
     enumerable: false
+});
+
+/**
+ @function external:Object#dispatchEventNamed
+ */
+Montage.defineProperty(Object.prototype, "dispatchEventNamed", {
+    value: function(type, canBubble, cancelable, detail) {
+        var event = MutableEvent.fromType(type, canBubble, cancelable, detail);
+        event.target = this;
+        defaultEventManager.handleEvent(event);
+    }
 });
 
 var EventListenerDescriptor = Montage.create(Montage, {

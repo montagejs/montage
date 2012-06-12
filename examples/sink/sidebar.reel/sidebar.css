@@ -1,42 +1,47 @@
+/* @override http://localhost:8082/montage/examples/sink/sidebar.reel/sidebar.css */
 
 .sidebar {
-    background-color: whitesmoke;
+    padding-top: 16px;
+    box-shadow: inset -1px 0 0 hsl(0,0%,90%);
+}
+
+.sidebar a:hover {
+    text-decoration: none;
 }
 
 .sidebar h6 {
-    color: #999;
+    color: hsl(0,0%,65%);
+    font-weight: normal;
+    line-height: 1.5em;
 }
 
-.sidebar .sidebar-list {
-    padding-left: 40px;
-}
-
-.sidebar .sidebar-list ul {
+.sidebar ul {
     list-style: none;
-    margin: 0;
+    margin: 0 0 15px 0;
+    padding: 0;
 }
 
-.sidebar .sidebar-list li {
-    border-bottom: 1px solid #eee;
-    border-top: 1px solid #eee;
-    cursor: default;
-    padding: 5px;
-}
-.sidebar .sidebar-list li:hover{
-    background-color: #fff;
+.sidebar li {
+    padding: 0;
     cursor: pointer;
+    border-left: 3px solid hsl(0,0%,95%);
 }
-.sidebar .sidebar-list .selected {
-    background-color: #fff;
-    border-right: 21px solid #FE4365;
-    opacity: 1.0;
+.sidebar li:hover{
+    background-color: hsl(0,0%,95%);
+    border-color: hsl(0,0%,85%);
+}
+.sidebar .selected,
+.sidebar .selected:hover {
+    border-left: 3px solid hsl(200,100%,50%);
     cursor: default;
-
-    border-left: 1px solid #AAA;
-    border-top: 1px solid #AAA;
-    border-bottom: 1px solid #AAA;
 }
 
-.sidebar .sidebar-list a h4 {
-    margin-left: 10px;
+.sidebar h4 {
+    margin: 0 13px;
+    line-height: 1.6em;
+    font-size: 1.1em;
+}
+
+.sidebar .sidebar-list h6 {
+    text-transform: none;
 }

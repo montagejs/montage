@@ -10,7 +10,7 @@
         <script type="text/montage-serialization">{
 
                 "checkbox1": {
-                    "prototype": "montage/ui/checkbox.reel",
+                    "prototype": "montage/ui/input-checkbox.reel",
                     "properties": {
                         "element": {"#": "checkbox1"}
                     },
@@ -23,7 +23,7 @@
                 },
 
                 "checkbox2": {
-                    "prototype": "montage/ui/checkbox.reel",
+                    "prototype": "montage/ui/input-checkbox.reel",
                     "properties": {
                         "element": {"#": "checkbox2"},
                         "checked": true
@@ -37,7 +37,7 @@
                 },
 
                 "agreeCheckbox": {
-                    "prototype": "montage/ui/checkbox.reel",
+                    "prototype": "montage/ui/input-checkbox.reel",
                     "properties": {
                         "element": {"#": "agreeCheckbox"}
                     }
@@ -109,7 +109,7 @@
 
 
                 "selection": {
-                    "prototype": "montage/ui/checkbox.reel",
+                    "prototype": "montage/ui/input-checkbox.reel",
                     "properties": {
                         "element": {"#": "selection"}
                     },
@@ -165,8 +165,8 @@
     }</script>
 
         <style>
-           table tr.selected {
-               background-color: #F5D663;
+           .checkbox-example tr.selected {
+               background-color: hsl(50,80%,95%);
            }
         </style>
     </head>
@@ -174,9 +174,9 @@
         <div data-montage-id="checkbox-example" class="checkbox-example">
             <div class="row">
                 <div class="span12">
-                    <h3>Checkbox</h3>
+                    <h3>Input Checkbox</h3>
                     <p>
-                        The Checkbox component wraps an HTML checkbox input type with custom styles and functionality.
+                        The InputCheckbox component wraps an HTML checkbox input type with custom styles and functionality.
                     </p>
                 </div>
             </div>
@@ -186,7 +186,7 @@
             <div class="demo cb1">
 
                 <form class="form-stacked">
-                    <label class="checkbox inline"><input data-montage-id="checkbox1" type="checkbox" /> Milk </label>
+                    <label class="checkbox inline"><input data-montage-id="checkbox1" type="checkbox" /> Milk</label>
                     <label class="checkbox inline"><input data-montage-id="checkbox2" type="checkbox" /> Eggs</label>
                 </form>
 
@@ -199,7 +199,7 @@
                        <div class="accordion-inner montage-hidden" >
                             <pre class="prettyprint" >
 &lt;form class="form-stacked"&gt;
-    &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox1" type="checkbox" /&gt; Milk &lt;/label&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox1" type="checkbox" /&gt; Milk&lt;/label&gt;
     &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox2" type="checkbox" /&gt; Eggs&lt;/label&gt;
 &lt;/form&gt;
                             </pre>
@@ -211,7 +211,7 @@
                         <pre class="prettyprint" >
 {
     "checkbox1": {
-        "prototype": "montage/ui/checkbox.reel",
+        "prototype": "montage/ui/input-checkbox.reel",
         "properties": {
             "element": {"#": "checkbox1"}
         },
@@ -224,7 +224,7 @@
     },
 
     "checkbox2": {
-        "prototype": "montage/ui/checkbox.reel",
+        "prototype": "montage/ui/input-checkbox.reel",
         "properties": {
             "element": {"#": "checkbox2"},
             "checked": true
@@ -254,7 +254,7 @@
 
 
 
-                <h4>Binding the Checkbox to a Button's disabled state</h4>
+                <h4>Binding the InputCheckbox to a Button's disabled state</h4>
 
 
             <div class="demo cb2">
@@ -282,7 +282,7 @@
                         <pre class="prettyprint" >
 {
     "agreeCheckbox": {
-        "prototype": "montage/ui/checkbox.reel",
+        "prototype": "montage/ui/input-checkbox.reel",
         "properties": {
             "element": {"#": "agreeCheckbox"}
         }
@@ -306,7 +306,7 @@
                        </div>
                    </li>
                    <li class="accordion-group">
-                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
                        <div class="accordion-inner montage-hidden">
                            <pre class="prettyprint" >
 
@@ -338,7 +338,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
 
 
 
-            <h4>Using Checkbox to select multiple items within a Repetition </h4>
+            <h4>Using InputCheckbox to select multiple items within a Repetition </h4>
             <div class="demo cb3">
                 <table data-montage-id="list1" class="bordered-table">
                     <thead>
@@ -358,8 +358,8 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
                 </table>
 
                 <div>
-                    <h5>Your selections: </h5>
-                    <span data-montage-id="selectedValue"  style="width: 400px;"></span>
+                    <h5>Your selections:</h5>
+                    <p data-montage-id="selectedValue" class="echo"></p>
                 </div>
             </div>
 
@@ -379,7 +379,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
     &lt;/thead&gt;
     &lt;tbody data-montage-id="table-row"&gt;
         &lt;tr&gt;
-             &lt;td&gt;&lt;input type="checkbox" data-montage-id="selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;input type="checkbox" data-montage-id="selection" /&gt;&lt;/td&gt;
             &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
             &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
         &lt;/tr&gt;
@@ -388,7 +388,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
 
 &lt;div&gt;
     &lt;h5&gt;Your selections: &lt;/h5&gt;
-    &lt;span data-montage-id="selectedValue"  style="width: 400px;"&gt;&lt;/span&gt;
+    &lt;p data-montage-id="selectedValue" class="echo"&gt;&lt;/p&gt;
 &lt;/div&gt;
                             </pre>
                        </div>
@@ -458,7 +458,7 @@ var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
 
 
     "selection": {
-        "prototype": "montage/ui/checkbox.reel",
+        "prototype": "montage/ui/input-checkbox.reel",
         "properties": {
             "element": {"#": "selection"}
         },

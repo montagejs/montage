@@ -263,6 +263,7 @@ var PrimordialPromise = Creatable.create({
             self.Promise = this;
             rejections.push(self);
             errors.push(error ? (error.stack ? error.stack : error) : reason);
+            displayErrors();
             return self;
         }
     },
@@ -676,22 +677,31 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
 var rejections = [];
 var errors = [];
-// Live console objects are not handled on tablets
-if (typeof window !== "undefined" && !window.Touch) {
+var errorsDisplayed = false;
+var displayErrors = function () {
+    // Live console objects are not handled on tablets or in Node
+    if (
+        !errorsDisplayed &&
+        typeof window !== "undefined" &&
+        !window.Touch &&
+        typeof console === "object"
+    ) {
 
-    /*
-    * This promise library consumes exceptions thrown in callbacks so
-    * that they can be handled asynchronously.  The exceptions get
-    * added to ``errors`` when they are consumed, and removed when
-    * they are handled.  In many debuggers, the view of the reported
-    * array will update to reflect its current contents so you can
-    * always see if you have missed an error.
-    *
-    * This log will appear once for every time this module gets
-    * instantiated.  That should be once per frame.
-    */
-    console.log("Should be empty:", errors);
-}
+        /*
+        * This promise library consumes exceptions thrown in callbacks so
+        * that they can be handled asynchronously.  The exceptions get
+        * added to ``errors`` when they are consumed, and removed when
+        * they are handled.  In many debuggers, the view of the reported
+        * array will update to reflect its current contents so you can
+        * always see if you have missed an error.
+        *
+        * This log will appear once for every time this module gets
+        * instantiated.  That should be once per frame.
+        */
+        console.log("Should be empty:", errors);
+        errorsDisplayed = true;
+    }
+};
 
 exports.Promise = Promise;
 

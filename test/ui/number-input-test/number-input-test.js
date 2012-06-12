@@ -4,7 +4,7 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
-    NumberInput = require("montage/ui/number-input.reel").NumberInput;
+    NumberInput = require("montage/ui/input-number.reel").NumberInput;
 
 var NumberInputTest = exports.NumberInputTest = Montage.create(Montage, {
 
