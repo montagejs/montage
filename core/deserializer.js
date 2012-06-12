@@ -246,7 +246,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                 object = stack[ix-1],
                 desc = stack[ix];
 
-            this._deserializeProperties(object, desc.properties, true);
+            this._deserializeProperties(object, desc.properties, false);
         }
     },
 
@@ -795,7 +795,7 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                     desc._units = {};
                     self._customDeserialization(object, desc);
                 } else {
-                    self._deserializeProperties(object, desc.properties, true);
+                    self._deserializeProperties(object, desc.properties, false);
                 }
             }
 
