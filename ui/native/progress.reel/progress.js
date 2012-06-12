@@ -17,7 +17,7 @@ var Montage = require("montage").Montage,
 /**
   The Progress component wraps a native <code>&lt;progress></code> element and exposes its standard attributes as bindable properties.
   @class module:"montage/ui/progress.reel".Progress
-  @extends module:montage/native-control.NativeControl
+  @extends module:montage/ui/native-control.NativeControl
 
 */
 var Progress = exports.Progress =  Montage.create(NativeControl, {

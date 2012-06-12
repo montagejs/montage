@@ -20,7 +20,7 @@ var Montage = require("montage").Montage,
 /**
  * Wraps the a &lt;input type="range"> element with binding support for the element's standard attributes.
    @class module:"montage/ui/input-range.reel".InputRange
-   @extends module:montage/text-input.TextInput
+   @extends module:montage/ui/text-input.TextInput
  */
 var InputRange = exports.InputRange = Montage.create(TextInput, {
     prepareForActivationEvents: {
