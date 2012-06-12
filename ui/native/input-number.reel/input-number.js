@@ -17,7 +17,7 @@ var Montage = require("montage").Montage,
 /**
  * Wraps the a &lt;input type="date"> element with binding support for the element's standard attributes.
    @class module:"montage/ui/input-number.reel".InputNumber
-   @extends module:montage/text-input.TextInput
+   @extends module:montage/ui/text-input.TextInput
  */
 var InputNumber = exports.InputNumber = Montage.create(TextInput, {
 
