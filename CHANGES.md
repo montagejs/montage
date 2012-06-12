@@ -1,3 +1,15 @@
+# v0.11.0
+
+-   **New skeleton components**
+
+-   **New TextSlider component**
+
+-   **New willFinishLoading delegate method on the application delegate**
+
+-   **A classList property on the Dynamic Element to more conveniently toggle classes**
+
+-   **Better support of different document context in serialization**
+
 # v0.10.0
 
 -   **New property change API**
