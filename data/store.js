@@ -27,6 +27,8 @@ var AttributeMapping = require("data/mapping").AttributeMapping;
 var AssociationMapping = require("data/mapping").AssociationMapping;
 var StoreConnectionInformation = require("data/store-connection-information").StoreConnectionInformation;
 var Query = require("data/query").Query;
+var Pledge = require("data/pledge").Pledge;
+var PledgedSortedSet = require("data/pledge").PledgedSortedSet;
 var Restriction = require("data/restriction").Restriction;
 var TransactionId = require("data/transaction-id").TransactionId;
 var ObjectId = require("data/object-id").ObjectId;
@@ -322,6 +324,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
             return false;
         }
     },
+
     /**
      Description TODO
      @function
@@ -711,11 +714,11 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
     },
 
     /**
-     Description TODO
+     Execute a query in the context of the current store.
      @function
-     @param {Property} query TODO
-     @param {Property} context TODO
-     @param {Id} transactionId TODO
+     @param {Property} query describing the object to retrieve
+     @param {Property} context change context into which to insert the objects
+     @param {Id} transactionId transaction identifier
      @param {name} Mapping folder name used for this transaction
      @returns this.queryInContext$Implementation(query, context, aTransactionId)
      */
@@ -742,17 +745,17 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
     },
 
     /**
-     Description TODO
+     Execute a query in the context of the current store.
      @function
-     @param {Property} query TODO
-     @param {Property} context TODO
-     @param {Id} transactionId TODO
-     @returns {Array} Promise.ref([])
+     @param {Property} query describing the object to retrieve
+     @param {Property} context change context into which to insert the objects
+     @param {Id} transactionId transaction identifier
+     @returns {Array} PledgedSortedSet pledge for the object to retrieve
      */
     queryInContext$Implementation:{
         value:function (query, context, transactionID) {
             // TODO [PJYF Sept 4 2011] This needs to be implemented
-            return Promise.ref([]);
+            return new PledgedSortedSet.create().initWithQueryAndContext(query, context);
         }
     }
 
