@@ -3,27 +3,27 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-inputNumber {
+
+.montage-input-number {
     font-size: 12px;
     position: relative;
     display: inline-block;
     width: 5em;
     margin-right: 2.5em;
 }
-.montage-inputNumber > input {
+.montage-input-number > input {
     font-size: inherit;
     width: 5em;
     vertical-align: middle;
     border-radius: 3px 0 0 3px;
 }
-.montage-inputNumber > input:hover {
+.montage-input-number > input:hover {
     border-color: #cccccc;
 }
-.montage-inputNumber > input:focus {
+.montage-input-number > input:focus {
     border-color: #7f7f7f;
 }
-.montage-inputNumber > button {
+.montage-input-number > button {
     position: absolute;
     margin: 0;
     padding: 0;
@@ -31,12 +31,12 @@
     height: 1.25em;
     right: -2.5em;
 }
-.montage-inputNumber > .montage-inputNumber-plus {
+.montage-input-number > .montage-input-number-plus {
     border-width: 1px 1px 0 0;
     border-radius: 0 3px 0 0;
     top: 0px;
 }
-.montage-inputNumber > .montage-inputNumber-minus {
+.montage-input-number > .montage-input-number-minus {
     border-width: 1px 1px 1px 0;
     border-radius: 0 0 3px 0;
     bottom: 0px;
@@ -44,27 +44,27 @@
 
 
 /* Style for Touch */
-.montage-inputNumber {
+.montage-input-number {
   font-size: 16px;
   width: auto;
   margin: 0;
 }
-.montage-inputNumber > input {
+.montage-input-number > input {
   font-size: inherit;
   border-radius: 0;
   text-align: center;
 }
-.montage-inputNumber > button {
+.montage-input-number > button {
   position: static;
   height: 2.5em;
   top: auto;
   right: auto;
 }
-.montage-inputNumber > .montage-inputNumber-plus {
+.montage-input-number > .montage-input-number-plus {
   border-width: 1px 1px 1px 0;
   border-radius: 0 2.5em 2.5em 0;
 }
-.montage-inputNumber > .montage-inputNumber-minus {
+.montage-input-number > .montage-input-number-minus {
   border-width: 1px 0 1px 1px;
   border-radius: 2.5em 0 0 2.5em;
 }

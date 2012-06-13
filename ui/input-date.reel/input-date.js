@@ -28,7 +28,7 @@ exports.InputDate = Montage.create(NativeInputDate, {
     didSetElement: {
         value: function() {
             NativeInputDate.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' ' + 'montage-inputDate montage-inputText';
+            this['class'] = (this['class'] || '') + ' ' + 'montage-input-date montage-input-text';
         }
     }
 

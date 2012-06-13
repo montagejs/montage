@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
+
 .montage-button {
     outline: none;
     box-sizing: border-box;
@@ -36,20 +36,20 @@
 
 /* ButtonGroup ------------------------------- */
 
-.montage-buttonGroup {
+.montage-button-group {
     padding-left: 5px; /* Add the negative margin back */
 }
 
-.montage-buttonGroup > .montage-button {
+.montage-button-group > .montage-button {
     margin: 0;
     border-radius: 0;
     margin-left: -5px; /* Remove the space inbetween */
 }
 
-.montage-buttonGroup > .montage-button:first-child {
+.montage-button-group > .montage-button:first-child {
     border-radius: 3px 0 0 3px;
 }
 
-.montage-buttonGroup > .montage-button:last-child {
+.montage-button-group > .montage-button:last-child {
     border-radius: 0 3px 3px 0;
 }

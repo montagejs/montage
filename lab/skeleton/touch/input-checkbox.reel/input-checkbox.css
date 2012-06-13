@@ -3,8 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-inputCheckbox {
+
+.montage-input-checkbox {
     -webkit-appearance: none;
     -moz-appearance: none;
     outline: none;
@@ -19,24 +19,24 @@
     cursor: pointer;
 }
 
-.montage-inputCheckbox:hover {
+.montage-input-checkbox:hover {
     background-color: #ffffff;
 }
 
-.montage-inputCheckbox:active {
+.montage-input-checkbox:active {
     background-color: #e5e5e5;
 }
 
-.montage-inputCheckbox:focus {
+.montage-input-checkbox:focus {
     border-color: #7f7f7f;
 }
 
-.montage-inputCheckbox:checked {
+.montage-input-checkbox:checked {
     background: #f2f2f2 url(checkbox.png) no-repeat center center;
 }
 
 
 /* Style for Touch */
-.montage-inputCheckbox {
+.montage-input-checkbox {
   font-size: 16px;
 }
