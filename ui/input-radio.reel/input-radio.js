@@ -18,7 +18,7 @@ exports.InputRadio = Montage.create(NativeInputRadio, {
     didSetElement: {
         value: function() {
             NativeInputRadio.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-inputRadio';
+            this['class'] = (this['class'] || '') + ' montage-input-radio';
         }
     }
 

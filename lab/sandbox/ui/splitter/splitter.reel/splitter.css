@@ -5,21 +5,21 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-splitterRow,
-.montage-splitterCol {
+
+.montage-splitter-row,
+.montage-splitter-col {
     /display: -webkit-box; /* old FlexBox */
     display: -webkit-flexbox;
-    
+
     box-sizing: border-box;
 }
 
-.montage-splitterRow {
+.montage-splitter-row {
     /-webkit-box-orient: horizontal; /* old FlexBox */
     -webkit-flex-direction: row;
 }
 
-.montage-splitterCol {
+.montage-splitter-col {
     /-webkit-box-orient: vertical; /* old FlexBox */
     -webkit-flex-direction: column;
 }
@@ -40,25 +40,25 @@
 /* Draggable ---------------------------------- */
 
 
-.montage-splitterRow.montage-splitterDraggable,
-.montage-splitterCol.montage-splitterDraggable {
+.montage-splitter-row.montage-splitter-draggable,
+.montage-splitter-col.montage-splitter-draggable {
     padding: 10px;
     background-color: #f2f2f2;
 }
 
 /* Reset child that gets used as a new draggable parent */
-.montage-splitterDraggable > .montage-splitter-child.montage-splitterDraggable,
-.montage-splitterDraggable > .montage-splitter-child.montage-splitterDraggable {
+.montage-splitter-draggable > .montage-splitter-child.montage-splitter-draggable,
+.montage-splitter-draggable > .montage-splitter-child.montage-splitter-draggable {
     padding: 0;
 }
 
-.montage-splitterDraggable > .montage-splitter-child {
+.montage-splitter-draggable > .montage-splitter-child {
     border: 1px solid #b3b3b3;
     background-color: white;
 }
 
 /* Reset child that gets used as a new parent */
-.montage-splitterDraggable > .montage-splitterDraggable {
+.montage-splitter-draggable > .montage-splitter-draggable {
     border: none;
     background: none;
 }
@@ -84,13 +84,13 @@
     background-color: hsl(0,0%,90%);
 }
 
-.montage-splitterRow > .montage-splitter-thumb {
+.montage-splitter-row > .montage-splitter-thumb {
     width: 10px;
     cursor: col-resize;
     background-position: -45px center;
 }
 
-.montage-splitterCol > .montage-splitter-thumb {
+.montage-splitter-col > .montage-splitter-thumb {
     height: 10px;
     cursor: row-resize;
     background-position: center -15px;

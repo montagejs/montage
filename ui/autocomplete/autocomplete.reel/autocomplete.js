@@ -53,7 +53,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     didSetElement: {
         value: function() {
             TextInput.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-inputText';
+            this['class'] = (this['class'] || '') + ' montage-input-text';
         }
     },
 

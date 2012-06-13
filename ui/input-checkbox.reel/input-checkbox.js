@@ -6,20 +6,20 @@
 /*global require,exports */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    NativeInputCheckbox = require("ui/native/input-checkbox.reel").InputCheckbox;    
- 
+    NativeInputCheckbox = require("ui/native/input-checkbox.reel").InputCheckbox;
+
 /**
  * Input Checkbox
  */
 exports.InputCheckbox = Montage.create(NativeInputCheckbox, {
-     
+
     hasTemplate: {value: true},
-     
+
     didSetElement: {
         value: function() {
             NativeInputCheckbox.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-inputCheckbox';
+            this['class'] = (this['class'] || '') + ' montage-input-checkbox';
         }
     }
-     
+
 });

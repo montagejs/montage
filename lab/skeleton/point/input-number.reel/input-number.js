@@ -5,19 +5,19 @@
  </copyright> */
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;    
+    Component = require("ui/component").Component;
 
 /**
  * The input type="number"
  */
 var InputNumber = exports.InputNumber = Montage.create(Component, {
-   
+
    draw: {
        value: function() {
            // Just for now
-           this._element.querySelector(".montage-inputNumber-plus").innerText = "+";
-           this._element.querySelector(".montage-inputNumber-minus").innerText = "-";
+           this._element.querySelector(".montage-input-number-plus").innerText = "+";
+           this._element.querySelector(".montage-input-number-minus").innerText = "-";
        }
    }
-       
+
 });
