@@ -105,7 +105,7 @@ var testPage = TestPageLoader.queueTest("text-slider-test", function() {
                     });
                 });
                 it("increases when the up arrow is pressed", function() {
-                    test.hex.handleKeydown({target: test.hex._inputElement, keyCode: 38});
+                    test.hex.handleInputKeydown({target: test.hex._inputElement, keyCode: 38});
                     expect(test.hex.value).toBe(161);
                     testPage.waitForDraw();
                     runs(function() {
@@ -113,7 +113,7 @@ var testPage = TestPageLoader.queueTest("text-slider-test", function() {
                     });
                 });
                 it("decreases when the down arrow is pressed", function() {
-                    test.hex.handleKeydown({target: test.hex._inputElement, keyCode: 40});
+                    test.hex.handleInputKeydown({target: test.hex._inputElement, keyCode: 40});
                     expect(test.hex.value).toBe(160);
                     testPage.waitForDraw();
                     runs(function() {
@@ -122,14 +122,14 @@ var testPage = TestPageLoader.queueTest("text-slider-test", function() {
                 });
                 it("sets the value when enter is set", function() {
                     test.hex._inputElement.value = "2A";
-                    test.hex.handleKeydown({target: test.hex._inputElement, keyCode: 13});
+                    test.hex.handleInputKeydown({target: test.hex._inputElement, keyCode: 13});
                     expect(test.hex.value).toBe(42);
                 });
                 it("ignored any entered value when Esc is pressed", function() {
                     test.hex.value = 160;
                     test.hex.handlePress();
                     test.hex._inputElement.value = "00";
-                    test.hex.handleKeydown({target: test.hex._inputElement, keyCode: 27});
+                    test.hex.handleInputKeydown({target: test.hex._inputElement, keyCode: 27});
                     expect(test.hex.value).toBe(160);
                 });
             });
