@@ -24,3 +24,9 @@
 .montage-textarea:focus {
   border-color: #7f7f7f;
 }
+
+.montage-textarea:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
+}

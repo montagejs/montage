@@ -29,8 +29,10 @@
     border: 1px dashed #E73525;
 }
 
-.montage-inputText[disabled] {
-    opacity: .4;
+.montage-inputText:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
 }
 
 .montage-inputText[readonly] {
