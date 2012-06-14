@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
  @module montage/data/store
@@ -34,6 +34,8 @@ var TemporaryObjectId = require("data/object-id").TemporaryObjectId;
 var Serializer = require("core/serializer").Serializer;
 var Deserializer = require("core/deserializer").Deserializer;
 var Promise = require("core/promise").Promise;
+var Exception = require("core/exception").Exception;
+
 var logger = require("core/logger").logger("store");
 /**
  Description TODO
@@ -342,7 +344,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
                         aTransactionId = TransactionId.manager.startTransaction(name);
                     }
                 }
-                return this.permanentIdForObjectId$Implementation(objectId, context, aTransactionId);
+                return this.permanentIdForObjectId$Implementation(object, context, aTransactionId);
             } finally {
                 if (!hadOpenTransaction) {
                     TransactionId.manager.closeTransaction(aTransactionId);

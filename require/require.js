@@ -1,9 +1,9 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global bootstrap,define */
 (function (definition) {
 
     // Boostrapping Browser
@@ -344,6 +344,7 @@
             var descriptionLocations =
                 config.descriptionLocations =
                     config.descriptionLocations || {};
+            var descriptionLocation;
             if (descriptionLocations[location]) {
                 descriptionLocation = descriptionLocations[location];
             } else {
@@ -355,7 +356,7 @@
                     return JSON.parse(json);
                 } catch (exception) {
                     throw new SyntaxError(
-                        "in " + JSON.stringify(jsonPath) + ": " +
+                        "in " + JSON.stringify(descriptionLocation) + ": " +
                         exception.message
                     );
                 }

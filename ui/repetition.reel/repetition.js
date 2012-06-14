@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
 	@module "montage/ui/repetition.reel"
@@ -168,7 +168,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             } else if (delta < 0) { // remove elements and send updates
 //console.log("Going to remove " + (max-i) + " iterations");
                 // this index is fixed because we're changing the array at each iteration of the for loop
-                removeIndex = index + min;
+                var removeIndex = index + min;
                 for (; i < max; i++) {
 //console.log("Going to remove " + (index+i), minus[i], min);
                     fakeIndex = fakeObjects.removeFakeObjectAtPosition(removeIndex);
@@ -666,8 +666,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         index = items.length + itemsToAppendCount;
 
         if ("index" in item) {
-            for (var i = 0; i < itemsToAppendCount; i++) {
-                itemToAppend = itemsToAppend[i];
+            for (i = 0; i < itemsToAppendCount; i++) {
+                var itemToAppend = itemsToAppend[i];
                 if (itemToAppend.index >= item.index) {
                     itemToAppend.index++;
                 }
@@ -718,7 +718,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
 
             for (var i = 0; i < itemsToAppendCount; i++) {
-                itemToAppend = itemsToAppend[i];
+                var itemToAppend = itemsToAppend[i];
                 if (itemToAppend.index > index) {
                     itemToAppend.index--;
                 } else if (itemToAppend.index < index) {
@@ -1453,7 +1453,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
         var usefulBindingDescriptor = bindingDescriptor,
             usefulType = type,
-            currentIndex, currentFakeIndex;
+            currentIndex, currentFakeIndex, descriptorKeys, descriptorKeyCount,
+            iDescriptorKey, modifiedBoundObjectPropertyPath;
 
         if (bindingDescriptor && bindingDescriptor.boundObjectPropertyPath.match(/objectAtCurrentIteration/)) {
             if (this._deserializedItem) {
@@ -1461,13 +1462,13 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
                 usefulBindingDescriptor = {};
                 descriptorKeys = Object.keys(bindingDescriptor);
                 descriptorKeyCount = descriptorKeys.length;
-                for (i = 0; i < descriptorKeyCount; i++) {
+                for (var i = 0; i < descriptorKeyCount; i++) {
                     iDescriptorKey = descriptorKeys[i];
                     usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
                 }
 
                 //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
-                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/objectAtCurrentIteration/, '_fakeObjects.' + currentFakeIndex);
+                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/objectAtCurrentIteration/, '_fakeObjects.' + currentFakeIndex);
 
                 usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
 
@@ -1479,9 +1480,8 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._deserializedItem) {
                 currentFakeIndex = this._fakeObjects._fakeIndex[this._deserializedItem.index];
                 usefulBindingDescriptor = {};
-                var descriptorKeys = Object.keys(bindingDescriptor);
-                var descriptorKeyCount = descriptorKeys.length;
-                var iDescriptorKey;
+                descriptorKeys = Object.keys(bindingDescriptor);
+                descriptorKeyCount = descriptorKeys.length;
                 for (var i = 0; i < descriptorKeyCount; i++) {
                     iDescriptorKey = descriptorKeys[i];
                     usefulBindingDescriptor[iDescriptorKey] = bindingDescriptor[iDescriptorKey];
@@ -1489,7 +1489,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
                 //TODO not as simple as replacing this, there may be more to the path maybe? (needs testing)
 
-                var modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
+                modifiedBoundObjectPropertyPath = bindingDescriptor.boundObjectPropertyPath.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
                 usefulBindingDescriptor.boundObjectPropertyPath = modifiedBoundObjectPropertyPath;
 
                 usefulType = type.replace(/selectionAtCurrentIteration/, 'contentController.selections.' + currentFakeIndex);
