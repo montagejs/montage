@@ -147,6 +147,11 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: null
     },
 
+    stateKeys: {
+        serializable: true,
+        value: null
+    },
+
     /**
      Description TODO
      @function
@@ -165,27 +170,23 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             template.instantiateWithOwnerAndDocument(null, window.document, function() {
                 require("ui/component").__root__.needsDraw = true;
 
-                if(self.state) {
-                    var serializableProperties = Montage.getSerializablePropertyNames(self.state);
-                    for(var i=0; i< serializableProperties.length; i++) {
-                        self.state.addPropertyChangeListener(serializableProperties[i], function() {
-                            self._updateUrlFromState();
-                        });
-                    }
+                if(self.stateKeys) {
+                    self._createState();
+
                     if(typeof window.history.pushState !== "undefined") {
                         window.onpopstate = function(event) {
                             var state = event.state;
-                            self._updateStateFromUrl(state);
+                            self._willPopState(event);
                         };
                     } else {
                         window.onhashchange = function(event) {
                             event.preventDefault();
-                            self._updateStateFromUrl();
+                            self._willPopState(event);
                         };
                     }
 
                     // initial state from URL
-                    self._updateStateFromUrl();
+                    self._willPopState();
                 }
 
 
@@ -196,59 +197,88 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         }
     },
 
-    _synching : {value: null},
-    _updateStateFromUrl: {
-        value: function(aState) {
-            if(this.state) {
-                this._synching = true;
-                this.state.updateStateFromUrl(window.location, aState);
-                this._synching = false;
-            }
-        }
-    },
-
-    _getSerializedState: {
-        value: function() {
-            var state = this.state, result;
-            if(state) {
-                result = {};
-                var serializableProperties = Montage.getSerializablePropertyNames(state);
-                var i=0, len = serializableProperties.length, p;
-                for(i; i< len; i++) {
-                    p = serializableProperties[i];
-                    result[p] = state[p];
-                }
-            }
-            return result;
-        }
-    },
-
-    _updateUrlFromState: {
-        value: function() {
-            if(this.state) {
-                if(!this._synching) {
-                    var newLocation = this.state.getUrlFromState();
-                    this._synching = true;
-
-                    if(newLocation) {
-                        if(typeof window.history.pushState !== 'undefined') {
-                            var url, title;
-                            if(String.isString(newLocation)) {
-                                url = newLocation;
-                            } else {
-                                url = newLocation.url;
-                                title = newLocation.title;
-                            }
-                            var serializedState = this._getSerializedState();
-                            window.history.pushState(serializedState, title, url);
-                        } else {
-                            window.location.hash = newLocation.url;
+    _defineStateProperty: {
+        value: function(name) {
+            var _name = '_' + name, self = this, stateDelegate = this.stateDelegate;
+            var newDescriptor = {
+                configurable: true,
+                enumerable: true,
+                serializable: true,
+                set: (function(name, attrName) {
+                    return function(value) {
+                        if((typeof value !== 'undefined') && this[attrName] !== value) {
+                            // this = state
+                            this[attrName] = value;
+                            self._willPushState();
                         }
-                    }
-                    this._synching = false;
-                }
+                    };
+                }(name, _name)),
+                get: (function(name, attrName) {
+                    return function() {
+                        return this[attrName];
+                    };
+                }(name, _name))
+            };
 
+            // Define _ property
+            Montage.defineProperty(this.state, _name, {value: null});
+            // Define property getter and setter
+            Montage.defineProperty(this.state, name, newDescriptor);
+        }
+    },
+
+    _createState: {
+        value: function() {
+            this.state = Montage.create(Montage, {});
+            if(this.stateKeys && this.stateKeys.length > 0) {
+                var i, len = this.stateKeys.length;
+                for(i=0; i< len; i++) {
+                    this._defineStateProperty(this.stateKeys[i]);
+                }
             }
+        }
+    },
+
+    _synching : {value: null},
+
+    _willPopState: {
+        value: function(event) {
+            this._synching = true;
+            var options = {
+                url: window.location,
+                title: window.title,
+                state: event ? event.state : null
+            };
+            if(this.delegate && typeof this.delegate["willPopState"] === 'function') {
+                this.delegate["willPopState"].call(this.delegate, options, this.state);
+            } else {
+                // update state using default mechanism
+                // @todo
+            }
+            this._synching = false;
+        }
+    },
+
+    _willPushState: {
+        value: function() {
+            this._synching = true;
+            var options = {
+                url: window.location,
+                title: window.title
+            };
+
+            if(this.delegate && typeof this.delegate["willPushState"] === 'function') {
+                this.delegate["willPushState"].call(this.delegate, options, this.state);
+            } else {
+                // get the URL from the pattern OR /context/stateKey[0]/stateKey[1]
+                // @todo
+            }
+            if(typeof window.history.pushState !== 'undefined') {
+                window.history.pushState(this.state, options.title, options.url);
+            } else {
+                window.location.hash = options.url;
+            }
+            this._synching = false;
         }
     },
 
