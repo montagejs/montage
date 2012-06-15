@@ -361,6 +361,22 @@
                 "properties": {
                     "element": {"#": "slider"}
                 }
+            },
+            "repetition17": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "list15"},
+                    "objects": []
+                }
+            },
+            "textfield8": {
+                "prototype": "ui/repetition/textfield.reel[TextField]",
+                "properties": {
+                    "element": {"#": "textfield8"}
+                },
+                "bindings": {
+                    "text": {"<-": "@repetition17.objectAtCurrentIteration"}
+                }
             }
     }</script>
 </head>
@@ -478,6 +494,10 @@
     <h2>Repetition changed after added to the draw list but before the draw</h2>
     <div class="list14" data-montage-id="list14">
         <span data-montage-id="slider"></span>
+    </div>
+
+    <div class="list15" data-montage-id="list15">
+        <span data-montage-id="textfield8"></span>
     </div>
 </body>
 </html>
