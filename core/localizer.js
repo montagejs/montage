@@ -39,15 +39,15 @@ var reLanguageTagValidator = /^[a-zA-Z]+(?:-[a-zA-Z0-9]+)*$/;
 var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:montage/core/localizer.Localizer# */ {
 
     /**
-        Initialize the object
+        Initialize the localizer.
 
         @function
-        @param {String} locale The RFC-5646 language tag this localizer should use.
+        @param {String} [locale] The RFC-5646 language tag this localizer should use. Defaults to defaultLocalizer.locale
         @returns {Localizer} The Localizer object it was called on.
     */
     init: {
         value: function(locale) {
-            this.locale = locale;
+            this.locale = locale || defaultLocalizer.locale;
 
             return this;
         }
