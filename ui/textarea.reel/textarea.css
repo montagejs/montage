@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-  
+
 .montage-textarea {
     outline: none;
     box-sizing: border-box;
@@ -16,11 +16,17 @@
     border-radius: 3px;
     background-color: #fff;
 }
- 
+
 .montage-textarea:hover {
   border-color: #ccc;
 }
- 
+
 .montage-textarea:focus {
   border-color: #7f7f7f;
+}
+
+.montage-textarea:disabled {
+    opacity: .5;
+    border-style: dashed;
+    pointer-events: none;
 }
