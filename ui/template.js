@@ -59,6 +59,8 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 */
     _isLoaded: {value: false},
 
+    delegate: {value: null},
+
     /**
     Creates a new Template instance from an HTML document element.
     @function
@@ -114,13 +116,15 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     @param {String} moduleId The module id.
     @param {Function} callback The function to call when the template is ready, receives a Template object as a parameter.
     */
-    templateWithComponent: {value: function(component) {
+    templateWithComponent: {value: function(component, delegate) {
         var componentId = component._templateId,
             template = this.__templatesById[componentId],
             externalObjects;
 
         if (!template) {
-            template = this.create().initWithComponent(component);
+            template = this.create();
+            template.delegate = delegate;
+            template.initWithComponent(component);
             externalObjects = template._externalObjects;
             // don't store this template if it has external objects, the next component to use might have diferent objects for the same ids
             if (!externalObjects || Object.keys(externalObjects).length === 0) {
@@ -200,6 +204,16 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         }
     },
 
+    // serializer delegate method
+    serializeObjectProperties: {
+        enumerable: false,
+        value: function() {
+            var delegate = this.delegate;
+
+            return delegate.serializeObjectProperties.apply(delegate, arguments);
+        }
+    },
+
     /**
      Initializes a Template object out of a fully instantiated component.
      This means creating a markup from the Component object's element and a serialization with the Component object as the owner of the Template.
@@ -216,6 +230,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         this._document = htmlDocument;
 
+        serializer.delegate = this.delegate ? this : null;
         this._ownerSerialization = serializer.serialize({owner: component});
         this._externalObjects = serializer.getExternalObjects();
         elements = serializer.getExternalElements();
