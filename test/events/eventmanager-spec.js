@@ -16,9 +16,10 @@ var global = typeof global !== "undefined" ? global : window;
 var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
     describe("events/eventmanager-spec", function() {
 
-        var CAPTURING_PHASE = 1,
-            AT_TARGET = 2,
-            BUBBLING_PHASE = 3;
+        var NONE = Event.NONE,
+            CAPTURING_PHASE = Event.CAPTURING_PHASE,
+            AT_TARGET = Event.AT_TARGET,
+            BUBBLING_PHASE = Event.BUBBLING_PHASE;
 
         it("should load", function() {
             expect(testPage.loaded).toBeTruthy();
@@ -597,6 +598,48 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
+                });
+
+                it("must set the event phase as NONE after distribution", function() {
+                    var event;
+                    var eventSpy = {
+                        handleEvent: function(evt) {
+                            event = evt;
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                    });
+
+                    expect(event.eventPhase).toBe(NONE);
+                });
+
+            });
+
+            describe("with respect to the currentTarget property", function() {
+
+                it("must set the currentTarget as null after distribution", function() {
+                    var event;
+                    var eventSpy = {
+                        handleEvent: function(evt) {
+                            event = evt;
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                    });
+
+                    expect(event.currentTarget).toBeNull();
                 });
 
             });

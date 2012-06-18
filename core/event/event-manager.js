@@ -187,9 +187,10 @@ Deserializer.defineDeserializationUnit("listeners", function(object, listeners) 
     }
 });
 
-var CAPTURING_PHASE = 1,
-    AT_TARGET = 2,
-    BUBBLING_PHASE = 3;
+var NONE = Event.NONE,
+    CAPTURING_PHASE = Event.CAPTURING_PHASE,
+    AT_TARGET = Event.AT_TARGET,
+    BUBBLING_PHASE = Event.BUBBLING_PHASE;
 
 /**
  @class module:montage/core/event/event-manager.EventManager
@@ -1862,6 +1863,9 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                     iEventHandler.call(event.target, mutableEvent);
                 }
             }
+
+            mutableEvent.eventPhase = NONE;
+            mutableEvent.currentTarget = null;
 
             if (this._isStoringPointerEvents) {
                 this._pointerStorage.removeEvent(event);
