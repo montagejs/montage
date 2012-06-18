@@ -45,7 +45,7 @@ var ObjectId = exports.ObjectId = Montage.create(Montage, /** @lends module:mont
      @default {Object} null
      */
     blueprint:{
-        get function () {
+        get: function () {
             return this._blueprint;
         }
     }
@@ -61,7 +61,7 @@ var TemporaryObjectId = exports.TemporaryObjectId = Montage.create(ObjectId, /**
      @default {Boolean} true
      */
     isTemporary:{
-        get function () {
+        get: function () {
             return true;
         }
     },
