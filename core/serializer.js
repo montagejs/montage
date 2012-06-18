@@ -42,6 +42,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
 
     serializeNullValues: {value: false},
 
+    delegate: {value: null},
+
     /**
      Defines a serialization unit for an object.
      @function
@@ -286,6 +288,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         return this._objectStack.pop();
     }},
 
+    _peekContextObject: {value: function() {
+        return this._objectStack[this._objectStack.length-1];
+    }},
+
     /**
      Returns a dictionary of the external objects that were referenced in the last serialization.
      @function
@@ -454,7 +460,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             serializedUnits,
             propertyNames,
             objectInfo,
-            label, moduleId, name, defaultName;
+            label, moduleId, name, defaultName,
+            delegate;
 
         if (serializedReference) {
             return serializedReference;
@@ -468,6 +475,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 this._externalObjects[label] = object;
             }
         } else {
+            delegate = this.delegate;
             this._serializedReferences[uuid] = serializedReference;
 
             serializedUnits = {};
@@ -502,6 +510,11 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 this._pushContextObject(object);
                 this._pushContextObject({});
                 object.serializeProperties(this, Montage.getSerializablePropertyNames(object));
+                // handle delegate.serializeProperties for objects that
+                // implement their own serializeProperties
+                if (delegate && typeof delegate.serializeObjectProperties === "function") {
+                    delegate.serializeObjectProperties(this, object,  Object.keys(this._peekContextObject()));
+                }
                 serializedUnits.properties = this._serializeObjectLiteral(this._popContextObject(), null, 3);
                 this._popContextObject();
             } else {
@@ -511,7 +524,18 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                     properties = object;
                     propertyNames = Montage.getSerializablePropertyNames(object);
                 }
-                serializedUnits.properties = this._serializeObjectLiteral(properties, propertyNames, 3);
+                // handle delegate.serializeProperties for objects that
+                // do NOT implement their own serializeProperties
+                if (delegate && typeof delegate.serializeObjectProperties === "function") {
+                    this._pushContextObject(object);
+                    this._pushContextObject({});
+                    this.setAll(propertyNames);
+                    delegate.serializeObjectProperties(this, object, propertyNames);
+                    serializedUnits.properties = this._serializeObjectLiteral(this._popContextObject(), null, 3);
+                    this._popContextObject();
+                } else {
+                    serializedUnits.properties = this._serializeObjectLiteral(properties, propertyNames, 3);
+                }
             }
 
             this._applySerializationUnits(serializedUnits, object);
@@ -658,7 +682,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
 
     _serializeValueWithDescriptor: {
         value: function(object, objectDescriptor, indent) {
-            var label;
+            var label,
+                delegate = this.delegate;
 
             if (!("prototype" in objectDescriptor || "object" in objectDescriptor || "value" in objectDescriptor)) {
                 this._applyTypeUnit(objectDescriptor, object);
@@ -667,6 +692,15 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             if ("value" in objectDescriptor) {
                 return this._serializeValue(objectDescriptor.value);
             } else {
+                // handle delegate.serializeProperties for objects that
+                // implement their own serializeSelf
+                if (delegate && typeof delegate.serializeObjectProperties === "function") {
+                    this._pushContextObject(object);
+                    this._pushContextObject(objectDescriptor.properties);
+                    delegate.serializeObjectProperties(this, object,  Object.keys(objectDescriptor.properties));
+                    this._popContextObject();
+                    this._popContextObject();
+                }
                 objectDescriptor.properties = this._serializeObjectLiteral(objectDescriptor.properties, null, 3);
                 var units;
                 if (units = /* assignment */ objectDescriptor._units) {

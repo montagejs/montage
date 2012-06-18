@@ -644,5 +644,24 @@ describe("serialization/serializer-spec", function() {
                 expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{}}}');
             });
         });
+
+        describe("by serializing objects with a delegate", function() {
+            it("should serialize the properties list defined by the delegate", function() {
+                var twoProp = objects.TwoProps.create();
+                twoProp.prop1 = 1;
+                twoProp.prop2 = 2;
+
+                serializer.delegate = {
+                    serializeObjectProperties: function(serializer, object, propertyNames) {
+                        for (var i = 0; i < propertyNames.length; i++) {
+                            serializer.set(propertyNames[i], null);
+                        }
+                        serializer.set("prop3", object.prop2);
+                    }
+                };
+                var serialization = serializer.serializeObject(twoProp);
+                expect(stripPP(serialization)).toBe('{"root":{"prototype":"serialization/testobjects-v2[TwoProps]","properties":{"prop3":2}}}');
+            });
+        });
     });
 });
