@@ -200,140 +200,95 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
     // Utility
     eventDefinitions: {
+        // ClipboardEvent http://dev.w3.org/2006/webapi/clipops/clipops.html#event-types-and-details
+        // DND http://www.w3.org/TR/2010/WD-html5-20101019/dnd.html
+        // document.implementation.hasFeature("HTMLEvents", "2.0")
+        // DOM2 http://www.w3.org/TR/DOM-Level-2-Events/events.html
+        // DOM3 http://dev.w3.org/2006/webapi/DOM-Level-3-Events/html/DOM3-Events.html
+        // DOM4 http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#events
+        // GECKO https://developer.mozilla.org/en/Gecko-Specific_DOM_Events
+        // MSFT defacto standard
+        // ProgressEvent http://www.w3.org/TR/progress-events/
+        // TouchEvent http://dvcs.w3.org/hg/webevents/raw-file/tip/touchevents.html
+        // INPUT http://dev.w3.org/html5/spec/common-input-element-apis.html#common-event-behaviors
+        // WEBSOCKETS http://www.w3.org/TR/html5/comms.html
+
+        // Other info:
+        // http://www.quirksmode.org/dom/events/index.html
+        // https://developer.mozilla.org/en/DOM/DOM_event_reference
         value: {
-            "mousedown": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "mouseup": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "mousemove": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "click": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "dblclick": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "mouseover": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "mouseout": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
+            abort: {bubbles: false, cancelable: false}, //ProgressEvent, DOM3, //DOM2 does bubble
+            beforeunload: {bubbles: false}, //MSFT
+            blur: {bubbles: false, cancelable: false}, //DOM2, DOM3
+            change: {bubbles: true, cancelable: false}, //DOM2, INPUT
+            click: {bubbles: true, cancelable: true}, //DOM3
+            close: {bubbles: false, cancelable: false}, //WEBSOCKETS
+            compositionend: {bubbles: true, cancelable: false}, //DOM3
+            compositionstart: {bubbles: true, cancelable: true}, //DOM3
+            compositionupdate: {bubbles: true, cancelable: false}, //DOM3
+            contextmenu: {bubbles: true, cancelable: true}, //MSFT
+            copy: {bubbles: true, cancelable: true}, //ClipboardEvent
+            cut: {bubbles: true, cancelable: true}, //ClipboardEvent
+            dblclick: {bubbles: true, cancelable: false}, //DOM3
+            DOMActivate: {bubbles: true, cancelable: true, deprecated: true}, //DOM2, DOM3 deprecated
+            DOMMouseScroll: {bubbles: true}, //GECKO
+            drag: {bubbles: true, cancelable: true}, //DND
+            dragend: {bubbles: true, cancelable: false}, //DND
+            dragenter: {bubbles: true, cancelable: true}, //DND
+            dragleave: {bubbles: true, cancelable: false}, //DND
+            dragover: {bubbles: true, cancelable: true}, //DND
+            dragstart: {bubbles: true, cancelable: true}, //DND
+            drop: {bubbles: true, cancelable: true}, //DND
+            error: {
+                bubbles: function(target) {
+                    // error does not bubble when used as a ProgressEvent
+                    return !(XMLHttpRequest.prototype.isPrototypeOf(target) ||
+                           target.tagName && "VIDEO" === target.tagName.toUpperCase() ||
+                           target.tagName && "AUDIO" === target.tagName.toUpperCase());
+                },
+                cancelable: false
+            }, //DOM2, DOM3, ProgressEvent
+            focus: {bubbles: false, cancelable: false}, //DOM2, DOM3
+            focusin: {bubbles: true, cancelable: false}, //DOM3
+            focusout: {bubbles: true, cancelable: false}, //DOM3
+            input: {bubbles: true, cancelable: false}, // INPUT
+            keydown: {bubbles: true, cancelable: false}, //DOM3
+            keypress: {bubbles: true, cancelable: false}, //DOM3
+            keyup: {bubbles: true, cancelable: false}, //DOM3
+            load: {bubbles: false, cancelable: false}, //ProgressEvent, DOM2, DOM3
+            loadend: {bubbles: false, cancelable: false}, //ProgressEvent
+            loadstart: {bubbles: false, cancelable: false}, //ProgressEvent
+            message: {bubbles: false, cancelable: false}, //WEBSOCKETS
+            mousedown: {bubbles: true, cancelable: true}, //DOM3
+            mouseenter: {bubbles: false, cancelable: false}, //DOM3
+            mouseleave: {bubbles: false, cancelable: false}, //DOM3
+            mousemove: {bubbles: true, cancelable: true}, //DOM3
+            mouseout: {bubbles: true, cancelable: true}, //DOM3
+            mouseover: {bubbles: true, cancelable: true}, //DOM3
+            mouseup: {bubbles: true, cancelable: true}, //DOM3
+            mousewheel: {bubbles: true},
+            orientationchange: {bubbles: false},
+            paste: {bubbles: true, cancelable: true}, //ClipboardEvent
+            progress: {bubbles: false, cancelable: false}, //ProgressEvent
+            reset: {bubbles: true, cancelable: false}, //DOM2
+            resize: {bubbles: false, cancelable: false}, //DOM2 bubbles, DOM3
 
-            "contextmenu": {
-                bubbles: true
-            },
+            scroll: {
+                bubbles: function(target) {
+                    return /*isDocument*/!!target.defaultView;
+                },
+                cancelable: false
+            }, //DOM2, DOM3 When dispatched on Document element must bubble to defaultView object
 
-            "touchstart": {
-                bubbles: true,
-                type: "TouchEvents"
-            },
-            "touchend": {
-                bubbles: true,
-                type: "TouchEvents"
-            },
-            "touchmove": {
-                bubbles: true,
-                type: "TouchEvents"
-            },
-            "touchcancel": {
-                bubbles: true,
-                type: "TouchEvents"
-            },
+            select: {bubbles: true, cancelable: false}, //DOM2, DOM3
 
-            "copy": {
-                bubbles: true
-            },
-            "cut": {
-                bubbles: true
-            },
-            "paste": {
-                bubbles: true
-            },
-
-            "keyup": {
-                bubbles: true,
-                type: "KeyEvents"
-            },
-            "keydown": {
-                bubbles: true,
-                type: "KeyEvents"
-            },
-            "keypress": {
-                bubbles: true,
-                type: "KeyEvents"
-            },
-
-            "load": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-            "unload": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-
-            "abort": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "error": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "select": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "change": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "reset": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "focus": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-            "blur": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-            "resize": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "scroll": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "input": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "submit": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-            "DOMMouseScroll": {
-                bubbles: true
-            },
-            "mousewheel": {
-                bubbles: true,
-                type: "MouseEvents"
-            }
+            submit: {bubbles: true, cancelable: true}, //DOM2
+            touchcancel: {bubbles: true, cancelable: false}, //TouchEvent
+            touchend: {bubbles: true, cancelable: true}, //TouchEvent
+            touchmove: {bubbles: true, cancelable: true}, //TouchEvent
+            touchstart: {bubbles: true, cancelable: true}, //TouchEvent
+            unload: {bubbles: false, cancelable: false}, //DOM2, DOM3
+            wheel: {bubbles: true, cancelable: true} //DOM3
         }
     },
 
@@ -839,14 +794,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 
-
-    _nonDelegateableEventTypes: {
-        enumerable: false,
-        distinct: true,
-        value: ["load", "resize", "message", "orientationchange", "beforeunload", "unload",
-            "dragenter", "dragleave", "drop", "dragover", "dragend"]
-    },
-
    /**
     Determines the actual target to observe given a target and an eventType. This correctly decides whether to observe the element specified or to observe some other element to leverage event delegation. This should be consulted whenever starting or stopping the observation of a target for a given eventType.
     @function
@@ -862,13 +809,28 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 return null;
             } else {
 
-                // We install all native event listeners on the document, except for a few special event types
-                // TODO this may be problematic for some events in some browsers, I'm afraid there will be too
-                // many exceptions to do this in a generic manner
-                if ((/*isDocument*/!!target.defaultView) || this._nonDelegateableEventTypes.indexOf(eventType) >= 0) {
+                if (/*isDocument*/!!target.defaultView) {
                     return target;
+                }
+
+                var entry = this.eventDefinitions[eventType],
+                    bubbles;
+
+                // For events we know we can safely delegate to handling at a higher level, listen on the document
+                // otherwise, be less surprising and listen on the specified target
+
+                if (!entry) {
+                    return target;
+                }
+
+                // TODO allow eventTypes to describe a preferred delegation target window|document|none etc.
+                bubbles = (typeof entry.bubbles === FUNCTION_TYPE) ? entry.bubbles(target) : entry.bubbles;
+
+                if (bubbles) {
+                    // TODO why on the document and not the window?
+                    return /* isWindow*/target.screen ? target.document : target.ownerDocument;;
                 } else {
-                    return /* isWindow*/target.screen ? target.document : target.ownerDocument;
+                    return target;
                 }
             }
 
@@ -2069,28 +2031,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     }
 
 });
-
-if (typeof window.ondragstart !== undefined) {
-
-    EventManager.eventDefinitions.dragstart = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.drag = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.dragend = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.dragover = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.dragleave = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.drop = {
-        "bubbles": true
-    };
-}
 
 } // client-side
 
