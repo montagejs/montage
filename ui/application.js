@@ -13,6 +13,7 @@
 var Montage = require("core/core").Montage,
     Template = require("ui/template").Template,
     Component = require("ui/component").Component,
+    WindowProxy = require("ui/window").WindowProxy,
     Slot;
 
     require("ui/dom");
@@ -47,10 +48,117 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
     /**
      Provides a reference to the parent application (in multi-window environment).
-     @type {module:montage/core/event/event-manager.EventManager}
+     @type {module:montage/ui/application.Application}
      */
     parentApplication: {
         value: null
+    },
+
+    /**
+     Provides a reference to the main application (in multi-window environment).
+     @type {module:montage/ui/application.Application}
+     */
+    mainApplication: {
+        get: function() {
+            // JFD TODO: We should cache the result, would need to update it when the window is detached
+            var mainApplication = this;
+            while (mainApplication.parentApplication) {
+                mainApplication = mainApplication.parentApplication;
+            }
+            return mainApplication;
+        }
+    },
+
+    // possible values: "z-order", "reverse-z-order", "z-order", "reverse-open-order"
+    _windowsSortOrder: {
+        value: "reverse-z-order"
+    },
+
+    windowsSortOrder: {
+        get: function() {
+            if (this.parentApplication == null) {
+                return this._windowsSortOrder;
+            } else {
+                return this.mainApplication.windowsSortOrder;
+            }
+        },
+
+        set: function(value) {
+            if (this.parentApplication == null) {
+                if (["z-order", "reverse-z-order", "z-order", "reverse-open-order"].indexOf(value) !== -1) {
+                    this._windowsSortOrder = value;
+                }
+            } else {
+                this.mainApplication.windowsSortOrder = value;
+            }
+        }
+    },
+
+    /**
+     return the list of open windows sorted per z-order, first on is the topmost.
+     @type {array}
+     */
+    windows: {
+        get: function() {
+            var theWindow;
+
+            if (this.parentApplication == null) {
+                if (!this._windows) {
+                    var theWindow = WindowProxy.create();
+                    theWindow.application = this;
+                    theWindow.window = window;
+                    this.window = theWindow;
+
+                    this._windows = [this.window];
+                    this._multipleWindow = true;
+                }
+                return this._windows;
+            } else {
+                return this.mainApplication.windows;
+            }
+        }
+    },
+
+    _window: {
+        value: null
+    },
+
+    window: {
+        get: function() {
+            if (!this._window && this == this.mainApplication) {
+                var theWindow = WindowProxy.create();
+                theWindow.application = this;
+                theWindow.window = window;
+                this._window = theWindow;
+            }
+            return this._window;
+        },
+
+        set: function(value) {
+            if (!this._window) {
+                this._window = value;
+            }
+        }
+    },
+
+    dumpWindows: {
+        value: function() {
+            var windows = this.windows,
+                aWindow;
+
+            for (var i in windows) {
+                aWindow = windows[i];
+                console.log("WINDOW:", aWindow.title, aWindow.closed ? "--closed--" : "");
+            }
+        }
+    },
+
+    didCreate: {
+        value: function() {
+            if (window.loadInfo && !this.parentApplication) {
+                this.parentApplication = window.loadInfo.parent.document.application;
+            }
+        }
     },
 
     /**
@@ -98,59 +206,51 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     openWindow: {
         value: function(component, name, params, callback) {
             var thisRef = this,
-                newWindow,
-                addedEventListener = false;
+                childWindow = WindowProxy.create(),
+                childApplication,
+                event;
 
             var loadInfo = {
                 module: component,
                 name: name,
+                parent: window,
                 callback: function(aWindow, aComponent) {
-                    aWindow.document.application.parentApplication = thisRef;
-                    if (callback) {
-                        callback(aWindow, aComponent);
+                    var sortOrder;
+
+
+                    // Finishing the window object initialization and let the consumer knows the window is loaded and ready
+                    childApplication = aWindow.document.application;
+                    childWindow.window = aWindow;
+                    childWindow.application = childApplication;
+                    childWindow.component = aComponent;
+                    childApplication.window = childWindow;
+
+                    thisRef.attachedWindows.push(childWindow);
+
+                    sortOrder = thisRef.mainApplication.windowsSortOrder;
+                    if (sortOrder == "z-order" || sortOrder == "reverse-open-order") {
+                        thisRef.windows.unshift(childWindow);
+                    } else {
+                        thisRef.windows.push(childWindow);
                     }
 
-                    thisRef.attachedWindows.push(newWindow);
-                    newWindow.addEventListener("unload", function() {
-                        if (newWindow.location.href !== "about:blank") {
-                            var index = thisRef.attachedWindows.indexOf(newWindow);
-                            if (index !== -1) {
-                                thisRef.attachedWindows.splice(index, 1);
-                            }
-                            newWindow.removeEventListener("unload", arguments.callee);
-                        }
-                    });
+                    event = document.createEvent("CustomEvent");
+                    event.initCustomEvent("load", true, true, null);
+                    childWindow.dispatchEvent(event);
                 }
             };
 
-            var _initializeWindow = function() {
-                newWindow.load(component, name, function(aWindow, aComponent) {
-                    aWindow.document.application.parentApplication = thisRef;
-                    if (callback) {
-                        callback(aWindow, aComponent);
-                    }
-
-                    thisRef.attachedWindows.push(newWindow);
-                    newWindow.addEventListener("unload", function() {
-                        if (newWindow.location.href !== "about:blank") {
-                            var index = thisRef.attachedWindows.indexOf(newWindow);
-                            if (index !== -1) {
-                                thisRef.attachedWindows.splice(index, 1);
-                            }
-                            newWindow.removeEventListener("unload", arguments.callee);
-                        }
-                    });
-                });
-
-                if (addedEventListener) {
-                    newWindow.removeEventListener("DOMContentLoaded", _initializeWindow);
-                }
-            };
-
+            // If this is the first time we open a window, let's install a focus listener and make sure the body element is focusable
+            // Applicable only on the main application
+            if (this === this.mainApplication && !this._multipleWindow) {
+                this.window;    // Will cause to create a window proxy for the mainApplication and install the needed event handlers
+            }
             window.require.loadPackage({name: "montage"}).then(function(require) {
-                newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", params);
+                var newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", params);
                 newWindow.loadInfo = loadInfo;
             }).end();
+
+            return childWindow;
         }
     },
 
