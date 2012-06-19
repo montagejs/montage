@@ -1,7 +1,13 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
 
 var URL = require("core/mini-url");
 
 exports.Worker = function (package, id) {
+    var proxy;
     var worker = new Worker(
         URL.resolve(module.location, 'worker-script.js')
     );
@@ -45,7 +51,7 @@ exports.Worker = function (package, id) {
             // XXX
         }
     };
-    var proxy = {
+    proxy = {
         postMessage: function (data) {
             worker.postMessage({
                 type: "forward",

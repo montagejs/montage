@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 /**
@@ -17,7 +17,7 @@ TextInput = require("ui/text-input").TextInput;
 /**
  * Wraps the a &lt;textarea> element with binding support for the element's standard attributes. Uses an ArrayController instance to manage the element's contents and selection.
    @class module:"montage/ui/textarea.reel".Textarea
-   @extends module:montage/text-input.TextInput
+   @extends module:montage/ui/text-input.TextInput
  */
 
 var Textarea = exports.Textarea = Montage.create(TextInput, /** @lends module:"montage/ui/textarea.reel".Textarea# */ {

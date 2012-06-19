@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /*global require, exports */
 
@@ -18,7 +18,7 @@ var Montage = require("montage").Montage,
 
 /**
     The base class for the Checkbox component. You will not typically create this class directly but instead use the Checkbox component.
-    @class module:montage/ui/text-input.CheckInput
+    @class module:montage/ui/check-input.CheckInput
     @extends module:montage/ui/native-control.NativeControl
     @see module:"montage/ui/input-checkbox.reel".CheckBox
 */

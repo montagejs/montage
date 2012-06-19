@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 /**
@@ -15,7 +15,7 @@ var Montage = require("montage").Montage,
 /**
   The Anchor component wraps a native <code>&lt;a&gt;</code> element and exposes its standard attributes as bindable properties.
   @class module:"montage/ui/anchor.reel".Anchor
-  @extends module:montage/native-control.NativeControl
+  @extends module:montage/ui/native-control.NativeControl
 
 */
 var Anchor = exports.Anchor = Montage.create(NativeControl, {

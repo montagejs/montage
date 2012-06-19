@@ -1,3 +1,9 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+/*global bootstrap */
 (function (global) {
 
 var postMessage = global.postMessage.bind(global);
@@ -182,7 +188,7 @@ global.addEventListener = function (name, handler, capture, untrusted) {
     if (name === "message") {
         handlers.push(handler);
     } else {
-        return addEventListener(name, handler, caputre, untrusted);
+        return addEventListener(name, handler, capture, untrusted);
     }
 };
 

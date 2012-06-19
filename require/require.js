@@ -1,9 +1,9 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global bootstrap,define */
 (function (definition) {
 
     // Boostrapping Browser
@@ -14,7 +14,8 @@
             bootstrap("require/require", function (require, exports) {
                 var Promise = require("core/promise").Promise;
                 var URL = require("core/mini-url");
-                definition(exports, Promise, URL);
+                var nextTick = require("core/next-tick").nextTick;
+                definition(exports, Promise, URL, nextTick);
                 require("require/browser");
             });
 
@@ -23,7 +24,8 @@
             bootstrap("require/require", function (require, exports) {
                 var Promise = require("core/promise").Promise;
                 var URL = require("core/url");
-                definition(exports, Promise, URL);
+                var nextTick = require("core/next-tick").nextTick;
+                definition(exports, Promise, URL, nextTick);
             });
         }
 
@@ -31,7 +33,7 @@
     } else if (typeof process !== "undefined") {
         var Promise = (require)("../core/promise").Promise;
         var URL = (require)("../core/url");
-        definition(exports, Promise, URL);
+        definition(exports, Promise, URL, process.nextTick);
         require("./node");
         if (require.main == module)
             exports.main();
@@ -40,7 +42,7 @@
         throw new Error("Can't support require on this platform");
     }
 
-})(function (Require, Promise, URL) {
+})(function (Require, Promise, URL, nextTick) {
 
     if (!this)
         throw new Error("Require does not work in strict mode.");
@@ -254,13 +256,24 @@
                 return deepLoad(topId, viaId)
                 .then(function () {
                     return require(topId);
+                }, function (reason, error) {
+                    nextTick(function () {
+                        throw error;
+                    });
+                    return require(topId);
                 })
                 .then(function (exports) {
-                    callback && callback(exports);
+                    if (callback) {
+                        nextTick(function () {
+                            callback(exports);
+                        });
+                    }
                     return exports;
                 }, function (reason, error, rejection) {
                     if (callback) {
-                        console.error(error.stack);
+                        nextTick(function() {
+                            throw error;
+                        });
                     }
                     return rejection;
                 });
@@ -344,6 +357,7 @@
             var descriptionLocations =
                 config.descriptionLocations =
                     config.descriptionLocations || {};
+            var descriptionLocation;
             if (descriptionLocations[location]) {
                 descriptionLocation = descriptionLocations[location];
             } else {
@@ -355,7 +369,7 @@
                     return JSON.parse(json);
                 } catch (exception) {
                     throw new SyntaxError(
-                        "in " + JSON.stringify(jsonPath) + ": " +
+                        "in " + JSON.stringify(descriptionLocation) + ": " +
                         exception.message
                     );
                 }

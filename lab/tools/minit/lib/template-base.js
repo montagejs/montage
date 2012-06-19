@@ -52,15 +52,17 @@ exports.TemplateBase = Object.create(Object.prototype, {
             this.buildDir = Path.join(this.options.minitHome, "build", this.options.templateName);
             var path;
             childProcess.exec("rm -rf " + this.buildDir, function (error, stdout, stderr) {
-                path = "cp -R " + this.directory + " " + this.buildDir;
-                //console.log(path);
-                childProcess.exec(path, function (error, stdout, stderr) {
-                    if (error) {
-                        console.log(error.stack);
-                        console.log('Error code: '+error.code);
-                        console.log('Signal received: '+error.signal);
-                    }
-                    this.processDirectory(this.buildDir);
+                childProcess.exec("mkdir -p " + Path.join(this.options.minitHome, "build"), function (error, stdout, stderr) {
+                    path = "cp -R " + this.directory + " " + this.buildDir;
+                    childProcess.exec(path, function (error, stdout, stderr) {
+                        if (error) {
+                            console.log(error.stack);
+                            console.log('Error code: '+error.code);
+                            console.log('Signal received: '+error.signal);
+                            return;
+                        }
+                        this.processDirectory(this.buildDir);
+                    }.bind(this));
                 }.bind(this));
             }.bind(this));
         }

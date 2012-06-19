@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 /**
@@ -17,7 +17,7 @@ var Montage = require("montage").Montage,
 /**
   The Progress component wraps a native <code>&lt;progress></code> element and exposes its standard attributes as bindable properties.
   @class module:"montage/ui/progress.reel".Progress
-  @extends module:montage/native-control.NativeControl
+  @extends module:montage/ui/native-control.NativeControl
 
 */
 var Progress = exports.Progress =  Montage.create(NativeControl, {

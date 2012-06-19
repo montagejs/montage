@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
     @module montage/ui/composer/key-composer
@@ -288,7 +288,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
 /**
  @class KeyManagerProxy
  @classdesc Provide a proxy for lazy load of module:montage/core/event/key-manager.KeyManager.
- @extends module:montage
+ @extends module:montage/core/core.Montage
  @private
  */
 var _keyManagerProxy= null;
