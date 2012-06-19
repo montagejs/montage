@@ -36,27 +36,27 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
         describe("when determining handler method names", function() {
 
             it('should correctly prefix the eventType with "capture" for the capture phase event handler method', function() {
-                expect(eventManager.methodNameForCapturePhaseOfEventType_("mousedown")).toBe("captureMousedown");
+                expect(eventManager.methodNameForCapturePhaseOfEventType("mousedown")).toBe("captureMousedown");
             });
 
             it('should correctly prefix the eventType with "handle" for the bubble phase event handler method', function() {
-                expect(eventManager.methodNameForBubblePhaseOfEventType_("mousedown")).toBe("handleMousedown");
+                expect(eventManager.methodNameForBubblePhaseOfEventType("mousedown")).toBe("handleMousedown");
             });
 
             it("must not alter inner capitalization of capture phase event handler method names", function() {
-                expect(eventManager.methodNameForCapturePhaseOfEventType_("DOMContentReady")).toBe("captureDOMContentReady");
+                expect(eventManager.methodNameForCapturePhaseOfEventType("DOMContentReady")).toBe("captureDOMContentReady");
             });
 
             it("must not alter inner capitalization of bubble phase event handler method names", function() {
-                expect(eventManager.methodNameForBubblePhaseOfEventType_("DOMContentReady")).toBe("handleDOMContentReady");
+                expect(eventManager.methodNameForBubblePhaseOfEventType("DOMContentReady")).toBe("handleDOMContentReady");
             });
 
             it("should inject the specified target identifier as part of the bubble phase event handler method name", function() {
-                expect(eventManager.methodNameForBubblePhaseOfEventType_("click", "testButton")).toBe("handleTestButtonClick");
+                expect(eventManager.methodNameForBubblePhaseOfEventType("click", "testButton")).toBe("handleTestButtonClick");
             });
 
             it("should inject the specified target identifier as part of the capture phase event handler method name", function() {
-                expect(eventManager.methodNameForCapturePhaseOfEventType_("click", "testButton")).toBe("captureTestButtonClick");
+                expect(eventManager.methodNameForCapturePhaseOfEventType("click", "testButton")).toBe("captureTestButtonClick");
             });
         });
 
@@ -619,6 +619,33 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     expect(event.eventPhase).toBe(NONE);
                 });
 
+                describe("adding listeners during distribution", function() {
+
+                    it("should distribute the event if the added listener would receive the event after the point that it was added", function() {
+                        var lateAddedRootListener = {
+                            handleEvent: function() {
+
+                            }
+                        };
+
+                        var bodyListener = {
+                            handleEvent: function() {
+                                testDocument.documentElement.addEventListener("mousedown", lateAddedRootListener, false);
+                            }
+                        };
+
+                        spyOn(bodyListener, 'handleEvent').andCallThrough();
+                        spyOn(lateAddedRootListener, 'handleEvent');
+
+                        testDocument.body.addEventListener("mousedown", bodyListener, false);
+
+                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.body), "mousedown", function() {
+                            expect(lateAddedRootListener.handleEvent).toHaveBeenCalled();
+                        });
+                    });
+
+                });
+
             });
 
             describe("with respect to the currentTarget property", function() {
@@ -782,44 +809,44 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
             it("should install listeners on a document if the requested target is a window", function() {
                 var testWindow = testDocument.defaultView;
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("mousedown", testWindow);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("mousedown", testWindow);
 
                 expect(actualTarget).toBe(testDocument);
             });
 
             it("should install listeners on a document if the requested target is a document", function() {
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("mousedown", testDocument);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("mousedown", testDocument);
 
                 expect(actualTarget).toBe(testDocument);
             });
 
             it("should install listeners on a document if the requested target is an element", function() {
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("mousedown", testDocument.documentElement);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("mousedown", testDocument.documentElement);
 
                 expect(actualTarget).toBe(testDocument);
             });
 
             it("should install listeners on the specified target if the eventType is 'load'", function() {
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("load", testDocument.documentElement);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("load", testDocument.documentElement);
                 expect(actualTarget).toBe(testDocument.documentElement);
 
-                actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("load", testDocument);
+                actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("load", testDocument);
                 expect(actualTarget).toBe(testDocument);
 
                 var testWindow = testDocument.defaultView;
-                actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("load", testWindow);
+                actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("load", testWindow);
                 expect(actualTarget).toBe(testWindow);
             });
 
             it("should install listeners on the specified target if the eventType is 'resize'", function() {
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("resize", testDocument.documentElement);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("resize", testDocument.documentElement);
                 expect(actualTarget).toBe(testDocument.documentElement);
 
-                actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("resize", testDocument);
+                actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("resize", testDocument);
                 expect(actualTarget).toBe(testDocument);
 
                 var testWindow = testDocument.defaultView;
-                actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("resize", testWindow);
+                actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("resize", testWindow);
                 expect(actualTarget).toBe(testWindow);
             });
 
