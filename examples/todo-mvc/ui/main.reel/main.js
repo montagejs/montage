@@ -5,7 +5,7 @@
  </copyright> */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    Task = require("task").Task,
+    Task = require("core/task").Task,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
     LOCAL_STORAGE_KEY = "montage_todo_mvc_tasks";
