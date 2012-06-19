@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>ColorInfoPanel</title>
+    <link rel="stylesheet" type="text/css" href="color-info-panel.css">
+
+    <script type="text/montage-serialization">{
+
+            "owner": {
+                "properties": {
+                    "element": {"#": "ColorInfoPanel"}
+                }
+            },
+
+            "pointMonitorRepetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "pointMonitors"},
+                    "isSelectionEnabled": true
+                },
+                "bindings": {
+                    "contentController": {"<-": "@owner.pointMonitorController"}
+                }
+            },
+            "colorPicker": {
+                "prototype": "ui/color-picker.reel",
+                "properties": {
+                    "element": {"#": "colorPicker"}
+                },
+                "bindings": {
+                    "currentColor": {"<->": "@pointMonitorRepetition.objectAtCurrentIteration.color"},
+                    "x": {"<->": "@pointMonitorRepetition.objectAtCurrentIteration.x"},
+                    "y": {"<->": "@pointMonitorRepetition.objectAtCurrentIteration.y"}
+                }
+            }
+
+    }</script>
+
+</head>
+<body>
+
+    <div data-montage-id="ColorInfoPanel" class="ColorInfoPanel">
+        <div data-montage-id="pointMonitors">
+            <div data-montage-id="colorPicker"></div>
+        </div>
+    </div>
+
+</body>
+</html>
