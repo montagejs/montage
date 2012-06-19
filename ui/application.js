@@ -14,7 +14,7 @@ var Montage = require("core/core").Montage,
     EventManager = require("core/event/event-manager").EventManager,
     Template = require("ui/template").Template,
     Component = require("ui/component").Component,
-    Slot;
+    Slot, DefaultStateDelegate;
 
     require("ui/dom");
 
@@ -152,6 +152,11 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: null
     },
 
+    routes: {
+        serializable: true,
+        value: null
+    },
+
     /**
      Description TODO
      @function
@@ -172,6 +177,10 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
                 if(self.stateKeys) {
                     self._createState();
+                    if(!self._defaultStateDelegate) {
+                        self._defaultStateDelegate = Montage.create(DefaultStateDelegate);
+                        self._defaultStateDelegate.routes = self.routes;
+                    }
 
                     if(typeof window.history.pushState !== "undefined") {
                         window.onpopstate = function(event) {
@@ -241,6 +250,8 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
     _synching : {value: null},
 
+    _defaultStateDelegate: {value: null},
+
     _willPopState: {
         value: function(event) {
             this._synching = true;
@@ -253,7 +264,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 this.delegate["willPopState"].call(this.delegate, options, this.state);
             } else {
                 // update state using default mechanism
-                // @todo
+                this._defaultStateDelegate.willPopState(options, this.state);
             }
             this._synching = false;
         }
@@ -272,6 +283,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             } else {
                 // get the URL from the pattern OR /context/stateKey[0]/stateKey[1]
                 // @todo
+                this._defaultStateDelegate.willPushState(options, this.state);
             }
             if(typeof window.history.pushState !== 'undefined') {
                 window.history.pushState(this.state, options.title, options.url);
@@ -381,6 +393,113 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             }
             return arr;
         }
+    }
+
+});
+
+DefaultStateDelegate = Montage.create(Montage, {
+
+    namedParam: {
+        value: /:\w+/g
+    },
+    splatParam: {
+        value: /\*\w+/g
+    },
+    escapeRegExp: {
+        value: /[-[\]{}()+?.,\\^$|#\s]/g
+    },
+
+    _activeRoute: {value: null},
+
+    routes: {value: null},
+
+    didCreate: {
+       value: function(routes) {
+           this.routes = [];
+       }
+    },
+
+    _routeToRegExp: {
+        value: function(route) {
+            route = route.slice(); // create a copy
+            route = route.replace(this.escapeRegExp, '\\$&')
+                        .replace(this.namedParam, '([^\/]+)')
+                        .replace(this.splatParam, '(.*?)');
+            console.log('regex ', route);
+            return new RegExp('^' + route + '$');
+        }
+    },
+
+    _extractParameters: {
+        value: function(regex, fragment) {
+            var tmp = regex.exec(fragment);
+            if(tmp && tmp.length > 1) {
+                return tmp.slice(1);
+            }
+            return null;
+        }
+    },
+
+    _parseFragment: {
+        value: function(routes, fragment) {
+            var i, valuesArr, regex, route, params;
+            for(i=0; i< routes.length; i++) {
+                route = "*prefix" + (routes[i].indexOf('/') == 0 ? ''  : '/') + routes[i];
+                regex = this._routeToRegExp(route);
+                if(valuesArr = this._extractParameters(regex, fragment)) {
+                    break;
+                }
+            }
+            if(valuesArr) {
+                // if there is a match
+                console.log('found match ', route);
+                // save the route for later
+                this._activeRoute = route;
+
+                // get the named param names from the route
+                var arr = route.match(this.namedParam), param;
+                if(arr != null) {
+                    params = {};
+
+                    // get the values matching the tokens
+                    console.log('valuesArr ', valuesArr);
+                    // first value of valuesArr is the *prefix
+
+                    for(var i=0; i< arr.length; i++) {
+                        param = arr[i].substring(1); // remove :
+                        if(valuesArr.length > i) {
+                            params[param] = valuesArr[i+1];
+                        }
+                    }
+                }
+            } else {
+                console.log('unable to match the URL with specified routes');
+            }
+            return params;
+        }
+    },
+
+    willPushState: {
+       value: function(options, appState) {
+           // push appState to url
+           console.log('DefaultStateDelegate: willPushState ', this._activeRoute, appState, options.url);
+       }
+    },
+
+    willPopState: {
+       value: function(options, appState) {
+           // pop state from URL
+           var params = this._parseFragment(this.routes, options.url.href);
+           console.log('DefaultStateDelegate: updating AppState from URL', params);
+           if(params) {
+               for(var i in params) {
+                   if(params.hasOwnProperty(i) && typeof appState[i] !== 'undefined') {
+                       appState[i] = params[i];
+                   }
+               }
+           }
+
+       }
     }
 
 });

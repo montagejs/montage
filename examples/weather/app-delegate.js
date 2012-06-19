@@ -20,9 +20,10 @@ var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
             }
             return hash;
         }
-    },
+    }
     
     // Delegate methods to manage Application State
+    /*
     willPushState: {
         value: function(options, appState) {
             console.log('return URL for current State');
@@ -48,4 +49,5 @@ var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
             
         }
     }
+    */
 });
