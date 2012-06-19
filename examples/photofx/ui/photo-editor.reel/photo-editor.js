@@ -7,13 +7,13 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var dom = require("montage/ui/dom");
 var Point = require("montage/core/geometry/point").Point;
-var PointMonitor = require("point-monitor").PointMonitor;
-var Effect = require("effect/effect").Effect;
+var PointMonitor = require("core/point-monitor").PointMonitor;
+var Effect = require("core/effect/effect").Effect;
 
-var DesaturateEffect = require("effect/desaturate-effect").DesaturateEffect;
-var InvertEffect = require("effect/invert-effect").InvertEffect;
-var SepiaEffect = require("effect/sepia-effect").SepiaEffect;
-var MultiplyEffect = require("effect/multiply-effect").MultiplyEffect;
+var DesaturateEffect = require("core/effect/desaturate-effect").DesaturateEffect;
+var InvertEffect = require("core/effect/invert-effect").InvertEffect;
+var SepiaEffect = require("core/effect/sepia-effect").SepiaEffect;
+var MultiplyEffect = require("core/effect/multiply-effect").MultiplyEffect;
 
 exports.PhotoEditor = Montage.create(Component, {
 

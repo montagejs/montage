@@ -4,7 +4,7 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage;
-var Effect = require("effect/effect").Effect;
+var Effect = require("core/effect/effect").Effect;
 
 exports.DesaturateEffect = Montage.create(Effect, {
 

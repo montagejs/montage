@@ -4,18 +4,18 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage;
-var Effect = require("effect/effect").Effect;
+var Effect = require("core/effect/effect").Effect;
 
-exports.InvertEffect = Montage.create(Effect, {
+exports.MultiplyEffect = Montage.create(Effect, {
 
     applyEffect: {
-        value: function(pixels, pixelCount) {
-            var i;
+        value: function(pixels, pixelCount, multiplier) {
+            var i = 0;
 
             for (i = 0; i < pixelCount; i += 4) {
-                pixels[i] = 255 - pixels[i];
-                pixels[i+1] = 255 - pixels[i+1];
-                pixels[i+2] = 255 - pixels[i+2];
+                pixels[i  ] = pixels[i  ] * multiplier; // red
+                pixels[i+1] = pixels[i+1] * multiplier; // green
+                pixels[i+2] = pixels[i+2] * multiplier; // blue
             }
         }
     }
