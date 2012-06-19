@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Localization test</title>
+    <script type="text/javascript" src="../../../../montage.js"></script>
+    <script type="text/montage-serialization">
+    {
+        "localizer": {
+            "object": "montage/core/localizer[defaultLocalizer]"
+        },
+
+        "missingKey": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "missingKey"},
+                "value": "Pass"
+            },
+            "localizations": {
+                "value": {
+                    "_default": "fail"
+                }
+            }
+        },
+
+        "basic": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "basic"}
+            },
+            "localizations": {
+                "value": {
+                    "_": "pass",
+                    "_default": "Pass."
+                }
+            }
+        },
+
+        "resources": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "resources"}
+            },
+            "localizations": {
+                "value": {
+                    "_": "hello",
+                    "_default": "fail"
+                }
+            }
+        },
+
+        "bindingInput": {
+            "prototype": "montage/ui/input-text.reel",
+            "properties": {
+                "element": {"#": "bindingInput"},
+                "value": "World"
+            }
+        },
+        "binding": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "binding"},
+                "defaultValue": "fail"
+            },
+            "localizations": {
+                "value": {
+                    "_": "hello_thing",
+                    "_default": "Hello {thing}",
+                    "thing": "@bindingInput.value"
+                }
+            }
+        },
+
+
+
+
+        "test": {
+            "prototype": "montage",
+            "properties": {
+                "missingKey": {"@": "missingKey"},
+                "basic": {"@": "basic"},
+                "resources": {"@": "resources"},
+                "bindingInput": {"@": "bindingInput"},
+                "binding": {"@": "binding"}
+            }
+        },
+        "application": {
+            "prototype": "montage/ui/application",
+            "properties": {
+                "delegate": {"@": "test"}
+            }
+        }
+    }
+    </script>
+</head>
+<body>
+    <div data-montage-id="missingKey">fail</div>
+    <div data-montage-id="basic">fail</div>
+    <div data-montage-id="resources">fail</div>
+
+    <input type="text" data-montage-id="bindingInput" value="World" />
+    <div data-montage-id="binding">fail</div>
+
+</body>
+</html>
