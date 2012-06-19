@@ -15,9 +15,7 @@ var Montage = require("montage").Montage,
     MessageFormat = require("core/messageformat"),
     logger = require("core/logger").logger("localizer"),
     Deserializer = require("core/deserializer").Deserializer,
-    Promise = require("core/promise").Promise,
-
-    MANIFEST = require("manifest.json");
+    Promise = require("core/promise").Promise;
 
 var KEY_KEY = "_",
     DEFAULT_MESSAGE_KEY = "_default",
@@ -149,37 +147,68 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
         }
     },
 
+    /**
+        <p>The require function to use in {@link loadMessages}</p>
+
+        <p>By default this is set to the global require, meaning that messages
+        will be loaded from the root of the application. To load messages
+        from the root of your package set this to the require function from
+        any class in the package.</p>
+
+        @type {Function}
+        @default global require | null
+    */
+    require: {
+        value: (typeof global !== "undefined") ? global.require : (typeof window !== "undefined") ? window.require : null
+    },
+
     loadMessages: {
         value: function(callback) {
+            if (!this.require) {
+                throw new Error("Cannot load messages as", this, "require is not set");
+            }
+
             this.messages = null;
 
-            var files = MANIFEST.files,
-                locales, localesMessagesP = [];
+            var self = this;
+            var messageRequire = this.require;
 
-            if (!(LOCALES_DIRECTORY in files)) {
-                return Promise.reject("Package does not contain a '" + LOCALES_DIRECTORY + "' directory");
-            }
-
-            locales = files[LOCALES_DIRECTORY].files;
-            // TODO: fallback through the locale tags and check for the
-            // existence of each
-            for (var locale in locales) {
-                var filename;
-                if ((filename = MESSAGES_FILENAME + ".js") in locales[locale].files) {}
-                else if ((filename = MESSAGES_FILENAME + ".json") in locales[locale].files) {}
-                else {
-                    // missing messages file
-                    if(logger.isDebug) {
-                        logger.debug("Warning: '" + LOCALES_DIRECTORY + "/" + locale + "/' does not contain '" + MESSAGES_FILENAME + ".json' or '" + MESSAGES_FILENAME + ".js'");
-                    }
-                    continue;
+            return messageRequire.async("package.json").then(function(pkg) {
+                if (pkg.manifest === true) {
+                    return messageRequire.async("manifest.json");
+                } else {
+                    return Promise.reject("Package has no manifest. "+messageRequire.location+"package.json must contain \"manifest\": true and "+messageRequire.location+"manifest.json must exist");
+                }
+            }).get("files").then(function(files) {
+                if (!files) {
+                    return Promise.reject(messageRequire.location+"manifest.json does not contain a 'files' property");
                 }
 
-                localesMessagesP.push(require.async(LOCALES_DIRECTORY + "/" + locale + "/" + filename));
-            }
+                var locales, localesMessagesP = [];
 
-            var self = this;
-            return Promise.all(localesMessagesP).then(function(localesMessages) {
+                if (!(LOCALES_DIRECTORY in files)) {
+                    return Promise.reject("Package does not contain a '" + LOCALES_DIRECTORY + "' directory");
+                }
+
+                locales = files[LOCALES_DIRECTORY].files;
+                // TODO: fallback through the locale tags and check for the
+                // existence of each
+                for (var locale in locales) {
+                    var filename;
+                    if ((filename = MESSAGES_FILENAME + ".js") in locales[locale].files) {}
+                    else if ((filename = MESSAGES_FILENAME + ".json") in locales[locale].files) {}
+                    else {
+                        // missing messages file
+                        if(logger.isDebug) {
+                            logger.debug("Warning: '" + LOCALES_DIRECTORY + "/" + locale + "/' does not contain '" + MESSAGES_FILENAME + ".json' or '" + MESSAGES_FILENAME + ".js'");
+                        }
+                        continue;
+                    }
+
+                    localesMessagesP.push(messageRequire.async(LOCALES_DIRECTORY + "/" + locale + "/" + filename));
+                }
+                return Promise.all(localesMessagesP);
+            }).then(function(localesMessages) {
                 var messages = {};
                 // collapse the messages into one object, earlier locales
                 // taking precedence over later ones.
@@ -196,8 +225,9 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
                     callback(messages);
                 }
                 return messages;
-            }, function(error) {
-                console.error("Could not load messages for '" + self.locale + "': " + error);
+            }, function(reason, error, rejection) {
+                console.error("Could not load messages for '" + self.locale + "': " + reason);
+                return rejection;
             });
         }
     },
