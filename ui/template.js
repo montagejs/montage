@@ -210,7 +210,9 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         value: function() {
             var delegate = this.delegate;
 
-            return delegate.serializeObjectProperties.apply(delegate, arguments);
+            if (delegate && typeof delegate.serializeObjectProperties === "function") {
+                return delegate.serializeObjectProperties.apply(delegate, arguments);
+            }
         }
     },
 
@@ -334,7 +336,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                     // that... let's sneak it in here for the time being..
                     delete instances.application;
                     delete instances.template;
-                    self._invokeTemplateDidLoad(objects);
+                    self._invokeTemplateDidLoad(objects, objects.owner && objects.owner.templateObjects);
                 }
                 self.waitForStyles(function() {
                     callback(objects ? objects.owner : null);
@@ -350,10 +352,31 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
      @param {Component} component The Component object to be used as a owner.
      @param {Function} callback The callback function to invoke when the template is instantiated.
      */
+    // TODO: we should think about having a component-template.js that extends
+    //       template.js, this object is starting to have too much information
+    //       about the inner workings of the Component.
     instantiateWithComponent: {value: function(component, callback) {
-        var document = component.element.ownerDocument;
+        var self = this,
+            instances = component.templateObjects;
 
-        this.instantiateWithOwnerAndDocument(component, document, callback);
+        if (instances) {
+            instances.owner = component;
+        } else {
+            instances = {owner: component};
+        }
+
+        this._partiallyInstantiateWithInstancesForDocument(instances, component.element.ownerDocument, function(objects) {
+            delete instances.owner;
+            delete instances.application;
+            delete instances.template;
+
+            if (objects) {
+                self._invokeTemplateDidLoad(objects, !component._isTemplateLoaded && instances);
+            }
+            self.waitForStyles(function() {
+                callback(objects ? objects.owner : null);
+            });
+        });
     }},
 
     instantiateWithDocument: {
@@ -426,16 +449,62 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         }
     },
 
+    _templateObjectDescriptor: {
+        value: {
+            enumerable: true,
+            configurable: true
+        }
+    },
+
+    _createTemplateObjectGetter: {
+        value: function(owner, label) {
+            var querySelectorLabel = "@"+label,
+                isRepeated,
+                components,
+                component;
+
+            return function templateObjectGetter() {
+                if (isRepeated) {
+                    return owner.querySelectorAllComponent(querySelectorLabel, owner);
+                } else {
+                    components = owner.querySelectorAllComponent(querySelectorLabel, owner);
+                    // if there's only one maybe it's not repeated, let's go up
+                    // the tree and found out.
+                    if (components.length === 1) {
+                        component = components[0];
+                        while (component = component.parentComponent) {
+                            if (component === owner) {
+                                // we got to the owner without ever hitting a component
+                                // that repeats its child components, we can
+                                // safely recreate this property with a static value
+                                Object.defineProperty(this, label, {
+                                    value: component
+                                });
+                                return component;
+                            } else if (component.clonesChildComponents) {
+                                break;
+                            }
+                        }
+                    }
+
+                    isRepeated = true;
+                    return components;
+                };
+            };
+        }
+    },
+
     /**
      @private
      */
     _invokeTemplateDidLoad: {
-        value: function(objects) {
+        value: function(objects, templateObjects) {
             var owner = objects.owner,
                 labels = Object.keys(objects),
+                label,
                 hasTemplateDidDeserializeObject = owner && typeof owner.templateDidDeserializeObject === "function";
 
-            for (var i = 0, object; (object = objects[labels[i]]); i++) {
+            for (var i = 0, object; (object = objects[label = labels[i]]); i++) {
                 if (owner !== object) {
                     if (typeof object._deserializedFromTemplate === "function") {
                         object._deserializedFromTemplate(owner);
@@ -445,6 +514,14 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                     }
                     if (hasTemplateDidDeserializeObject) {
                         owner.templateDidDeserializeObject(object);
+                    }
+                    if (templateObjects) {
+                        if (object.parentComponent === owner || !object.ownerComponent) {
+                            templateObjects[label] = object;
+                        } else {
+                            this._templateObjectDescriptor.get = this._createTemplateObjectGetter(object.ownerComponent, label);
+                            Object.defineProperty(templateObjects, label, this._templateObjectDescriptor);
+                        }
                     }
                 }
             }
