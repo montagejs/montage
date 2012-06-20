@@ -504,6 +504,8 @@
         config.name = description.name;
         config.location = location || Require.getLocation();
         config.packageDescription = description;
+        config.define = description.define;
+
         // explicitly mask definitions and modules, which must
         // not apply to child packages
         var modules = config.modules = config.modules || {};
