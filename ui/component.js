@@ -630,6 +630,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: false
     },
 
+    clonesChildComponents: {
+        value: false
+    },
+
 /**
     Description TODO
     @function
@@ -949,10 +953,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
 
-    templateDidDeserializeObject: {
-        value: function(object) {
-            if (Component.isPrototypeOf(object)) {
-                object.ownerComponent = this;
+    _deserializedFromTemplate: {
+        value: function(owner) {
+            if (!this.ownerComponent) {
+                if (Component.isPrototypeOf(owner)) {
+                    this.ownerComponent = owner;
+                } else {
+                    this.ownerComponent = this.rootComponent;
+                }
             }
         }
     },
