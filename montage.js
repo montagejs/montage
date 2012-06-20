@@ -331,7 +331,10 @@ if (typeof window !== "undefined") {
 
         getConfig: function() {
             return {
-                location: "" + window.location
+                location: "" + window.location,
+                platform: "browser"
+                // TODO language
+                // TODO country
             };
         },
 
@@ -404,22 +407,6 @@ if (typeof window !== "undefined") {
                 document.addEventListener("DOMContentLoaded", domLoad, true);
             }
 
-            // determine which scripts to load
-            var pending = [
-                "require/require",
-                "require/browser",
-                "core/promise",
-                "core/next-tick"
-            ];
-
-            // load in parallel, but only if we’re not using a preloaded cache.
-            // otherwise, these scripts will be inlined after already
-            if (typeof BUNDLE === "undefined") {
-                pending.forEach(function(name) {
-                    browser.load(params.montageLocation + name + ".js");
-                });
-            }
-
             // register module definitions for deferred,
             // serial execution
             var definitions = {};
@@ -434,8 +421,6 @@ if (typeof window !== "undefined") {
                 }
             };
 
-            global.bootstrap("core/mini-url", urlModuleFactory);
-
             // miniature module system
             var bootModules = {};
             function bootRequire(id) {
@@ -446,12 +431,39 @@ if (typeof window !== "undefined") {
                 return bootModules[id];
             }
 
+            // determine which scripts to load
+            var pending = [
+                "require/require",
+                "require/browser",
+                "core/promise",
+                "core/next-tick"
+            ];
+
+            // load in parallel, but only if we’re not using a preloaded cache.
+            // otherwise, these scripts will be inlined after already
+            if (typeof BUNDLE === "undefined") {
+                // only load in development since we do not need to collapse
+                // package descriptions in production.  that is done by the
+                // optimizer, or by the package.json.load.js script produced by
+                // the optimizer at run-time.
+                pending.push("require/if");
+                pending.forEach(function(name) {
+                    browser.load(params.montageLocation + name + ".js");
+                });
+            } else {
+                // do not load require/if.  instead inject here.
+                bootModules["require/if"] = {};
+            }
+
+            global.bootstrap("core/mini-url", urlModuleFactory);
+
             // execute bootstrap scripts
             function allModulesLoaded() {
                 Clock = bootRequire("core/next-tick");
                 Promise = bootRequire("core/promise");
                 URL = bootRequire("core/mini-url");
                 Require = bootRequire("require/require");
+                bootRequire("require/if");
                 delete global.bootstrap;
                 callbackIfReady();
             }

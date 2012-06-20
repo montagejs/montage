@@ -13,13 +13,6 @@
                 "require/tests",
                 "etc",
                 "node.js"
-            ],
-            "resources": [
-                "montage.js",
-                "require/require.js",
-                "require/browser.js",
-                "core/next-tick.js",
-                "core/promise.js"
             ]
         }
     },

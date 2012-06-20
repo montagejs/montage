@@ -190,8 +190,18 @@ Require.loadPackageDescription = (function (loadPackageDescription) {
             definitions[dependency.hash] &&
             definitions[dependency.hash]["package.json"]
         ) {
-            return definitions[dependency.hash]["package.json"]
-                .promise.get("exports");
+            return definitions[dependency.hash]["package.json"].promise
+            .then(function (module) {
+                if (module.exports === void 0) {
+                    if (module.factory !== void 0) {
+                        module.factory({
+                            merge: Require.merge,
+                            config: config
+                        }, null, module);
+                    }
+                }
+                return module.exports;
+            });
         } else {
             return loadPackageDescription(dependency, config);
         }

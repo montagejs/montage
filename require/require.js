@@ -34,6 +34,7 @@
         var Promise = (require)("../core/promise").Promise;
         var URL = (require)("../core/url");
         definition(exports, Promise, URL, process.nextTick);
+        require("./if");
         require("./node");
         if (require.main == module)
             exports.main();
@@ -326,7 +327,9 @@
 
             require.config = config;
 
+            // for internal use
             require.read = Require.read;
+            require.merge = Require.merge;
 
             return require;
         }
@@ -375,7 +378,9 @@
             descriptions[location] = Require.read(descriptionLocation)
             .then(function (json) {
                 try {
-                    return JSON.parse(json);
+                    var object = JSON.parse(json);
+                    object.descriptionLocation = descriptionLocation;
+                    return object;
                 } catch (exception) {
                     throw new SyntaxError(
                         "in " + JSON.stringify(descriptionLocation) + ": " +
@@ -500,6 +505,18 @@
             location += "/";
         }
 
+        // this should not occur in production since it has already been
+        // collapsed by the optimizer.  this is important because we do not
+        // bother to load require/if (where collapsePackageDescription is
+        // defined) if the application has been optimized.
+        if (description["if"]) {
+            description = Require.collapsePackageDescription(
+                description,
+                parent,
+                description.descriptionLocation
+            );
+        }
+
         var config = Object.create(parent);
         config.name = description.name;
         config.location = location || Require.getLocation();
@@ -513,7 +530,7 @@
             registry[config.name] = config.location;
         }
 
-        // overlay
+        // overlay (deprecated in favor of "if" blocks)
         var overlay = description.overlay || {};
         var layer;
         Require.overlays.forEach(function (engine) {
@@ -842,6 +859,34 @@
             }
             return cache[key];
         };
+    };
+
+    // this is used to collapse package descriptions with "if" blocks.  In
+    // development it is used by require/if.collapsePackageDescription.  In
+    // optimization, package.json gets replaced with a package.json.load.js
+    // that is created with require/if.compilePackageDescriptionModule.  The
+    // compiled package.json conditionally uses Require.merge at run-time in
+    // production.
+    var array_push = Array.prototype.push;
+    Require.merge = function (object, patch) {
+        Object.keys(patch).forEach(function (key) {
+            var change = patch[key];
+            if (change === null) {
+                delete object[key];
+            } else if (Array.isArray(change)) {
+                var array = object[key] = object[key] || [];
+                array_push.apply(array, change);
+            } else if (typeof change === "object") {
+                // at this point we could extend this to recognize
+                // different kinds of patching algorithms like !:set,add,delete
+                // and //!:splices,splices:[[0, 0, 1, 2]]
+                object[key] = object[key] || {};
+                Require.merge(object[key], change);
+            } else {
+                object[key] = change;
+            }
+        });
+        return object;
     };
 
 });
