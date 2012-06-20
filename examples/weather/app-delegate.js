@@ -12,6 +12,7 @@ var Montage = require("montage").Montage;
 
 var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
     
+    /*
     _getHash: {
         value: function(location) {
             var hash = location.hash;
@@ -23,7 +24,6 @@ var AppDelegate = exports.AppDelegate = Montage.create(Montage, {
     }
     
     // Delegate methods to manage Application State
-    /*
     willPushState: {
         value: function(options, appState) {
             console.log('return URL for current State');
