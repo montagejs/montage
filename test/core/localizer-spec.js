@@ -17,6 +17,11 @@ describe("core/localizer-spec", function() {
             l = Localizer.Localizer.create().init("en");
         });
 
+        it("can be created with a foreign language code", function() {
+            var l = Localizer.Localizer.create().init("no");
+            expect(l.messageFormat).not.toBe(null);
+        });
+
         describe("locale", function() {
             it("can't be set to an invalid tag", function() {
                 var threw = false;
