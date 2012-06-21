@@ -31,7 +31,7 @@ if (typeof process !== "undefined") {
 // Browser implementation: based on MessageChannel, setImmediate, or setTimeout
 } else {
 
-    // queue of tasks implemented as a sin`y linked list with a head node
+    // queue of tasks implemented as a singly linked list with a head node
     var head = {}, tail = head;
     // whether a task is pending is represented by the existence of head.next
 
