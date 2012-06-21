@@ -1975,6 +1975,12 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         break;
                     default:
                         targetCandidate = targetCandidate.parentProperty ? targetCandidate[targetCandidate.parentProperty] : targetCandidate.parentNode;
+
+                        // Run out of hierarchy candidates? go up to the application
+                        if (!targetCandidate) {
+                            targetCandidate = this.application;
+                        }
+
                         break;
                 }
             }
