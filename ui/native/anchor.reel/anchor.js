@@ -15,7 +15,7 @@ var Montage = require("montage").Montage,
 /**
   The Anchor component wraps a native <code>&lt;a&gt;</code> element and exposes its standard attributes as bindable properties.
   @class module:"montage/ui/anchor.reel".Anchor
-  @extends module:montage/native-control.NativeControl
+  @extends module:montage/ui/native-control.NativeControl
 
 */
 var Anchor = exports.Anchor = Montage.create(NativeControl, {

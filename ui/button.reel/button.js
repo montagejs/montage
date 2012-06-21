@@ -4,14 +4,22 @@
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /*global require,exports */
+/**
+    @module "montage/ui/button.reel"
+    @requires montage/core/core
+    @requires montage/ui/component
+    @requires montage/ui/native/button.reel/button
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     NativeButton = require("ui/native/button.reel/button").Button;
 
 /**
  * Montage Button
- */
-exports.Button = Montage.create(NativeButton, {
+ @class module:"montage/ui/button.reel".Button
+ @extends module:"montage/ui/native/button.reel/button".Button
+*/
+exports.Button = Montage.create(NativeButton, /** @lends module:"montage/ui/button.reel".Button# */ {
 
     hasTemplate: {value: true},
 

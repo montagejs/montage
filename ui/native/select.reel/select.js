@@ -20,8 +20,8 @@ var Montage = require("montage").Montage,
 
 /**
  * Wraps the a &lt;select> element with binding support for the element's standard attributes. Uses an ArrayController instance to manage the element's contents and selection.
-   @class module:"montage/ui/select.reel".Select
-   @extends module:montage/native-control.NativeControl
+   @class module:"montage/ui/native/select.reel".Select
+   @extends module:montage/ui/native-control.NativeControl
    @summary
    If the &lt;select> markup contains <option> is provided in the markup and <code>contentController</code> is not, the <code>contentController</code> collection is populated with the options from the markup. If <code>contentController</code> is present, any options in the markup are overwritten by the values from the <code>contentController</code> when they are available.
  */

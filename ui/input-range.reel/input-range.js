@@ -3,6 +3,9 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/**
+    @module "montage/ui/input-range.reel"
+*/
 /*global require,exports */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -10,8 +13,10 @@ var Montage = require("montage").Montage,
 
 /**
  * The input type="range" field
+ * @class module:"montage/ui/input-range.reel".InputRange
+ * @extends module:"montage/ui/native/input-range.reel".InputRange
  */
-var InputRange = exports.InputRange = Montage.create(Component, {
+var InputRange = exports.InputRange = Montage.create(Component, /** @lends module:"montage/ui/input-range.reel".InputRange */  {
 
     DEFAULT_WIDTH: {
         value: 100

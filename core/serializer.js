@@ -26,7 +26,7 @@ if (typeof window !== "undefined") {
  @classdesc Serialized objects are indexed by uuid.
  @extends module:montage/core/core.Montage
  */
-var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Serializer# */ {
+var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializer.Serializer# */ {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
     _serializedObjects: {value: {}}, // label -> string
     _serializedReferences: {value: {}}, // uuid -> string

@@ -3,6 +3,11 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+
+/**
+    @module "montage/ui/autocomplete/autocomplete.reel"
+*/
+
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TextInput = require("ui/text-input").TextInput,
@@ -37,9 +42,11 @@ var getElementPosition = function(obj) {
 };
 
 /**
- * The Autocomplete input
- */
-var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
+    The Autocomplete component
+    @class module:"montage/ui/autocomplete/autocomplete.reel".Autocomplete
+    @extends module:montage/ui/text-input.TextInput
+*/
+var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends module:"montage/ui/autocomplete/autocomplete.reel".Autocomplete# */ {
 
     didCreate: {
         value: function() {
@@ -57,6 +64,10 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         }
     },
 
+/**
+    The AutoComplete instance's delegate object.
+    @type {Object}
+*/
     delegate: {
         value: null
     },
@@ -65,17 +76,29 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     * If the delegate returns Objects, this property can be used to derive the
     * display string for an object. If this property is not provided, the results
     * provided by the delegate are assumed to be String.
+    @type {String}
     */
     textPropertyPath: {
         value: null
     },
 
+/**
+    The string separator to use between tokens in the AutoComplete.
+    @type {String}
+    @default {Boolean} ","
+*/
     separator: {
         value: ',',
         distinct: true
     },
 
     _delay: {value: null},
+
+/**
+    The delay in milliseconds between when the user modifies the input field and when the query to retrieve suggestions is executed.
+    @type {Number}
+    @defaultvalue 500
+*/
     delay: {
         get: function(){
             return this._delay;
@@ -92,8 +115,8 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     },
 
     /**
-    * Number of characters the user must type before the suggest query is fired
-    * Default = 2
+    * The number of characters the user must type before the query for suggeseted tokens executes.
+    * @type {Number}
     */
     minLength: {
         value: null,
@@ -101,6 +124,10 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     },
 
     _tokens: {value: null},
+/**
+    Gets and sets the tokens being displayed by the AutoComplete component.
+    @type {Array}
+*/
     tokens: {
         get: function() {
             return this._tokens;

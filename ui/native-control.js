@@ -5,14 +5,13 @@
  </copyright> */
 
 /**
-    @module "montage/ui/native-control"
+    @module montage/ui/native-control
     @requires montage/core/core
     @requires montage/ui/component
 */
 
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
-
 
 /**
     Base component for all native components, such as RadioButton and Checkbox.

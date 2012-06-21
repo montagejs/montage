@@ -16,8 +16,7 @@ var Montage = require("montage").Montage,
 
     @class module:"montage/ui/input-checkbox.reel".InputCheckbox
     @extends module:montage/ui/check-input.CheckInput
-    @example
-    TODO
+
 */
 var InputCheckbox = exports.InputCheckbox = Montage.create(CheckInput, {});
 InputCheckbox.addAttributes( /** @lends module:"montage/ui/input-checkbox.reel".InputCheckbox# */ {

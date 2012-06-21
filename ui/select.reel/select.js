@@ -3,6 +3,9 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/**
+    @module "montage/ui/select.reel"
+*/
 /*global require,exports */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -10,8 +13,10 @@ var Montage = require("montage").Montage,
 
 /**
  * Select
+ * @class module:"montage/ui/select.reel".Select
+ * @extends module:"montage/ui/native/select.reel".Select
  */
-exports.Select = Montage.create(NativeSelect, {
+exports.Select = Montage.create(NativeSelect, /** @lends module:"montage/ui/select.reel".Select# */ {
 
     hasTemplate: {value: true},
 
