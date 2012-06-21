@@ -7,22 +7,34 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Todo</title>
-    <script src="../../montage.js" data-package="."></script>
-    <link rel="stylesheet" href="assets/style/todo-mvc.css">
+    <title>Other Component</title>
+
+    <style type="text/css">
+        .other {
+            background: hsl(0,0%,80%);
+        }
+        .other p {
+            margin: 0;
+            padding: 20px;
+        }
+    </style>
 
     <script type="text/montage-serialization">
         {
             "owner": {
-                "prototype": "montage/ui/loader.reel"
+                "properties": {
+                    "element": {"#": "other"}
+                }
             }
         }
     </script>
 
 </head>
 <body>
-    <div data-montage-id="splash" class="splash">
-        <h1>Loading TodoMVC<span data-montage-id="loadingIndicator" class="loadingIndicator">…</span></h1>
+
+    <div data-montage-id="other" class="other">
+        <p>Other component of application</p>
     </div>
+
 </body>
 </html>
