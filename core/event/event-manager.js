@@ -1692,6 +1692,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 jListener,
                 eventPath,
                 eventType = event.type,
+                eventBubbles = event.bubbles,
                 captureMethodName,
                 bubbleMethodName,
                 identifierSpecificCaptureMethodName,
@@ -1833,7 +1834,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             // Bubble Phase Distribution
             mutableEvent.eventPhase = BUBBLING_PHASE;
-            for (i = 0; !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i++) {
+            for (i = 0; eventBubbles && !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i++) {
                 mutableEvent.currentTarget = iTarget;
 
                 listenerEntries = this.registeredEventListenersForEventType_onTarget_(eventType, iTarget);

@@ -70,6 +70,23 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
 
             describe("during the capture phase", function() {
 
+                it("should distribute the event to listeners observing the parent of the target object if the event does not bubble", function() {
+
+                    bubbleEvent = window.document.createEvent("CustomEvent");
+                    bubbleEvent.initCustomEvent("bubbleEvent", false, false, null);
+
+                    parentListener = {
+                        handleEvent: function() {}
+                    };
+
+                    parent.addEventListener("bubbleEvent", parentListener, true);
+
+                    spyOn(parentListener, "handleEvent");
+                    childFoo.dispatchEvent(bubbleEvent);
+
+                    expect(parentListener.handleEvent).toHaveBeenCalled();
+                });
+
                 it("should distribute the event to listeners observing the target object", function() {
 
                     childFooListener = {
@@ -154,6 +171,23 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             });
 
             describe("during the bubble phase", function() {
+
+                it("must not distribute the event to listeners observing the parent of the target object if the event does not bubble", function() {
+
+                    bubbleEvent = window.document.createEvent("CustomEvent");
+                    bubbleEvent.initCustomEvent("bubbleEvent", false, false, null);
+
+                    parentListener = {
+                        handleEvent: function() {}
+                    };
+
+                    parent.addEventListener("bubbleEvent", parentListener, false);
+
+                    spyOn(parentListener, "handleEvent");
+                    childFoo.dispatchEvent(bubbleEvent);
+
+                    expect(parentListener.handleEvent).not.toHaveBeenCalled();
+                });
 
                 it("should distribute the event to listeners observing the target object", function() {
 
@@ -331,6 +365,23 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
 
             describe("during the capture phase", function() {
 
+                it("should distribute the event to listeners observing the parent of the target object if the event does not bubble", function() {
+
+                    bubbleEvent = window.document.createEvent("CustomEvent");
+                    bubbleEvent.initCustomEvent("bubbleEvent", false, false, null);
+
+                    var parentListener = {
+                        handleEvent: function() {}
+                    };
+
+                    parent.addEventListener("bubbleEvent", parentListener, true);
+
+                    spyOn(parentListener, "handleEvent");
+                    child.dispatchEvent(bubbleEvent);
+
+                    expect(parentListener.handleEvent).toHaveBeenCalled();
+                });
+
                 it("should distribute the event to listeners observing the target component", function() {
 
                     var childListener = {
@@ -414,6 +465,24 @@ var testPage = TestPageLoader.queueTest("object-hierarchy-test", function() {
             });
 
             describe("during the bubble phase", function() {
+
+                it("must not distribute the event to listeners observing the parent of the target object if the event does not bubble", function() {
+
+                    bubbleEvent = window.document.createEvent("CustomEvent");
+                    bubbleEvent.initCustomEvent("bubbleEvent", false, false, null);
+
+                    var parentListener = {
+                        handleEvent: function() {
+                        }
+                    };
+
+                    parent.addEventListener("bubbleEvent", parentListener, false);
+
+                    spyOn(parentListener, "handleEvent");
+                    child.dispatchEvent(bubbleEvent);
+
+                    expect(parentListener.handleEvent).not.toHaveBeenCalled();
+                });
 
                 it("should distribute the event to listeners observing the target object", function() {
 
