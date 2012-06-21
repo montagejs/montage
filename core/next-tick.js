@@ -5,14 +5,13 @@
  </copyright> */
 /*global bootstrap,setImmediate */
 /**
-    Defines [nextTick()]{#link nextTick}
+    Defines nextTick() function
     @see nextTick
     @module montage/core/next-tick
 */
 
 /**
-    @function
-    @name nextTick
+    @function module:montage/core/next-tick#nextTick
 */
 
 (function (definition) {
