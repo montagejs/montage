@@ -17,6 +17,9 @@ var Montage = require("montage").Montage,
     Deserializer = require("core/deserializer").Deserializer,
     Promise = require("core/promise").Promise;
 
+// Add all locales to MessageFormat object
+MessageFormat.locale = require("core/messageformat-locale");
+
 var KEY_KEY = "_",
     DEFAULT_MESSAGE_KEY = "_default",
     LOCALE_STORAGE_KEY = "montage_locale",
