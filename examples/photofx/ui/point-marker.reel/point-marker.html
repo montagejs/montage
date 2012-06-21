@@ -7,22 +7,23 @@
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Todo</title>
-    <script src="../../montage.js" data-package="."></script>
-    <link rel="stylesheet" href="assets/style/todo-mvc.css">
+    <title>PointMarker</title>
+    <link rel="stylesheet" href="point-marker.css">
 
     <script type="text/montage-serialization">
         {
             "owner": {
-                "prototype": "montage/ui/loader.reel"
+                "properties": {
+                    "element": {"#": "pointMarker"}
+                }
             }
         }
     </script>
 
 </head>
 <body>
-    <div data-montage-id="splash" class="splash">
-        <h1>Loading TodoMVC<span data-montage-id="loadingIndicator" class="loadingIndicator">…</span></h1>
-    </div>
+
+    <div data-montage-id="pointMarker" class="PointMarker"></div>
+
 </body>
 </html>
