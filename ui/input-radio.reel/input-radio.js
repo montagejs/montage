@@ -3,6 +3,9 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/**
+    @module "montage/ui/input-radio.reel"
+*/
 /*global require,exports */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -10,8 +13,10 @@ var Montage = require("montage").Montage,
 
 /**
  * Input Radio
+ * @class module:"montage/ui/input-radio.reel".InputRadio
+ * @extends module:"montage/ui/native/input-radio.reel".InputRadio
  */
-exports.InputRadio = Montage.create(NativeInputRadio, {
+exports.InputRadio = Montage.create(NativeInputRadio, /** @lends module:"montage/ui/input-radio.reel".InputRadio# */ {
 
     hasTemplate: {value: true},
 

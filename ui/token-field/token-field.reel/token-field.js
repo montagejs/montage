@@ -3,6 +3,9 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/**
+    @module "montage/ui/token-field/token-field.reel"
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
@@ -13,7 +16,11 @@ KEY_UP = 38,
 KEY_RIGHT = 39,
 KEY_DOWN = 40;
 
-exports.TokenField = Montage.create(Component, {
+/**
+    @class module:"montage/ui/token-field/token-field.reel".TokenField
+    @extends module:montage/ui/component.Component
+*/
+exports.TokenField = Montage.create(Component, /** @lends module:"montage/ui/token-field/token-field.reel".TokenField */ {
 
     delegate: {value: null, serializable: true},
 
