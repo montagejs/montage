@@ -210,7 +210,7 @@
  typeOf, Uint16Array, Uint32Array, Uint8Array, undef, unused, urls, value, valueOf,
  var, version, WebSocket, white, window, Worker, wsh*/
 
-/*global exports: false */
+/*global exports: false,bootstrap */
 
 // We build the application inside a function so that we produce only a single
 // global variable. That function will be invoked immediately, and its return

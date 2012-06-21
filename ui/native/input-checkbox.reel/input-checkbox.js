@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
     @module "montage/ui/input-checkbox.reel"
@@ -16,7 +16,6 @@ var Montage = require("montage").Montage,
 
     @class module:"montage/ui/input-checkbox.reel".InputCheckbox
     @extends module:montage/ui/check-input.CheckInput
-
 */
 var InputCheckbox = exports.InputCheckbox = Montage.create(CheckInput, {});
 InputCheckbox.addAttributes( /** @lends module:"montage/ui/input-checkbox.reel".InputCheckbox# */ {
