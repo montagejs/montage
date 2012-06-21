@@ -1,0 +1,21 @@
+{
+    "name": "test-package",
+    "if": {
+        "condition=on": {
+            "redirects": {
+                "foo": "bar"
+            }
+        },
+        "condition in (on, off)": {
+            "redirects": {
+                "baz": "qux"
+            }
+        }
+    },
+    "dependencies": {
+        "package": "*"
+    },
+    "directories": {
+        "packages": "."
+    }
+}

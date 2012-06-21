@@ -16,6 +16,7 @@
                 var URL = require("core/mini-url");
                 var nextTick = require("core/next-tick").nextTick;
                 definition(exports, Promise, URL, nextTick);
+                require("require/if");
                 require("require/browser");
             });
 
@@ -26,6 +27,7 @@
                 var URL = require("core/url");
                 var nextTick = require("core/next-tick").nextTick;
                 definition(exports, Promise, URL, nextTick);
+                require("require/if");
             });
         }
 
@@ -565,7 +567,7 @@
             modules[""] = {
                 id: "",
                 redirect: description.main,
-                location: config.location
+                location: location
             };
 
             modules[description.name] = {
@@ -575,6 +577,16 @@
             };
 
         }
+
+        var redirects = description.redirects || {};
+        Object.keys(redirects).forEach(function (from) {
+            var to = redirects[from];
+            modules[from] = {
+                id: from,
+                redirect: to,
+                location: URL.resolve(location, from)
+            };
+        });
 
         // mappings, link this package to other packages.
         var mappings = description.mappings || {};

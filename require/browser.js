@@ -92,8 +92,8 @@ Require.Compiler = function (config) {
     return function(module) {
         if (module.factory || module.text === void 0)
             return module;
-        if (config.define)
-            throw new Error("Can't use eval.");
+        if (config.packageDescription.define)
+            throw new Error("Can't use eval to compile " + JSON.stringify(module.id));
 
         // Here we use a couple tricks to make debugging better in various browsers:
         // TODO: determine if these are all necessary / the best options

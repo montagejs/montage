@@ -282,7 +282,7 @@ if (typeof window !== "undefined") {
         if (typeof window !== "undefined" && window && window.document) {
             return browser;
         } else if (typeof process !== "undefined") {
-            return require("./node.js");
+            return require("./node");
         } else {
             throw new Error("Platform not supported.");
         }
@@ -447,11 +447,14 @@ if (typeof window !== "undefined") {
                 // optimizer, or by the package.json.load.js script produced by
                 // the optimizer at run-time.
                 pending.push("require/if");
+                // use script-injection to load these dependencies
                 pending.forEach(function(name) {
                     browser.load(params.montageLocation + name + ".js");
                 });
             } else {
-                // do not load require/if.  instead inject here.
+                // all dependencies are included in the bundle, so we do not
+                // use script-injection for them.
+                // do not load require/if at all.  instead inject here.
                 bootModules["require/if"] = {};
             }
 
@@ -463,7 +466,6 @@ if (typeof window !== "undefined") {
                 Promise = bootRequire("core/promise");
                 URL = bootRequire("core/mini-url");
                 Require = bootRequire("require/require");
-                bootRequire("require/if");
                 delete global.bootstrap;
                 callbackIfReady();
             }

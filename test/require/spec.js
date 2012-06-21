@@ -24,7 +24,8 @@ describe("require-spec", function () {
         "load-package",
         "load-package-name",
         "not-found",
-        "comments"
+        "comments",
+        "conditional-redirects"
     ].forEach(function (test) {
         it(test, function () {
             var spec = this;
@@ -34,7 +35,9 @@ describe("require-spec", function () {
 
             return require.loadPackage(
                 module.directory + test + "/",
-                {}
+                {
+                    condition: "on"
+                }
             )
             .then(function (pkg) {
                 pkg.inject("test", {
