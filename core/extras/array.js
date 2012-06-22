@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
     Defines extensions to the intrinsic <code>Array</code> object.
@@ -335,6 +335,187 @@ Object.defineProperty(Array.prototype, "delete", {
     configurable: true
 });
 
+/**
+    Returns the value at the corresponding index.
+    Although this replicates the behavior of accessing an element with
+    bracket notation, the purpose of this method is to permit collection
+    objects to be used generically, including sets and lists.
+
+    <p>This method is not intended to be used to access named
+    properties of an array and as such will throw a type error.
+
+    @function external:Array#get
+    @param {Number} index
+    @returns {Any} the value at the corresponding index
+*/
+Object.defineProperty(Array.prototype, "get", {
+    value: function (index) {
+        if (+index !== index)
+            throw new Error("Indicies must be numbers");
+        return this[index];
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Changes the value for the corresponding index, resizing the Array to
+    include the index if necessary.  Also notifies any observers of the array
+    of the corresponding change.
+
+    <p>Use this method instead of bracketed index assignment if this array is
+    being observed.  Bracketed assignment is not observable.
+
+    <p>This method is not intended to be used to modify named
+    properties of an array and as such will throw a type error.
+
+    <p>Although this replicates the behavior of assigning an element with
+    bracket notation, the purpose of this method is to permit collection
+    objects to be used generically, including sets and lists.
+
+    @function external:Array#set
+
+    @param {Number} index
+    @param {Any} value
+    @returns <code>undefined</code>
+*/
+Object.defineProperty(Array.prototype, "set", {
+    value: function (index, value) {
+        if (+index !== index)
+            throw new Error("Indicies must be numbers");
+        this.setProperty(index, value); // TODO(kriskowal) subsume this functionality
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Similar to <code>indexOf</code>, <code>find</code> returns the first index
+    occupying a given value, or <code>-1</code> failing to find one.  The
+    function differs from <code>indexOf</code> because it uses
+    <code>Object.equals</code> by default to determine whether a value in the
+    array matches the given value.  By contrast, <code>indexOf</code> uses
+    <code>===</code>.  <code>find</code> can also accept an alternate equality
+    operator like <code>Object.is</code> for finding only identical values.
+
+    @function external:Array#find
+    @param {Any} value the sought value
+    @param {Function} equals an optional alternate equality comparison
+    function, accepting two arguments.  The default is
+    <code>Object.equals</code>.
+    @returns {Number} the first index at which an equivalent value resides in
+    this array, or <code>-1</code> if there is none.
+*/
+Object.defineProperty(Array.prototype, "find", {
+    value: function (value, equals) {
+        equals = equals || Object.equals;
+        for (var index = 0; index < this.length; index++) {
+            if (index in this && equals(this[index], value)) {
+                return index;
+            }
+        }
+        return -1;
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Similar to <code>lastIndexOf</code>, <code>findLast</code> returns the last
+    index occupying a given value, or <code>-1</code> failing to find one.  The
+    function differs from <code>lastIndexOf</code> because it uses
+    <code>Object.equals</code> by default to determine whether a value in the
+    array matches the given value.  By contrast, <code>indexOf</code> uses
+    <code>===</code>.  <code>find</code> can also accept an alternate equality
+    operator like <code>Object.is</code> for finding only identical values.
+
+    @function external:Array#findLast
+    @param {Any} value the sought value
+    @param {Function} equals an optional alternate equality comparison
+    function, accepting two arguments.  The default is
+    <code>Object.equals</code>.
+    @returns {Number} the last index at which an equivalent value resides in
+    this array, or <code>-1</code> if there is none.
+*/
+Object.defineProperty(Array.prototype, "findLast", {
+    value: function (value, equals) {
+        equals = equals || Object.equals;
+        var index = this.length;
+        do {
+            index--;
+            if (index in this && equals(this[index], value)) {
+                return index;
+            }
+        } while (index > 0);
+        return -1;
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Determines whether a value exists within the array.  This is intended to
+    replace the idiom:
+
+    <pre>array.find(value) !== -1</pre>
+
+    <p>Although this replicates the above behavior, the purpose of this method
+    is to permit collection objects to be used generically, particularly sets
+    since these have no concept of position.
+
+    @function external:Array#has
+    @param {Any} value
+    @param {Function} equals optional alternative to <code>Object.equals</code>
+    for determining whether a value matches the given value.
+    <code>Object.is</code> is particularly useful for restricting the query to
+    find only absolutely identical values.
+    @returns {Boolean} whether the value exists in the array
+*/
+Object.defineProperty(Array.prototype, "has", {
+    value: function (value, equals) {
+        return this.find(value, equals) !== -1;
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    As if the array were a set, adds an element to the end of the array if it
+    does not yet exist elsewhere.  This method permits arrays and sets to be
+    used generically, albeit with <strong>terrible</strong> performance
+    for large arrays.
+
+    @function external:Array#add
+    @param {Any} value
+*/
+Object.defineProperty(Array.prototype, "add", {
+    value: function (value, equals) {
+        if (!this.has(value, equals)) {
+            this.push(value);
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    As if the array were a set, removes an element with the given value (as
+    discovered by <code>find</code>.  All following values migrate forward by
+    one index.  Nothing happens if a matching value is not found.
+    @function external:Array#delete
+    @param {Any} value
+*/
+Object.defineProperty(Array.prototype, "delete", {
+    value: function (value, equals) {
+        var index = this.find(value, equals);
+        if (index !== -1) {
+            this.splice(index, 1);
+        }
+    },
+    writable: true,
+    configurable: true
+});
+
 var _index_array_regexp = /^[0-9]+$/;
 /**
     Returns the value at the end of a property path starting from this array.
@@ -431,6 +612,20 @@ Object.defineProperty(Array.prototype, "all", {
 Object.defineProperty(Array.prototype, "min", {
     value: function() {
         return Math.min.apply(Math, this);
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    From an array of numbers, returns which number is closest to infinity.
+
+    @function external:Array#max
+    @returns {Number} the largest number
+*/
+Object.defineProperty(Array.prototype, "max", {
+    value: function() {
+        return Math.max.apply(Math, this);
     },
     writable: true,
     configurable: true
@@ -569,6 +764,93 @@ Object.defineProperty(Array.prototype, "one", {
             throw new Error("Can't get one element from empty array");
         }
         return this[0];
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    So that arrays and sets may be used interchangably, allows us to pick the
+    one and only element from an array with only that element.  If other
+    elements exist, throws an exception.
+
+    @function external:Array#only
+    @returns {Any} the only element of an array
+*/
+Object.defineProperty(Array.prototype, "only", {
+    value: function () {
+        if (this.length !== 1) {
+            throw new Error(
+                "Can't get only element of array with " +
+                this.length + " elements."
+            );
+        }
+        return this[0];
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Produces a sorted version of an array, with a sensible default comparator,
+    and the ability to perform a "Schwartzian Transform" so that the compared
+    property of each element of the array only needs to be computed once per
+    element.
+
+    <p>The <code>compare</code> argument may be an object with a
+    <code>by</code> property instead of a plain comparator function.  The
+    <code>by</code> function will be used to find a representative value
+    for each element in this array on which to sort the values.  The
+    object may also have an alternate <code>compare</code> method to use
+    to sort the representative values.  Comparators returned by
+    <code>Function.by</code> have these properties to reduce the number of
+    times the <code>by</code> relation function needs to be called to just
+    once per sorted object.
+
+    @function external:Array#sorted
+    @param {Function} compare a comparator that returns a number
+    describing the transitive relationship between the two given
+    arguments.  The number will have the same relationship to zero
+    (equals, less than, greater than, &c) as the numbers have to each
+    other.  The comparator may by an object with <code>compare</code> and
+    <code>by</code> properties, where the <code>compare</code> is a
+    comparator and <code>by</code> is a "mapping" function that accepts an
+    element of the array and returns the property by which to sort it.
+    The default comparator is <code>Object.compare</code>.
+    @param {Function} by is a "mapping" function for each element of the array.
+    The default mapping is <code>Function.identity</code>.
+    @param {Number} order 1 for ascending, -1 for descending, 0 for waste of
+    time.
+    @returns a new array with the values from the original array in
+    the specified sorted order.
+*/
+// TODO(kriskowal) consider an alternate implementation that pre-memoizes all
+// of the corresponding "by" computations with a weak-map.  compare for memory
+// usage and speed.
+Object.defineProperty(Array.prototype, "sorted", {
+    value: function (compare, by, order) {
+        compare = compare || Object.compare;
+        // account for comparators generated by Function.by
+        if (compare.by) {
+            by = compare.by;
+            compare = compare.compare || Object.compare;
+        } else {
+            by = by || Function.identity;
+        }
+        if (order === undefined)
+            order = 1;
+        return this.map(function (item) {
+            return {
+                by: by(item),
+                value: item
+            };
+        })
+        .sort(function (a, b) {
+            return compare(a.by, b.by) * order;
+        })
+        .map(function (pair) {
+            return pair.value;
+        });
     },
     writable: true,
     configurable: true

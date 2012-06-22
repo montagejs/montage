@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 var Montage = require("montage").Montage;
@@ -26,6 +26,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
 
     grammar: {
         value: function () {
+            var parseScalar, parseExpression;
 
             // precedence
 
@@ -45,7 +46,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
             this.parseLeftToRight(['and']);
             this.parseLeftToRight(['or']);
             this.parseConditional();
-            var parseScalar = this.precedence();
+            parseScalar = this.precedence();
 
             // linear
             this.parseArray();
@@ -286,7 +287,7 @@ var Language = exports.Language = AbstractLanguage.create(AbstractLanguage, {
                     return callback(previousTerms);
                 } else {
                     return parsePrevious(function (term) {
-                        terms = previousTerms.concat([term]);
+                        var terms = previousTerms.concat([term]);
                         return self.optional('comma', function (comma) {
                             if (comma) {
                                 return self.parseArrayTerms(

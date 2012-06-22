@@ -2,14 +2,14 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
-    <head>
-        <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
-        <link rel="stylesheet" type="text/css" href="confirm.css">
-        <script type="text/montage-serialization">{
-
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="confirm.css">
+    <script type="text/montage-serialization">
+{
     "dynamictext1": {
         "prototype": "ui/dynamic-text.reel",
         "properties": {
@@ -22,7 +22,7 @@
         }
     },
     "button1": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "ui/button.reel",
         "properties": {
             "identifier": "Ok",
             "element": {
@@ -42,7 +42,7 @@
         ]
     },
     "button2": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "ui/button.reel",
         "properties": {
             "identifier": "Cancel",
             "element": {
@@ -69,30 +69,25 @@
             }
         }
     }
-
-    }</script>
-
-
-    </head>
-    <body>
-        <div data-montage-id="confirm-container" class="montage-confirm-dialog">
-
-            <div class="montage-popup-header">
-                <h3 data-montage-id="title" class="title">Confirmation</h3>
-            </div>
-
-            <div class="montage-confirm-content">
-                    <div data-montage-id="msg" class="msg"></div>
-                    <div data-montage-id="msg-detail" class="msg-detail"></div>
-            </div>
-
-            <div class="montage-popup-footer">
-                <div class="montage-confirm-actions">
-                    <button class="cancel" data-montage-id="action-cancel">Cancel</button>
-                    <button class="submit" data-montage-id="action-ok">OK</button>
-                </div>
-                <div class="clearfix"></div>
-            </div>
+}
+    </script>
+</head>
+<body>
+    <div data-montage-id="confirm-container" class="montage-confirm-dialog">
+        <div class="montage-popup-header">
+            <h3 data-montage-id="title" class="title">Confirmation</h3>
         </div>
-    </body>
+        <div class="montage-confirm-content">
+                <div data-montage-id="msg" class="msg"></div>
+                <div data-montage-id="msg-detail" class="msg-detail"></div>
+        </div>
+        <div class="montage-popup-footer">
+            <div class="montage-confirm-actions">
+                <button class="cancel" data-montage-id="action-cancel">Cancel</button>
+                <button class="submit" data-montage-id="action-ok">OK</button>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+    </div>
+</body>
 </html>

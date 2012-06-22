@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 
@@ -25,32 +25,6 @@ ul {
 
 .generateUUIDForm {
     margin-bottom: 20px;
-}
-
-button {
-    padding: 10px;
-    border-radius: 8px;
-    border: 1px solid hsl(200,100%,40%);
-    background: hsl(200,100%,50%);
-    box-shadow: 0px 1px 1px hsla(0,0%,0%,.3);
-    font-size: 18px;
-    font-weight: bold;
-    color: white;
-    outline: none;
-    cursor: pointer;
-}
-
-button:hover {
-    background: hsl(200,100%,60%);
-}
-
-button:active {
-    box-shadow: none;
-    background: hsl(200,100%,50%);
-}
-
-button::-moz-focus-inner {
-    border: 0; /*Fixes inner dotted border in FF*/
 }
 
 

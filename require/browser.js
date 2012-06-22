@@ -1,8 +1,9 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/*global bootstrap */
 bootstrap("require/browser", function (require) {
 
 var Require = require("require/require"),
@@ -17,7 +18,13 @@ Require.getLocation = function() {
     return URL.resolve(window.location, ".");
 };
 
-Require.overlays = ["browser", "montage"];
+Require.overlays = ["window", "browser", "montage"];
+
+// Determine if an XMLHttpRequest was successful
+// Some versions of WebKit return 0 for successful file:// URLs
+function xhrSuccess(req) {
+    return (req.status === 200 || (req.status === 0 && req.responseText));
+}
 
 // Due to crazy variabile availability of new and old XHR APIs across
 // platforms, this implementation registers every known name for the event
@@ -65,12 +72,6 @@ Require.read = function (url) {
     return response.promise;
 };
 
-// Determine if an XMLHttpRequest was successful
-// Some versions of WebKit return 0 for successful file:// URLs
-function xhrSuccess(req) {
-    return (req.status === 200 || (req.status === 0 && req.responseText));
-}
-
 // By using a named "eval" most browsers will execute in the global scope.
 // http://www.davidflanagan.com/2010/12/global-eval-in.html
 // Unfortunately execScript doesn't always return the value of the evaluated expression (at least in Chrome)
@@ -116,8 +117,6 @@ Require.Compiler = function (config) {
         // module.factory = new Function("require", "exports", "module", module.text + "\n//*/"+sourceURLComment);
 
         module.factory.displayName = displayName;
-
-        return module;
     }
 };
 

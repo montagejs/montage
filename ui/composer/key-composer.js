@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
     @module montage/ui/composer/key-composer
@@ -103,9 +103,9 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
       @default null
     */
     identifier: {
-        get: function() {
-            return this._identifier;
-        },
+       get: function() {
+           return this._identifier;
+       },
         set: function(identifier) {
             this._identifier = identifier;
         }
@@ -234,7 +234,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
                         this._keyRegistered = true;
                     }
                 } else if (component && typeof component.addComposer !== "function") {
-                    // this keyComposer is associated with an element, let's make it a global key
+                    // this keyComposer is not associated with an element, let's make it a global key
                     if (!this.element) {
                         this.element = window;
                     }
@@ -264,11 +264,15 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
         value: function() {
             var component = this.component;
 
+            if (this.identifier === null) {
+                this.identifier = Montage.getInfoForObject(this).label;
+            }
+
             if (component) {
                 if (typeof component.addComposer == "function") {
                     component.addComposer(this);
                 } else if (!this._isLoaded) {
-                    // this keyComposer is associated with an element, let's make it a global key
+                    // this keyComposer is not associated with an element, let's make it a global key
                     if (!this.element) {
                         this.element = window;
                     }
@@ -284,7 +288,7 @@ var KeyComposer = exports.KeyComposer = Montage.create(Composer, /** @lends modu
 /**
  @class KeyManagerProxy
  @classdesc Provide a proxy for lazy load of module:montage/core/event/key-manager.KeyManager.
- @extends module:montage
+ @extends module:montage/core/core.Montage
  @private
  */
 var _keyManagerProxy= null;

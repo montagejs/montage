@@ -2,7 +2,7 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
 <head>
@@ -20,7 +20,6 @@
                 "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
                 "properties": {
                     "element": {"#": "editor-frame"},
-                    "identifier": "editor",
                     "delegate": {"@": "delegate"},
                     "undoManager": {"@": "undoManager"}
                 },
@@ -48,7 +47,8 @@
             "boldToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "boldToggle"}
+                    "element": {"#": "boldToggle"},
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {"<->": "@editor.bold"}
@@ -58,7 +58,8 @@
             "underlineToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "underlineToggle" }
+                    "element": {"#": "underlineToggle" },
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {"<->": "@editor.underline"}
@@ -68,7 +69,8 @@
             "italicToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "italicToggle" }
+                    "element": {"#": "italicToggle" },
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {"<->": "@editor.italic"}
@@ -78,7 +80,8 @@
             "strikeToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "strikeToggle" }
+                    "element": {"#": "strikeToggle" },
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {"<->": "@editor.strikeThrough"}
@@ -96,7 +99,8 @@
             "subToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "subToggle" }
+                    "element": {"#": "subToggle" },
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {"<->": "@editor.baselineShift", "converter": {"@": "subscriptConverter"}}
@@ -114,7 +118,8 @@
             "supToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "supToggle" }
+                    "element": {"#": "supToggle" },
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {"<->": "@editor.baselineShift", "converter": {"@": "superscriptConverter"}}
@@ -125,6 +130,7 @@
                 "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "indentButton" },
+                    "preventFocus": true,
                     "action": "indent"
                 },
                 "listeners": [
@@ -140,6 +146,7 @@
                 "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "outdentButton" },
+                    "preventFocus": true,
                     "action": "outdent"
                 },
                 "listeners": [
@@ -162,7 +169,8 @@
             "unorderedlistToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "unorderedlistToggle" }
+                    "element": {"#": "unorderedlistToggle" },
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {"<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
@@ -180,7 +188,8 @@
             "orderedlistToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "orderedlistToggle" }
+                    "element": {"#": "orderedlistToggle" },
+                    "preventFocus": true
                 },
                 "bindings": {
                     "pressed": {"<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
@@ -208,9 +217,10 @@
             },
 
             "justify": {
-                "prototype": "montage/ui/select-input.reel",
+                "prototype": "montage/ui/select.reel",
                 "properties": {
                     "element": {"#": "justification"},
+                    "preventFocus": true,
                     "contentController": {"@": "justificationController"}
                 }
             },
@@ -242,9 +252,10 @@
             },
 
             "fontname": {
-                "prototype": "montage/ui/select-input.reel",
+                "prototype": "montage/ui/select.reel",
                 "properties": {
                     "element": {"#": "fontname"},
+                    "preventFocus": true,
                     "contentController": {"@": "fontnameController"}
                 }
             },
@@ -273,9 +284,10 @@
             },
 
             "fontsize": {
-                "prototype": "montage/ui/select-input.reel",
+                "prototype": "montage/ui/select.reel",
                 "properties": {
                     "element": {"#": "fontsize"},
+                    "preventFocus": true,
                     "contentController": {"@": "fontsizeController"}
                 }
             },
@@ -305,9 +317,10 @@
             },
 
             "backcolor": {
-                "prototype": "montage/ui/select-input.reel",
+                "prototype": "montage/ui/select.reel",
                 "properties": {
                     "element": {"#": "backcolor"},
+                    "preventFocus": true,
                     "contentController": {"@": "backcolorController"}
                 }
             },
@@ -337,9 +350,10 @@
             },
 
             "forecolor": {
-                "prototype": "montage/ui/select-input.reel",
+                "prototype": "montage/ui/select.reel",
                 "properties": {
                     "element": {"#": "forecolor"},
+                    "preventFocus": true,
                     "contentController": {"@": "forecolorController"}
                 }
             },
@@ -401,7 +415,7 @@
             },
 
             "checkboxReadonly": {
-                "prototype": "montage/ui/checkbox.reel",
+                "prototype": "montage/ui/input-checkbox.reel",
                 "properties": {
                     "element": {"#": "checkbox-readonly"}
                 },
@@ -411,7 +425,7 @@
             },
 
             "checkboxSource": {
-                "prototype": "montage/ui/checkbox.reel",
+                "prototype": "montage/ui/input-checkbox.reel",
                 "properties": {
                     "element": {"#": "checkbox-source"},
                     "identifier": "showRawSource"
@@ -480,8 +494,7 @@
     <article class="hideSource">
         <section class="source" data-montage-id="source-frame"></section>
         <section class="editor">
-            <div data-montage-id="editor-frame">
-            </div>
+            <div data-montage-id="editor-frame"></div>
         </section>
     </article>
     <footer>

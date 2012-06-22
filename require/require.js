@@ -1,25 +1,39 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global bootstrap,define */
 (function (definition) {
 
     // Boostrapping Browser
     if (typeof bootstrap !== "undefined") {
-        bootstrap("require/require", function (require, exports) {
-            var Promise = require("core/promise").Promise;
-            var URL = require("core/mini-url");
-            definition(exports, Promise, URL);
-            require("require/browser");
-        });
+
+        // Window
+        if (typeof window !== "undefined") {
+            bootstrap("require/require", function (require, exports) {
+                var Promise = require("core/promise").Promise;
+                var URL = require("core/mini-url");
+                var nextTick = require("core/next-tick").nextTick;
+                definition(exports, Promise, URL, nextTick);
+                require("require/browser");
+            });
+
+        // Worker
+        } else {
+            bootstrap("require/require", function (require, exports) {
+                var Promise = require("core/promise").Promise;
+                var URL = require("core/url");
+                var nextTick = require("core/next-tick").nextTick;
+                definition(exports, Promise, URL, nextTick);
+            });
+        }
 
     // Node Server
     } else if (typeof process !== "undefined") {
         var Promise = (require)("../core/promise").Promise;
         var URL = (require)("../core/url");
-        definition(exports, Promise, URL);
+        definition(exports, Promise, URL, process.nextTick);
         require("./node");
         if (require.main == module)
             exports.main();
@@ -28,7 +42,7 @@
         throw new Error("Can't support require on this platform");
     }
 
-})(function (Require, Promise, URL) {
+})(function (Require, Promise, URL, nextTick) {
 
     if (!this)
         throw new Error("Require does not work in strict mode.");
@@ -183,8 +197,8 @@
             // Modules should never have a return value.
             if (returnValue !== void 0) {
                 console.warn(
-                    'require: module ' + JSON.stringify(topId) +
-                    ' returned a value.'
+                    "require: module " + JSON.stringify(topId) +
+                    " returned a value."
                 );
             }
 
@@ -242,13 +256,24 @@
                 return deepLoad(topId, viaId)
                 .then(function () {
                     return require(topId);
+                }, function (reason, error) {
+                    nextTick(function () {
+                        throw error;
+                    });
+                    return require(topId);
                 })
                 .then(function (exports) {
-                    callback && callback(exports);
+                    if (callback) {
+                        nextTick(function () {
+                            callback(exports);
+                        });
+                    }
                     return exports;
                 }, function (reason, error, rejection) {
                     if (callback) {
-                        console.error(error.stack);
+                        nextTick(function() {
+                            throw error;
+                        });
                     }
                     return rejection;
                 });
@@ -257,6 +282,8 @@
             require.resolve = function (id) {
                 return resolve(id, viaId);
             };
+
+            require.getModule = getModule;
 
             require.load = load;
             require.deepLoad = deepLoad;
@@ -269,8 +296,16 @@
                 }
             };
 
+            require.getPackage = function (dependency) {
+                return config.getPackage(dependency, config);
+            };
+
             require.injectPackageDescription = function (location, description) {
                 Require.injectPackageDescription(location, description, config);
+            };
+
+            require.injectPackageDescriptionLocation = function (location, descriptionLocation) {
+                Require.injectPackageDescriptionLocation(location, descriptionLocation, config);
             };
 
             require.identify = identify;
@@ -282,6 +317,8 @@
             });
 
             require.config = config;
+
+            require.read = Require.read;
 
             return require;
         }
@@ -297,23 +334,42 @@
     };
 
     Require.injectPackageDescription = function (location, description, config) {
-        var descriptions = config.descriptions = config.descriptions || {};
+        var descriptions =
+            config.descriptions =
+                config.descriptions || {};
         descriptions[location] = Promise.call(function () {
             return description;
         });
     };
 
+    Require.injectPackageDescriptionLocation = function (location, descriptionLocation, config) {
+        var descriptionLocations =
+            config.descriptionLocations =
+                config.descriptionLocations || {};
+        descriptionLocations[location] = descriptionLocation;
+    };
+
     Require.loadPackageDescription = function (location, config) {
-        var descriptions = config.descriptions = config.descriptions || {};
+        var descriptions =
+            config.descriptions =
+                config.descriptions || {};
         if (descriptions[location] === void 0) {
-            var jsonPath = URL.resolve(location, 'package.json');
-            descriptions[location] = Require.read(jsonPath)
+            var descriptionLocations =
+                config.descriptionLocations =
+                    config.descriptionLocations || {};
+            var descriptionLocation;
+            if (descriptionLocations[location]) {
+                descriptionLocation = descriptionLocations[location];
+            } else {
+                descriptionLocation = URL.resolve(location, "package.json");
+            }
+            descriptions[location] = Require.read(descriptionLocation)
             .then(function (json) {
                 try {
                     return JSON.parse(json);
                 } catch (exception) {
                     throw new SyntaxError(
-                        "in " + JSON.stringify(jsonPath) + ": " +
+                        "in " + JSON.stringify(descriptionLocation) + ": " +
                         exception.message
                     );
                 }
@@ -447,6 +503,7 @@
 
         // overlay
         var overlay = description.overlay || {};
+        var layer;
         Require.overlays.forEach(function (engine) {
             if (overlay[engine]) {
                 var layer = overlay[engine];

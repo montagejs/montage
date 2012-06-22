@@ -1,0 +1,32 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+.montage-flow {
+    position: relative;
+    overflow: hidden;
+    -webkit-transform: translateZ(0);
+}
+.montage-flow-repetition {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transform: translateZ(0);
+}
+.montage-flow-repetition > div {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    -webkit-transform: translateZ(0);
+    -webkit-transform-style: preserve-3d;
+}
+.montage-flow-pointer-events-none {
+    pointer-events: none;
+}

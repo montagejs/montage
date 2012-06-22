@@ -2,17 +2,16 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <link rel="stylesheet" type="text/css" href="video-player.css">
-
-    <script type="text/montage-serialization">{
-
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="video-player.css">
+    <script type="text/montage-serialization">
+{
     "dynamictext1": {
-        "prototype": "ui/dynamic-text.reel",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {
                 "#": "duration"
@@ -20,7 +19,7 @@
         }
     },
     "dynamictext2": {
-        "prototype": "ui/dynamic-text.reel",
+        "prototype": "montage/ui/dynamic-text.reel",
         "properties": {
             "element": {
                 "#": "position"
@@ -28,7 +27,7 @@
         }
     },
     "mediacontroller1": {
-        "prototype": "ui/controller/media-controller",
+        "prototype": "montage/ui/controller/media-controller",
         "properties": {
             "mediaElement": {
                 "#": "video-tag"
@@ -39,7 +38,7 @@
         }
     },
     "slider1": {
-        "prototype": "ui/bluemoon/slider.reel",
+        "prototype": "montage/ui/bluemoon/slider.reel",
         "properties": {
             "element": {
                 "#": "durationSlider"
@@ -52,7 +51,7 @@
         }
     },
     "actioneventlistener1": {
-        "prototype": "core/event/action-event-listener",
+        "prototype": "montage/core/event/action-event-listener",
         "properties": {
             "handler": {
                 "@": "mediacontroller1"
@@ -61,7 +60,7 @@
         }
     },
     "togglebutton1": {
-        "prototype": "ui/bluemoon/button.reel[ToggleButton]",
+        "prototype": "montage/ui/bluemoon/button.reel[ToggleButton]",
         "properties": {
             "element": {
                 "#": "playButton"
@@ -78,7 +77,7 @@
         ]
     },
     "actioneventlistener2": {
-        "prototype": "core/event/action-event-listener",
+        "prototype": "montage/core/event/action-event-listener",
         "properties": {
             "handler": {
                 "@": "mediacontroller1"
@@ -87,7 +86,7 @@
         }
     },
     "button1": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {
                 "#": "rewindButton"
@@ -104,7 +103,7 @@
         ]
     },
     "actioneventlistener3": {
-        "prototype": "core/event/action-event-listener",
+        "prototype": "montage/core/event/action-event-listener",
         "properties": {
             "handler": {
                 "@": "mediacontroller1"
@@ -113,7 +112,7 @@
         }
     },
     "button2": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {
                 "#": "ffButton"
@@ -130,7 +129,7 @@
         ]
     },
     "actioneventlistener4": {
-        "prototype": "core/event/action-event-listener",
+        "prototype": "montage/core/event/action-event-listener",
         "properties": {
             "handler": {
                 "@": "mediacontroller1"
@@ -139,7 +138,7 @@
         }
     },
     "button3": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {
                 "#": "decreaseVolume"
@@ -156,7 +155,7 @@
         ]
     },
     "actioneventlistener5": {
-        "prototype": "core/event/action-event-listener",
+        "prototype": "montage/core/event/action-event-listener",
         "properties": {
             "handler": {
                 "@": "mediacontroller1"
@@ -165,7 +164,7 @@
         }
     },
     "button4": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {
                 "#": "increaseVolume"
@@ -182,7 +181,7 @@
         ]
     },
     "actioneventlistener6": {
-        "prototype": "core/event/action-event-listener",
+        "prototype": "montage/core/event/action-event-listener",
         "properties": {
             "handler": {
                 "@": "mediacontroller1"
@@ -191,7 +190,7 @@
         }
     },
     "button5": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {
                 "#": "muteButton"
@@ -208,7 +207,7 @@
         ]
     },
     "actioneventlistener7": {
-        "prototype": "core/event/action-event-listener",
+        "prototype": "montage/core/event/action-event-listener",
         "properties": {
             "handler": {
                 "@": "mediacontroller1"
@@ -217,7 +216,7 @@
         }
     },
     "button6": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {
                 "#": "repeatButton"
@@ -234,7 +233,7 @@
         ]
     },
     "actioneventlistener8": {
-        "prototype": "core/event/action-event-listener",
+        "prototype": "montage/core/event/action-event-listener",
         "properties": {
             "handler": {
                 "@": "owner"
@@ -243,7 +242,7 @@
         }
     },
     "button7": {
-        "prototype": "ui/bluemoon/button.reel",
+        "prototype": "montage/ui/bluemoon/button.reel",
         "properties": {
             "element": {
                 "#": "fullScreenButton"
@@ -260,7 +259,7 @@
         ]
     },
     "owner": {
-        "prototype": "ui/video-player.reel",
+        "prototype": "montage/ui/video-player.reel",
         "properties": {
             "element": {
                 "#": "video-player"
@@ -297,42 +296,36 @@
             }
         }
     }
-
-    }</script>
-
-
+}
+    </script>
 </head>
 <body>
-
-<div data-montage-id="video-player" class="montage-video-player">
-    <video data-montage-id="video-tag" class="video"></video>
-
-    <div data-montage-id="controlWrapper" class="control-wrapper">
-        <div data-montage-id="controller" class="controller">
-            <div class="controller-button-panel">
-                <div data-montage-id="repeatButton" class="repeat controller-button" title="Repeat Video"></div>
-                <div data-montage-id="rewindButton" class="rw controller-button" title="Rewind"> </div>
-                <div data-montage-id="playButton" class="play controller-button" title="Play/Pause"> </div>
-                <div data-montage-id="ffButton" class="ff controller-button" title="Fast Forward"> </div>
+    <div data-montage-id="video-player" class="montage-video-player">
+        <video data-montage-id="video-tag" class="video"></video>
+        <div data-montage-id="controlWrapper" class="control-wrapper">
+            <div data-montage-id="controller" class="controller">
+                <div class="controller-button-panel">
+                    <div data-montage-id="repeatButton" class="repeat controller-button" title="Repeat Video"></div>
+                    <div data-montage-id="rewindButton" class="rw controller-button" title="Rewind"> </div>
+                    <div data-montage-id="playButton" class="play controller-button" title="Play/Pause"> </div>
+                    <div data-montage-id="ffButton" class="ff controller-button" title="Fast Forward"> </div>
+                </div>
+                <div class="controller-scrubber-panel">
+                    <div data-montage-id="position" class="position controller-text"></div>
+                    <div data-montage-id="durationSlider" class="scrubber dark"></div>
+                    <div data-montage-id="duration" class="duration controller-text"></div>
+                </div>
+                <div class="controller-volume-panel">
+                    <div data-montage-id="muteButton" class="mute controller-button" title="Mute"></div>
+                    <div data-montage-id="decreaseVolume" class="volume-minus controller-button" title="Decrease Volume"> </div>
+                    <div class="volume controller-progress"><div data-montage-id="volumeLevel" class="volume-progress"></div></div>
+                    <div data-montage-id="increaseVolume" class="volume-plus controller-button" title="Increase Volume"> </div>
+                </div>
+                <div data-montage-id="fullScreenPanel" class="controller-fullscreen-panel">
+                    <div data-montage-id="fullScreenButton" class="fullscreen controller-button" title="Toggle Fullscreen"> </div>
+                </div>
             </div>
-            <div class="controller-scrubber-panel">
-                <div data-montage-id="position" class="position controller-text"></div>
-                <div data-montage-id="durationSlider" class="scrubber dark"></div>
-                <div data-montage-id="duration" class="duration controller-text"></div>
-            </div>
-            <div class="controller-volume-panel">
-                <div data-montage-id="muteButton" class="mute controller-button" title="Mute"></div>
-                <div data-montage-id="decreaseVolume" class="volume-minus controller-button" title="Decrease Volume"> </div>
-                <div class="volume controller-progress"><div data-montage-id="volumeLevel" class="volume-progress"></div></div>
-                <div data-montage-id="increaseVolume" class="volume-plus controller-button" title="Increase Volume"> </div>
-            </div>
-            <div data-montage-id="fullScreenPanel" class="controller-fullscreen-panel">
-                <div data-montage-id="fullScreenButton" class="fullscreen controller-button" title="Toggle Fullscreen"> </div>
-            </div>
-
         </div>
     </div>
-</div>
-
 </body>
 </html>

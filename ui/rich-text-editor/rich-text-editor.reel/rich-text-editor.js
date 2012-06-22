@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
     @module "montage/ui/rich-text-editor/rich-text-editor.reel"
@@ -13,8 +13,7 @@
 var Montage = require("montage").Montage,
     RichTextEditorBase = require("./rich-text-editor-base").RichTextEditorBase,
     Sanitizer = require("./rich-text-sanitizer").Sanitizer,
-    MutableEvent = require("core/event/mutable-event").MutableEvent,
-    defaultEventManager = require("core/event/event-manager").defaultEventManager;
+    ChangeNotification = require("core/change-notification").ChangeNotification;
 
 /**
     @classdesc The RichTextEditor component is a lightweight Montage component that provides basic HTML editing capability. It wraps the HTML5 <code>contentEditable</code> property and largely relies on the browser's support of <code><a href="http://www.quirksmode.org/dom/execCommand.html" target="_blank">execCommand</a></code>.
@@ -130,9 +129,11 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                 overlayParent,
                 overlayNextSibling;
 
-            if (this._dirtyValue) {
+            if (this._dirtyValue && !this._value_locked) {
+                this._value_locked = true;
+
                 if (contentNode) {
-                    // Temporary orphran the overlay slot while retrieving the content
+                    // Temporary orphan the overlay slot while retrieving the content
                     overlayElement = contentNode.querySelector(".montage-editor-overlay");
                     if (overlayElement) {
                         overlayParent = overlayElement.parentNode;
@@ -158,8 +159,14 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                     overlayParent.insertBefore(overlayElement, overlayNextSibling);
                 }
 
-                this._value = content;
+                if (this._value != content) {
+                    this.dispatchPropertyChange("value", function(){
+                        this._value = content;
+                    });
+                }
+
                 this._dirtyValue = false;
+                this._value_locked = false;
             }
             return this._value;
         },
@@ -192,13 +199,16 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
         enumerable: true,
         get: function() {
             var contentNode = this._innerElement,
+                content = "",
                 overlayElement = null,
                 overlayParent,
                 overlayNextSibling;
 
-            if (this._dirtyTextValue) {
+            if (this._dirtyTextValue && !this._textValue_locked) {
+                this._textValue_locked = true;
+
                 if (contentNode) {
-                    // Temporary orphran the overlay slot in order to retrieve the content
+                    // Temporary orphan the overlay slot in order to retrieve the content
                     overlayElement = contentNode.querySelector(".montage-editor-overlay");
                     if (overlayElement) {
                         overlayParent = overlayElement.parentNode;
@@ -206,17 +216,22 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
                         overlayParent.removeChild(overlayElement);
                     }
 
-                    this._textValue = this._innerText(contentNode);
+                    content = this._innerText(contentNode);
 
                      // restore the overlay
                     if (overlayElement) {
                         overlayParent.insertBefore(overlayElement, overlayNextSibling);
                     }
-                } else {
-                    this._textValue = "";
+                }
+
+                if (this._textValue != content) {
+                    this.dispatchPropertyChange("textValue", function(){
+                        this._textValue = content;
+                    });
                 }
 
                 this._dirtyTextValue = false;
+                this._textValue_locked = false;
             }
             return this._textValue;
         },
@@ -641,28 +656,31 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     markDirty: {
         enumerable: false,
         value: function() {
-            var thisRef = this,
-                prevValue;
-                var updateValues = function() {
-                    clearTimeout(thisRef._forceUpdateValuesTimeout);
-                    delete thisRef._forceUpdateValuesTimeout;
-                    clearTimeout(thisRef._updateValuesTimeout);
-                    delete thisRef._updateValuesTimeout;
+            var thisRef = this;
 
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@value", thisRef)) {
-                        prevValue = thisRef._value;
-                        if (thisRef.value !== prevValue) {
-                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("value" , prevValue).withPlusValue(thisRef.value));
-                        }
+            var updateValues = function() {
+                var value,
+                    descriptor;
+
+                clearTimeout(thisRef._forceUpdateValuesTimeout);
+                delete thisRef._forceUpdateValuesTimeout;
+                clearTimeout(thisRef._updateValuesTimeout);
+                delete thisRef._updateValuesTimeout;
+
+                if (thisRef._dirtyValue) {
+                    descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "value");
+                    if (descriptor) {
+                        value = thisRef.value;  // Will force to update the value and send a property change notification
                     }
-                    if (defaultEventManager.registeredEventListenersForEventType_onTarget_("change@textValue", thisRef)) {
-                        prevValue = thisRef._textValue;
-                        if (thisRef.textValue !== prevValue) {
-                            thisRef.dispatchEvent(MutableEvent.changeEventForKeyAndValue("textValue" , prevValue).withPlusValue(thisRef.textValue));
-                        }
+                }
+                if (thisRef._dirtyTextValue) {
+                    descriptor = ChangeNotification.getPropertyChangeDescriptor(thisRef, "textValue");
+                    if (descriptor) {
+                        value = thisRef.textValue;  // Will force to update the value and send a property change notification
                     }
-                    thisRef._dispatchEditorEvent("editorChange");
-                };
+                }
+                thisRef._dispatchEditorEvent("editorChange");
+            };
 
             if (!this._needsAssingValue) {
                 // Clear the cached value

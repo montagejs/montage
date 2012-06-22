@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
     Defines extensions to intrinsic <code>Object</code>.
@@ -33,7 +33,7 @@ var COMPARE = "compare";
     A utility object to avoid unnecessary allocations of an empty object
     <code>{}</code>.  This object is frozen so it is safe to share.
 
-    @function external:Object.empty
+    @object external:Object.empty
 */
 Object.defineProperty(Object, "empty", {
     value: Object.freeze(Object.create(null)),
@@ -217,7 +217,7 @@ Object.defineProperty(Object, "get", {
         } else if (value !== undefined) {
             return value;
         } else if (Object.implements(object, UNDEFINED_GET)) {
-            return object.undefinedGet();
+            return object.undefinedGet(key);
         }
     },
     writable: true,
@@ -266,6 +266,46 @@ Object.defineProperty(Object, "forEach", {
         Object.keys(object).forEach(function (key) {
             callback.call(thisp, object[key], key, object);
         });
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Iterates over the owned properties of a map, constructing a new array of
+    mapped values.
+
+    @function external:Object.map
+    @param {Object} object an object to iterate.
+    @param {Function} callback a function to call for every key and value
+    pair in the object.  Receives <code>value</code>, <code>key</code>,
+    and <code>object</code> as arguments.
+    @param {Object} thisp the <code>this</code> to pass through to the
+    callback
+    @returns {Array} the respective values returned by the callback for each
+    item in the object.
+*/
+Object.defineProperty(Object, "map", {
+    value: function (object, callback, thisp) {
+        return Object.keys(object).map(function (key) {
+            return callback.call(thisp, object[key], key, object);
+        });
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Returns the values for owned properties of an object.
+
+    @function external:Object.map
+    @param {Object} object
+    @returns {Array} the respective value for each owned property of the
+    object.
+*/
+Object.defineProperty(Object, "values", {
+    value: function (object) {
+        return Object.map(object, Function.identity)
     },
     writable: true,
     configurable: true

@@ -1,0 +1,28 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+.taskEntry {
+	padding: 15px 20px 15px 0;
+	position: relative;
+	font-size: 24px;
+	border-bottom: 1px solid #cccccc;
+}
+
+.taskEntry .completionField .labelText {
+    display: none;
+}
+
+.taskEntry .completionField .completedCheckbox {
+    vertical-align: middle;
+}
+.taskEntry .completionField .text {
+    margin-left: 5px;
+}
+
+.taskEntry.completed .completionField .text {
+    opacity: 0.4;
+    text-decoration: line-through;
+}

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="tabs.css">
+    <script type="text/montage-serialization">
+{
+    "navController": {
+        "prototype": "ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"<-": "@owner.tabs"}
+        }
+    },
+
+    "repetition1": {
+        "prototype": "ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "tab-list"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "navController"}
+        }
+    },
+
+    "owner": {
+        "prototype": "ui/bluemoon/tabs.reel",
+        "properties": {
+            "element": {
+                "#": "tabs-nav"
+            },
+            "navController": {
+                "@": "navController"
+            },
+            "_repetition": {
+                "@": "repetition1"
+            },
+            "_indicator": {
+                "#": "montage-tabs-indicator"
+            }
+        },
+        "bindings": {
+            "selectedTabs": {"<-": "@navController.selectedObjects"}
+        }
+    }
+}
+    </script>
+</head>
+<body>
+    <div data-montage-id='tabs-nav' class='montage-tabs montage-container'>
+        <div data-montage-id="montage-tabs-indicator" class="montage-tabs-indicator" style="display: none;"></div>
+        <ul data-montage-id="tab-list" class='montage-tabs-list montage-clearfix'>
+            <li></li>
+        </ul>
+    </div>
+</body>
+</html>

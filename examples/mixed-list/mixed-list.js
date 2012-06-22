@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage;
 
@@ -68,7 +68,8 @@ exports.SubstitutionDelegate = Montage.create(Montage, {
         value: function(contentToAppend, nodeToAppend) {
             var element = document.createElement("div");
             if (contentToAppend.switchValue === "boolean") {
-                element = document.createElement("button");
+                element = document.createElement("input");
+                element.setAttribute("type", "radio");
             } else if (contentToAppend.switchValue === "check") {
                 element = document.createElement("input");
                 element.setAttribute("type", "checkbox");

@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
 	@module montage/ui/controller/media-controller
@@ -625,24 +625,24 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
             if (error) {
                 switch (error.code) {
                     case error.MEDIA_ERR_ABORTED:
-                        alert("You aborted the video playback.");
+                        console.error("You aborted the video playback.");
                         break;
                     case error.MEDIA_ERR_NETWORK:
-                        alert("A network error caused the video download to fail part-way.");
+                        console.error("A network error caused the video download to fail part-way.");
                         break;
                     case error.MEDIA_ERR_DECODE:
-                        alert("The video playback was aborted due to a corruption problem or because the video used features your browser did not support.");
+                        console.error("The video playback was aborted due to a corruption problem or because the video used features your browser did not support.");
                         break;
                     case error.MEDIA_ERR_SRC_NOT_SUPPORTED:
                         if (this.mediaElement.src.length > 0) {
-                            alert("The video at " + this.mediaElement.src + " could not be loaded, either because the server or network failed or because the format is not supported.");
+                            console.error("The video at " + this.mediaElement.src + " could not be loaded, either because the server or network failed or because the format is not supported.");
                         }
                         else {
-                            alert("No video has been selected.");
+                            console.error("No video has been selected.");
                         }
                         break;
                     default:
-                        alert("An unknown error occurred.");
+                        console.error("An unknown error occurred.");
                         break;
                 }
             }

@@ -1,0 +1,113 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+.montage-hidden {
+    display: none;
+}
+
+.montage-invisible {
+    visibility: hidden;
+}
+
+html {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+body,
+.PhotoFX,
+.PhotoFX .editArea,
+.PhotoFX .PhotoEditor {
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+
+* {
+    -webkit-user-select: none;
+}
+
+input {
+    -webkit-user-select: text;
+}
+
+.floatingPanel {
+    position: fixed;
+    opacity: 0;
+    -webkit-transition: opacity 200ms ease-in-out;
+    pointer-events: none;
+}
+
+.PhotoFX.showControls .floatingPanel {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.PhotoFX .mainMenu {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    /*opacity: 0.9;*/
+    z-index: 5000;
+}
+
+.PhotoPanel {
+    display: -webkit-box;
+    bottom: 0;
+    right: 0;
+    left: 0;
+
+    overflow: visible;
+    border-top:  1px solid hsl(0,0%,62%);
+
+    background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#fff));
+}
+
+.PhotoPanel .PhotoList {
+    -webkit-box-flex: 1;
+    border-right:  1px solid hsl(0,0%,60%);
+}
+
+.PhotoPanel .PhotoList .montage-list-scroller {
+    margin-top: 10px;
+}
+
+.PhotoPanel .controlPanel {
+    box-sizing: border-box;
+    padding: 25px 10px 10px;
+    text-align: center;
+}
+
+.PhotoPanel .controlPanel button {
+    margin-bottom: 8px;
+}
+
+.EffectsPanel,
+.PhotoPanel .controlPanel {
+    width: 270px;
+}
+
+.EffectsPanel {
+    top: 0;
+    right: 0;
+
+    border-left:  1px solid hsl(0,0%,62%);
+    background-color: hsl(120,2%,89%)
+}
+
+.acceptsDrop {
+    border: 5px solid hsl(195,96%,43%);
+}
+
+.PhotoFX .mainMenu .UndoButton,
+.PhotoFX .mainMenu .RedoButton {
+    /*width: 12em;*/
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

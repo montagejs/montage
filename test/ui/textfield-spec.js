@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
         TestPageLoader = require("support/testpageloader").TestPageLoader;
@@ -51,7 +51,7 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
                 });
 
                 it("txt2 should not have the min/max/step element attributes", function() {
-                    // these attributes are defined at the NumberInput/RangeInput
+                    // these attributes are defined at the InputNumber/RangeInput
                     var instance = testPage.test.txt2;
 
                     expect(instance._getElementAttributeDescriptor('min')).toBe(undefined);
@@ -61,8 +61,16 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
 
                 });
 
+                it("only valid attributes can be set on a NativeControl", function() {
+                    var instance = testPage.test.txt2;
+                    instance.min = '20'; // invalid attribute 'min'
+
+                    expect(instance.element.getAttribute('min')).toBeFalsy();
+
+                });
+
                 it("txt2 should have the element attributes defined by TextInput and NativeControl", function() {
-                    // these attributes are defined at the NumberInput/RangeInput
+                    // these attributes are defined at the InputNumber/RangeInput
                     var instance = testPage.test.txt2;
 
                     expect(instance._getElementAttributeDescriptor('name')).not.toBe(undefined);
