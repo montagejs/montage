@@ -309,6 +309,46 @@ Object.defineProperty(Object, "forEach", {
 });
 
 /**
+    Iterates over the owned properties of a map, constructing a new array of
+    mapped values.
+
+    @function external:Object.map
+    @param {Object} object an object to iterate.
+    @param {Function} callback a function to call for every key and value
+    pair in the object.  Receives <code>value</code>, <code>key</code>,
+    and <code>object</code> as arguments.
+    @param {Object} thisp the <code>this</code> to pass through to the
+    callback
+    @returns {Array} the respective values returned by the callback for each
+    item in the object.
+*/
+Object.defineProperty(Object, "map", {
+    value: function (object, callback, thisp) {
+        return Object.keys(object).map(function (key) {
+            return callback.call(thisp, object[key], key, object);
+        });
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
+    Returns the values for owned properties of an object.
+
+    @function external:Object.map
+    @param {Object} object
+    @returns {Array} the respective value for each owned property of the
+    object.
+*/
+Object.defineProperty(Object, "values", {
+    value: function (object) {
+        return Object.map(object, Function.identity)
+    },
+    writable: true,
+    configurable: true
+});
+
+/**
     Returns whether two values are identical.  Any value is identical to itself
     and only itself.  This is much more restictive than equivalence and subtly
     different than strict equality, <code>===</code> because of edge cases

@@ -318,6 +318,27 @@ describe("core/extras/object", function () {
 
     });
 
+    describe("Object.map", function () {
+
+        it("should iterate the owned properties of an object with a context thisp", function () {
+            var object = {a: 10, b: 20}
+            var result = Object.map(object, function (value, key, o) {
+                expect(o).toBe(object);
+                return key + this + value;
+            }, ": ").join(", ");
+            expect(result).toEqual("a: 10, b: 20");
+        });
+
+    });
+
+    describe("Object.values", function () {
+
+        it("should produce the values for owned properties", function () {
+            expect(Object.values({b: 10, a: 20})).toEqual([10, 20]);
+        });
+
+    });
+
     describe("Object.is", function () {
 
         var distinctValues = {
