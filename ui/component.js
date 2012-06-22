@@ -1,8 +1,9 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/*global Element */
 /**
 	@module montage/ui/component
     @requires montage/core/core
@@ -30,7 +31,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     delegate: {
-        serializable: true,
+        serializable: "reference",
         value: null
     },
 
@@ -1795,7 +1796,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
                     }
                     if (drawLogger.isDebug) {
                         // Detect any DOM modification since the previous draw
-                        var newSource = document.getElementsByTagName('html')[0].innerHTML;
+                        var newSource = document.documentElement.innerHTML;
                         if (self._oldSource && newSource !== self._oldSource) {
                             var warning = ["DOM modified outside of the draw loop"];
                             var out = self._diff(self._oldSource.split("\n"), newSource.split("\n"));
@@ -1820,7 +1821,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
 
                     if (drawLogger.isDebug) {
                         console.groupEnd();
-                        self._oldSource = document.getElementsByTagName('html')[0].innerHTML;
+                        self._oldSource = document.documentElement.innerHTML;
                     }
                     self._frameTime = null;
                     if (self._scheduleComposerRequest) {
@@ -1987,7 +1988,7 @@ var rootComponent = Montage.create(Component, /** @lends module:montage/ui/compo
     }
 });
 
-rootComponent.init().element = document;
+rootComponent.init();
 //if(window.parent && window.parent.jasmine) {
 exports.__root__ = rootComponent;
 //}

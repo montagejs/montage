@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
  /**
@@ -36,7 +36,8 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     mainModule: {
         enumerable: false,
-        value: "main.reel"
+        serializable: true,
+        value: "ui/main.reel"
     },
 
 /**
@@ -44,6 +45,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     mainName: {
         enumerable: false,
+        serializable: true,
         value: "Main"
     },
 
@@ -52,6 +54,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     includeFrameworkModules: {
         enumerable: false,
+        serializable: true,
         value: false
     },
 
@@ -60,6 +63,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     minimumBootstrappingDuration: {
         enumerable: false,
+        serializable: true,
         value: 1500
     },
 
@@ -68,6 +72,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 */
     minimumLoadingDuration: {
         enumerable: false,
+        serializable: true,
         value: 2000
     },
 
@@ -224,6 +229,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
 
             if (!this.element) {
                 this.element = document.documentElement;
+                this.attachToParentComponent();
             }
             this.readyToShowLoader = true;
 

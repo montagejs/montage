@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
  @module montage/data/pledge
@@ -10,13 +10,13 @@
  @requires montage/core/logger
  */
 var Montage = require("montage").Montage;
-var Q = require("core/promise");
+var Promise = require("core/promise").Promise;
 var logger = require("core/logger").logger("pledge");
 /**
  @class module:montage/data/pledge.Pledge
- @extends module:montage/core/core.Montage
+ @extends module:montage/core/promise.Promise
  */
-var Pledge = exports.Pledge = Montage.create(Montage, /** @lends module:montage/data/pledge.Pledge# */ {
+var Pledge = exports.Pledge = Montage.create(Promise, /** @lends module:montage/data/pledge.Pledge# */ {
 
     /**
      Description TODO
@@ -200,11 +200,11 @@ var PledgedSortedSet = exports.PledgedSortedSet = Montage.create(Pledge, /** @le
      Checks if the pledged array is empty.<br/>
      <b>Note:</b> This value is not constant as depending upon the type of backing store, the number of objects returned may vary over time.
      @function
-     @returns {Boolean} <code>true</code> if the array is not empty, <code>false</code> otherwise.
+     @returns {Boolean} <code>true</code> if the array is empty, <code>false</code> otherwise.
      */
     empty: {
         value: function () {
-            return length == 0;
+            return this.length() == 0;
         }
     },
 

@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Photo Editor</title>
+    <link rel="stylesheet" type="text/css" href="photo-editor.css">
+
+    <script type="text/montage-serialization">{
+
+            "image": {
+                "prototype": "montage/ui/image.reel",
+                "properties": {
+                    "element": {"#": "image"}
+                },
+                "bindings": {
+                    "src": {"<-": "@owner.photo.src"}
+                }
+            },
+
+            "pointMonitorController": {
+                "prototype": "montage/ui/controller/array-controller",
+                "bindings": {
+                    "content": {"<-": "@owner.pointMonitors"}
+                }
+            },
+
+            "pointMonitorRepetition": {
+                "prototype": "montage/ui/repetition.reel",
+                "properties": {
+                    "element": {"#": "pointMonitors"},
+                    "isSelectionEnabled": true,
+                    "contentController": {"@": "pointMonitorController"}
+                }
+            },
+
+            "pointMarker": {
+                "prototype": "ui/point-marker.reel",
+                "properties": {
+                    "element": {"#": "pointMarker"}
+                },
+                "bindings": {
+                    "x": {"<-": "@pointMonitorRepetition.objectAtCurrentIteration.x"},
+                    "y": {"<-": "@pointMonitorRepetition.objectAtCurrentIteration.y"}
+                }
+            },
+
+            "horizontalRuler": {
+                "prototype": "ui/ruler.reel",
+                "properties": {
+                    "element": {"#": "horizontalRuler"},
+                    "axis": "x"
+                },
+                "bindings": {
+                    "container": {"<-": "@owner._canvas"},
+                    "rangeEnd": {"<-": "@owner._width"}
+                }
+            },
+
+            "verticalRuler": {
+                "prototype": "ui/ruler.reel",
+                "properties": {
+                    "element": {"#": "verticalRuler"},
+                    "axis": "y"
+                },
+                "bindings": {
+                    "container": {"<-": "@owner._canvas"},
+                    "rangeEnd": {"<-": "@owner._height"}
+                }
+            },
+
+            "owner": {
+                "properties": {
+                    "element": {"#": "editor"},
+                    "_image": {"@": "image"},
+                    "_canvas": {"#": "canvas"},
+                    "_toolLayer": {"#": "toolLayer"},
+                    "pointMonitorController": {"@": "pointMonitorController"},
+                    "horizontalRuler": {"@": "horizontalRuler"},
+                    "verticalRuler": {"@": "verticalRuler"}
+                }
+            }
+
+    }</script>
+
+</head>
+<body>
+
+    <div data-montage-id="editor" class="PhotoEditor">
+        <img data-montage-id="image" class="image" />
+
+        <div class="canvasFrame">
+            <div data-montage-id="horizontalRuler" class="horizontalRuler ruler"></div>
+            <div data-montage-id="verticalRuler" class="verticalRuler ruler"></div>
+
+            <div data-montage-id="toolLayer" class="toolLayer">
+                <div data-montage-id="pointMonitors">
+                    <div data-montage-id="pointMarker"></div>
+                </div>
+            </div>
+            <canvas data-montage-id="canvas" class="canvas"></canvas>
+        </div>
+    </div>
+
+</body>
+</html>

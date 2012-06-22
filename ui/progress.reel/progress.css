@@ -1,0 +1,29 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+.montage-progress {
+    display: inline-block;
+    position: relative;
+    width: 100px;
+    height: 10px;
+    border-radius: 3px;
+    border: 1px solid #b3b3b3;
+    background-color: #d9d9d9;
+}
+
+.montage-progress > .montage-progress-bar {
+    position: absolute;
+    height: inherit;
+    border-radius: 2px;
+    top: 0;
+    left: 0;
+    background-color: #f2f2f2;
+    -webkit-transition: width .3s cubic-bezier(.25,.1,.3,.9);
+       -moz-transition: width .3s cubic-bezier(.25,.1,.3,.9);
+        -ms-transition: width .3s cubic-bezier(.25,.1,.3,.9);
+         -o-transition: width .3s cubic-bezier(.25,.1,.3,.9);
+            transition: width .3s cubic-bezier(.25,.1,.3,.9);
+}

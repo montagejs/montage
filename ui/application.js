@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 /**
@@ -137,28 +137,27 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: null
     },
 
-    /**
-     Description TODO
-     @function
-     @param {Function} callback A function to invoke after the method has completed.
-     */
-    load: {
-        value: function(callback) {
-            var template = Template.create().initWithDocument(window.document),
-                component,
+    _load: {
+        value: function(applicationRequire, callback) {
+            var template = Template.create().initWithDocument(window.document, applicationRequire),
+                rootComponent,
                 self = this;
-
-            self = Application.isPrototypeOf(self) ? self : Application.create();
 
             // assign to the exports so that it is available in the deserialization of the template
             exports.application = self;
 
-            template.instantiateWithOwnerAndDocument(null, window.document, function() {
-                require("ui/component").__root__.needsDraw = true;
-                if (callback) {
-                    callback(self);
-                }
-            });
+            require.async("ui/component").then(function(exports) {
+                rootComponent = exports.__root__;
+                rootComponent.element = document;
+                template.instantiateWithOwnerAndDocument(null, window.document, function() {
+                    self.callDelegateMethod("willFinishLoading", self);
+                    rootComponent.needsDraw = true;
+                    if (callback) {
+                        callback(self);
+                    }
+
+                });
+            }).end();
         }
     },
 

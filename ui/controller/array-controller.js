@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
  @module montage/ui/controller/array-controller
@@ -37,7 +37,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 });
 
                 // TODO this triggers an infinite loop
-                // self.selectedIndexes = newSelectedIndexes;
+                self.selectedIndexes = newSelectedIndexes;
             });
 
             this.addPropertyChangeListener("content", function() {
@@ -313,9 +313,10 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     }
                 }
 
-                this._selectedIndexes = value;
 
+                // _selectedIndexes is assigned in the dispatcher because "selectedContentIndexes", "selectedObjects" and "selections" depend on _selectedIndexes, so in order to have a correct "minus" (and prevent the premature creation of those values) in the notification we need to hold back the change.
                 this.dispatchPropertyChange("selectedContentIndexes", "selectedObjects", "selections", function() {
+                    this._selectedIndexes = value;
                     this._selectedContentIndexes = newIndexes;
                     this._selectedObjects = null;
                     this._selections = null;
@@ -559,9 +560,10 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     return;
                 }
             }
-            this._selectedObjects = value;
 
+            // _selectedObjects is assigned in the dispatcher because "selectedContentIndexes", "selectedIndexes" and "selections" depend on _selectedObjects, so in order to have a correct "minus" (and prevent the premature creation of those values) in the notification we need to hold back the change.
             this.dispatchPropertyChange("selectedContentIndexes", "selectedIndexes", "selections", function() {
+                this._selectedObjects = value;
                 this._selectedContentIndexes = null;
                 this._selectedIndexes = null;
                 this._selections = null;
@@ -663,7 +665,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
                     for (i = 0; i < selectedIndexCount; i++) {
                         index = selectedIndexes[i];
-                        if (index < selections.length-1) {
+                        if (index < selections.length) {
                             selections[index] = true;
                         }
                     }

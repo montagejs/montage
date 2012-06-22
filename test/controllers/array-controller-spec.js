@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
     ArrayController = require("montage/ui/controller/array-controller").ArrayController;
@@ -193,13 +193,13 @@ describe("controllers/array-controller-spec.js", function() {
                 expect(arrayController.content.length).toBe(0);
             });
 
-            it("should provide a way to remove selected objects from the managed collection", function() {
+            it("should provide a way to remove selected objects from the managed collection", function() {;
                 arrayController.selectedContentIndexes = [0,1];
                 arrayController.remove();
 
                 expect(arrayController.content.length).toBe(0);
-                expect(arrayController.selectedObjects).toBe(null);
-                expect(arrayController.selectedContentIndexes).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
+                expect(arrayController.selectedContentIndexes.length).toBe(0);
             });
 
             it("should remove objects at the selected indices", function() {
@@ -269,14 +269,14 @@ describe("controllers/array-controller-spec.js", function() {
 
             it("should allow removing a selection by passing a falsy value other than zero as a selection content index", function() {
                 arrayController.selectedContentIndexes = null;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 arrayController.selectedContentIndexes = false;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 var notDefined;
                 arrayController.selectedContentIndexes = notDefined;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 arrayController.selectedContentIndexes = [0];
                 expect(arrayController.selectedObjects.length).toBe(1);
@@ -285,14 +285,14 @@ describe("controllers/array-controller-spec.js", function() {
 
             it("should allow removing a selection by passing a falsy value other than zero as a selection index", function() {
                 arrayController.selectedIndexes = null;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 arrayController.selectedIndexes = false;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 var notDefined;
                 arrayController.selectedIndexes = notDefined;
-                expect(arrayController.selectedObjects).toBe(null);
+                expect(arrayController.selectedObjects.length).toBe(0);
 
                 arrayController.selectedIndexes = [0];
                 expect(arrayController.selectedObjects.length).toBe(1);

@@ -2,7 +2,7 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
     <head>
@@ -21,7 +21,7 @@
         "bindings": {
             "maxTranslateX": {"<-": "@owner.sliderWidth"},
             "translateX": {"<-": "@owner.sliderLeft"},
-            "translateX": {"<<->": "@owner.positionX"}
+            "translateX": {"<->": "@owner.positionX"}
         }
     },
     "owner": {
@@ -40,7 +40,7 @@
     </head>
     <body>
         <span id="inputRange" class="montage-inputRange">
-            <span id="inputRangeThumb" draggable="true" href="#" class="montage-inputRange-thumb"></span>
+            <span id="inputRangeThumb" draggable="true" class="montage-inputRange-thumb"></span>
         </span>
     </body>
 </html>

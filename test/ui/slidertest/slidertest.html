@@ -2,7 +2,7 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
 <head>
@@ -17,12 +17,12 @@
         }
     },
     "textfield1": {
-        "prototype": "montage/ui/bluemoon/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "sliderValue"}
         },
         "bindings": {
-            "value": {"<<->": "@slider1.value"}
+            "value": {"<->": "@slider1.value"}
         }
     },
     "slider2": {
@@ -32,12 +32,12 @@
         }
     },
     "textfield2": {
-        "prototype": "montage/ui/bluemoon/textfield.reel",
+        "prototype": "montage/ui/input-text.reel",
         "properties": {
             "element": {"#": "sliderValue2"}
         },
         "bindings": {
-            "value": {"<<->": "@slider2.value"}
+            "value": {"<->": "@slider2.value"}
         }
     },
     "test": {

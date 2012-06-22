@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
@@ -1871,6 +1871,88 @@ describe("events/change-notification-spec", function() {
             } catch(ex) {
                 expect(ex.type).toBe("stack_overflow");
             }
+        });
+
+        it("should not create an infinite loop on a cycle with direct property dependencies", function() {
+            var MeaningfulObject = Montage.create(Montage, {
+                    foo: {
+                        dependencies: ["bar"],
+                        value: null
+                    },
+
+                    bar: {
+                        dependencies: ["foo"],
+                        value: null
+                    }
+                });
+
+            var object = MeaningfulObject.create(),
+                listeners = {
+                    listener: function(notification) {
+                    }
+                };
+
+            object.addPropertyChangeListener("foo", listeners.listener);
+            object.foo = 1;
+            expect(true).toBe(true);
+        });
+
+        it("should not create an infinite loop on a cycle with indirect property dependencies", function() {
+            var MeaningfulObject = Montage.create(Montage, {
+                    foo: {
+                        dependencies: ["bar"],
+                        value: null
+                    },
+
+                    bar: {
+                        dependencies: ["foo", "baz"],
+                        value: null
+                    },
+
+                    baz: {
+                        value: null
+                    }
+                });
+
+            var object = MeaningfulObject.create(),
+                listeners = {
+                    listener: function(notification) {
+                    }
+                };
+
+            object.addPropertyChangeListener("foo", listeners.listener);
+            object.baz = 1;
+            expect(true).toBe(true);
+        });
+
+        it("should not create an infinite loop on a cycle created by manually dispatching a property change in a changeProperty listener that is triggered by that dispatch", function() {
+            var MeaningfulObject = Montage.create(Montage, {
+                    _foo: {value: 2},
+                    foo: {
+                        get: function() {
+                            return this._foo;
+                        },
+                        set: function(value) {
+                            this._foo = value;
+                            this.dispatchPropertyChange("bar", function() {
+                                this.bar = null;
+                            });
+                        }
+                    },
+
+                    bar: {value: null}
+                });
+
+            var object = MeaningfulObject.create(),
+                listeners = {
+                    listener: function(notification) {
+                        object.foo = 1;
+                    }
+                };
+
+            object.addPropertyChangeListener("bar", listeners.listener);
+            object.foo = 1;
+            expect(true).toBe(true);
         });
     });
 

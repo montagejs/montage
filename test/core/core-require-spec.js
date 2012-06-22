@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
     objects = require("./testobjects");
@@ -43,6 +43,15 @@ function() {
 
             expect(info.objectName).toBe("Funktion");
             expect(info.isInstance).toBeTruthy();
+            expect(info.moduleId).toBe("core/testobjects");
+        });
+
+        it("should describe a class object that accessed getInfoForObject before being exported",
+        function() {
+            var info = Montage.getInfoForObject(objects.FunkyProto);
+
+            expect(info.objectName).toBe("FunkyProto");
+            expect(info.isInstance).toBeFalsy();
             expect(info.moduleId).toBe("core/testobjects");
         });
     });

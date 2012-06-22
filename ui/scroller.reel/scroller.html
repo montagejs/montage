@@ -2,84 +2,74 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
-    <head>
-    <title></title>
-    <script type="text/montage-serialization">{
-
-            "scrollbars": {
-                "prototype": "ui/scroll-bars.reel",
-                "properties": {
-                    "element": {
-                        "#": "scrollbars"
-                    }
-                }
-            },
-            "translateComposer1": {
-                "prototype": "ui/composer/translate-composer",
-                "properties": {
-                    "component": {"@": "owner"},
-                    "minTranslateX": 0,
-                    "minTranslateY": 0,
-                    "invertAxis": true
-                },
-                "bindings": {
-                    "translateX": {"<<->": "@owner.scrollX"},
-                    "translateY": {"<<->": "@owner.scrollY"},
-                    "maxTranslateX": {"<-": "@owner._maxTranslateX"},
-                    "maxTranslateY": {"<-": "@owner._maxTranslateY"},
-                    "axis": {"<-": "@owner.axis"},
-                    "hasMomentum": {"<-": "@owner.hasMomentum"}
-                },
-                "listeners": [
-                    {
-                        "type": "translateStart",
-                        "listener": {"@": "owner"}
-                    },
-                    {
-                        "type": "translateEnd",
-                        "listener": {"@": "owner"}
-                    }
-                ]
-            },
-            "slot": {
-                "prototype": "ui/slot.reel",
-                "properties": {
-                    "element": {"#": "content"}
-                },
-                "bindings": {
-                    "domContent": {"<-": "@owner.domContent"}
-                }
-            },
-            "owner": {
-                "prototype": "ui/scroller.reel",
-                "properties": {
-                    "_content": {
-                        "#": "content"
-                    },
-                    "element": {
-                        "#": "montage-scroller"
-                    },
-                    "_scrollBars": {
-                        "@": "scrollbars"
-                    }
-                }
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="scroller.css">
+    <script type="text/montage-serialization">
+{
+    "scrollbars": {
+        "prototype": "ui/scroll-bars.reel",
+        "properties": {
+            "element": {
+                "#": "scrollbars"
             }
-
-    }</script>
-    <style>
-        .montage-scroller {
-            position: relative;
-            display: block;
-            overflow: hidden;
         }
-        .montage-scroller .content {
-            float: left;
-            width: 100%;
+    },
+    "translateComposer1": {
+        "prototype": "ui/composer/translate-composer",
+        "properties": {
+            "component": {"@": "owner"},
+            "minTranslateX": 0,
+            "minTranslateY": 0,
+            "invertAxis": true
+        },
+        "bindings": {
+            "translateX": {"<->": "@owner.scrollX"},
+            "translateY": {"<->": "@owner.scrollY"},
+            "maxTranslateX": {"<-": "@owner._maxTranslateX"},
+            "maxTranslateY": {"<-": "@owner._maxTranslateY"},
+            "axis": {"<-": "@owner.axis"},
+            "hasMomentum": {"<-": "@owner.hasMomentum"}
+        },
+        "listeners": [
+            {
+                "type": "translateStart",
+                "listener": {"@": "owner"}
+            },
+            {
+                "type": "translateEnd",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "slot": {
+        "prototype": "ui/slot.reel",
+        "properties": {
+            "element": {"#": "content"}
+        },
+        "bindings": {
+            "domContent": {"<-": "@owner.domContent"}
         }
-    </style>
+    },
+    "owner": {
+        "prototype": "ui/scroller.reel",
+        "properties": {
+            "_content": {
+                "#": "content"
+            },
+            "element": {
+                "#": "montage-scroller"
+            },
+            "_scrollBars": {
+                "@": "scrollbars"
+            }
+        }
+    }
+}
+    </script>
 </head>
 <body>
     <div data-montage-id="montage-scroller" class="montage-scroller">

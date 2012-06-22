@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 /**
@@ -536,7 +536,14 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
             var listener,
                 dependentDescriptorsIndex = this.dependentDescriptorsIndex,
                 dependenciesIndex = notification._dependenciesIndex,
-                isMutationNotification;
+                isMutationNotification,
+                uuid = this.uuid;
+
+            // we need to stop circular property dependencies.
+            // e.g.: object.foo depends on object.bar and object.bar depends on object.foo.
+            if (notification[uuid]) {
+                return;
+            }
 
             // TODO: maybe I should replicate this
             if (arguments.length < 2) {
@@ -566,7 +573,9 @@ var ChangeNotificationDescriptor = Montage.create(Montage, {
                         if (dependentDescriptorsIndex) {
                             notification._dependenciesIndex = dependentDescriptorsIndex[key];
                         }
+                        notification[uuid] = true;
                         listener.listenerFunction.call(listener.listenerTarget, notification);
+                        notification[uuid] = false;
                     }
                 }
                 notification._dependenciesIndex = dependenciesIndex;
@@ -761,12 +770,13 @@ Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
         for (i = 0; i < callbackArgumentIndex; i++) {
             iProperty = arguments[i];
             descriptor = ChangeNotification.getPropertyChangeDescriptor(this, iProperty);
-            if (descriptor) {
+            if (descriptor && !descriptor.isActive) {
                 notification = Object.create(PropertyChangeNotification);
                 observedProperties.push(iProperty, descriptor, notification);
 
                 notification.target = this;
                 notification.minus = this.getProperty(iProperty);
+                descriptor.isActive = true;
                 descriptor.handleWillChange(notification);
             }
         }
@@ -780,6 +790,7 @@ Object.defineProperty(Object.prototype, "dispatchPropertyChange", {
 
             notification.plus = this.getProperty(iProperty);
             descriptor.handleChange(notification);
+            descriptor.isActive = false;
         }
 
     }
@@ -876,16 +887,16 @@ var PrefixedPropertyDescriptor = {
     configurable: true
 };
 
-var PropertyChangeNotification = exports.PropertyChangeNotification = Object.create(null, {
-    phase: {writable: true, value: null},
-    target: {writable: true, value: null},
-    propertyPath: {writable: true, value: null},
-    minus: {writable: true, value: null},
-    plus: {writable: true, value: null},
-    currentTarget: {writable: true, value: null},
-    currentPropertyPath: {writable: true, value: null},
-    isMutation: {writable: true, value: false}
-});
+var PropertyChangeNotification = exports.PropertyChangeNotification = {
+    phase: null,
+    target: null,
+    propertyPath: null,
+    minus: null,
+    plus: null,
+    currentTarget: null,
+    currentPropertyPath: null,
+    isMutation: false
+};
 
 var ChangeNotificationDispatchingArray = exports.ChangeNotificationDispatchingArray = [];
 var _index_array_regexp = /^[0-9]+$/;

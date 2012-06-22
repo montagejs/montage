@@ -1,9 +1,9 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global bootstrap,setImmediate */
 /**
     Provides [nextTick]{@link nextTick}
     @module montage/core/next-tick
@@ -46,7 +46,7 @@ if (typeof process !== "undefined") {
             // setTimeout:
             request(flush, 0);
         }
-    }
+    };
 
     var flush = function () {
         try {

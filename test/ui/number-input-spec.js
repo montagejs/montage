@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
         TestPageLoader = require("support/testpageloader").TestPageLoader;
@@ -51,7 +51,7 @@ var testPage = TestPageLoader.queueTest("number-input-test", function() {
                 });
 
                 it("num1 should have the min/max/step element attributes", function() {
-                    // these attributes are defined at the NumberInput/RangeInput
+                    // these attributes are defined at the InputNumber/RangeInput
                     var instance = testPage.test.num1;
                     console.log('test min/max');
                     expect(instance._getElementAttributeDescriptor('min')).not.toBe(undefined);
@@ -61,7 +61,7 @@ var testPage = TestPageLoader.queueTest("number-input-test", function() {
                 });
 
                 it("num1 should have the element attributes defined by TextInput and NativeControl", function() {
-                    // these attributes are defined at the NumberInput/RangeInput
+                    // these attributes are defined at the InputNumber/RangeInput
                     var instance = testPage.test.num1;
 
                     expect(instance._getElementAttributeDescriptor('name')).not.toBe(undefined);

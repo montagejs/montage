@@ -1,11 +1,16 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Serializer = require("montage/core/serializer").Serializer;
+
+var stripPP = function stripPrettyPrintting(str) {
+    return str.replace(/\n\s*/g, "");
+};
 
 var testPage = TestPageLoader.queueTest("draw", function() {
 
@@ -478,6 +483,13 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             var oldElement = testPage.test.text1.element;
             testPage.test.text1.element = testPage.document.createElement("div");
             expect(testPage.test.text1.element).toBe(oldElement);
+        });
+
+        it("should serialize delegate as a reference", function() {
+            var serializer = Serializer.create().initWithRequire(require),
+                serialization = serializer.serializeObject(testPage.test.componentWithDelegate);
+
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/ui/component","properties":{"delegate":{"@":"application"},"parentProperty":"parentComponent","identifier":"componentWithDelegate"}}}');
         })
     });
 });

@@ -1,13 +1,15 @@
 <!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>TokenField Template</title>
-    <link rel="stylesheet" type="text/css" href="token-field.css">
-
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="token-field.css">
     <script type="text/montage-serialization">
 {
-
     "owner": {
         "prototype": "ui/token-field/token-field.reel",
         "properties": {
@@ -21,6 +23,7 @@
             "_autocompleteValue": {"<-": "@autocomplete.value"}
         }
     },
+
     "tokensController": {
         "prototype": "ui/controller/array-controller",
         "properties": {
@@ -28,7 +31,7 @@
             "automaticallyOrganizeObjects": true
         },
         "bindings": {
-            "content": {"<<->": "@owner.values"}
+            "content": {"<->": "@owner.values"}
         }
     },
 
@@ -39,8 +42,7 @@
                 "#": "token-list"
             },
             "isSelectionEnabled": true,
-            "contentController": {"@": "tokensController"},
-            "orientation": "horizontal"
+            "contentController": {"@": "tokensController"}
         }
     },
 
@@ -56,6 +58,7 @@
             "allowAdHocValues": {"<-": "@owner.allowAdHocValues"}
         }
     },
+
     "autocomplete": {
         "prototype": "ui/autocomplete/autocomplete.reel",
         "properties": {
@@ -71,17 +74,13 @@
     }
 }
     </script>
-
 </head>
 <body>
-    <div data-montage-id="token-field" class="montage-token-field">
-        <div data-montage-id="token-list" class="montage-token-list">
+    <div data-montage-id="token-field" class="montage-tokenField">
+        <div data-montage-id="token-list" class="montage-tokenField-list">
             <span data-montage-id="token"></span>
         </div>
-        <span class="montage-autocomplete-wrapper">
-            <input type="text" data-montage-id="autocomplete" class="montage-token-autocomplete" tabindex="0" />
-        </span>
+        <input type="text" data-montage-id="autocomplete" class="montage-tokenField-autocomplete" tabindex="0">
     </div>
-
 </body>
 </html>

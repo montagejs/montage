@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 /**
@@ -248,7 +248,7 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
         var serialization = {};
 
         serializer.addObjectReference(this.boundObject);
-        serialization[this.oneway ? "<-" : "<<->"] = "@" + serializer.getObjectLabel(this.boundObject) + "." + this.boundObjectPropertyPath;
+        serialization[this.oneway ? "<-" : "<->"] = "@" + serializer.getObjectLabel(this.boundObject) + "." + this.boundObjectPropertyPath;
         serialization.deferred = this.deferred;
         serialization.converter = this.converter;
 
@@ -270,26 +270,26 @@ Deserializer.defineDeserializationUnit("bindings", function(object, bindings, de
             dotIndex;
 
         if (!("boundObject" in binding)) {
-            var targetPath = binding["<-"] || binding["->"] || binding["<->>"] || binding["<<->"];
+            var targetPath = binding["<-"] || binding["<->"] || binding["<<->"];
 
-            if (targetPath[0] !== "@") {
-                logger.error("Invalid binding syntax '" + targetPath + "', should be in the form of '@label.path'.");
-                throw "Invalid binding syntax '" + targetPath + "'";
+            if ("<<->" in binding) {
+                console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.")
             }
-            if ("->" in binding || "<->>" in binding) {
-                binding.boundObject = object;
-                binding.boundObjectPropertyPath = sourcePath;
 
-                dotIndex = targetPath.indexOf(".");
-                object = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
-                sourcePath = targetPath.slice(dotIndex+1);
+            if (targetPath) {
+                if (targetPath[0] !== "@") {
+                    logger.error("Invalid binding syntax '" + targetPath + "', should be in the form of '@label.path'.");
+                    throw "Invalid binding syntax '" + targetPath + "'";
+                }
             } else {
-                dotIndex = targetPath.indexOf(".");
-                binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
-                binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
+                logger.error("Invalid binding syntax '" + JSON.stringify(binding) + "'.");
+                throw "Invalid binding syntax '" + JSON.stringify(binding) + "'";
             }
 
-            if ("<-" in binding || "->" in binding) {
+            dotIndex = targetPath.indexOf(".");
+            binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
+            binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
+            if ("<-" in binding) {
                 binding.oneway = true;
             }
         }

@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Application Test</title>
+    <script type="text/javascript" src="../../../montage.js"></script>
+    <script type="text/montage-serialization">
+        {
+            "test": {
+                "object": "application-test[theTest]",
+                "properties": {
+                    "testedComponent": {"@": "testedComponent"}
+                }
+            },
+
+            "testedComponent": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "application1"}
+                }
+            },
+
+            "application": {
+                "properties": {
+                    "delegate": {"@": "app_delegate"}
+                }
+            },
+
+            "app_delegate": {
+                "prototype": "app-delegate"
+            }
+        }
+    </script>
+
+</head>
+<body>
+    <h1>Application test</h1>
+
+    <div data-montage-id="application1">something</div>
+
+</body>
+</html>

@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
     TestPageLoader = require("support/testpageloader").TestPageLoader,
@@ -29,6 +29,59 @@ var testPage = TestPageLoader.queueTest("repetition", function() {
             application = testPage.window.document.application;
             eventManager = application.eventManager;
             delegate = application.delegate;
+        });
+
+        it("should expect unloaded new iterations to be present during the draw", function() {
+            var list14 = querySelector(".list14").controller,
+                willDraw = list14.willDraw,
+                draw = list14.draw,
+                didThrow = false;
+
+            spyOn(list14, "willDraw").andCallFake(function() {
+                list14._iterationTemplate._deserializer._compiledDeserializationFunctionString = null;
+                list14._iterationTemplate._deserializer._areModulesLoaded = false;
+                list14._iterationTemplate._deserializer._modules = {};
+                list14.objects.push(2);
+                if (willDraw) {
+                    return willDraw.apply(this, arguments);
+                }
+            });
+
+            spyOn(list14, "draw").andCallFake(function() {
+                try {
+                    draw.apply(this, arguments);
+                } catch (ex) {
+                    didThrow = true;
+                }
+            });
+
+
+            list14.objects = [1];
+
+            testPage.waitForComponentDraw(list14);
+            runs(function() {
+                expect(didThrow).toBe(false);
+            });
+        });
+
+        it("should remove the correct child components when removing an iteration", function() {
+            var list15 = querySelector(".list15").controller;
+
+            list15.objects.unshift(1);
+            testPage.waitForComponentDraw(list15);
+            runs(function() {
+                expect(list15.childComponents[0].text).toBe(1);
+                list15.objects.unshift(0);
+                testPage.waitForComponentDraw(list15);
+                runs(function() {
+                    expect(list15.childComponents[0].text).toBe(1);
+                    expect(list15.childComponents[1].text).toBe(0);
+
+                    list15.objects.shift();
+                    expect(list15.childComponents.length).toBe(1);
+                    expect(list15.childComponents[0].text).toBe(1);
+                });
+            });
         });
 
         describe("main document template", function() {

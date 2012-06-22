@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
@@ -1517,85 +1517,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
                         value: null
                     },
                     bindings: {
-                        value: {"<<->": "@source.value"}
-                    }
-                },
-
-                source: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    }
-                }
-            }).deserialize(function(objs) {
-                latch = true;
-                objects = objs;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
-                var root = objects.root,
-                    source = objects.source;
-
-                source.value = 15;
-                expect(root.value).toBe(15);
-                root.value = 16;
-                expect(source.value).toBe(16);
-            });
-        });
-
-        it("should deserialize a reverse oneway binding", function() {
-            var latch, objects,
-                deserializer = Deserializer.create();
-
-            deserializer._require = require;
-            deserializer.initWithObject({
-                root: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    },
-                    bindings: {
-                        value: {"->": "@source.value"}
-                    }
-                },
-
-                source: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    }
-                }
-            }).deserialize(function(objs) {
-                latch = true;
-                objects = objs;
-            });
-
-            waitsFor(function() { return latch; });
-            runs(function() {
-                var root = objects.root,
-                    source = objects.source;
-
-                source.value = 15;
-                expect(root.value).toBeNull();
-                root.value = 16;
-                expect(source.value).toBe(16);
-            });
-        });
-
-        it("should deserialize a reverse twoway binding", function() {
-            var latch, objects,
-                deserializer = Deserializer.create();
-
-            deserializer._require = require;
-            deserializer.initWithObject({
-                root: {
-                    prototype: "montage",
-                    properties: {
-                        value: null
-                    },
-                    bindings: {
-                        value: {"<->>": "@source.value"}
+                        value: {"<->": "@source.value"}
                     }
                 },
 

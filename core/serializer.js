@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
  @module montage/core/serializer
@@ -529,10 +529,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                     return this._serializeElement(value);
                 } else if (Array.isArray(value)) {
                     return this._serializeArray(value, indent + 1);
-                } else if (Object.getPrototypeOf(value) === Object.prototype) {
-                    return this._serializeObjectLiteral(value, null, indent + 1);
                 } else if (value.constructor === Function) {
                     return this._serializeFunction(value, indent);
+                } else if (!("getInfoForObject" in value)) { // we consider object literals the ones who aren't a Montage object
+                    return this._serializeObjectLiteral(value, null, indent + 1);
                 } else {
                     // TODO: should refactor this to handle references here, doesn't make
                     //       sense to wait until it hits _serializeObject for that to happen

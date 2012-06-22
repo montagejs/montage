@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Native InputRange test</title>
+    <script type="text/javascript" src="../../../montage.js" data-package="../../"></script>
+    <script type="text/montage-serialization">{
+
+    "nativeInputRange1": {
+        "prototype": "montage/ui/native/input-range.reel",
+        "properties": {
+            "element": {"#": "nativeInputRange1"},
+            "value": "50"
+        }
+    },
+    "nativeInputRange": {
+        "prototype": "montage/ui/native/input-range.reel",
+        "properties": {
+            "element": {"#": "nativeInputRange"},
+            "value": 1
+        }
+    },
+    "output": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "output"},
+            "value": "hello"
+        },
+        "bindings": {
+            "value": {"<-": "@nativeInputRange1.value"}
+        }
+    },
+
+    "scroll": {
+        "prototype": "montage/ui/scroller.reel",
+        "properties": {
+            "element": {"#": "scroll"}
+        }
+    },
+    "scroll_range": {
+        "prototype": "montage/ui/native/input-range.reel",
+        "properties": {
+            "element": {"#": "scroll_range"}
+        }
+    },
+
+    "test": {
+        "prototype": "ui/native-input-range-test/native-input-range-test",
+        "properties": {
+            "nativeInputRange1": {"@": "nativeInputRange1"},
+            "nativeInputRange": {"@": "nativeInputRange"},
+            "scroll": {"@": "scroll"},
+            "scroll_range": {"@": "scroll_range"}
+        }
+    },
+    "application": {
+        "prototype": "montage/ui/application",
+        "properties": {
+            "delegate": {"@": "test"}
+        }
+    }
+
+    }</script>
+
+</head>
+<body>
+    <h1>RangeInput test</h1>
+
+    <p>
+        <input type="range" data-montage-id="nativeInputRange1" value="0" min="0" max="100"/>
+        <span data-montage-id="output">0</span>
+    </p>
+
+    <p>
+        <input type="range" data-montage-id="nativeInputRange" min="-1" max="1" />
+    </p>
+
+    <h2>Scroll</h2>
+    <form action="" method="get">
+    <div id="scroll" style="background:#CCC; height: 300px">
+        <div style="background:#A00; height:50px; width:10px">.</div>
+        <input type="range" id="scroll_range" value="0" />
+        <div style="background:#A00; height:400px; width:10px">.</div>
+    </div>
+    </form>
+
+</body>
+</html>

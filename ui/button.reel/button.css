@@ -1,0 +1,55 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+ 
+.montage-button {
+    outline: none;
+    box-sizing: border-box;
+    font-size: 12px;
+    height: 2.5em;
+    min-width: 2.5em;
+    margin: 0 2px;
+    padding: 0 1em;
+    vertical-align: middle;
+    border-radius: 3px;
+    border: 1px solid #b3b3b3;
+    background-color: #f2f2f2;
+    cursor: pointer;
+}
+
+/* States */
+.montage-button:hover {
+    background-color: #fff;
+    color: #000;
+}
+
+.montage-button:active {
+    background-color: #e5e5e5;
+}
+
+.montage-button:focus {
+    border-color: #7f7f7f;
+}
+
+
+/* ButtonGroup ------------------------------- */
+
+.montage-buttonGroup {
+    padding-left: 5px; /* Add the negative margin back */
+}
+
+.montage-buttonGroup > .montage-button {
+    margin: 0;
+    border-radius: 0;
+    margin-left: -5px; /* Remove the space inbetween */
+}
+
+.montage-buttonGroup > .montage-button:first-child {
+    border-radius: 3px 0 0 3px;
+}
+
+.montage-buttonGroup > .montage-button:last-child {
+    border-radius: 0 3px 3px 0;
+}

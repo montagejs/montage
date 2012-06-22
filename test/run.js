@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 var Promise = require("montage/core/promise").Promise;
@@ -50,17 +50,14 @@ if (spec) {
         "core/extras/string",
 
         "data/blueprint-spec",
-        "data/context-spec",
         "data/store-spec",
-        "data/selector/property-spec",
-        "data/selector/query-spec",
-        "data/selector/selector-spec",
-        "data/selector/string-selector-spec",
+        "data/context-spec",
         "data/transactionmanager-spec",
 
-        "events/eventmanager-spec",
-        "events/object-hierarchy-spec",
         "events/change-notification-spec",
+        "events/eventmanager-spec",
+        "events/mutable-event-spec",
+        "events/object-hierarchy-spec",
 
         "geometry/cubicbezier-spec",
         "geometry/point-spec",
@@ -85,16 +82,18 @@ if (spec) {
         "ui/dynamic-element-spec",
         "ui/dynamic-text-spec",
         "ui/firstdraw-spec",
+        "ui/text-slider-spec",
         "ui/scroller-spec",
         "ui/list-spec",
+        "ui/native-control-spec",
         "ui/number-input-spec",
-        "ui/range-input-spec",
         "ui/popup-spec",
         "ui/popup-in-window-spec",
         "ui/repetition-spec",
         "ui/rich-text-editor-spec",
         "ui/select-input-spec",
-        "ui/skeleton-range-input-spec",
+        "ui/native-input-range-spec",
+        "ui/input-range-spec",
         "ui/slider-spec",
         "ui/slot-spec",
         "ui/textfield-spec",

@@ -1,0 +1,81 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+
+.main {
+    width: 480px;
+	margin: 0 auto 40px;
+	background: white;
+	padding: 20px;
+    -webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+    -moz-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+    -o-box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+    box-shadow: rgba(0, 0, 0, 0.2) 0 2px 6px 0;
+    -moz-border-radius: 0 0 5px 5px;
+    -o-border-radius: 0 0 5px 5px;
+    -webkit-border-radius: 0 0 5px 5px;
+    border-radius: 0 0 5px 5px;
+    font: 1em/1.5em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
+}
+
+.main h1 {
+    font-size: 36px;
+    font-weight: bold;
+    text-align: center;
+    padding: 10px 0 20px 0;
+}
+
+
+.taskStats {
+    margin-top: 10px;
+    color: #555;
+    -moz-border-radius-bottomleft: 5px;
+    -webkit-border-bottom-left-radius: 5px;
+    -o-border-bottom-left-radius: 5px;
+    -ms-border-bottom-left-radius: 5px;
+    -khtml-border-bottom-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    -moz-border-radius-bottomright: 5px;
+    -webkit-border-bottom-right-radius: 5px;
+    -o-border-bottom-right-radius: 5px;
+    -ms-border-bottom-right-radius: 5px;
+    -khtml-border-bottom-right-radius: 5px;
+    border-bottom-right-radius: 5px;
+    background: #F4FCE8;
+    border-top: 1px solid #EDEDED;
+    padding: 0 20px;
+    line-height: 36px;
+    font-size: 14px;
+}
+
+.taskForm label span,
+.taskForm input[type=submit] {
+    display: none;
+}
+
+.taskForm .taskNoteField {
+    outline: none;
+    width: 100%;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: 1px solid hsl(0,0%,70%);
+    padding: 10px 5px;
+    font-size: 24px;
+    color: hsl(0,0%,30%);
+    background: #fff;
+    -webkit-box-shadow: inset 0px 2px 2px -1px hsl(0,0%,85%);
+}
+
+.taskList {
+    list-style-type: none;
+    margin: 10px 0 0 0;
+    padding: 0;
+}
+
+
+
+
+

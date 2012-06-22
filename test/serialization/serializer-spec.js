@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
  var Montage = require("montage/core/core").Montage,
      Component = require("montage/ui/component").Component,
@@ -100,6 +100,20 @@ describe("serialization/serializer-spec", function() {
             // only the first parameter...
             // expect(spy).toHaveBeenCalledWith();
             expect(stripPP(serialization)).toBe('{"number":' + object.number + ',"string":"' + object.string + '","regexp":' + object.regexp + '}');
+        });
+
+        it("should serialize an Object literal created in a different document", function() {
+            var iframe = document.createElement("iframe");
+            iframe.style.display = "none";
+            window.document.body.appendChild(iframe);
+
+            var object = new iframe.contentWindow.Object;
+            object.number = 42;
+            object.string = "string";
+            var serialization = serializer.serializeObject(object);
+
+            expect(stripPP(serialization)).toBe('{"root":{"value":{"number":42,"string":"string"}}}');
+
         });
 
         it("should serialize a function", function() {

@@ -2,29 +2,29 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
 <head>
-    <title></title>
-    <link rel="stylesheet" type="text/css" href="rich-text-resizer.css">
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="rich-text-resizer.css">
     <script type="text/montage-serialization">
-        {
-            "image": {
-                "prototype": "ui/image.reel",
-                "properties": {
-                    "element": {"#": "image"}
-                }
-            },
-
-            "owner": {
-                "prototype": "ui/rich-text-editor/overlays/rich-text-resizer.reel",
-                "properties": {
-                    "element": {"#": "resizer-container"},
-                    "image": {"@": "image"}
-                }
-            }
+{
+    "image": {
+        "prototype": "ui/image.reel",
+        "properties": {
+            "element": {"#": "image"}
         }
+    },
+
+    "owner": {
+        "prototype": "ui/rich-text-editor/overlays/rich-text-resizer.reel",
+        "properties": {
+            "element": {"#": "resizer-container"},
+            "image": {"@": "image"}
+        }
+    }
+}
     </script>
 </head>
 <body>
