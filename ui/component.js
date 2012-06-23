@@ -638,7 +638,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             this.attachToParentComponent();
             if (this._element) {
-                this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+                // the DOM content of the component was dynamically modified
+                // but it hasn't been drawn yet, we're going to assume that
+                // this new DOM content is the desired original content for
+                // this component since it has been set at deserialization
+                // time.
+                if (this._newDomContent) {
+                    this.originalContent = this._newDomContent;
+                } else {
+                    this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+                }
             }
             if (! this.hasOwnProperty("identifier")) {
                 this.identifier = Montage.getInfoForObject(this).label;
@@ -1110,6 +1119,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.eventManager.registerEventHandlerForElement(this, template);
             this._element = template;
             this._templateElement = null;
+
+            // if the DOM content of the component was changed before the
+            // template has been drawn then we assume that this change is
+            // meant to set the original content of the component and not to
+            // replace the entire template with it, that wouldn't make much
+            // sense.
+            if (this._newDomContent) {
+                this._newDomContent = null;
+                this._shouldClearDomContentOnNextDraw = false;
+            }
         }
     },
 

@@ -32,7 +32,8 @@
             "text1": {"@": "text1"},
             "componentDrawsParent": {"@": "componentDrawsParent"},
             "componentParent": {"@": "componentParent"},
-            "componentWithDelegate": {"@": "componentWithDelegate"}
+            "componentWithDelegate": {"@": "componentWithDelegate"},
+            "componentList": {"@": "componentList"}
         }
     },
     "repetition": {
@@ -181,6 +182,19 @@
             "hasTemplate": false
         }
     },
+    "componentList": {
+        "prototype": "ui/draw/component-list.reel",
+        "properties": {
+            "element": {"#": "componentList"}
+        }
+    },
+    "text2": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "text2"},
+            "value": "Text 2"
+        }
+    },
     "owner": {
         "prototype": "montage/ui/application",
         "properties": {
@@ -230,6 +244,9 @@
     <div data-montage-id="componentDrawsParent">Fizz</div>
 </div>
 
+<div data-montage-id="componentList">
+    <span data-montage-id="text2"></span>
+</div>
 
 </body>
 </html>
