@@ -103,15 +103,13 @@ exports.Ruler = Montage.create(Component, {
                 // TODO add touch support
             } else {
                 document.addEventListener("mousemove", this);
-                document.addEventListener("mousedown", this);
-                document.addEventListener("mouseup", this);
             }
         }
     },
 
     handleMousemove: {
         value: function(evt) {
-            var containerPoint = Point.create().init(evt.clientX, evt.clientY);
+            var containerPoint = Point.create().init(evt.pageX, evt.pageY);
             if (this.container) {
                 containerPoint = dom.convertPointFromPageToNode(this.container, containerPoint);
             }

@@ -7,15 +7,55 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 var dom = require("montage/ui/dom");
 var Point = require("montage/core/geometry/point").Point;
-var PointMonitor = require("core/point-monitor").PointMonitor;
-var Effect = require("core/effect/effect").Effect;
 
 var DesaturateEffect = require("core/effect/desaturate-effect").DesaturateEffect;
 var InvertEffect = require("core/effect/invert-effect").InvertEffect;
 var SepiaEffect = require("core/effect/sepia-effect").SepiaEffect;
 var MultiplyEffect = require("core/effect/multiply-effect").MultiplyEffect;
 
+var CORS_TEST_IMAGE = "https://lh5.googleusercontent.com/-M9uCIhQjy3c/TwTSfmO6MlI/AAAAAAAAFcw/BIMvbz3a7Z4/s1/blank.jpg";
+
 exports.PhotoEditor = Montage.create(Component, {
+
+    supportsCrossOriginCanvas: {
+        value: null
+    },
+
+    didCreate: {
+        value: function() {
+            this._testCrossOriginCanvas();
+        }
+    },
+
+    _testCrossOriginCanvas: {
+        value: function() {
+
+            var corsImage,
+                corsCanvas,
+                corsContext,
+                self = this;
+
+            corsImage = document.createElement("img");
+            corsImage.crossOrigin = "";
+            corsImage.src = CORS_TEST_IMAGE;
+
+            corsImage.onload = function() {
+                corsCanvas = document.createElement("canvas");
+                corsContext = corsCanvas.getContext("2d");
+                corsContext.drawImage(corsImage, 0, 0, 1, 1);
+                try {
+                    corsContext.getImageData(0, 0, 1, 1);
+                    self.supportsCrossOriginCanvas = true;
+                } catch(e) {
+                    if (18 === e.code) {
+                        self.supportsCrossOriginCanvas = false;
+                    } else {
+                        throw e;
+                    }
+                }
+            }
+        }
+    },
 
     __image: {
         value: null
@@ -79,13 +119,13 @@ exports.PhotoEditor = Montage.create(Component, {
 
             event.preventDefault();
             this._pointerIdentifier = "mouse";
-            this._canvas.addEventListener("mousemove", this, false);
+            document.addEventListener("mousemove", this, false);
             document.addEventListener("mouseup", this, false);
 
-            this._pickColor(event.clientX, event.clientY);
+            this._pickColor(event.pageX, event.pageY);
 
             //update rulers
-            var canvasPoint = dom.convertPointFromPageToNode(this._canvas, Point.create().init(event.clientX, event.clientY));
+            var canvasPoint = dom.convertPointFromPageToNode(this._canvas, Point.create().init(event.pageX, event.pageY));
             if (this.horizontalRuler) {
                 this.horizontalRuler.savedPosition = canvasPoint.x;
             }
@@ -112,7 +152,7 @@ exports.PhotoEditor = Montage.create(Component, {
             document.addEventListener("touchend", this, false);
             document.addEventListener("touchcancel", this, false);
 
-            this._pickColor(pickTouch.clientX, pickTouch.clientY);
+            this._pickColor(pickTouch.pageX, pickTouch.pageY);
         }
     },
 
@@ -124,10 +164,10 @@ exports.PhotoEditor = Montage.create(Component, {
             }
 
             this._pointerIdentifier = null;
-            this._canvas.removeEventListener("mousemove", this, false);
+            document.removeEventListener("mousemove", this, false);
             document.removeEventListener("mouseup", this, false);
 
-            this._pickColor(event.clientX, event.clientY, true);
+            this._pickColor(event.pageX, event.pageY, true);
 
             if (this.horizontalRuler) {
                 this.horizontalRuler.savedPosition = null;
@@ -147,7 +187,7 @@ exports.PhotoEditor = Montage.create(Component, {
                 return;
             }
 
-            this._pickColor(event.clientX, event.clientY);
+            this._pickColor(event.pageX, event.pageY);
         }
     },
 
@@ -169,7 +209,7 @@ exports.PhotoEditor = Montage.create(Component, {
                 return;
             }
 
-            this._pickColor(foundTouch.clientX, foundTouch.clientY);
+            this._pickColor(foundTouch.pageX, foundTouch.pageY);
         }
     },
 
@@ -191,7 +231,7 @@ exports.PhotoEditor = Montage.create(Component, {
             }
 
             this._pointerIdentifier = null;
-            this._pickColor(foundTouch.clientX, foundTouch.clientY, true);
+            this._pickColor(foundTouch.pageX, foundTouch.pageY, true);
         }
     },
 
@@ -210,12 +250,12 @@ exports.PhotoEditor = Montage.create(Component, {
             colorPickEvent.initCustomEvent(end ? "colorpickend" : "colorpick", true, true, null);
             colorPickEvent.color = pickedPixel.data;
             colorPickEvent.focusGrid = focusGrid;
-            colorPickEvent.clientX = x;
-            colorPickEvent.clientY = y;
+            colorPickEvent.pageX = x;
+            colorPickEvent.pageY = y;
             colorPickEvent.canvasX = canvasPoint.x;
             colorPickEvent.canvasY = canvasPoint.y;
 
-            document.application.dispatchEvent(colorPickEvent);
+            this.dispatchEvent(colorPickEvent);
         }
     },
 
@@ -401,11 +441,6 @@ exports.PhotoEditor = Montage.create(Component, {
         }
     },
 
-    pointMonitorController: {
-        value: null,
-        serializable: true
-    },
-
     horizontalRuler: {
         value: null,
         serializable: true
@@ -416,22 +451,8 @@ exports.PhotoEditor = Montage.create(Component, {
         serializable: true
     },
 
-    _pointMonitors: {
+    pointMonitorController: {
         value: null
-    },
-
-    pointMonitors: {
-        get: function() {
-            if (!this._pointMonitors) {
-                if (window.Touch) {
-                    this._pointMonitors = [PointMonitor.create(), PointMonitor.create()];
-                } else {
-                    this._pointMonitors = [PointMonitor.create(), PointMonitor.create(), PointMonitor.create(), PointMonitor.create()];
-                }
-            }
-
-            return this._pointMonitors;
-        }
     },
 
     _isShowingPointMonitors: {
@@ -536,22 +557,11 @@ exports.PhotoEditor = Montage.create(Component, {
     didDraw: {
         value: function() {
             if (this._imageDirty) {
-
-                var context,
-                    imageData;
-
-                if (this.hasImage) {
-                    context = this._canvas.getContext('2d');
-                    imageData = context.getImageData(0, 0, this._width, this._height);
-                } else {
-                    imageData = null;
-                }
-
                 var imageModifiedEvent = document.createEvent("CustomEvent");
                 imageModifiedEvent.initCustomEvent("imagemodified", true, true, {
                     editor: this
                 });
-                document.application.dispatchEvent(imageModifiedEvent);
+                this.dispatchEvent(imageModifiedEvent);
 
                 this._imageDirty = false;
             }

@@ -57,9 +57,9 @@ exports.PointMarker = Montage.create(Component, {
         value: function() {
 
             if (null === this.x || null === this.y) {
-                this.element.classList.add("montage-hidden");
+                this.element.classList.add("montage-invisible");
             } else {
-                this.element.classList.remove("montage-hidden");
+                this.element.classList.remove("montage-invisible");
             }
 
             this.element.style.left = Math.floor(this.x - this._width/2)+ "px";

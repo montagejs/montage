@@ -9,20 +9,16 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
     defaultUndoManager = require("montage/core/undo-manager").defaultUndoManager,
-    LOCAL_STORAGE_KEY = "montage_photofx_state",
-    CORS_TEST_IMAGE = "https://lh5.googleusercontent.com/-M9uCIhQjy3c/TwTSfmO6MlI/AAAAAAAAFcw/BIMvbz3a7Z4/s1/blank.jpg";
+    ArrayController = require("montage/ui/controller/array-controller").ArrayController,
+    LOCAL_STORAGE_KEY = "montage_photofx_state";
 
 exports.Main = Montage.create(Component, {
-
-    supportsCrossOriginCanvas: {
-        value: null
-    },
 
     didCreate: {
         value: function() {
             this.undoManager = defaultUndoManager;
+            this.photoController = ArrayController.create();
 
-            this._testCrossOriginCanvas();
             this._loadPhotos();
         }
     },
@@ -42,7 +38,7 @@ exports.Main = Montage.create(Component, {
 
                     try {
                         deserializer.initWithStringAndRequire(stateSerialization, require).deserializeObject(function(savedState) {
-                            self.photos = savedState.photos;
+                            self.photoController.content = savedState.photos;
                         }, require);
                     } catch(e) {
                         console.error("Could not load saved state.");
@@ -53,12 +49,12 @@ exports.Main = Montage.create(Component, {
             }
 
             // Restore default images if there are no photos and we didn't have a serialization
-            if (!this.photos && !stateSerialization) {
-                this.photos = [
-                    {src: "images/IMG_1337.jpg", title: "Piston", authors: ["mike"], id:"4692177F-8C28-4273-99A5-DB453EF2767C"},
-                    {src: "images/IMG_1375.jpg", title: "Big Sky", authors: ["mike"], id:"89C81183-BB4C-4FAB-93B2-F193A54FF8CF"},
-                    {src: "images/IMG_1414.jpg", title: "5771", authors: ["mike"], id:"9797A89D-6EC6-4AC1-A568-87A42D04915A"},
-                    {src: "images/IMG_1416.jpg", title: "Horizon", authors: ["mike"], id:"61E19879-7E28-4D53-AECE-F1D80D9EDE0A"}
+            if (!this.photoController.content && !stateSerialization) {
+                this.photoController.content = [
+                    {src: "images/IMG_1337.jpg", thumbnailSrc: "images/IMG_1337_thumb.jpg", title: "Piston", authors: ["mike"], id:"4692177F-8C28-4273-99A5-DB453EF2767C"},
+                    {src: "images/IMG_1375.jpg", thumbnailSrc: "images/IMG_1375_thumb.jpg", title: "Big Sky", authors: ["mike"], id:"89C81183-BB4C-4FAB-93B2-F193A54FF8CF"},
+                    {src: "images/IMG_1414.jpg", thumbnailSrc: "images/IMG_1414_thumb.jpg", title: "5771", authors: ["mike"], id:"9797A89D-6EC6-4AC1-A568-87A42D04915A"},
+                    {src: "images/IMG_1416.jpg", thumbnailSrc: "images/IMG_1416_thumb.jpg", title: "Horizon", authors: ["mike"], id:"61E19879-7E28-4D53-AECE-F1D80D9EDE0A"}
                 ];
             }
         }
@@ -94,11 +90,7 @@ exports.Main = Montage.create(Component, {
         }
     },
 
-    photos: {
-        value: null
-    },
-
-    photoListController: {
+    photoController: {
         value: null,
         serializable: true
     },
@@ -108,7 +100,7 @@ exports.Main = Montage.create(Component, {
 
             document.addEventListener("mousedown", this, false);
 
-            window.addEventListener('beforeunload', this, false);
+            window.addEventListener('beforeunload', this, true);
 
             this.element.addEventListener("dragenter", this, false);
             this.element.addEventListener("dragleave", this, false);
@@ -125,14 +117,8 @@ exports.Main = Montage.create(Component, {
     handleMousedown: {
         value: function(evt) {
             if (evt.button === 1) {
-                this.handleToggleShowControlsButtonAction();
+                this.showControls = !this._showControls;
             }
-        }
-    },
-
-    handleToggleShowControlsButtonAction: {
-        value: function() {
-            this.showControls = !this.showControls;
         }
     },
 
@@ -207,7 +193,7 @@ exports.Main = Montage.create(Component, {
                             src: evt.target.result,
                             title: file.name
                         }
-                        self.photoListController.addObjects(photo);
+                        self.photoController.addObjects(photo);
 
                     };
                 })(this, iFile);
@@ -240,7 +226,7 @@ exports.Main = Montage.create(Component, {
         }
     },
 
-    handleBeforeunload: {
+    captureBeforeunload: {
         value: function() {
             this.saveState();
         }
@@ -254,7 +240,7 @@ exports.Main = Montage.create(Component, {
             }
 
             var savedState = {
-                photos: this.photos
+                photos: this.photoController.organizedObjects
             };
 
             var serializer = Serializer.create().initWithRequire(require);
@@ -280,7 +266,7 @@ exports.Main = Montage.create(Component, {
         value: function() {
 
             // Guard against adding cross-origin photos if we'll never be able to edit them
-            if (!this.supportsCrossOriginCanvas) {
+            if (!this.photoEditor.supportsCrossOriginCanvas) {
                 return;
             }
 
@@ -300,17 +286,17 @@ exports.Main = Montage.create(Component, {
         value: function() {
 
             // Guard against removing photos if we'll never be able to add more
-            if (!this.supportsCrossOriginCanvas) {
+            if (!this.photoEditor.supportsCrossOriginCanvas) {
                 return;
             }
 
-            var selectedPhoto = this.photoListController.getProperty("selectedObjects.0");
+            var selectedPhoto = this.photoController.getProperty("selectedObjects.0");
 
             if (!selectedPhoto) {
                 return;
             }
 
-            var index = this.photoListController.content.indexOf(selectedPhoto);
+            var index = this.photoController.content.indexOf(selectedPhoto);
             this.removePhotoAtIndex(index);
         }
     },
@@ -330,12 +316,12 @@ exports.Main = Montage.create(Component, {
     removePhotoAtIndex: {
         value: function(index) {
 
-            var photo = this.photoListController.content[index];
+            var photo = this.photoController.content[index];
             var undoLabel = 'remove photo "' + photo.title + '"';
 
             this.undoManager.add(undoLabel, this.addPhotoAtIndex, this, photo, index);
 
-            this.photoListController.removeObjects(photo);
+            this.photoController.removeObjects(photo);
         }
     },
 
@@ -346,8 +332,8 @@ exports.Main = Montage.create(Component, {
 
             this.undoManager.add(undoLabel, this.removePhotoAtIndex, this, index);
 
-            this.photoListController.content.splice(index, 0, photo);
-            this.photoListController.selectedObjects = [photo];
+            this.photoController.content.splice(index, 0, photo);
+            this.photoController.selectedObjects = [photo];
         }
     },
 

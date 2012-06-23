@@ -22,19 +22,14 @@
                 }
             },
 
-            "pointMonitorController": {
-                "prototype": "montage/ui/controller/array-controller",
-                "bindings": {
-                    "content": {"<-": "@owner.pointMonitors"}
-                }
-            },
-
             "pointMonitorRepetition": {
                 "prototype": "montage/ui/repetition.reel",
                 "properties": {
                     "element": {"#": "pointMonitors"},
-                    "isSelectionEnabled": true,
-                    "contentController": {"@": "pointMonitorController"}
+                    "isSelectionEnabled": true
+                },
+                "bindings": {
+                    "contentController": {"<-": "@owner.pointMonitorController"}
                 }
             },
 
@@ -79,7 +74,6 @@
                     "_image": {"@": "image"},
                     "_canvas": {"#": "canvas"},
                     "_toolLayer": {"#": "toolLayer"},
-                    "pointMonitorController": {"@": "pointMonitorController"},
                     "horizontalRuler": {"@": "horizontalRuler"},
                     "verticalRuler": {"@": "verticalRuler"}
                 }

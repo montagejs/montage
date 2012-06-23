@@ -31,3 +31,7 @@
     border-left-color: hsl(195,96%,53%);
     background-color: hsl(0,0%,96%);
 }
+
+.ColorInfoPanel .panel {
+    padding: 10px;
+}

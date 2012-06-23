@@ -11,20 +11,11 @@
     <link rel="stylesheet" type="text/css" href="main.css">
 
     <script type="text/montage-serialization">{
-
-            "photoController": {
-                "prototype": "montage/ui/controller/array-controller",
-                "properties": {
-                    "selectObjectsOnAddition": true
-                },
-                "bindings": {
-                    "content": {"<->": "@owner.photos"}
-                }
-            },
             "gridMagnifier": {
                 "prototype": "ui/grid-magnifier.reel",
                 "properties": {
-                    "element": {"#": "gridMagnifier"}
+                    "element": {"#": "gridMagnifier"},
+                    "followPointer": true
                 }
             },
             "photoEditor": {
@@ -33,7 +24,7 @@
                     "element": {"#": "editor"}
                 },
                 "bindings": {
-                    "photo": {"<-": "@photoController.selectedObjects.0"}
+                    "photo": {"<-": "@owner.photoController.selectedObjects.0"}
                 }
             },
             "effectsPanel": {
@@ -57,8 +48,10 @@
                 "properties": {
                     "element": {"#": "photoList"},
                     "axis": "horizontal",
-                    "isSelectionEnabled": true,
-                    "contentController": {"@": "photoController"}
+                    "isSelectionEnabled": true
+                },
+                "bindings": {
+                    "contentController": {"<-": "@owner.photoController"}
                 }
             },
 
@@ -68,7 +61,7 @@
                     "element": {"#": "supportsCrossOriginCanvasCondition"}
                 },
                 "bindings": {
-                    "condition": {"<-": "@owner.supportsCrossOriginCanvas"}
+                    "condition": {"<-": "@owner.photoEditor.supportsCrossOriginCanvas"}
                 }
             },
 
@@ -94,7 +87,7 @@
                     "removalStrategy": "hide"
                 },
                 "bindings": {
-                    "condition": {"<-": "@photoController.selectedObjects.0"}
+                    "condition": {"<-": "@owner.photoController.selectedObjects.0"}
                 }
             },
 
@@ -115,33 +108,27 @@
 
             "searchPanel": {
                 "prototype": "ui/search-panel.reel",
-                "properties": {
-                    "photoListController": {"@": "photoController"}
+                "bindings": {
+                    "photoListController": {"<-": "@owner.photoController"}
                 }
             },
 
             "owner": {
                 "properties": {
                     "element": {"#": "main"},
-                    "photoListController": {"@": "photoController"},
                     "searchPanel": {"@": "searchPanel"},
                     "photoEditor": {"@": "photoEditor"}
                 }
             },
 
             "toggleControlsButton": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
-                    "element": {"#": "toggleControlsButton"},
-                    "identifier": "toggleShowControlsButton"
+                    "element": {"#": "toggleControlsButton"}
                 },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "owner"},
-                        "capture": false
-                    }
-                ]
+                "bindings": {
+                    "pressed": {"<->": "@owner.showControls"}
+                }
             },
 
             "undoButton": {

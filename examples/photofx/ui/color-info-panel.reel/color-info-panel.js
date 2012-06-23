@@ -5,23 +5,59 @@
  </copyright> */
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
+var ArrayController = require("montage/ui/controller/array-controller").ArrayController;
+var PointMonitor = require("core/point-monitor").PointMonitor;
 var undoManager = require("montage/core/undo-manager").defaultUndoManager;
 
 exports.ColorInfoPanel = Montage.create(Component, {
 
-    pointMonitorController: {
-        serializable: true,
+    didCreate: {
+        value: function() {
+
+            this.pointMonitorController = ArrayController.create();
+            this.pointMonitorController.content = [];
+            this.pointMonitorController.objectPrototype = PointMonitor;
+
+            for (var i = 0; i < 2; i++) {
+                this.pointMonitorController.add();
+            }
+
+            this.pointMonitorController.selectedIndexes = [0];
+            this.pointMonitorController.selectObjectsOnAddition = true;
+        }
+    },
+
+    _editor: {
+        enumerable: false,
         value: null
     },
 
-    prepareForDraw: {
-        value: function() {
-            document.application.addEventListener("colorpick", this, false);
-            document.application.addEventListener("colorpickend", this, false);
-            document.application.addEventListener("imagemodified", this, false);
+    editor: {
+        get: function() {
+            return this._editor;
+        },
+        set: function(value) {
 
-            if (this.pointMonitorController && null == this.pointMonitorController.selectedIndexes) {
-                this.pointMonitorController.selectedIndexes = [0];
+            var oldEditor = this._editor;
+
+            if (value === oldEditor) {
+                return;
+            }
+
+            if (oldEditor) {
+                oldEditor.pointMonitorController = null;
+                oldEditor.removeEventListener("colorpick", this, false);
+                oldEditor.removeEventListener("colorpickend", this, false);
+                oldEditor.removeEventListener("imagemodified", this, false);
+            }
+
+            this._editor = value;
+
+            if (value) {
+                value.pointMonitorController = this.pointMonitorController;
+                value.addEventListener("colorpick", this, false);
+                value.addEventListener("colorpickend", this, false);
+                value.addEventListener("imagemodified", this, false);
             }
         }
     },
@@ -29,38 +65,20 @@ exports.ColorInfoPanel = Montage.create(Component, {
     handleColorpick: {
         value: function(event) {
             // a color was picked, update the color for the current selected color picker
-            // also need to update the stored point for that picker
-
-            var self = this;
-            this._deferredColor = event.color;
-            this._deferredCanvasX = event.canvasX;
-            this._deferredCanvasY = event.canvasY;
-
-            // Deferring accepting a color as a bit of a performance optimization to improve magnifier drawing
-            if (!this._colorPickTimeout) {
-                this._colorPickTimeout = setTimeout(function() {
-
-                    var selectedObject = self.pointMonitorController.getProperty("selectedObjects.0");
-                    self.pickColor(selectedObject, self._deferredCanvasX, self._deferredCanvasY, self._deferredColor, false);
-
-                    self._colorPickTimeout = null;
-                }, 100);
+            var selectedObject = this.pointMonitorController.getProperty("selectedObjects.0");
+            if (selectedObject) {
+                this.pickColor(selectedObject, event.canvasX, event.canvasY, event.color, false);
             }
         }
     },
 
     handleColorpickend: {
         value: function(event) {
-            clearTimeout(this._colorPickTimeout);
-            this._colorPickTimeout = null;
-
             var selectedObject = this.pointMonitorController.getProperty("selectedObjects.0");
-            this.pickColor(selectedObject, event.canvasX, event.canvasY, event.color, true);
+            if (selectedObject) {
+                this.pickColor(selectedObject, event.canvasX, event.canvasY, event.color, true);
+            }
         }
-    },
-
-    _undoColorPickInfo: {
-        value: null
     },
 
     pickColor: {
@@ -89,7 +107,7 @@ exports.ColorInfoPanel = Montage.create(Component, {
                 if (originalX !== x || originalY !== y) {
 
                     // If the new x and y were null, this pickColor cleared a marker, label it as such
-                    var undoLabel = (null == x || null == y) ? "clear color marker" : "set color marker"
+                    var undoLabel = (null == x || null == y) ? "clear color marker" : "set color marker";
                     undoManager.add(undoLabel, this.pickColor, this, monitor, originalX, originalY, null, true);
                 }
 
@@ -102,20 +120,88 @@ exports.ColorInfoPanel = Montage.create(Component, {
     handleImagemodified: {
         value: function(evt) {
             var pointMonitors = this.getProperty("pointMonitorController.organizedObjects"),
-                editor,
+                editor = evt.detail.editor,
                 i,
                 iPointMonitor;
 
-            if (!pointMonitors) {
+
+            if (!pointMonitors || editor !== this._editor) {
                 return;
             }
-
-            editor = evt.detail.editor;
 
             for (i = 0; (iPointMonitor = pointMonitors[i]); i++) {
                 if (null != iPointMonitor.x && null != iPointMonitor.y) {
                     iPointMonitor.color = editor.dataAtPoint(iPointMonitor.x, iPointMonitor.y);
                 }
+            }
+
+        }
+    },
+
+    handleAddMonitorButtonAction: {
+        value: function() {
+            this.addPointMonitors();
+        }
+    },
+
+    handleRemoveMonitorButtonAction: {
+        value: function() {
+            this.removePointMonitors();
+        }
+    },
+
+    addPointMonitors: {
+        value: function(monitors) {
+
+            var pointMonitors = this.pointMonitorController;
+
+            //Don't shift selection when undoing
+            if (undoManager.isUndoing) {
+                pointMonitors.selectObjectsOnAddition = false;
+            }
+
+            if (monitors) {
+                pointMonitors.addObjects.apply(pointMonitors, monitors);
+            } else {
+                pointMonitors.add();
+            }
+
+            // TODO account for multiple addition undoing
+            // don't assume it's the last one (or that it appears in organizedObjects at all)
+            undoManager.add("add color marker", this.removePointMonitors, this, [pointMonitors.organizedObjects.length - 1]);
+
+            if (undoManager.isUndoing) {
+                pointMonitors.selectObjectsOnAddition = true;
+            }
+        }
+    },
+
+    removePointMonitors: {
+        value: function(indexes) {
+
+            var removedMonitors;
+
+            if (indexes) {
+                removedMonitors = this.pointMonitorController.removeObjectsAtIndexes(indexes);
+            } else {
+
+                var selectedIndex = this.pointMonitorController.selectedIndexes[0],
+                    objectCount;
+
+                removedMonitors = this.pointMonitorController.remove();
+
+                objectCount = this.pointMonitorController.organizedObjects.length;
+
+               if (!this.pointMonitorController.selectedIndexes.length && objectCount > selectedIndex) {
+                   this.pointMonitorController.selectedIndexes = [selectedIndex];
+               } else {
+                   this.pointMonitorController.selectedIndexes = [selectedIndex - 1];
+               }
+
+            }
+
+            if (removedMonitors && removedMonitors.length > 0) {
+                undoManager.add("remove color marker", this.addPointMonitors, this, removedMonitors);
             }
 
         }

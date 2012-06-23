@@ -6,6 +6,8 @@
  </copyright> */
 var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
+var dom = require("montage/ui/dom");
+var Point = require("montage/core/geometry/point").Point;
 
 exports.GridMagnifier = Montage.create(Component, {
 
@@ -43,18 +45,18 @@ exports.GridMagnifier = Montage.create(Component, {
         value: null
     },
 
-    _clientCenterX: {
+    _pageCenterX: {
         value: null
     },
 
-    _clientCenterY: {
+    _pageCenterY: {
         value: null
     },
 
     handleColorpick: {
         value: function(event) {
-            this._clientCenterX = event.clientX;
-            this._clientCenterY = event.clientY;
+            this._pageCenterX = event.pageX;
+            this._pageCenterY = event.pageY;
             // TODO these should trigger draw if changed elsewhere, but that shouldn't happen anyway
             this.grid = event.focusGrid;
 
@@ -65,9 +67,28 @@ exports.GridMagnifier = Montage.create(Component, {
     handleColorpickend: {
         value: function() {
             document.application.removeEventListener("colorpickend", this, false);
-            this._clientCenterX = null;
-            this._clientCenterY = null;
+            this._pageCenterX = null;
+            this._pageCenterY = null;
             this.grid = null;
+        }
+    },
+
+    _followPointer: {
+        value: false,
+        serializable: true
+    },
+
+    followPointer: {
+        get: function() {
+            return this._followPointer;
+        },
+        set: function(value) {
+            if (value === this._followPointer) {
+                return;
+            }
+
+            this._followPointer = value;
+            this.needsDraw = true;
         }
     },
 
@@ -103,20 +124,30 @@ exports.GridMagnifier = Montage.create(Component, {
 
             this.element.classList.add("active");
 
+            if (this.followPointer) {
+                this.element.classList.remove("stationary");
+            } else {
+                this.element.classList.add("stationary");
+            }
+
             var gridSize = 10,
-                translateX = (this._clientCenterX - (this._width/2)) - (gridSize * 1.5) + "px",
-                translateY = (this._clientCenterY - (this._height/2)) - (gridSize * 1.5) + "px",
+                translateX = (this._pageCenterX - (this._width/2)) - (gridSize/2),
+                translateY = (this._pageCenterY - (this._height/2)) - (gridSize/2),
+                relativePoint = dom.convertPointFromPageToNode(this.element.parentNode, Point.create().init(translateX, translateY)),
                 gridData = this.grid.data,
                 context = this._context,
-                x = 0,
-                y = 0,
+                x,
+                y,
                 i = 0,
                 rowCount = Math.floor(this._width / gridSize),
                 columnCount = Math.floor(this._height / gridSize);
 
             // Move to the right spot
-            // TODO add a flag to keep this in one spot
-            this.element.style.webkitTransform = "translate3d(" + translateX + "," + translateY + ", 0)";
+            if (this.followPointer) {
+                this.element.style.webkitTransform = "translate3d(" + relativePoint.x + "px, " + relativePoint.y + "px , 0)";
+            } else {
+                this.element.style.webkitTransform = "translate3d(0, 0, 0)";
+            }
 
             context.clearRect(0, 0, this._width, this._height);
 

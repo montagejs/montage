@@ -106,7 +106,7 @@ input {
 
 .PhotoFX .mainMenu .UndoButton,
 .PhotoFX .mainMenu .RedoButton {
-    /*width: 12em;*/
+    width: 12em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
