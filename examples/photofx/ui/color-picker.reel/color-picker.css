@@ -23,6 +23,7 @@
 
 .ColorPicker .valueList {
     margin-right: 5px;
+    margin-bottom: 0;
 }
 
 .ColorPicker dt {

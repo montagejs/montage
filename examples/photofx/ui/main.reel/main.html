@@ -11,11 +11,19 @@
     <link rel="stylesheet" type="text/css" href="main.css">
 
     <script type="text/montage-serialization">{
+
+            "negationConverter": {
+                "prototype": "core/negation-converter"
+            },
+
             "gridMagnifier": {
                 "prototype": "ui/grid-magnifier.reel",
                 "properties": {
                     "element": {"#": "gridMagnifier"},
                     "followPointer": true
+                },
+                "bindings": {
+                    "colorPickerEnabled": {"<-": "@owner.showControls", "converter": {"@": "negationConverter"}}
                 }
             },
             "photoEditor": {

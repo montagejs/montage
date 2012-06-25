@@ -15,7 +15,31 @@
             "owner": {
                 "properties": {
                     "element": {"#": "GridMagnifier"},
+                    "_loupe": {"#": "loupe"},
                     "_canvas": {"#": "canvas"}
+                }
+            },
+
+            "colorPickerCondition": {
+                "prototype": "montage/ui/condition.reel",
+                "properties": {
+                    "element": {"#": "colorPickerCondition"},
+                    "removalStrategy": "hide"
+                },
+                "bindings": {
+                    "condition": {"<-": "@owner.colorPickerEnabled"}
+                }
+            },
+
+            "colorPicker": {
+                "prototype": "ui/color-picker.reel",
+                "properties": {
+                    "element": {"#": "colorPicker"}
+                },
+                "bindings": {
+                    "currentColor": {"<-": "@owner.color"},
+                    "x": {"<-": "@owner.x"},
+                    "y": {"<-": "@owner.y"}
                 }
             }
         }
@@ -25,7 +49,12 @@
 <body>
 
     <div data-montage-id="GridMagnifier" class="GridMagnifier">
-        <canvas data-montage-id="canvas" width="200" height="200"></canvas>
+        <div data-montage-id="loupe" class="loupe">
+            <canvas data-montage-id="canvas" width="200" height="200"></canvas>
+        </div>
+        <div data-montage-id="colorPickerCondition">
+            <div data-montage-id="colorPicker"></div>
+        </div>
     </div>
 
 </body>

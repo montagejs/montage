@@ -11,6 +11,11 @@ var Point = require("montage/core/geometry/point").Point;
 
 exports.GridMagnifier = Montage.create(Component, {
 
+    _loupe: {
+            value: null,
+            serializable: true
+        },
+
     _canvas: {
         value: null,
         serializable: true
@@ -53,12 +58,31 @@ exports.GridMagnifier = Montage.create(Component, {
         value: null
     },
 
+    x: {
+        value: null
+    },
+
+    y: {
+        value: null
+    },
+
+    color: {
+        value: null
+    },
+
+    colorPickerEnabled: {
+        value: false
+    },
+
     handleColorpick: {
         value: function(event) {
             this._pageCenterX = event.pageX;
             this._pageCenterY = event.pageY;
+            this.x = event.canvasX;
+            this.y = event.canvasY;
             // TODO these should trigger draw if changed elsewhere, but that shouldn't happen anyway
             this.grid = event.focusGrid;
+            this.color = event.color;
 
             document.application.addEventListener("colorpickend", this, false);
         }
@@ -100,7 +124,7 @@ exports.GridMagnifier = Montage.create(Component, {
             // canvas elements. Debugging points to some issue with adoptNode. Either way,
             // if we don't do this it takes two draw cycles to actually get the canvas rendering.
             var newCanvas = this._canvas.cloneNode(true);
-            this.element.replaceChild(newCanvas, this._canvas);
+            this._canvas.parentNode.replaceChild(newCanvas, this._canvas);
             this._canvas = newCanvas;
 
             this._context = this._canvas.getContext("2d");
@@ -109,8 +133,8 @@ exports.GridMagnifier = Montage.create(Component, {
 
     willDraw: {
         value: function() {
-            this._width = this.element.offsetWidth;
-            this._height = this.element.offsetHeight;
+            this._width = this._loupe.offsetWidth;
+            this._height = this._loupe.offsetHeight;
         }
     },
 
