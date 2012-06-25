@@ -110,7 +110,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
             filenames.forEach(function(filename) {
                 var stats = fs.statSync(filename);
 
-                if (stats.isFile() && /\.(html|json|js|css)$/.test(filename)) {
+                if (stats.isFile() && /\.(html|json|js|css|markdown)$/.test(filename)) {
                     this.processFile(filename);
                 } else if (stats.isDirectory()) {
                     this.processDirectory(filename);
