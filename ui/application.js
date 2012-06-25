@@ -49,6 +49,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     /**
      Provides a reference to the parent application (in multi-window environment).
      @type {module:montage/ui/application.Application}
+     @default null
      */
     parentApplication: {
         value: null
@@ -57,6 +58,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     /**
      Provides a reference to the main application (in multi-window environment).
      @type {module:montage/ui/application.Application}
+     @default this
      */
     mainApplication: {
         get: function() {
@@ -74,6 +76,12 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: "reverse-z-order"
     },
 
+    /**
+     Determines the sort order for the Application.windows array.
+     Possible values are: z-order, reverse-z-order, open-order, reverse-open-order
+     @type {String}
+     @default {String} {"reverse-z-order"}
+     */
     windowsSortOrder: {
         get: function() {
             if (this.parentApplication == null) {
@@ -95,8 +103,9 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     return the list of open windows sorted per z-order, first on is the topmost.
-     @type {array}
+     Provides a reference to all the windows opened by the main application or any of its descendents.
+     The list is kept sorted, the sort order is determined by the Application.windowsSortOrder property     @type {array}
+     @type {Array}
      */
     windows: {
         get: function() {
@@ -123,6 +132,10 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: null
     },
 
+    /**
+     Provides a reference to the MontageWindow attached to this application.
+     @type {module:montage/ui/montage-windows.js/MontageWindow}
+     */
     window: {
         get: function() {
             if (!this._window && this == this.mainApplication) {
@@ -179,7 +192,22 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      @default document.defaultView
      */
     focusWindow: {
-        value: document.defaultView
+        get: function() {
+            var windows = this.windows,
+                sortOrder = this.windowsSortOrder;
+
+            if (sortOrder == "z-order") {
+                return windows[0];
+            } else if (sortOrder == "reverse-z-order") {
+                return windows[windows.length - 1];
+            } else {
+                for (var i in windows) {
+                    if (windows[i].focused) {
+                        return windows[i];
+                    }
+                }
+            }
+        }
     },
 
     /**
@@ -192,23 +220,97 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
+     Attach a window
+     @function
+     */
+    attachWindow: {
+        value: function(montageWindow) {
+            var parentApplicaton = montageWindow.application.parentApplication,
+                sortOrder;
+
+            if (parentApplicaton !== this) {
+                if (parentApplicaton) {
+                    parentApplicaton.detachWindow(montageWindow);
+                }
+
+                montageWindow.parentApplication = this;
+                this.attachedWindows.push(montageWindow);
+
+                sortOrder = this.mainApplication.windowsSortOrder;
+                if (sortOrder == "z-order" || sortOrder == "reverse-open-order") {
+                    this.windows.unshift(montageWindow);
+                } else {
+                    this.windows.push(montageWindow);
+                }
+                montageWindow.focus()
+            }
+            return montageWindow;
+        }
+    },
+
+    /**
+     Detach a window
+     @function
+     */
+    detachWindow: {
+        value: function(montageWindow) {
+            var index,
+                parentApplicaton,
+                windows = this.windows;
+
+            if (montageWindow === undefined) {
+                montageWindow = this.window;
+            }
+            parentApplicaton = montageWindow.application.parentApplication;
+
+            if (parentApplicaton == this) {
+                index = this.attachedWindows.indexOf(montageWindow);
+                if (index !== -1) {
+                    this.attachedWindows.splice(index, 1);
+                }
+                index = windows.indexOf(montageWindow);
+                if (index !== -1) {
+                    windows.splice(index, 1);
+                }
+                montageWindow.application.parentApplication = null;
+            } else if (parentApplicaton) {
+                parentApplicaton.detachWindow(montageWindow);
+            }
+            return montageWindow;
+        }
+    },
+
+    /**
      Opens a URL in a new browser window, and registers the window with the Montage event manager.<br>
      The document URL must be in the same domain as the calling script.
      @function
-     @param {PATH} component The path to the real component to open in the new window.
-     @param {STRING} name the component main class name.
-     @param {STRING} params the the new window parameters (as in window.open).
-     @param {FUNCTION} callback the function to call once the component has been loaded in the window. the callback params are the window and the component instance
+     @param {PATH} component, the path to the reel component to open in the new window.
+     @param {STRING} name, the component main class name.
+     @param {OBJECT} parameters, the new window parameters (accept same parameters than window.open).
      @example
      var app = document.application;
-     app.openWindow("docs/help.reel", "width=300, height=500", function(aWindow, aComponent){...});
+     app.openWindow("docs/help.reel", "width=300, height=500");
      */
     openWindow: {
-        value: function(component, name, params, callback) {
+        value: function(component, name, parameters) {
             var thisRef = this,
                 childWindow = WindowProxy.create(),
                 childApplication,
-                event;
+                event,
+                windowParams = {
+                    name: "_blank",
+                    location: false,
+//                  height: <pixels>,
+//                  width: <pixels>,
+//                  left: <pixels>,
+//                  top: <pixels>,
+                    menubar: false,
+                    resizable: true,
+                    scrollbars: true,
+                    status: false,
+                    titlebar: true,
+                    toolbar: false
+                };
 
             var loadInfo = {
                 module: component,
@@ -216,7 +318,6 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 parent: window,
                 callback: function(aWindow, aComponent) {
                     var sortOrder;
-
 
                     // Finishing the window object initialization and let the consumer knows the window is loaded and ready
                     childApplication = aWindow.document.application;
@@ -243,10 +344,37 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             // If this is the first time we open a window, let's install a focus listener and make sure the body element is focusable
             // Applicable only on the main application
             if (this === this.mainApplication && !this._multipleWindow) {
-                this.window;    // Will cause to create a window proxy for the mainApplication and install the needed event handlers
+                var montageWindow = this.window;    // Will cause to create a Montage Window for the mainApplication and install the needed event handlers
             }
+
+            if (typeof parameters == "object") {
+                var param, value, separator = "", stringParamaters = "";
+
+                // merge the windowParams with the parameters
+                for (param in parameters) {
+                    if (parameters.hasOwnProperty(param)) {
+                        windowParams[param] = parameters[param];
+                    }
+                }
+            }
+
+            // now convert the windowParams into a string
+            for (param in windowParams) {
+                value = windowParams[param];
+                if (typeof value == "boolean") {
+                    value = value ? "yes" : "no";
+                } else {
+                    value = String(value);
+                    if (value.match(/[ ,"]/)) {
+                        value = '"' + value.replace(/"/g, "\\\"") + '"';
+                    }
+                }
+                stringParamaters += separator + param + "=" + value;
+                separator = ",";
+            }
+
             window.require.loadPackage({name: "montage"}).then(function(require) {
-                var newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", params);
+                var newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", stringParamaters);
                 newWindow.loadInfo = loadInfo;
             }).end();
 

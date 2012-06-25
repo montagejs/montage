@@ -43,7 +43,6 @@ var WindowProxy = exports.WindowProxy = Montage.create(Montage, /** @lends monta
         set: function(value) {
             if (this._application === null) {
                 this._application = value;
-
                 if (this.focused) {
                     this._setFocusedWindow(this);
                 }
@@ -170,6 +169,11 @@ var WindowProxy = exports.WindowProxy = Montage.create(Montage, /** @lends monta
         get: function() { return this._window ? this._window.closed : false }
     },
 
+    /**
+     Close the window
+     Note: Any child window will be closed too.
+     @function
+     */
     close: {
         value: function() {
             if (this._window) {
