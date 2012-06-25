@@ -331,7 +331,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Object} object  TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @returns this.permanentIdForObjectId$Implementation(objectId, context, aTransactionId)
      */
     permanentIdForObjectId:{
@@ -377,7 +377,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Object} objectId  TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @returns this.pledgeForObjectId$Implementation(objectId, context, aTransactionId)
      */
     pledgeForObjectId:{
@@ -422,7 +422,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} relationshipName TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @returns this.pledgeForSourceObjectAssociationNamed$Implementation(sourceObject, relationshipName, context, aTransactionId)
      */
     pledgeForSourceObjectAssociationNamed:{
@@ -473,7 +473,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} relationship TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @returns this.pledgeForSourceObjectAssociation$Implementation(sourceObject, relationship, context, aTransactionId)
      */
     pledgeForSourceObjectAssociation:{
@@ -521,7 +521,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Object} object TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @returns this.initializeObject$Implementation(object, context, aTransactionId)
      */
     initializeObject:{
@@ -570,7 +570,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Object} target TODO
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @returns this.repledgeObject$Implementation(target, context, aTransactionId)
      */
     repledgeObject:{
@@ -628,7 +628,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @function
      @param {Property} context TODO
      @param {Id} transactionId TODO
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      */
     saveChangesInContext:{
         value:function (context, transactionId, name) {
@@ -719,7 +719,7 @@ var Store = exports.Store = Montage.create(Montage, /** @lends module:montage/da
      @param {Property} query describing the object to retrieve
      @param {Property} context change context into which to insert the objects
      @param {Id} transactionId transaction identifier
-     @param {name} Mapping folder name used for this transaction
+     @param {name} Mapping set name used for this transaction
      @returns this.queryInContext$Implementation(query, context, aTransactionId)
      */
     queryInContext:{
