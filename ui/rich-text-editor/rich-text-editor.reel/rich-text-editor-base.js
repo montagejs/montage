@@ -565,7 +565,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
 
             el.classList.add('montage-editor-container');
 
-            el.addEventListener("focus", this);
+            el.addEventListener("focus", this, true);
             el.addEventListener("dragstart", this, false);
             el.addEventListener("dragenter", this, false);
             el.addEventListener("dragover", this, false);
@@ -784,7 +784,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     Description TODO
     @function
     */
-    handleFocus: {
+    captureFocus: {
         enumerable: false,
         value: function() {
             var thisRef = this,
@@ -836,7 +836,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 this._setCaretAtEndOfContent = false;
             }
 
-            el.addEventListener("blur", this);
+            el.addEventListener("blur", this, true);
             el.addEventListener("input", this);
             el.addEventListener("keydown", this);
             el.addEventListener("keypress", this);
@@ -874,7 +874,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
     Description TODO
     @function
     */
-    handleBlur: {
+    captureBlur: {
         enumerable: false,
         value: function() {
             var thisRef = this,
@@ -895,7 +895,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
             // Force a selectionchange when we lose the focus
             this.handleSelectionchange();
 
-            el.removeEventListener("blur", this);
+            el.removeEventListener("blur", this, true);
             el.removeEventListener("input", this);
             el.removeEventListener("keydown", this);
             el.removeEventListener("keypress", this);

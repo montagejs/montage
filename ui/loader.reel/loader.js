@@ -37,7 +37,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     mainModule: {
         enumerable: false,
         serializable: true,
-        value: "main.reel"
+        value: "ui/main.reel"
     },
 
 /**
