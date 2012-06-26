@@ -121,7 +121,7 @@ var Pledge = exports.Pledge = Montage.create(Promise, /** @lends module:montage/
 
 /**
  @class module:montage/data/pledge.PledgedSortedSet
- @extends module:montage/data/pledge.Pledged
+ @extends module:montage/data/pledge.Pledge
  */
 var PledgedSortedSet = exports.PledgedSortedSet = Montage.create(Pledge, /** @lends module:montage/data/pledge.PledgedSortedSet# */ {
 
