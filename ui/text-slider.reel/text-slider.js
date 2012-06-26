@@ -338,7 +338,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
                 // if we're entering the editing state...
                 if (!wasEditing) {
                     // ...add the class and focus the input
-                    this._element.classList.add("montage-text-slider-editing");
+                    this._element.classList.add("montage-TextSlider--editing");
                     this._inputElement.focus();
                 }
 
@@ -346,7 +346,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
             } else if (wasEditing) {
                 // remove class list, blur the input element and focus the
                 // TextSlider for further editing
-                this._element.classList.remove("montage-text-slider-editing");
+                this._element.classList.remove("montage-TextSlider--editing");
                 this._inputElement.blur();
                 this._element.focus();
             }

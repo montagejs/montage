@@ -28,8 +28,8 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- 
-.montage-inputRange {
+
+.montage-InputRange {
     position: relative;
     display: inline-block;
     box-sizing: border-box;
@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
     background-color: #d9d9d9;
 }
 
-.montage-inputRange-thumb {
+.montage-InputRange-thumb {
     position: absolute;
     font-size: inherit;
     box-sizing: border-box;
@@ -56,12 +56,12 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 
 /* States */
-.montage-inputRange-thumb:hover {
+.montage-InputRange-thumb:hover {
     background-color: #fff;
 }
-.montage-inputRange-thumb:active {
+.montage-InputRange-thumb:active {
     background-color: #e5e5e5;
 }
-.montage-inputRange-thumb:focus {
+.montage-InputRange-thumb:focus {
     border-color: #7f7f7f;
 }

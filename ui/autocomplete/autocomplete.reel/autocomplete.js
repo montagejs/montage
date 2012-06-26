@@ -445,7 +445,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
     prepareForDraw: {
         value: function() {
             this._addEventListeners();
-            this.element.classList.add('montage-autocomplete');
+            this.element.classList.add('montage-Autocomplete');
 
             // create the Repetition for the suggestions
             this.resultsController = ArrayController.create();
@@ -524,7 +524,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
             }
 
             var isLoading = (this.loadingStatus === 'loading');
-            this.element.classList[isLoading ? 'add' : 'remove']('montage-autocomplete-loading');
+            this.element.classList[isLoading ? 'add' : 'remove']('montage-Autocomplete--loading');
 
 
         }

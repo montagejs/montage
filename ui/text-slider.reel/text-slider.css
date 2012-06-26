@@ -29,18 +29,18 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.montage-text-slider-input {
+.montage-TextSlider-input {
     display: none;
 }
 
-.montage-text-slider-editing .montage-text-slider-input {
+.montage-TextSlider--editing .montage-TextSlider-input {
     display: inherit;
 }
 
-.montage-text-slider-value {
+.montage-TextSlider-value {
     border-bottom: 1px dotted #000;
 }
 
-.montage-text-slider-editing .montage-text-slider-value, .montage-text-slider-editing .montage-text-slider-label {
+.montage-TextSlider--editing .montage-TextSlider-value, .montage-TextSlider--editing .montage-TextSlider-label {
     display: none;
 }

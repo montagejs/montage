@@ -588,7 +588,7 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
         value: function() {
             var el = this.element;
 
-            el.classList.add('montage-editor-container');
+            el.classList.add('montage-Editor-container');
 
             el.addEventListener("focus", this, true);
             el.addEventListener("dragstart", this, false);
@@ -633,13 +633,13 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 i;
 
             if (this._needsAssingValue || this._needsAssignOriginalContent) {
-                editorInnerElement = this._innerElement = editorElement.querySelector(".montage-editor");
+                editorInnerElement = this._innerElement = editorElement.querySelector(".montage-Editor");
 
                 if (this._contentInitialized) {
                     // if the content has been already initialized, we need replace it by a clone of itself
                     // in order to reset the browser undo stack
                     editorElement.replaceChild(editorInnerElement.cloneNode(true), editorInnerElement);
-                    editorInnerElement = this._innerElement = editorElement.querySelector(".montage-editor");
+                    editorInnerElement = this._innerElement = editorElement.querySelector(".montage-Editor");
 
                     //JFD TODO: Need to clear entries in the Montage undoManager queue
                 }

@@ -28,8 +28,8 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
- 
-.montage-progress {
+
+.montage-Progress {
     position: relative;
     font-size: 12px;
     display: inline-block;
@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
     background-color: #d9d9d9;
 }
 
-.montage-progress > .montage-progress-bar {
+.montage-Progress > .montage-Progress-bar {
     position: absolute;
     height: inherit;
     border-radius: 2px;

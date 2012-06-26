@@ -37,7 +37,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-box-shadow: rgba(255, 255, 255, .7) 0 1px 0, inset rgba(0, 0, 0, .3) 0 1px 3px;
 }
 
-.montage-tabs-indicator {
+.montage-Tabs-indicator {
     position: absolute;
     left: 0;
     top: 0;
@@ -112,7 +112,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /* tab width: 70px */
 
-.montage-tabs.small .montage-tabs-indicator {
+.montage-tabs.small .montage-Tabs-indicator {
     height: 27px;
 }
 
@@ -130,7 +130,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-box-shadow: rgba(255, 255, 255, .25) 0 1px 0, inset rgba(0, 0, 0, .3) 0 1px 3px;
 }
 
-.montage-tabs.dark .montage-tabs-indicator {
+.montage-tabs.dark .montage-Tabs-indicator {
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #767676), color-stop(100%, #5c5c5c));
 
 }

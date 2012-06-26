@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.montage-scroll-bars {
+.montage-ScrollBars {
     position: absolute;
     left: 0;
     top: 0;
@@ -38,7 +38,7 @@ POSSIBILITY OF SUCH DAMAGE.
     z-index: 9999;
     pointer-events: none;
 }
-.montage-scroll-bars .top {
+.montage-ScrollBars .top {
     position: absolute;
     right: 2px;
     background: black;
@@ -50,7 +50,7 @@ POSSIBILITY OF SUCH DAMAGE.
     clip: rect(-1px, 6px, 3px, -1px);
     -webkit-transform: translateZ(0);
 }
-.montage-scroll-bars .bottom {
+.montage-ScrollBars .bottom {
     background: black;
     -webkit-box-shadow: 0 0 0 1px rgba(255,255,255,.27);
     width: 5px;
@@ -58,13 +58,13 @@ POSSIBILITY OF SUCH DAMAGE.
     opacity: 0;
     -webkit-transform: translateZ(0);
 }
-.montage-scroll-bars .bottom-clip {
+.montage-ScrollBars .bottom-clip {
     position: absolute;
     right: 2px;
     width: 5px;
     -webkit-transform: translateZ(0);
 }
-.montage-scroll-bars .left {
+.montage-ScrollBars .left {
     position: absolute;
     bottom: 2px;
     background: black;
@@ -76,7 +76,7 @@ POSSIBILITY OF SUCH DAMAGE.
     clip: rect(-1px, 3px, 6px, -1px);
     -webkit-transform: translateZ(0);
 }
-.montage-scroll-bars .right {
+.montage-ScrollBars .right {
     background: black;
     -webkit-box-shadow: 0 0 0 1px rgba(255,255,255,.27);
     height: 5px;
@@ -84,7 +84,7 @@ POSSIBILITY OF SUCH DAMAGE.
     opacity: 0;
     -webkit-transform: translateZ(0);
 }
-.montage-scroll-bars .right-clip {
+.montage-ScrollBars .right-clip {
     position: absolute;
     bottom: 2px;
     height: 5px;

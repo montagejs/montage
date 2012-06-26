@@ -29,12 +29,12 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
  
-.montage-scroller {
+.montage-Scroller {
     position: relative;
     display: block;
     overflow: hidden;
 }
-.montage-scroller .content {
+.montage-Scroller .content {
     float: left;
     width: 100%;
 }
