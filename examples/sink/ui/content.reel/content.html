@@ -123,11 +123,20 @@
                 "properties": {}
             },
 
+            "defaultText": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "default-text"},
+                    "value": "← Please select a Component"
+                }
+            },
+
             "content": {
                 "prototype": "montage/ui/substitution.reel",
                 "properties": {
-                    "element": {"#": "content"},
+                    "element": {"#": "content-deck"},
                     "switchComponents": {
+                        "defaultText": {"@": "defaultText"},
                         "toggleButton": {"@": "toggleButton"},
                         "button": {"@": "button"},
                         "checkbox": {"@": "checkbox"},
@@ -173,7 +182,10 @@
 </head>
 <body>
     <div data-montage-id="content" class="content">
-        <h5 class="firstrun">← Please select a Component</h5>
+        <div data-montage-id="content-deck" class="content">
+            <h5 data-montage-id="default-text" class="firstrun">← Please select a Component</h5>
+        </div>
+
     </div>
 
 </body>
