@@ -70,7 +70,7 @@ exports.Sidebar = Montage.create(Component, {
                 var a = $li.querySelector('a');
                 if(a) {
                     var hash = a.getAttribute('href') || '#';
-                    this.selectedItem = hash.substring(hash.indexOf('#')+1);
+                    this.selectedItem = hash.substring(hash.indexOf('#!')+3); // #!/
                     //event.preventDefault();
                 }
             }
@@ -81,7 +81,7 @@ exports.Sidebar = Montage.create(Component, {
         value: function() {
 
             if(this.selectedItem) {
-                var $link = this.element.querySelector("a[href='#" + this.selectedItem + "']");
+                var $link = this.element.querySelector("a[href='#!/" + this.selectedItem + "']");
                 if($link) {
                     var items = this.element.querySelectorAll('li.nav-item')||[], len = items.length;
                     for(i=0; i< len; i++) {

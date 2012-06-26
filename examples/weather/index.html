@@ -25,8 +25,12 @@
             "application": {
                 "prototype": "montage/ui/application",
                 "properties": {
-                    "delegate": {"@": "appDelegate"},
-                    "stateKeys": ["zip"]
+                    "stateKeys": ["zip"],
+                    "contextPath": "/m-js/examples/weather",
+                    "routes": [
+                        "/#!/:zip"
+                    ],
+                    "delegate": {"@": "appDelegate"}
                 }
             }
         }

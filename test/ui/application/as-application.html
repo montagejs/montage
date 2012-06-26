@@ -13,6 +13,14 @@
         "application": {
             "prototype": "montage/ui/application",
             "properties": {
+                "contextPath": "/ui/application/as-application.html",
+                "routes": [
+                    "#!/weather/:zip",
+                    "#!/lists/:userId",
+                    "#!/photos/:userId/tags/:tag",
+                    "#!/feeds/:userId"
+                ],
+                "stateKeys": ["zip", "userId", "tag", "somethingElse"],
                 "delegate": {"@": "test"}
             }
         },

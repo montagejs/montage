@@ -14,7 +14,7 @@ var Montage = require("core/core").Montage,
     EventManager = require("core/event/event-manager").EventManager,
     Template = require("ui/template").Template,
     Component = require("ui/component").Component,
-    Slot, HashbangStateDelegate;
+    Slot;
 
     require("ui/dom");
 
@@ -137,24 +137,36 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: null
     },
 
-    useHash: {
-        value: true,
-        serializable: true
-    },
-
+    /** The application State. This is created by Application from properties defined in stateKeys.
+    */
     state: {
         serializable: true,
         value: null
     },
 
+    /**
+    * An array of keys (eg:  ["zip", "city"] ) of the Application State object
+    */
     stateKeys: {
         serializable: true,
         value: null
     },
 
+    /**
+    * An array of possible routes that must be handled by this Application to automatically retrieve values
+    * and update the state.
+    */
     routes: {
         serializable: true,
         value: null
+    },
+
+    /**
+    * The part of the URL.pathname that defines the invariant part of the URL for the Application.
+    */
+    contextPath: {
+        value: null,
+        serializable: true
     },
 
     /**
@@ -178,9 +190,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 if(self.stateKeys) {
                     self._createState();
                     if(!self._defaultStateDelegate) {
-                        //self._defaultStateDelegate = Montage.create(DefaultStateDelegate);
-                        self._defaultStateDelegate = Montage.create(HashbangStateDelegate);
-                        self._defaultStateDelegate.stateKeys = self.stateKeys;
+                        self._defaultStateDelegate = self._createDefaultStateDelegate();
                     }
 
                     if(typeof window.history.pushState !== "undefined") {
@@ -255,45 +265,48 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
     _willPopState: {
         value: function(event) {
-            this._synching = true;
-            var options = {
-                location: window.location,
-                url: window.location.href,
-                title: window.title,
-                state: event ? event.state : null
-            };
-            if(this.delegate && typeof this.delegate["willPopState"] === 'function') {
-                this.delegate["willPopState"].call(this.delegate, options, this.state);
-            } else {
-                // update state using default mechanism
-                this._defaultStateDelegate.willPopState(options, this.state);
+            if(!this._synching) {
+                this._synching = true;
+                var options = {
+                    location: window.location,
+                    url: window.location.href,
+                    title: window.title,
+                    state: event ? event.state : null
+                };
+                if(this.delegate && typeof this.delegate["willPopState"] === 'function') {
+                    this.delegate["willPopState"].call(this.delegate, options, this.state);
+                } else {
+                    // update state using default mechanism
+                    this._defaultStateDelegate.willPopState(options, this.state);
+                }
+                this._synching = false;
             }
-            this._synching = false;
+
         }
     },
 
     _willPushState: {
         value: function() {
-            this._synching = true;
-            var options = {
-                url: window.location.href,
-                location: window.location,
-                title: window.title
-            };
+            if(!this._synching) {
+                this._synching = true;
+                var options = {
+                    url: window.location.href,
+                    location: window.location,
+                    title: window.title
+                };
 
-            if(this.delegate && typeof this.delegate["willPushState"] === 'function') {
-                this.delegate["willPushState"].call(this.delegate, options, this.state);
-            } else {
-                // get the URL from the pattern OR /context/stateKey[0]/stateKey[1]
-                // @todo
-                this._defaultStateDelegate.willPushState(options, this.state);
+                if(this.delegate && typeof this.delegate["willPushState"] === 'function') {
+                    this.delegate["willPushState"].call(this.delegate, options, this.state);
+                } else {
+                    this._defaultStateDelegate.willPushState(options, this.state);
+                }
+                if(typeof window.history.pushState !== 'undefined') {
+                    window.history.pushState(this.state, options.title, options.url);
+                } else {
+                    window.location.hash = options.url;
+                }
+                this._synching = false;
             }
-            if(typeof window.history.pushState !== 'undefined') {
-                window.history.pushState(this.state, options.title, options.url);
-            } else {
-                window.location.hash = options.url;
-            }
-            this._synching = false;
         }
     },
 
@@ -396,71 +409,148 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             }
             return arr;
         }
+    },
+
+    _createDefaultStateDelegate: {
+        value: function() {
+            this._defaultStateDelegate = Montage.create(DefaultStateDelegate);
+            this._defaultStateDelegate.routes = this.routes;
+            this._defaultStateDelegate.contextPath = this.contextPath || window.location.pathname;
+            return this._defaultStateDelegate;
+        }
     }
 
 });
 
-
-
-
 /**
-* StateDelegate that implements the #! url strategy
+* A default strategy to update Application state from URL and vice-versa.
 */
-HashbangStateDelegate = Montage.create(Montage, {
+var DefaultStateDelegate = Montage.create(Montage, {
 
-    stateKeys: {value: null},
+    // Credit: some basic Regex and operations for URL tokens inspired by http://backbonejs.org/backbone.js
 
-    _getHash: {
-        value: function(location) {
-            var hash = location.hash;
-            if(hash && hash.length > 0 && hash.indexOf('#!/') == 0) {
-                hash = hash.substring(hash.indexOf('#')+3);
-            }
-            return hash;
-        }
+    _namedParam: {
+        value: /:\w+/g
+    },
+    _wildcardParam: {
+        value: /\*/g
+    },
+    _escapeRegExp: {
+        value: /[-[\]{}()+?.,\\^$|#\s]/g
     },
 
-    willPushState: {
-       value: function(options, appState) {
-           // push appState to url
-           console.log('DefaultStateDelegate: willPushState ', this._urlPrefix, appState, options);
+    _activeRoute: {value: null},
 
-           if(appState) {
-               var i, len = this.stateKeys.length;
-               var arr = [], value;
-               for(i=0; i< len; i++) {
-                   var value = appState[this.stateKeys[i]];
-                   if(value) {
-                       arr.push(value);
-                   }
-               }
-               var hash = arr.join('/');
-               options.url = '#!/' + hash;
-           }
+    /** all possible routes from the contextPath */
+    routes: {value: null},
 
+    /** part of the URL that the current application is rooted in */
+    contextPath: {value: null},
+
+    didCreate: {
+       value: function(routes) {
+           this.routes = [];
        }
     },
 
+    _convertRouteToRegExp: {
+        value: function(route) {
+            route = route.slice(); // create a copy
+            route = route.replace(this._escapeRegExp, '\\$&')
+                        .replace(this._namedParam, '([^\/]+)')
+                        .replace(this._wildcardParam, '(.*?)');
+            return new RegExp('^' + route + '$');
+        }
+    },
+
+    _extractParameterValues: {
+        value: function(regex, fragment) {
+            var tmp = regex.exec(fragment);
+            if(tmp && tmp.length > 1) {
+                return tmp.slice(1);
+            }
+            return null;
+        }
+    },
+
+    _parseFragment: {
+        value: function(routes, fragment) {
+            var i, valuesArr, regex, route, params;
+            for(i=0; i< routes.length; i++) {
+                route =  routes[i];
+                regex = this._convertRouteToRegExp(route);
+                if(valuesArr = this._extractParameterValues(regex, fragment)) {
+                    break;
+                }
+            }
+            if(valuesArr) {
+                // if there is a match
+                // save the route for later
+                this._activeRoute = route;
+
+                // get the named param names from the route
+                var arr = route.match(this._namedParam), param;
+                if(arr != null) {
+                    params = {};
+                    // get the values matching the tokens
+                    //console.log('valuesArr ', valuesArr);
+                    for(var i=0; i< arr.length; i++) {
+                        param = arr[i].substring(1); // remove :
+                        if(valuesArr.length > i) {
+                            params[param] = valuesArr[i];
+                        }
+                    }
+                }
+            } else {
+                console.log('unable to match the URL with specified routes');
+            }
+            return params;
+        }
+    },
+
+    // push application state to URL
+    willPushState: {
+       value: function(options, appState) {
+           //console.log('DefaultStateDelegate: willPushState ', this._activeRoute, appState, options.url);
+           if(appState) {
+               var token, route;
+               if(!this._activeRoute) {
+                   this._activeRoute = this.routes && this.routes.length > 0 ? this.routes[0] : null;
+               }
+               if(this._activeRoute) {
+                   for(var i in appState) {
+                       token = ':' + i;
+                       if(this._activeRoute.indexOf(token) >= 0) {
+                           route = this._activeRoute.replace(token, appState[i]);
+                       }
+                   }
+                   var newUrl = this.contextPath + route;
+                   options.url = newUrl;
+               }
+
+           }
+       }
+    },
+
+    // pop state from URL and update Application state
     willPopState: {
        value: function(options, appState) {
-           console.log('updating AppState from URL');
-           appState = appState || {};
-           var hash = this._getHash(options.location); // location
-           // #!/a/b/c
-           var parts;
-           console.log('hash ', hash);
-           if(hash) {
-               parts = hash.split('/');
-           }
+           //console.log('DefaultStateDelegate: willPopState : updating AppState from URL', options.url, options.location);
+           var index = options.url.indexOf(this.contextPath), fragment;
 
-           if(parts) {
-               var i, len = this.stateKeys.length, partsLen = parts.length;
-               for(i=0; i< len; i++) {
-                   if(i < partsLen) {
-                       appState[this.stateKeys[i]] = parts[i];
+           if(index >= 0) {
+               fragment = options.url.substring(index + this.contextPath.length);
+           }
+           var params = this._parseFragment(this.routes, fragment);
+           if(params) {
+               for(var i in params) {
+                   if(params.hasOwnProperty(i) && typeof appState[i] !== 'undefined') {
+                       appState[i] = params[i];
                    }
                }
+               //console.log('appState after applying url values ', appState);
            }
+
        }
     }
 
