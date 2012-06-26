@@ -15,7 +15,7 @@
         {
             
             "owner": {
-                "prototype": "main.reel",
+                "prototype": "ui/main.reel",
                 "properties": {
                     "element": {"#": "main"},
                     "currentConditionsEl": {"#": "current-conditions"},
@@ -30,7 +30,7 @@
             },
 
             "zip": {
-                "prototype": "montage/ui/textfield.reel",
+                "prototype": "montage/ui/input-text.reel",
                 "properties": {
                     "element": {"#": "zip"}
                 },
@@ -82,10 +82,10 @@
 <body>
     <div class="main container" data-montage-id="main">
         <div class="main-content">
-            <h3>Weather Forecast</h3>
+            <h1>Weather Forecast</h1>
 
             <div class="search">
-                <input type="search" data-montage-id="zip" value="94087" style="width: 80%" placeholder="Enter US zip code"/>
+                <input type="text" data-montage-id="zip" value="94087" placeholder="Enter US zip code"/>
                 <button type="button" data-montage-id="goButton" class="btn">OK</button>
             </div>
             <div style="padding: 10px 0;">
