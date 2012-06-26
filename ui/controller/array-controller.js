@@ -791,14 +791,16 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
     remove: {
         value: function() {
 
+            var removedObjects;
+
             if (this.selectedObjects && this.selectedObjects.length > 0) {
-                this.removeObjects.apply(this, this.selectedObjects);
+                removedObjects = this.removeObjects.apply(this, this.selectedObjects);
 
                 if (this.automaticallyOrganizeObjects) {
                     this.organizeObjects();
                 }
             }
-            // TODO what do we want to do otherwise?
+            return removedObjects;
         }
     },
 
@@ -825,27 +827,39 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 this.organizeObjects();
             }
 
+            return objectsToRemove;
+
         }
     },
 
     removeObjectsAtSelectedIndexes: {
         value: function() {
-            this.removeObjectsAtIndexes(this.selectedIndexes);
+            return this.removeObjectsAtIndexes(this.selectedIndexes);
         }
     },
 
     removeObjectsAtIndexes: {
         value: function(indices) {
-            var remainingObjects;
+            var removedObjects,
+                remainingObjects;
+
             if(indices && indices.length > 0) {
+                removedObjects = [];
                 remainingObjects = this.content.filter(function(value, index) {
-                    return indices.indexOf(index) < 0;
+                    if (indices.indexOf(index) < 0) {
+                        return true;
+                    } else {
+                        removedObjects.push(value);
+                        return false
+                    };
                 });
                 this.content = remainingObjects;
                 if (this.automaticallyOrganizeObjects) {
                     this.organizeObjects();
                 }
             }
+
+            return removedObjects;
         }
     }
 
