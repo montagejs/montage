@@ -88,7 +88,7 @@ exports.Token = Montage.create(Component, {
 
     draw: {
         value: function() {
-            this.element.classList[this._adHoc ? 'add' : 'remove']('montage-token-adhoc');
+            this.element.classList[this._adHoc ? 'add' : 'remove']('montage-Token--adhoc');
         }
     },
 

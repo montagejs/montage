@@ -17,7 +17,7 @@
         opacity: 0;
     }
 }
-.montage-loading {
+.montage-Loading {
     position: relative;
     width: 30px;
     height: 35px;
@@ -25,11 +25,11 @@
     background-repeat: no-repeat;
 }
 
-.montage-loading.animate {
+.montage-Loading.animate {
     background-image: url(loading-bg.svg);
 }
 
-.montage-loading .section {
+.montage-Loading .section {
     display: none;
     position: absolute;
     left: 0;
@@ -40,7 +40,7 @@
     background-repeat: no-repeat;
 }
 
-.montage-loading.animate .section {
+.montage-Loading.animate .section {
     display: block;
     -webkit-transform: translateZ(0);
     -webkit-animation-name: montage-loading;
@@ -48,31 +48,31 @@
     -webkit-animation-iteration-count: infinite;
 }
 
-.montage-loading .l0 {
+.montage-Loading .l0 {
     background-image: url(loading-0.svg);
     -webkit-animation-delay: -1000ms;
 }
 
-.montage-loading .l1 {
+.montage-Loading .l1 {
     background-image: url(loading-1.svg);
     -webkit-animation-delay: -800ms;
 }
 
-.montage-loading .l2 {
+.montage-Loading .l2 {
     background-image: url(loading-2.svg);
     -webkit-animation-delay: -600ms;
 }
 
-.montage-loading .l3 {
+.montage-Loading .l3 {
     background-image: url(loading-3.svg);
     -webkit-animation-delay: -400ms;
 }
 
-.montage-loading .l4 {
+.montage-Loading .l4 {
     background-image: url(loading-4.svg);
     -webkit-animation-delay: -200ms;
 }
 
-.montage-loading .l5 {
+.montage-Loading .l5 {
     background-image: url(loading-5.svg);
 }

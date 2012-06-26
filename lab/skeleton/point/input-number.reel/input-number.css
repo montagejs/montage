@@ -3,27 +3,27 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-inputNumber {
+
+.montage-InputNumber {
     font-size: 12px;
     position: relative;
     display: inline-block;
     width: 5em;
     margin-right: 2.5em;
 }
-.montage-inputNumber > input {
+.montage-InputNumber > input {
     font-size: inherit;
     width: 5em;
     vertical-align: middle;
     border-radius: 3px 0 0 3px;
 }
-.montage-inputNumber > input:hover {
+.montage-InputNumber > input:hover {
     border-color: #cccccc;
 }
-.montage-inputNumber > input:focus {
+.montage-InputNumber > input:focus {
     border-color: #7f7f7f;
 }
-.montage-inputNumber > button {
+.montage-InputNumber > button {
     position: absolute;
     margin: 0;
     padding: 0;
@@ -31,12 +31,12 @@
     height: 1.25em;
     right: -2.5em;
 }
-.montage-inputNumber > .montage-inputNumber-plus {
+.montage-InputNumber > .montage-InputNumber-plus {
     border-width: 1px 1px 0 0;
     border-radius: 0 3px 0 0;
     top: 0px;
 }
-.montage-inputNumber > .montage-inputNumber-minus {
+.montage-InputNumber > .montage-InputNumber-minus {
     border-width: 1px 1px 1px 0;
     border-radius: 0 0 3px 0;
     bottom: 0px;

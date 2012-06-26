@@ -4,13 +4,13 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-google-picasa-carousel {
+.montage-google-PicasaCarousel {
     width: 100%;
     height: 100%;
     background: -webkit-gradient(linear, left top, left bottom, from(#000), to(#333));
 }
 
-.montage-google-picasa-carousel .flow {
+.montage-google-PicasaCarousel .flow {
     position: absolute;
     top: 0;
     left: 0;

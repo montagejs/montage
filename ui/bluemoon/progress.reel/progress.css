@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.montage-progress {
+.montage-Progress {
 	height: 7px;
 	padding: 1px;
 	border-radius: 5px / 4px;
@@ -14,7 +14,7 @@
 	box-shadow: inset rgba(0,0,0,.2) 0 0 0 1px, rgba(255,255,255,.5) 0 1px 1px, rgba(0,0,0,.1) 0 -1px 0px;
 }
 
-.montage-progress .bar {
+.montage-Progress .bar {
 	height: 7px;
 	border-radius: inherit;
 	background: #0cbeff;
@@ -24,7 +24,7 @@
 	transition: width .3s cubic-bezier(0.25, 0.1, 0.3, 0.9);
 }
 
-.montage-progress.dark {
+.montage-Progress.dark {
 	background:  url(rule.png), -webkit-gradient(linear, 0% 0%, 0% 100%,
 						color-stop(0%, #303030), color-stop(100%, #3f3f3f) );
 

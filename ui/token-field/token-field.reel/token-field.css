@@ -4,7 +4,7 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-tokenField {
+.montage-TokenField {
     background: white;
     border: 1px solid #bdbdbd;
     padding: 3px 5px;
@@ -12,11 +12,11 @@
     cursor: text;
 }
 
-.montage-tokenField-list {
+.montage-TokenField-list {
     display: inline;
 }
 
-.montage-tokenField-autocomplete.montage-inputText {
+.montage-TokenField-Autocomplete.montage-InputText {
     -webkit-appearance: none;
     -moz-appearance: none;
     border: none;
@@ -29,6 +29,6 @@
     width: 2px;
 }
 
-.montage-tokenField-autocomplete:focus {
+.montage-TokenField-Autocomplete:focus {
     width: 80%;
 }

@@ -3,12 +3,12 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.montage-toggle-switch {
+.montage-ToggleSwitch {
     width: 60px;
     height: 22px;
 }
 
-.montage-toggle-switch .toggle:before {
+.montage-ToggleSwitch .toggle:before {
     content: "";
     position: absolute;
     left: -13px;
@@ -18,7 +18,7 @@
     border-radius: 30px;
 }
 
-.montage-toggle-switch .toggle {
+.montage-ToggleSwitch .toggle {
     position: absolute;
     border-radius: 12px;
     height: 20px;
@@ -27,11 +27,11 @@
     -webkit-box-shadow: inset 0 1px 4px rgba(0,0,0,.3), 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
 }
 
-.montage-toggle-switch .scroll {
+.montage-ToggleSwitch .scroll {
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle-switch .circle {
+.montage-ToggleSwitch .circle {
     position: absolute;
     margin: -16px 0 0 -16px;
     height: 50px;
@@ -43,11 +43,11 @@
     -webkit-transform: scale3d(.35, .35, 0) translateZ(0);
 }
 
-.montage-toggle-switch.pressed .circle {
+.montage-ToggleSwitch.pressed .circle {
     -webkit-transform: scale3d(1, 1, 0) translateZ(0);
 }
 
-.montage-toggle-switch .handlerbg {
+.montage-ToggleSwitch .handlerbg {
     position: absolute;
     background: transparent;
     position: absolute;
@@ -58,7 +58,7 @@
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle-switch .handler {
+.montage-ToggleSwitch .handler {
     position: absolute;
     width: 20px;
     height: 20px;
@@ -67,7 +67,7 @@
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle-switch .handler:after {
+.montage-ToggleSwitch .handler:after {
     content: "";
     position: absolute;
     margin: 6px 0 0 6px;
@@ -79,7 +79,7 @@
     -webkit-transform: scale3d(.9, .9, 0) translateZ(0);
 }
 
-.montage-toggle-switch .handleronbg {
+.montage-ToggleSwitch .handleronbg {
     opacity: 0;
     position: absolute;
     background: rgba(0,0,0,.3);
@@ -91,7 +91,7 @@
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle-switch .handleron {
+.montage-ToggleSwitch .handleron {
     position: absolute;
     width: 20px;
     height: 20px;
@@ -100,7 +100,7 @@
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle-switch .handleron:after {
+.montage-ToggleSwitch .handleron:after {
     content: "";
     position: absolute;
     margin: 6px 0 0 6px;
@@ -112,7 +112,7 @@
     -webkit-transform: scale3d(.9, .9, 0) translateZ(0);
 }
 
-.montage-toggle-switch .handlerdragarea {
+.montage-ToggleSwitch .handlerdragarea {
     position: absolute;
     margin: -16px 0 0 -16px;
     width: 52px;
@@ -121,14 +121,14 @@
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle-switch.dark .toggle {
+.montage-ToggleSwitch.dark .toggle {
     padding: 0;
     border: 1px solid rgba(0,0,0,.4);
     background-color: rgba(40,40,40,.55);
     -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
 }
 
-.montage-toggle-switch.dark .circle {
+.montage-ToggleSwitch.dark .circle {
     opacity: .25;
     background: rgba(120, 120, 120, .8);
     border: 1px solid #000;
@@ -136,20 +136,20 @@
     -webkit-transition: -webkit-transform 150ms;
 }
 
-.montage-toggle-switch.pressed.dark .circle {
+.montage-ToggleSwitch.pressed.dark .circle {
     -webkit-transform: scale3d(1, 1, 0) translateZ(0);
 }
 
-.montage-toggle-switch.dark .handler {
+.montage-ToggleSwitch.dark .handler {
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,.5)), to(rgba(255,255,255,.3)));
 }
 
-.montage-toggle-switch.dark .handler:after {
+.montage-ToggleSwitch.dark .handler:after {
     background-color: rgba(0,0,0,.6);
     -webkit-box-shadow: 0 1px 0 #828282;
 }
 
-.montage-toggle-switch.dark .handleronbg {
+.montage-ToggleSwitch.dark .handleronbg {
     opacity: 0;
     position: absolute;
     background: transparent;

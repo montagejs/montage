@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.montage-token {
+.montage-Token {
     display: inline-block;
     margin: 3px 1px;
     border: 1px solid hsl(0,0%,85%);
@@ -14,41 +14,41 @@
     border-radius: 3px;
 }
 
-.montage-token > .montage-token-text {
+.montage-Token > .montage-Token-text {
     padding: 0px 1px 0px 5px;
 }
 
-.montage-token > .montage-token-delete {
+.montage-Token > .montage-Token-delete {
     display: inline-block;
     padding: 3px 6px;
     border-left: inherit;
     border-radius: 0 2px 2px 0;
-    color: hsl(0,0%,60%);    
+    color: hsl(0,0%,60%);
     cursor: pointer;
 }
-.montage-token > .montage-token-delete:hover {
+.montage-Token > .montage-Token-delete:hover {
     color: hsl(0,0%,30%);
     background-color: hsl(0,0%,90%);
 }
-.montage-token > .montage-token-delete:active {
+.montage-Token > .montage-Token-delete:active {
     color: hsl(0,0%,60%);
     background-color: hsl(0,0%,85%);
 }
 
 /* selected */
-.montage-token.selected {
+.montage-Token.selected {
     border-color: hsl(0,0%,60%);
 }
 
-.montage-token.selected > .montage-token-delete {
+.montage-Token.selected > .montage-Token-delete {
     color: hsl(0,0%,100%);
     background-color: hsl(0,0%,60%);
 }
 
-.montage-token.active {
+.montage-Token.active {
     border: 1px solid #ccc;
 }
 
-.montage-token.montage-token-adhoc {
+.montage-Token.montage-Token--adhoc {
     border: 1px dashed #ccc;
 }

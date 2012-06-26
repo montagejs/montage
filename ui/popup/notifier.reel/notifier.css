@@ -4,12 +4,12 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-notifier {
+.montage-Notifier {
     background-color: #333; /*#FFF1A8*/;
     color: #fff;
 }
 
-.montage-notifier .montage-notifier-msg {
+.montage-Notifier .montage-Notifier-message {
     padding: 10px 20px;
     text-overflow: ellipsis;
 }

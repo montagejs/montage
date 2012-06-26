@@ -392,7 +392,7 @@ exports.Checkbox = Montage.create(Component,/** @lends "module:montage/ui/bluemo
 
             var checkbox = document.createElement("span");
             checkbox.className = this.element.className;
-            checkbox.classList.add("montage-checkbox");
+            checkbox.classList.add("montage-Checkbox");
 
             this._background = document.createElement("span");
             this._background.classList.add("background");

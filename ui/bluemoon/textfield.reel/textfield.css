@@ -20,7 +20,7 @@
     border: 2px solid hsl(0, 0%, 40%);
 }
 
-.montage-text-invalid {
+.montage--invalid-text {
     border: 2px solid #E73525;
     border-style: dashed;
 }

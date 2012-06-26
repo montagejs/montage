@@ -4,7 +4,7 @@
    (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
    </copyright> */
 
-.montage-inputText {
+.montage-InputText {
     outline: none;
     box-sizing: border-box;
     font-size: 12px;
@@ -17,27 +17,27 @@
     background-color: #fff;
 }
 
-.montage-inputText:hover {
+.montage-InputText:hover {
     border-color: #ccc;
 }
 
-.montage-inputText:focus {
+.montage-InputText:focus {
     border-color: #7f7f7f;
 }
 
-.montage-inputText:invalid {
+.montage-InputText:invalid {
     border: 1px dashed #E73525;
 }
 
-.montage-inputText:disabled {
+.montage-InputText:disabled {
     opacity: .5;
     border-style: dashed;
     pointer-events: none;
 }
 
-.montage-inputText[readonly] {
+.montage-InputText[readonly] {
     background-color: #e5e5e5;
 }
-.montage-inputText[readonly]:hover {
+.montage-InputText[readonly]:hover {
     border-color: #b3b3b3;
 }

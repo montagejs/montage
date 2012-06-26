@@ -3,12 +3,12 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.montage-button-group {
+.montage-ButtonGroup {
 
 }
 
-.montage-button-group.small > .montage-button,
-.montage-button-group.small > .montage-button:before {
+.montage-ButtonGroup.small > .montage-Button,
+.montage-ButtonGroup.small > .montage-Button:before {
     font-size: 12px;
     border-radius: 16px;
     padding: 1px 18px 0 18px;
@@ -16,64 +16,64 @@
     line-height: 26px;
 }
 
-.montage-button-group.small > .montage-button.submit,
-.montage-button-group.small > .montage-button.cancel {
+.montage-ButtonGroup.small > .montage-Button.submit,
+.montage-ButtonGroup.small > .montage-Button.cancel {
     height: 21px;
     line-height: 21px;
 }
 
-.montage-button-group.small > .montage-button.disabled,
-.montage-button-group.small > .montage-button.disabled:before {
+.montage-ButtonGroup.small > .montage-Button.disabled,
+.montage-ButtonGroup.small > .montage-Button.disabled:before {
     height: 28px;
     line-height: 28px;
 }
 
-.montage-button-group.small > .montage-button.submit:before,
-.montage-button-group.small > .montage-button.cancel:before {
+.montage-ButtonGroup.small > .montage-Button.submit:before,
+.montage-ButtonGroup.small > .montage-Button.cancel:before {
     height: 24px;
 }
 
-.montage-button-group > .montage-button.submit,
-.montage-button-group > .montage-button.cancel {
+.montage-ButtonGroup > .montage-Button.submit,
+.montage-ButtonGroup > .montage-Button.cancel {
     height: 42px;
     line-height: 42px;
 }
 
-.montage-button-group > .montage-button:not(:first-child):not(:last-child),
-.montage-button-group > .montage-button.submit:not(:first-child):not(:last-child),
-.montage-button-group > .montage-button.cancel:not(:first-child):not(:last-child),
-.montage-button-group > .montage-button:not(:first-child):not(:last-child):before,
-.montage-button-group > .montage-button:not(:first-child):not(:last-child):after {
+.montage-ButtonGroup > .montage-Button:not(:first-child):not(:last-child),
+.montage-ButtonGroup > .montage-Button.submit:not(:first-child):not(:last-child),
+.montage-ButtonGroup > .montage-Button.cancel:not(:first-child):not(:last-child),
+.montage-ButtonGroup > .montage-Button:not(:first-child):not(:last-child):before,
+.montage-ButtonGroup > .montage-Button:not(:first-child):not(:last-child):after {
     border-radius: 0;
 }
 
-.montage-button-group > .montage-button:first-child:not(:last-child),
-.montage-button-group > .montage-button.submit:first-child:not(:last-child),
-.montage-button-group > .montage-button.cancel:first-child:not(:last-child),
-.montage-button-group > .montage-button:first-child:not(:last-child):before,
-.montage-button-group > .montage-button:first-child:not(:last-child):after {
+.montage-ButtonGroup > .montage-Button:first-child:not(:last-child),
+.montage-ButtonGroup > .montage-Button.submit:first-child:not(:last-child),
+.montage-ButtonGroup > .montage-Button.cancel:first-child:not(:last-child),
+.montage-ButtonGroup > .montage-Button:first-child:not(:last-child):before,
+.montage-ButtonGroup > .montage-Button:first-child:not(:last-child):after {
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
 }
 
-.montage-button-group > .montage-button:last-child:not(:first-child),
-.montage-button-group > .montage-button.submit:last-child:not(:first-child),
-.montage-button-group > .montage-button.cancel:last-child:not(:first-child),
-.montage-button-group > .montage-button:last-child:not(:first-child):before,
-.montage-button-group > .montage-button:last-child:not(:first-child):after {
+.montage-ButtonGroup > .montage-Button:last-child:not(:first-child),
+.montage-ButtonGroup > .montage-Button.submit:last-child:not(:first-child),
+.montage-ButtonGroup > .montage-Button.cancel:last-child:not(:first-child),
+.montage-ButtonGroup > .montage-Button:last-child:not(:first-child):before,
+.montage-ButtonGroup > .montage-Button:last-child:not(:first-child):after {
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
 }
 
-.montage-button-group > .montage-button:not(:first-child) {
+.montage-ButtonGroup > .montage-Button:not(:first-child) {
     margin-left: -3px;
 }
 
 /* Icon handling */
 
-.montage-button-group.small > .montage-button.text.icon > img,
-.montage-button-group.small > .montage-button.submit.icon > img,
-.montage-button-group.small > .montage-button.cancel.icon > img {
+.montage-ButtonGroup.small > .montage-Button.text.icon > img,
+.montage-ButtonGroup.small > .montage-Button.submit.icon > img,
+.montage-ButtonGroup.small > .montage-Button.cancel.icon > img {
     float: left;
     margin-left: -4px;
     margin-right: 4px;
@@ -82,30 +82,30 @@
     width: 20px;
 }
 
-.montage-button-group.small > .montage-button.text.icon > img {
+.montage-ButtonGroup.small > .montage-Button.text.icon > img {
     margin-top: 2px;
 }
 
-.montage-button-group.iconic > .montage-button.text.icon,
-.montage-button-group.iconic > .montage-button.submit.icon,
-.montage-button-group.iconic > .montage-button.cancel.icon {
+.montage-ButtonGroup.iconic > .montage-Button.text.icon,
+.montage-ButtonGroup.iconic > .montage-Button.submit.icon,
+.montage-ButtonGroup.iconic > .montage-Button.cancel.icon {
     text-indent: -9999px;
     width: 26px;
     padding-left: 14px;
     padding-right: 14px;
 }
 
-.montage-button-group.small.iconic > .montage-button.text.icon,
-.montage-button-group.small.iconic > .montage-button.submit.icon,
-.montage-button-group.small.iconic > .montage-button.cancel.icon {
+.montage-ButtonGroup.small.iconic > .montage-Button.text.icon,
+.montage-ButtonGroup.small.iconic > .montage-Button.submit.icon,
+.montage-ButtonGroup.small.iconic > .montage-Button.cancel.icon {
     width: 20px;
     padding-left: 10px;
     padding-right: 10px;
 }
 
-.montage-button-group.iconic > .montage-button.text.icon > img,
-.montage-button-group.iconic > .montage-button.submit.icon > img,
-.montage-button-group.iconic > .montage-button.cancel.icon > img {
+.montage-ButtonGroup.iconic > .montage-Button.text.icon > img,
+.montage-ButtonGroup.iconic > .montage-Button.submit.icon > img,
+.montage-ButtonGroup.iconic > .montage-Button.cancel.icon > img {
     margin-left: 0;
     margin-right: 0;
 }

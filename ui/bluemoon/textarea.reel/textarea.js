@@ -23,7 +23,7 @@ exports.TextArea = Montage.create(EditableText, /** @lends module:"montage/ui/bl
     _drawSpecific: {
         enumerable: false,
         value: function() {
-            this.element.classList.add('montage-textarea');
+            this.element.classList.add('montage-Textarea');
         }
     }
 });

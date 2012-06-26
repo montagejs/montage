@@ -4,10 +4,10 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-button.active {
+.montage-Button.active {
     background-color: #cccccc;
 }
 
-.montage-button.active:hover {
+.montage-Button.active:hover {
     background-color: #d8d8d8;
 }

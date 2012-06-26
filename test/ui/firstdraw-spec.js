@@ -20,7 +20,7 @@ var simpleTestPage = TestPageLoader.queueTest("firstdraw-simple", {src: "ui/draw
         });
         describe("component with template", function() {
             it("should draw within first draw", function() {
-                var button = simpleTestPage.iframe.contentDocument.getElementsByClassName("montage-button")[0];
+                var button = simpleTestPage.iframe.contentDocument.getElementsByClassName("montage-Button")[0];
                 var text = simpleTestPage.iframe.contentDocument.getElementsByClassName("dynamictext")[1];
                 expect(button).not.toBeNull();
                 expect(button.textContent).toEqual("Button");
@@ -45,7 +45,7 @@ var repetitionTestPage = TestPageLoader.queueTest("firstdraw-repetition", {src: 
         });
         describe("repeating component with template", function() {
             it("should draw within first draw", function() {
-                var button0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list2 .montage-button")[0];
+                var button0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list2 .montage-Button")[0];
                 var text0 = repetitionTestPage.iframe.contentDocument.querySelectorAll(".list2 .dynamictext")[0];
                 expect(button0).not.toBeNull();
                 expect(button0.textContent).toEqual("Button");

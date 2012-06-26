@@ -3,8 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-inputText {
+
+.montage-InputText {
   outline: none;
   box-sizing: border-box;
   font-size: 12px;
@@ -16,10 +16,10 @@
   background-color: #ffffff;
 }
 
-.montage-inputText:hover {
+.montage-InputText:hover {
   border-color: #cccccc;
 }
 
-.montage-inputText:focus {
+.montage-InputText:focus {
   border-color: #7f7f7f;
 }

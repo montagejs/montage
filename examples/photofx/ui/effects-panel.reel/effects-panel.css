@@ -27,10 +27,3 @@
 .EffectsPanel .effectsList .effect-toggle-switch {
     float: right;
 }
-
-.EffectsPanel .effectsList .montage-toggle {
-    display: inline-block;
-    margin-right: 10px;
-    margin-bottom: -4px;
-
-}

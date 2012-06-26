@@ -3,8 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-select {
+
+.montage-Select {
     -webkit-appearance: none;
     -moz-appearance: none;
     outline: none;
@@ -18,14 +18,14 @@
     cursor: pointer;
 }
 
-.montage-select:hover {
+.montage-Select:hover {
     background-color: #ffffff;
 }
 
-.montage-select:active {
+.montage-Select:active {
     background-color: #e5e5e5;
 }
 
-.montage-select:focus {
+.montage-Select:focus {
     border-color: #7f7f7f;
 }
