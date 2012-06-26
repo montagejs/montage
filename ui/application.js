@@ -64,6 +64,14 @@ var Montage = require("core/core").Montage,
 var Application = exports.Application = Montage.create(Montage, /** @lends montage/ui/application.Application# */ {
 
     /**
+     Provides a reference to the Montage preferences used in the application.
+     @type {module:montage/core/preferences.Preferences}
+     */
+    preferences: {
+        value: null
+    },
+
+    /**
      Provides a reference to the Montage event manager used in the application.
      @type {module:montage/core/event/event-manager.EventManager}
      */

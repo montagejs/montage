@@ -94,6 +94,16 @@ POSSIBILITY OF SUCH DAMAGE.
                         "capture": false
                     }
                 ]
+            },
+
+            "loupeFollowPointerCheckbox": {
+                "prototype": "montage/ui/input-checkbox.reel",
+                "properties": {
+                    "element": {"#": "loupeFollowPointerCheckbox"}
+                },
+                "bindings": {
+                    "checked": {"<->": "@application.preferences.values.loupeFollowPointer"}
+                }
             }
 
     }</script>
@@ -109,6 +119,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <div class="panel">
             <button data-montage-id="addMonitorButton" class="btn">+</button>
             <button data-montage-id="removeMonitorButton" class="btn">-</button>
+            <label><input type="checkbox" data-montage-id="loupeFollowPointerCheckbox" />Follow pointer</label>
         </div>
     </div>
 

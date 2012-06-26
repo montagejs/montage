@@ -37,6 +37,17 @@ POSSIBILITY OF SUCH DAMAGE.
 
     <script type="text/montage-serialization">{
 
+            "owner": {
+                "properties": {
+                    "element": {"#": "main"},
+                    "searchPanel": {"@": "searchPanel"},
+                    "photoEditor": {"@": "photoEditor"}
+                },
+                "bindings": {
+                    "showControls": {"<->": "@application.preferences.values.showControls"}
+                }
+            },
+
             "negationConverter": {
                 "prototype": "core/negation-converter"
             },
@@ -44,11 +55,11 @@ POSSIBILITY OF SUCH DAMAGE.
             "gridMagnifier": {
                 "prototype": "ui/grid-magnifier.reel",
                 "properties": {
-                    "element": {"#": "gridMagnifier"},
-                    "followPointer": true
+                    "element": {"#": "gridMagnifier"}
                 },
                 "bindings": {
-                    "colorPickerEnabled": {"<-": "@owner.showControls", "converter": {"@": "negationConverter"}}
+                    "colorPickerEnabled": {"<-": "@application.preferences.values.showControls", "converter": {"@": "negationConverter"}},
+                    "followPointer": {"<-": "@application.preferences.values.loupeFollowPointer"}
                 }
             },
             "photoEditor": {
@@ -146,21 +157,13 @@ POSSIBILITY OF SUCH DAMAGE.
                 }
             },
 
-            "owner": {
-                "properties": {
-                    "element": {"#": "main"},
-                    "searchPanel": {"@": "searchPanel"},
-                    "photoEditor": {"@": "photoEditor"}
-                }
-            },
-
             "toggleControlsButton": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "toggleControlsButton"}
                 },
                 "bindings": {
-                    "pressed": {"<->": "@owner.showControls"}
+                    "pressed": {"<->": "@application.preferences.values.showControls"}
                 }
             },
 
