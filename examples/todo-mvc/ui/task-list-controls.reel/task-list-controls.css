@@ -1,0 +1,46 @@
+/* <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> */
+
+.taskListControls {
+    display: inline-block;
+    float: right;
+}
+
+.taskListControls input {
+	display: block;
+	line-height: 20px;
+	text-decoration: none;
+	-moz-border-radius: 12px;
+	-webkit-border-radius: 12px;
+	-o-border-radius: 12px;
+	-ms-border-radius: 12px;
+	-khtml-border-radius: 12px;
+	border-radius: 12px;
+	border: none;
+	background: rgba(0, 0, 0, 0.1);
+	color: #555555;
+	font-size: 11px;
+	margin-top: 6px;
+	padding: 2px 10px;
+	-moz-box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
+	-o-box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
+	box-shadow: rgba(0, 0, 0, 0.2) 0 -1px 0 0;
+	cursor: pointer;
+}
+
+.taskListControls input:hover, .taskListControls input:focus {
+	background: rgba(0, 0, 0, 0.15);
+	-moz-box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
+	-webkit-box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
+	-o-box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
+	box-shadow: rgba(0, 0, 0, 0.3) 0 -1px 0 0;
+}
+
+.taskListControls input:active {
+	position: relative;
+	top: 1px;
+}

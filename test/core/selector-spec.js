@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 var Selector = require("montage/core/selector").Selector;
@@ -316,10 +316,6 @@ describe('core/selector-spec', function () {
                 assert(Selector.insensitive.equals("Charles Babbage").evaluate("charles babbage"), true);
                 assert(Selector.insensitive.startsWith("charles").evaluate("Charles Babbage"), true);
                 assert(Selector.insensitive.endsWith("babbage").evaluate("Charles Babbage"), true);
-            });
-
-            it("ends with operator works on arrays", function () {
-                assert(Selector.endsWith([4,5,6]).evaluate([1,2,3,4,5,6]), true);
             });
 
             describe("conditional expressions:", function () {

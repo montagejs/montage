@@ -2,7 +2,7 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
 <head>
@@ -12,7 +12,7 @@
      <script type="text/montage-serialization">{
 
     "dept": {
-        "prototype": "montage/ui/select-input.reel",
+        "prototype": "montage/ui/select.reel",
         "properties": {
             "element": {"#": "dept"},
             "textPropertyPath": "name",
@@ -34,7 +34,7 @@
     },
 
     "state": {
-        "prototype": "montage/ui/select-input.reel",
+        "prototype": "montage/ui/select.reel",
         "properties": {
             "element": {"#": "state"},
             "contentController": {"@": "statesController"},
@@ -44,7 +44,7 @@
     },
 
     "country": {
-        "prototype": "montage/ui/select-input.reel",
+        "prototype": "montage/ui/select.reel",
         "properties": {
             "element": {"#": "country"}
         }
@@ -58,33 +58,33 @@
     },
 
     "country1": {
-        "prototype": "montage/ui/select-input.reel",
+        "prototype": "montage/ui/select.reel",
         "properties": {
             "element": {"#": "country1"}
         }
     },
 
     "noDefaultSelection": {
-        "prototype": "montage/ui/select-input.reel",
+        "prototype": "montage/ui/select.reel",
         "properties": {
             "element": {"#": "noDefaultSelection"}
         }
     },
 
         "justifyComparatorLeft": {
-            "prototype": "ui/controls/select-input-fail.reel[JustifyConverter]",
+            "prototype": "ui/select-input-test/select-input-test[JustifyConverter]",
             "properties": {
                 "justify": "left"
             }
         },
         "justifyComparatorRight": {
-            "prototype": "ui/controls/select-input-fail.reel[JustifyConverter]",
+            "prototype": "ui/select-input-test/select-input-test[JustifyConverter]",
             "properties": {
                 "justify": "right"
             }
         },
         "justifyComparatorCenter": {
-            "prototype": "ui/controls/select-input-fail.reel[JustifyConverter]",
+            "prototype": "ui/select-input-test/select-input-test[JustifyConverter]",
             "properties": {
                 "justify": "center"
             }
@@ -120,7 +120,7 @@
             }
         },
         "justifySelect": {
-            "prototype": "montage/ui/select-input.reel",
+            "prototype": "montage/ui/select.reel",
             "properties": {
                 "element": {"#": "justifySelect"}
             },

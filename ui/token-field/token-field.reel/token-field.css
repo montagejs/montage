@@ -1,40 +1,34 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-token-field {
+.montage-tokenField {
     background: white;
     border: 1px solid #bdbdbd;
     padding: 3px 5px;
+    border-radius: 3px;
     cursor: text;
 }
 
-.montage-token-field .montage-token-list {
+.montage-tokenField-list {
     display: inline;
 }
 
-.montage-token-field input[type="text"].montage-token-autocomplete {
+.montage-tokenField-autocomplete.montage-inputText {
     -webkit-appearance: none;
     -moz-appearance: none;
     border: none;
     height: 13px;
     margin: 3px 1px;
+    padding: 0;
     outline: 0;
-    -webkit-box-shadow: none;
-    -moz-box-shadow: none;
+    vertical-align: middle;
     box-shadow: none;
     width: 2px;
 }
 
-.montage-token-field input[type="text"].montage-token-autocomplete:focus {
+.montage-tokenField-autocomplete:focus {
     width: 80%;
-}
-
-.montage-token-field .montage-autocomplete-wrapper {
-    display: inline-block;
-    overflow: hidden;
-    margin: 0px;
-    vertical-align: middle;
 }

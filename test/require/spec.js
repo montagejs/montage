@@ -22,56 +22,43 @@ describe("require-spec", function () {
         "named-mappings",
         "named-parent-package",
         "load-package",
-        "load-package-name"
+        "load-package-name",
+        "not-found",
+        "comments"
     ].forEach(function (test) {
         it(test, function () {
-            var promise;
+            var spec = this;
+            var done;
 
-            runs(function () {
-                var spec = this;
-                var done;
+            logger.debug(test + ":", "START");
 
-                logger.debug(test + ":", "START");
-
-                promise = require.loadPackage(
-                    module.directory + test + "/",
-                    {}
-                )
-                .then(function (pkg) {
-                    pkg.inject("test", {
-                        print: function (message, level) {
-                            logger.debug(test + ":", message);
-                            if (message === "DONE") {
-                                done = message;
-                            }
-                        },
-                        assert: function (guard, message) {
-                            logger.debug(test + ":", guard ? "PASS" : "FAIL", message);
-                            expect(!!guard).toBe(true);
+            return require.loadPackage(
+                module.directory + test + "/",
+                {}
+            )
+            .then(function (pkg) {
+                pkg.inject("test", {
+                    print: function (message, level) {
+                        logger.debug(test + ":", message);
+                        if (message === "DONE") {
+                            done = message;
                         }
-                    });
+                    },
+                    assert: function (guard, message) {
+                        logger.debug(test + ":", guard ? "PASS" : "FAIL", message);
+                        expect(!!guard).toBe(true);
+                    }
+                });
 
-                    return pkg.deepLoad("program")
-                    .then(function () {
-                        return pkg("program");
-                    }, function () {
-                        return pkg("program");
-                    })
-
-                })
-                .fail(function (reason, error) {
-                    spec.fail(error || reason);
-                })
-                .fin(function () {
-                    expect(done).toBe("DONE");
-                })
-
-            });
-
-            waitsFor(function () {
-                return promise.isResolved();
-            });
-
+                return pkg.async("program");
+            })
+            .then(function () {
+            }, function (reason, error) {
+                spec.fail(error || reason);
+            })
+            .fin(function () {
+                expect(done).toBe("DONE");
+            })
         })
     });
 });

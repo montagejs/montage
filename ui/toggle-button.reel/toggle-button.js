@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 /**
@@ -16,9 +16,11 @@ var Montage = require("montage").Montage,
 /**
   The ToggleButton component extends the Button component to include state management (pressed or not pressed), and the ability to specify labels and CSS classes for each state.
   @class module:"montage/ui/toggle-button.reel".ToggleButton
-  @extends module:"montage/button.reel".Button
+  @extends module:"montage/ui/button.reel".Button
  */
 var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends module:"montage/ui/toggle-button.reel".ToggleButton# */ {
+    hasTemplate: {value: true},
+
     _pressed: {
         value: false
     },
@@ -115,11 +117,12 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
     */
     label: {
         get: function() {
-            return Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").get.call(this);
+            return Object.getPropertyDescriptor(Button,"label").get.call(this);
         },
         set: function(value) {
             // Call super
-            Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").set.call(this, value);
+            //Object.getOwnPropertyDescriptor(Object.getPrototypeOf(ToggleButton),"label").set.call(this, value);
+            Object.getPropertyDescriptor(Button, "label").set.call(this, value);
             if (this._pressed === true && this._label === this._unpressedLabel) {
                 this.pressed = false;
             } else if (this._pressed === false && this._label === this._pressedLabel) {

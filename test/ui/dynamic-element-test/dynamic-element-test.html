@@ -2,7 +2,7 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
 <head>
@@ -14,7 +14,9 @@
             "test": {
                 "object": "ui/dynamic-element-test/dynamic-element-test[theTest]",
                 "properties": {
-                    "dynamicElement": {"@": "dynamicElement"}
+                    "dynamicElement": {"@": "dynamicElement"},
+                    "dynamicElementClassList": {"@": "dynamicElementClassList"},
+                    "dynamicElementClassInMarkup": {"@": "dynamicElementClassInMarkup"}
                 }
             },
 
@@ -23,6 +25,23 @@
                 "properties": {
                     "element": {"#": "dynamicElement"},
                     "allowedTagNames": ["div"]
+                }
+            },
+
+            "dynamicElementClassList": {
+                "prototype": "montage/ui/dynamic-element.reel",
+                "properties": {
+                    "element": {"#": "dynamicElementClassList"}
+                },
+                "bindings": {
+                    "classList.class1": {"<-": "@test.class1"},
+                    "classList.class2": {"<-": "@test.class2"}
+                }
+            },
+            "dynamicElementClassInMarkup": {
+                "prototype": "montage/ui/dynamic-element.reel",
+                "properties": {
+                    "element": {"#": "dynamicElementClassInMarkup"}
                 }
             }
         }
@@ -33,6 +52,7 @@
     <h1>DynamicElement test</h1>
 
     <div data-montage-id="dynamicElement"><div id="bar2"></div></div>
-
+    <div data-montage-id="dynamicElementClassList"></div>
+    <div data-montage-id="dynamicElementClassInMarkup" class="markupClass1 markupClass2"></div>
 </body>
 </html>

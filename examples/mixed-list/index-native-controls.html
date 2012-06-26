@@ -2,7 +2,7 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
 <head>
@@ -42,7 +42,6 @@
                     "switchComponents": {
                         "boolean": {"@": "toggle"},
                         "range": {"@": "slider"},
-                        "action": {"@": "button"},
                         "check": {"@": "checkbox"}
                     }
                 },
@@ -61,7 +60,7 @@
                 }
             },
             "slider": {
-                "prototype": "montage/ui/range-input.reel",
+                "prototype": "montage/ui/native/input-range.reel",
                 "properties": {
 
                 },
@@ -70,7 +69,7 @@
                 }
             },
             "checkbox": {
-                "prototype": "montage/ui/checkbox.reel",
+                "prototype": "montage/ui/native/input-checkbox.reel",
                 "properties": {
 
                 },
@@ -79,7 +78,7 @@
                 }
             },
             "addAnObjectButton": {
-                "prototype": "montage/ui/button.reel",
+                "prototype": "montage/ui/native/button.reel",
                 "properties": {
                     "element": {"#": "button"},
                     "identifier": "addButton"

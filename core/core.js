@@ -1,8 +1,9 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/*global Element */
 /**
  @module montage/core/core
  @requires montage/core/shim
@@ -12,9 +13,12 @@
  */
 require("core/shim/object");
 require("core/shim/array");
+require("core/shim/string");
 require("core/extras/object");
 require("core/extras/array");
 require("core/extras/string");
+require("core/extras/function");
+require("core/extras/date");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",
@@ -636,15 +640,3 @@ Object.defineProperty(Montage, "callDelegateMethod", {
         }
     }
 });
-
-// XXX Does not presently function server-side
-if (typeof window !== "undefined") {
-
-    var EventManager = require("core/event/event-manager").EventManager;
-    EventManager.create().initWithWindow(window);
-
-    // Now that we have a defaultEventManager we can setup the bindings system
-    require("core/event/binding");
-
-}
-

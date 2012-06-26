@@ -2,103 +2,41 @@
 <!-- <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> -->
 <html>
-    <head>
-    <title></title>
+<head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="scroll-bars.css">
     <script type="text/montage-serialization">
-        {
-            "owner": {
-                "properties": {
-                    "element": {
-                        "#": "montage-scroll-bars"
-                    },
-                    "_top": {
-                        "#": "top"
-                    },
-                    "_bottomClip": {
-                        "#": "bottom-clip"
-                    },
-                    "_bottom": {
-                        "#": "bottom"
-                    },
-                    "_left": {
-                        "#": "left"
-                    },
-                    "_rightClip": {
-                        "#": "right-clip"
-                    },
-                    "_right": {
-                        "#": "right"
-                    }
-                }
+{
+    "owner": {
+        "properties": {
+            "element": {
+                "#": "montage-scroll-bars"
+            },
+            "_top": {
+                "#": "top"
+            },
+            "_bottomClip": {
+                "#": "bottom-clip"
+            },
+            "_bottom": {
+                "#": "bottom"
+            },
+            "_left": {
+                "#": "left"
+            },
+            "_rightClip": {
+                "#": "right-clip"
+            },
+            "_right": {
+                "#": "right"
             }
         }
+    }
+}
     </script>
-    <style>
-        .montage-scroll-bars {
-            position: absolute;
-            left: 0;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            z-index: 9999;
-            pointer-events: none;
-        }
-        .montage-scroll-bars .top {
-            position: absolute;
-            right: 2px;
-            background: black;
-            -webkit-box-shadow: 0 0 0 1px rgba(255,255,255,.27);
-            width: 5px;
-            height: 3px;
-            border-radius: 4px 4px 0 0;
-            opacity: 0;
-            clip: rect(-1px, 6px, 3px, -1px);
-            -webkit-transform: translateZ(0);
-        }
-        .montage-scroll-bars .bottom {
-            background: black;
-            -webkit-box-shadow: 0 0 0 1px rgba(255,255,255,.27);
-            width: 5px;
-            border-radius: 0 0 4px 4px;
-            opacity: 0;
-            -webkit-transform: translateZ(0);
-        }
-        .montage-scroll-bars .bottom-clip {
-            position: absolute;
-            right: 2px;
-            width: 5px;
-            -webkit-transform: translateZ(0);
-        }
-        .montage-scroll-bars .left {
-            position: absolute;
-            bottom: 2px;
-            background: black;
-            -webkit-box-shadow: 0 0 0 1px rgba(255,255,255,.27);
-            width: 3px;
-            height: 5px;
-            border-radius: 4px 0 0 4px;
-            opacity: 0;
-            clip: rect(-1px, 3px, 6px, -1px);
-            -webkit-transform: translateZ(0);
-        }
-        .montage-scroll-bars .right {
-            background: black;
-            -webkit-box-shadow: 0 0 0 1px rgba(255,255,255,.27);
-            height: 5px;
-            border-radius: 0 4px 4px 0;
-            opacity: 0;
-            -webkit-transform: translateZ(0);
-        }
-        .montage-scroll-bars .right-clip {
-            position: absolute;
-            bottom: 2px;
-            height: 5px;
-            -webkit-transform: translateZ(0);
-        }
-    </style>
 </head>
 <body>
     <div data-montage-id="montage-scroll-bars" class="montage-scroll-bars">

@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 var Parser = require("./parser").Parser;
@@ -12,6 +12,7 @@ function makeSelector(language) {
     var tokens = language.tokens;
     var tokenNames = language.tokenNames;
     var semantics = language.semantics;
+    var tokenEmitterProperties;
 
     var Selector = function () {
         return makeTokenEmitter(
@@ -24,7 +25,7 @@ function makeSelector(language) {
 
     Selector.language = language;
 
-    var tokenEmitterProperties = language.selectorExtras || {};
+    tokenEmitterProperties = language.selectorExtras || {};
     var extraTokenEmitterNames = Object.keys(tokenEmitterProperties);
 
     // Proxied properties of the underlying selector

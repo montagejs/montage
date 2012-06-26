@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 /**
 	@module "montage/ui/rich-text-editor/overlays/rich-text-resizer.reel"
@@ -231,7 +231,7 @@ exports.RichTextResizer = Montage.create(Component,/** @lends module:"montage/ui
                 var zero = Point.create().init(0, 0),
                     framePosition = dom.convertPointFromNodeToPage(element, zero),
                     cursor = this._cursorPosition,
-                    direction = this._draggedElement.id.substring("montage-resizer-handle-".length),
+                    direction = this._draggedElement.getAttribute("data-montage-id").substring("montage-resizer-handle-".length),
                     info = this._resizerFrameInfo,
                     ratio = info.ratio,
                     height = parseFloat(element.style.height, 10),

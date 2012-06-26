@@ -1,9 +1,9 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global BUNDLE */
 if (typeof window !== "undefined") {
 
     document._montageTiming = {}
@@ -41,11 +41,8 @@ if (typeof window !== "undefined") {
     }
 })(function (require, exports, module) {
 
-    // The global context object, works for the browser and for node.
-    // XXX Will not work in strict mode
-    var global = (function() {
-        return this;
-    })();
+    // The global context object
+    var global = new Function("return this")();
 
     /**
      * Initializes Montage and creates the application singleton if
@@ -106,12 +103,22 @@ if (typeof window !== "undefined") {
                     });
                 };
 
-                if ('autoPackage' in params) {
+                if ("autoPackage" in params) {
                     montageRequire.injectPackageDescription(location, {
                         dependencies: {
                             montage: "*"
                         }
                     });
+                }
+
+                // handle explicit package.json location
+                if (location.slice(location.length - 5) === ".json") {
+                    var packageDescriptionLocation = location;
+                    location = URL.resolve(location, ".");
+                    montageRequire.injectPackageDescriptionLocation(
+                        location,
+                        packageDescriptionLocation
+                    );
                 }
 
                 return montageRequire.loadPackage(location)
@@ -269,7 +276,7 @@ if (typeof window !== "undefined") {
 
         getConfig: function() {
             return {
-                location: '' + window.location
+                location: "" + window.location
             };
         },
 
@@ -379,7 +386,7 @@ if (typeof window !== "undefined") {
                 }
             };
 
-            global.bootstrap('core/mini-url', urlModuleFactory);
+            global.bootstrap("core/mini-url", urlModuleFactory);
 
             // miniature module system
             var bootModules = {};
@@ -410,31 +417,54 @@ if (typeof window !== "undefined") {
         },
 
         initMontage: function (montageRequire, applicationRequire, params) {
-            // If a module was specified in the config then we initialize it now
-            if (params.module) {
-                applicationRequire.async(params.module)
-                .end();
-            } else {
-            // otherwise we load the application
-                montageRequire.async("ui/application", function(exports) {
-                    montageRequire.async("core/event/event-manager", function(eventManagerExports) {
+            var Promise, defaultEventManager, application;
 
-                        var defaultEventManager = eventManagerExports.defaultEventManager;
+            montageRequire.async("core/promise").then(function(exports) {
+                Promise = exports.Promise;
+                Promise.all([
+                    montageRequire.async("core/event/event-manager"),
+                    montageRequire.async("core/deserializer")
+                ]).then(function(exportsArray) {
+                    // Load the event-manager
+                    defaultEventManager = exportsArray[0].EventManager.create().initWithWindow(window);
 
-                        // montageWillLoad is mostly for testing purposes
-                        if (typeof global.montageWillLoad === "function") {
-                            global.montageWillLoad();
-                        }
-                        exports.Application.load(function(application) {
-                            window.document.application = application;
-                            defaultEventManager.application = application;
-                            application.eventManager = defaultEventManager;
+                    // montageWillLoad is mostly for testing purposes
+                    if (typeof global.montageWillLoad === "function") {
+                        global.montageWillLoad();
+                    }
+
+                    // Load the application
+
+                    var appProto = applicationRequire.packageDescription.applicationPrototype,
+                        applicationDescription, appModulePromise;
+                    if (appProto) {
+                        applicationDescription = exportsArray[1].Deserializer.parseForModuleAndName(appProto);
+                        appModulePromise = applicationRequire.async(applicationDescription.module);
+                    } else {
+                        appModulePromise = montageRequire.async("ui/application");
+                    }
+
+                    if (typeof window !== "undefined") {
+                        montageRequire.async("core/event/binding").end();
+                    }
+
+                    appModulePromise.then(function(exports) {
+                        application = exports[(applicationDescription ? applicationDescription.name : "Application")].create();
+                        window.document.application = application;
+                        defaultEventManager.application = application;
+                        application.eventManager = defaultEventManager;
+                        application._load(applicationRequire, function() {
+                            if (params.module) {
+                                // If a module was specified in the config then we initialize it now
+                                applicationRequire.async(params.module).end();
+                            }
                         });
-                    });
-                });
-            }
-        }
+                    }).end();
 
+                }).end();
+
+            });
+        }
     };
 
     if (typeof window !== "undefined") {

@@ -1,7 +1,7 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
 /**
@@ -15,7 +15,7 @@ var Montage = require("montage").Montage,
 /**
  * Wraps the a &lt;input type="radio"> element with binding support for the element's standard attributes.
    @class module:"montage/ui/radio-button.reel".RadioButton
-   @extends module:montage/check-input.CheckInput
+   @extends module:montage/ui/check-input.CheckInput
  */
 var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
     _fakeCheck: {
@@ -83,7 +83,8 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
                     RadioButton.addEventListener('checked', this);
                 }
             }
-        }
+        },
+        serializable: true
     },
 
 

@@ -1,18 +1,19 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global bootstrap,setImmediate */
 /**
-    Defines [nextTick()]{#link nextTick}
-    @see nextTick
+    Provides [nextTick]{@link nextTick}
     @module montage/core/next-tick
 */
 
 /**
-    @function
-    @name nextTick
+    Executes a function as soon as possible in a future event.  The task
+    is not cancelable.
+    @function module:montage/core/next-tick#nextTick
+    @param {Function} task a function to call in a future turn of the event loop
 */
 
 (function (definition) {
@@ -45,7 +46,7 @@ if (typeof process !== "undefined") {
             // setTimeout:
             request(flush, 0);
         }
-    }
+    };
 
     var flush = function () {
         try {

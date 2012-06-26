@@ -1,9 +1,9 @@
 /* <copyright>
  This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-
+/*global bootstrap,Q */
 // Scope:
 //  * ES5
 //  * speed and economy of memory before safety and securability
@@ -76,7 +76,7 @@ var Creatable = Object.create(Object.prototype, {
             for (var name in descriptor) {
                 var property = descriptor[name];
                 if (!property.set && !property.get) {
-                    property.writable = true
+                    property.writable = true;
                 }
                 property.configurable = true;
             }
@@ -263,6 +263,7 @@ var PrimordialPromise = Creatable.create({
             self.Promise = this;
             rejections.push(self);
             errors.push(error ? (error.stack ? error.stack : error) : reason);
+            displayErrors();
             return self;
         }
     },
@@ -676,22 +677,31 @@ var Promise = PrimordialPromise.create({}, { // Descriptor for each of the three
 
 var rejections = [];
 var errors = [];
-// Live console objects are not handled on tablets
-if (typeof window !== "undefined" && !window.Touch) {
+var errorsDisplayed = false;
+var displayErrors = function () {
+    // Live console objects are not handled on tablets or in Node
+    if (
+        !errorsDisplayed &&
+        typeof window !== "undefined" &&
+        !window.Touch &&
+        typeof console === "object"
+    ) {
 
-    /*
-    * This promise library consumes exceptions thrown in callbacks so
-    * that they can be handled asynchronously.  The exceptions get
-    * added to ``errors`` when they are consumed, and removed when
-    * they are handled.  In many debuggers, the view of the reported
-    * array will update to reflect its current contents so you can
-    * always see if you have missed an error.
-    *
-    * This log will appear once for every time this module gets
-    * instantiated.  That should be once per frame.
-    */
-    console.log("Should be empty:", errors);
-}
+        /*
+        * This promise library consumes exceptions thrown in callbacks so
+        * that they can be handled asynchronously.  The exceptions get
+        * added to ``errors`` when they are consumed, and removed when
+        * they are handled.  In many debuggers, the view of the reported
+        * array will update to reflect its current contents so you can
+        * always see if you have missed an error.
+        *
+        * This log will appear once for every time this module gets
+        * instantiated.  That should be once per frame.
+        */
+        console.log("Should be empty:", errors);
+        errorsDisplayed = true;
+    }
+};
 
 exports.Promise = Promise;
 
