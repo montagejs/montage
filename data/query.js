@@ -56,26 +56,14 @@ var Query = exports.Query = Montage.create(Montage, /** @lends module:montage/da
     },
 
     /**
-     * @private
-     */
-    _name:{
-        serializable:true,
-        enumerable:true,
-        value:""
-    },
-
-    /**
      * Name of this query. The name is used when the query is stored in the binder for retrieval at run time.
      @type {Property}
      @default {String} ""
      */
     name:{
-        get:function () {
-            return this._name;
-        },
-        set:function (value) {
-            this._name = value;
-        }
+        serializable:true,
+        enumerable:true,
+        value:""
     },
 
     /**
