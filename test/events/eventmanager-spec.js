@@ -504,6 +504,58 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     });
                 });
 
+                it ("should present an event to capture listeners that are functions themselves when the event is at target", function() {
+                    var bubbleCalled = false;
+
+                    testDocument.documentElement.addEventListener("mousedown", function(evt) {
+                        expect(this).toBe(evt.currentTarget);
+                        bubbleCalled = true;
+                    }, true);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(bubbleCalled).toBeTruthy();
+                    });
+                });
+
+                it ("should present an event to bubble listeners that are functions themselves during the capture phase", function() {
+                    var bubbleCalled = false;
+
+                    testDocument.addEventListener("mousedown", function(evt) {
+                        expect(this).toBe(evt.currentTarget);
+                        bubbleCalled = true;
+                    }, true);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(bubbleCalled).toBeTruthy();
+                    });
+                });
+
+                it ("should present an event to bubble listeners that are functions themselves when the event is at target", function() {
+                    var bubbleCalled = false;
+
+                    testDocument.documentElement.addEventListener("mousedown", function(evt) {
+                        expect(this).toBe(evt.currentTarget);
+                        bubbleCalled = true;
+                    }, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(bubbleCalled).toBeTruthy();
+                    });
+                });
+
+                it ("should present an event to bubble listeners that are functions themselves during the event phase", function() {
+                    var bubbleCalled = false;
+
+                    testDocument.addEventListener("mousedown", function(evt) {
+                        expect(this).toBe(evt.currentTarget);
+                        bubbleCalled = true;
+                    }, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(bubbleCalled).toBeTruthy();
+                    });
+                });
+
                 it("must not present the event to the generic handler in a phase the listener has not registered in", function() {
 
                     var eventCaptureSpy = {

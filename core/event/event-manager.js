@@ -1786,7 +1786,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                     } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                         jListener.handleEvent(mutableEvent);
                     } else if (typeof jListener === FUNCTION_TYPE) {
-                        jListener.call(jListener, mutableEvent);
+                        jListener.call(iTarget, mutableEvent);
                     }
                 }
             }
@@ -1812,7 +1812,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                             } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                                 jListener.handleEvent(mutableEvent);
                             } else if (typeof jListener === FUNCTION_TYPE) {
-                                jListener.call(jListener, mutableEvent);
+                                jListener.call(iTarget, mutableEvent);
                             }
                         }
 
@@ -1824,7 +1824,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                             } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                                 jListener.handleEvent(mutableEvent);
                             } else if (typeof jListener === FUNCTION_TYPE) {
-                                jListener.call(jListener, mutableEvent);
+                                jListener.call(iTarget, mutableEvent);
                             }
                         }
 
@@ -1857,7 +1857,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         jListener[bubbleMethodName](mutableEvent);
                     } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                         jListener.handleEvent(mutableEvent);
-                    } else if (typeof iTarget === FUNCTION_TYPE) {
+                    } else if (typeof jListener === FUNCTION_TYPE) {
                         jListener.call(iTarget, mutableEvent);
                     }
                 }
