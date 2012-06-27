@@ -71,8 +71,16 @@
             }
         },
 
-
-
+        "twoProperties": {
+            "prototype": "montage/ui/toggle-button.reel",
+            "properties": {
+                "element": {"#": "twoProperties"}
+            },
+            "localizations": {
+                "pressedLabel": {"_": "on", "_default": "On"},
+                "unpressedLabel": {"_": "off", "_default": "Off"}
+            }
+        },
 
         "test": {
             "prototype": "montage",
@@ -81,7 +89,8 @@
                 "basic": {"@": "basic"},
                 "resources": {"@": "resources"},
                 "bindingInput": {"@": "bindingInput"},
-                "binding": {"@": "binding"}
+                "binding": {"@": "binding"},
+                "twoProperties": {"@": "twoProperties"}
             }
         },
         "application": {
@@ -100,6 +109,7 @@
 
     <input type="text" data-montage-id="bindingInput" value="World" />
     <div data-montage-id="binding">fail</div>
+    <button data-montage-id="twoProperties">fail</div>
 
 </body>
 </html>

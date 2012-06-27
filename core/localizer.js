@@ -627,11 +627,37 @@ var MessageLocalizer = exports.MessageLocalizer = Montage.create(Montage, /** @l
     }
 });
 
+var createMessageBinding = function(object, prop, variables, deserializer, messageFunction) {
+    // if the messageFunction has its own toString property, then it is a
+    // simple string and there's no point creating and bindings
+    if (messageFunction.hasOwnProperty("toString")) {
+        object[prop] = messageFunction();
+        return;
+    }
+
+    var messageLocalizer = MessageLocalizer.create().init(messageFunction, variables);
+
+    for (var variable in variables) {
+        var targetPath = variables[variable];
+        var binding = {};
+        var dotIndex = targetPath.indexOf(".");
+        binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
+        binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
+        binding.oneway = true;
+        Object.defineBinding(messageLocalizer.variables, variable, binding);
+    }
+
+    Object.defineBinding(object, prop, {
+        boundObject: messageLocalizer,
+        boundObjectPropertyPath: "value",
+        oneway: true
+    });
+};
+
 Deserializer.defineDeserializationUnit("localizations", function(object, properties, deserializer) {
     for (var prop in properties) {
         var desc = properties[prop],
             key,
-            messageFunction,
             defaultMessage,
             variables;
 
@@ -648,37 +674,11 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
         defaultMessage = desc[DEFAULT_MESSAGE_KEY];
         delete desc[DEFAULT_MESSAGE_KEY];
 
-        // only set variables here once KEY_KEY and DEFAULT_MESSAGE_KEY have been removed
-        variables = Object.keys(desc);
-
-        defaultLocalizer.localizeAsync(key, defaultMessage).then(function(messageFunction) {
-            // if the messageFunction has its own toString property, then it is a
-            // simple string and there's no point creating and bindings
-            if (messageFunction.hasOwnProperty("toString")) {
-                object[prop] = messageFunction();
-                return;
-            }
-
-            var messageLocalizer = MessageLocalizer.create().init(messageFunction, variables);
-
-            for (var i = 0, len = variables.length; i < len; i++) {
-                var variable = variables[i];
-
-                var targetPath = desc[variable];
-                var binding = {};
-                var dotIndex = targetPath.indexOf(".");
-                binding.boundObject = deserializer.getObjectByLabel(targetPath.slice(1, dotIndex));
-                binding.boundObjectPropertyPath = targetPath.slice(dotIndex+1);
-                binding.oneway = true;
-                Object.defineBinding(messageLocalizer.variables, variable, binding);
-            }
-
-            Object.defineBinding(object, prop, {
-                boundObject: messageLocalizer,
-                boundObjectPropertyPath: "value",
-                oneway: true
+        (function(prop, variables) {
+            defaultLocalizer.localizeAsync(key, defaultMessage).then(function(messageFunction) {
+                createMessageBinding(object, prop, variables, deserializer, messageFunction);
             });
-        });
+        }(prop, desc));
     }
 });
 

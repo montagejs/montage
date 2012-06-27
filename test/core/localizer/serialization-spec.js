@@ -45,6 +45,11 @@ var testPage = TestPageLoader.queueTest("fallback", {directory: module.directory
                 test.bindingInput.value = "Earth";
                 expect(test.binding.value).toBe("Hello Earth");
             });
+
+            it("can localize two properties", function() {
+                expect(test.twoProperties.unpressedLabel).toBe("Off");
+                expect(test.twoProperties.pressedLabel).toBe("On");
+            });
         });
 
         describe("localizer localizeObjects", function() {
