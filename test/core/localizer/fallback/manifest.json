@@ -10,7 +10,7 @@
                         "messages.json": null
                     }
                 },
-                "en-x-compiled": {
+                "no-x-compiled": {
                     "directory": true,
                     "files": {
                         "messages.js": null

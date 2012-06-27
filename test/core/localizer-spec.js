@@ -158,6 +158,31 @@ describe("core/localizer-spec", function() {
                     expect(messages.hello).toBe("Hello, World!");
                 });
             });
+
+            it("loads non-English messages", function() {
+                var l = Localizer.Localizer.create().init("no");
+                return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function(r){
+                    l.require = r;
+                    return l.loadMessages();
+                }).then(function(messages) {
+                    expect(messages.hello).toBe("Hei");
+                });
+
+            });
+
+            it("loads the fallback messages", function() {
+                var l = Localizer.Localizer.create().init("no-x-compiled");
+                return require.loadPackage(module.directory + "localizer/fallback/", {}).then(function(r){
+                    l.require = r;
+                    return l.loadMessages();
+                }).then(function(messages) {
+                    expect(messages.hello).toBe("Hei");
+                    expect(typeof messages.welcome).toBe("function");
+                    var num_albums = l.localize("num_albums");
+                    expect(num_albums({albums: 1})).toBe("1 fotoalbum");
+                    expect(num_albums({albums: 4})).toBe("4 fotoalbuma");
+                });
+            });
         });
     });
 

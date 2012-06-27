@@ -1,7 +1,7 @@
 {
     "hello": "Hei",
     "num_albums": {
-        "message": "{albums, plural, other {# fotoalbum}}",
+        "message": "{albums, plural, one {1 fotoalbum} other {# fotoalbuma}}",
         "description": "how many photo albums the user has"
     },
     "welcome": {
