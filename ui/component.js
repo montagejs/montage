@@ -35,6 +35,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
+    templateObjects: {
+        value: null
+    },
+
     parentProperty: {
         serializable: true,
         value: "parentComponent"
@@ -335,7 +339,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     querySelectorAllComponent: {
-        value: function(selector) {
+        value: function(selector, owner) {
             if (typeof selector !== "string") {
                 throw "querySelectorComponent: Selector needs to be a string.";
             }
@@ -359,21 +363,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                    if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
+                    if (leftHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
                             found = found.concat(childComponent.querySelectorAllComponent(rest));
                         } else {
                             found.push(childComponent);
                         }
                     } else {
-                        found = found.concat(childComponent.querySelectorAllComponent(selector));
+                        found = found.concat(childComponent.querySelectorAllComponent(selector, owner));
                     }
                 }
             } else {
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                    if (rightHandOperand === Montage.getInfoForObject(childComponent).label) {
+                    if (rightHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
-                            found = found.concat(childComponent.querySelectorAllComponent(rest));
+                            found = found.concat(childComponent.querySelectorAllComponent(rest, owner));
                         } else {
                             found.push(childComponent);
                         }
@@ -627,6 +631,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     _shouldClearDomContentOnNextDraw: {
+        value: false
+    },
+
+    clonesChildComponents: {
         value: false
     },
 
@@ -889,9 +897,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
         if (!this._isTemplateInstantiated) {
             this._loadTemplate(function(template) {
+                var instances = self.templateObjects;
+
+                if (instances) {
+                    instances.owner = self;
+                } else {
+                    instances = {owner: self};
+                }
+
                 // this actually also serves as isTemplateInstantiating
                 self._isTemplateInstantiated = true;
-                template.instantiateWithComponent(self, function() {
+                template.instantiateWithInstancesAndDocument(instances, self._element.ownerDocument, function() {
                     if (callback) {
                         callback();
                     }
@@ -958,10 +974,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
 
-    templateDidDeserializeObject: {
-        value: function(object) {
-            if (Component.isPrototypeOf(object)) {
-                object.ownerComponent = this;
+    _deserializedFromTemplate: {
+        value: function(owner) {
+            if (!this.ownerComponent) {
+                if (Component.isPrototypeOf(owner)) {
+                    this.ownerComponent = owner;
+                } else {
+                    this.ownerComponent = this.rootComponent;
+                }
             }
         }
     },

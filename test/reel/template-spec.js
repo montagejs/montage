@@ -8,7 +8,12 @@ var Montage = require("montage").Montage,
     Template = require("montage/ui/template").Template,
     Component = require("montage/ui/component").Component,
     Serializer = require("montage/core/serializer").Serializer,
-    objects = require("serialization/testobjects-v2").objects;
+    objects = require("serialization/testobjects-v2").objects,
+    Repetition = require("montage/ui/repetition.reel").Repetition;
+
+var stripPP = function stripPrettyPrintting(str) {
+    return str.replace(/\n\s*/g, "");
+};
 
 var testPage = TestPageLoader.queueTest("template", function() {
     describe("reel/template-spec", function() {
@@ -36,13 +41,70 @@ var testPage = TestPageLoader.queueTest("template", function() {
             });
         });
 
+        it("should export all template objects into templateObjects", function() {
+            var component = objects.Comp.create(),
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                script = htmlDocument.createElement("script"),
+                latch;
+
+            component.element = document.createElement("div");
+            component.element.setAttribute("data-montage-id", "myDiv");
+
+            script.setAttribute("type", Template._SCRIPT_TYPE);
+            script.textContent = Serializer.create().initWithRequire(require).serialize({owner: component, object1: 1, object2: "string"});
+            htmlDocument.head.appendChild(script);
+
+            var template = Template.create().initWithDocument(htmlDocument);
+
+            component.templateObjects = {};
+            template.instantiateWithComponent(component, function() {
+                latch = true;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(Object.keys(component.templateObjects).length).toBe(2);
+            })
+        });
+
+        it("should export non-direct children into templateObjects as getters", function() {
+            var owner = Component.create(),
+                repetition = Repetition.create(),
+                comp = Component.create(),
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                script = htmlDocument.createElement("script"),
+                latch;
+
+            htmlDocument.body.innerHTML = '<div id="myDiv" data-montage-id="myDiv"><div id="repetition" data-montage-id="repetition"><div id="comp" data-montage-id="comp"></div></div></div>';
+
+            owner.element = htmlDocument.getElementById("myDiv");
+            repetition.element = htmlDocument.getElementById("repetition");
+
+            script.setAttribute("type", Template._SCRIPT_TYPE);
+            script.textContent = Serializer.create().initWithRequire(require).serialize({owner: owner, repetition: repetition, comp: comp});
+            htmlDocument.head.appendChild(script);
+
+            var template = Template.create().initWithDocument(htmlDocument);
+
+            owner.templateObjects = {};
+            template.instantiateWithComponent(owner, function() {
+                latch = true;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(Object.keys(owner.templateObjects).length).toBe(2);
+            });
+        });
+
         describe("instantiation delegates", function() {
             it("should call templateDidLoad function on the root object", function() {
                 var component = objects.Comp.create();
                 component.element = document.createElement("div");
                 component.element.setAttribute("data-montage-id", "myDiv");
                 component.child = objects.Comp.create();
-                var htmlDocument = document.implementation.createHTMLDocument("");
+                var htmlDocument = document.implementation.createHTMLDocument(""),
+                latch;
 
                 var script = htmlDocument.createElement("script");
                 script.setAttribute("type", Template._SCRIPT_TYPE);
@@ -51,6 +113,11 @@ var testPage = TestPageLoader.queueTest("template", function() {
 
                 var template = Template.create().initWithDocument(htmlDocument);
                 template.instantiateWithComponent(component, function() {
+                    latch = true;
+                });
+
+                waitsFor(function() { return latch; });
+                runs(function() {
                     expect(component.templateDidLoadCount).toBe(1);
                     expect(component.child.templateDidLoadCount).toBe(0);
                 });
@@ -218,5 +285,42 @@ var testPage = TestPageLoader.queueTest("template", function() {
                 expect(testPage.window.HeresAGlobalVariableFromComponentScript).toBeTruthy();
             }
         });
+
+        it("should serialize the properties list defined by the delegate", function() {
+            var component = Component.create(),
+                template = Template.create();
+
+            component.element = document.createElement("div");
+            component.element.setAttribute("data-montage-id", "myDiv");
+            component.aProperty = true;
+
+            template.delegate = {
+                serializeObjectProperties: function(serializer, object, propertyNames) {
+                    for (var i = 0; i < propertyNames.length; i++) {
+                        serializer.set(propertyNames[i], null);
+                    }
+                    serializer.set("aProperty", object.aProperty)
+                }
+            };
+
+            var template = template.initWithComponent(component);
+            expect(stripPP(template._ownerSerialization)).toBe('{"owner":{"prototype":"montage/ui/component","properties":{"aProperty":true}}}');
+        });
+        /* TODO: need error reporting from template to test this
+        it("should not see objects from the instances input that are not declared in the serialization", function() {
+            var htmlDocument = document.implementation.createHTMLDocument(""),
+                script = htmlDocument.createElement("script");
+
+            script.setAttribute("type", Template._SCRIPT_TYPE);
+            script.textContent = '{"object": {"value": {"@": "alien"}}}';
+            htmlDocument.head.appendChild(script);
+
+            var template = Template.create().initWithDocument(htmlDocument),
+                instances = {alien: 2};
+            template.instantiateWithInstancesAndDocument(instances, document, function() {
+                expect(Object.keys(instances).length).toBe(2);
+            });
+        });
+        */
     });
 });

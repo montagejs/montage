@@ -496,7 +496,7 @@ var testPage = TestPageLoader.queueTest("draw", function() {
             var serializer = Serializer.create().initWithRequire(require),
                 serialization = serializer.serializeObject(testPage.test.componentWithDelegate);
 
-            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/ui/component","properties":{"delegate":{"@":"application"},"parentProperty":"parentComponent","identifier":"componentWithDelegate"}}}');
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/ui/component","properties":{"delegate":{"@":"application"},"parentProperty":"parentComponent","identifier":"componentWithDelegate"}},"application":{}}');
         })
     });
 });
