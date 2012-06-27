@@ -631,7 +631,8 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             requireStrings = [],
             objectNamesCounter = {},
             label,
-            labelRegexp = this._labelRegexp;
+            labelRegexp = this._labelRegexp,
+            object;
 
         if (canEval) {
             serialization = this._serialization;
@@ -669,8 +670,11 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
             for (label in serialization) {
                 self._deserializeUnits(exports[label], serialization[label]);
             }
-            for (label in serialization) {
-                delete exports[label].isDeserializing;
+            for (label in exports) {
+                object = exports[label];
+                if (object) {
+                    delete object.isDeserializing;
+                }
             }
         }
 
@@ -702,6 +706,10 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                 descString,
                 objectLocation,
                 bracketIndex;
+
+            if (Object.keys(desc).length == 0) {
+                return;
+            }
 
             if ("module" in desc) {
                 moduleId = desc.module;
@@ -894,11 +902,15 @@ var Deserializer = exports.Deserializer = Montage.create(Montage, /** @lends mod
                     if (value in exports) {
                         object = exports[value];
                     } else if (value in serialization) {
-                        deserializeObject(value, serialization[value]);
-                        object = exports[value];
+                        if (Object.keys(serialization[value]).length > 0) {
+                            deserializeObject(value, serialization[value]);
+                            object = exports[value];
+                        } else {
+                            object = self._objectLabels[value];
+                            value = "this._objectLabels." + value;
+                        }
                     } else {
-                        object = self._objectLabels[value];
-                        value = "this._objectLabels." + value;
+                        logger.error("Error: Label '" + value + "' not found in serialization at " + self._origin);
                     }
 
                     if (parent) {
