@@ -182,61 +182,109 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
                 } else {
                     return Promise.reject("Package has no manifest. "+messageRequire.location+"package.json must contain \"manifest\": true and "+messageRequire.location+"manifest.json must exist");
                 }
+
             }).get("files").then(function(files) {
-                if (!files) {
-                    return Promise.reject(messageRequire.location+"manifest.json does not contain a 'files' property");
-                }
+                return self._loadMessageFiles(files);
 
-                var availableLocales, localesMessagesP = [], fallbackLocale, localeFiles, filename;
-
-                if (!(LOCALES_DIRECTORY in files)) {
-                    return Promise.reject("Package does not contain a '" + LOCALES_DIRECTORY + "' directory");
-                }
-
-                availableLocales = files[LOCALES_DIRECTORY].files;
-                fallbackLocale = self._locale;
-
-                while (fallbackLocale !== "") {
-                    if (availableLocales.hasOwnProperty(fallbackLocale)) {
-                        localeFiles = availableLocales[fallbackLocale].files;
-
-                        if ((filename = MESSAGES_FILENAME + ".js") in localeFiles) {}
-                        else if ((filename = MESSAGES_FILENAME + ".json") in localeFiles) {}
-                        else {
-                            // missing messages file
-                            if(logger.isDebug) {
-                                logger.debug("Warning: '" + LOCALES_DIRECTORY + "/" + fallbackLocale + "/' does not contain '" + MESSAGES_FILENAME + ".json' or '" + MESSAGES_FILENAME + ".js'");
-                            }
-                            continue;
-                        }
-
-                        localesMessagesP.push(messageRequire.async(LOCALES_DIRECTORY + "/" + fallbackLocale + "/" + filename));
-                    }
-                    fallbackLocale = fallbackLocale.substring(0, fallbackLocale.lastIndexOf("-"));
-                }
-
-                return Promise.all(localesMessagesP);
             }).then(function(localesMessages) {
-                var messages = {};
-                // collapse the messages into one object, earlier locales
-                // taking precedence over later ones.
-                for (var i = 0, len = localesMessages.length; i < len; i++) {
-                    var localeMessages = localesMessages[i];
-                    for (var key in localeMessages) {
-                        if (!(key in messages)) {
-                            messages[key] = localeMessages[key];
-                        }
-                    }
-                }
-                self.messages = messages;
+                return self._collapseMessages(localesMessages);
+
+            }, function(reason, error, rejection) {
+                console.error("Could not load messages for '" + self.locale + "': " + reason);
+                return rejection;
+
+            }).then(function(messages) {
                 if (typeof callback === "function") {
                     callback(messages);
                 }
                 return messages;
-            }, function(reason, error, rejection) {
-                console.error("Could not load messages for '" + self.locale + "': " + reason);
-                return rejection;
+
             });
+        }
+    },
+
+    /**
+        Load the locale appropriate message files from the given manifest
+        structure.
+        @private
+        @function
+        @param {Object} files An object mapping directory (locale) names to
+        @returns {Promise} A promise that will be resolved with an array
+        containing the content of message files appropriate to this locale.
+        Suitable for passing into {@link _collapseMessages}.
+    */
+    _loadMessageFiles: {
+        value: function(files) {
+            var messageRequire = this.require;
+
+            if (!files) {
+                return Promise.reject(messageRequire.location+"manifest.json does not contain a 'files' property");
+            }
+
+            var availableLocales, localesMessagesP = [], fallbackLocale, localeFiles, filename;
+
+            if (!(LOCALES_DIRECTORY in files)) {
+                return Promise.reject("Package does not contain a '" + LOCALES_DIRECTORY + "' directory");
+            }
+
+            availableLocales = files[LOCALES_DIRECTORY].files;
+            fallbackLocale = this._locale;
+
+            // Fallback through the language tags, loading any available
+            // message files
+            while (fallbackLocale !== "") {
+                if (availableLocales.hasOwnProperty(fallbackLocale)) {
+                    localeFiles = availableLocales[fallbackLocale].files;
+
+                    // Look for Javascript or JSON message files, with the
+                    // compiled JS files taking precedence
+                    if ((filename = MESSAGES_FILENAME + ".js") in localeFiles) {}
+                    else if ((filename = MESSAGES_FILENAME + ".json") in localeFiles) {}
+                    else {
+                        // missing messages file
+                        if(logger.isDebug) {
+                            logger.debug("Warning: '" + LOCALES_DIRECTORY + "/" + fallbackLocale + "/' does not contain '" + MESSAGES_FILENAME + ".json' or '" + MESSAGES_FILENAME + ".js'");
+                        }
+                        continue;
+                    }
+
+                    // Require the message file
+                    localesMessagesP.push(messageRequire.async(LOCALES_DIRECTORY + "/" + fallbackLocale + "/" + filename));
+                }
+                // Strip the last language tag off of the locale
+                fallbackLocale = fallbackLocale.substring(0, fallbackLocale.lastIndexOf("-"));
+            }
+
+            return Promise.all(localesMessagesP);
+        }
+    },
+
+    /**
+        Collapse an array of message objects into one, earlier elements taking
+        precedence over later ones.
+        @private
+        @function
+        @param {Array[Object]} localesMessages
+        @returns {Object} An object mapping messages keys to the messages
+        @example <code>[{hi: "Good-day"}, {hi: "Hello", bye: "Bye"}]</code>
+        results in <code>{hi: "Good-day", bye: "Bye"}</code>
+    */
+    _collapseMessages: {
+        value: function(localesMessages) {
+            var messages = {};
+
+            // Go through each set of messages, adding any keys that haven't
+            // already been set
+            for (var i = 0, len = localesMessages.length; i < len; i++) {
+                var localeMessages = localesMessages[i];
+                for (var key in localeMessages) {
+                    if (!(key in messages)) {
+                        messages[key] = localeMessages[key];
+                    }
+                }
+            }
+            this.messages = messages;
+            return messages;
         }
     },
 
