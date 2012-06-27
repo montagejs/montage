@@ -187,29 +187,34 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
                     return Promise.reject(messageRequire.location+"manifest.json does not contain a 'files' property");
                 }
 
-                var locales, localesMessagesP = [];
+                var availableLocales, localesMessagesP = [], fallbackLocale, localeFiles, filename;
 
                 if (!(LOCALES_DIRECTORY in files)) {
                     return Promise.reject("Package does not contain a '" + LOCALES_DIRECTORY + "' directory");
                 }
 
-                locales = files[LOCALES_DIRECTORY].files;
-                // TODO: fallback through the locale tags and check for the
-                // existence of each
-                for (var locale in locales) {
-                    var filename;
-                    if ((filename = MESSAGES_FILENAME + ".js") in locales[locale].files) {}
-                    else if ((filename = MESSAGES_FILENAME + ".json") in locales[locale].files) {}
-                    else {
-                        // missing messages file
-                        if(logger.isDebug) {
-                            logger.debug("Warning: '" + LOCALES_DIRECTORY + "/" + locale + "/' does not contain '" + MESSAGES_FILENAME + ".json' or '" + MESSAGES_FILENAME + ".js'");
-                        }
-                        continue;
-                    }
+                availableLocales = files[LOCALES_DIRECTORY].files;
+                fallbackLocale = self._locale;
 
-                    localesMessagesP.push(messageRequire.async(LOCALES_DIRECTORY + "/" + locale + "/" + filename));
+                while (fallbackLocale !== "") {
+                    if (availableLocales.hasOwnProperty(fallbackLocale)) {
+                        localeFiles = availableLocales[fallbackLocale].files;
+
+                        if ((filename = MESSAGES_FILENAME + ".js") in localeFiles) {}
+                        else if ((filename = MESSAGES_FILENAME + ".json") in localeFiles) {}
+                        else {
+                            // missing messages file
+                            if(logger.isDebug) {
+                                logger.debug("Warning: '" + LOCALES_DIRECTORY + "/" + fallbackLocale + "/' does not contain '" + MESSAGES_FILENAME + ".json' or '" + MESSAGES_FILENAME + ".js'");
+                            }
+                            continue;
+                        }
+
+                        localesMessagesP.push(messageRequire.async(LOCALES_DIRECTORY + "/" + fallbackLocale + "/" + filename));
+                    }
+                    fallbackLocale = fallbackLocale.substring(0, fallbackLocale.lastIndexOf("-"));
                 }
+
                 return Promise.all(localesMessagesP);
             }).then(function(localesMessages) {
                 var messages = {};
