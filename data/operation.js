@@ -86,7 +86,7 @@ var OperationManager = exports.OperationManager = Montage.create(Montage, /** @l
 var _noopOperation = null;
 /**
  @class module:montage/data/operation.NoopOperation
- @extends module:montage/core/core.Operation
+ @extends module:montage/data/operation.Operation
  */
 var NoopOperation = exports.NoopOperation = Montage.create(Operation, /** @lends module:montage/data/operation.NoopOperation# */ {
 
@@ -95,7 +95,7 @@ var NoopOperation = exports.NoopOperation = Montage.create(Operation, /** @lends
 
 /**
  @class module:montage/data/operation.InsertOperation
- @extends module:montage/core/core.Operation
+ @extends module:montage/data/operation.Operation
  */
 var InsertOperation = exports.InsertOperation = Montage.create(Operation, /** @lends module:montage/data/operation.InsertOperation# */ {
 
@@ -104,7 +104,7 @@ var InsertOperation = exports.InsertOperation = Montage.create(Operation, /** @l
 
 /**
  @class module:montage/data/operation.DeleteOperation
- @extends module:montage/core/core.Operation
+ @extends module:montage/data/operation.Operation
  */
 var DeleteOperation = exports.DeleteOperation = Montage.create(Operation, /** @lends module:montage/data/operation.DeleteOperation# */ {
 
@@ -113,7 +113,7 @@ var DeleteOperation = exports.DeleteOperation = Montage.create(Operation, /** @l
 
 /**
  @class module:montage/data/operation.ChangeOperation
- @extends module:montage/core/core.Operation
+ @extends module:montage/data/operation.Operation
  */
 var ChangeOperation = exports.ChangeOperation = Montage.create(Operation, /** @lends module:montage/data/operation.ChangeOperation# */ {
 

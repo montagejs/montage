@@ -133,6 +133,7 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
             this._event.stopImmediatePropagation();
             // TODO only if the event is cancellable?
             this.propagationStopped = true;
+            this.immediatePropagationStopped = true;
         }
     },
 /**
@@ -140,6 +141,13 @@ var MutableEvent = exports.MutableEvent = Montage.create(Montage,/** @lends modu
         @default {Boolean} false
     */
     propagationStopped: {
+        value: false
+    },
+/**
+            @type {Property}
+        @default {Boolean} false
+    */
+    immediatePropagationStopped: {
         value: false
     },
 /**

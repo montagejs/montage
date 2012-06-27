@@ -3,6 +3,14 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/**
+    @module module:montage/core/promise
+*/
+
+/**
+    @class module:montage/core/promise.Promise
+*/
+
 /*global bootstrap,Q */
 // Scope:
 //  * ES5

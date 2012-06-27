@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PhotoInfoPanel</title>
+    <link rel="stylesheet" type="text/css" href="photo-info-panel.css">
+
+    <script type="text/montage-serialization">{
+
+            "owner": {
+                "properties": {
+                    "element": {"#": "photoInfoPanel"},
+                    "_dragProxy": {"#": "dragProxy"},
+                    "_canvas": {"#": "canvas"}
+                }
+            },
+            "title": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "title"}
+                },
+                "bindings": {
+                    "value": {"<->": "@owner.photo.title"}
+                }
+            },
+            "author": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "author"}
+                },
+                "bindings": {
+                    "value": {"<->": "@owner.photo.authors.0"}
+                }
+            },
+
+            "thumbnailCondition": {
+                "prototype": "montage/ui/condition.reel",
+                "properties": {
+                    "element": {"#": "thumbnailCondition"},
+                    "removalStrategy": "hide"
+                },
+                "bindings": {
+                    "condition": {"<->": "@owner.photo"}
+                }
+            }
+
+    }</script>
+
+</head>
+<body>
+
+    <div data-montage-id="photoInfoPanel" class="PhotoInfoPanel">
+        <div data-montage-id="thumbnailCondition" class="thumbnail">
+            <img data-montage-id="dragProxy" class="dragProxy">
+            <canvas data-montage-id="canvas" class="canvas"></canvas>
+        </div>
+        <h2 data-montage-id="title" class="title text"></h2>
+        <p data-montage-id="author" class="author text"></p>
+    </div>
+
+</body>
+</html>

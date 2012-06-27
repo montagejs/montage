@@ -1,0 +1,28 @@
+<html>
+<head>
+  <title>Logger</title>
+  <link rel="stylesheet" href="logger.css">
+  <script type="text/montage-serialization">
+  {
+    "output": {
+      "prototype": "montage/ui/dynamic-text.reel",
+      "properties": {
+        "element": {"#": "output"}
+      }
+    },
+
+    "owner": {
+        "properties": {
+            "element": {"#": "logger"},
+            "output": {"@": "output"}
+        }
+    }
+  }
+  </script>
+</head>
+<body>
+  <div data-montage-id="logger" class="logger">
+    <div data-montage-id="output" class="logger-output"></div>
+  </div>
+</body>
+</html>

@@ -16,9 +16,10 @@ var global = typeof global !== "undefined" ? global : window;
 var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
     describe("events/eventmanager-spec", function() {
 
-        var CAPTURING_PHASE = 1,
-            AT_TARGET = 2,
-            BUBBLING_PHASE = 3;
+        var NONE = Event.NONE,
+            CAPTURING_PHASE = Event.CAPTURING_PHASE,
+            AT_TARGET = Event.AT_TARGET,
+            BUBBLING_PHASE = Event.BUBBLING_PHASE;
 
         it("should load", function() {
             expect(testPage.loaded).toBeTruthy();
@@ -35,27 +36,27 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
         describe("when determining handler method names", function() {
 
             it('should correctly prefix the eventType with "capture" for the capture phase event handler method', function() {
-                expect(eventManager.methodNameForCapturePhaseOfEventType_("mousedown")).toBe("captureMousedown");
+                expect(eventManager.methodNameForCapturePhaseOfEventType("mousedown")).toBe("captureMousedown");
             });
 
             it('should correctly prefix the eventType with "handle" for the bubble phase event handler method', function() {
-                expect(eventManager.methodNameForBubblePhaseOfEventType_("mousedown")).toBe("handleMousedown");
+                expect(eventManager.methodNameForBubblePhaseOfEventType("mousedown")).toBe("handleMousedown");
             });
 
             it("must not alter inner capitalization of capture phase event handler method names", function() {
-                expect(eventManager.methodNameForCapturePhaseOfEventType_("DOMContentReady")).toBe("captureDOMContentReady");
+                expect(eventManager.methodNameForCapturePhaseOfEventType("DOMContentReady")).toBe("captureDOMContentReady");
             });
 
             it("must not alter inner capitalization of bubble phase event handler method names", function() {
-                expect(eventManager.methodNameForBubblePhaseOfEventType_("DOMContentReady")).toBe("handleDOMContentReady");
+                expect(eventManager.methodNameForBubblePhaseOfEventType("DOMContentReady")).toBe("handleDOMContentReady");
             });
 
             it("should inject the specified target identifier as part of the bubble phase event handler method name", function() {
-                expect(eventManager.methodNameForBubblePhaseOfEventType_("click", "testButton")).toBe("handleTestButtonClick");
+                expect(eventManager.methodNameForBubblePhaseOfEventType("click", "testButton")).toBe("handleTestButtonClick");
             });
 
             it("should inject the specified target identifier as part of the capture phase event handler method name", function() {
-                expect(eventManager.methodNameForCapturePhaseOfEventType_("click", "testButton")).toBe("captureTestButtonClick");
+                expect(eventManager.methodNameForCapturePhaseOfEventType("click", "testButton")).toBe("captureTestButtonClick");
             });
         });
 
@@ -503,6 +504,58 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                     });
                 });
 
+                it ("should present an event to capture listeners that are functions themselves when the event is at target", function() {
+                    var bubbleCalled = false;
+
+                    testDocument.documentElement.addEventListener("mousedown", function(evt) {
+                        expect(this).toBe(evt.currentTarget);
+                        bubbleCalled = true;
+                    }, true);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(bubbleCalled).toBeTruthy();
+                    });
+                });
+
+                it ("should present an event to bubble listeners that are functions themselves during the capture phase", function() {
+                    var bubbleCalled = false;
+
+                    testDocument.addEventListener("mousedown", function(evt) {
+                        expect(this).toBe(evt.currentTarget);
+                        bubbleCalled = true;
+                    }, true);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(bubbleCalled).toBeTruthy();
+                    });
+                });
+
+                it ("should present an event to bubble listeners that are functions themselves when the event is at target", function() {
+                    var bubbleCalled = false;
+
+                    testDocument.documentElement.addEventListener("mousedown", function(evt) {
+                        expect(this).toBe(evt.currentTarget);
+                        bubbleCalled = true;
+                    }, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(bubbleCalled).toBeTruthy();
+                    });
+                });
+
+                it ("should present an event to bubble listeners that are functions themselves during the event phase", function() {
+                    var bubbleCalled = false;
+
+                    testDocument.addEventListener("mousedown", function(evt) {
+                        expect(this).toBe(evt.currentTarget);
+                        bubbleCalled = true;
+                    }, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.documentElement), "mousedown", function() {
+                        expect(bubbleCalled).toBeTruthy();
+                    });
+                });
+
                 it("must not present the event to the generic handler in a phase the listener has not registered in", function() {
 
                     var eventCaptureSpy = {
@@ -597,6 +650,75 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                         expect(eventSpy.handleEvent).toHaveBeenCalled();
                     });
 
+                });
+
+                it("must set the event phase as NONE after distribution", function() {
+                    var event;
+                    var eventSpy = {
+                        handleEvent: function(evt) {
+                            event = evt;
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                    });
+
+                    expect(event.eventPhase).toBe(NONE);
+                });
+
+                describe("adding listeners during distribution", function() {
+
+                    it("should distribute the event if the added listener would receive the event after the point that it was added", function() {
+                        var lateAddedRootListener = {
+                            handleEvent: function() {
+
+                            }
+                        };
+
+                        var bodyListener = {
+                            handleEvent: function() {
+                                testDocument.documentElement.addEventListener("mousedown", lateAddedRootListener, false);
+                            }
+                        };
+
+                        spyOn(bodyListener, 'handleEvent').andCallThrough();
+                        spyOn(lateAddedRootListener, 'handleEvent');
+
+                        testDocument.body.addEventListener("mousedown", bodyListener, false);
+
+                        testPage.mouseEvent(EventInfo.create().initWithElement(testDocument.body), "mousedown", function() {
+                            expect(lateAddedRootListener.handleEvent).toHaveBeenCalled();
+                        });
+                    });
+
+                });
+
+            });
+
+            describe("with respect to the currentTarget property", function() {
+
+                it("must set the currentTarget as null after distribution", function() {
+                    var event;
+                    var eventSpy = {
+                        handleEvent: function(evt) {
+                            event = evt;
+                        }
+                    };
+
+                    spyOn(eventSpy, 'handleEvent').andCallThrough();
+
+                    testDocument.addEventListener("mousedown", eventSpy, false);
+
+                    testPage.mouseEvent(EventInfo.create().initWithElement(testDocument), "mousedown", function() {
+                        expect(eventSpy.handleEvent).toHaveBeenCalled();
+                    });
+
+                    expect(event.currentTarget).toBeNull();
                 });
 
             });
@@ -739,44 +861,44 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
 
             it("should install listeners on a document if the requested target is a window", function() {
                 var testWindow = testDocument.defaultView;
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("mousedown", testWindow);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("mousedown", testWindow);
 
                 expect(actualTarget).toBe(testDocument);
             });
 
             it("should install listeners on a document if the requested target is a document", function() {
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("mousedown", testDocument);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("mousedown", testDocument);
 
                 expect(actualTarget).toBe(testDocument);
             });
 
             it("should install listeners on a document if the requested target is an element", function() {
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("mousedown", testDocument.documentElement);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("mousedown", testDocument.documentElement);
 
                 expect(actualTarget).toBe(testDocument);
             });
 
             it("should install listeners on the specified target if the eventType is 'load'", function() {
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("load", testDocument.documentElement);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("load", testDocument.documentElement);
                 expect(actualTarget).toBe(testDocument.documentElement);
 
-                actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("load", testDocument);
+                actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("load", testDocument);
                 expect(actualTarget).toBe(testDocument);
 
                 var testWindow = testDocument.defaultView;
-                actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("load", testWindow);
+                actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("load", testWindow);
                 expect(actualTarget).toBe(testWindow);
             });
 
             it("should install listeners on the specified target if the eventType is 'resize'", function() {
-                var actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("resize", testDocument.documentElement);
+                var actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("resize", testDocument.documentElement);
                 expect(actualTarget).toBe(testDocument.documentElement);
 
-                actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("resize", testDocument);
+                actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("resize", testDocument);
                 expect(actualTarget).toBe(testDocument);
 
                 var testWindow = testDocument.defaultView;
-                actualTarget = eventManager.actualDOMTargetForEventType_onTarget_("resize", testWindow);
+                actualTarget = eventManager.actualDOMTargetForEventTypeOnTarget("resize", testWindow);
                 expect(actualTarget).toBe(testWindow);
             });
 
