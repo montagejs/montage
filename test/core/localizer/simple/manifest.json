@@ -1,6 +1,6 @@
 {
     "files": {
-        "locales": {
+        "locale": {
             "directory": true,
             "files": {
                 "en": {

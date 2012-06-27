@@ -25,7 +25,7 @@ var KEY_KEY = "_",
     LOCALE_STORAGE_KEY = "montage_locale",
 
     // directory name that the locales are stored under
-    LOCALES_DIRECTORY = "locales",
+    LOCALES_DIRECTORY = "locale",
     // filename (without extension) on the file that contains the messages
     MESSAGES_FILENAME = "messages";
 

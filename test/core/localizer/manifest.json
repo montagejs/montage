@@ -1,7 +1,7 @@
 {
     "montage_manifest_version": 1,
     "files": {
-        "locales": {
+        "locale": {
             "directory": true,
             "files": {
                 "en": {
