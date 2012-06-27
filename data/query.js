@@ -110,7 +110,7 @@ var Query = exports.Query = Montage.create(Montage, /** @lends module:montage/da
     initWithBlueprint:{
         enumerable:true,
         value:function (blueprint) {
-            return this.initWithBlueprintAndSelector(blueprint, null, null);
+            return this.initWithBlueprintSelectorAndParameters(blueprint, null, null);
         }
     },
 
@@ -124,7 +124,7 @@ var Query = exports.Query = Montage.create(Montage, /** @lends module:montage/da
     initWithBlueprintAndSelector:{
         enumerable:true,
         value:function (blueprint, selector) {
-            return this.initWithBlueprintAndSelector(blueprint, selector, null);
+            return this.initWithBlueprintSelectorAndParameters(blueprint, selector, null);
         }
     },
 
