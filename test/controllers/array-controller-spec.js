@@ -186,11 +186,19 @@ describe("controllers/array-controller-spec.js", function() {
                 expect(arrayController.content[0]).toBe(bob);
             });
 
+            it("should return a single object removed from the managed collection", function() {
+                expect(arrayController.removeObjects(alice)).toEqual([alice]);
+            });
+
             it("should provide a way to remove multiple objects from the managed collection", function() {
 
                 arrayController.removeObjects(bob, alice);
 
                 expect(arrayController.content.length).toBe(0);
+            });
+
+            it("should return multiple object removed from the managed collection", function() {
+                expect(arrayController.removeObjects(bob, alice)).toEqual([bob, alice]);
             });
 
             it("should provide a way to remove selected objects from the managed collection", function() {;
@@ -202,6 +210,11 @@ describe("controllers/array-controller-spec.js", function() {
                 expect(arrayController.selectedContentIndexes.length).toBe(0);
             });
 
+            it("should return multiple selected objects removed by from the managed collection", function() {
+                arrayController.selectedContentIndexes = [0,1];
+                expect(arrayController.remove()).toEqual([bob, alice]);
+            });
+
             it("should remove objects at the selected indices", function() {
                 arrayController.selectedIndexes = [1];
                 arrayController.removeObjectsAtSelectedIndexes();
@@ -210,11 +223,20 @@ describe("controllers/array-controller-spec.js", function() {
                 expect(arrayController.content.indexOf(bob)).toBe(-1);
             });
 
+            it("should return multiple objects removed by selectedIndexes from the managed collection", function() {
+                arrayController.selectedIndexes = [1];
+                expect(arrayController.removeObjectsAtSelectedIndexes()).toEqual([bob]);
+            });
+
             it("should remove objects at the specified indices", function() {
                 arrayController.removeObjectsAtIndexes([0,1]);
                 expect(arrayController.content.length).toBe(0);
                 expect(arrayController.content.indexOf(bob)).toBe(-1);
                 expect(arrayController.content.indexOf(alice)).toBe(-1);
+            });
+
+            it("should return multiple objects removed by specific indicies from the managed collection", function() {
+                expect(arrayController.removeObjectsAtIndexes([0,1])).toEqual([alice, bob]);
             });
 
         });
@@ -761,5 +783,7 @@ describe("controllers/array-controller-spec.js", function() {
         });
 
     });
+
+
 
 });

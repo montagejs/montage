@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Dynamic Text Example</title>
+        <script type="text/montage-serialization">{
+
+            "dateConverter1": {
+                "prototype": "montage/core/converter/date-converter",
+                "properties": {
+                    "pattern": "hh:mm:ss"
+                }
+            },
+            "currentTime": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "value": "",
+                    "converter": {"@": "dateConverter1"},
+                    "element": {"#": "currentTime"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.currentTime"}
+                }
+            },
+            "dynamicTextAccordion1": {
+                "prototype": "ui/accordion.reel",
+                "properties": {
+                    "element": {"#": "dynamicTextAccordion1"}
+                }
+            },
+
+            "owner": {
+                "properties": {
+                    "element": {"#": "component-root"}
+                }
+            }
+
+    }</script>
+
+    <style>
+        .current-time {
+            margin: 40px auto;
+            font-size: 64px;
+            display: inline-block;
+        }
+    </style>
+
+    </head>
+
+    <body>
+        <div data-montage-id="component-root">
+            <div class="row">
+                <div class="span12">
+                    <h3>Dynamic Text</h3>
+                    <p class="">
+                    The DynamicText component lets you display a string of text in a DOM element.
+                    </p>
+                </div>
+            </div>
+
+            <h4>Demo</h4>
+
+                <p>This example displays the current time in a DynamicText component. The current time is calculated , which is provided by the component's controller. A <code>DateConverter</code> is used to format the time value in the hh:mm:ss format.
+                </p>
+            <div class="demo">
+                <span data-montage-id="currentTime" class="current-time"></span>
+
+            </div>
+
+                       <ul data-montage-id="dynamicTextAccordion1" class="accordion">
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                <div class="accordion-inner montage-hidden" >
+                                    <pre class="prettyprint" >
+&lt;span data-montage-id="currentTime" class="currentTime"&gt;&lt;/span&gt;
+            </pre>
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+{
+    "dateConverter1": {
+        "prototype": "montage/core/converter/date-converter",
+        "properties": {
+            "pattern": "hh:mm:ss"
+        }
+    },
+    "currentTime": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "value": "",
+            "converter": {"@": "dateConverter1"},
+            "element": {"#": "currentTime"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@owner.currentTime"}
+        }
+    },
+    "owner": {
+        "prototype": "ui/components/dynamic-text-example.reel",
+        "properties": {
+            "element": {"#": "component-root"}
+        }
+    }
+}
+             </pre>
+
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.DynamicTextExample = Montage.create(Component, {
+
+    _currentTime: {value: null},
+    currentTime: {
+        set: function(value) {
+            this._currentTime = value;
+            this.needsDraw = false;
+        },
+        get: function() {return this._currentTime;}
+    },
+
+    _intervalId: {value: null},
+
+    didBecomeInactiveInSlot: {
+        value: function() {
+            if(this._intervalId) {
+                clearInterval(this._intervalId);
+                this._intervalId = null;
+            }
+        }
+    },
+
+    didBecomeActiveInSlot: {
+        value: function() {
+            var self = this;
+            if(this._intervalId) {
+                clearInterval(this._intervalId);
+            }
+            this._intervalId = setInterval(function() {
+                self.currentTime = new Date(Date.now());
+            }, 1000);
+        }
+    }
+
+});
+                                    </pre>
+                                </div>
+                            </li>
+                        </ul>
+
+
+
+            <section>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/dynamic-text-example.reel" target="_blank">View source on GitHub</a>
+            </section>
+<!--
+            <section>
+                <h4>Component Properties</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                        <td>value</td>
+                        <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                      </tr>
+
+                  </tbody>
+                </table>
+                <p>
+                    <a href="" target="_blank">View full Documentation</a>
+                </p>
+            </section>
+
+ -->    </body>
+</html>
