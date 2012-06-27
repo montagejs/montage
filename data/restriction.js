@@ -72,7 +72,7 @@ var Restriction = exports.Restriction = Montage.create(Montage, /** @lends modul
     initWithNameAndParameters:{
         enumerable:false,
         value:function (name, parameters) {
-            this.name = (name != null ? name : "default");
+            this._name = (name != null ? name : "default");
             if (parameters != null) {
                 var parametersNames = Object.getOwnPropertyNames(parameters);
                 var parameter, parameterName, index;
