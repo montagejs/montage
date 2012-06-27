@@ -628,6 +628,10 @@ var MessageLocalizer = exports.MessageLocalizer = Montage.create(Montage, /** @l
 });
 
 var createMessageBinding = function(object, prop, variables, deserializer, messageFunction) {
+    if (!messageFunction) {
+        throw new Error("messageFunction required");
+    }
+
     // if the messageFunction has its own toString property, then it is a
     // simple string and there's no point creating and bindings
     if (messageFunction.hasOwnProperty("toString")) {
@@ -674,11 +678,15 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
         defaultMessage = desc[DEFAULT_MESSAGE_KEY];
         delete desc[DEFAULT_MESSAGE_KEY];
 
-        (function(prop, variables) {
+        (function(prop, variables, key) {
             defaultLocalizer.localizeAsync(key, defaultMessage).then(function(messageFunction) {
+                if (!messageFunction) {
+                    console.error("No localization for key '" + key + "' in ", object);
+                    return;
+                }
                 createMessageBinding(object, prop, variables, deserializer, messageFunction);
             });
-        }(prop, desc));
+        }(prop, desc, key));
     }
 });
 
