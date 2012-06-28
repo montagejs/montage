@@ -8,11 +8,6 @@ var Montage = require("montage/core/core").Montage,
     Notifier = require("montage/ui/popup/notifier.reel/notifier").Notifier;
 
 exports.Content = Montage.create(Component, {
-    // the main component
-    sandbox: {
-        value: null,
-        serializable: true
-    },
 
     contentDeck: {
         value: null,
@@ -26,8 +21,12 @@ exports.Content = Montage.create(Component, {
             return this._selectedItem;
         },
         set: function(value) {
-            this._selectedItem = value;
-            this.needsDraw = true;
+            console.log('set selectedItem ', value, this._selectedItem);
+            if(value && value !== "" && value !== this._selectedItem) {
+                this._selectedItem = value;
+                this.needsDraw = true;                
+            }
+            
         }
     },
 

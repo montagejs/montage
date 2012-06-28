@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<!-- <copyright>
+ This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
+ No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
+ (c) Copyright 2011 Motorola Mobility, Inc.  All Rights Reserved.
+ </copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Weather: Main Component</title>
+
+    <script type="text/montage-serialization">
+        {
+
+            "owner": {
+                "prototype": "ui/main.reel",
+                "properties": {
+                    "element": {"#": "main"},
+                    "currentConditionsEl": {"#": "current-conditions"},
+                    "zipTxt": {"#": "zip"}
+                },
+                "bindings": {
+                    "zip": {
+                        "<->": "@application.state.zip"
+                    },
+                    "zipTxtValue": {"<-" : "@zip.value"}
+                }
+            },
+
+            "zip": {
+                "prototype": "montage/ui/input-text.reel",
+                "properties": {
+                    "element": {"#": "zip"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.zip"}
+                }
+            },
+            "goButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "goButton"},
+                    "identifier": "goButton"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "resultTitle": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "result-title"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.weather.title"}
+                }
+            },
+            "error": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "error"}
+                },
+                "bindings": {
+                    "value": {"<-": "@owner.error"}
+                }
+            }
+        }
+    </script>
+
+    <style>
+        .main {
+            width: 600px;
+
+        }
+    </style>
+</head>
+<body>
+    <div class="main container" data-montage-id="main">
+        <div class="main-content">
+            <h1>Weather Forecast</h1>
+
+            <div class="search">
+                <input type="text" data-montage-id="zip" value="94087" placeholder="Enter US zip code"/>
+                <button type="button" data-montage-id="goButton" class="btn">OK</button>
+            </div>
+            <div style="padding: 10px 0;">
+                Example zip codes:
+                <ul>
+                    <li><a href="./#!/94087">94087 - Sunnyvale, CA</a></li>
+                    <li><a href="./#!/10001">10001 - New York, NY</a></li>
+                    <li><a href="./#!/20002">20002 - Washington DC</a></li>
+                </ul>
+            </div>
+            <h3 data-montage-id="result-title"></h3>
+            <div data-montage-id="current-conditions"></div>
+            <div data-montage-id="error" class="error"></div>
+
+            <div class="forecast">
+
+            </div>
+      </div>
+      <footer>
+        <p>&copy; Motorola Mobility 2011</p>
+      </footer>
+
+    </div> <!-- /container -->
+
+
+</body>
+</html>
