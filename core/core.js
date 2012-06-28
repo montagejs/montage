@@ -162,12 +162,14 @@ Object.defineProperty(Montage, "defineProperty", {
         //this is added to enable value properties with [] or Objects that are new for every instance
         if (descriptor.distinct === true && typeof descriptor.value === "object") {
             (function(prop,internalProperty, value, obj) {
-                Object.defineProperty(obj, internalProperty, {
-                    enumerable: false,
-                    configurable: true,
-                    writable: true,
-                    value: null
-                });
+                var defineInternalProperty = function(obj, internalProperty, value) {
+                    Object.defineProperty(obj, internalProperty, {
+                        enumerable: false,
+                        configurable: true,
+                        writable: true,
+                        value: value
+                    });
+                };
                 if (value.constructor === Object && Object.getPrototypeOf(value) === Object_prototype) {
                     // we have an object literal {...}
                     if (Object.keys(value).length !== 0) {
@@ -182,22 +184,43 @@ Object.defineProperty(Montage, "defineProperty", {
                                     for (k in value) {
                                         returnValue[k] = value[k];
                                     }
-                                    this[internalProperty] = returnValue;
+                                    if(!this.hasOwnProperty(internalProperty)) {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    } else {
+                                        this[internalProperty] = returnValue;
+                                    }
                                 }
                                 return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     } else {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
                             get: function() {
-                                return this[internalProperty] || (this[internalProperty] = {});
+                                var returnValue = this[internalProperty];
+                                if (!returnValue) {
+                                    returnValue = {};
+                                    if (this.hasOwnProperty(internalProperty))  {
+                                        this[internalProperty] = returnValue
+                                    } else {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    }
+                                }
+                                return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     }
@@ -216,12 +239,20 @@ Object.defineProperty(Montage, "defineProperty", {
                                     for (i = 0; typeof (k = value[i]) !== "undefined"; i++) {
                                         returnValue[i] = k;
                                     }
-                                    this[internalProperty] = returnValue;
+                                    if(!this.hasOwnProperty(internalProperty)) {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    } else {
+                                        this[internalProperty] = returnValue;
+                                    }
                                 }
                                 return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
 
@@ -229,12 +260,23 @@ Object.defineProperty(Montage, "defineProperty", {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
                             get: function() {
-                                //Special case for array as isArray fails
-                                //Object_prototype.toString.call(Object.create([].__proto)) !== "[object Array]"
-                                return this[internalProperty] || (this[internalProperty] = []);
+                                var returnValue = this[internalProperty];
+                                if (!returnValue) {
+                                    returnValue = [];
+                                    if (this.hasOwnProperty(internalProperty))  {
+                                        this[internalProperty] = returnValue
+                                    } else {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    }
+                                }
+                                return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     }
@@ -251,12 +293,20 @@ Object.defineProperty(Montage, "defineProperty", {
                                 for (k in value) {
                                     returnValue[k] = value[k];
                                 }
-                                this[internalProperty] = returnValue;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, returnValue);
+                                } else {
+                                    this[internalProperty] = returnValue;
+                                }
                             }
                             return returnValue;
                         },
                         set: function(value) {
-                            this[internalProperty] = value;
+                            if(!this.hasOwnProperty(internalProperty)) {
+                                defineInternalProperty(this, internalProperty, value);
+                            } else {
+                                this[internalProperty] = value;
+                            }
                         }
                     });
 
@@ -265,10 +315,23 @@ Object.defineProperty(Montage, "defineProperty", {
                     Object.defineProperty(obj, prop, {
                         configurable: true,
                         get: function() {
-                            return this[internalProperty] || (this[internalProperty] = Object.create(value.__proto__ || Object.getPrototypeOf(value)));
+                            var returnValue = this[internalProperty];
+                            if (!returnValue) {
+                                returnValue = Object.create(value.__proto__ || Object.getPrototypeOf(value));
+                                if (this.hasOwnProperty(internalProperty))  {
+                                    this[internalProperty] = returnValue
+                                } else {
+                                    defineInternalProperty(this, internalProperty, returnValue);
+                                }
+                            }
+                            return returnValue;
                         },
                         set: function(value) {
-                            this[internalProperty] = value;
+                            if(!this.hasOwnProperty(internalProperty)) {
+                                defineInternalProperty(this, internalProperty, value)
+                            } else {
+                                this[internalProperty] = value;
+                            }
                         }
                     });
                 }
