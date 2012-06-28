@@ -1,0 +1,21 @@
+{
+    "undo": "Undo",
+    "undo_item": "Undo {item}",
+    "redo": "Redo",
+    "redo_item": "Redo {item}",
+    "off": "Off",
+    "on": "On",
+
+    "invert_colors": "Invert Colors",
+    "desaturate": "Desaturate",
+    "multiply": "Multiply",
+    "add_photos": "Add Photos…",
+    "add_photo": "Add Photo",
+    "remove_photo": "Remove Photo",
+    "search": "Search",
+    "searching": "Searching…",
+    "already_added": "Already Added",
+
+    "remove_photo_name": "remove photo \"{name}\"",
+    "add_photo_name": "add photo \"{name}\""
+}

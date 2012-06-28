@@ -9,6 +9,7 @@ var Montage = require("montage").Montage,
     Serializer = require("montage/core/serializer").Serializer,
     Deserializer = require("montage/core/deserializer").Deserializer,
     defaultUndoManager = require("montage/core/undo-manager").defaultUndoManager,
+    defaultLocalizer = require("montage/core/localizer").defaultLocalizer,
     ArrayController = require("montage/ui/controller/array-controller").ArrayController,
     LOCAL_STORAGE_KEY = "montage_photofx_state";
 

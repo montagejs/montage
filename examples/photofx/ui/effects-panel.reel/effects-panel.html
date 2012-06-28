@@ -12,28 +12,59 @@
 
     <script type="text/montage-serialization">{
 
+            "invertColorsLabel": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "invertColorsLabel"}
+                },
+                "localizations": {
+                    "value": {"_": "invert_colors"}
+                }
+            },
             "invertToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "invertToggle"},
-                    "pressedClass": "success",
-                    "pressedLabel": "ON",
-                    "unpressedLabel": "OFF"
+                    "pressedClass": "success"
                 },
                 "bindings": {
                     "pressed": {"<->": "@owner.editor.inverted"}
+                },
+                "localizations": {
+                    "pressedLabel": {"_": "on"},
+                    "unpressedLabel": {"_": "off"}
+                }
+            },
+            "desaturateLabel": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "desaturateLabel"}
+                },
+                "localizations": {
+                    "value": {"_": "desaturate"}
                 }
             },
             "desaturateToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "desaturateToggle"},
-                    "pressedClass": "success",
-                    "pressedLabel": "ON",
-                    "unpressedLabel": "OFF"
+                    "pressedClass": "success"
                 },
                 "bindings": {
                     "pressed": {"<->": "@owner.editor.desaturated"}
+                },
+                "localizations": {
+                    "pressedLabel": {"_": "on"},
+                    "unpressedLabel": {"_": "off"}
+                }
+            },
+            "multiplyLabel": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "multiplyLabel"}
+                },
+                "localizations": {
+                    "value": {"_": "multiply"}
                 }
             },
             "multiplyControl": {
@@ -82,9 +113,9 @@
 
     <div data-montage-id="EffectsPanel" class="EffectsPanel">
         <ul class="effectsList">
-            <li>Invert Colors<button data-montage-id="invertToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
-            <li>Desaturate<button data-montage-id="desaturateToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
-            <li>Multiply<div data-montage-id="multiplyControl" class=""></div></li>
+            <li><span data-montage-id="invertColorsLabel">Invert Colors</span> <button data-montage-id="invertToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
+            <li><span data-montage-id="desaturateLabel">Desaturate</span> <button data-montage-id="desaturateToggle" class="btn effect-toggle-switch" style="width: 60px;">ON</button></li>
+            <li><span data-montage-id="multiplyLabel">Multiply</span> <div data-montage-id="multiplyControl" class=""></div></li>
         </ul>
         <div data-montage-id="colorInfoPanel"></div>
         <div data-montage-id="photoInfoPanel"></div>

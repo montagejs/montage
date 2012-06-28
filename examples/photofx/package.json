@@ -3,5 +3,6 @@
     "version": "0.0.0",
     "mappings": {
         "montage": "../../"
-    }
+    },
+    "manifest": true
 }

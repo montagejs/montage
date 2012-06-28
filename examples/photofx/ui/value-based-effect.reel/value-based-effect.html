@@ -16,12 +16,14 @@
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
                     "element": {"#": "toggle"},
-                    "pressedClass": "success",
-                    "pressedLabel": "ON",
-                    "unpressedLabel": "OFF"
+                    "pressedClass": "success"
                 },
                 "bindings": {
                     "pressed": {"<->": "@owner.enabled"}
+                },
+                "localizations": {
+                    "pressedLabel": {"_": "on"},
+                    "unpressedLabel": {"_": "off"}
                 }
             },
             "valueSlider": {
