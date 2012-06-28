@@ -171,11 +171,11 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         return (type === 'alert' || type === 'confirm' || type === 'notify');
     }},
 
-    _createPopupSlot: {value: function(zIndex) {
+    _createPopupSlot: {value: function(zIndex, useFixed) {
         var slotEl = document.createElement('div');
         document.body.appendChild(slotEl);
         slotEl.style.zIndex = zIndex;
-        slotEl.style.position = 'absolute';
+        slotEl.style.position = useFixed ? 'fixed' : 'absolute';
 
         var popupSlot = Slot.create();
         popupSlot.element = slotEl;
@@ -189,7 +189,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             require.async("ui/slot.reel/slot", function(exports) {
                 Slot = Slot || exports.Slot;
                 type = type || "custom";
-                var isSystemPopup = self._isSystemPopup(type), zIndex, slotEl, popupSlot;
+                var isSystemPopup = self._isSystemPopup(type), zIndex, slotEl, popupSlot, useFixed;
                 self.popupSlots = self.popupSlots || {};
 
                 if(isSystemPopup) {
@@ -202,6 +202,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                             break;
                         case "notify":
                             zIndex = 9002;
+                            useFixed = true;
                             break;
                     }
                 } else {
@@ -216,7 +217,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
                 popupSlot = self.popupSlots[type];
                 if (!popupSlot) {
-                    popupSlot = self.popupSlots[type] = self._createPopupSlot(zIndex);
+                    popupSlot = self.popupSlots[type] = self._createPopupSlot(zIndex, useFixed);
                 }
                 // use the new zIndex for custom popup
                 if(!isSystemPopup) {
