@@ -5,10 +5,10 @@
  </copyright> */
 /*global bootstrap,setImmediate */
 /**
-    Provides [nextTick]{@link nextTick}
-    @module montage/core/next-tick
+   Provides [nextTick]{@link nextTick}
+   @see nextTick
+   @module montage/core/next-tick
 */
-
 /**
     Executes a function as soon as possible in a future event.  The task
     is not cancelable.

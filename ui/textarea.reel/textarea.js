@@ -3,6 +3,9 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/**
+    @module "montage/ui/textarea.reel"
+*/
 /*global require,exports */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -10,8 +13,10 @@ var Montage = require("montage").Montage,
 
 /**
  * Textarea
+ * @class module:"montage/ui/textarea.reel".Textarea
+ * @lends module:"ui/native/textarea.reel".Textarea
  */
-exports.Textarea = Montage.create(NativeTextarea, {
+exports.Textarea = Montage.create(NativeTextarea, /** @lends module:"montage/ui/textarea.reel".Textarea */ {
 
     hasTemplate: {value: true},
 
