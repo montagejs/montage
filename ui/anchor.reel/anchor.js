@@ -3,6 +3,11 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+
+/**
+    @module "montage/ui/anchor.reel"
+*/
+
 /*global require,exports */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -10,8 +15,10 @@ var Montage = require("montage").Montage,
 
 /**
  * Montage Anchor
+ * @class module:"montage/ui/anchor.reel".Anchor
+ * @extends module:"montage/ui/native/anchor.reel".Anchor
  */
-exports.Anchor = Montage.create(NativeAnchor, {
+exports.Anchor = Montage.create(NativeAnchor, /** @lends module:"montage/ui/anchor.reel".Anchor# */{
 
     hasTemplate: {value: false},
 

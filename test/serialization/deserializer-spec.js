@@ -226,7 +226,8 @@ describe("serialization/deserializer-spec", function() {
                     properties: {
                         simple: {"@": "simple"}
                     }
-                }
+                },
+                simple: {}
             }).deserializeWithInstances(instances, function(obj) {
                 latch = true;
                 object = obj;

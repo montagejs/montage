@@ -3,6 +3,9 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
+/**
+    @module "montage/ui/input-text.reel"
+
 /*global require,exports */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -10,8 +13,10 @@ var Montage = require("montage").Montage,
 
 /**
  * Input Text
+ * @class module:"montage/ui/input-text.reel".InputText
+ * @extends module:montage/ui/native/input-text.reel.InputText
  */
-exports.InputText = Montage.create(NativeInputText, {
+exports.InputText = Montage.create(NativeInputText, /** @lends module:"montage/ui/input-text.reel".InputText# */ {
 
     hasTemplate: {value: true},
 
