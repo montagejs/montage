@@ -175,15 +175,15 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
 
             var self = this;
             var messageRequire = this.require;
+            var promise;
 
-            return messageRequire.async("package.json").then(function(pkg) {
-                if (pkg.manifest === true) {
-                    return messageRequire.async("manifest.json");
-                } else {
-                    return Promise.reject("Package has no manifest. "+messageRequire.location+"package.json must contain \"manifest\": true and "+messageRequire.location+"manifest.json must exist");
-                }
+            if (messageRequire.packageDescription.manifest === true) {
+                promise = messageRequire.async("manifest.json");
+            } else {
+                promise = Promise.reject("Package has no manifest. "+messageRequire.location+"package.json must contain \"manifest\": true and "+messageRequire.location+"manifest.json must exist");
+            }
 
-            }).get("files").then(function(files) {
+            return promise.get("files").then(function(files) {
                 return self._loadMessageFiles(files);
 
             }).then(function(localesMessages) {
