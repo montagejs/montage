@@ -26,6 +26,10 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
         value: null
     },
 
+    _usingInnerHTML: {
+        value: null
+    },
+
     /**
         The innerHTML displayed as the content of the DynamicElement
         @type {Property}
@@ -36,6 +40,7 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
             return this._innerHTML;
         },
         set: function(value) {
+            this._usingInnerHTML = true;
             if (this._innerHTML !== value) {
                 this._innerHTML = value;
                 this.needsDraw = true;
