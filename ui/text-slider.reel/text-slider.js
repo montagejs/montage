@@ -281,8 +281,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
 
     didCreate: {
         value: function() {
-            this.handlePress = this.handleFocus;
-            this.handleClick = this.handleFocus;
+            this.handlePress = this.handleClick;
         }
     },
 
@@ -296,27 +295,35 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
 
     prepareForDraw: {
         value: function() {
+            this._element.identifier = "text";
+            this._inputElement.identifier = "input";
+
             this._element.addEventListener("focus", this, false);
             this._inputElement.addEventListener("blur", this, false);
+            this._element.addEventListener("keydown", this, false);
             this._inputElement.addEventListener("keydown", this, false);
         }
     },
 
     draw: {
         value: function() {
+            var wasEditing = this._element.classList.contains("montage-text-slider-editing");
+
             if (this._isEditing) {
-                this._element.classList.add("montage-text-slider-editing");
+                // if we're entering the editing state...
+                if (!wasEditing) {
+                    // ...add the class and focus the input
+                    this._element.classList.add("montage-text-slider-editing");
+                    this._inputElement.focus();
+                }
+
                 this._inputElement.value = this.convertedValue + ((this._unit) ? " " + this._unit : "");
-                // Replace this with just focus when merged
-                this._inputElement.focus();
-                // When _element gets focus we focus the input. Because of this
-                // shift+tab stops working, so prevent _element getting
-                // focus while editing
-                this._element.tabIndex = -1;
-            } else {
+            } else if (wasEditing) {
+                // remove class list, blur the input element and focus the
+                // TextSlider for further editing
                 this._element.classList.remove("montage-text-slider-editing");
                 this._inputElement.blur();
-                this._element.tabIndex = 0;
+                this._element.focus();
             }
 
             if (this._direction === "horizontal") {
@@ -339,11 +346,10 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         }
     },
 
-    // handlePress and handleClick are set to equal handleFocus in didCreate
+    // handlePress and handleClick are set to equal in didCreate
     // handlePress: edit on touch
     // handleClick: edit when parent <label> element is clicked/touched
-    // handleFocus: edit when tabbed to
-    handleFocus: {
+    handleClick: {
         value: function(event) {
             if (!this._isEditing) {
                 this.isEditing = true;
@@ -360,36 +366,42 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         }
     },
 
-    handleKeydown: {
+    handleInputKeydown: {
         value: function(event) {
-            if (event.target === this._inputElement) {
-                var value;
-                if (event.keyCode === 38) {
-                    // up
-                    this.convertedValue = this._inputElement.value;
-                    value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
-                    this.value += value;
-                    this.needsDraw = true;
-                } else if (event.keyCode === 40) {
-                    // down
-                    this.convertedValue = this._inputElement.value;
-                    value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
-                    this.value -= value;
-                    this.needsDraw = true;
-                } else if (event.keyCode === 13) {
-                    // enter
-                    this.convertedValue = this._inputElement.value;
-                    this.isEditing = false;
-                } else if (event.keyCode === 27) {
-                    // esc
-                    this.isEditing = false;
-                }
-            } else {
-                if (event.shiftKey || event.keyCode === 16) {
-                    this._translateComposer.pointerSpeedMultiplier = this.largeStepSize / this.stepSize;
-                } else if (event.ctrlKey || event.keyCode === 17) {
-                    this._translateComposer.pointerSpeedMultiplier = this.smallStepSize / this.stepSize;
-                }
+            var value;
+            if (event.keyCode === 38) {
+                // up
+                this.convertedValue = this._inputElement.value;
+                value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
+                this.value += value;
+                this.needsDraw = true;
+            } else if (event.keyCode === 40) {
+                // down
+                this.convertedValue = this._inputElement.value;
+                value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
+                this.value -= value;
+                this.needsDraw = true;
+            } else if (event.keyCode === 13) {
+                // enter
+                this.convertedValue = this._inputElement.value;
+                this.isEditing = false;
+            } else if (event.keyCode === 27) {
+                // esc
+                this.isEditing = false;
+            }
+        }
+    },
+    handleTextKeydown: {
+        value: function(event) {
+            if (event.keyCode === 13) {
+                // enter
+                this.isEditing = true;
+            }
+
+            if (event.shiftKey || event.keyCode === 16) {
+                this._translateComposer.pointerSpeedMultiplier = this.largeStepSize / this.stepSize;
+            } else if (event.ctrlKey || event.keyCode === 17) {
+                this._translateComposer.pointerSpeedMultiplier = this.smallStepSize / this.stepSize;
             }
         }
     },

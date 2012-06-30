@@ -1463,7 +1463,7 @@ expect(sourceObject._bindingDescriptors.foo.boundObjectPropertyPath).toBe("bar.0
             });
 
             var serialization = serializer.serializeObject(sourceObject);
-            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"bindings":{"foo":{"<-":"@montage.bar"}}}}')
+            expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/core/core[Montage]","properties":{},"bindings":{"foo":{"<-":"@montage.bar"}}},"montage":{}}')
         });
 
         it("should deserialize a oneway binding", function() {

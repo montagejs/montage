@@ -184,9 +184,11 @@ Deserializer.defineDeserializationUnit("listeners", function(object, listeners) 
     }
 });
 
-var CAPTURING_PHASE = 1,
-    AT_TARGET = 2,
-    BUBBLING_PHASE = 3;
+var NONE = Event.NONE,
+    CAPTURING_PHASE = Event.CAPTURING_PHASE,
+    AT_TARGET = Event.AT_TARGET,
+    BUBBLING_PHASE = Event.BUBBLING_PHASE,
+    FUNCTION_TYPE = "function";
 
 /**
  @class module:montage/core/event/event-manager.EventManager
@@ -195,140 +197,95 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
     // Utility
     eventDefinitions: {
+        // ClipboardEvent http://dev.w3.org/2006/webapi/clipops/clipops.html#event-types-and-details
+        // DND http://www.w3.org/TR/2010/WD-html5-20101019/dnd.html
+        // document.implementation.hasFeature("HTMLEvents", "2.0")
+        // DOM2 http://www.w3.org/TR/DOM-Level-2-Events/events.html
+        // DOM3 http://dev.w3.org/2006/webapi/DOM-Level-3-Events/html/DOM3-Events.html
+        // DOM4 http://dvcs.w3.org/hg/domcore/raw-file/tip/Overview.html#events
+        // GECKO https://developer.mozilla.org/en/Gecko-Specific_DOM_Events
+        // MSFT defacto standard
+        // ProgressEvent http://www.w3.org/TR/progress-events/
+        // TouchEvent http://dvcs.w3.org/hg/webevents/raw-file/tip/touchevents.html
+        // INPUT http://dev.w3.org/html5/spec/common-input-element-apis.html#common-event-behaviors
+        // WEBSOCKETS http://www.w3.org/TR/html5/comms.html
+
+        // Other info:
+        // http://www.quirksmode.org/dom/events/index.html
+        // https://developer.mozilla.org/en/DOM/DOM_event_reference
         value: {
-            "mousedown": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "mouseup": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "mousemove": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "click": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "dblclick": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "mouseover": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
-            "mouseout": {
-                bubbles: true,
-                type: "MouseEvents"
-            },
+            abort: {bubbles: false, cancelable: false}, //ProgressEvent, DOM3, //DOM2 does bubble
+            beforeunload: {bubbles: false}, //MSFT
+            blur: {bubbles: false, cancelable: false}, //DOM2, DOM3
+            change: {bubbles: true, cancelable: false}, //DOM2, INPUT
+            click: {bubbles: true, cancelable: true}, //DOM3
+            close: {bubbles: false, cancelable: false}, //WEBSOCKETS
+            compositionend: {bubbles: true, cancelable: false}, //DOM3
+            compositionstart: {bubbles: true, cancelable: true}, //DOM3
+            compositionupdate: {bubbles: true, cancelable: false}, //DOM3
+            contextmenu: {bubbles: true, cancelable: true}, //MSFT
+            copy: {bubbles: true, cancelable: true}, //ClipboardEvent
+            cut: {bubbles: true, cancelable: true}, //ClipboardEvent
+            dblclick: {bubbles: true, cancelable: false}, //DOM3
+            DOMActivate: {bubbles: true, cancelable: true, deprecated: true}, //DOM2, DOM3 deprecated
+            DOMMouseScroll: {bubbles: true}, //GECKO
+            drag: {bubbles: true, cancelable: true}, //DND
+            dragend: {bubbles: true, cancelable: false}, //DND
+            dragenter: {bubbles: true, cancelable: true}, //DND
+            dragleave: {bubbles: true, cancelable: false}, //DND
+            dragover: {bubbles: true, cancelable: true}, //DND
+            dragstart: {bubbles: true, cancelable: true}, //DND
+            drop: {bubbles: true, cancelable: true}, //DND
+            error: {
+                bubbles: function(target) {
+                    // error does not bubble when used as a ProgressEvent
+                    return !(XMLHttpRequest.prototype.isPrototypeOf(target) ||
+                           target.tagName && "VIDEO" === target.tagName.toUpperCase() ||
+                           target.tagName && "AUDIO" === target.tagName.toUpperCase());
+                },
+                cancelable: false
+            }, //DOM2, DOM3, ProgressEvent
+            focus: {bubbles: false, cancelable: false}, //DOM2, DOM3
+            focusin: {bubbles: true, cancelable: false}, //DOM3
+            focusout: {bubbles: true, cancelable: false}, //DOM3
+            input: {bubbles: true, cancelable: false}, // INPUT
+            keydown: {bubbles: true, cancelable: false}, //DOM3
+            keypress: {bubbles: true, cancelable: false}, //DOM3
+            keyup: {bubbles: true, cancelable: false}, //DOM3
+            load: {bubbles: false, cancelable: false}, //ProgressEvent, DOM2, DOM3
+            loadend: {bubbles: false, cancelable: false}, //ProgressEvent
+            loadstart: {bubbles: false, cancelable: false}, //ProgressEvent
+            message: {bubbles: false, cancelable: false}, //WEBSOCKETS
+            mousedown: {bubbles: true, cancelable: true}, //DOM3
+            mouseenter: {bubbles: false, cancelable: false}, //DOM3
+            mouseleave: {bubbles: false, cancelable: false}, //DOM3
+            mousemove: {bubbles: true, cancelable: true}, //DOM3
+            mouseout: {bubbles: true, cancelable: true}, //DOM3
+            mouseover: {bubbles: true, cancelable: true}, //DOM3
+            mouseup: {bubbles: true, cancelable: true}, //DOM3
+            mousewheel: {bubbles: true},
+            orientationchange: {bubbles: false},
+            paste: {bubbles: true, cancelable: true}, //ClipboardEvent
+            progress: {bubbles: false, cancelable: false}, //ProgressEvent
+            reset: {bubbles: true, cancelable: false}, //DOM2
+            resize: {bubbles: false, cancelable: false}, //DOM2 bubbles, DOM3
 
-            "contextmenu": {
-                bubbles: true
-            },
+            scroll: {
+                bubbles: function(target) {
+                    return /*isDocument*/!!target.defaultView;
+                },
+                cancelable: false
+            }, //DOM2, DOM3 When dispatched on Document element must bubble to defaultView object
 
-            "touchstart": {
-                bubbles: true,
-                type: "TouchEvents"
-            },
-            "touchend": {
-                bubbles: true,
-                type: "TouchEvents"
-            },
-            "touchmove": {
-                bubbles: true,
-                type: "TouchEvents"
-            },
-            "touchcancel": {
-                bubbles: true,
-                type: "TouchEvents"
-            },
+            select: {bubbles: true, cancelable: false}, //DOM2, DOM3
 
-            "copy": {
-                bubbles: true
-            },
-            "cut": {
-                bubbles: true
-            },
-            "paste": {
-                bubbles: true
-            },
-
-            "keyup": {
-                bubbles: true,
-                type: "KeyEvents"
-            },
-            "keydown": {
-                bubbles: true,
-                type: "KeyEvents"
-            },
-            "keypress": {
-                bubbles: true,
-                type: "KeyEvents"
-            },
-
-            "load": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-            "unload": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-
-            "abort": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "error": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "select": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "change": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "reset": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "focus": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-            "blur": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-            "resize": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "scroll": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "input": {
-                bubbles: true,
-                type: "HTMLEvents"
-            },
-            "submit": {
-                bubbles: false,
-                type: "HTMLEvents"
-            },
-            "DOMMouseScroll": {
-                bubbles: true
-            },
-            "mousewheel": {
-                bubbles: true,
-                type: "MouseEvents"
-            }
+            submit: {bubbles: true, cancelable: true}, //DOM2
+            touchcancel: {bubbles: true, cancelable: false}, //TouchEvent
+            touchend: {bubbles: true, cancelable: true}, //TouchEvent
+            touchmove: {bubbles: true, cancelable: true}, //TouchEvent
+            touchstart: {bubbles: true, cancelable: true}, //TouchEvent
+            unload: {bubbles: false, cancelable: false}, //DOM2, DOM3
+            wheel: {bubbles: true, cancelable: true} //DOM3
         }
     },
 
@@ -834,14 +791,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
         }
     },
 
-
-    _nonDelegateableEventTypes: {
-        enumerable: false,
-        distinct: true,
-        value: ["load", "resize", "message", "orientationchange", "beforeunload", "unload",
-            "dragenter", "dragleave", "drop", "dragover", "dragend"]
-    },
-
    /**
     Determines the actual target to observe given a target and an eventType. This correctly decides whether to observe the element specified or to observe some other element to leverage event delegation. This should be consulted whenever starting or stopping the observation of a target for a given eventType.
     @function
@@ -850,20 +799,35 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     @returns null || target.screen ? target.document : target.ownerDocument
     */
 
-    actualDOMTargetForEventType_onTarget_: {
+    actualDOMTargetForEventTypeOnTarget: {
         value: function(eventType, target) {
 
             if (!target.nativeAddEventListener) {
                 return null;
             } else {
 
-                // We install all native event listeners on the document, except for a few special event types
-                // TODO this may be problematic for some events in some browsers, I'm afraid there will be too
-                // many exceptions to do this in a generic manner
-                if ((/*isDocument*/!!target.defaultView) || this._nonDelegateableEventTypes.indexOf(eventType) >= 0) {
+                if (/*isDocument*/!!target.defaultView) {
                     return target;
+                }
+
+                var entry = this.eventDefinitions[eventType],
+                    bubbles;
+
+                // For events we know we can safely delegate to handling at a higher level, listen on the document
+                // otherwise, be less surprising and listen on the specified target
+
+                if (!entry) {
+                    return target;
+                }
+
+                // TODO allow eventTypes to describe a preferred delegation target window|document|none etc.
+                bubbles = (typeof entry.bubbles === FUNCTION_TYPE) ? entry.bubbles(target) : entry.bubbles;
+
+                if (bubbles) {
+                    // TODO why on the document and not the window?
+                    return /* isWindow*/target.screen ? target.document : target.ownerDocument;;
                 } else {
-                    return /* isWindow*/target.screen ? target.document : target.ownerDocument;
+                    return target;
                 }
             }
 
@@ -884,7 +848,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             var listenerTarget;
 
-            if ((listenerTarget = this.actualDOMTargetForEventType_onTarget_(eventType, target)) && (!this._observedTarget_byEventType_[eventType] || !this._observedTarget_byEventType_[eventType][listenerTarget.uuid])) {
+            if ((listenerTarget = this.actualDOMTargetForEventTypeOnTarget(eventType, target)) && (!this._observedTarget_byEventType_[eventType] || !this._observedTarget_byEventType_[eventType][listenerTarget.uuid])) {
                 if (!this._observedTarget_byEventType_[eventType]) {
                     this._observedTarget_byEventType_[eventType] = {};
                 }
@@ -904,7 +868,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             var listenerTarget;
 
-            listenerTarget = this.actualDOMTargetForEventType_onTarget_(eventType, target);
+            listenerTarget = this.actualDOMTargetForEventTypeOnTarget(eventType, target);
             if (listenerTarget) {
                 delete this._observedTarget_byEventType_[eventType][listenerTarget.uuid];
                 listenerTarget.nativeRemoveEventListener(eventType, this, true);
@@ -1023,7 +987,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 /**
     @function
     */
-    methodNameForBubblePhaseOfEventType_: {
+    methodNameForBubblePhaseOfEventType: {
         enumerable: false,
         value: (function(_methodNameForBubblePhaseByEventType_) {
             return function(eventType, identifier) {
@@ -1036,7 +1000,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     _methodNameForCapturePhaseByEventType_: {
         value:{}
     },
-    methodNameForCapturePhaseOfEventType_: {
+    methodNameForCapturePhaseOfEventType: {
         enumerable: false,
         value: (function(_methodNameForCapturePhaseByEventType_) {
             return function(eventType, identifier) {
@@ -1716,19 +1680,21 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
             var loadedWindow,
                 i,
-                iEventHandler,
-                currentEventHandlers,
+                iTarget,
+                listenerEntries,
+                j,
+                jListenerEntry,
+                listenerEntryKeys,
+                listenerEntryKeyCount,
+                jListener,
+                eventPath,
                 eventType = event.type,
-                iEventHandlerEntry,
+                eventBubbles = event.bubbles,
                 captureMethodName,
                 bubbleMethodName,
                 identifierSpecificCaptureMethodName,
                 identifierSpecificBubbleMethodName,
                 mutableEvent,
-                baseType,
-                eventListenersForBaseType,
-                functionType = "function",
-                atSignIndex,
                 touchCount;
 
             if ("DOMContentLoaded" === eventType) {
@@ -1742,14 +1708,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                     event.target.removeEventListener("DOMContentLoaded", this, true);
                 }
             }
-
-            // TODO maybe at this point if we know it's a touch event
-            // we simply split up all the touches into individual
-            // coordinate-based-like events and handle each touch individually
-            // This would be cleaner than handling touch events specially
-            // but would mean that a single touchstart event would end up
-            // needing to potentially really be treated like 1 touchstart
-            // per touch present in the original touchstart even
 
             if (typeof event.propagationStopped !== "boolean") {
                 mutableEvent = MutableEvent.fromEvent(event);
@@ -1771,44 +1729,26 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 }
             }
 
-            // With anybody that may have cared to listen now listening, figure out who to distribute the event to
-            currentEventHandlers = this._eventListenersForEvent_(mutableEvent);
-
-            // console.log("--- DISTRIBUTION: ", event, eventType, "from:", event.target, "to: ", currentEventHandlers, "---")
-            if (!currentEventHandlers) {
-                return;
-            }
-
-            //if if it's an event with @, we need to add listeners for the base event itself
-            if ((atSignIndex = eventType.indexOf("@")) > 0) {
-                baseType = eventType.substring(0, atSignIndex);
-                eventListenersForBaseType = this.registeredEventListenersForEventType_onTarget_(baseType, event.target);
-                event.type = baseType;
-                if (eventListenersForBaseType) {
-                    currentEventHandlers.bubble.push.apply(currentEventHandlers, eventListenersForBaseType.bubble);
-                    currentEventHandlers.capture.push.apply(currentEventHandlers, eventListenersForBaseType.capture);
-                }
-            }
+            eventPath = this._eventPathForTarget(mutableEvent.target);
 
             // use most specific handler method available, possibly based upon the identifier of the event target
             if (mutableEvent.target.identifier) {
-                identifierSpecificCaptureMethodName = this.methodNameForCapturePhaseOfEventType_(eventType, mutableEvent.target.identifier);
+                identifierSpecificCaptureMethodName = this.methodNameForCapturePhaseOfEventType(eventType, mutableEvent.target.identifier);
             } else {
                 identifierSpecificCaptureMethodName = null;
             }
 
             if (mutableEvent.target.identifier) {
-                identifierSpecificBubbleMethodName = this.methodNameForBubblePhaseOfEventType_(eventType, mutableEvent.target.identifier);
+                identifierSpecificBubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType, mutableEvent.target.identifier);
             } else {
                 identifierSpecificBubbleMethodName = null;
             }
 
-            captureMethodName = this.methodNameForCapturePhaseOfEventType_(eventType);
-            bubbleMethodName = this.methodNameForBubblePhaseOfEventType_(eventType);
+            captureMethodName = this.methodNameForCapturePhaseOfEventType(eventType);
+            bubbleMethodName = this.methodNameForBubblePhaseOfEventType(eventType);
 
             // Let the delegate handle the event first
-            // TODO do we care about phase at all?
-            if (this.delegate && this.delegate.willDistributeEvent) {
+            if (this.delegate && typeof this.delegate.willDistributeEvent === FUNCTION_TYPE) {
                 this.delegate.willDistributeEvent(mutableEvent);
             }
 
@@ -1817,48 +1757,111 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             }
 
             // Capture Phase Distribution
-            for (i = currentEventHandlers.capture.length - 1; !mutableEvent.propagationStopped && (iEventHandlerEntry = currentEventHandlers.capture[i]); i--) {
-                mutableEvent.currentTarget = iEventHandlerEntry.currentTarget;
+            mutableEvent.eventPhase = CAPTURING_PHASE;
+            // The event path we generate is from bottom to top, capture needs to traverse this backwards
+            for (i = eventPath.length - 1; !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i--) {
+                mutableEvent.currentTarget = iTarget;
 
-                if (mutableEvent.currentTarget === mutableEvent.target) {
-                    mutableEvent.eventPhase = AT_TARGET;
+                listenerEntries = this.registeredEventListenersForEventType_onTarget_(eventType, iTarget);
+                if (!listenerEntries) {
+                    continue;
                 }
+                listenerEntryKeys = Object.keys(listenerEntries);
 
-                iEventHandler = iEventHandlerEntry.listener;
+                for (j = 0; listenerEntries && !mutableEvent.immediatePropagationStopped && (jListenerEntry = listenerEntries[listenerEntryKeys[j]]); j++) {
 
-                if (identifierSpecificCaptureMethodName && typeof iEventHandler[identifierSpecificCaptureMethodName] === functionType) {
-                    iEventHandler[identifierSpecificCaptureMethodName](mutableEvent);
-                } else if (typeof iEventHandler[captureMethodName] === functionType) {
-                    iEventHandler[captureMethodName](mutableEvent);
-                } else if (typeof iEventHandler.handleEvent === functionType) {
-                    iEventHandler.handleEvent(mutableEvent);
-                } else if (typeof iEventHandler === functionType) {
-                    iEventHandler.call(event.target, mutableEvent);
+                    if (!jListenerEntry.capture) {
+                        continue;
+                    }
+
+                    jListener = jListenerEntry.listener;
+
+                    if (identifierSpecificCaptureMethodName && typeof jListener[identifierSpecificCaptureMethodName] === FUNCTION_TYPE) {
+                        jListener[identifierSpecificCaptureMethodName](mutableEvent);
+                    } else if (typeof jListener[captureMethodName] === FUNCTION_TYPE) {
+                        jListener[captureMethodName](mutableEvent);
+                    } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
+                        jListener.handleEvent(mutableEvent);
+                    } else if (typeof jListener === FUNCTION_TYPE) {
+                        jListener.call(iTarget, mutableEvent);
+                    }
                 }
             }
 
-            mutableEvent.eventPhase = AT_TARGET;
+            // At Target Distribution
+            if (!mutableEvent.propagationStopped) {
+                mutableEvent.eventPhase = AT_TARGET;
+                mutableEvent.currentTarget = iTarget = mutableEvent.target;
+
+                listenerEntries = this.registeredEventListenersForEventType_onTarget_(eventType, iTarget);
+                if (listenerEntries) {
+                    listenerEntryKeys = Object.keys(listenerEntries);
+
+                    for (j = 0; listenerEntries && !mutableEvent.immediatePropagationStopped && (jListenerEntry = listenerEntries[listenerEntryKeys[j]]); j++) {
+
+                        jListener = jListenerEntry.listener;
+
+                        if (jListenerEntry.capture) {
+                            if (identifierSpecificCaptureMethodName && typeof jListener[identifierSpecificCaptureMethodName] === FUNCTION_TYPE) {
+                                jListener[identifierSpecificCaptureMethodName](mutableEvent);
+                            } else if (typeof jListener[captureMethodName] === FUNCTION_TYPE) {
+                                jListener[captureMethodName](mutableEvent);
+                            } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
+                                jListener.handleEvent(mutableEvent);
+                            } else if (typeof jListener === FUNCTION_TYPE) {
+                                jListener.call(iTarget, mutableEvent);
+                            }
+                        }
+
+                        if (jListenerEntry.bubble) {
+                            if (identifierSpecificBubbleMethodName && typeof jListener[identifierSpecificBubbleMethodName] === FUNCTION_TYPE) {
+                                jListener[identifierSpecificBubbleMethodName](mutableEvent);
+                            } else if (typeof jListener[bubbleMethodName] === FUNCTION_TYPE) {
+                                jListener[bubbleMethodName](mutableEvent);
+                            } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
+                                jListener.handleEvent(mutableEvent);
+                            } else if (typeof jListener === FUNCTION_TYPE) {
+                                jListener.call(iTarget, mutableEvent);
+                            }
+                        }
+
+                    }
+                }
+            }
 
             // Bubble Phase Distribution
-            for (i = 0; !mutableEvent.propagationStopped && (iEventHandlerEntry = currentEventHandlers.bubble[i]); i++) {
-                mutableEvent.currentTarget = iEventHandlerEntry.currentTarget;
+            mutableEvent.eventPhase = BUBBLING_PHASE;
+            for (i = 0; eventBubbles && !mutableEvent.propagationStopped && (iTarget = eventPath[i]); i++) {
+                mutableEvent.currentTarget = iTarget;
 
-                if (AT_TARGET === mutableEvent.eventPhase && mutableEvent.currentTarget !== mutableEvent.target) {
-                    mutableEvent.eventPhase = BUBBLING_PHASE;
+                listenerEntries = this.registeredEventListenersForEventType_onTarget_(eventType, iTarget);
+                if (!listenerEntries) {
+                    continue;
                 }
+                listenerEntryKeys = Object.keys(listenerEntries);
 
-                iEventHandler = iEventHandlerEntry.listener;
+                for (j = 0; listenerEntries && !mutableEvent.immediatePropagationStopped && (jListenerEntry = listenerEntries[listenerEntryKeys[j]]); j++) {
 
-                if (identifierSpecificBubbleMethodName && typeof iEventHandler[identifierSpecificBubbleMethodName] === functionType) {
-                    iEventHandler[identifierSpecificBubbleMethodName](mutableEvent);
-                } else if (typeof iEventHandler[bubbleMethodName] === functionType) {
-                    iEventHandler[bubbleMethodName](mutableEvent);
-                } else if (typeof iEventHandler.handleEvent === functionType) {
-                    iEventHandler.handleEvent(mutableEvent);
-                } else if (typeof iEventHandler === functionType) {
-                    iEventHandler.call(event.target, mutableEvent);
+                    if (!jListenerEntry.bubble) {
+                        continue;
+                    }
+
+                    jListener = jListenerEntry.listener;
+
+                    if (identifierSpecificBubbleMethodName && typeof jListener[identifierSpecificBubbleMethodName] === FUNCTION_TYPE) {
+                        jListener[identifierSpecificBubbleMethodName](mutableEvent);
+                    } else if (typeof jListener[bubbleMethodName] === FUNCTION_TYPE) {
+                        jListener[bubbleMethodName](mutableEvent);
+                    } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
+                        jListener.handleEvent(mutableEvent);
+                    } else if (typeof jListener === FUNCTION_TYPE) {
+                        jListener.call(iTarget, mutableEvent);
+                    }
                 }
             }
+
+            mutableEvent.eventPhase = NONE;
+            mutableEvent.currentTarget = null;
 
             if (this._isStoringPointerEvents) {
                 this._pointerStorage.removeEvent(event);
@@ -1932,95 +1935,56 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 /**
   @private
 */
-    _eventListenersForEvent_: {
+    _eventPathForTarget: {
         enumerable: false,
-        value: function(event) {
-            var eventType = event.type,
-                bubblingTarget = event.target,
-                // touchBasedEvent = !!event.touches,
-                targetView = bubblingTarget && bubblingTarget.defaultView ? bubblingTarget.defaultView : window,
+        value: function(target) {
+
+            if (!target) {
+                return [];
+            }
+
+            var targetCandidate  = target,
+                targetView = targetCandidate && targetCandidate.defaultView ? targetCandidate.defaultView : window,
                 targetDocument = targetView.document ? targetView.document : document,
                 previousBubblingTarget,
-                currentEventListener,
-                currentEventListenerEntry,
-                currentEventListenerHash,
-                listenersForEventType,
-                affectedListeners = {capture: [], bubble: []},
-                component;
-
-            if (!bubblingTarget) {
-                // TODO complain about events with no target? in debug?
-                return;
-            }
-            // console.log("--- DISCOVERY: ", eventType, "---")
+                eventPath = [];
 
             do {
-                listenersForEventType = this.registeredEventListenersForEventType_onTarget_(eventType, bubblingTarget);
-
-                if (listenersForEventType) {
-                    component = this.eventHandlerForElement(bubblingTarget);
-                    if (component && listenersForEventType[component.uuid]) {
-                        // console.log("Associated Component is also affected Listener…")
-                        // TODO if there is a component directly associated with this target
-                        // give them a chance to replace the target? This would accommodate
-                        // the whole "widgets drawn in a canvas model"
-                    }
-
-                    for (currentEventListenerHash in listenersForEventType) {
-                        currentEventListenerEntry = listenersForEventType[currentEventListenerHash];
-                        currentEventListener = currentEventListenerEntry.listener;
-
-                        // TODO pass along the entry here maybe? we may already have a perfectly good object to use here
-                        if (currentEventListenerEntry.capture) {
-                            affectedListeners.capture.push({listener: currentEventListener, currentTarget: bubblingTarget});
-                        }
-
-                        if (currentEventListenerEntry.bubble) {
-                            affectedListeners.bubble.push({listener: currentEventListener, currentTarget: bubblingTarget});
-                        }
-                    }
+                // Don't include the target itself in the event path
+                if (targetCandidate !== target) {
+                    eventPath.push(targetCandidate);
                 }
 
-                previousBubblingTarget = bubblingTarget;
-
-                // Find the next potential target with a handler
-                // if (touchBasedEvent)) {
-                // TODO multiple touches may require distribution from multiple targets
-                // we may need to look at each touch changed in this event and figure out which
-                // targets to consider for propagation
-                // TODO we may need to update finding the next bubbling target to accommodate multiple
-                // target chains, up to a common ancestor at least
-                // }
-
+                previousBubblingTarget = targetCandidate;
                 // use the structural DOM hierarchy until we run out of that and need
                 // to give listeners on document, window, and application a chance to respond
-                switch (bubblingTarget) {
+                switch (targetCandidate) {
                     case this.application:
-                        bubblingTarget = null;
+                        targetCandidate = null;
                         break;
                     case targetView:
-                        bubblingTarget = this.application;
+                        targetCandidate = this.application;
                         break;
                     case targetDocument:
-                        bubblingTarget = targetView;
+                        targetCandidate = targetView;
                         break;
                     case targetDocument.documentElement:
-                        bubblingTarget = targetDocument;
+                        targetCandidate = targetDocument;
                         break;
                     default:
-                        bubblingTarget = bubblingTarget.parentProperty ? bubblingTarget[bubblingTarget.parentProperty] : bubblingTarget.parentNode;
+                        targetCandidate = targetCandidate.parentProperty ? targetCandidate[targetCandidate.parentProperty] : targetCandidate.parentNode;
+
+                        // Run out of hierarchy candidates? go up to the application
+                        if (!targetCandidate) {
+                            targetCandidate = this.application;
+                        }
+
                         break;
                 }
             }
-            while (bubblingTarget && previousBubblingTarget !== bubblingTarget);
+            while (targetCandidate && previousBubblingTarget !== targetCandidate);
 
-            //Add Application as the first capture handler (and the last bubble handler)
-            if (this.application) {
-                affectedListeners.capture.push({listener: this.application, currentTarget: this.application});
-                affectedListeners.bubble.push({listener: this.application, currentTarget: this.application});
-            }
-
-            return affectedListeners;
+            return eventPath;
         }
     },
 /**
@@ -2071,28 +2035,6 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     }
 
 });
-
-if (typeof window.ondragstart !== undefined) {
-
-    EventManager.eventDefinitions.dragstart = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.drag = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.dragend = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.dragover = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.dragleave = {
-        "bubbles": true
-    };
-    EventManager.eventDefinitions.drop = {
-        "bubbles": true
-    };
-}
 
 } // client-side
 

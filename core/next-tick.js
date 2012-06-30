@@ -5,14 +5,15 @@
  </copyright> */
 /*global bootstrap,setImmediate */
 /**
-    Defines [nextTick()]{#link nextTick}
-    @see nextTick
-    @module montage/core/next-tick
+   Provides [nextTick]{@link nextTick}
+   @see nextTick
+   @module montage/core/next-tick
 */
-
 /**
-    @function
-    @name nextTick
+    Executes a function as soon as possible in a future event.  The task
+    is not cancelable.
+    @function module:montage/core/next-tick#nextTick
+    @param {Function} task a function to call in a future turn of the event loop
 */
 
 (function (definition) {

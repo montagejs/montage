@@ -13,9 +13,12 @@
  */
 require("core/shim/object");
 require("core/shim/array");
+require("core/shim/string");
 require("core/extras/object");
 require("core/extras/array");
 require("core/extras/string");
+require("core/extras/function");
+require("core/extras/date");
 
 var ATTRIBUTE_PROPERTIES = "AttributeProperties",
     UNDERSCORE = "_",

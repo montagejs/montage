@@ -133,6 +133,10 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
         }
     },
 
+    clonesChildComponents: {
+        value: true
+    },
+
     _emptyFunction: {value: function(){}},
 
     _updateItems: {
@@ -812,9 +816,11 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             if (this._iterationChildComponentsCount > 0) {
                 this._templateId = childComponents[0]._suuid || childComponents[0].uuid;
-                this._iterationTemplate = Template.templateWithComponent(this);
+                this._iterationTemplate = Template.templateWithComponent(this, this._templateDelegate);
             } else {
-                this._iterationTemplate = Template.create().initWithComponent(this);
+                this._iterationTemplate = Template.create();
+                this._iterationTemplate.delegate = this._templateDelegate;
+                this._iterationTemplate.initWithComponent(this);
             }
             this._iterationTemplate.optimize();
             this._removeOriginalContent = true;
@@ -832,6 +838,14 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             if (this.objects && (this.objects.length !== this._items.length)) {
                 this._updateItems([], this.objects, 0);
+            }
+        }
+    },
+
+    _templateDelegate: {
+        value: {
+            serializeObjectProperties: function(serializable, object) {
+                serializable.set("ownerComponent", object.ownerComponent, "reference");
             }
         }
     },

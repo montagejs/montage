@@ -5,7 +5,7 @@
  </copyright> */
 /**
     @module montage/ui/composer/key-composer
-    @requires montage
+    @requires montage/core/core
     @requires montage/ui/composer/composer
 */
 var Montage = require("montage").Montage,

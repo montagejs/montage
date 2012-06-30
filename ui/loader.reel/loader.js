@@ -35,7 +35,7 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The main module to require
 */
     mainModule: {
-        value: "main.reel"
+        value: "ui/main.reel"
     },
 
 /**

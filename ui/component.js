@@ -34,6 +34,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: null
     },
 
+    templateObjects: {
+        value: null
+    },
+
     parentProperty: {
         value: "parentComponent"
     },
@@ -336,7 +340,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     querySelectorAllComponent: {
-        value: function(selector) {
+        value: function(selector, owner) {
             if (typeof selector !== "string") {
                 throw "querySelectorComponent: Selector needs to be a string.";
             }
@@ -360,21 +364,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                    if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
+                    if (leftHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
                             found = found.concat(childComponent.querySelectorAllComponent(rest));
                         } else {
                             found.push(childComponent);
                         }
                     } else {
-                        found = found.concat(childComponent.querySelectorAllComponent(selector));
+                        found = found.concat(childComponent.querySelectorAllComponent(selector, owner));
                     }
                 }
             } else {
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                    if (rightHandOperand === Montage.getInfoForObject(childComponent).label) {
+                    if (rightHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
-                            found = found.concat(childComponent.querySelectorAllComponent(rest));
+                            found = found.concat(childComponent.querySelectorAllComponent(rest, owner));
                         } else {
                             found.push(childComponent);
                         }
@@ -636,6 +640,10 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: false
     },
 
+    clonesChildComponents: {
+        value: false
+    },
+
 /**
     Description TODO
     @function
@@ -644,7 +652,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             this.attachToParentComponent();
             if (this._element) {
-                this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+                // the DOM content of the component was dynamically modified
+                // but it hasn't been drawn yet, we're going to assume that
+                // this new DOM content is the desired original content for
+                // this component since it has been set at deserialization
+                // time.
+                if (this._newDomContent) {
+                    this.originalContent = this._newDomContent;
+                } else {
+                    this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+                }
             }
             if (! this.hasOwnProperty("identifier")) {
                 this.identifier = Montage.getInfoForObject(this).label;
@@ -886,9 +903,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
         if (!this._isTemplateInstantiated) {
             this._loadTemplate(function(template) {
+                var instances = self.templateObjects;
+
+                if (instances) {
+                    instances.owner = self;
+                } else {
+                    instances = {owner: self};
+                }
+
                 // this actually also serves as isTemplateInstantiating
                 self._isTemplateInstantiated = true;
-                template.instantiateWithComponent(self, function() {
+                template.instantiateWithInstancesAndDocument(instances, self._element.ownerDocument, function() {
                     if (callback) {
                         callback();
                     }
@@ -955,10 +980,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
 
-    templateDidDeserializeObject: {
-        value: function(object) {
-            if (Component.isPrototypeOf(object)) {
-                object.ownerComponent = this;
+    _deserializedFromTemplate: {
+        value: function(owner) {
+            if (!this.ownerComponent) {
+                if (Component.isPrototypeOf(owner)) {
+                    this.ownerComponent = owner;
+                } else {
+                    this.ownerComponent = this.rootComponent;
+                }
             }
         }
     },
@@ -1116,6 +1145,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.eventManager.registerEventHandlerForElement(this, template);
             this._element = template;
             this._templateElement = null;
+
+            // if the DOM content of the component was changed before the
+            // template has been drawn then we assume that this change is
+            // meant to set the original content of the component and not to
+            // replace the entire template with it, that wouldn't make much
+            // sense.
+            if (this._newDomContent) {
+                this._newDomContent = null;
+                this._shouldClearDomContentOnNextDraw = false;
+            }
         }
     },
 
