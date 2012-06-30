@@ -75,8 +75,7 @@ var Converter = exports.Converter = Montage.create(Montage, /** @lends module:mo
      @default {Boolean} true
      */
     allowPartialConversion: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     /**

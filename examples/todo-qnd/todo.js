@@ -9,13 +9,11 @@ var Todo = exports.Todo = Montage.create(Component, {
     },
 
     todoItem: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     todoList: {
-        value: null,
-        serializable: true
+        value: null
     },
 
 

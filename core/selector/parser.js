@@ -47,8 +47,7 @@ var Parser = exports.Parser = Montage.create(Montage, {
 
     syntax: {
         value: null,
-        writable: true,
-        serializable: true
+        writable: true
     },
 
     format: {

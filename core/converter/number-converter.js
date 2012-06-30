@@ -212,8 +212,7 @@ var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @l
      @default {Boolean} true
      */
     allowFloat: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     /**
@@ -221,8 +220,7 @@ var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @l
         @default {Boolean} true
     */
     allowNegative: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     /**
@@ -267,8 +265,7 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
     */
         // do not allow partial conversion
     allowPartialConversion: {
-        value: false,
-        serializable: true
+        value: false
     },
     /**
         @type {Function}
@@ -284,16 +281,14 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
     */
         // valid fn values are:
     shorten: {
-        value: null,
-        serializable: true
+        value: null
     },
     /**
         @type {Property}
         @default {Number} 2
     */
     decimals: {
-        value: 2,
-        serializable: true
+        value: 2
     },
 
     /**
@@ -301,8 +296,7 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         @default {Number} null
     */
     round: {
-        value: null,
-        serializable: true
+        value: null
     },
 
    /**
@@ -317,16 +311,14 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         @default {Boolean} true
     */
     allowFloat: {
-        value: true,
-        serializable: true
+        value: true
     },
     /**
         @type {Property}
         @default {Boolean} true
     */
     allowNegative: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     // credit: sugar.js - https://github.com/andrewplummer/Sugar

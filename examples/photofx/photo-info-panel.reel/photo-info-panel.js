@@ -28,13 +28,11 @@ exports.PhotoInfoPanel = Montage.create(Component, {
     },
 
     _dragProxy: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _canvas: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _modifiedCanvas: {

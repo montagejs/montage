@@ -83,8 +83,7 @@ var RadioButton = exports.RadioButton = Montage.create(CheckInput, {
                     RadioButton.addEventListener('checked', this);
                 }
             }
-        },
-        serializable: true
+        }
     },
 
 

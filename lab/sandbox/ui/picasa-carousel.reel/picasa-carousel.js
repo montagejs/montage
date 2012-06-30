@@ -21,7 +21,6 @@ var PicasaCarousel = exports.PicasaCarousel = Montage.create(Component, /** @len
         },
 
         flow: {
-            serializable: true,
             value: null
         },
 
@@ -30,7 +29,6 @@ var PicasaCarousel = exports.PicasaCarousel = Montage.create(Component, /** @len
         },
 
         _queryParameter: {
-            enumerable: false,
             value: null
         },
 
@@ -139,13 +137,13 @@ var PicasaCarousel = exports.PicasaCarousel = Montage.create(Component, /** @len
 
         draw: {
             value: function() {
-    
+
                 if (this.isSearching) {
                     this.element.classList.add("searching");
                 } else {
                     this.element.classList.remove("searching");
                 }
-    
+
             }
         }
 

@@ -52,13 +52,11 @@ exports.Main = Montage.create(Component, {
     },
 
     tasksController: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     taskForm: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _markAllCompleteForm: {
@@ -72,13 +70,11 @@ exports.Main = Montage.create(Component, {
         set: function(value) {
             this._markAllCompleteForm = value;
             this._markAllCompleteForm.identifier = "markAllComplete";
-        },
-        serializable: true
+        }
     },
 
     taskNoteField: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     prepareForDraw: {

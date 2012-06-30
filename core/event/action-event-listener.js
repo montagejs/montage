@@ -21,8 +21,7 @@ var ActionEventListener = exports.ActionEventListener = Montage.create(Montage, 
     @default {Event handler} null
 */
     handler: {
-        value: null,
-        serializable: true
+        value: null
     },
 
 /**
@@ -31,8 +30,7 @@ var ActionEventListener = exports.ActionEventListener = Montage.create(Montage, 
     @default {Event handler} null
 */
     action: {
-        value: null,
-        serializable: true
+        value: null
     },
 
 /**

@@ -71,8 +71,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             this._pointerSpeedMultiplier = value;
-        },
-        serializable: true
+        }
     },
 
     pointerStartEventPosition: {
@@ -80,17 +79,14 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     },
 
     _shouldDispatchTranslate: {
-        value: false,
-        enumerable: false
+        value: false
     },
 
     _isSelfUpdate: {
-        enumerable: false,
         value: false
     },
 
     _allowFloats: {
-        enumerable: false,
         value: false
     },
     /**
@@ -108,8 +104,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this.translateX = this._translateX;
                 this.translateY = this._translateY;
             }
-        },
-        serializable: true
+        }
     },
 
     _translateX: {
@@ -143,8 +138,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._translateX = tmp;
             }
-        },
-        serializable: true
+        }
     },
 
     _translateY: {
@@ -178,8 +172,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._translateY = tmp;
             }
-        },
-        serializable: true
+        }
     },
 
     _minTranslateX: {
@@ -206,8 +199,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._minTranslateX = value;
             }
-        },
-        serializable: true
+        }
     },
     _maxTranslateX: {
         value: null
@@ -233,8 +225,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._maxTranslateX = value;
             }
-        },
-        serializable: true
+        }
     },
 
     _minTranslateY: {
@@ -261,8 +252,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._minTranslateY = value;
             }
-        },
-        serializable: true
+        }
     },
     _maxTranslateY: {
         value: null
@@ -288,8 +278,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 }
                 this._maxTranslateY = value;
             }
-        },
-        serializable: true
+        }
     },
 
     _axis: {
@@ -318,8 +307,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                 this._axis = "both";
                 break;
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -341,8 +329,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         set: function(value) {
             this.invertXAxis = value;
             this.invertYAxis = value;
-        },
-        serializable: true
+        }
     },
     _invertXAxis: {
         value: false
@@ -360,8 +347,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             this._invertXAxis = !!value;
-        },
-        serializable: true
+        }
     },
     _invertYAxis: {
         value: false
@@ -379,8 +365,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             this._invertYAxis = !!value;
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -390,13 +375,11 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         @default 500
     */
     startTranslateSpeed: {
-        value: 500,
-        serializable: true
+        value: 500
     },
 
     startTranslateRadius: {
-        value: 8,
-        serializable: true
+        value: 8
     },
 
     _hasMomentum: {
@@ -414,8 +397,7 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         },
         set: function(value) {
             this._hasMomentum = value ? true : false;
-        },
-        serializable: true
+        }
     },
 
     __momentumDuration: {
@@ -828,18 +810,15 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
     endY: {value: null, enumerable: false},
 
     translateStrideX: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     translateStrideY: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     translateStrideDuration: {
-        value: 330,
-        serializable: true
+        value: 330
     },
 
     _animationInterval: {

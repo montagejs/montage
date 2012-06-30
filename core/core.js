@@ -101,10 +101,10 @@ extendedPropertyAttributes.forEach(function(name) {
      @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
      @example
      Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
-     enumerable: false,
-     serializable: true,
+     enumerable: true | false,
+     serializable: "reference" | "value" | "auto" | false,
      value: null,
-     writable: true
+     writable: true | false
      });
      */
 Object.defineProperty(Montage, "defineProperty", {
@@ -144,6 +144,16 @@ Object.defineProperty(Montage, "defineProperty", {
         if (!descriptor.hasOwnProperty(ENUMERABLE) && prop.charAt(0) === UNDERSCORE) {
             descriptor.enumerable = false;
         }
+        if (!descriptor.hasOwnProperty(SERIALIZABLE)) {
+            if (! descriptor.enumerable) {
+                descriptor.serializable = false;
+            } else if (descriptor.get && !descriptor.set) {
+                descriptor.serializable = false;
+            } else if (descriptor.writable === false) {
+                descriptor.serializable = false;
+            }
+        }
+
         if (dependencies) {
             var i = 0,
                 independentProperty;
@@ -357,29 +367,22 @@ Object.defineProperty(Montage, "defineProperties", {value: function(obj, propert
     return obj;
 }});
 
-/**
- @private
- */
 var _defaultAccessorProperty = {
     enumerable: true,
-    configurable: true
+    configurable: true,
+    serializable: "reference"
 };
-/**
- @private
- */
 var _defaultObjectValueProperty = {
     writable: true,
     enumerable: true,
-    configurable: true
+    configurable: true,
+    serializable: "reference"
 };
-
-/**
- @private
- */
 var _defaultFunctionValueProperty = {
     writable: true,
     enumerable: false,
-    configurable: true
+    configurable: true,
+    serializable: false
 };
 
 /**
@@ -394,7 +397,9 @@ Montage.defineProperty(Montage, "addDependencyToProperty", { value: function(obj
 
     // TODO optimize this so we don't keep checking over and over again
     if (!obj._dependenciesForProperty) {
-        obj._dependenciesForProperty = {};
+        Montage.defineProperty(obj, "_dependenciesForProperty", {
+            value: {}
+        });
     }
 
     if (!obj._dependenciesForProperty[dependentProperty]) {

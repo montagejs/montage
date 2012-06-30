@@ -37,8 +37,7 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
             this._pressed = !!value;
             this._label = (this._pressed) ? this._pressedLabel : this._unpressedLabel;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _unpressedLabel: {
@@ -59,8 +58,7 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
                 this.label = this._unpressedLabel;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _pressedLabel: {
@@ -81,8 +79,7 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
                 this.label = this._pressedLabel;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _pressedClass: {
@@ -103,8 +100,7 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
             if (this._pressed) {
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -128,8 +124,7 @@ var ToggleButton = exports.ToggleButton = Montage.create(Button, /** @lends modu
             } else if (this._pressed === false && this._label === this._pressedLabel) {
                 this.pressed = true;
             }
-        },
-        serializable: true
+        }
     },
 
     didSetElement: {

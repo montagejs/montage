@@ -23,8 +23,7 @@ exports.PointMarker = Montage.create(Component, {
 
             this._x = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _y: {
@@ -42,8 +41,7 @@ exports.PointMarker = Montage.create(Component, {
 
             this._y = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     willDraw: {

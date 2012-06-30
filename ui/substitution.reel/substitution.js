@@ -23,24 +23,26 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
         enumerable: false,
         value: false
     },
-/**
+
+    /**
         Description TODO
         @type {Property}
         @default {}
     */
     switchComponents: {
-        serializable: true,
         distinct: true,
         value: {}
     },
-/**
-  Description TODO
-  @private
-*/
+
+    /**
+      Description TODO
+      @private
+    */
     _switchValue: {
         value: null
     },
-/**
+
+    /**
         Description TODO
         @type {Function}
         @default null
@@ -60,16 +62,15 @@ exports.Substitution = Montage.create(Slot, /** @lends module:"montage/ui/substi
             if (this.switchComponents) {
                 this.content = this.switchComponents[this.switchValue];
             }
-        },
-        serializable: true
+        }
     },
-/**
+
+    /**
         Description TODO
         @type {Property}
         @default null
     */
     transition: {
-        value: null,
-        serializable: true
+        value: null
     }
 });

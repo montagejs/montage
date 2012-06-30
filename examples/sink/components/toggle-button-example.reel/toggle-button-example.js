@@ -15,12 +15,9 @@ exports.ToggleButtonExample = Montage.create(Component, {
     },
 
     display: {
-        value: null,
-        serializable: true
-    },
+        value: null
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 });

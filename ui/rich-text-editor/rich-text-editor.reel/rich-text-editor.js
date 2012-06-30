@@ -120,8 +120,6 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
      @type {string}
     */
     value: {
-        enumerable: true,
-        serializable: true,
         get: function() {
             var contentNode = this._innerElement,
                 content = "",

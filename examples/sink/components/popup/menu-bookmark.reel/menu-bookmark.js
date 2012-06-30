@@ -8,8 +8,7 @@ var ActionSheet = require("components/popup/action-sheet.reel").ActionSheet;
 exports.MenuBookmark = Montage.create(Component, {
 
     label: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     title: {
@@ -33,15 +32,13 @@ exports.MenuBookmark = Montage.create(Component, {
     },
 
     actionSheet: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _actionSheetPopup: {value: null},
 
     btnActionSheet: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     handleAddbookmarkAction: {

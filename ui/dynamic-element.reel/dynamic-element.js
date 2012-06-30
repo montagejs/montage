@@ -45,8 +45,7 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
                 this._innerHTML = value;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -76,8 +75,7 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
                 this._allowedTagNames = value;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
 
@@ -130,43 +128,45 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
                 content, allowedTagNames = this.allowedTagNames, range = this._range, elements;
 
             //push to DOM
-            if (allowedTagNames !== null) {
-                //cleanup
-                this._contentNode = null;
-                range.deleteContents();
-                //test for tag white list
-                content = range.createContextualFragment( displayValue );
-                if(allowedTagNames.length !== 0) {
-                    elements = content.querySelectorAll("*:not(" + allowedTagNames.join("):not(") + ")");
-                } else {
-                    elements = content.childNodes;
-                }
-                if (elements.length === 0) {
-                    range.insertNode(content);
-                    if(range.endOffset === 0) {
-                        // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
-                        // range collapsed after insertNode
-                        range.selectNodeContents(this.element);
-                    }
-
-                } else {
-                    console.warn("Some Elements Not Allowed " , elements);
-                }
-            } else {
-                content = this._contentNode;
-                if(content === null) {
+            if(this._usingInnerHTML) {
+                if (allowedTagNames !== null) {
                     //cleanup
+                    this._contentNode = null;
                     range.deleteContents();
-                    this._contentNode = content = document.createTextNode(displayValue);
-                    range.insertNode(content);
-                    if(range.endOffset === 0) {
-                        // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
-                        // range collapsed after insert
-                        range.selectNodeContents(this.element);
+                    //test for tag white list
+                    content = range.createContextualFragment( displayValue );
+                    if(allowedTagNames.length !== 0) {
+                        elements = content.querySelectorAll("*:not(" + allowedTagNames.join("):not(") + ")");
+                    } else {
+                        elements = content.childNodes;
                     }
+                    if (elements.length === 0) {
+                        range.insertNode(content);
+                        if(range.endOffset === 0) {
+                            // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
+                            // range collapsed after insertNode
+                            range.selectNodeContents(this.element);
+                        }
 
+                    } else {
+                        console.warn("Some Elements Not Allowed " , elements);
+                    }
                 } else {
-                    content.data = displayValue;
+                    content = this._contentNode;
+                    if(content === null) {
+                        //cleanup
+                        range.deleteContents();
+                        this._contentNode = content = document.createTextNode(displayValue);
+                        range.insertNode(content);
+                        if(range.endOffset === 0) {
+                            // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
+                            // range collapsed after insert
+                            range.selectNodeContents(this.element);
+                        }
+
+                    } else {
+                        content.data = displayValue;
+                    }
                 }
             }
             // classList

@@ -25,8 +25,7 @@ exports.Ruler = Montage.create(Component, {
 
             this._position = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _savedPosition: {
@@ -44,18 +43,15 @@ exports.Ruler = Montage.create(Component, {
 
             this._savedPosition = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     rangeStart: {
-        value: 0,
-        serializable: true
+        value: 0
     },
 
     rangeEnd: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _axis: {
@@ -73,28 +69,23 @@ exports.Ruler = Montage.create(Component, {
 
             this._axis = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     container: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     positionText: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     savedPositionText: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     distanceText: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     prepareForDraw: {

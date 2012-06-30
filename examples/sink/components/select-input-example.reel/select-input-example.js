@@ -10,8 +10,7 @@ var Montage = require("montage/core/core").Montage,
 
 exports.JustifyConverter = Montage.create(Converter, {
     justify: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     convert: {
@@ -34,8 +33,7 @@ exports.SelectInputExample = Montage.create(Component, {
     lastName: {value: null},
 
     statesController: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     departments: {
@@ -50,8 +48,7 @@ exports.SelectInputExample = Montage.create(Component, {
     },
 
     dept: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     states: {
@@ -152,7 +149,6 @@ exports.SelectInputExample = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 });

@@ -10,7 +10,6 @@ var Component = require("montage/ui/component").Component;
 
 var ComponentRep = exports.ComponentRep = Montage.create(Component, {
     listObjects: {
-        serializable: true,
         value: null
     }
 });

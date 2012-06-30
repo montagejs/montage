@@ -75,8 +75,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
             this._content = value;
 
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -96,8 +95,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      })
      */
     delegate: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     /**
@@ -125,8 +123,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} true
      */
     automaticallyOrganizeObjects: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     /**
@@ -157,8 +154,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this.automaticallyOrganizeObjects) {
                 this.organizeObjects();
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -189,8 +185,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this.automaticallyOrganizeObjects) {
                 this.organizeObjects();
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -207,7 +202,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @version 1.0
     */
     startIndex: {
-        serializable: true,
         get: function() {
             return this._startIndex;
         },
@@ -240,7 +234,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @version 1.0
     */
     endIndex: {
-        serializable: true,
+
         get: function() {
             return this._endIndex;
         },
@@ -315,15 +309,15 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
 
                 // _selectedIndexes is assigned in the dispatcher because "selectedContentIndexes", "selectedObjects" and "selections" depend on _selectedIndexes, so in order to have a correct "minus" (and prevent the premature creation of those values) in the notification we need to hold back the change.
-                this.dispatchPropertyChange("selectedContentIndexes", "selectedObjects", "selections", function() {
+                this.dispatchPropertyChange("selections", "selectedContentIndexes", "selectedObjects", function() {
                     this._selectedIndexes = value;
                     this._selectedContentIndexes = newIndexes;
                     this._selectedObjects = null;
+                    console.log("selectedIndexes this._selections = null;");
                     this._selections = null;
                 });
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -562,14 +556,13 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
 
             // _selectedObjects is assigned in the dispatcher because "selectedContentIndexes", "selectedIndexes" and "selections" depend on _selectedObjects, so in order to have a correct "minus" (and prevent the premature creation of those values) in the notification we need to hold back the change.
-            this.dispatchPropertyChange("selectedContentIndexes", "selectedIndexes", "selections", function() {
+            this.dispatchPropertyChange("selections", "selectedContentIndexes", "selectedIndexes", function() {
                 this._selectedObjects = value;
                 this._selectedContentIndexes = null;
                 this._selectedIndexes = null;
                 this._selections = null;
             });
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -638,7 +631,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             this._selectedContentIndexes = value;
 
-            this.dispatchPropertyChange("selectedIndexes", "selectedObjects", "selections", function() {
+            this.dispatchPropertyChange("selections", "selectedIndexes", "selectedObjects", function() {
                 this._selectedIndexes = null;
                 this._selectedObjects = null;
                 this._selections = null;
@@ -697,7 +690,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} false
      */
     selectObjectsOnAddition: {
-        serializable: true,
         value: false
     },
 
@@ -707,7 +699,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} true
      */
     clearFilterFunctionOnAddition: {
-        serializable: true,
         value: true
     },
 

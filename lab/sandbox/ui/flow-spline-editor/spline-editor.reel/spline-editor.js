@@ -5,47 +5,38 @@ var Montage = require("montage").Montage,
 exports.SplineEditor = Montage.create(Component, {
 
     flow: {
-        serializable: true,
         value: null
     },
 
     topView: {
-        serializable: true,
         value: null
     },
 
     frontView: {
-        serializable: true,
         value: null
     },
 
     toolbar: {
-        serializable: true,
         value: null
     },
 
     parametersEditor: {
-        serializable: true,
         value: null
     },
 
     _cameraPosition: {
-        enumerable: false,
         value: null
     },
 
     _cameraTargetPoint: {
-        enumerable: false,
         value: null
     },
 
     _cameraFov: {
-        enumerable: false,
         value: null
     },
 
     _cameraRoll: {
-        enumerable: false,
         value: null
     },
 
@@ -220,7 +211,7 @@ exports.SplineEditor = Montage.create(Component, {
             var self = this;
 
             this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
-            this.topView.mousedownDelegate = 
+            this.topView.mousedownDelegate =
             this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
                 if (knot !== null) {
                     self._selectedKnot = knot;
@@ -322,7 +313,7 @@ exports.SplineEditor = Montage.create(Component, {
         value: function () {
             var self = this;
 
-            this.topView.mousedownDelegate = 
+            this.topView.mousedownDelegate =
             this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
                 return false;
             };
@@ -349,7 +340,7 @@ exports.SplineEditor = Montage.create(Component, {
 
             this.topView.isDrawingDensities = this.frontView.isDrawingDensities = true;
             this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
-            this.topView.mousedownDelegate = 
+            this.topView.mousedownDelegate =
             this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
                 if (knot !== null) {
                     self._selectedKnot = knot;
@@ -463,7 +454,7 @@ exports.SplineEditor = Montage.create(Component, {
         enumerable: false,
         value: function () {
             var self = this;
-            
+
             this.spline = Object.create(FlowBezierSpline).init();
             this.flow._paths = [];
             this.flow._paths.push({
@@ -505,7 +496,7 @@ exports.SplineEditor = Montage.create(Component, {
 
             /*this._frontViewContext.clearRect(0, 0, this._frontViewWidth, this._frontViewHeight);
             this._topViewContext.clearRect(0, 0, this._topViewWidth, this._topViewHeight);
-            
+
             this._drawGrid(this._topViewContext, this._topViewWidth, this._topViewHeight, this._centerX, this._centerZ, this._scale, true);
             this._drawGrid(this._frontViewContext, this._frontViewWidth, this._frontViewHeight, this._centerX, this._centerY, this._scale, true);
             this._spline.transformMatrix = [
@@ -528,7 +519,7 @@ exports.SplineEditor = Montage.create(Component, {
                 0, 0, this._scale, 0,
                 this._topViewWidth / 2 - this.centerX * this._scale, this._topViewHeight / 2 - this.centerY * this._scale, 0, 1
             ];
-            this._spline.drawSpline(this._frontViewContext);			
+            this._spline.drawSpline(this._frontViewContext);
             this._spline.drawKnots(this._frontViewContext);
             if (this._selectedTool === this._weightButton) {
                 this._spline.drawDensities(this._frontViewContext);

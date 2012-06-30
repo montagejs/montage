@@ -55,17 +55,14 @@ exports.TranslateComposerExample = Montage.create(Component, {
     },
 
     translate_composer: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     example: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 });

@@ -84,8 +84,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
                     this.needsDraw = true;
                 }
             }
-        },
-        serializable: true
+        }
     },
 
     // set value from user input
@@ -106,8 +105,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
     @see {@link module:montage/core/converter.Converter}
 */
     converter:{
-        value: null,
-        serializable: true
+        value: null
     },
 
     _error: {
@@ -162,8 +160,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
         },
         set: function(v) {
             this._updateOnInput = v;
-        },
-        serializable: true
+        }
     },
 
     // HTMLInputElement methods

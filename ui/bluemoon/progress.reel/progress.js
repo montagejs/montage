@@ -20,7 +20,6 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
   @private
 */
     _barElement: {
-        serializable: true,
         value: null
     },
 /**
@@ -28,7 +27,6 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
   @private
 */
     _value: {
-        enumerable: false,
         value: 0
     },
 /**
@@ -51,15 +49,13 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
                 }
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 /**
   Description TODO
   @private
 */
     _max: {
-        enumerable: false,
         value: 100
     },
 /**
@@ -79,15 +75,13 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
                 }
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 /**
   Description TODO
   @private
 */
     _scrollingChanged: {
-        enumerable: false,
         value: true
     },
 /**
@@ -95,7 +89,6 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
   @private
 */
     _scrolling: {
-        enumerable: false,
         value: false
     },
 /**
@@ -113,8 +106,7 @@ exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemo
                 this._scrolling = value;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 /**
     Description TODO

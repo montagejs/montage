@@ -9,13 +9,11 @@ var Montage = require("montage/core/core").Montage,
 exports.RepetitionExample = Montage.create(Component, {
 
     data: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     answers: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     jsonSelectedItems: {
@@ -41,8 +39,7 @@ exports.RepetitionExample = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 
 });

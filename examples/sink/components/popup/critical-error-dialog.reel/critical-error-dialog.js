@@ -8,8 +8,7 @@ var CriticalErrorDialog = exports.CriticalErrorDialog = Montage.create(Component
     },
 
     details: {
-        value: '',
-        serializable: true
+        value: ''
     },
 
     draw: {

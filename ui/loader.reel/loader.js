@@ -35,8 +35,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The main module to require
 */
     mainModule: {
-        enumerable: false,
-        serializable: true,
         value: "main.reel"
     },
 
@@ -44,8 +42,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The name of the object to read from the mainModule exports
 */
     mainName: {
-        enumerable: false,
-        serializable: true,
         value: "Main"
     },
 
@@ -53,8 +49,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Whether or not to include framework modules in the collection of required and initialized modules
 */
     includeFrameworkModules: {
-        enumerable: false,
-        serializable: true,
         value: false
     },
 
@@ -62,8 +56,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The minimum amount of time the bootstrapping indicator must be shown for
 */
     minimumBootstrappingDuration: {
-        enumerable: false,
-        serializable: true,
         value: 1500
     },
 
@@ -71,13 +63,10 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The minimum amount of time the loading indicator must be shown for
 */
     minimumLoadingDuration: {
-        enumerable: false,
-        serializable: true,
         value: 2000
     },
 
     _initializedModules: {
-        enumerable: false,
         value: null
     },
 
@@ -100,7 +89,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     },
 
     _requiredModules: {
-        enumerable: false,
         value: null
     },
 
@@ -125,7 +113,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     // States
 
     _currentStage: {
-        enumerable: false,
         value: PRELOADING
     },
 
@@ -133,7 +120,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Current loading stage.
 */
     currentStage: {
-        enumerable: false,
         get: function() {
             return this._currentStage;
         },
@@ -151,7 +137,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     },
 
     _readyToShowLoader: {
-        enumerable: false,
         value: false
     },
 
@@ -159,7 +144,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Boolean that specifies whether the loader is loading the application's main component.
 */
     isLoadingMainComponent: {
-        enumerable: false,
         value: null
     },
 
@@ -167,7 +151,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Specifies whether the loader is ready to show the loading graphic...FIXME
 */
     readyToShowLoader: {
-        enumerable: false,
         get: function() {
             return this._readyToShowLoader;
         },
@@ -185,7 +168,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Specifies whether the main component is ready to be displayed.
 */
     readyToShowMainComponent: {
-        enumerable: false,
         get: function() {
             return !!this._mainComponent;
         }

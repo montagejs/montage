@@ -11,16 +11,16 @@ var Montage = require("montage").Montage,
 exports.Empty = Montage.create(Montage, {});
 
 exports.Simple = Montage.create(Montage, {
-    number: {value: 42, serializable: true},
-    string: {value: "string", serializable: true},
-    regexp: {value: /regexp/gi},
+    number: {value: 42},
+    string: {value: "string"},
+    regexp: {value: /regexp/gi, serializable: false},
     foo: {value: null}
 });
 
 exports.OneProp = Montage.create(Montage, {
     prop: {value: null, serializable: true},
 
-    deserializedFromSerializationCount: {value: 0},
+    deserializedFromSerializationCount: {value: 0, serializable: false},
     deserializedFromSerialization: {value: function() {
         this.deserializedFromSerializationCount++;
     }}

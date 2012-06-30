@@ -83,7 +83,6 @@ var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends m
     @default null
     */
     delegate: {
-        serializable: true,
         value: null
     },
 

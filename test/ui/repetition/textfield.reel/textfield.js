@@ -22,8 +22,6 @@ var TextField = exports.TextField = Montage.create(Component, {
     },
 
     _text: {
-        serializable: true,
-        enumerable: false,
         value: "default text"
     },
 

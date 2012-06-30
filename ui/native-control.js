@@ -31,8 +31,6 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
     @default null
 */
     element: {
-        serializable: true,
-        enumerable: true,
         get: function() {
             return this._element;
         },
@@ -120,8 +118,7 @@ var NativeControl = exports.NativeControl = Montage.create(Component, /** @lends
                     return function() {
                         return this[attrName];
                     };
-                }(name, _name)),
-                serializable: true
+                }(name, _name))
             };
 
             // Define _ property

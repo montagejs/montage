@@ -34,8 +34,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._verticalScroll = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     horizontalScroll: {
@@ -45,8 +44,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._horizontalScroll = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     verticalLength: {
@@ -56,8 +54,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._verticalLength = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     horizontalLength: {
@@ -67,8 +64,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._horizontalLength = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _opacity: {
@@ -82,8 +78,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
         set: function (value) {
             this._opacity = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _isDisplayUpdated: {
@@ -104,8 +99,7 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
                 this._isDisplayUpdated = true;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _displayHorizontal: {
@@ -122,38 +116,31 @@ var ScrollBars = exports.ScrollBars = Montage.create(Component, {
                 this._isDisplayUpdated = true;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _top: {
-        value: false,
-        serializable: true
+        value: false
     },
 
     _bottomClip: {
-        value: false,
-        serializable: true
+        value: false
     },
 
     _bottom: {
-        value: false,
-        serializable: true
+        value: false
     },
 
     _left: {
-         value: false,
-         serializable: true
+         value: false
      },
 
     _rightClip: {
-        value: false,
-        serializable: true
+        value: false
     },
 
     _right: {
-        value: false,
-        serializable: true
+        value: false
     },
 
     _hasResizedHorizontal: {

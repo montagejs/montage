@@ -23,7 +23,6 @@ var TimeSince = exports.TimeSince = Montage.create(Component, {
     },
 
     time: {
-        serializable: true,
         get: function() {
             return this._time;
         },

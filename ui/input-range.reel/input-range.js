@@ -33,8 +33,7 @@ var InputRange = exports.InputRange = Montage.create(Component, {
         set: function(value) {
             this._min =  String.isString(value) ? parseFloat(value) : value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _max: {
@@ -48,8 +47,7 @@ var InputRange = exports.InputRange = Montage.create(Component, {
         set: function(value) {
             this._max = String.isString(value) ? parseFloat(value) : value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
    },
 
     _step: {
@@ -63,8 +61,7 @@ var InputRange = exports.InputRange = Montage.create(Component, {
         set: function(value) {
             this._step =  String.isString(value) ? parseFloat(value) : value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     /** Width of the slider in px. Default = 300 */
@@ -79,8 +76,7 @@ var InputRange = exports.InputRange = Montage.create(Component, {
         set: function(value) {
             this._width =  String.isString(value) ? parseFloat(value) : value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     percent: {
@@ -108,19 +104,16 @@ var InputRange = exports.InputRange = Montage.create(Component, {
                 this._valueSyncedWithPosition = false;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     // private
     _handleEl: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _translateComposer: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _sliderLeft: {

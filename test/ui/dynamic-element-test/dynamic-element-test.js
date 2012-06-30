@@ -9,18 +9,15 @@ var Montage = require("montage").Montage,
 var Test = exports.TestController = Montage.create(TestController, {
 
     dynamicElement: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     dynamicElementClassList: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     dynamicElementClassInMarkup: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     class1: {

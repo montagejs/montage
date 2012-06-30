@@ -50,8 +50,6 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
         @default null
     */
     value: {
-        enumerable: true,
-        serializable: true,
         get: function() {
             return this._value;
         },
@@ -164,8 +162,7 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
         },
         set: function(v) {
             this._updateOnInput = v;
-        },
-        serializable: true
+        }
     },
 
 
