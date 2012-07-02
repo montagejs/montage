@@ -13,6 +13,9 @@ var Montage = require("montage").Montage,
     ArrayController = require("montage/ui/controller/array-controller").ArrayController,
     LOCAL_STORAGE_KEY = "montage_photofx_state";
 
+var _ = defaultLocalizer.localize.bind(defaultLocalizer),
+    add_photo_name, remove_photo_name;
+
 exports.Main = Montage.create(Component, {
 
     didCreate: {
@@ -21,6 +24,17 @@ exports.Main = Montage.create(Component, {
             this.photoController = ArrayController.create();
 
             this._loadPhotos();
+
+            var self = this;
+            var localize = function() {
+                add_photo_name = _("add_photo_name");
+                remove_photo_name = _("remove_photo_name");
+                self.canDrawGate.setField("messages", true);
+            };
+            // Don't draw until the messages have loaded
+            self.canDrawGate.setField("messages", false);
+            // Localize even if the messages fail
+            defaultLocalizer.messagesPromise.then(localize, localize);
         }
     },
 
@@ -318,7 +332,7 @@ exports.Main = Montage.create(Component, {
         value: function(index) {
 
             var photo = this.photoController.content[index];
-            var undoLabel = 'remove photo "' + photo.title + '"';
+            var undoLabel = remove_photo_name({name: photo.title});
 
             this.undoManager.add(undoLabel, this.addPhotoAtIndex, this, photo, index);
 
@@ -329,7 +343,7 @@ exports.Main = Montage.create(Component, {
     addPhotoAtIndex: {
         value: function(photo, index) {
 
-            var undoLabel = 'add photo "' + photo.title + '"';
+            var undoLabel = add_photo_name({name: photo.title});
 
             this.undoManager.add(undoLabel, this.removePhotoAtIndex, this, index);
 
