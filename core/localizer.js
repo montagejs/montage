@@ -401,33 +401,41 @@ var z = hi();
     /**
         <p>Async version of {@link localize}.</p>
 
-        <p>Waits for the localizer to get messages (hasMessages === true) before
-        localizing the key. Use either the callback or the promise.</p>
+        <p>Waits for the localizer to get messages before localizing the key.
+        Use either the callback or the promise.</p>
 
         @function
         @param {String} key The key to the string in the {@link messages} object.
         @param {String} defaultMessage The value to use if key does not exist.
+        @param {String} [defaultOnFail=true] Whether to use the default messages if the messages fail to load.
         @param {Function} [callback] Passed the message function.
         @returns {Promise} A promise that is resolved with the message function.
     */
     localizeAsync: {
-        value: function(key, defaultMessage, callback) {
+        value: function(key, defaultMessage, defaultOnFail, callback) {
             var listener, deferred, promise, self = this;
-            if (this.hasMessages) {
+            defaultOnFail = (defaultOnFail === null) ? true : defaultOnFail;
+
+            if (!this.messagesPromise) {
                 promise = Promise.resolve(this.localize(key, defaultMessage));
                 promise.then(callback);
                 return promise;
             }
 
-            deferred = Promise.defer();
-            listener = function() {
-                deferred.resolve(self.localize(key, defaultMessage));
-                deferred.promise.then(callback);
-                self.removePropertyChangeListener("hasMessages", listener);
+            var l = function() {
+                var messageFn = self.localize(key, defaultMessage);
+                if (typeof callback === "function") {
+                    callback(messageFn);
+                }
+                return messageFn;
             };
 
-            this.addPropertyChangeListener("hasMessages", listener);
-            return deferred.promise;
+            if (defaultOnFail) {
+                // Try and localize the message, no matter what the outcome
+                return this.messagesPromise.then(l, l);
+            } else {
+                return this.messagesPromise.then(l);
+            }
         }
     }
 
