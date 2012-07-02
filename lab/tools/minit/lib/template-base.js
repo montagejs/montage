@@ -73,10 +73,10 @@ exports.TemplateBase = Object.create(Object.prototype, {
             var path;
             if (!this.destination) {
                 // destination is the working directory
-                path = "cp -R " + this.buildDir + "/ .";
+                path = "mv " + this.buildDir + "/* .";
             } else {
                 // otherwise relative to the package root
-                path = "cp -R " + this.buildDir + "/ " + Path.join(this.options.packageHome, this.destination);
+                path = "mv " + this.buildDir + "/* " + Path.join(this.options.packageHome, this.destination);
             }
             if (! this.options.dryRun) {
                 childProcess.exec(path, function (error, stdout, stderr) {
@@ -84,6 +84,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
                         console.log(error.stack);
                         console.log('Error code: '+error.code);
                         console.log('Signal received: '+error.signal);
+                        process.exit(1);
                     }
                     console.log("Template expansion successful!");
                 }.bind(this));
@@ -109,7 +110,7 @@ exports.TemplateBase = Object.create(Object.prototype, {
             filenames.forEach(function(filename) {
                 var stats = fs.statSync(filename);
 
-                if (stats.isFile() && /\.(html|json|js|css)$/.test(filename)) {
+                if (stats.isFile() && /\.(html|json|js|css|markdown)$/.test(filename)) {
                     this.processFile(filename);
                 } else if (stats.isDirectory()) {
                     this.processDirectory(filename);
