@@ -28,12 +28,12 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-.montage-toggle {
+.montage-Toggle {
     width: 60px;
     height: 22px;
 }
 
-.montage-toggle .toggle:before {
+.montage-Toggle .toggle:before {
     content: "";
     position: absolute;
     left: -13px;
@@ -43,7 +43,7 @@ POSSIBILITY OF SUCH DAMAGE.
     border-radius: 30px;
 }
 
-.montage-toggle .toggle {
+.montage-Toggle .toggle {
     position: absolute;
     border-radius: 12px;
     height: 20px;
@@ -52,11 +52,11 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-box-shadow: inset 0 1px 4px rgba(0,0,0,.3), 0 1px rgba(255,255,255,.4), 0 -1px rgba(0,0,0,.1);
 }
 
-.montage-toggle .scroll {
+.montage-Toggle .scroll {
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle .circle {
+.montage-Toggle .circle {
     position: absolute;
     margin: -16px 0 0 -16px;
     height: 50px;
@@ -68,11 +68,11 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: scale3d(.35, .35, 0) translateZ(0);
 }
 
-.montage-toggle.pressed .circle {
+.montage-Toggle.pressed .circle {
     -webkit-transform: scale3d(1, 1, 0) translateZ(0);
 }
 
-.montage-toggle .handlerbg {
+.montage-Toggle .handlerbg {
     position: absolute;
     background: transparent;
     position: absolute;
@@ -83,7 +83,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle .handler {
+.montage-Toggle .handler {
     position: absolute;
     width: 20px;
     height: 20px;
@@ -92,7 +92,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle .handler:after {
+.montage-Toggle .handler:after {
     content: "";
     position: absolute;
     margin: 6px 0 0 6px;
@@ -104,7 +104,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: scale3d(.9, .9, 0) translateZ(0);
 }
 
-.montage-toggle .handleronbg {
+.montage-Toggle .handleronbg {
     opacity: 0;
     position: absolute;
     background: rgba(0,0,0,.3);
@@ -116,7 +116,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle .handleron {
+.montage-Toggle .handleron {
     position: absolute;
     width: 20px;
     height: 20px;
@@ -125,7 +125,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle .handleron:after {
+.montage-Toggle .handleron:after {
     content: "";
     position: absolute;
     margin: 6px 0 0 6px;
@@ -137,7 +137,7 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: scale3d(.9, .9, 0) translateZ(0);
 }
 
-.montage-toggle .handlerdragarea {
+.montage-Toggle .handlerdragarea {
     position: absolute;
     margin: -16px 0 0 -16px;
     width: 52px;
@@ -146,14 +146,14 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
 }
 
-.montage-toggle.dark .toggle {
+.montage-Toggle.dark .toggle {
     padding: 0;
     border: 1px solid rgba(0,0,0,.4);
     background-color: rgba(40,40,40,.55);
     -webkit-box-shadow: 0 1px rgba(255,255,255,.2), 0 -1px rgba(0,0,0,.1);
 }
 
-.montage-toggle.dark .circle {
+.montage-Toggle.dark .circle {
     opacity: .25;
     background: rgba(120, 120, 120, .8);
     border: 1px solid #000;
@@ -161,20 +161,20 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transition: -webkit-transform 150ms;
 }
 
-.montage-toggle.pressed.dark .circle {
+.montage-Toggle.pressed.dark .circle {
     -webkit-transform: scale3d(1, 1, 0) translateZ(0);
 }
 
-.montage-toggle.dark .handler {
+.montage-Toggle.dark .handler {
     background: -webkit-gradient(linear, left top, left bottom, from(rgba(255,255,255,.5)), to(rgba(255,255,255,.3)));
 }
 
-.montage-toggle.dark .handler:after {
+.montage-Toggle.dark .handler:after {
     background-color: rgba(0,0,0,.6);
     -webkit-box-shadow: 0 1px 0 #828282;
 }
 
-.montage-toggle.dark .handleronbg {
+.montage-Toggle.dark .handleronbg {
     opacity: 0;
     position: absolute;
     background: transparent;
