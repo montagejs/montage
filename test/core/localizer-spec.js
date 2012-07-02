@@ -104,8 +104,8 @@ describe("core/localizer-spec", function() {
             it("uses the default if the key does not exist", function() {
                 expect(l.localize("missing", "Missing key")()).toBe("Missing key");
             });
-            it("returns null if the key does not exist and no fallback is given", function() {
-                expect(l.localize("missing")).toBe(null);
+            it("returns the key if the key does not exist and no fallback is given", function() {
+                expect(l.localize("missing")()).toBe("missing");
             });
             it("throws if the message object does not contain a 'message' property", function() {
                 var threw = false;

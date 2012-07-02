@@ -353,13 +353,9 @@ var z = hi();
     */
     localize: {
         value: function(key, defaultMessage) {
-            if (!this.hasMessages) {
-                throw new Error("Localizer for '" + this.locale + "' has no messages");
-            }
-
             var message, type, compiled;
 
-            if (key in this._messages) {
+            if (this._messages && key in this._messages) {
                 message = this._messages[key];
                 type = typeof message;
 
@@ -377,7 +373,9 @@ var z = hi();
             }
 
             if (!message) {
-                return null;
+                console.error("No message or default message for key '"+ key +"'");
+                // Give back something so there's at least something for the UI
+                message = key;
             }
 
             if (message in this._compiledMessageCache) {
@@ -702,10 +700,6 @@ Deserializer.defineDeserializationUnit("localizations", function(object, propert
 
         (function(prop, variables, key) {
             defaultLocalizer.localizeAsync(key, defaultMessage).then(function(messageFunction) {
-                if (!messageFunction) {
-                    console.error("No localization for key '" + key + "' in ", object);
-                    return;
-                }
                 createMessageBinding(object, prop, variables, deserializer, messageFunction);
             });
         }(prop, desc, key));
