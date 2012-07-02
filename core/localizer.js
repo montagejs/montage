@@ -101,8 +101,8 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
         value: null
     },
     /**
-
-        @type {Object} A map from keys to messages.
+        A map from keys to messages.
+        @type Object
         @default null
     */
     messages: {
@@ -120,6 +120,14 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
                 this.hasMessages = !!value;
             }
         }
+    },
+    /**
+        A promise for the messages property
+        @type Promise
+        @default null
+    */
+    messagesPromise: {
+        value: null
     },
 
     _locale: {
@@ -165,12 +173,22 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
         value: (typeof global !== "undefined") ? global.require : (typeof window !== "undefined") ? window.require : null
     },
 
+    /**
+        Load messages for the locale
+        @function
+        @param {Number|Boolean} [timeout=5000] Number of milliseconds to wait before failing. Set to false for no timeout.
+        @param {Function} [callback] Called on successful loading of messages. Using the returned promise is recomended.
+        @returns {Promise} A promise for the messages.
+    */
     loadMessages: {
-        value: function(callback) {
+        value: function(timeout, callback) {
             if (!this.require) {
                 throw new Error("Cannot load messages as", this, "require is not set");
             }
 
+            if (timeout === null) {
+                timeout = 5000;
+            }
             this.messages = null;
 
             var self = this;
@@ -183,7 +201,11 @@ var Localizer = exports.Localizer = Montage.create(Montage, /** @lends module:mo
                 promise = Promise.reject("Package has no manifest. "+messageRequire.location+"package.json must contain \"manifest\": true and "+messageRequire.location+"manifest.json must exist");
             }
 
-            return promise.get("files").then(function(files) {
+            if (timeout) {
+                promise = promise.timeout(timeout);
+            }
+
+            return this.messagesPromise = promise.get("files").then(function(files) {
                 return self._loadMessageFiles(files);
 
             }).then(function(localesMessages) {
