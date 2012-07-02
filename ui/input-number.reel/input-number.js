@@ -28,7 +28,7 @@ exports.InputNumber = Montage.create(NativeInputNumber, /** @lends module:"monta
     didSetElement: {
         value: function() {
             NativeInputNumber.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-inputNumber montage-inputText';
+            this['class'] = (this['class'] || '') + ' montage-InputNumber montage-InputText';
         }
     }
 

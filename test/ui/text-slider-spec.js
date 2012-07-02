@@ -101,7 +101,7 @@ var testPage = TestPageLoader.queueTest("text-slider-test", function() {
                     expect(test.hex.isEditing).toBe(true);
                     testPage.waitForDraw();
                     runs(function() {
-                        expect(test.hex.element.className).toMatch("montage-text-slider-editing");
+                        expect(test.hex.element.className).toMatch("montage-TextSlider--editing");
                     });
                 });
                 it("increases when the up arrow is pressed", function() {

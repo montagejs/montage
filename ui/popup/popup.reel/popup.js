@@ -429,9 +429,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
             if (this.displayed) {
 
                 if(this.modal === true) {
-                    this.element.classList.add('montage-modal');
+                    this.element.classList.add('montage-Popup--modal');
                 } else {
-                    this.element.classList.remove('montage-modal');
+                    this.element.classList.remove('montage-Popup--modal');
 
                     if (this.autoHide) {
                         var self = this;

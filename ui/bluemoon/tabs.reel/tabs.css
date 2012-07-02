@@ -3,7 +3,7 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.montage-tabs {
+.montage-Tabs {
     position: relative;
     display: inline-block;
     border-radius: 26px;
@@ -25,13 +25,13 @@
 
 }
 
-.montage-tabs-list {
+.montage-Tabs-list {
     padding: 0;
     margin: 0;
     position: relative;
 }
 
-.montage-tabs-list li {
+.montage-Tabs-list li {
     display: inline-block;
     line-height: 46px;
     margin: 3px;
@@ -48,23 +48,23 @@
     cursor: pointer;
 }
 
-.montage-tabs-list li.selected {
+.montage-Tabs-list li.selected {
     color: #333;
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #fff), color-stop(100%, #e6e6e6));
     padding: 0 10px;
     -webkit-box-shadow: rgba(0, 0, 0, .3) 0 1px 3px;
 }
 
-.montage-tabs-list li img {
+.montage-Tabs-list li img {
     margin-bottom: -2px; /* based on 16px icons */
     opacity: .5;
 }
 
-.montage-tabs-list li.selected img {
+.montage-Tabs-list li.selected img {
     opacity: 1;
 }
 
-.montage-tabs-list li span {
+.montage-Tabs-list li span {
     margin: 0;
     padding: 0;
     margin: 0;
@@ -77,7 +77,7 @@
 
 /* states */
 
-.montage-tabs-list li.pressed {
+.montage-Tabs-list li.pressed {
     background-color: #aaa;
     -webkit-box-shadow: rgba(255, 255, 255, .2) 0 1px 0, inset rgba(0, 0, 0, .1) 0 2px 5px;
     -webkit-transition: background-color .15s ease-out;
@@ -87,11 +87,11 @@
 
 /* tab width: 70px */
 
-.montage-tabs.small .montage-Tabs-indicator {
+.montage-Tabs.small .montage-Tabs-indicator {
     height: 27px;
 }
 
-.montage-tabs.small .montage-tabs-list li {
+.montage-Tabs.small .montage-Tabs-list li {
     padding: 0 10px;
     line-height: 25px;
 
@@ -100,27 +100,27 @@
 
 /* ----------------------- Dark theme ----------------------- */
 
-.montage-tabs.dark {
+.montage-Tabs.dark {
     background-color: #404040;
     -webkit-box-shadow: rgba(255, 255, 255, .25) 0 1px 0, inset rgba(0, 0, 0, .3) 0 1px 3px;
 }
 
-.montage-tabs.dark .montage-Tabs-indicator {
+.montage-Tabs.dark .montage-Tabs-indicator {
     background: -webkit-gradient(linear, 0% 0%, 0% 100%, color-stop(0%, #767676), color-stop(100%, #5c5c5c));
 
 }
 
-.montage-tabs.dark .montage-tabs-list li {
+.montage-Tabs.dark .montage-Tabs-list li {
     color: #bbb;
 }
 
-.montage-tabs.dark .montage-tabs-list li.selected {
+.montage-Tabs.dark .montage-Tabs-list li.selected {
     color: #333;
 }
 
 /* states */
 
-.montage-tabs.dark .montage-tabs-list li.pressed {
+.montage-Tabs.dark .montage-Tabs-list li.pressed {
     background-color: #333;
     -webkit-box-shadow: rgba(255, 255, 255, .05) 0 1px 0, inset rgba(0, 0, 0, .1) 0 2px 5px;
 }

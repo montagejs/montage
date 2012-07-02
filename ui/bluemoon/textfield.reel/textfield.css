@@ -4,7 +4,7 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-textfield {
+.montage-Textfield {
     line-height: 1em;
     z-index: 1;
     cursor: pointer;
@@ -15,7 +15,7 @@
     font-size: 1.0em;
 }
 
-.montage-textfield:focus {
+.montage-Textfield:focus {
     background-color: hsl(0, 100%, 99%);
     border: 2px solid hsl(0, 0%, 40%);
 }

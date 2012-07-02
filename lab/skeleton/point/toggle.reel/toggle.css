@@ -3,8 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-toggle {
+
+.montage-Toggle {
     box-sizing: border-box;
     font-size: 12px;
     position: relative;
@@ -19,7 +19,7 @@
     -webkit-transition: background-color .2s cubic-bezier(.5,.15,.2,1);
 }
 
-.montage-toggle-thumb {
+.montage-Toggle-thumb {
     box-sizing: border-box;
     position: absolute;
     left: 0;
@@ -34,22 +34,22 @@
 }
 
 /* States */
-.montage-toggle:hover > .montage-toggle-thumb {
+.montage-Toggle:hover > .montage-Toggle-thumb {
     background-color: #ffffff;
 }
 
-.montage-toggle:active > .montage-toggle-thumb {
+.montage-Toggle:active > .montage-Toggle-thumb {
     background-color: #e5e5e5;
 }
 
-.montage-toggle:focus {
+.montage-Toggle:focus {
     border-color: #7f7f7f;
 }
 
-.montage-toggle.isChecked {
+.montage-Toggle.isChecked {
     background: hsl(0,0%,70%);
 }
 
-.montage-toggle.isChecked > .montage-toggle-thumb {
+.montage-Toggle.isChecked > .montage-Toggle-thumb {
     -webkit-transform: translate3d(100%,0,0);
 }
