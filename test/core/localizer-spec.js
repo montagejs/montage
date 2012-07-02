@@ -150,12 +150,35 @@ describe("core/localizer-spec", function() {
                 });
             });
 
-            it("can load a simple messages.json", function() {
+            it("can load a simple messages.json (promise)", function() {
                 return require.loadPackage(module.directory + "localizer/simple/", {}).then(function(r){
                     l.require = r;
                     return l.loadMessages();
                 }).then(function(messages) {
                     expect(messages.hello).toBe("Hello, World!");
+                });
+            });
+
+            it("can load a simple messages.json (callback)", function() {
+                var deferred = Promise.defer();
+                require.loadPackage(module.directory + "localizer/simple/", {}).then(function(r){
+                    l.require = r;
+                    l.loadMessages(null, function(messages) {
+                        expect(messages.hello).toBe("Hello, World!");
+                        deferred.resolve();
+                    });
+                });
+                return deferred.promise;
+            });
+
+            it("has a timeout", function() {
+                return require.loadPackage(module.directory + "localizer/simple/", {}).then(function(r){
+                    l.require = r;
+                    return l.loadMessages(1);
+                }).then(function() {
+                    return Promise.reject("expected a timeout");
+                }, function(err) {
+                    return void 0;
                 });
             });
 
