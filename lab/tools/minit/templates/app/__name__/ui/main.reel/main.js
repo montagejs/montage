@@ -13,10 +13,6 @@ var Montage = require("montage").Montage,
 */
 exports.Main = Montage.create(Component, /** @lends module:"ui/main.reel".Main# */ {
 
-    hasTemplate: {
-        value: true
-    },
-
     thing: {
         value: "World"
     }
