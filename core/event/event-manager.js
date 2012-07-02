@@ -419,6 +419,9 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             });
             Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
             XMLHttpRequest.prototype.nativeAddEventListener = XMLHttpRequest.prototype.addEventListener;
+            if (Worker) {
+                Worker.prototype.nativeAddEventListener = Worker.prototype.addEventListener;
+            }
 
             Element.prototype.nativeRemoveEventListener = Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
@@ -427,6 +430,9 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             });
             Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
             XMLHttpRequest.prototype.nativeRemoveEventListener = XMLHttpRequest.prototype.removeEventListener;
+            if (Worker) {
+                Worker.prototype.nativeRemoveEventListener = Worker.prototype.removeEventListener;
+            }
 
             Object.defineProperty(aWindow, "addEventListener", {
                 enumerable: false,
@@ -438,6 +444,10 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                                 })
             });
 
+            if (Worker) {
+                Worker.prototype.addEventListener = aWindow.addEventListener;
+            }
+
             Object.defineProperty(aWindow, "removeEventListener", {
                 enumerable: false,
                 value: (XMLHttpRequest.prototype.removeEventListener =
@@ -447,6 +457,11 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                                     return defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
                                 })
             });
+
+            if (Worker) {
+                Worker.prototype.removeEventListener = aWindow.removeEventListener;
+            }
+
             // In some browsers each element has their own addEventLister/removeEventListener
             // Methodology to find all elements found in Chainvas
             if(HTMLDivElement.prototype.addEventListener !== Element.prototype.nativeAddEventListener) {
