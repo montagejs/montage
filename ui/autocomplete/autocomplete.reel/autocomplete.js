@@ -110,8 +110,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
                 }
                 this._delay = value;
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -119,8 +118,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
     * @type {Number}
     */
     minLength: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _tokens: {value: null},

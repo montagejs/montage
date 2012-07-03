@@ -207,7 +207,7 @@ jasmine.TrivialReporter.prototype.reportSpecResults = function(spec) {
                 if (stack.length > 0) {
                     message += "<br/>" + stack.join("<br/>");
                 }
-                messagesDiv.appendChild(this.createDom('div', {className: 'resultMessage fail'}, message));
+                messagesDiv.appendChild(this.createDom('div', {className: 'resultMessage fail'}, message.replace("Expected", "Expected<br/>").replace("to be", "<br/>to be<br/>")));
             }
 
             if (result.trace.stack) {

@@ -9,8 +9,7 @@ var Montage = require("montage/core/core").Montage,
 exports.RadioButtonExample = Montage.create(Component, {
 
     answers: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     selectedAnswer: {
@@ -25,7 +24,6 @@ exports.RadioButtonExample = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 });

@@ -35,32 +35,25 @@ exports.Converters = Montage.create(Component, {
         }
     },
     $number: {
-        value: null,
-        serializable: true
+        value: null
     },
     num1Cmp: {
-        value: null,
-        serializable: true
+        value: null
     },
     num2Cmp: {
-        value: null,
-        serializable: true
+        value: null
     },
     num2Cmp: {
-        value: null,
-        serializable: true
+        value: null
     },
     num3Cmp: {
-        value: null,
-        serializable: true
+        value: null
     },
     num4Cmp: {
-        value: null,
-        serializable: true
+        value: null
     },
     currencyCmp: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     applyNumberFormat: {
@@ -83,8 +76,7 @@ exports.Converters = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 
 });

@@ -154,7 +154,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default undefined
     */
     value: {
-        serializable: true,
         get: function () {
             return this._value;
         },
@@ -186,7 +185,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default undefined
     */
     title: {
-        serializable: true,
         get: function () {
             return this._title;
         },
@@ -210,7 +208,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default undefined
     */
     valueActive: {
-        serializable: true,
         value: undefined
     },
 
@@ -230,7 +227,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
      @default undefined
      */
     pressedValue: {
-        serializable: true,
         value: undefined
     },
 
@@ -249,7 +245,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default undefined
     */
     pressedValueActive: {
-        serializable: true,
         value: undefined
     },
 
@@ -268,7 +263,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default undefined
     */
     mixedValue: {
-        serializable: true,
         value: undefined
     },
 
@@ -287,7 +281,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default undefined
     */
     mixedValueActive: {
-        serializable: true,
         value: undefined
     },
 
@@ -339,7 +332,6 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         @default {String} "transient"
     */
     behavior: {
-        serializable: true,
         get: function() {
             return this._behavior;
         },

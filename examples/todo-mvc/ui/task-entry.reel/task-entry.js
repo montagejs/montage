@@ -36,8 +36,7 @@ exports.TaskEntry = Montage.create(Component, {
     },
 
     completedCheckbox: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     prepareForDraw: {

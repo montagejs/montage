@@ -4,8 +4,7 @@ var Montage = require("montage/core/core").Montage,
 exports.Logger = Montage.create(Component, {
 
     output: {
-        value: null,
-        serializable: true
+        value: null
     },
 
   _messages: {

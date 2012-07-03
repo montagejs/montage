@@ -70,8 +70,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         },
         get: function() {
             return this._content;
-        },
-        serializable: true
+        }
     },
 
     // If a <code>contentController</code> is provided, this allows the developer to specify
@@ -80,16 +79,14 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         Specifies the property belonging to the component's <code>contentController</code> to use as the "value" part of the <option>.
     */
     valuePropertyPath: {
-        value: null,
-            serializable: true
+        value: null
     },
 
     /**
         Specifies the property belonging to the component's <code>contentController</code> to use as the text content of the <option>.
     */
     textPropertyPath: {
-        value: null,
-        serializable: true
+        value: null
     },
 
 
@@ -137,8 +134,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                 });
             }
 
-        },
-        serializable: true
+        }
     },
 
     _getSelectedValuesFromIndexes: {
@@ -195,8 +191,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                     this._synching = false;
                 }
             }
-        },
-        serializable: true
+        }
         //dependencies: ["_selectedIndexes"]
     },
 
@@ -217,8 +212,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             }
 
 
-        },
-        serializable: true
+        }
         //dependencies: ["_selectedIndexes"]
     },
 

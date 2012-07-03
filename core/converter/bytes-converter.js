@@ -78,8 +78,7 @@ exports.BytesConverter = Montage.create(Converter, /** @lends module:montage/cor
      @default {Number} 2
      */
     decimals: {
-        value: 2,
-        serializable: true
+        value: 2
     },
     /**
      Converts the specified value to byte format.

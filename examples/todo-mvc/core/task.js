@@ -6,7 +6,6 @@
 var Montage = require("montage").Montage;
 exports.Task = Montage.create(Montage, {
     note: {
-        serializable: true,
         enumerable: false,
         value: null
     },
@@ -20,7 +19,6 @@ exports.Task = Montage.create(Montage, {
     },
 
     completedDate: {
-        serializable: true,
         enumerable: false,
         value: null
     },

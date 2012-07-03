@@ -20,8 +20,7 @@ exports.MontageSlider = Montage.create(Component, {
     },
 
     colorchip: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     red: {
@@ -81,8 +80,7 @@ exports.MontageSlider = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 
 });

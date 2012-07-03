@@ -20,8 +20,7 @@ exports.Scroller = Montage.create(Component, {
         set: function (value) {
             this._scrollX = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _scrollY: {
@@ -35,8 +34,7 @@ exports.Scroller = Montage.create(Component, {
         set: function (value) {
             this._scrollY = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _maxTranslateX: {
@@ -58,8 +56,7 @@ exports.Scroller = Montage.create(Component, {
         set: function (value) {
             this._axis = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _displayScrollbars: {
@@ -83,8 +80,7 @@ exports.Scroller = Montage.create(Component, {
                     break;
             }
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _hasMomentum: {
@@ -97,18 +93,15 @@ exports.Scroller = Montage.create(Component, {
         },
         set: function (value) {
             this._hasMomentum = value;
-        },
-        serializable: true
+        }
     },
 
     _content: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _scrollBars: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     handleTranslateStart: {

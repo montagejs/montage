@@ -31,7 +31,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     delegate: {
-        serializable: "reference",
         value: null
     },
 
@@ -40,7 +39,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     parentProperty: {
-        serializable: true,
         value: "parentComponent"
     },
 
@@ -80,7 +78,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 this._canDrawGate.setField("componentTreeLoaded", false);
             }
             return this._canDrawGate;
-        }
+        },
+        enumerable: false
     },
 /**
   Description TODO
@@ -95,6 +94,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @returns this._blockDrawGate
     */
     blockDrawGate: {
+        enumerable: false,
         get: function() {
             if (!this._blockDrawGate) {
                 this._blockDrawGate = Gate.create().initWithDelegate(this);
@@ -134,8 +134,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     element: {
-        serializable: true,
-        enumerable: true,
         get: function() {
             return this._element;
         },
@@ -191,6 +189,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @returns document.application
     */
     application: {
+        enumerable: false,
         get: function() {
             return document.application;
         }
@@ -201,6 +200,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @returns defaultEventManager
     */
     eventManager: {
+        enumerable: false,
         get: function() {
             return defaultEventManager;
         }
@@ -211,6 +211,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @returns rootComponent
     */
     rootComponent: {
+        enumerable: false,
         get: function() {
             return rootComponent;
         }
@@ -395,6 +396,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     template: {
+        enumerable: false,
         value: null
     },
 
@@ -404,6 +406,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default {Boolean} true
 */
     hasTemplate: {
+        enumerable: false,
         value: true
     },
 
@@ -413,6 +416,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
 */
     templateModuleId: {
+        serializable: false,
         value: null
     },
 
@@ -562,6 +566,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     originalContent: {
+        serializable: false,
         value: null
     },
 
@@ -571,6 +576,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     domContent: {
+        serializable: false,
         get: function() {
             if (this._element) {
                 return Array.prototype.slice.call(this._element.childNodes, 0);
@@ -1318,7 +1324,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      @default {Boolean} false
      */
     needsDraw: {
-        enumerable: true,
+        enumerable: false,
         get: function() {
             return !!this._needsDraw;
         },
@@ -1350,7 +1356,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      @private
      */
     _drawList: {
-        enumerable: true,
         value: null
     },
 /**
@@ -1416,7 +1421,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      */
     composerList: {
         value: [],
-        distinct: true
+        distinct: true,
+        serializable: false
     },
 
     /**

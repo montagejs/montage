@@ -9,8 +9,7 @@ var Montage = require("montage/core/core").Montage,
 exports.SliderPolyfillExample = Montage.create(Component, {
 
     result: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     resultHex: {value: null},
@@ -84,7 +83,6 @@ exports.SliderPolyfillExample = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 });

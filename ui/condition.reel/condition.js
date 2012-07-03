@@ -60,8 +60,7 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
         },
         get: function() {
             return this._condition;
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -86,8 +85,7 @@ exports.Condition = Montage.create(Component, /** @lends module:"montage/ui/cond
             }
             this._removalStrategy = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     prepareForDraw: {

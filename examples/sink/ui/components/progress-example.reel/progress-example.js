@@ -16,8 +16,7 @@ exports.ProgressExample = Montage.create(Component, {
         },
         get: function() {
             return this._uploadProgress;
-        },
-        serializable: true
+        }
     },
 
     _intervalId: {value: null},
@@ -54,8 +53,7 @@ exports.ProgressExample = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 
 });

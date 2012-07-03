@@ -7,15 +7,15 @@ var Montage = require("montage").Montage;
 
 var TextSliderTest = exports.TextSliderTest = Montage.create(Montage, {
     number: {
-        serializable: true
+        value: null
     },
     percent: {
-        serializable: true
+        value: null
     },
     multiple: {
-        serializable: true
+        value: null
     },
     hex: {
-        serializable: true
+        value: null
     }
 });

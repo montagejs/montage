@@ -44,8 +44,7 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
         @default {String} '$'
     */
     currency: {
-        value: '$',
-        serializable: true
+        value: '$'
     },
 
     /**
@@ -53,8 +52,7 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
         @default {Number} 2
     */
     decimals: {
-        value: 2,
-        serializable: true
+        value: 2
     },
 
     /**
@@ -62,8 +60,7 @@ exports.CurrencyConverter = Montage.create(NumberConverter, /** @lends module:mo
         @default {Boolean} false
     */
     useParensForNegative: {
-        value: false,
-        serializable: true
+        value: false
     },
 
     /**

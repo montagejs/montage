@@ -82,18 +82,15 @@ exports.PhotoEditor = Montage.create(Component, {
                 this.__image.element.addEventListener("load", this, false);
             }
 
-        },
-        serializable: true
+        }
     },
 
     _canvas: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _toolLayer: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _pointerIdentifier: {
@@ -339,8 +336,7 @@ exports.PhotoEditor = Montage.create(Component, {
             this._inverted = value;
             this._imageDirty = true;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     _desaturated: {
@@ -442,13 +438,11 @@ exports.PhotoEditor = Montage.create(Component, {
     },
 
     horizontalRuler: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     verticalRuler: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     pointMonitorController: {

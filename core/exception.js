@@ -20,24 +20,21 @@ var Exception = exports.Exception = Montage.create(Montage,/** @lends module:mon
         @default {String} null
     */
     message: {
-        value: null,
-        serializable: true
+        value: null
     },
 /**
         @type {Property}
         @default {String} null
     */
     target: {
-        value: null,
-        serializable: true
+        value: null
     },
 /**
         @type {Property}
         @default {Function} null
     */
     method: {
-        value: null,
-        serializable: true
+        value: null
     },
    /**
     @function

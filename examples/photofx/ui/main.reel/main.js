@@ -91,8 +91,7 @@ exports.Main = Montage.create(Component, {
     },
 
     photoController: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     prepareForDraw: {
@@ -249,13 +248,11 @@ exports.Main = Montage.create(Component, {
     },
 
     searchPanel: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     photoEditor: {
-        value: null,
-        serializable: true
+        value: null
     },
 
      searchPopup: {

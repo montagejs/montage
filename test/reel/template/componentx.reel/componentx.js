@@ -10,5 +10,5 @@ var Component = require("montage/ui/component").Component;
 
 var ComponentX = exports.ComponentX = Montage.create(Component, {
     hasTemplate: {value: true},
-    textfield: {serializable: true, value: null}
+    textfield: {value: null}
 });

@@ -211,7 +211,6 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
 */
     boundObject: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -222,7 +221,6 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
 */
     boundObjectPropertyPath: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -231,7 +229,6 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
 */
     oneway: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -240,7 +237,6 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
 */
     deferred: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -297,6 +293,9 @@ Deserializer.defineDeserializationUnit("bindings", function(object, bindings, de
     }
 });
 
+var __bindingCount = {count: 0};
+console.log(__bindingCount);
+
 /**
     @function external:Object.defineBinding
     @param {object} sourceObject The source object of the data binding. This object establishes the binding between itself and the "bound object" specified by the <code>bindingDescriptor</code> parameter.
@@ -312,7 +311,7 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         boundObjectValue,
         currentBindingDescriptor,
         bindingListener;
-
+    __bindingCount.count++;
     if (!boundObject || !boundObjectPropertyPath) {
         //TODO should we throw an error here? the binding descriptor wasn't valid
         return;

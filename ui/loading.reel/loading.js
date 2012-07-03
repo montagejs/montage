@@ -37,8 +37,7 @@ var Loading = exports.Loading = Montage.create(Component,/** @lends module:"mont
                 this._loading = isloading;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 /**
     Description TODO

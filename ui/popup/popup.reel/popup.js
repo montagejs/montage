@@ -47,8 +47,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                     this.anchorElement = value.element;
                 }
             }
-        },
-        serializable: true
+        }
     },
 
     // A Delegate to control positioning (and other features, in future) of the popup in a custom manner
@@ -59,8 +58,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         @private
     */
     contentEl: {
-        value: null,
-        serializable: true
+        value: null
     },
 /**
         Description TODO
@@ -69,8 +67,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         @private
     */
     containerEl: {
-        value: null,
-        serializable: true
+        value: null
     },
 
 
@@ -95,8 +92,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
             if (this.content) {
                 this._slot.content = this.content;
             }
-        },
-        serializable: true
+        }
     },
 /**
   Description TODO
@@ -110,7 +106,6 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         @default null
     */
     content: {
-        serializable: true,
         get: function() {
             return this._content;
         },
@@ -122,8 +117,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
             // set the popup property of the content.
             this._content.popup = this;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 /**
   Description TODO
@@ -148,8 +142,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this._modal = value;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -164,8 +157,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
         set: function(pos) {
             this._position = pos;
             //this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -184,13 +176,11 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
                 this.needsDraw = true;
             }
             this._displayed = value;
-        },
-        serializable: true
+        }
     },
 
     focusOnShow: {
-        value: true,
-        serializable: true
+        value: true
     },
 
 /**

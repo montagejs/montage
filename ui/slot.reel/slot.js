@@ -33,9 +33,7 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
         @default null
     */
     delegate: {
-        enumerable: false,
-        value: null,
-        serializable: true
+        value: null
     },
 
     _content: {
@@ -48,7 +46,6 @@ exports.Slot = Montage.create(Component, /** @lends module:"montage/ui/slot.reel
         @default null
     */
     content: {
-        enumerable: false,
         get: function() {
             return this._content;
         },

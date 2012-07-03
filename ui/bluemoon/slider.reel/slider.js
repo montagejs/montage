@@ -22,58 +22,47 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
     // Extra elements for rendering
 
     _bghl: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handlerbg: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _bg: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handler: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _line: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _scale: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _line2: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handler2: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handler3: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handler4: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handlerDragArea: {
-        value: null,
-        serializable: true
+        value: null
     },
     // Slider properties
 
@@ -108,8 +97,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             this._hasTapBarToScroll = !!value;
-        },
-        serializable: true
+        }
     },
 
     _hasClickBarToScroll: {
@@ -126,8 +114,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             this._hasClickBarToScroll = !!value;
-        },
-        serializable: true
+        }
     },
 /**
         Description TODO
@@ -147,8 +134,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 this._valueRange = null;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _maxValue: {
@@ -173,8 +159,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 this._valueRange = null;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _valueRange: {
@@ -227,13 +212,11 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                     this.needsDraw = true;
                 }
             }
-        },
-        serializable: true
+        }
     },
 
     step: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _pressed: {

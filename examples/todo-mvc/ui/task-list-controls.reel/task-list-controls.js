@@ -49,8 +49,7 @@ exports.TaskListControls = Montage.create(Component, {
     },
 
     clearCompletedForm: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     handleSubmit: {

@@ -9,8 +9,7 @@ var Montage = require("montage/core/core").Montage,
 exports.CheckboxExample = Montage.create(Component, {
 
     data: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     jsonSelectedItems: {
@@ -36,7 +35,6 @@ exports.CheckboxExample = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 });
