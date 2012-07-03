@@ -4,14 +4,14 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
- .montage-confirm-dialog {
+ .montage-Confirm-dialog {
      min-width: 300px;
  }
- .montage-confirm-dialog .montage-confirm-content {
+ .montage-Confirm-dialog .montage-Confirm-content {
      font-size: 1.3em;
      padding: 15px;
  }
- .montage-confirm-dialog .montage-confirm-actions {
+ .montage-Confirm-dialog .montage-Confirm-actions {
      float: right;
  }
 

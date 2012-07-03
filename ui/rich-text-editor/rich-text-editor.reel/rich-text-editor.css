@@ -4,14 +4,14 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-editor-container {
+.montage-Editor-container {
     position: relative;
     overflow: auto;
     height: 100%;
     width: 100%;
 }
 
-.montage-editor {
+.montage-Editor {
     position: relative;
     height: inherit;
     outline:  none;
@@ -26,6 +26,6 @@
 /*
  Overlay
 */
-.montage-editor-overlay {
+.montage-Editor-overlay {
     z-index: 50;
 }

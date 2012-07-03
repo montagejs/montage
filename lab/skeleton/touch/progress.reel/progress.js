@@ -5,18 +5,18 @@
  </copyright> */
 /*global require,exports */
 var Montage = require("montage").Montage,
-    Component = require("ui/component").Component;    
+    Component = require("ui/component").Component;
 
 /**
  * Progress
  */
 var Progress = exports.Progress = Montage.create(Component, {
-    
+
     draw: {
         value: function() {
             // Just for now
-            this._element.querySelector(".montage-progress-bar").style["width"] = "50%";
+            this._element.querySelector(".montage-Progress-bar").style["width"] = "50%";
         }
     }
-    
+
 });

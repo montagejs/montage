@@ -3,13 +3,13 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
-.montage-checkbox {
+.montage-Checkbox {
     display: inline-block;
     width: 53px;
     height: 53px;
 }
 
-.montage-checkbox .background {
+.montage-Checkbox .background {
     display: block;
     position: absolute;
     width: 53px;
@@ -20,7 +20,7 @@
     -webkit-transform: scale3d(.5283, .5283, 1);
 }
 
-.montage-checkbox .button {
+.montage-Checkbox .button {
     display: block;
     position: absolute;
     width: 49px;
@@ -30,7 +30,7 @@
     -webkit-transform: translate3d(2px, 2px, 0) scale3d(.5283, .5283, 1);
 }
 
-.montage-checkbox .checkmark {
+.montage-Checkbox .checkmark {
     display: block;
     position: absolute;
     width: 63px;
@@ -42,16 +42,16 @@
     opacity: 0;
 }
 
-.montage-checkbox.active .background,  .montage-checkbox.active .button, .montage-checkbox.active .checkmark{
+.montage-Checkbox.active .background,  .montage-Checkbox.active .button, .montage-Checkbox.active .checkmark{
     -webkit-transition-duration: 150ms;
     -webkit-transition-property: all;
 }
 
-.montage-checkbox .checkmark{
+.montage-Checkbox .checkmark{
 	-webkit-transition-duration: 360ms;
 }
 
-.montage-checkbox input[type=checkbox] {
+.montage-Checkbox input[type=checkbox] {
     -webkit-appearance: none;
     -webkit-tap-highlight-color: transparent;
     display: inline-block;
@@ -65,34 +65,34 @@
     background: transparent;
 }
 
-.montage-checkbox.active .background,
-.montage-checkbox.active .button,
-.montage-checkbox.active .checkmark {
+.montage-Checkbox.active .background,
+.montage-Checkbox.active .button,
+.montage-Checkbox.active .checkmark {
     -webkit-transform: scale3d(1, 1, 1);
 }
 
-.montage-checkbox.active .button {
+.montage-Checkbox.active .button {
     opacity: 0;
 }
 
-.montage-checkbox.checked .checkmark {
+.montage-Checkbox.checked .checkmark {
     opacity: 1;
 }
 
-.montage-checkbox.dark .checkmark {
+.montage-Checkbox.dark .checkmark {
     background-image: url(checkmark-dark.svg);
 }
 
-.montage-checkbox.dark .button {
+.montage-Checkbox.dark .button {
     background: -webkit-gradient(linear, left top, left bottom, from(#757575), to(#5c5c5c));
 }
 
-.montage-checkbox.dark .background {
+.montage-Checkbox.dark .background {
     background: #404040;
     -webkit-box-shadow: inset 0 1px 2px #333, 0 2px 2px rgba(255,255,255,.2), 0 -2px 2px rgba(0,0,0,.1);
 }
 
-.montage-checkbox.disabled .background {
+.montage-Checkbox.disabled .background {
     margin: 12px 0 0 13px;
     width: 26px;
     height: 26px;
@@ -103,14 +103,14 @@
     opacity: .26;
 }
 
-.montage-checkbox.disabled .button {
+.montage-Checkbox.disabled .button {
     display: none;
 }
 
-.montage-checkbox.disabled .checkmark {
+.montage-Checkbox.disabled .checkmark {
     background-image: url(checkmark-light-disabled.svg);
 }
 
-.montage-checkbox.dark.disabled .checkmark {
+.montage-Checkbox.dark.disabled .checkmark {
     background-image: url(checkmark-dark-disabled.svg);
 }

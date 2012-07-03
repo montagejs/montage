@@ -319,7 +319,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
     _createModalMask: {
         value: function() {
             var el = document.createElement('div');
-            el.classList.add('montage-popup-modal-mask');
+            el.classList.add('montage-Popup-modal-mask');
             el.style.zIndex = 6999;
             el.classList.add('montage-invisible');
 
@@ -396,7 +396,7 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
 
     _showModalMask: {
         value: function() {
-            this._modalDialogMask = document.querySelector('.montage-popup-modal-mask');
+            this._modalDialogMask = document.querySelector('.montage-Popup-modal-mask');
             this._modalDialogMask = this._modalDialogMask || this._createModalMask();
             this._modalDialogMask.classList.remove('montage-invisible');
         }
@@ -429,9 +429,9 @@ var Popup = exports.Popup = Montage.create(Component, { /** @lends module:"modul
             if (this.displayed) {
 
                 if(this.modal === true) {
-                    this.element.classList.add('montage-modal');
+                    this.element.classList.add('montage-Popup--modal');
                 } else {
-                    this.element.classList.remove('montage-modal');
+                    this.element.classList.remove('montage-Popup--modal');
 
                     if (this.autoHide) {
                         var self = this;

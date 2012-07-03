@@ -285,7 +285,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
         value: function() {
             NativeControl.didSetElement.call(this);
 
-            //this._element.classList.add("montage-button");
+            //this._element.classList.add("montage-Button");
             this._element.setAttribute("role", "button");
 
             this._isInputElement = (this._element.tagName === "INPUT");

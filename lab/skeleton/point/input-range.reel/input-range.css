@@ -3,8 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-inputRange {
+
+.montage-InputRange {
     position: relative;
     font-size: 12px;
     display: inline-block;
@@ -15,7 +15,7 @@
     background-color: #d9d9d9;
 }
 
-.montage-inputRange-thumb {
+.montage-InputRange-thumb {
     position: absolute;
     font-size: inherit;
     box-sizing: border-box;
@@ -31,12 +31,12 @@
 }
 
 /* States */
-.montage-inputRange-thumb:hover {
+.montage-InputRange-thumb:hover {
     background-color: #ffffff;
 }
-.montage-inputRange-thumb:active {
+.montage-InputRange-thumb:active {
     background-color: #e5e5e5;
 }
-.montage-inputRange-thumb:focus {
+.montage-InputRange-thumb:focus {
     border-color: #7f7f7f;
 }

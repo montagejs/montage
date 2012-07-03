@@ -4,21 +4,21 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-alert-dialog {
+.montage-Alert-dialog {
     min-width: 300px;
 }
-.montage-alert-dialog .montage-alert-content {
+.montage-Alert-dialog .montage-Alert-content {
     font-size: 1.3em;
     padding: 15px;
 
 }
-.montage-alert-dialog .montage-alert-actions {
+.montage-Alert-dialog .montage-Alert-actions {
     float: right;
 }
 
 /*
 
-.montage-alert-dialog {
+.montage-Alert-dialog {
     font-family: "AG Buch BQ Regular", "AG Buch BQ", Helvetica, Arial, sans-serif;
     background-color: #333;
     border: 1px solid #333;
@@ -27,40 +27,40 @@
     padding: 0px 3px;
 }
 
-.montage-alert-dialog .header {
+.montage-Alert-dialog .header {
     height: 25px;
     color: #fff;
 }
 
-.montage-alert-dialog .header h4 {
+.montage-Alert-dialog .header h4 {
     margin: 10px 0;
     font-weight: normal;
 }
 
-.montage-alert-dialog .content {
+.montage-Alert-dialog .content {
     text-align: center;
     margin: 5px 0;
     background-color: #e6e6e6;
     padding: 10px;
 }
 
-.montage-alert-dialog .msg-container {
+.montage-Alert-dialog .msg-container {
     padding: 10px 0;
     border-bottom: 1px solid #ccc;
 }
 
-.montage-alert-dialog .msg {
+.montage-Alert-dialog .msg {
     font-size: 18pt;
     font-weight: normal;
 }
 
-.montage-alert-dialog .msg-detail {
+.montage-Alert-dialog .msg-detail {
     font-size: 12pt;
     font-weight: normal;
     color: #cccccc;
 }
 
-.montage-alert-dialog .action-container {
+.montage-Alert-dialog .action-container {
     padding: 10px 0;
 }
 */

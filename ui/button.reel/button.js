@@ -26,7 +26,7 @@ exports.Button = Montage.create(NativeButton, /** @lends module:"montage/ui/nati
     didSetElement: {
         value: function() {
             NativeButton.didSetElement.call(this);
-            this['class'] = (this['class'] || '') + ' montage-button';
+            this['class'] = (this['class'] || '') + ' montage-Button';
         }
     }
 });

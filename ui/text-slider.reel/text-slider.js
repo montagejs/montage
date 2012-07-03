@@ -15,6 +15,8 @@ var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     PressComposer = require("ui/composer/press-composer").PressComposer;
 
+var EDITING_CLASS = "montage-TextSlider--editing";
+
 /**
     <p>Provides a way for users to quickly and easily manipulate numeric values.
     It takes the form of a numeric value with a dotted underline, optionally
@@ -324,13 +326,13 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
 
     draw: {
         value: function() {
-            var wasEditing = this._element.classList.contains("montage-text-slider-editing");
+            var wasEditing = this._element.classList.contains(EDITING_CLASS);
 
             if (this._isEditing) {
                 // if we're entering the editing state...
                 if (!wasEditing) {
                     // ...add the class and focus the input
-                    this._element.classList.add("montage-text-slider-editing");
+                    this._element.classList.add(EDITING_CLASS);
                     this._inputElement.focus();
                 }
 
@@ -338,7 +340,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
             } else if (wasEditing) {
                 // remove class list, blur the input element and focus the
                 // TextSlider for further editing
-                this._element.classList.remove("montage-text-slider-editing");
+                this._element.classList.remove(EDITING_CLASS);
                 this._inputElement.blur();
                 this._element.focus();
             }

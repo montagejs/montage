@@ -73,7 +73,7 @@ input {
     border-right:  1px solid hsl(0,0%,60%);
 }
 
-.PhotoPanel .PhotoList .montage-list-scroller {
+.PhotoPanel .PhotoList .montage-List .montage-Scroller {
     margin-top: 10px;
 }
 

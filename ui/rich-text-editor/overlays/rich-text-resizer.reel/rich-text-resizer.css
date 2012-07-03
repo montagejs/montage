@@ -4,16 +4,16 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-resizer {
+.montage-Resizer {
     display: inline-block;
 }
 
-.montage-resizer-container {
+.montage-Resizer-container {
     position: absolute;
     border: 1px solid black;
 }
 
-.montage-resizer-handle {
+.montage-Resizer-handle {
     position: absolute;
     width: 7px;
     height: 7px;
@@ -23,106 +23,106 @@
     background: white;
 }
 
-.montage-resizer-handle:hover {
+.montage-Resizer-handle:hover {
     width: 9px;
     height: 9px;
     -moz-border-radius: 5px;
     border-radius: 5px;
 }
 
-.montage-resizer-handle.n {
+.montage-Resizer-handle.n {
     top: -4px;
     left: 50%;
     margin-left: -4px;
     cursor: n-resize;
 }
 
-.montage-resizer-handle.n:hover {
+.montage-Resizer-handle.n:hover {
     top: -5px;
     margin-left: -5px;
 }
 
-.montage-resizer-handle.ne {
+.montage-Resizer-handle.ne {
     top: -4px;
     right: -4px;
     cursor: ne-resize;
 }
 
-.montage-resizer-handle.ne:hover {
+.montage-Resizer-handle.ne:hover {
     top: -5px;
     right: -5px;
 }
 
-.montage-resizer-handle.e {
+.montage-Resizer-handle.e {
     right: -4px;
     top: 50%;
     margin-top: -4px;
     cursor: e-resize;
 }
 
-.montage-resizer-handle.e:hover {
+.montage-Resizer-handle.e:hover {
     right: -5px;
     margin-top: -5px;
 }
 
-.montage-resizer-handle.se {
+.montage-Resizer-handle.se {
     bottom: -4px;
     right: -4px;
     cursor: se-resize;
 }
 
-.montage-resizer-handle.se:hover {
+.montage-Resizer-handle.se:hover {
     bottom: -5px;
     right: -5px;
 }
 
-.montage-resizer-handle.s {
+.montage-Resizer-handle.s {
     bottom: -4px;
     left: 50%;
     margin-left: -4px;
     cursor: s-resize;
 }
 
-.montage-resizer-handle.s:hover {
+.montage-Resizer-handle.s:hover {
     bottom: -5px;
     margin-left: -5px;
 }
 
-.montage-resizer-handle.sw {
+.montage-Resizer-handle.sw {
     bottom: -4px;
     left: -4px;
     cursor: sw-resize;
 }
 
-.montage-resizer-handle.sw:hover {
+.montage-Resizer-handle.sw:hover {
     bottom: -5px;
     left: -5px;
 }
 
-.montage-resizer-handle.w {
+.montage-Resizer-handle.w {
     left: -4px;
     top: 50%;
     margin-top: -4px;
     cursor: w-resize;
 }
 
-.montage-resizer-handle.w:hover {
+.montage-Resizer-handle.w:hover {
     left: -5px;
     margin-top: -5px;
 }
 
-.montage-resizer-handle.nw {
+.montage-Resizer-handle.nw {
     top: -4px;
     left: -4px;
     cursor: nw-resize;
 }
 
-.montage-resizer-handle.nw:hover {
+.montage-Resizer-handle.nw:hover {
     top: -5px;
     left: -5px;
 }
 
-.montage-resizer-image {
+.montage-Resizer-image {
     position: absolute;
     display: none;
     top: 0;
@@ -132,10 +132,10 @@
     opacity: 0.5;
 }
 
-.montage-editor-resizing .montage-resizer-image {
+.montage-Editor--resizing .montage-Resizer-image {
     display: block;
 }
 
-.montage-resizer-element::selection {
+.montage-Resizer-element::selection {
     background: rgba(0,0,0,0);
 }

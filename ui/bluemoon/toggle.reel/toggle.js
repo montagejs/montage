@@ -325,7 +325,7 @@ var Toggle = exports.Toggle = Montage.create(Component, /** @lends module:"monta
     prepareForDraw: {
         enumerable: false,
         value: function() {
-            this._element.classList.add("montage-toggle");
+            this._element.classList.add("montage-Toggle");
             this._toggle = document.createElement('div');
             this._scroll = document.createElement('div');
             this._circle = document.createElement('div');

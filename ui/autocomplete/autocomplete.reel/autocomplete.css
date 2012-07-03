@@ -3,10 +3,10 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- .montage-autocomplete {
+ .montage-Autocomplete {
      padding-right: 20px;
  }
- .montage-autocomplete-loading {
+ .montage-Autocomplete--loading {
      background: url('loading.gif') no-repeat;
      background-position: right;
  }

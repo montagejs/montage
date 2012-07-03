@@ -3,8 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-inputRadio {
+
+.montage-InputRadio {
     -webkit-appearance: none;
     -moz-appearance: none;
     outline: none;
@@ -18,18 +18,18 @@
     cursor: pointer;
 }
 
-.montage-inputRadio:hover {
+.montage-InputRadio:hover {
     background-color: #ffffff;
 }
 
-.montage-inputRadio:active {
+.montage-InputRadio:active {
     background-color: #e5e5e5;
 }
 
-.montage-inputRadio:focus {
+.montage-InputRadio:focus {
     border-color: #7f7f7f;
 }
 
-.montage-inputRadio:checked {
+.montage-InputRadio:checked {
     background: #f2f2f2 url(radio.png) no-repeat center center;
 }

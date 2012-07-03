@@ -4,7 +4,7 @@
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
 
-.montage-textarea {
+.montage-Textarea {
     width: 300px;
     height: 100px;
     line-height: 1em;
@@ -16,12 +16,12 @@
     font-size: 1.0em;
 }
 
-.montage-textarea:focus {
+.montage-Textarea:focus {
     background-color: hsl(0, 100%, 99%);
     border: 2px solid hsl(0, 0%, 40%);
 }
 
-.montage-text-invalid {
+.montage--invalid-text {
     border: 2px solid #E73525;
     border-style: dashed;
 }

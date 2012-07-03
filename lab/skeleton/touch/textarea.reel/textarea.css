@@ -3,8 +3,8 @@
  No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
  (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
  </copyright> */
- 
-.montage-textarea {
+
+.montage-Textarea {
     outline: none;
     box-sizing: border-box;
     font-size: 12px;
@@ -17,17 +17,17 @@
     background-color: #ffffff;
 }
 
-.montage-textarea:hover {
+.montage-Textarea:hover {
   border-color: #cccccc;
 }
 
-.montage-textarea:focus {
+.montage-Textarea:focus {
   border-color: #7f7f7f;
 }
 
 
 
 /* Style for Touch */
-.montage-textarea {
+.montage-Textarea {
   font-size: 14px;
 }
