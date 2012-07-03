@@ -89,6 +89,14 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(request.nativeAddEventListener).toNotBe(request.addEventListener);
             });
 
+            if (Worker) {
+                it("should have overridden the addEventListener for Worker", function() {
+                    var worker = testDocument.defaultView.Worker.prototype;
+                    expect(worker.nativeAddEventListener).toBeTruthy();
+                    expect(worker.nativeAddEventListener).toNotBe(worker.addEventListener);
+                });
+            }
+
             it("should have overridden the removeEventListener for window", function() {
                 var testWindow = testDocument.defaultView;
                 expect(testWindow.nativeRemoveEventListener).toBeTruthy();
@@ -111,6 +119,14 @@ var testPage = TestPageLoader.queueTest("eventmanagertest", function() {
                 expect(request.nativeRemoveEventListener).toBeTruthy();
                 expect(request.nativeRemoveEventListener).toNotBe(request.removeEventListener);
             });
+
+            if (Worker) {
+                it("should have overridden the addEventListener for Worker", function() {
+                    var worker = testDocument.defaultView.Worker.prototype;
+                    expect(worker.nativeRemoveEventListener).toBeTruthy();
+                    expect(worker.nativeRemoveEventListener).toNotBe(worker.removeEventListener);
+                });
+            }
         });
 
         describe("when adding event listeners", function() {
