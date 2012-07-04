@@ -9,8 +9,7 @@ var Montage = require("montage/core/core").Montage,
 exports.AnchorExample = Montage.create(Component, {
 
     data: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     images: {
@@ -28,8 +27,7 @@ exports.AnchorExample = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 
 });

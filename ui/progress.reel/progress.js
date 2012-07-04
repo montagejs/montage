@@ -25,7 +25,6 @@ exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/b
 */
     _barElement: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -34,7 +33,6 @@ exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/b
 */
     _value: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -43,7 +41,6 @@ exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/b
         @default {Number} 0
     */
     value: {
-        serializable: true,
         get: function() {
             return this._value;
         },
@@ -67,7 +64,6 @@ exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/b
 */
     _max: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -76,7 +72,6 @@ exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/b
         @default {Number} 100
     */
     max: {
-        serializable: true,
         get: function() {
             return this._max;
         },

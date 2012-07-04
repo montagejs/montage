@@ -9,18 +9,14 @@ var Montage = require("montage/core/core").Montage,
 exports.FauxFlow = Montage.create(List, {
 
     __repetition :{
-        serializable: true,
-        enumerable: false,
         value: null
     },
 
     objects: {
-        serializable: true,
         value: null
     },
 
     _repetition: {
-        serializable: true,
         get: function() {
             return this.__repetition;
         },
@@ -99,17 +95,14 @@ exports.FauxFlow = Montage.create(List, {
     },
 
     mode: {
-        serializable: true,
         value: "random"
     },
 
     _tileWidth: {
-        enumerable: false,
         value: null
     },
 
     _tileHeight: {
-        enumerable: false,
         value: null
     },
 

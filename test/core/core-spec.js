@@ -204,7 +204,26 @@ describe("core/core-spec", function() {
             beforeEach(function() {
                 A = {};
                 B = Montage.create(A);
-            })
+            });
+
+            describe("defaults", function() {
+                it("should be reference", function () {
+                    Montage.defineProperty(A, "foo", {value: null});
+                    expect(Montage.getPropertyAttribute(A, "foo", "serializable")).toBe("reference")
+                });
+                it("should be false if the property is not enumerable", function () {
+                    Montage.defineProperty(A, "foo", {value: null, enumerable: false});
+                    expect(Montage.getPropertyAttribute(A, "foo", "serializable")).toBe(false)
+                });
+                it("should be false if the property has a get but no set", function () {
+                    Montage.defineProperty(A, "foo", {get: function( ) {}});
+                    expect(Montage.getPropertyAttribute(A, "foo", "serializable")).toBe(false)
+                });
+                it("should be false if the property is not writable", function () {
+                    Montage.defineProperty(A, "foo", {value: null, writable: false});
+                    expect(Montage.getPropertyAttribute(A, "foo", "serializable")).toBe(false)
+                });
+            });
 
             it("should set a property as serializable", function() {
                 Montage.defineProperty(A, "foo", {serializable:true});
@@ -280,11 +299,11 @@ describe("core/core-spec", function() {
 
                 expect(attributes.foo).toBe(true);
                 expect(attributes.bar).toBe(false);
-                expect(attributes.baz).toBeUndefined();
+                expect(attributes.baz).toBe("reference");
 
                 expect(Montage.getPropertyAttribute(A, "foo", "serializable")).toBe(true);
                 expect(Montage.getPropertyAttribute(A, "bar", "serializable")).toBe(false);
-                expect(Montage.getPropertyAttribute(A, "baz", "serializable")).toBeUndefined();
+                expect(Montage.getPropertyAttribute(A, "baz", "serializable")).toBe("reference");
             });
 
             it("should return the defined attribute values", function() {

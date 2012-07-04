@@ -298,8 +298,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
             //TODO otherwise if no contentController should we disable selections?
 
-        },
-        serializable: true
+        }
     },
 /**
   Description TODO
@@ -350,8 +349,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             //if (this._isComponentExpanded) {
             //    this._refreshItems();
             //}
-        },
-        serializable: true
+        }
     },
 /**
   Description TODO
@@ -380,8 +378,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this._refreshSelectionTracking();
             }
-        },
-        serializable: true
+        }
     },
 /**
   Description TODO
@@ -397,7 +394,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 */
     _iterationChildComponentsCount: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -406,7 +402,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 */
     _expectedChildComponentsCount: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -442,8 +437,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             this._indexMapEnabled = value;
 
             this.refreshIndexMap();
-        },
-        serializable: true
+        }
     },
 
     _drawnIndexMap: {
@@ -786,7 +780,6 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
 
     _iterationTemplate: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 /**
@@ -972,8 +965,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
 /**
@@ -1001,8 +993,7 @@ var Repetition = exports.Repetition = Montage.create(Component, /** @lends modul
             if (this._isComponentExpanded) {
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _markIndexesDirty: {

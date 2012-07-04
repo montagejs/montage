@@ -22,21 +22,21 @@ KEY_DOWN = 40;
 */
 exports.TokenField = Montage.create(Component, /** @lends module:"montage/ui/token-field/token-field.reel".TokenField */ {
 
-    delegate: {value: null, serializable: true},
+    delegate: {value: null},
 
-    values: {value: null, serializable: true},
+    values: {value: null},
 
     /**
     * Path to a String within an Object that is representative of the Object
     */
-    textPropertyPath: {value: null, serializable: true},
+    textPropertyPath: {value: null},
 
     /**
     * Allow ad-hoc strings (strings that do not have corresponding represented object) to be entered.
     */
-    allowAdHocValues: {value: null, serializable: true},
+    allowAdHocValues: {value: null},
 
-    placeholder: {value: null, serializable: true},
+    placeholder: {value: null},
 
 
     // private
@@ -54,12 +54,11 @@ exports.TokenField = Montage.create(Component, /** @lends module:"montage/ui/tok
         }
     },
 
-    _tokensController: {value: null, serializable: true},
-    _tokenList: {value: null, serializable: true},
-    _autocomplete: {value: null, serializable: true},
+    _tokensController: {value: null},
+    _tokenList: {value: null},
+    _autocomplete: {value: null},
     __autocompleteValue: {value: null},
     _autocompleteValue: {
-        serializable: true,
         get: function() {
             return this.__autocompleteValue;
         },
@@ -70,7 +69,6 @@ exports.TokenField = Montage.create(Component, /** @lends module:"montage/ui/tok
 
     __suggestedValue: {value: null},
     _suggestedValue: {
-        serializable: true,
         get: function() {
             return this.__suggestedValue;
         },

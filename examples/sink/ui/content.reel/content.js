@@ -10,18 +10,15 @@ var Montage = require("montage/core/core").Montage,
 exports.Content = Montage.create(Component, {
     // the main component
     sandbox: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     contentDeck: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _selectedItem: {value: null},
     selectedItem: {
-        serializable: true,
         get: function() {
             return this._selectedItem;
         },

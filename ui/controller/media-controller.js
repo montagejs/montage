@@ -519,7 +519,6 @@ var MediaController = exports.MediaController = Montage.create(Montage, /** @len
   @private
 */
     _lastCurrentTime: {
-        writable: true,
         value: 0
     },
 /**

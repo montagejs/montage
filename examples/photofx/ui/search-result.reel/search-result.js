@@ -9,13 +9,11 @@ var Component = require("montage/ui/component").Component;
 exports.SearchResult = Montage.create(Component, {
 
     photoListController: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     result: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     resultAlreadyImported: {

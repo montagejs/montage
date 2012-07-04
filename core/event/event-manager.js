@@ -137,17 +137,14 @@ Montage.defineProperty(Object.prototype, "dispatchEventNamed", {
 
 var EventListenerDescriptor = Montage.create(Montage, {
     type: {
-        serializable: true,
         value: null
     },
 
     listener: {
-        serializable: "reference",
         value: null
     },
 
     capture: {
-        serializable: true,
         value: null
     }
 });

@@ -10,14 +10,12 @@ var Montage = require("montage/core/core").Montage,
 exports.SubstitutionExample = Montage.create(Component, {
 
     navEl: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     // the substitution
     content: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     prepareForDraw: {
@@ -28,7 +26,6 @@ exports.SubstitutionExample = Montage.create(Component, {
     },
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     }
 });

@@ -249,8 +249,6 @@ exports.Viewport = Montage.create(Component, {
     },
 
     _transformMatrix: {
-        serializable: true,
-        enumerable: false,
         value: [
             1, 0, 0, 0,
             0, 1, 0, 0,

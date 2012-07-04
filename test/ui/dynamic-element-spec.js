@@ -21,8 +21,12 @@ var testPage = TestPageLoader.queueTest("dynamic-element-test", function() {
                 it("can be created", function() {
                     expect(test.dynamicElement).toBeDefined();
                 });
-                it("wipes out it's content in initialization", function() {
-                    expect(testPage.getElementById("bar2")).toBeNull();
+                it("wipes out it's content in initialization if innerHTML is used", function() {
+                    test.dynamicElement.innerHTML = void 0;
+                    testPage.waitForDraw();
+                    runs(function() {
+                        expect(testPage.getElementById("bar2")).toBeNull();
+                    });
                 });
                 it("plain text value can be set", function() {
                     test.dynamicElement.innerHTML = "foo";

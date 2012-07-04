@@ -9,27 +9,22 @@ var Component = require("montage/ui/component").Component;
 exports.SearchPanel = Montage.create(Component, {
 
     photoListController: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     queryParameter: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     resultCount: {
-        value: 20,
-        serializable: true
+        value: 20
     },
     searchForm: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     searchResultsList: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     prepareForDraw: {
@@ -54,8 +49,7 @@ exports.SearchPanel = Montage.create(Component, {
 
             this._isSearching = value;
             this.needsDraw = true;
-        },
-        serializable: true
+        }
     },
 
     handleSearchFormSubmit: {
@@ -105,8 +99,7 @@ exports.SearchPanel = Montage.create(Component, {
     },
 
     searchResults: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     draw: {

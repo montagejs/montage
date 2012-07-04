@@ -12,7 +12,6 @@ var TextField = exports.TextField = Montage.create(Component, {
     hasTemplate: {value: true},
 
     text: {
-        serializable: true,
         set: function(value) {
             this._text = value;
             this.needsDraw = true;
@@ -23,7 +22,6 @@ var TextField = exports.TextField = Montage.create(Component, {
     },
 
     _text: {
-        enumerable: false,
         value: "default text"
     },
 

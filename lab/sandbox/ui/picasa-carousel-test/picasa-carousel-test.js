@@ -3,7 +3,6 @@ var Montage = require("montage").Montage;
 exports.PicasaCarouselTest = Montage.create(Montage, {
 
     picasa: {
-        serializable: true,
         value: null
     },
 

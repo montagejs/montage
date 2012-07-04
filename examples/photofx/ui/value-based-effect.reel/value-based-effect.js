@@ -10,24 +10,20 @@ var undoManager = require("montage/core/undo-manager").defaultUndoManager;
 exports.ValueBasedEffect = Montage.create(Component, {
 
     name: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     enabled: {
-        value: false,
-        serializable: true
+        value: false
     },
 
     defaultValue: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _value: {value: 0},
     value: {
-        value: 0,
-        serializable: true
+        value: 0
     },
 
     _originalSliderValue: {
@@ -74,18 +70,15 @@ exports.ValueBasedEffect = Montage.create(Component, {
 
             this.value = value;
 
-        },
-        serializable: true
+        }
     },
 
     minValue: {
-        value: 0,
-        serializable: true
+        value: 0
     },
 
     maxValue: {
-        value: 100,
-        serializable: true
+        value: 100
     },
 
     reset: {

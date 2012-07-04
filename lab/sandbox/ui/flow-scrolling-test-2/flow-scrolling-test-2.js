@@ -3,7 +3,6 @@ var Montage = require("montage").Montage;
 exports.FlowScrollingTest2 = Montage.create(Montage, {
 
     flow: {
-        serializable: true,
         value: null
     },
 

@@ -20,8 +20,7 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
       @private
     */
     _repetition: {
-        value: null,
-        serializable: true
+        value: null
     },
     /**
         Description TODO
@@ -29,22 +28,18 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
         @default null
     */
     delegate: {
-        serializable: true,
         value: null
     },
 
     objects: {
-        serializable: true,
         value: null
     },
 
     contentController: {
-        serializable: true,
         value: null
     },
 
     axis: {
-        serializable: true,
         value: null
     },
 
@@ -53,7 +48,6 @@ var List = exports.List = Montage.create(Component,/** @lends module:"montage/ui
   @private
 */
     isSelectionEnabled: {
-        serializable: true,
         value: null
     },
 

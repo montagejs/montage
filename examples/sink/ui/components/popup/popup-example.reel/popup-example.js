@@ -8,38 +8,30 @@ Notifier = require("montage/ui/popup/notifier.reel").Notifier;
 exports.PopupExample = Montage.create(Component, {
 
     logger: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     criticalError: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     btnCriticalError: {
-        value: null,
-        serializable: true
-    },
+        value: null
 
     bookmarkMenu: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     bookmarkMenu2: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     actionSheet: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     btnBookmark: {
-        value: null,
-        serializable: true
+        value: null
     },
 
 
