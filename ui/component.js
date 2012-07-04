@@ -641,6 +641,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     clonesChildComponents: {
+        writable: false,
         value: false
     },
 
