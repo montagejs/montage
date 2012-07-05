@@ -1,0 +1,15 @@
+{
+    "hello": "Hei",
+    "num_albums": {
+        "message": "{albums, plural, one {1 fotoalbum} other {# fotoalbuma}}",
+        "description": "how many photo albums the user has"
+    },
+    "welcome": {
+        "message": "Velkommen til nettstedet, {name}",
+        "description": "Message when the user signs in",
+        "variable_examples": {
+            "name": "Joe Bloggs"
+        }
+    },
+    "photo_deleted": "{photo_name} ble slettet"
+}

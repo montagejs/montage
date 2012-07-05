@@ -48,7 +48,10 @@
                         "listener": {"@": "addPhotoListener"},
                         "capture": false
                     }
-                ]
+                ],
+                "localizations": {
+                    "label": {"_": "add_photo"}
+                }
             },
 
             "actionSwitchValueConverter": {
@@ -66,6 +69,16 @@
                 },
                 "bindings": {
                     "switchValue": {"<-": "@owner.resultAlreadyImported", "converter": {"@": "actionSwitchValueConverter"}}
+                }
+            },
+
+            "alreadyAddedNotice": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "alreadyAddedNotice"}
+                },
+                "localizations": {
+                    "value": {"_": "already_added"}
                 }
             }
 

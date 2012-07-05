@@ -1,0 +1,28 @@
+{
+    "montage_manifest_version": 1,
+    "files": {
+        "locale": {
+            "directory": true,
+            "files": {
+                "en": {
+                    "directory": true,
+                    "files": {
+                        "messages.json": null
+                    }
+                },
+                "no-x-compiled": {
+                    "directory": true,
+                    "files": {
+                        "messages.js": null
+                    }
+                },
+                "no": {
+                    "directory": true,
+                    "files": {
+                        "messages.json": null
+                    }
+                }
+            }
+        }
+    }
+}

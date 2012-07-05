@@ -38,6 +38,8 @@ if (spec) {
 
         "core/core-require-spec",
         "core/core-spec",
+        "core/localizer-spec",
+        "core/localizer/serialization-spec",
         "core/promise-spec",
         "core/promise-queue-spec",
         "core/promise-connection-spec",
