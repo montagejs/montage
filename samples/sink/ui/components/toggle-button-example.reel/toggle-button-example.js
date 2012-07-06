@@ -40,6 +40,7 @@ exports.ToggleButtonExample = Montage.create(Component, {
 
     display: {
         value: null
+    },
 
     logger: {
         value: null

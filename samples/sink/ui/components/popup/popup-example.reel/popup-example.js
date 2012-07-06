@@ -46,6 +46,7 @@ exports.PopupExample = Montage.create(Component, {
 
     btnCriticalError: {
         value: null
+    },
 
     bookmarkMenu: {
         value: null

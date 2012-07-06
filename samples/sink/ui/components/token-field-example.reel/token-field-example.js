@@ -40,7 +40,7 @@ var states = [
     {name: "California", code: "CA"},
     {name: "Colorado", code: "CO"},
     {name: "Connecticut", code: "CT"},
-    {name: "Delaware", code: "DE"}, 
+    {name: "Delaware", code: "DE"},
     {name: "District Of Columbia", code: "DC"},
     {name: "Florida", code: "FL"},
     {name: "Georgia", code: "GA"},
@@ -133,7 +133,7 @@ exports.TokenFieldExample = Montage.create(Component, {
     json: {value: null},
     states: {value: null},
     members: {value: null},
-    tags: {value: null,
+    tags: {value: null},
     info: {value: null},
 
     logger: {
