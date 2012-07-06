@@ -82,7 +82,7 @@ MIT Licensed
 GL Util and Matrix
 ==================
 
-At samples/photobooth/
+At samples/paparazzi/
 
 https://github.com/toji/gl-matrix/blob/master/LICENSE.md
 
