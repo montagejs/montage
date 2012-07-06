@@ -1,5 +1,5 @@
 {
-    "name": "montage-optimizer",
+    "name": "mop",
     "version": "0.0.0",
     "title": "Montage Optimizer",
     "main": "optimize.js",
@@ -18,6 +18,5 @@
     "bin": {
         "mop": "optimize.js"
     },
-    "preferGlobal": true,
-    "private": true
+    "preferGlobal": true
 }
