@@ -97,6 +97,52 @@ var testPage = TestPageLoader.queueTest("template", function() {
             });
         });
 
+        it("should find non-direct children of non-clonesChildComponents' components", function() {
+            var owner = Component.create(),
+                htmlDocument = document.implementation.createHTMLDocument(""),
+                script = htmlDocument.createElement("script"),
+                latch;
+
+            htmlDocument.body.innerHTML = '<div id="myDiv" data-montage-id="myDiv"><div id="nonCloningComponent" data-montage-id="nonCloningComponent"><div id="comp" data-montage-id="comp"></div></div></div>';
+
+            owner.element = htmlDocument.getElementById("myDiv");
+            script.setAttribute("type", Template._SCRIPT_TYPE);
+            script.textContent = JSON.stringify({
+              "owner":{
+                "prototype":"montage/ui/component",
+                "properties":{
+                  "element":{"#":"myDiv"}}},
+
+              "nonCloningComponent":{
+                "prototype":"montage/ui/component",
+                "properties":{
+                  "hasTemplate": false,
+                  "element":{"#":"nonCloningComponent"}}},
+
+              "comp":{
+                "prototype":"montage/ui/component",
+                "properties": {
+                    "element":{"#":"comp"}
+                }
+              }
+            }, null, 2);
+
+            htmlDocument.head.appendChild(script);
+
+            var template = Template.create().initWithDocument(htmlDocument);
+
+            owner.templateObjects = {};
+            template.instantiateWithComponent(owner, function() {
+                latch = true;
+            });
+
+            waitsFor(function() { return latch; });
+            runs(function() {
+                expect(Object.keys(owner.templateObjects).length).toBe(2);
+                expect(owner.templateObjects.comp.identifier).toBe("comp");
+            });
+        });
+
         describe("instantiation delegates", function() {
             it("should call templateDidLoad function on the root object", function() {
                 var component = objects.Comp.create();
