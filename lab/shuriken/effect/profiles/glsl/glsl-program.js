@@ -1,3 +1,33 @@
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+
 //TODO: save/restore currentProgram before using GL.useProgram(this.program);
 //TODO: Delete shader if compile failed
 //TODO: Delete program if LINK failed
@@ -20,7 +50,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _shaders:
     {
         enumerable: false,
-        value: []
+        value: null
     },
     
     shaders: {
@@ -36,7 +66,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _errorLogs:
     {
         enumerable: false,
-        value: []
+        value: null
     },
     
     errorLogs: {
@@ -52,7 +82,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _pendingCommits:
     {
         enumerable: false,
-        value: []
+        value: null
     },
     
     pendingCommits: {
@@ -68,7 +98,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _symbolToLocation:
     {
         enumerable: false,
-        value: {}
+        value: null
     },
     
     symbolToLocation: {
@@ -84,7 +114,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _symbolToActiveInfo:
     {
         enumerable: false,
-        value: {}
+        value: null
     },
     
     symbolToActiveInfo: {
@@ -99,7 +129,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     
     _semanticToSymbol: {
         enumerable: false,
-        value: {}
+        value: null
     },
     
     semanticToSymbol: {
@@ -114,7 +144,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
 
     _symbolToSemantic: {
         enumerable: false,
-        value: {}
+        value: null
     },
     
     symbolToSemantic: {
@@ -130,7 +160,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _symbolToValue:
     {
         enumerable: false,
-        value: {}
+        value: null
     },
     
     symbolToValue: {
@@ -146,7 +176,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _uniformSymbols:
     {
         enumerable: false,
-        value: []
+        value: null
     },
     
     uniformSymbols: {
@@ -162,7 +192,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _attributeSymbols:
     {
         enumerable: false,
-        value: []
+        value: null
     },
     
     attributeSymbols: {
@@ -375,14 +405,6 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
             GL.linkProgram(this.GLProgram);
             if (GL.getProgramParameter(this.GLProgram, GL.LINK_STATUS)) {
                 
-                this.pendingCommits = [];		
-                this.symbolToActiveInfo = {};
-                this.symbolToValue = {};
-                this.uniformSymbols = [];
-                this.attributeSymbols = [];
-                this.symbolToSemantic = {};
-                this.semnaticToSymbol = {};
-                
                 GL.useProgram(this.GLProgram);
                 
                 var uniformsCount = GL.getProgramParameter(this.GLProgram,GL.ACTIVE_UNIFORMS);
@@ -413,14 +435,29 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         }
     },
 
+    _commonInit: {
+        value: function() {
+            this.pendingCommits = [];       
+            this.symbolToActiveInfo = {};
+            this.symbolToValue = {};
+            this.symbolToLocation = {};
+            this.uniformSymbols = [];
+            this.attributeSymbols = [];
+            this.symbolToSemantic = {};
+            this.semanticToSymbol = {};                
+        }
+    },
+
 	initWithShaders: {
-        value: function(shaders) {   
+        value: function(shaders) { 
+            this._commonInit();  
             this.shaders = shaders;
         }
     },
 
     initWithProgram: {
         value: function(program) {
+            this._commonInit();  
             this.shaders = program.shaders;
             this.semanticToSymbol = program.semanticToSymbol;
             this.symbolToSemantic = program.symbolToSemantic;
