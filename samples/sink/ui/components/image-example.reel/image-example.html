@@ -1,0 +1,288 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Image Example</title>
+    <script type="text/montage-serialization">{
+
+    "mainImage": {
+        "prototype": "montage/ui/image.reel",
+        "properties": {
+            "element": {"#": "img-main"}
+        },
+        "bindings": {
+            "src": {"<-": "@images.selectedObjects.0.src"},
+            "title": {"<-": "@images.selectedObjects.0.description"},
+            "alt": {"<-": "@images.selectedObjects.0.description"}
+        }
+    },
+
+    "moreLink": {
+        "prototype": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "moreLink"}
+        },
+        "bindings": {
+            "href": {"<-": "@images.selectedObjects.0.href"},
+            "textContent": {"<-": "@images.selectedObjects.0.href"}
+        }
+    },
+
+
+    "images": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"<-": "@owner.images"}
+        }
+    },
+
+    "list1": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "thumbs-list"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "images"},
+            "axis": "horizontal"
+        }
+    },
+
+    "thumb": {
+        "prototype": "montage/ui/image.reel",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {"<-": "@list1.objectAtCurrentIteration.src"}
+        }
+    },
+
+    "imageAccordion": {
+        "prototype": "ui/accordion.reel",
+        "properties": {
+            "element": {"#": "image-accordion1"}
+        }
+    },
+
+    "owner": {
+        "prototype": "ui/components/image-example.reel",
+        "properties": {
+            "element": {"#": "example-root"},
+            "images": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        }
+    }
+
+    }</script>
+
+    <style>
+        .thumb {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #fff;
+        }
+        .thumbs-list .selected {
+            border: 5px solid #FE4365;
+        }
+        .img-main {
+            max-height: 350px;
+            min-height: 350px;
+        }
+    </style>
+
+
+</head>
+<body>
+    <div data-montage-id="example-root">
+        <div class="row">
+            <div class="span12">
+                <h3>Image</h3>
+                <p>
+                    The Image component wraps an &lt;img> element and exposes a <code>src</code> property to set the image's URL source.
+                    </p>
+            </div>
+        </div>
+
+        <h4>Demo</h4>
+
+            <div class="row">
+                <div class="span12">
+
+                    <div class="demo">
+                        <img data-montage-id="img-main" class="img-main"/>
+                        <div><a target="_blank" data-montage-id="moreLink">Click to learn more</a></div>
+
+                        <p>Select an image from the list:</p>
+                        <div class="row">
+                        <div class="span12">
+                            <div data-montage-id="thumbs-list" class="thumbs-list">
+                                <img data-montage-id="thumb" class="thumb" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+            <section>
+                <ul data-montage-id="image-accordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;img data-montage-id="img-main" class="img-main"/&gt;
+&lt;div&gt;&lt;a target="_blank" data-montage-id="moreLink"&gt;Click to learn more&lt;/a&gt;&lt;/div&gt;
+
+&lt;p&gt;Select an image from the list:&lt;/p&gt;
+&lt;div class="row"&gt;
+&lt;div class="span12"&gt;
+    &lt;div data-montage-id="thumbs-list" class="thumbs-list"&gt;
+        &lt;img data-montage-id="thumb" class="thumb" /&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "mainImage": {
+        "prototype": "montage/ui/image.reel",
+        "properties": {
+            "element": {"#": "img-main"}
+        },
+        "bindings": {
+            "src": {"&lt;-": "@images.selectedObjects.0.src"},
+            "title": {"&lt;-": "@images.selectedObjects.0.description"},
+            "alt": {"&lt;-": "@images.selectedObjects.0.description"}
+        }
+    },
+
+    "moreLink": {
+        "prototype": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "moreLink"}
+        },
+        "bindings": {
+            "href": {"&lt;-": "@images.selectedObjects.0.href"}
+        }
+    },
+
+
+    "images": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"&lt;-": "@owner.images"}
+        }
+    },
+
+    "list1": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "thumbs-list"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "images"},
+            "axis": "horizontal"
+        }
+    },
+
+    "thumb": {
+        "prototype": "montage/ui/image.reel",
+        "properties": {
+            "element": {"#": "thumb"}
+        },
+        "bindings": {
+            "src": {"&lt;-": "@list1.objectAtCurrentIteration.src"}
+        }
+    }
+
+    "owner": {
+        "prototype": "ui/components/image-example.reel",
+        "properties": {
+            "element": {"#": "example-root"},
+            "images": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        }
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+.thumb {
+    width: 48px;
+    height: 48px;
+    border: 5px solid #fff;
+}
+.thumbs-list .selected {
+    border: 5px solid #FE4365;
+}
+.img-main {
+    max-height: 350px;
+    min-height: 350px;
+}
+                        </pre>
+                    </div>
+                </ul>
+
+            </section>
+        <section>
+            <a target="_blank" href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/image-example.reel" title="View source on GitHub">View source on GitHub</a>
+        </section>
+    </div>
+
+</body>
+</html>

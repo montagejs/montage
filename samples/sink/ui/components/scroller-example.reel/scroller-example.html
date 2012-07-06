@@ -1,0 +1,220 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">{
+
+
+            "owner": {
+                "properties": {
+                    "element": {"#": "scrollview-example"}
+                }
+            },
+
+            "scroller": {
+                "prototype": "montage/ui/scroller.reel",
+                "properties": {
+                    "element": {"#": "scroller"},
+                    "axis": "vertical"
+                },
+                "bindings": {
+                    "hasMomentum": {"<->": "@toggleMomentum.checked"}
+                }
+            },
+
+            "toggleMomentum": {
+                "prototype": "montage/ui/input-checkbox.reel",
+                "properties": {
+                    "element": {"#": "toggleMomentum"},
+                    "checked": true
+                }
+            },
+            "scrollerAccordion1": {
+                "prototype": "ui/accordion.reel",
+                "properties": {
+                    "element": {"#": "scrollerAccordion1"}
+                }
+            }
+
+    }</script>
+
+        <style>
+            .scrollpanel {
+                height: 400px;
+                margin: 10px 4px;
+                border: 1px solid #ddd;
+                -webkit-user-select: none;
+                -moz-user-select: none;
+            }
+        </style>
+    </head>
+    <body>
+        <div data-montage-id="scrollview-example" class="scrollview-example">
+            <div class="row">
+                <div class="span12">
+                    <h3>Scroller</h3>
+                    <p>
+                        The Scroller component provides vertical and horizontal scrolling of fixed height elements. It supports momentum behavior that you can control or disable.
+                    </p>
+<!--                     <p>
+                        <a href="" target="_blank">View Documentation</a>
+                    </p>
+ -->                </div>
+            </div>
+
+            <h4>Example</h4>
+                <p>In the following example</p>
+            <div class="demo">
+                    <div>
+                        <label for="cb1"><input type="checkbox" data-montage-id="toggleMomentum" data-montage-id="cb1" /> Toggle momenutum </label>
+                    </div>
+
+                    <div data-montage-id="scroller" class="scrollpanel" >
+                        <p><b>A large paragraph</b>
+
+                        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                        quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                        consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                        cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                        proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+
+                        <img src="images/IMG_3.jpg" alt="The Universe">
+
+                        <p>Another large paragraph...
+                            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+                            tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+                            quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+                            consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+                            cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+                            proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                        </p>
+                    </div>
+            </div>
+
+            <section>
+
+                <ul data-montage-id="scrollerAccordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;label for="cb1"&gt;Toggle momenutum&lt;input type="checkbox" data-montage-id="toggleMomentum" data-montage-id="cb1" /&gt;&lt;/label&gt;
+
+&lt;div data-montage-id="scroller" style="height: 400px; width: 500px; margin: auto; -webkit-user-select: none; -moz-user-select: none "&gt;
+    &lt;p&gt;&lt;b&gt;A large paragraph&lt;/b&gt; Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod
+    tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
+    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo
+    consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse
+    cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non
+    proident, sunt in culpa qui officia deserunt mollit anim id est laborum.&lt;/p&gt;
+    &lt;img src="components/scroller-example.reel/flowers.jpg" alt="The Universe"&gt;
+    &lt;p&gt;Another large paragraph...&lt;/p&gt;
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+
+    "owner": {
+        "prototype": "ui/components/scroller-example.reel",
+        "properties": {
+            "element": {"#": "scrollview-example"}
+        }
+    },
+
+    "scroller": {
+        "prototype": "montage/ui/scroller.reel",
+        "properties": {
+            "element": {"#": "scroller"}
+        },
+        "bindings": {
+            "hasMomentum": {"&lt;&lt;-&gt;": "@toggleMomentum.checked"}
+        }
+    },
+
+    "toggleMomentum": {
+        "prototype": "montage/ui/input-checkbox.reel",
+        "properties": {
+            "element": {"#": "toggleMomentum"},
+            "checked": true
+        }
+    }
+}
+
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+.scrollpanel {
+    height: 400px;
+    margin: 10px 4px;
+    border: 1px solid #ddd;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+}
+
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+
+            </section>
+
+
+        </div>
+    </body>
+</html>

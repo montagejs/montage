@@ -1,0 +1,847 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Popups</title>
+    <script type="text/montage-serialization">
+{
+
+    "button2": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-bookmark-menu"},
+            "identifier": "showBookmarkMenu"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button3": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-critical-error"},
+            "identifier": "showCriticalError"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button4": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-alert"},
+            "identifier": "showAlert"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button5": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-confirm"},
+            "identifier": "showConfirm"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button7": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-loading"},
+            "identifier": "showLoading"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button8": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-growl"},
+            "identifier": "showNotifier"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    "criticalerrordialog1": {
+        "prototype": "ui/components/popup/critical-error-dialog.reel",
+        "properties": {
+            "details": "Your device has encountered a fatal error and could recover. Restart the device."
+        }
+    },
+    "menubookmark1": {
+        "prototype": "ui/components/popup/menu-bookmark.reel",
+        "properties": {
+            "label": "The New York Times"
+        }
+    },
+    "menubookmark2": {
+        "prototype": "ui/components/popup/menu-bookmark.reel",
+        "properties": {
+            "label": "The LA Times"
+        }
+    },
+    "actionsheet1": {
+        "prototype": "ui/components/popup/action-sheet.reel",
+        "properties": {
+        }
+    },
+
+    "logger": {
+        "prototype": "ui/logger.reel",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    },
+
+    "popupAccordion1": {
+           "prototype": "ui/accordion.reel",
+           "properties": {
+               "element": {"#": "popupAccordion1"}
+           }
+       },
+
+       "menuPosition": {
+           "prototype": "montage/ui/select.reel",
+           "properties": {
+               "element": {"#": "menu-position"}
+           },
+           "bindings": {
+               "value": {"<->": "@owner.menuPosition"}
+           }
+       },
+
+    "owner": {
+        "prototype": "ui/components/popup/popup-example.reel",
+        "properties": {
+            "element": {"#": "popup-example-root"},
+            "criticalError": {"@": "criticalerrordialog1"},
+            "btnCriticalError": {"#": "action-show-critical-error"},
+            "bookmarkMenu": {"@": "menubookmark1"},
+            "bookmarkMenu2": {"@": "menubookmark2"},
+            "actionSheet": {"@": "actionsheet1"},
+            "btnBookmark": {"#": "action-show-bookmark-menu"},
+            "logger": {"@": "logger"}
+        }
+    }
+}
+    </script>
+
+    <style type="text/css">
+        #custom-alert-dialog {
+            width: 400px;
+            height: 500px;
+        }
+
+        .popup-example-root section {
+            margin: 0 0 20px 0;
+        }
+
+        .popups .menu {
+            background: hsl(0,0%,85%);
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0;
+        }
+
+        .popups .menu-item {
+            width: 20px;
+            height: 20px;
+            padding: 10px;
+            margin: 10px 10px 0 0;
+            border-radius: 4px;
+            background-color: hsl(0,0%,95%);
+            border: 1px solid hsl(0,0%,70%);
+            cursor: pointer;
+        }
+
+        .popups .menu-item:hover {
+            background-color: hsl(0,0%,98%);
+        }
+
+        .popups .menu-item:active {
+            background-color: hsl(0,0%,90%);
+        }
+    </style>
+
+
+</head>
+<body>
+
+    <div data-montage-id="popup-example-root" class="popup-example-root">
+
+        <div class="row">
+            <div class="span12">
+                <h3>Popup</h3>
+                <p>
+                    Montage provides a number of components for displaying pop-ups, notifiers and alerts.
+                    </p>
+            </div>
+        </div>
+
+        <h4>Demo</h4>
+
+        <div class="demo popups">
+
+            <h5>System Popups</h5>
+            <section>
+                <button class="btn large" data-montage-id="action-show-alert">Show Alert</button>
+                <button class="btn large" data-montage-id="action-show-confirm">Confirm before Delete</button>
+            </section>
+            <section>
+                <button class="btn large" data-montage-id="action-show-loading">Show Loading</button>
+                <button class="btn large" data-montage-id="action-show-growl">Show Notification</button>
+            </section>
+
+            <h5>Custom Popups</h5>
+            <section>
+                <p>Show a Custom popup anchored to the button.</p>
+                <button class="btn large" data-montage-id="action-show-bookmark-menu">Show Menu</button>
+                Select Menu position:
+                <select data-montage-id="menu-position" class="menu-position">
+                        <option value="">Default</option>
+                        <option value="left">Left of Anchor</option>
+                        <option value="right">Right of Anchor</option>
+                        <option value="top">Top of Anchor</option>
+                        <option value="bottom">Bottom of Anchor</option>
+                        <option value="topright">Absolute: Top Right</option>
+                        <option value="bottomleft">Absolute: Bottom Left</option>
+                        <option value="topcenter">Absolute: Top Center</option>
+                        <option value="bottomcenter">Absolute: Bottom Center</option>
+                        <option value="center">Absolute: Center of Page</option>
+
+                </select>
+
+            </section>
+            <section>
+                <p>Show a Modal popup anchored to the button</p>
+                <button class="btn large" data-montage-id="action-show-critical-error">Show Critical Error</button>
+
+            </section>
+
+            <section>
+                <div class="menu">
+                    <img src="images/19-gear.png" class="menu-item action-show-settings-menu" />
+                    <img src="images/09-chat-2.png" class="menu-item action-show-action-sheet" />
+                </div>
+            </section>
+        </div>
+
+        <section>
+            <ul data-montage-id="popupAccordion1" class="accordion">
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                   <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;h5&gt;System Popups&lt;/h5&gt;
+&lt;section&gt;
+    &lt;button class="btn large" data-montage-id="action-show-alert"&gt;Show Alert&lt;/button&gt;
+    &lt;button class="btn large" data-montage-id="action-show-confirm"&gt;Confirm before Delete&lt;/button&gt;
+&lt;/section&gt;
+&lt;section&gt;
+    &lt;button class="btn large" data-montage-id="action-show-loading"&gt;Show Loading&lt;/button&gt;
+    &lt;button class="btn large" data-montage-id="action-show-growl"&gt;Show Notification&lt;/button&gt;
+&lt;/section&gt;
+
+&lt;h5&gt;Custom Popups&lt;/h5&gt;
+&lt;section&gt;
+    &lt;p&gt;Show a Custom popup anchored to the button.&lt;/p&gt;
+    &lt;button class="btn large" data-montage-id="action-show-bookmark-menu"&gt;Show Menu (non-modal)&lt;/button&gt;
+
+&lt;/section&gt;
+&lt;section&gt;
+    &lt;p&gt;Show a Modal popup anchored to the button&lt;/p&gt;
+    &lt;button class="btn large" data-montage-id="action-show-critical-error"&gt;Show Critical Error&lt;/button&gt;
+
+&lt;/section&gt;
+
+&lt;section&gt;
+    &lt;div class="menu"&gt;
+        &lt;img src="images/19-gear.png" class="menu-item action-show-settings-menu" /&gt;
+        &lt;img src="images/09-chat-2.png" class="menu-item action-show-action-sheet" /&gt;
+    &lt;/div&gt;
+&lt;/section&gt;
+                        </pre>
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                   <div class="accordion-inner montage-hidden">
+                    <pre class="prettyprint" >
+{
+    "owner": {
+        "prototype": "ui/components/popup/popup-example.reel",
+        "properties": {
+            "element": {"#": "popup-example-root"},
+            "criticalError": {"@": "criticalerrordialog1"},
+            "btnCriticalError": {"#": "action-show-critical-error"},
+            "bookmarkMenu": {"@": "menubookmark1"},
+            "bookmarkMenu2": {"@": "menubookmark2"},
+            "actionSheet": {"@": "actionsheet1"},
+            "btnBookmark": {"#": "action-show-bookmark-menu"},
+            "logger": {"@": "logger"}
+        }
+    },
+
+    "button2": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-bookmark-menu"},
+            "identifier": "showBookmarkMenu"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button3": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-critical-error"},
+            "identifier": "showCriticalError"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button4": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-alert"},
+            "identifier": "showAlert"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button5": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-confirm"},
+            "identifier": "showConfirm"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button7": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-loading"},
+            "identifier": "showLoading"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+    "button8": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "action-show-growl"},
+            "identifier": "showNotifier"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    "criticalerrordialog1": {
+        "prototype": "ui/components/popup/critical-error-dialog.reel",
+        "properties": {
+            "details": "Your device has encountered a fatal error and could recover. Restart the device."
+        }
+    },
+    "menubookmark1": {
+        "prototype": "ui/components/popup/menu-bookmark.reel",
+        "properties": {
+            "label": "The New York Times"
+        }
+    },
+    "menubookmark2": {
+        "prototype": "ui/components/popup/menu-bookmark.reel",
+        "properties": {
+            "label": "The LA Times"
+        }
+    },
+    "actionsheet1": {
+        "prototype": "ui/components/popup/action-sheet.reel",
+        "properties": {
+        }
+    },
+
+    "logger": {
+        "prototype": "ui/logger.reel",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    }
+}
+                    </pre>
+
+                   </div>
+               </li>
+               <li class="accordion-group">
+                   <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                   <div class="accordion-inner montage-hidden">
+                       <pre class="prettyprint" >
+#custom-alert-dialog {
+    width: 400px;
+    height: 500px;
+}
+
+.popup-example-root section {
+    margin: 0 0 20px 0;
+}
+
+.popups .menu {
+    background: hsl(0,0%,85%);
+    border-radius: 4px;
+    text-align: center;
+    font-size: 0;
+}
+
+.popups .menu-item {
+    width: 20px;
+    height: 20px;
+    padding: 10px;
+    margin: 10px 10px 0 0;
+    border-radius: 4px;
+    background-color: hsl(0,0%,95%);
+    border: 1px solid hsl(0,0%,70%);
+    cursor: pointer;
+}
+
+.popups .menu-item:hover {
+    background-color: hsl(0,0%,98%);
+}
+
+.popups .menu-item:active {
+    background-color: hsl(0,0%,90%);
+}
+                       </pre>
+                   </div>
+               </li>
+
+               <li class="accordion-group">
+                      <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                      <div class="accordion-inner montage-hidden">
+                          <pre class="prettyprint" >
+
+exports.PopupExample = Montage.create(Component, {
+
+  logger: {value: null},
+
+  log: {
+      value: function(msg) {
+          this.logger.log(msg);
+      }
+  },
+
+
+  // Bookmark
+  handleAddbookmark: {
+      value: function(e) {
+          this.log('Bookmark added = ' + this.bookmarkMenu.label);
+          this._bookmarkMenuPopup.hide();
+      }
+  },
+  handleAddAndFavBookmark: {
+      value: function(e) {
+          this.log('Bookmark added and favorited = ' + this.bookmarkMenu.label);
+          this._bookmarkMenuPopup.hide();
+      }
+  },
+  _bookmarkMenuPopup: {value: null},
+  handleShowBookmarkMenuAction: {
+      value: function(evt) {
+          var popup = this._bookmarkMenuPopup;
+          if(!popup) {
+              popup = Popup.create();
+              popup.content = this.bookmarkMenu;
+              popup.anchor = this.btnBookmark;
+              // custom positioning support
+              popup.delegate = this;
+              this._bookmarkMenuPopup = popup;
+
+              this.bookmarkMenu.addEventListener('addbookmark', this);
+              this.bookmarkMenu.addEventListener('addAndFavBookmark', this);
+          }
+          popup.show();
+          evt.stopPropagation();
+      }
+  },
+
+  menuPosition: {value: 'default'},
+  // delegate for the Bookmark menu popup
+  willPositionPopup: {
+      value: function(popup, defaultPosition) {
+          var anchor = popup.anchorElement, anchorHt = 0, anchorWd = 0, contentHt = 0, contentWd = 0;
+          if(anchor) {
+              anchorHt = parseFloat(anchor.style.height || 0) || anchor.offsetHeight || 0;
+              anchorWd = parseFloat(anchor.style.width || 0) || anchor.offsetWidth || 0;
+          }
+          var content = popup.content.element;
+          contentHt = parseFloat(content.style.height || 0) || content.offsetHeight || 0;
+          contentWd = parseFloat(content.style.height || 0) || content.offsetHeight || 0;
+
+          var result;
+          switch(this.menuPosition) {
+              case 'left':
+              result = {
+                  top: defaultPosition.top,
+                  left: defaultPosition.left - (anchorWd/2 + contentWd/2)
+              };
+              break;
+
+              case 'right':
+              result = {
+                  top: defaultPosition.top,
+                  left: defaultPosition.left + (anchorWd/2 + contentWd/2)
+              };
+              break;
+
+              case 'top':
+              result = {
+                  top: defaultPosition.top - (anchorHt + contentHt + 10),
+                  left: defaultPosition.left
+              };
+              break;
+
+              case 'bottom':
+              result = defaultPosition;
+              break;
+
+              case 'topright':
+              result = {
+                top: 1,
+                right: 2
+              };
+              break;
+
+              case 'topcenter':
+              result = {
+                top: 1,
+                left: '40%'
+              };
+              break;
+
+              case 'bottomcenter':
+              result = {
+                bottom: 1,
+                left: '40%'
+              };
+              break;
+
+              case 'bottomleft':
+              result = {
+                bottom: '1px',
+                left: '10px'
+              };
+              break;
+
+              case 'center':
+              result = {
+                  top: '40%',
+                  left: '40%'
+              };
+              break;
+
+
+              default:
+              result = defaultPosition;
+
+
+          }
+          return result;
+
+      }
+  },
+
+  // Critical Error Dialog
+  _criticalErrorPopup: {value: null},
+  handleMessage_restart: {
+      value: function(e) {
+          var self = this;
+          if(Confirm.show('Are you sure?', function() {
+              self.log('User clicked Restart');
+              self._criticalErrorPopup.hide();
+          }));
+      }
+  },
+  handleShowCriticalErrorAction: {
+      value: function(evt) {
+          var self = this, popup = this._criticalErrorPopup;
+          if(!popup) {
+              popup = Popup.create();
+              popup.content = this.criticalError;
+              popup.anchor = this.btnCriticalError;
+              popup.modal = true;
+              this._criticalErrorPopup = popup;
+
+              this.criticalError.addEventListener('message_restart', this);
+          }
+
+          popup.show();
+          evt.stopPropagation();
+      }
+  },
+
+
+  // Default Alert
+  handleShowAlertAction: {
+      value: function(evt) {
+
+          var self = this;
+          Alert.show('We were unable to process your request. Please try again later.', function() {
+              self.log("User clicked OK on the alert dialog");
+          });
+
+      }
+  },
+
+  startLoading: {
+      value: function() {
+          Notifier.show('Loading ... please wait', null, {top: 1, right: 10});
+      }
+  },
+
+  stopLoading: {
+      value: function() {
+          Notifier.hide();
+      }
+  },
+
+  handleShowLoadingAction: {
+      value: function(evt) {
+          var self = this;
+          this.log('Starting a long running transaction...');
+          self.startLoading('Loading... please wait');
+          setTimeout(function() {
+              self.log('.. and we are done.');
+              self.stopLoading();
+          }, 3000);
+
+          evt.stopPropagation();
+      }
+  },
+
+  handleShowNotifierAction: {
+      value: function(evt) {
+          var self = this,
+          app = this.application,
+          msg = 'Unable to reach the server. Retrying in ';
+
+          Notifier.show(msg + ' 2 seconds');
+
+          var count = 2;
+          var intId = setInterval(function() {
+              //Notifier.show(msg + count + 's');
+              count--;
+              if(count == 0) {
+                  Notifier.show('Successfully connected to server.');
+              }
+              if(count < 0) {
+                  clearInterval(intId);
+                  Notifier.hide();
+              }
+          }, 1000);
+          evt.stopPropagation();
+      }
+  },
+
+  handleShowConfirmAction: {
+      value: function(evt) {
+          var self = this;
+
+          Confirm.show('Are you sure?', function() {
+              self.log("User clicked on OK");
+              Notifier.show('Item deleted from List', 2000);
+          }, function() {
+              self.log("User clicked on Cancel");
+          });
+
+          evt.stopPropagation();
+      }
+  },
+
+
+  draw: {
+      value: function() {
+          if(!this.firstDraw) {
+              var self = this;
+              var eventManager = this.eventManager;
+
+              var log = function(evt) {
+                  self.log(evt.detail);
+              };
+
+              eventManager.addEventListener('addbookmark', log);
+              eventManager.addEventListener('addAndFavBookmark', log);
+              eventManager.addEventListener('restartDevice', log);
+              eventManager.addEventListener('message.close', log);
+              eventManager.addEventListener('message.reply', log);
+
+              // ActionSheet
+
+              var btnMenu = document.querySelector('.action-show-settings-menu');
+
+              var menuPopup = Popup.create();
+              menuPopup.content = this.bookmarkMenu2;
+              menuPopup.anchor = btnMenu;
+
+              btnMenu.addEventListener('click', function(evt) {
+                  evt.preventDefault();
+                  menuPopup.show();
+              }, false);
+
+              var btnActionSheet = document.querySelector('.action-show-action-sheet');
+              var asPopup = Popup.create();
+              asPopup.content = this.actionSheet;
+              asPopup.anchor = btnActionSheet;
+              btnActionSheet.addEventListener('click', function(evt) {
+                  evt.preventDefault();
+                  asPopup.show();
+              }, false);
+
+              this.firstDraw = true;
+
+          }
+
+      }
+  },
+
+  deserializedFromTemplate: {
+      value: function() {
+          this.addEventListener("action", this);
+      }
+  },
+
+  prepareForDraw: {
+      value: function() {
+          // Invoke Google pretty printer on source code samples
+          prettyPrint();
+      }
+  }
+
+});
+
+                          </pre>
+                      </div>
+                  </li>
+
+            </ul>
+        </section>
+
+
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/popup/popup-example.reel" target="_blank">View source on GitHub</a>
+        </section>
+
+        <section>
+        <h6>Popup API</h6>
+        Show an Alert message with an optional callback that is called the user clicks OK.
+    <pre class="prettyprint ">
+Alert.show('We were unable to process your request', function() {
+    self.log("User clicked OK on the alert dialog");
+});
+    </pre>
+
+    Show a Confirm message.
+    <pre class="prettyprint ">
+Confirm.show('Are you sure?', function() {
+    Notifier.show('Item deleted from List', 2000);
+}, function() {
+    self.log("User clicked on Cancel");
+});
+    </pre>
+
+    Show a notification
+    <pre class="prettyprint ">
+Notifier.show('Loading ... please wait', null, {top: 1, right: 10});
+Notifier.hide();
+    </pre>
+
+    Show a Custom Popup and anchor it to a Component/element on the page.
+    <pre class="prettyprint">
+var popup = Popup.create();
+popup.content = this.bookmarkMenu;
+popup.anchor = this.btnBookmark;
+this._bookmarkMenuPopup = popup;
+popup.show();
+    </pre>
+        </section>
+
+        <div data-montage-id="logger"></div>
+
+
+    </div>
+</body>
+</html>

@@ -1,0 +1,589 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">{
+
+                "owner": {
+                    "prototype": "ui/components/input-text-example.reel",
+                    "properties": {
+                        "element": {"#": "input-text-example"}
+                    },
+                    "bindings": {
+                        "phone": {"<->": "@phone.value"},
+                        "dobError": {"<-": "@dob.error"}
+
+                    }
+                },
+
+                "fname": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "fname"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.firstName"},
+                        "title": {"<->": "@owner.firstName"}
+                    }
+                },
+
+                "lname": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "lname"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.lastName"}
+                    }
+                },
+
+                "pwd": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "pwd"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.password"}
+                    }
+                },
+
+                "email": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "email"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.email"}
+                    }
+                },
+
+                "phone": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "phone"}
+                    },
+                    "bindings": {
+
+                        "readonly": {"<->": "@owner.phoneReadOnly"}
+                    }
+                },
+                "editPhone": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "editPhone"},
+                        "identifier": "editPhone"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
+                },
+
+                "url": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "url"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.url"}
+                    }
+                },
+
+                "zip": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "zip"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.zip"}
+                    }
+                },
+
+                "dateConverter": {
+                    "prototype": "montage/core/converter/date-converter",
+                    "properties": {
+                        "pattern": "yyyy-MM-dd"
+                    }
+                },
+
+                "dob": {
+                    "prototype": "montage/ui/input-text.reel",
+                    "properties": {
+                        "element": {"#": "dob"},
+                        "converter": {"@": "dateConverter"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.dob"}
+                    }
+                },
+                "dobError": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "dobError"}
+                    },
+                    "bindings": {
+                        "value": {"<-": "@dob.errorMessage"}
+                    }
+                },
+
+                "update": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "update"},
+                        "identifier": "update"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"}
+                        }
+                    ]
+                },
+
+                "inputTextAccordion1": {
+                    "prototype": "ui/accordion.reel",
+                    "properties": {
+                        "element": {"#": "inputTextAccordion1"}
+                    }
+                },
+
+                "echo": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "echo"}
+                    },
+                    "bindings": {
+                        "value": {"<-": "@owner.json"}
+                    }
+                }
+
+    }</script>
+
+        <style>
+            .input-text-example .error {
+                color: #E73525;
+                padding: 2px 0;
+            }
+            .input-text-example pre.json {
+                border: 0;
+            }
+            .form-stacked label {
+                margin-top: 5px;
+            }
+
+        </style>
+    </head>
+    <body>
+        <div data-montage-id="input-text-example" class="input-text-example">
+            <div class="row">
+                <div class="span12">
+                    <h3>InputText</h3>
+                    <p>The InputText component wraps an HTML <code>&lt;input&gt;</code> text field.</p>
+                </div>
+            </div>
+
+            <h4>Form</h4>
+            <p>An example of creating a form with InputText components.</p>
+
+            <div class="demo form">
+                <div class="app">
+                     <form class="form-stacked">
+                         <label for="fname">First name</label>
+                         <input type="text" placeholder="Enter first name" data-montage-id="fname" id="fname" required  value="foo" maxlength="20"/>
+                         <label for="lname">Last name</label>
+                         <input type="text" placeholder="Enter last name" data-montage-id="lname" id="lname" value="foo" maxlength="20"/>
+
+                         <label for="pwd1">Password</label>
+                         <input type="password" data-montage-id="pwd" id="pwd1" value="abcdef" />
+
+                         <label for="email1">Email</label>
+                         <input type="email" data-montage-id="email" id="email1" value="foo@bar.com" />
+
+                         <label for="url1">URL</label>
+                         <input type="url" data-montage-id="url" id="url1" value="http://www.google.com" />
+
+                         <label for="tel1">Phone Number</label>
+                         <input type="tel" data-montage-id="phone" id="tel1" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" />
+                         <button data-montage-id="editPhone">Edit Phone Number</button>
+
+                         <label for="zipcode">US Postal code</label>
+                          <input type="text" data-montage-id="zip" id="zipcode" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/>
+
+                         <label for="date1">Date of Birth</label>
+                         <input type="date" data-montage-id="dob" value="" name="dob" id="date1"  />
+                         <div data-montage-id="dobError" class="error"></div>
+
+                         <div style="margin-top: 10px;">
+                             <button class="btn" data-montage-id="update" type="button">Update</button>
+                        </div>
+                     </form>
+
+                     <div data-montage-id="echo" class="echo prettyprint"></div>
+                 </div>
+            </div>
+
+
+            <section>
+
+                       <ul data-montage-id="inputTextAccordion1" class="accordion">
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                <div class="accordion-inner montage-hidden" >
+                                    <pre class="prettyprint" >
+&lt;form class="form-stacked"&gt;
+     &lt;label for="fname"&gt;First name&lt;/label&gt;
+     &lt;input type="text" placeholder="Enter first name" data-montage-id="fname" required  value="foo" maxlength="20"/&gt;
+     &lt;label for="lname"&gt;Last name&lt;/label&gt;
+     &lt;input type="text" placeholder="Enter last name" data-montage-id="lname" value="foo" maxlength="20"/&gt;
+
+     &lt;label for="pwd1"&gt;Password&lt;/label&gt;
+     &lt;input type="password" data-montage-id="pwd" value="abcdef" /&gt;
+
+     &lt;label for="email1"&gt;Email&lt;/label&gt;
+     &lt;input type="email" data-montage-id="email" value="foo@bar.com" /&gt;
+
+     &lt;label for="url1"&gt;URL&lt;/label&gt;
+     &lt;input type="url" data-montage-id="url" value="http://www.google.com" /&gt;
+
+     &lt;label for="tel1"&gt;Phone Number&lt;/label&gt;
+     &lt;input type="tel" data-montage-id="phone" value="1-408-777-9999" placeholder="Enter Phone number" readonly pattern="^(1?(-?\d{3})-?)?(\d{3})(-?\d{4})$" /&gt;
+     &lt;button data-montage-id="editPhone"&gt;Edit Phone Number&lt;/button&gt;
+
+     &lt;label for="zipcode"&gt;US Postal code&lt;/label&gt;
+      &lt;input type="text" data-montage-id="zip" value="" pattern="(^\d{5}$)|(^\d{5}-\d{4}$)"/&gt;
+
+     &lt;label for="date1"&gt;Date of Birth&lt;/label&gt;
+     &lt;input type="date" data-montage-id="dob" value="" name="dob" pattern=""/&gt;
+     &lt;div data-montage-id="dobError" class="error"&gt;&lt;/div&gt;
+
+     &lt;div style="margin-top: 10px;"&gt;
+         &lt;button class="btn" data-montage-id="update" type="button"&gt;Update&lt;/button&gt;
+    &lt;/div&gt;
+ &lt;/form&gt;
+            </pre>
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+{
+    "owner": {
+        "prototype": "ui/components/input-text-example.reel",
+        "properties": {
+            "element": {"#": "input-text-example"}
+        },
+        "bindings": {
+            "phone": {"&lt;&lt;-&gt;": "@phone.value"},
+            "dobError": {"&lt;-": "@dob.error"}
+        }
+    },
+
+    "fname": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "fname"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.firstName"},
+            "title": {"&lt;&lt;-&gt;": "@owner.firstName"}
+        }
+    },
+
+    "lname": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "lname"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.lastName"}
+        }
+    },
+
+    "email": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "email"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.email"}
+        }
+    },
+
+    "phone": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "phone"}
+        },
+        "bindings": {
+
+            "readonly": {"&lt;&lt;-&gt;": "@owner.phoneReadOnly"}
+        }
+    },
+    "editPhone": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "editPhone"},
+            "identifier": "editPhone"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    "url": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "url"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.url"}
+        }
+    },
+
+    "zip": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "zip"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.zip"}
+        }
+    },
+
+    "zip": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "zip"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.zip"}
+        }
+    },
+
+    "dateConverter": {
+        "prototype": "montage/core/converter/date-converter",
+        "properties": {
+            "pattern": "MM-dd-yyyy"
+        }
+    },
+
+    "dob": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "dob"},
+            "converter": {"@": "dateConverter"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.dob"}
+        }
+    },
+    "dobError": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "dobError"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@dob.errorMessage"}
+        }
+    },
+
+    "update": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "update"},
+            "identifier": "update"
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"}
+            }
+        ]
+    },
+
+    "echo": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "echo"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@owner.json"}
+        }
+    }
+}
+             </pre>
+
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Javascript</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage,
+    Component = require("montage/ui/component").Component;
+
+exports.InputTextExample = Montage.create(Component, {
+    json: {value: null},
+
+    firstName: {value: null},
+    lastName: {value: null},
+    email: {value: null},
+    password: {value: null},
+    phone: {value: null},
+    url: {value: null},
+    zip: {value: null},
+    dob: {value: null},
+
+    phoneReadOnly: {value: null},
+
+    prepareForDraw: {
+        value: function() {
+          this.firstName = "Foo";
+          this.lastName = "Bar";
+          this.email = "foo.bar@mycompany.com";
+          this.zip = "94087";
+          this.url = "http://www.mycompany.com";
+          this.dob = new Date(Date.now());
+
+          this.phoneReadOnly = true;
+          // Invoke Google pretty printer on source code samples
+          prettyPrint();
+        }
+    },
+
+    handleUpdateAction: {
+        value: function(event) {
+            this.json = JSON.stringify({
+              firstName: this.firstName,
+              lastName: this.lastName,
+              email: this.email,
+              phone: this.phone,
+              url: this.url,
+              zip: this.zip,
+              dob: this.dob
+            });
+        }
+    },
+
+    handleEditPhoneAction: {
+        value: function(event) {
+            this.phoneReadOnly = false;
+        }
+    }
+});
+                                    </pre>
+                                </div>
+                            </li>
+                        </ul>
+
+
+            </section>
+
+
+            <section>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/input-text-example.reel" target="_blank">View source on GitHub</a>
+            </section>
+
+<!--             <section>
+                <h4>Component Properties</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>value</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+                    <tr>
+                      <td>converter</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+                    <tr>
+                      <td>error</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+                    <tr>
+                      <td>autocomplete</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>disabled</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>readonly</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>name</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>multiple</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>pattern</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>size</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>placeholder</td>
+                      <td>...</td>
+                    </tr>
+                    <tr>
+                      <td>required</td>
+                      <td>...</td>
+                    </tr>
+                  </tbody>
+                </table>
+                <p>
+                    <a href="" target="_blank">View full Documentation</a>
+                </p>
+            </section>
+
+ -->
+    </body>
+</html>

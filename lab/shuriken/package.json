@@ -1,0 +1,10 @@
+{
+    "name": "shuriken",
+    "version": "0.0.2",
+    "description": "an accelerated graphics framework",
+
+    "dependencies": {
+        "montage" : ">= 0.7.0"        
+    }
+    
+}
