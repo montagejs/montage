@@ -1,0 +1,389 @@
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+
+html {
+    background: #e7e7e7;
+}
+#header {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 46px;
+    background: url(mfiddle-ui.png);
+    border-bottom: 1px solid #3D3D3D;
+    z-index: 9999;
+}
+#logo {
+    position: absolute;
+    margin: 0;
+    padding: 0;
+    left: 12px;
+    top: 9px;
+    width: 119px;
+    height: 27px;
+    color: transparent;
+    font-size: 1px;
+    background: url(mfiddle-ui.png);
+    background-position: 0 -48px;
+    background-repeat: no-repeat;
+}
+#logo:after {
+    content: "";
+    position: absolute;
+    left: 131px;
+    top: -9px;
+    width: 4px;
+    height: 46px;
+    background: url(mfiddle-ui.png);
+    background-position: -115px -101px;
+    no-repeat;
+}
+#components {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 6px;
+    left: 147px;
+    height: 36px;
+    overflow: hidden;
+}
+#components li {
+    position: relative;
+    top: 0;
+    margin: 0;
+    padding: 0;
+    float: left;
+}
+#components div {
+    display: block;
+    border: none;
+    margin: 0;
+    padding: 0;
+    width: 66px;
+    height: 34px;
+    font-size: 1px;
+    color: transparent;
+    background: none;
+    border-left: 1px solid #636363;
+    border-right: 1px solid #404040;
+    cursor: pointer;
+}
+#components li:first-child div {
+    border-left: none;
+}
+#components li:last-child div {
+    border-right: none;
+}
+#button:after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 11px;
+    width: 44px;
+    height: 22px;
+    background: url(mfiddle-ui.png) 0 -76px no-repeat;
+}
+#slider:after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 13px;
+    width: 43px;
+    height: 23px;
+    background: url(mfiddle-ui.png) -45px -76px no-repeat;
+}
+#toggle:after {
+    content: "";
+    position: absolute;
+    top: 6px;
+    left: 12px;
+    width: 44px;
+    height: 22px;
+    background: url(mfiddle-ui.png) 0 -99px no-repeat;
+}
+#checkbox:after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 22px;
+    width: 28px;
+    height: 24px;
+    background: url(mfiddle-ui.png) -89px -76px no-repeat;
+}
+#text-field:after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 19px;
+    width: 30px;
+    height: 24px;
+    background: url(mfiddle-ui.png) -71px -101px no-repeat;
+}
+#dynamic-text:after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 20px;
+    width: 28px;
+    height: 24px;
+    background: url(mfiddle-ui.png) 0 -122px no-repeat;
+}
+#repetition:after {
+    content: "";
+    position: absolute;
+    top: 5px;
+    left: 19px;
+    width: 30px;
+    height: 24px;
+    background: url(mfiddle-ui.png) -29px -125px no-repeat;
+}
+#components li:hover div:before {
+    content: "";
+    position: absolute;
+    z-index: 2;
+    top: 0;
+    left: 7px;
+    width: 54px;
+    height: 34px;
+    background: url(mfiddle-ui.png) -60px -126px no-repeat;
+}
+#components li:first-child:hover div:before {
+    left: 6px;
+}
+#menu {
+    position: absolute;
+    list-style-type: none;
+    border: none;
+    margin: 0;
+    padding: 0;
+    right: 0;
+    height: 46px;
+    background: url(mfiddle-ui.png);
+    z-index: 2;
+}
+#menu li {
+    margin: 0;
+    padding: 0;
+    float: left;
+    height: 46px;
+}
+#menu:after {
+    content: "";
+    position: absolute;
+    left: -4px;
+    top: 0;
+    width: 4px;
+    height: 46px;
+    background: url(mfiddle-ui.png) -115px -101px no-repeat;
+}
+#run {
+    position: relative;
+    border: none;
+    margin: 6px 0 0 0;
+    padding: 0 12px 0 25px;
+    background: none;
+    border-right: 1px solid #404040;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 34px;
+    color: white;
+    font-family: Helvetica, Arial, sans-serif;
+}
+#run:after {
+    content: "";
+    position: absolute;
+    top: 11px;
+    left: 12px;
+    width: 8px;
+    height: 11px;
+    background: url(mfiddle-ui.png) 0 -147px no-repeat;
+}
+#run:hover:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 6px;
+    right: 6px;
+    border: 1px solid #11BDFB;
+    height: 32px;
+}
+#examples {
+    position: relative;
+    margin: 6px 0 0 0;
+    padding: 0 25px 0 12px;
+    height: 34px;
+    border-left: 1px solid #636363;
+    cursor: pointer;
+}
+#examples:hover:before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 6px;
+    right: 6px;
+    border: 1px solid #11BDFB;
+    height: 32px;
+}
+#examples:after {
+    content: "";
+    position: absolute;
+    top: 12px;
+    right: 11px;
+    width: 10px;
+    height: 10px;
+    background: url(mfiddle-ui.png) -9px -147px no-repeat;
+}
+#examples h2 {
+    margin: 0;
+    padding: 0;
+    font-size: 14px;
+    font-weight: normal;
+    line-height: 34px;
+    color: white;
+    font-family: Helvetica, Arial, sans-serif;
+}
+#examples ul {
+    display: block;
+    position: absolute;
+    list-style-type: none;
+    top: 33px;
+    right: 6px;
+    z-index: 9999;
+    border: 2px solid #11BDFB;
+    background-color: #404040;
+    margin: 0;
+    padding: 0 17px;
+    -webkit-box-shadow: 0 1px 7px rgba(0,0,0,.4);
+    visibility: hidden;
+    opacity: 0;
+    -webkit-transition: opacity 250ms;
+}
+#examples:hover ul {
+    visibility: visible;
+    display: block;
+    opacity: 1;
+}
+#examples li {
+    width: 100%;
+    background: none;
+    border: none;
+    margin: 0 -17px;
+    padding: 0 17px;
+    color: white;
+    font-size: 14px;
+    font-family: Helvetica, Arial, sans-serif;
+    height: 32px;
+    line-height: 32px;
+    text-align: right;
+    border-top: 1px solid #525252;
+    border-bottom: 1px solid #333;
+    cursor: pointer;
+    white-space: nowrap;
+}
+#examples li:hover {
+    background: #287F9E;
+    border-top: 1px solid #227897;
+    border-bottom: 1px solid #227897;
+}
+#serialization {
+    position: absolute;
+    top: 57px;
+    left: 10px;
+    right: 50%;
+    bottom: 50%;
+    margin-right: 5px;
+    margin-bottom: -19px;
+    background: white;
+    border: 1px solid #B9B9B9;
+}
+#html {
+    position: absolute;
+    margin-top: 29px;
+    margin-right: 5px;
+    top: 50%;
+    left: 10px;
+    right: 50%;
+    bottom: 10px;
+    background: white;
+    border: 1px solid #B9B9B9;
+}
+#result {
+    position: absolute;
+    top: 57px;
+    left: 50%;
+    right: 10px;
+    bottom: 10px;
+    margin-left: 5px;
+    background: rgba(0,0,0,.5);
+    background: white;
+    border: 1px solid #B9B9B9;
+}
+#serialization h2,
+#html h2,
+#result h2 {
+    position: absolute;
+    right: 24px;
+    z-index: 2;
+    margin: 0;
+    padding: 0 12px 2px 12px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    color: white;
+    line-height: 22px;
+    background: #11BDFB;
+    border-radius: 0 0 6px 6px;
+    opacity: 1;
+    -webkit-transition: opacity 400ms;
+    pointer-events: none;
+}
+#serialization:hover h2,
+#html:hover h2,
+#result:hover h2 {
+    opacity: 0;
+}
+#result iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+}
+
+/* CodeMirror customizations */
+div.CodeMirror, div.CodeMirror-scroll {
+    height: 100%;
+    width: 100%;
+}
+
+.CodeMirror-matchingbracket {
+    border: 1px solid grey;
+    color: black !important;
+}

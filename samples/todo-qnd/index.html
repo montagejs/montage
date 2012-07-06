@@ -1,0 +1,104 @@
+<!doctype html PUBLIC "-//W3C//DTD HTML 4.01//EN">
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+<head>
+    <title></title>
+    <script type="text/javascript" src="../../montage.js"></script>
+    <link href="todos.css" media="all" rel="stylesheet" type="text/css">
+    <script type="text/montage-serialization">{
+        "owner": {
+            "object": "todo",
+            "properties": {
+                "element": {"#": "todoapp"},
+                "todoItem": {"@": "todoItem"},
+                "todoList": {"@": "todoList"}
+            }
+        },
+
+        "todoList": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "todo-list"}
+            },
+            "bindings": {
+                "objects": {"<-": "@owner.todos"}
+            }
+        },
+
+        "todoItem": {
+            "prototype": "todo[TodoItem]",
+            "properties": {
+                "element": {"#": "todo-item"}
+            }
+        }
+    }</script>
+</head>
+<body>
+    <div data-montage-id="todoapp">
+        <div class="title">
+            <h1>
+                Todos
+            </h1>
+        </div>
+        <div class="content">
+            <div data-montage-id="create-todo" class="create-todo">
+                <input id="new-todo" data-montage-id="new-todo" placeholder="What needs to be done?" type="text"> <span class="ui-tooltip-top" style="display:none;">Press Enter to save this task</span>
+            </div>
+            <div data-montage-id="todos">
+                <ul style="margin-left: 2em" data-montage-id="todo-list" class="todo-list">
+                    <li class="todo" data-montage-id="todo-item">
+                        <div class="display">
+                            <input class="check" type="checkbox" data-montage-id="checkbox">
+                            <div class="todo-text"></div>
+                            <span class="todo-destroy"></span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            <div data-montage-id="todo-stats" class="todo-stats">
+                <span id="todo-count" class="todo-count" data-montage-id="todo-count">
+                    <span class="number">1</span>
+                    <span class="word">item</span> left.
+                </span>
+                <span id="todo-clear" class="todo-clear" data-montage-id="todo-clear">
+                    <a href="#">
+                        Clear <span class="number">1</span>
+                        completed <span class="word">item</span>
+                    </a>
+                </span>
+            </div>
+        </div>
+    </div>
+    <div data-montage-id="credits" class="credits">
+        Created by Montage Team, based on <a href="http://documentcloud.github.com/backbone/examples/todos/index.html">Backbone Todo</a>
+    </div>
+</body>
+</html>

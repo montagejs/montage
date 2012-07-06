@@ -1,0 +1,356 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+<head>
+    <title>Native slider component</title>
+    <script type="text/montage-serialization">{
+
+        "red": {
+            "prototype": "montage/ui/bluemoon/slider.reel",
+            "properties": {
+                "element": {"#": "red"},
+                "minValue": "0",
+                "maxValue": "255",
+                "step": "1",
+                "value": "255"
+            }
+        },
+
+        "green": {
+            "prototype": "montage/ui/bluemoon/slider.reel",
+            "properties": {
+                "element": {"#": "green"},
+                "minValue": "0",
+                "maxValue": "255",
+                "step": "1",
+                "value": "0"
+            }
+        },
+
+        "blue": {
+            "prototype": "montage/ui/bluemoon/slider.reel",
+            "properties": {
+                "element": {"#": "blue"},
+                "minValue": "0",
+                "maxValue": "255",
+                "step": "1",
+                "value": "0"
+            }
+        },
+        "alpha": {
+            "prototype": "montage/ui/bluemoon/slider.reel",
+            "properties": {
+                "element": {"#": "alpha"},
+                "minValue": "0",
+                "maxValue": "1",
+                "step": "0.1",
+                "value": "1"
+            }
+        },
+
+        "sliderAccordion1": {
+            "prototype": "ui/accordion.reel",
+            "properties": {
+                "element": {"#": "sliderAccordion1"}
+            }
+        },
+
+        "owner": {
+            "prototype": "ui/components/montage-slider.reel",
+            "properties": {
+                "element": {"#": "range-input-example"},
+                "colorchip": {"#": "chip"}
+            },
+            "bindings": {
+                "red": {"<->": "@red.value"},
+                "green": {"<->": "@green.value"},
+                "blue": {"<->": "@blue.value"},
+                "opacity": {"<->": "@alpha.value"}
+            }
+        }
+
+    }</script>
+    <style>
+        .montage-slider-example .chip {
+            display: inline-block;
+            width: 200px;
+            height: 200px;
+            vertical-align: top;
+            background: whitesmoke;
+            border-radius: 4px;
+            border: 6px solid white;
+            box-shadow: 0px 1px 2px hsla(0,0%,0%,.2);
+        }
+        .montage-slider-example .controls  {
+            display: inline-block;
+            margin: 0 0 0 20px;
+            list-style: none;
+        }
+        .montage-slider-example .slider-item {
+            position: relative;
+            width: 200px;
+            margin: 0px;
+            padding: 0;
+        }
+        .montage-slider-example .label {
+            position: absolute;
+            top: 15px;
+            left: 210px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            color: hsl(0,0%,100%);
+            background-color: hsl(0,0%,80%);
+        }
+        .label.red { background-color: hsl(0,100%,80%); }
+        .label.green { background-color: hsl(130,70%,70%); }
+        .label.blue { background-color: hsl(210,100%,80%); }
+    </style>
+</head>
+    <body>
+        <div data-montage-id="range-input-example" class="montage-slider-example">
+            <div class="row">
+                <div class="span12">
+                    <h3>Montage Slider</h3>
+                    <p>
+                        The Range Input component wraps an HTML input "range" type.
+                    </p>
+                </div>
+            </div>
+
+            <h4>Example - Color changer</h4>
+            <div class="demo range1">
+                <div data-montage-id="chip" class="chip"></div>
+                <ul data-montage-id="controls" class="controls">
+                    <li class="slider-item">
+                        <div data-montage-id="red"></div>
+                        <span class="label red">Red</span>
+                    </li>
+                    <li class="slider-item">
+                        <div data-montage-id="green"></div>
+                        <span class="label green">Green</span>
+                    </li>
+                    <li class="slider-item">
+                        <div data-montage-id="blue"></div>
+                        <span class="label blue">Blue</span>
+                    </li>
+                    <li class="slider-item">
+                        <div data-montage-id="alpha"></div>
+                        <span class="label">Opacity</span>
+                    </li>
+                </ul>
+            </div>
+
+
+        <section>
+           <ul data-montage-id="sliderAccordion1" class="accordion">
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                    <div class="accordion-inner montage-hidden" >
+                        <pre class="prettyprint" >
+&lt;div data-montage-id="chip" class="chip"&gt;&lt;/div&gt;
+&lt;div data-montage-id="controls" class="controls"&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;div data-montage-id="red"&gt;&lt;/div&gt;
+        &lt;span class="label"&gt;Red&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;div data-montage-id="green"&gt;&lt;/div&gt;
+        &lt;span class="label"&gt;Green&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;div data-montage-id="blue"&gt;&lt;/div&gt;
+        &lt;span class="label"&gt;Blue&lt;/span&gt;
+    &lt;/div&gt;
+    &lt;div class="slider-item"&gt;
+        &lt;div data-montage-id="alpha"&gt;&lt;/div&gt;
+        &lt;span class="label"&gt;Alpha&lt;/span&gt;
+    &lt;/div&gt;
+&lt;/div&gt;
+</pre>
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "red": {
+        "prototype": "montage/ui/bluemoon/slider.reel",
+        "properties": {
+            "element": {"#": "red"},
+            "minValue": "0",
+            "maxValue": "255",
+            "step": "1",
+            "value": "255"
+        }
+    },
+
+    "green": {
+        "prototype": "montage/ui/bluemoon/slider.reel",
+        "properties": {
+            "element": {"#": "green"},
+            "minValue": "0",
+            "maxValue": "255",
+            "step": "1",
+            "value": "0"
+        }
+    },
+
+    "blue": {
+        "prototype": "montage/ui/bluemoon/slider.reel",
+        "properties": {
+            "element": {"#": "blue"},
+            "minValue": "0",
+            "maxValue": "255",
+            "step": "1",
+            "value": "0"
+        }
+    },
+    "alpha": {
+        "prototype": "montage/ui/bluemoon/slider.reel",
+        "properties": {
+            "element": {"#": "alpha"},
+            "minValue": "0",
+            "maxValue": "1",
+            "step": "0.1",
+            "value": "1"
+        }
+    },
+
+    "owner": {
+        "prototype": "ui/components/range-input-example2.reel",
+        "properties": {
+            "element": {"#": "range-input-example"},
+            "colorchip": {"#": "chip"}
+        },
+        "bindings": {
+            "red": {"&lt;&lt;-&gt;": "@red.value"},
+            "green": {"&lt;&lt;-&gt;": "@green.value"},
+            "blue": {"&lt;&lt;-&gt;": "@blue.value"},
+            "opacity": {"&lt;&lt;-&gt;": "@alpha.value"}
+        }
+    }
+}
+ </pre>
+
+                    </div>
+                </li>
+                <li class="accordion-group">
+                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
+                    <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+var Montage = require("montage/core/core").Montage;
+var Component = require("montage/ui/component").Component;
+
+exports.MontageSlider = Montage.create(Component, {
+
+    _red: {
+        value: 125
+    },
+
+    _green: {
+        value: 125
+    },
+
+    _blue: {
+        value: 125
+    },
+
+    _opacity: {
+        value: 1.0
+    },
+
+    colorchip: {
+        value: null
+    },
+
+    red: {
+        get: function() {
+            return this._red;
+        },
+        set: function(value) {
+            this._red = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    blue: {
+        get: function() {
+            return this._blue;
+        },
+        set: function(value) {
+            this._blue = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    green: {
+        get: function() {
+            return this._green;
+        },
+        set: function(value) {
+            this._green = Math.round(value);
+            this.needsDraw = true;
+        }
+    },
+
+    opacity: {
+        get: function() {
+            return this._opacity;
+        },
+        set: function(value) {
+            this._opacity = value;
+            this.needsDraw = true;
+        }
+    },
+
+    draw: {
+        value: function() {
+            this.colorchip.style.background = "rgb(" + this.red + "," + this.green + ", " + this.blue + ")";
+            this.colorchip.style.opacity = this.opacity;
+            console.log(this.colorchip.style.background);
+        }
+    }
+
+});
+                        </pre>
+                    </div>
+                </li>
+            </ul>
+
+        </section>
+
+        <section>
+            <a href="https://github.com/Motorola-Mobility/montage/tree/v0.9/examples/sink/components/montage-slider.reel" target="_blank">View Source on GitHub</a>
+        </section>
+
+    </body>
+</html>
