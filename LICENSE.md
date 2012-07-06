@@ -73,6 +73,12 @@ Copyright (c) 2006-2008, Coolite Inc. (http://www.coolite.com/). All rights rese
 Licensed under The MIT License. See license.txt and http://www.datejs.com/license/.
 http://www.datejs.com/
 
+Express
+=======
+
+Copyright (c) 2010 TJ Holowaychuk <tj@vision-media.ca>
+MIT Licensed
+
 GL Util and Matrix
 ==================
 
