@@ -27,6 +27,7 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+
 //TODO: save/restore currentProgram before using GL.useProgram(this.program);
 //TODO: Delete shader if compile failed
 //TODO: Delete program if LINK failed
@@ -49,7 +50,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _shaders:
     {
         enumerable: false,
-        value: []
+        value: null
     },
 
     shaders: {
@@ -65,7 +66,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _errorLogs:
     {
         enumerable: false,
-        value: []
+        value: null
     },
 
     errorLogs: {
@@ -81,7 +82,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _pendingCommits:
     {
         enumerable: false,
-        value: []
+        value: null
     },
 
     pendingCommits: {
@@ -97,7 +98,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _symbolToLocation:
     {
         enumerable: false,
-        value: {}
+        value: null
     },
 
     symbolToLocation: {
@@ -113,7 +114,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _symbolToActiveInfo:
     {
         enumerable: false,
-        value: {}
+        value: null
     },
 
     symbolToActiveInfo: {
@@ -128,7 +129,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
 
     _semanticToSymbol: {
         enumerable: false,
-        value: {}
+        value: null
     },
 
     semanticToSymbol: {
@@ -143,7 +144,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
 
     _symbolToSemantic: {
         enumerable: false,
-        value: {}
+        value: null
     },
 
     symbolToSemantic: {
@@ -159,7 +160,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _symbolToValue:
     {
         enumerable: false,
-        value: {}
+        value: null
     },
 
     symbolToValue: {
@@ -175,7 +176,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _uniformSymbols:
     {
         enumerable: false,
-        value: []
+        value: null
     },
 
     uniformSymbols: {
@@ -191,7 +192,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     _attributeSymbols:
     {
         enumerable: false,
-        value: []
+        value: null
     },
 
     attributeSymbols: {
@@ -404,14 +405,6 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
             GL.linkProgram(this.GLProgram);
             if (GL.getProgramParameter(this.GLProgram, GL.LINK_STATUS)) {
 
-                this.pendingCommits = [];
-                this.symbolToActiveInfo = {};
-                this.symbolToValue = {};
-                this.uniformSymbols = [];
-                this.attributeSymbols = [];
-                this.symbolToSemantic = {};
-                this.semnaticToSymbol = {};
-
                 GL.useProgram(this.GLProgram);
 
                 var uniformsCount = GL.getProgramParameter(this.GLProgram,GL.ACTIVE_UNIFORMS);
@@ -442,14 +435,29 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         }
     },
 
+    _commonInit: {
+        value: function() {
+            this.pendingCommits = [];
+            this.symbolToActiveInfo = {};
+            this.symbolToValue = {};
+            this.symbolToLocation = {};
+            this.uniformSymbols = [];
+            this.attributeSymbols = [];
+            this.symbolToSemantic = {};
+            this.semanticToSymbol = {};
+        }
+    },
+
 	initWithShaders: {
         value: function(shaders) {
+            this._commonInit();
             this.shaders = shaders;
         }
     },
 
     initWithProgram: {
         value: function(program) {
+            this._commonInit();
             this.shaders = program.shaders;
             this.semanticToSymbol = program.semanticToSymbol;
             this.symbolToSemantic = program.symbolToSemantic;
@@ -457,4 +465,3 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     }
 
 });
-
