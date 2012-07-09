@@ -269,7 +269,8 @@ exports.PhotoEditor = Montage.create(Component, {
 
             colorPickEvent = document.createEvent("CustomEvent");
             colorPickEvent.initCustomEvent(end ? "colorpickend" : "colorpick", true, true, null);
-            colorPickEvent.color = pickedPixel.data;
+            //TODO not wrap the color in an array (mobile safari/binding issue) at the time of writing this
+            colorPickEvent.color = [pickedPixel.data[0], pickedPixel.data[1], pickedPixel.data[2], pickedPixel.data[3]];
             colorPickEvent.focusGrid = focusGrid;
             colorPickEvent.pageX = x;
             colorPickEvent.pageY = y;
@@ -290,7 +291,9 @@ exports.PhotoEditor = Montage.create(Component, {
             var canvas = this._canvas,
                 context = canvas.getContext('2d');
 
-            return context.getImageData(x, y, 1, 1).data;
+            var data = context.getImageData(x, y, 1, 1).data;
+            //TODO not wrap the color in an array (mobile safari/binding issue) at the time of writing this
+            return [data[0], data[1], data[2], data[3]];
         }
     },
 
