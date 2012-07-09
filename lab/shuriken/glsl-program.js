@@ -1,11 +1,40 @@
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility, Inc
+All Rights Reserved.
+BSD License.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+  - Redistributions of source code must retain the above copyright notice,
+    this list of conditions and the following disclaimer.
+  - Redistributions in binary form must reproduce the above copyright
+    notice, this list of conditions and the following disclaimer in the
+    documentation and/or other materials provided with the distribution.
+  - Neither the name of Motorola Mobility nor the names of its contributors
+    may be used to endorse or promote products derived from this software
+    without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 //TODO: save/restore currentProgram before using GL.useProgram(this.program);
 //TODO: Delete shader if compile failed
 //TODO: Delete program if LINK failed
 
 var Montage = require("montage/core/core").Montage;
 GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
-    
-    
+
+
     VERTEX_SHADER: {   enumerable: false,  get: function() {   return "x-shader/x-vertex"; }, },
     FRAGMENT_SHADER: {   enumerable: false,  get: function() {   return "x-shader/x-fragment"; }, },
 
@@ -22,7 +51,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         enumerable: false,
         value: []
     },
-    
+
     shaders: {
         enumerable: false,
         get: function() {
@@ -38,7 +67,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         enumerable: false,
         value: []
     },
-    
+
     errorLogs: {
         enumerable: false,
         get: function() {
@@ -54,7 +83,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         enumerable: false,
         value: []
     },
-    
+
     pendingCommits: {
         enumerable: false,
         get: function() {
@@ -70,7 +99,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         enumerable: false,
         value: {}
     },
-    
+
     symbolToLocation: {
         enumerable: false,
         get: function() {
@@ -80,13 +109,13 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
             this._symbolToLocation = value;
         }
     },
-    
+
     _symbolToActiveInfo:
     {
         enumerable: false,
         value: {}
     },
-    
+
     symbolToActiveInfo: {
         enumerable: false,
         get: function() {
@@ -96,12 +125,12 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
             this._symbolToActiveInfo = value;
         }
     },
-    
+
     _semanticToSymbol: {
         enumerable: false,
         value: {}
     },
-    
+
     semanticToSymbol: {
         enumerable: false,
         get: function() {
@@ -116,7 +145,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         enumerable: false,
         value: {}
     },
-    
+
     symbolToSemantic: {
         enumerable: false,
         get: function() {
@@ -132,7 +161,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         enumerable: false,
         value: {}
     },
-    
+
     symbolToValue: {
         enumerable: false,
         get: function() {
@@ -142,13 +171,13 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
             this._symbolToValue = value;
         }
     },
-        
+
     _uniformSymbols:
     {
         enumerable: false,
         value: []
     },
-    
+
     uniformSymbols: {
         enumerable: false,
         get: function() {
@@ -164,7 +193,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         enumerable: false,
         value: []
     },
-    
+
     attributeSymbols: {
         enumerable: false,
         get: function() {
@@ -181,8 +210,8 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
         enumerable: false,
         value: null
     },
-        
-    //API        
+
+    //API
     GLProgram: {
         enumerable: false,
         get: function() {
@@ -192,9 +221,9 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
             this._GLProgram = value;
         }
     },
-        
+
 	getTypeForSymbol: {
-        value: function(symbol) {	
+        value: function(symbol) {
             var type = null;
             var activeInfo = this.symbolToActiveInfo[symbol];
             if (activeInfo) {
@@ -205,18 +234,18 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
 	},
 
 	getLocationForSymbol: {
-        value: function(symbol) {	
+        value: function(symbol) {
             return this.symbolToLocation[symbol];
         }
 	},
 
-	
+
 	getSymbolForSemantic: {
-        value: function(semantic) {	
+        value: function(semantic) {
             return this.semanticToSymbol[semantic];
         }
 	},
-	  
+
     //FIXME: argument order should be reversed
     setSymbolForSemantic: {
         value: function(symbol,semantic)  {
@@ -240,19 +269,19 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
                 var previousSemantic = this.symbolToSemantic[symbol];
                 if ((previousSemantic) && (previousSemantic !== semantic)) {
                     this.semanticToSymbol[previousSemantic] = null;
-                } 
-                
+                }
+
                 this.symbolToSemantic[symbol] = semantic;
             }
 
             if (semantic) {
                 this.semanticToSymbol[semantic] = symbol;
             }
-            
+
             return true;
         }
 	},
-    
+
     setSemanticForSymbol: {
         value: function(symbol,semantic)  {
             this.setSymbolForSemantic(symbol,semantic);
@@ -260,7 +289,7 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
     },
 
 	getSemanticForSymbol: {
-        value: function(symbol) {	
+        value: function(symbol) {
             return this.symbolToSemantic[symbol];
         }
 	},
@@ -275,13 +304,13 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
             this.symbolToValue[symbol] = value;
         }
 	},
-	
+
 	getValueForSymbol: {
         value: function(symbol) {
             return this.symbolToValue[symbol];
         }
 	},
-	
+
     //that should be private
 	commit: {
         value: function(GL) {
@@ -289,9 +318,9 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
             for (i = 0 ; i < count ; i++) {
                 var symbol = this.pendingCommits[i];
                 var type = this.getTypeForSymbol(symbol);
-                var location = GL.getUniformLocation(this.GLProgram,symbol); 
+                var location = GL.getUniformLocation(this.GLProgram,symbol);
                 var value = this.getValueForSymbol(symbol);
-			
+
                 switch (type) {
                     case GL.FLOAT_MAT2:
                         GL.uniformMatrix2fv(location , false, value);
@@ -311,22 +340,22 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
                     case GL.FLOAT_VEC4:
                         GL.uniform4fv(location,value);
                     break;
-					
+
                 }
             }
             this.pendingCommits = [];
         }
     },
-	
+
     use: {
-        value: function(GL) { 
-        
-            GL.useProgram(this.GLProgram);        
+        value: function(GL) {
+
+            GL.useProgram(this.GLProgram);
 
             this.commit(GL);
         }
     },
-    
+
     //that should be private
 	createShaderWithSourceAndType: {
         value: function createShaderWithSourceAndType(GL,shaderSource,shaderType) {
@@ -346,23 +375,23 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
                 this.errorLogs = GL.getShaderInfoLog(shader);
                 return null;
             }
-		
+
             return shader;
         }
     },
-    
-	build: {   
+
+	build: {
         value: function(GL) {
             var i;
             var vertexShaderSource = this.shaders["x-shader/x-vertex"];
             var fragmentShaderSource = this.shaders["x-shader/x-fragment"];
-            
+
             var buildSuccess = false;
-            
+
             var vertexShader = this.createShaderWithSourceAndType(GL,vertexShaderSource,"x-shader/x-vertex");
             if (vertexShader === null)
                 return false;
-            
+
             var fragmentShader = this.createShaderWithSourceAndType(GL,fragmentShaderSource,"x-shader/x-fragment");
             if (fragmentShader === null)
                 return false;
@@ -374,33 +403,33 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
 
             GL.linkProgram(this.GLProgram);
             if (GL.getProgramParameter(this.GLProgram, GL.LINK_STATUS)) {
-                
-                this.pendingCommits = [];		
+
+                this.pendingCommits = [];
                 this.symbolToActiveInfo = {};
                 this.symbolToValue = {};
                 this.uniformSymbols = [];
                 this.attributeSymbols = [];
                 this.symbolToSemantic = {};
                 this.semnaticToSymbol = {};
-                
+
                 GL.useProgram(this.GLProgram);
-                
+
                 var uniformsCount = GL.getProgramParameter(this.GLProgram,GL.ACTIVE_UNIFORMS);
                 for (i = 0 ; i < uniformsCount ; i++) {
                     var activeInfo = GL.getActiveUniform(this.GLProgram, i);
                     this.symbolToActiveInfo[activeInfo.name] = activeInfo;
                     //WebGLUniformLocation getUniformLocation(WebGLProgram program, DOMString name);
-                    this.symbolToLocation[activeInfo.name] = GL.getUniformLocation(this.GLProgram,activeInfo.name);    
+                    this.symbolToLocation[activeInfo.name] = GL.getUniformLocation(this.GLProgram,activeInfo.name);
                     this.uniformSymbols.push(activeInfo.name);
                     //alert(""+activeInfo.name+":"+this.symbolToLocation[activeInfo.name])
                 }
-                
+
                 var attributesCount = GL.getProgramParameter(this.GLProgram,GL.ACTIVE_ATTRIBUTES);
                 for (i = 0 ; i < attributesCount ; i++) {
                     var activeInfo = GL.getActiveAttrib(this.GLProgram, i);
                     this.symbolToActiveInfo[activeInfo.name] = activeInfo;
                     //GLint getAttribLocation(WebGLProgram program, DOMString name);
-                    this.symbolToLocation[activeInfo.name] = GL.getAttribLocation(this.GLProgram,activeInfo.name);    
+                    this.symbolToLocation[activeInfo.name] = GL.getAttribLocation(this.GLProgram,activeInfo.name);
                     this.attributeSymbols.push(activeInfo.name);
                     //alert(""+activeInfo.name+":"+this.symbolToLocation[activeInfo.name])
                 }
@@ -408,13 +437,13 @@ GLSLProgram = exports.GLSLProgram = Montage.create(Montage, {
                 buildSuccess = true;
             }
             this.errorLogs = GL.getProgramInfoLog(this.GLProgram);
-            
+
             return buildSuccess;
         }
     },
 
 	initWithShaders: {
-        value: function(shaders) {   
+        value: function(shaders) {
             this.shaders = shaders;
         }
     },
