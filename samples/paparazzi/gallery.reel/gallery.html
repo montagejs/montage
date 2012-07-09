@@ -40,7 +40,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "properties": {
                         "element": {"#": "gallery" },
                         "snapshotController": {"@": "snapshotController"},
-                        "flow": {"@": "flow"}
+                        "flow": {"@": "list"}
                     }
                 },
 
@@ -51,58 +51,22 @@ POSSIBILITY OF SUCH DAMAGE.
                     }
                 },
 
+                "list": {
+                    "prototype": "montage/ui/list.reel",
+                    "properties": {
+                        "element": {"#": "flow"},
+                        "contentController": {"@": "snapshotController"},
+                        "axis": "horizontal"
+                    }
+                },
+
                 "snapshot": {
                     "prototype": "snapshot.reel",
                     "properties": {
                         "element": {"#": "snapshot"}
                     },
                     "bindings": {
-                        "src": { "<-": "@flow.objectAtCurrentIteration" }
-                    }
-                },
-
-                "flow": {
-                    "prototype": "montage/ui/flow.reel",
-                    "properties": {
-                        "element": {"#": "flow"},
-                        "contentController": {"@": "snapshotController"},
-                        "scrollingTransitionDuration": ".4s",
-                        "isSelectionEnabled": true,
-                        "cameraFov": 90,
-                        "elementsBoundingSphereRadius": 2048,
-                        "cameraPosition": [0, 0, 245],
-                        "isInputEnabled": true,
-                        "isSelectionEnabled": true,
-                        "hasSelectedIndexScrolling": true,
-                        "selectedIndexScrollingOffset": 0,
-                        "paths": [
-                            {
-                                "knots": [
-                                    {
-                                        "knotPosition": [200, 0, -250],
-                                        "nextHandlerPosition": [-1.0, 0, 0],
-                                        "previousDensity": 2,
-                                        "nextDensity": 2
-                                    },
-                                    {
-                                        "previousHandlerPosition": [100, 0, 0],
-                                        "knotPosition": [0, 0, 0],
-                                        "nextHandlerPosition": [1.0, 0, 0],
-                                        "previousDensity": 2,
-                                        "nextDensity": 2
-                                    },
-                                    {
-                                        "knotPosition": [200, 0, -250],
-                                        "previousHandlerPosition": [1.0, 0, 0],
-                                        "previousDensity": 2,
-                                        "nextDensity": 2
-                                    }
-                                ],
-                                "headOffset": 2,
-                                "tailOffset": 2,
-                                "units": {}
-                            }
-                        ]
+                        "src": { "<-": "@list.objectAtCurrentIteration" }
                     }
                 }
             }

@@ -30,11 +30,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .gallery {
     position: relative;
-    padding-top: 20px;
     background: hsl(0,0%,90%);
     box-shadow: inset 0px 2px 4px hsl(0,0%,85%);
 }
 
 .gallery .flow {
-
+    white-space: nowrap;
+    overflow-x: auto;
 }

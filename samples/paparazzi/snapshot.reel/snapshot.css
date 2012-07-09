@@ -30,14 +30,14 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .snapshot {
     position: relative;
-    padding: 0 0 -3px 0; /* There's a really weird bug that requires this... */
+    display:inline-block;
+    padding: 3px;
     -webkit-box-reflect: below 0 -webkit-linear-gradient(top, hsla(0,0%,0%,0) 80%, hsla(0,0%,0%,.2) );
 }
 
 .snapshot img {
-    width: 320px;
-    height: 240px;
-    margin: 0 0 -5px 0;
+    width: 160px;
+    height: 120px;
     padding: 0;
 }
 

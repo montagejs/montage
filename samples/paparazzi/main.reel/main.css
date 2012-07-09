@@ -53,7 +53,7 @@ body {
     display: -webkit-box;
     -webkit-box-align: center;
     -webkit-box-pack: center;
-    padding: 20px;
+    padding: 5px;
     background: hsl(0,0%,100%);
 }
 
