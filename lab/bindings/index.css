@@ -41,9 +41,11 @@ button {
   margin: 10px;
 }
 
-.box-view {
-  width: 20px; height: 20px;
-  float: left;
-  position: relative;
-  margin: 8px;
+ul.stats {
+    list-style-type: none;    
+}
+
+ul.stats > li {
+    list-style-type: none;
+    display: inline;
 }

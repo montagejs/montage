@@ -38,55 +38,42 @@ exports.Box = Montage.create(Component, {
         value: function() {
             var self = this,
                 mainComponent = this.mainComponent;
-            this.mainComponent.addPropertyChangeListener("color", function(notification) {
-                self.color = notification.target.color;
-            });
-            this.mainComponent.addPropertyChangeListener("left", function(notification) {
-                self.left = notification.target.left;
-            });
-            this.mainComponent.addPropertyChangeListener("top", function(notification) {
-                self.top = notification.target.top;
-            });
-            this.mainComponent.addPropertyChangeListener("content", function(notification) {
-                self.content = notification.target.content;
-            });
-            this.addPropertyChangeListener("content", function(notification) {
-                self.number.value = self.content;
-            });
-
-            //mainComponent.addEventListener("change@color", function() {
-            //    self.color = mainComponent.color;
+            //this.mainComponent.addPropertyChangeListener("color", function(notification) {
+            //    self.color = notification.target.color;
             //});
-            //mainComponent.addEventListener("change@left", function() {
-            //    self.left = mainComponent.left;
+            //this.mainComponent.addPropertyChangeListener("left", function(notification) {
+            //    self.left = notification.target.left;
             //});
-            //mainComponent.addEventListener("change@top", function() {
-            //    self.top = mainComponent.top;
+            //this.mainComponent.addPropertyChangeListener("top", function(notification) {
+            //    self.top = notification.target.top;
             //});
-            //mainComponent.addEventListener("change@content", function() {
-            //    self.number.value = mainComponent.content;
+            //this.mainComponent.addPropertyChangeListener("content", function(notification) {
+            //    self.content = notification.target.content;
+            //});
+            //this.addPropertyChangeListener("content", function(notification) {
+            //    self.number.value = self.content;
             //});
 
-            //Object.defineBinding(this, "color", {
-            //    boundObject: mainComponent,
-            //    boundObjectPropertyPath: "color",
-            //    oneway: true
-            //});
-            //Object.defineBinding(this, "left", {
-            //    boundObject: mainComponent,
-            //    boundObjectPropertyPath: "left",
-            //    oneway: true
-            //});
-            //Object.defineBinding(this, "top", {
-            //    boundObject: mainComponent,
-            //    boundObjectPropertyPath: "top",
-            //    oneway: true
-            //});
-            //Object.defineBinding(this.number, "value", {
-            //    boundObject: mainComponent,
-            //    boundObjectPropertyPath: "content",
-            //    oneway: true
-            //});
+            Object.defineBinding(this, "color", {
+                boundObject: mainComponent,
+                boundObjectPropertyPath: "color",
+                oneway: true
+            });
+            Object.defineBinding(this, "left", {
+                boundObject: mainComponent,
+                boundObjectPropertyPath: "left",
+                oneway: true
+            });
+            Object.defineBinding(this, "top", {
+                boundObject: mainComponent,
+                boundObjectPropertyPath: "top",
+                oneway: true
+            });
+            Object.defineBinding(this.number, "value", {
+                boundObject: mainComponent,
+                boundObjectPropertyPath: "content",
+                oneway: true
+            });
         }
     },
 

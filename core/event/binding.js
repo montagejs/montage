@@ -317,7 +317,7 @@ Deserializer.defineDeserializationUnit("bindings", function(object, bindings, de
     }
 });
 
-var __bindingCount = {count: 0};
+var __bindingCount = exports.Stats = {count: 0};
 console.log(__bindingCount);
 
 /**
@@ -335,12 +335,12 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         boundObjectValue,
         currentBindingDescriptor,
         bindingListener;
-    __bindingCount.count++;
+
     if (!boundObject || !boundObjectPropertyPath) {
         //TODO should we throw an error here? the binding descriptor wasn't valid
         return;
     }
-
+    __bindingCount.count++;
     if (!_bindingDescriptors) {
         // To ensure the binding descriptor collection is serializable, it needs all the expected properties
         //of an object in our framework; a UUID in particular
@@ -454,6 +454,7 @@ Object.defineProperty(Object, "deleteBinding", {value: function(sourceObject, so
         oneway;
 
     if (sourceObjectPropertyBindingPath in _bindingDescriptors) {
+        __bindingCount.count--;
         bindingDescriptor = _bindingDescriptors[sourceObjectPropertyBindingPath];
         oneway = typeof bindingDescriptor.oneway === "undefined" ? true : bindingDescriptor.oneway;
 

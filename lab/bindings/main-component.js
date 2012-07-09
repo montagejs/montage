@@ -56,8 +56,27 @@ exports.Main = Montage.create(Component, {
         value: 0
     },
 
+    _lastTimestamp: {
+        value: +new Date
+    },
+    __numberDraws: {
+        value: 0
+    },
+
+    numberDraws: {
+        value: 0
+    },
+
     draw: {
         value: function(timestamp) {
+            if (timestamp >= this._lastTimestamp + 1000) {
+                this._lastTimestamp = timestamp;
+                this.numberDraws = this.__numberDraws;
+                this.__numberDraws = 0;
+                //console.log(this.numberDraws);
+            }
+            this.__numberDraws++;
+
             this.needsDraw = true;
             this.top = Math.sin(this.count / 10) * 10;
             this.left = Math.cos(this.count / 10) * 10;
