@@ -522,7 +522,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
         value: function(event) {
             if (event.button === 0 && !this.eventManager.componentClaimingPointer(this._observedPointer)) {
                 this.eventManager.claimPointer(this._observedPointer, this);
-                this._start(event.clientX, event.clientY, event.target);
             }
 
         }
@@ -599,7 +598,6 @@ var TranslateComposer = exports.TranslateComposer = Montage.create(Composer,/** 
                     }
 
                     this.eventManager.claimPointer(this._observedPointer, this);
-                    this._start(event.targetTouches[0].clientX, event.targetTouches[0].clientY, event.targetTouches[0].target);
                 }
             }
         }
