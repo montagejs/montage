@@ -29,7 +29,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("ui/component").Component;
 
 var TimeSince = exports.TimeSince = Montage.create(Component, {
     hasTemplate: {
