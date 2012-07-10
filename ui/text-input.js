@@ -227,12 +227,8 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
 
             if (this.error) {
                 el.classList.add('montage-text-invalid');
-                el.setAttribute('title', this.error.message || '');
             } else {
                 el.classList.remove("montage-text-invalid");
-                if(el.getAttribute('title') != null) {
-                    el.setAttribute('title', '');
-                }
             }
         }
     },
