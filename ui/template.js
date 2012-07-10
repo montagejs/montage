@@ -503,9 +503,9 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                                 // that repeats its child components, we can
                                 // safely recreate this property with a static value
                                 Object.defineProperty(this, label, {
-                                    value: component
+                                    value: components[0]
                                 });
-                                return component;
+                                return components[0];
                             } else if (component.clonesChildComponents) {
                                 break;
                             }
