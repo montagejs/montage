@@ -269,6 +269,8 @@ exports.Main = Montage.create(Component, {
 
             var serializer = Serializer.create().initWithRequire(require);
             localStorage.setItem(LOCAL_STORAGE_KEY, serializer.serializeObject(savedState));
+
+            document.application.preferences.save();
         }
     },
 
