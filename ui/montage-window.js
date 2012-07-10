@@ -15,17 +15,17 @@
 var Montage = require("montage").Montage;
 
 /**
- This module defines the {@link module:ui/window.WindowProxy} prototype.
+ This module defines the {@link module:ui/window.MontageWindow} prototype.
  @module ui/window
  @requires montage/core/core
  */
 
 /**
  The Window object is responsible for managing a DOM window.
- @class module:montage/ui/window.WindowProxy
+ @class module:montage/ui/window.MontageWindow
  @extends module:montage/core/core.Montage
  */
-var WindowProxy = exports.WindowProxy = Montage.create(Montage, /** @lends montage/ui/window.WindowProxy# */ {
+var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends montage/ui/window.MontageWindow# */ {
 
     /**
      @private

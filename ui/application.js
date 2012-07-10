@@ -13,7 +13,7 @@
 var Montage = require("core/core").Montage,
     Template = require("ui/template").Template,
     Component = require("ui/component").Component,
-    WindowProxy = require("ui/window").WindowProxy,
+    MontageWindow = require("ui/montage-window").MontageWindow,
     Slot;
 
     require("ui/dom");
@@ -113,7 +113,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
 
             if (this.parentApplication == null) {
                 if (!this._windows) {
-                    var theWindow = WindowProxy.create();
+                    var theWindow = MontageWindow.create();
                     theWindow.application = this;
                     theWindow.window = window;
                     this.window = theWindow;
@@ -139,7 +139,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     window: {
         get: function() {
             if (!this._window && this == this.mainApplication) {
-                var theWindow = WindowProxy.create();
+                var theWindow = MontageWindow.create();
                 theWindow.application = this;
                 theWindow.window = window;
                 this._window = theWindow;
@@ -294,7 +294,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     openWindow: {
         value: function(component, name, parameters) {
             var thisRef = this,
-                childWindow = WindowProxy.create(),
+                childWindow = MontageWindow.create(),
                 childApplication,
                 event,
                 windowParams = {
