@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 
 /**
     @module montage/ui/text-input
@@ -18,7 +43,7 @@ var Montage = require("montage").Montage,
     The base class for all text-based input components. You typically won't create instances of this prototype.
     @class module:montage/ui/text-input.TextInput
     @extends module:montage/ui/native-control.NativeControl
-    @see module:"montage/ui/input-date.reel".DateInput
+    @see {module:"montage/ui/input-date.reel".DateInput}
     @see module:"montage/ui/input-text.reel".InputText
     @see module:"montage/ui/input-number.reel".InputNumber
     @see module:"montage/ui/input-range.reel".RangeInput
@@ -84,8 +109,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
                     this.needsDraw = true;
                 }
             }
-        },
-        serializable: true
+        }
     },
 
     // set value from user input
@@ -106,8 +130,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
     @see {@link module:montage/core/converter.Converter}
 */
     converter:{
-        value: null,
-        serializable: true
+        value: null
     },
 
     _error: {
@@ -162,8 +185,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
         },
         set: function(v) {
             this._updateOnInput = v;
-        },
-        serializable: true
+        }
     },
 
     // HTMLInputElement methods

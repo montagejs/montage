@@ -1,0 +1,103 @@
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+.GridMagnifier, .GridMagnifier .loupe, .GridMagnifier canvas {
+    pointer-events: none;
+}
+
+.GridMagnifier .loupe, .GridMagnifier canvas {
+    -webkit-border-radius: 200px;
+    pointer-events: none;
+}
+
+.GridMagnifier {
+    position: absolute;
+    z-index: 100;
+
+    opacity: 0;
+
+    -webkit-transition: opacity 200ms linear;
+    -webkit-transition-delay: 70ms;
+}
+
+.GridMagnifier .loupe {
+    position: static;
+    width: 200px;
+    height: 200px;
+
+    border: 1px solid hsl(0,0%,80%);
+
+    -webkit-box-shadow: 0 4px 6px hsla(0,0%,0%, 0.4);
+}
+
+.touch .GridMagnifier {
+    -webkit-box-shadow: none;
+}
+
+.GridMagnifier.active {
+    opacity: 1;
+}
+
+.GridMagnifier canvas {
+    position: static;
+    background: white;
+}
+
+.touch .GridMagnifier {
+    margin-top: -50px;
+}
+
+.GridMagnifier .ColorPicker {
+    width: auto;
+    overflow: visible;
+    white-space: nowrap;
+
+    background: hsla(0,0%,80%, 0.8);
+
+    font-size: x-small;
+    border-bottom: none;
+
+    padding-top: 110px;
+    margin-top: -100px;
+
+    border-radius: 8px;
+    -webkit-box-shadow: 0 4px 6px hsla(0,0%,0%, 0.4);
+}
+
+.GridMagnifier .ColorPicker .colorWell {
+    width: 10px;
+    height: 10px;
+    border: 2px;
+    display: inline-block;
+}
+
+.GridMagnifier .ColorPicker .valueList {
+    margin-right: 0;
+}

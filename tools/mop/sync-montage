@@ -1,0 +1,12 @@
+mkdir -p montage
+(
+    cd ../..;
+    git archive head $(
+        echo core/promise.js
+        echo core/next-tick.js 
+        echo core/url.js 
+        echo montage.js
+        echo node.js
+        echo require
+    ) --prefix montage/
+) | tar xvf -

@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 
 /**
     @module "montage/ui/select.reel"
@@ -20,7 +45,7 @@ var Montage = require("montage").Montage,
 
 /**
  * Wraps the a &lt;select> element with binding support for the element's standard attributes. Uses an ArrayController instance to manage the element's contents and selection.
-   @class module:"montage/ui/select.reel".Select
+   @class module:"montage/ui/native/select.reel".Select
    @extends module:montage/ui/native-control.NativeControl
    @summary
    If the &lt;select> markup contains <option> is provided in the markup and <code>contentController</code> is not, the <code>contentController</code> collection is populated with the options from the markup. If <code>contentController</code> is present, any options in the markup are overwritten by the values from the <code>contentController</code> when they are available.
@@ -70,8 +95,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         },
         get: function() {
             return this._content;
-        },
-        serializable: true
+        }
     },
 
     // If a <code>contentController</code> is provided, this allows the developer to specify
@@ -80,16 +104,14 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
         Specifies the property belonging to the component's <code>contentController</code> to use as the "value" part of the <option>.
     */
     valuePropertyPath: {
-        value: null,
-            serializable: true
+        value: null
     },
 
     /**
         Specifies the property belonging to the component's <code>contentController</code> to use as the text content of the <option>.
     */
     textPropertyPath: {
-        value: null,
-        serializable: true
+        value: null
     },
 
 
@@ -137,8 +159,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                 });
             }
 
-        },
-        serializable: true
+        }
     },
 
     _getSelectedValuesFromIndexes: {
@@ -195,8 +216,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
                     this._synching = false;
                 }
             }
-        },
-        serializable: true
+        }
         //dependencies: ["_selectedIndexes"]
     },
 
@@ -217,8 +237,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
             }
 
 
-        },
-        serializable: true
+        }
         //dependencies: ["_selectedIndexes"]
     },
 

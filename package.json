@@ -9,10 +9,8 @@
             "exclude": [
                 "lab/benchmarks",
                 "lab/sandbox",
-                "lab/tools",
-                "examples",
-                "require/test",
-                "require/tests",
+                "samples",
+                "tools",
                 "etc",
                 "node.js"
             ],

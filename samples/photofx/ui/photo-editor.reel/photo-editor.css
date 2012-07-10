@@ -1,0 +1,108 @@
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+.PhotoEditor {
+    display: -webkit-box;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    overflow: hidden;
+    background-color: #777;
+    -webkit-user-select: none;
+    padding-top: 3em;
+}
+
+.PhotoEditor .image {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+}
+
+.PhotoEditor .toolLayer {
+    display: none;
+    position: absolute;
+    pointer-events: none;
+}
+
+.PhotoEditor canvas {
+    display: none;
+    -webkit-user-select: none;
+    box-shadow: 0 0 16px rgba(0,0,0,.6);
+}
+
+.PhotoEditor.hasImage .toolLayer,
+.PhotoEditor.hasImage canvas {
+    display: block;
+}
+
+.PhotoEditor .canvasFrame {
+    position: relative;
+}
+
+.PhotoEditor.pickingColor {
+    cursor: none;
+    -webkit-user-select: none;
+}
+
+.PhotoEditor .ruler {
+    display: none;
+    position: absolute;
+    color: hsl(0,0%,56%);
+
+    height: 1em;
+}
+
+.PhotoEditor.hasImage .ruler {
+    display: block;
+}
+
+.PhotoEditor .ruler .positionText {
+    border-color: hsl(0,0%,66%);
+}
+
+.PhotoEditor .ruler .savedPositionText {
+    border-color: hsl(0,0%,36%);
+    color: hsl(0,0%,36%);
+}
+
+.PhotoEditor .ruler .distanceText {
+    color: hsl(0,0%,36%);
+    border-color: hsla(0,0%,36%, 0.4);
+}
+
+.PhotoEditor .horizontalRuler {
+    top: -1.5em;
+}
+
+.PhotoEditor .verticalRuler {
+    left: -0.5em;
+
+    -webkit-transform-origin: left top;
+    -webkit-transform: rotate(90deg);
+}

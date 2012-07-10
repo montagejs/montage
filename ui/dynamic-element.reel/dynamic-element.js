@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /**
     @module "montage/ui/dynamic-element.reel"
     @requires montage
@@ -26,6 +51,10 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
         value: null
     },
 
+    _usingInnerHTML: {
+        value: null
+    },
+
     /**
         The innerHTML displayed as the content of the DynamicElement
         @type {Property}
@@ -36,12 +65,12 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
             return this._innerHTML;
         },
         set: function(value) {
+            this._usingInnerHTML = true;
             if (this._innerHTML !== value) {
                 this._innerHTML = value;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -71,8 +100,7 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
                 this._allowedTagNames = value;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
 
@@ -125,43 +153,45 @@ exports.DynamicElement = Montage.create(Component, /** @lends module:"montage/ui
                 content, allowedTagNames = this.allowedTagNames, range = this._range, elements;
 
             //push to DOM
-            if (allowedTagNames !== null) {
-                //cleanup
-                this._contentNode = null;
-                range.deleteContents();
-                //test for tag white list
-                content = range.createContextualFragment( displayValue );
-                if(allowedTagNames.length !== 0) {
-                    elements = content.querySelectorAll("*:not(" + allowedTagNames.join("):not(") + ")");
-                } else {
-                    elements = content.childNodes;
-                }
-                if (elements.length === 0) {
-                    range.insertNode(content);
-                    if(range.endOffset === 0) {
-                        // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
-                        // range collapsed after insertNode
-                        range.selectNodeContents(this.element);
-                    }
-
-                } else {
-                    console.warn("Some Elements Not Allowed " , elements);
-                }
-            } else {
-                content = this._contentNode;
-                if(content === null) {
+            if(this._usingInnerHTML) {
+                if (allowedTagNames !== null) {
                     //cleanup
+                    this._contentNode = null;
                     range.deleteContents();
-                    this._contentNode = content = document.createTextNode(displayValue);
-                    range.insertNode(content);
-                    if(range.endOffset === 0) {
-                        // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
-                        // range collapsed after insert
-                        range.selectNodeContents(this.element);
+                    //test for tag white list
+                    content = range.createContextualFragment( displayValue );
+                    if(allowedTagNames.length !== 0) {
+                        elements = content.querySelectorAll("*:not(" + allowedTagNames.join("):not(") + ")");
+                    } else {
+                        elements = content.childNodes;
                     }
+                    if (elements.length === 0) {
+                        range.insertNode(content);
+                        if(range.endOffset === 0) {
+                            // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
+                            // range collapsed after insertNode
+                            range.selectNodeContents(this.element);
+                        }
 
+                    } else {
+                        console.warn("Some Elements Not Allowed " , elements);
+                    }
                 } else {
-                    content.data = displayValue;
+                    content = this._contentNode;
+                    if(content === null) {
+                        //cleanup
+                        range.deleteContents();
+                        this._contentNode = content = document.createTextNode(displayValue);
+                        range.insertNode(content);
+                        if(range.endOffset === 0) {
+                            // according to https://bugzilla.mozilla.org/show_bug.cgi?id=253609 Firefox keeps a collapsed
+                            // range collapsed after insert
+                            range.selectNodeContents(this.element);
+                        }
+
+                    } else {
+                        content.data = displayValue;
+                    }
                 }
             }
             // classList

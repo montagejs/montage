@@ -1,8 +1,38 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+
+/**
+    @module "montage/ui/autocomplete/autocomplete.reel"
+*/
+
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     TextInput = require("ui/text-input").TextInput,
@@ -37,9 +67,11 @@ var getElementPosition = function(obj) {
 };
 
 /**
- * The Autocomplete input
- */
-var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
+    The Autocomplete component
+    @class module:"montage/ui/autocomplete/autocomplete.reel".Autocomplete
+    @extends module:montage/ui/text-input.TextInput
+*/
+var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends module:"montage/ui/autocomplete/autocomplete.reel".Autocomplete# */ {
 
     didCreate: {
         value: function() {
@@ -57,6 +89,10 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
         }
     },
 
+/**
+    The AutoComplete instance's delegate object.
+    @type {Object}
+*/
     delegate: {
         value: null
     },
@@ -65,17 +101,29 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
     * If the delegate returns Objects, this property can be used to derive the
     * display string for an object. If this property is not provided, the results
     * provided by the delegate are assumed to be String.
+    @type {String}
     */
     textPropertyPath: {
         value: null
     },
 
+/**
+    The string separator to use between tokens in the AutoComplete.
+    @type {String}
+    @default {Boolean} ","
+*/
     separator: {
         value: ',',
         distinct: true
     },
 
     _delay: {value: null},
+
+/**
+    The delay in milliseconds between when the user modifies the input field and when the query to retrieve suggestions is executed.
+    @type {Number}
+    @defaultvalue 500
+*/
     delay: {
         get: function(){
             return this._delay;
@@ -87,20 +135,22 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, {
                 }
                 this._delay = value;
             }
-        },
-        serializable: true
+        }
     },
 
     /**
-    * Number of characters the user must type before the suggest query is fired
-    * Default = 2
+    * The number of characters the user must type before the query for suggeseted tokens executes.
+    * @type {Number}
     */
     minLength: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _tokens: {value: null},
+/**
+    Gets and sets the tokens being displayed by the AutoComplete component.
+    @type {Array}
+*/
     tokens: {
         get: function() {
             return this._tokens;

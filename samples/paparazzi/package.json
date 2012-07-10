@@ -1,0 +1,8 @@
+{
+    "name": "paparazzi",
+    "version": "0.0.1",
+    "mappings": {
+        "montage": "../../",
+        "shuriken": "../../lab/shuriken"
+    }
+}

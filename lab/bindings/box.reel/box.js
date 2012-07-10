@@ -1,12 +1,37 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component;
-    
+
 require("montage/core/change-notification");
 
 exports.Box = Montage.create(Component, {
@@ -14,55 +39,42 @@ exports.Box = Montage.create(Component, {
         value: function() {
             var self = this,
                 mainComponent = this.mainComponent;
-            this.mainComponent.addPropertyChangeListener("color", function(notification) {
-                self.color = notification.target.color;
+            //this.mainComponent.addPropertyChangeListener("color", function(notification) {
+            //    self.color = notification.target.color;
+            //});
+            //this.mainComponent.addPropertyChangeListener("left", function(notification) {
+            //    self.left = notification.target.left;
+            //});
+            //this.mainComponent.addPropertyChangeListener("top", function(notification) {
+            //    self.top = notification.target.top;
+            //});
+            //this.mainComponent.addPropertyChangeListener("content", function(notification) {
+            //    self.content = notification.target.content;
+            //});
+            //this.addPropertyChangeListener("content", function(notification) {
+            //    self.number.value = self.content;
+            //});
+
+            Object.defineBinding(this, "color", {
+                boundObject: mainComponent,
+                boundObjectPropertyPath: "color",
+                oneway: true
             });
-            this.mainComponent.addPropertyChangeListener("left", function(notification) {
-                self.left = notification.target.left;
+            Object.defineBinding(this, "left", {
+                boundObject: mainComponent,
+                boundObjectPropertyPath: "left",
+                oneway: true
             });
-            this.mainComponent.addPropertyChangeListener("top", function(notification) {
-                self.top = notification.target.top;
+            Object.defineBinding(this, "top", {
+                boundObject: mainComponent,
+                boundObjectPropertyPath: "top",
+                oneway: true
             });
-            this.mainComponent.addPropertyChangeListener("content", function(notification) {
-                self.content = notification.target.content;
+            Object.defineBinding(this.number, "value", {
+                boundObject: mainComponent,
+                boundObjectPropertyPath: "content",
+                oneway: true
             });
-            this.addPropertyChangeListener("content", function(notification) {
-                self.number.value = self.content;
-            });
-            
-            //mainComponent.addEventListener("change@color", function() {
-            //    self.color = mainComponent.color;
-            //});
-            //mainComponent.addEventListener("change@left", function() {
-            //    self.left = mainComponent.left;
-            //});
-            //mainComponent.addEventListener("change@top", function() {
-            //    self.top = mainComponent.top;
-            //});
-            //mainComponent.addEventListener("change@content", function() {
-            //    self.number.value = mainComponent.content;
-            //});
-            
-            //Object.defineBinding(this, "color", {
-            //    boundObject: mainComponent,
-            //    boundObjectPropertyPath: "color",
-            //    oneway: true
-            //});
-            //Object.defineBinding(this, "left", {
-            //    boundObject: mainComponent,
-            //    boundObjectPropertyPath: "left",
-            //    oneway: true
-            //});
-            //Object.defineBinding(this, "top", {
-            //    boundObject: mainComponent,
-            //    boundObjectPropertyPath: "top",
-            //    oneway: true
-            //});
-            //Object.defineBinding(this.number, "value", {
-            //    boundObject: mainComponent,
-            //    boundObjectPropertyPath: "content",
-            //    oneway: true
-            //});            
         }
     },
 

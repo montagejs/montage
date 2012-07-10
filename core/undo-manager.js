@@ -1,14 +1,46 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 
 // Consider proposal at https://rniwa.com/editing/undomanager.html
+/**
+    @module montage/core/undo-manager
+*/
 
 var Montage = require("montage").Montage;
 
-var UndoManager = exports.UndoManager = Montage.create(Montage, {
+/**
+    @class module:montage/core/undo-manager.UndoManager
+    @extends module:montage/core/core.Montage
+*/
+var UndoManager = exports.UndoManager = Montage.create(Montage, /** @lends module:montage/core/undo-manager.UndoManager# */ {
 
     enabled: {
         value: true
@@ -19,6 +51,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         value: null
     },
 
+/**
+    Maximum number of undos.
+*/
     maxUndoCount: {
         get: function() {
             return this._maxUndoCount;
@@ -59,6 +94,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         value: null
     },
 
+/**
+    The undo stack.
+*/
     undoStack: {
         get: function() {
             if (!this._undoStack) {
@@ -68,11 +106,21 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    The redo stack.
+*/
     redoStack: {
         value: [],
         distinct: true
     },
 
+/**
+    Adds a new item to the undo stack.
+    @param {string} label A label to associate with the undo item.
+    @param {function} undoFunction The function to invoke when the item is popped from the undo stack.
+    @param {object} context The context in which the undo function should be invoked.
+    @function
+*/
     add: {
         value: function(label, undoFunction, context) {
 
@@ -114,11 +162,21 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    Removes all items from the undo stack.
+    @function
+*/
+
     clearUndo: {
         value: function() {
             this.undoStack.splice(0, this.undoStack.length);
         }
     },
+
+/**
+    Removes all items from the redo stack.
+    @function
+*/
 
     clearRedo: {
         value: function() {
@@ -126,6 +184,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    Returns `true` if the UndoManager is in the middle of an undo operation, otherwise returns `false`.
+*/
     isUndoing: {
         dependencies: ["undoEntry"],
         get: function() {
@@ -133,6 +194,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    Returns `true` if the UndoManager is in the middle of an redo operation, otherwise returns `false`.
+*/
     isRedoing: {
         dependencies: ["redoEntry"],
         get: function() {
@@ -140,16 +204,26 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    The current undo item being operated on.
+*/
     undoEntry: {
         enumerable: false,
         value: null
     },
 
+/**
+    The current redo item being operated on.
+*/
     redoEntry: {
         enumerable: false,
         value: null
     },
 
+/**
+    Removes the last item in the undo stack and invokes its undo function.
+    @function
+*/
     undo: {
         value: function() {
 
@@ -167,6 +241,10 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    Removes the last item in the undo stack and invokes its undo function.
+    @function
+*/
     redo: {
         value: function() {
             if (this.isUndoing || this.isRedoing) {
@@ -183,6 +261,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    Returns true if the undo stack contains any items, otherwise returns false.
+*/
     canUndo: {
         dependencies: ["undoStack.count()"],
         get: function() {
@@ -190,12 +271,19 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    Returns true if the redo stack contains any items, otherwise returns false.
+*/
     canRedo: {
         dependencies: ["redoStack.count()"],
         get: function() {
             return !!this.redoStack.length;
         }
     },
+
+/**
+    Contains the label of the last item added to the undo stack, preceded by "Undo" (for example, "Undo Item Removal"). If the item does not have a label, then the string "Undo" is returned.
+*/
 
     undoLabel: {
         dependencies: ["undoStack.count()"],
@@ -217,6 +305,9 @@ var UndoManager = exports.UndoManager = Montage.create(Montage, {
         }
     },
 
+/**
+    Contains the label of the last item added to the redo stack, preceded by "Redo" (for example, "Redo Item Removal"). If the item does not have a label, then the string "Redo" is returned.
+*/
     redoLabel: {
         dependencies: ["redoStack.count()"],
         get: function() {

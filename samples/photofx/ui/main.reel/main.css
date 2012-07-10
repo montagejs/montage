@@ -1,0 +1,138 @@
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+.montage-hidden {
+    display: none;
+}
+
+.montage-invisible {
+    visibility: hidden;
+}
+
+html {
+    font-family: Helvetica, Arial, sans-serif;
+}
+
+body,
+.PhotoFX,
+.PhotoFX .editArea,
+.PhotoFX .PhotoEditor {
+    display: -webkit-box;
+    -webkit-box-orient: horizontal;
+    -webkit-box-pack: center;
+    -webkit-box-align: center;
+    -webkit-box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+}
+
+* {
+    -webkit-user-select: none;
+}
+
+input {
+    -webkit-user-select: text;
+}
+
+.floatingPanel {
+    position: fixed;
+    opacity: 0;
+    -webkit-transition: opacity 200ms ease-in-out;
+    pointer-events: none;
+}
+
+.PhotoFX.showControls .floatingPanel {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.PhotoFX .mainMenu {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    /*opacity: 0.9;*/
+    z-index: 5000;
+}
+
+.PhotoPanel {
+    display: -webkit-box;
+    bottom: 0;
+    right: 0;
+    left: 0;
+
+    overflow: visible;
+    border-top:  1px solid hsl(0,0%,62%);
+
+    background: -webkit-gradient(linear, left top, left bottom, from(#ddd), to(#fff));
+}
+
+.PhotoPanel .PhotoList {
+    -webkit-box-flex: 1;
+    border-right:  1px solid hsl(0,0%,60%);
+}
+
+.PhotoPanel .PhotoList .montage-list-scroller {
+    margin-top: 10px;
+}
+
+.PhotoPanel .controlPanel {
+    box-sizing: border-box;
+    padding: 25px 10px 10px;
+    text-align: center;
+}
+
+.PhotoPanel .controlPanel button {
+    margin-bottom: 8px;
+}
+
+.EffectsPanel,
+.PhotoPanel .controlPanel {
+    width: 270px;
+}
+
+.EffectsPanel {
+    top: 0;
+    right: 0;
+
+    border-left:  1px solid hsl(0,0%,62%);
+    background-color: hsl(120,2%,89%)
+}
+
+.acceptsDrop {
+    border: 5px solid hsl(195,96%,43%);
+}
+
+.PhotoFX .mainMenu .UndoButton,
+.PhotoFX .mainMenu .RedoButton {
+    width: 12em;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}

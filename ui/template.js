@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /**
     @module montage/ui/template
     @requires montage/core
@@ -59,6 +84,8 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 */
     _isLoaded: {value: false},
 
+    delegate: {value: null},
+
     /**
     Creates a new Template instance from an HTML document element.
     @function
@@ -114,13 +141,15 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     @param {String} moduleId The module id.
     @param {Function} callback The function to call when the template is ready, receives a Template object as a parameter.
     */
-    templateWithComponent: {value: function(component) {
+    templateWithComponent: {value: function(component, delegate) {
         var componentId = component._templateId,
             template = this.__templatesById[componentId],
             externalObjects;
 
         if (!template) {
-            template = this.create().initWithComponent(component);
+            template = this.create();
+            template.delegate = delegate;
+            template.initWithComponent(component);
             externalObjects = template._externalObjects;
             // don't store this template if it has external objects, the next component to use might have diferent objects for the same ids
             if (!externalObjects || Object.keys(externalObjects).length === 0) {
@@ -200,6 +229,18 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         }
     },
 
+    // serializer delegate method
+    serializeObjectProperties: {
+        enumerable: false,
+        value: function() {
+            var delegate = this.delegate;
+
+            if (delegate && typeof delegate.serializeObjectProperties === "function") {
+                return delegate.serializeObjectProperties.apply(delegate, arguments);
+            }
+        }
+    },
+
     /**
      Initializes a Template object out of a fully instantiated component.
      This means creating a markup from the Component object's element and a serialization with the Component object as the owner of the Template.
@@ -216,6 +257,7 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
 
         this._document = htmlDocument;
 
+        serializer.delegate = this.delegate ? this : null;
         this._ownerSerialization = serializer.serialize({owner: component});
         this._externalObjects = serializer.getExternalObjects();
         elements = serializer.getExternalElements();
@@ -304,11 +346,22 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
     */
     instantiateWithOwnerAndDocument: {
         value: function(owner, targetDocument, callback) {
+            return this.instantiateWithInstancesAndDocument({owner: owner}, targetDocument, callback);
+        }
+    },
+
+    instantiateWithInstancesAndDocument: {
+        value: function(instances, targetDocument, callback) {
             var self = this;
 
-            this._partiallyInstantiateWithInstancesForDocument({owner: owner}, targetDocument, function(objects) {
+            this._partiallyInstantiateWithInstancesForDocument(instances, targetDocument, function(objects) {
                 if (objects) {
-                    self._invokeTemplateDidLoad(objects);
+                    // TODO: this should be in the same function that creates them but
+                    // then I would always have to create another function just for
+                    // that... let's sneak it in here for the time being..
+                    delete instances.application;
+                    delete instances.template;
+                    self._invokeTemplateDidLoad(objects, objects.owner && objects.owner.templateObjects);
                 }
                 self.waitForStyles(function() {
                     callback(objects ? objects.owner : null);
@@ -324,10 +377,31 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
      @param {Component} component The Component object to be used as a owner.
      @param {Function} callback The callback function to invoke when the template is instantiated.
      */
+    // TODO: we should think about having a component-template.js that extends
+    //       template.js, this object is starting to have too much information
+    //       about the inner workings of the Component.
     instantiateWithComponent: {value: function(component, callback) {
-        var document = component.element.ownerDocument;
+        var self = this,
+            instances = component.templateObjects;
 
-        this.instantiateWithOwnerAndDocument(component, document, callback);
+        if (instances) {
+            instances.owner = component;
+        } else {
+            instances = {owner: component};
+        }
+
+        this._partiallyInstantiateWithInstancesForDocument(instances, component.element.ownerDocument, function(objects) {
+            delete instances.owner;
+            delete instances.application;
+            delete instances.template;
+
+            if (objects) {
+                self._invokeTemplateDidLoad(objects, !component._isTemplateLoaded && instances);
+            }
+            self.waitForStyles(function() {
+                callback(objects ? objects.owner : null);
+            });
+        });
     }},
 
     instantiateWithDocument: {
@@ -400,16 +474,62 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
         }
     },
 
+    _templateObjectDescriptor: {
+        value: {
+            enumerable: true,
+            configurable: true
+        }
+    },
+
+    _createTemplateObjectGetter: {
+        value: function(owner, label) {
+            var querySelectorLabel = "@"+label,
+                isRepeated,
+                components,
+                component;
+
+            return function templateObjectGetter() {
+                if (isRepeated) {
+                    return owner.querySelectorAllComponent(querySelectorLabel, owner);
+                } else {
+                    components = owner.querySelectorAllComponent(querySelectorLabel, owner);
+                    // if there's only one maybe it's not repeated, let's go up
+                    // the tree and found out.
+                    if (components.length === 1) {
+                        component = components[0];
+                        while (component = component.parentComponent) {
+                            if (component === owner) {
+                                // we got to the owner without ever hitting a component
+                                // that repeats its child components, we can
+                                // safely recreate this property with a static value
+                                Object.defineProperty(this, label, {
+                                    value: components[0]
+                                });
+                                return components[0];
+                            } else if (component.clonesChildComponents) {
+                                break;
+                            }
+                        }
+                    }
+
+                    isRepeated = true;
+                    return components;
+                };
+            };
+        }
+    },
+
     /**
      @private
      */
     _invokeTemplateDidLoad: {
-        value: function(objects) {
+        value: function(objects, templateObjects) {
             var owner = objects.owner,
                 labels = Object.keys(objects),
+                label,
                 hasTemplateDidDeserializeObject = owner && typeof owner.templateDidDeserializeObject === "function";
 
-            for (var i = 0, object; (object = objects[labels[i]]); i++) {
+            for (var i = 0, object; (object = objects[label = labels[i]]); i++) {
                 if (owner !== object) {
                     if (typeof object._deserializedFromTemplate === "function") {
                         object._deserializedFromTemplate(owner);
@@ -419,6 +539,14 @@ var Template = exports.Template = Montage.create(Montage, /** @lends module:mont
                     }
                     if (hasTemplateDidDeserializeObject) {
                         owner.templateDidDeserializeObject(object);
+                    }
+                    if (templateObjects) {
+                        if (object.parentComponent === owner || !object.ownerComponent) {
+                            templateObjects[label] = object;
+                        } else {
+                            this._templateObjectDescriptor.get = this._createTemplateObjectGetter(object.ownerComponent, label);
+                            Object.defineProperty(templateObjects, label, this._templateObjectDescriptor);
+                        }
                     }
                 }
             }

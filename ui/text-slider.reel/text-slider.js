@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /*global require,exports */
 
 /**
@@ -42,6 +67,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         enumerable: false,
         value: null
     },
+
     /**
     A converter that converts from a numeric value to the display value, for
     example to convert to hexadecimal. You may also want to use a converter
@@ -51,7 +77,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     converter: {
-        serializable: true,
         get: function() {
             return this._converter;
         },
@@ -64,16 +89,15 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     },
 
     _value: {
-        enumerable: false,
         value: 0
     },
+
     /**
     The value of the TextSlider.
     @type {Number}
     @default 0
     */
     value: {
-        serializable: true,
         get: function() {
             return this._value;
         },
@@ -129,7 +153,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     minValue: {
-        serializable: true,
         get: function() {
             return this._minValue;
         },
@@ -154,7 +177,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     maxValue: {
-        serializable: true,
         get: function() {
             return this._maxValue;
         },
@@ -176,7 +198,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 0.1
     */
     smallStepSize: {
-        serializable: true,
         enumerable: false,
         value: 0.1
     },
@@ -187,7 +208,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 1
     */
     stepSize: {
-        serializable: true,
         enumerable: false,
         value: 1
     },
@@ -198,7 +218,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 10
     */
     largeStepSize: {
-        serializable: true,
         enumerable: false,
         value: 10
     },
@@ -214,7 +233,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     unit: {
-        serializable: true,
         get: function() {
             return this._unit;
         },
@@ -231,7 +249,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         value: []
     },
     units: {
-        serializable: true,
         get: function() {
             return this._units;
         },
@@ -267,39 +284,29 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     // private
 
     _inputElement: {
-        serializable: true,
-        enumerable: false,
         value: null
     },
 
     _pressComposer: {
-        serializable: true,
-        enumerable: false,
         value: null
     },
     _translateComposer: {
-        serializable: true,
-        enumerable: false,
         value: null
     },
 
     _startX: {
-        enumerable: false,
         value: null
     },
     _startY: {
-        enumerable: false,
         value: null
     },
     _direction: {
-        enumerable: false,
         value: null
     },
 
     didCreate: {
         value: function() {
-            this.handlePress = this.handleFocus;
-            this.handleClick = this.handleFocus;
+            this.handlePress = this.handleClick;
         }
     },
 
@@ -313,27 +320,35 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
 
     prepareForDraw: {
         value: function() {
+            this._element.identifier = "text";
+            this._inputElement.identifier = "input";
+
             this._element.addEventListener("focus", this, false);
             this._inputElement.addEventListener("blur", this, false);
+            this._element.addEventListener("keydown", this, false);
             this._inputElement.addEventListener("keydown", this, false);
         }
     },
 
     draw: {
         value: function() {
+            var wasEditing = this._element.classList.contains("montage-text-slider-editing");
+
             if (this._isEditing) {
-                this._element.classList.add("montage-text-slider-editing");
+                // if we're entering the editing state...
+                if (!wasEditing) {
+                    // ...add the class and focus the input
+                    this._element.classList.add("montage-text-slider-editing");
+                    this._inputElement.focus();
+                }
+
                 this._inputElement.value = this.convertedValue + ((this._unit) ? " " + this._unit : "");
-                // Replace this with just focus when merged
-                this._inputElement.focus();
-                // When _element gets focus we focus the input. Because of this
-                // shift+tab stops working, so prevent _element getting
-                // focus while editing
-                this._element.tabIndex = -1;
-            } else {
+            } else if (wasEditing) {
+                // remove class list, blur the input element and focus the
+                // TextSlider for further editing
                 this._element.classList.remove("montage-text-slider-editing");
                 this._inputElement.blur();
-                this._element.tabIndex = 0;
+                this._element.focus();
             }
 
             if (this._direction === "horizontal") {
@@ -356,11 +371,10 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         }
     },
 
-    // handlePress and handleClick are set to equal handleFocus in didCreate
+    // handlePress and handleClick are set to equal in didCreate
     // handlePress: edit on touch
     // handleClick: edit when parent <label> element is clicked/touched
-    // handleFocus: edit when tabbed to
-    handleFocus: {
+    handleClick: {
         value: function(event) {
             if (!this._isEditing) {
                 this.isEditing = true;
@@ -377,36 +391,42 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         }
     },
 
-    handleKeydown: {
+    handleInputKeydown: {
         value: function(event) {
-            if (event.target === this._inputElement) {
-                var value;
-                if (event.keyCode === 38) {
-                    // up
-                    this.convertedValue = this._inputElement.value;
-                    value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
-                    this.value += value;
-                    this.needsDraw = true;
-                } else if (event.keyCode === 40) {
-                    // down
-                    this.convertedValue = this._inputElement.value;
-                    value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
-                    this.value -= value;
-                    this.needsDraw = true;
-                } else if (event.keyCode === 13) {
-                    // enter
-                    this.convertedValue = this._inputElement.value;
-                    this.isEditing = false;
-                } else if (event.keyCode === 27) {
-                    // esc
-                    this.isEditing = false;
-                }
-            } else {
-                if (event.shiftKey || event.keyCode === 16) {
-                    this._translateComposer.pointerSpeedMultiplier = this.largeStepSize / this.stepSize;
-                } else if (event.ctrlKey || event.keyCode === 17) {
-                    this._translateComposer.pointerSpeedMultiplier = this.smallStepSize / this.stepSize;
-                }
+            var value;
+            if (event.keyCode === 38) {
+                // up
+                this.convertedValue = this._inputElement.value;
+                value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
+                this.value += value;
+                this.needsDraw = true;
+            } else if (event.keyCode === 40) {
+                // down
+                this.convertedValue = this._inputElement.value;
+                value = Math.round(((event.shiftKey) ? this.largeStepSize : (event.ctrlKey) ? this.smallStepSize : this.stepSize) / this.smallStepSize) * this.smallStepSize;
+                this.value -= value;
+                this.needsDraw = true;
+            } else if (event.keyCode === 13) {
+                // enter
+                this.convertedValue = this._inputElement.value;
+                this.isEditing = false;
+            } else if (event.keyCode === 27) {
+                // esc
+                this.isEditing = false;
+            }
+        }
+    },
+    handleTextKeydown: {
+        value: function(event) {
+            if (event.keyCode === 13) {
+                // enter
+                this.isEditing = true;
+            }
+
+            if (event.shiftKey || event.keyCode === 16) {
+                this._translateComposer.pointerSpeedMultiplier = this.largeStepSize / this.stepSize;
+            } else if (event.ctrlKey || event.keyCode === 17) {
+                this._translateComposer.pointerSpeedMultiplier = this.smallStepSize / this.stepSize;
             }
         }
     },
