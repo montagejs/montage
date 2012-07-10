@@ -1,0 +1,129 @@
+
+
+header {
+    height: 54px;
+    padding: 10px 4px;
+    border-bottom: 1px solid hsl(0,0%,95%);
+    color: #0CAAE5;
+}
+
+footer {
+    height: 40px;
+    padding: 0 10px 10px 10px;
+}
+
+article.hideSource {
+    margin-top: 20px;
+}
+
+.editor {
+    margin: 10px 5px 10px 10px;
+    height: 350px;
+    overflow: auto;
+    background-color: #FFFFFF;
+    border: 1px solid #B9B9B9;
+    outline: none;
+
+}
+
+.editor .montage-editor {
+    outline: none;
+    padding: 8px 8px;
+
+    -moz-user-select: -moz-text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+.readonly {
+    background-color: #F0F0F0;
+}
+
+.hideSource .editor {
+    margin: 10px;
+}
+
+.source {
+    height: 300px;
+    margin: 10px 10px 10px 5px;
+    overflow: auto;
+    color: green;
+    background-color: #E0E0E0;
+    border: 1px solid #B9B9B9;
+
+    font-family: "courier monaco";
+    font-size: 1.5rem;
+
+    -moz-user-select: -moz-text;
+    -webkit-user-select: text;
+    user-select: text;
+}
+
+.hideSource .source {
+}
+
+.source pre {
+    white-space: pre-wrap;
+    white-space: -moz-pre-wrap;
+    margin: 0;
+    padding: 2px 10px;
+}
+
+.source pre:nth-child(odd) {
+  background-color: #F0F0F0;
+}
+
+.source pre.type-text {
+    color: blue;
+}
+
+.source pre.type-br {
+    color: red;
+}
+
+.source pre.type-div {
+    color: maroon;
+}
+
+
+
+
+/* Format Buttons */
+.btn-group button {
+    margin-bottom: 5px;
+}
+button.font-styles  {
+    height: 2.2em;
+    width: 3em;
+    padding: 0;
+    outline: none;
+}
+
+button.font-styles.pressed {
+    background: hsl(0,0%,85%);
+    border: 1px solid hsla(0,0%,0%,.1);
+    box-shadow: none;
+}
+
+
+/* other controls */
+
+#resetButton {
+    margin-left: 5px;
+}
+
+#show-source {
+/    position: absolute;
+/    right: 10px;
+}
+
+#read-only {
+/    position: absolute;
+/    right: 50%;
+/    margin-right: 10px;
+}
+
+.leftBox {
+    /position: absolute;
+    /top: 0;
+    /right: 10px;
+}

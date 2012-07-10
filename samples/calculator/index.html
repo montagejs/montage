@@ -1,0 +1,105 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+<head>
+    <title>Calculator</title>
+    <meta charset="utf-8">
+
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="asset/image/apple-touch-icon-144x144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="asset/image/apple-touch-icon-114x114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="asset/image/apple-touch-icon-72x72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="asset/image/apple-touch-icon-precomposed.png">
+
+    <script src="../../montage.js" data-package="."></script>
+    <script type="text/montage-serialization">
+        {
+            "owner": {
+                "module": "montage/ui/loader.reel",
+                "name": "Loader",
+                "properties": {
+                    "mainModule": "components/main.reel",
+                    "mainName": "Main"
+                }
+            },
+
+            "loadingPanel": {
+                "module": "montage/ui/loading-panel.reel",
+                "name": "LoadingPanel",
+                "properties": {
+                    "element": {"#": "loadingPanel"}
+                },
+                "bindings": {
+                    "initializedModuleCount": {"<-": "@owner.initializedModules.count()"},
+                    "requiredModuleCount": {"<-": "@owner.requiredModules.count()"}
+                }
+            }
+
+        }
+    </script>
+
+    <style type="text/css">
+        html {
+            height: 100%;
+        }
+        body {
+            height: 100%;
+            margin: 0;
+            background: #EBEBEB;
+
+        }
+        #loadingPanel {
+            width: 100%;
+            height: 100%;
+            display: -webkit-box;
+            -webkit-box-align: center;
+            -webkit-box-pack: center;
+            display: -moz-box;
+            -moz-box-align: center;
+            -moz-box-pack: center;
+            font: 1.2em sans-serif;
+            color: #555;
+            opacity: 0;
+        }
+        .montage-app-bootstrapping #loadingPanel {
+            opacity: 1;
+        }
+    </style>
+
+</head>
+<body>
+    <div id="loadingPanel">Loading…</div>
+</body>
+</html>

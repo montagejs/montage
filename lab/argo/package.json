@@ -1,0 +1,7 @@
+{
+    "name": "argo",
+    "version": "0.0.0",
+    "description": "Streaming JSON parser",
+    "keywords": ["stream", "streaming", "json", "parser"],
+    "author": "Kris Kowal <kriskowal@motorola.com>"
+}

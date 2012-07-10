@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 
 // Number and String formatting functions from Google Closure Library - http://code.google.com/closure/library/
 // /library/format/format.js
@@ -212,8 +237,7 @@ var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @l
      @default {Boolean} true
      */
     allowFloat: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     /**
@@ -221,8 +245,7 @@ var NumberValidator = exports.NumberValidator = Montage.create(Validator, /** @l
         @default {Boolean} true
     */
     allowNegative: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     /**
@@ -267,8 +290,7 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
     */
         // do not allow partial conversion
     allowPartialConversion: {
-        value: false,
-        serializable: true
+        value: false
     },
     /**
         @type {Function}
@@ -284,16 +306,14 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
     */
         // valid fn values are:
     shorten: {
-        value: null,
-        serializable: true
+        value: null
     },
     /**
         @type {Property}
         @default {Number} 2
     */
     decimals: {
-        value: 2,
-        serializable: true
+        value: 2
     },
 
     /**
@@ -301,8 +321,7 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         @default {Number} null
     */
     round: {
-        value: null,
-        serializable: true
+        value: null
     },
 
    /**
@@ -317,16 +336,14 @@ var NumberConverter = exports.NumberConverter = Montage.create(Converter, /** @l
         @default {Boolean} true
     */
     allowFloat: {
-        value: true,
-        serializable: true
+        value: true
     },
     /**
         @type {Property}
         @default {Boolean} true
     */
     allowNegative: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     // credit: sugar.js - https://github.com/andrewplummer/Sugar

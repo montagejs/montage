@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /*global require,exports */
 
 /**
@@ -42,6 +67,7 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         enumerable: false,
         value: null
     },
+
     /**
     A converter that converts from a numeric value to the display value, for
     example to convert to hexadecimal. You may also want to use a converter
@@ -51,7 +77,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     converter: {
-        serializable: true,
         get: function() {
             return this._converter;
         },
@@ -64,16 +89,15 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     },
 
     _value: {
-        enumerable: false,
         value: 0
     },
+
     /**
     The value of the TextSlider.
     @type {Number}
     @default 0
     */
     value: {
-        serializable: true,
         get: function() {
             return this._value;
         },
@@ -129,7 +153,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     minValue: {
-        serializable: true,
         get: function() {
             return this._minValue;
         },
@@ -154,7 +177,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     maxValue: {
-        serializable: true,
         get: function() {
             return this._maxValue;
         },
@@ -176,7 +198,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 0.1
     */
     smallStepSize: {
-        serializable: true,
         enumerable: false,
         value: 0.1
     },
@@ -187,7 +208,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 1
     */
     stepSize: {
-        serializable: true,
         enumerable: false,
         value: 1
     },
@@ -198,7 +218,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default 10
     */
     largeStepSize: {
-        serializable: true,
         enumerable: false,
         value: 10
     },
@@ -214,7 +233,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     @default null
     */
     unit: {
-        serializable: true,
         get: function() {
             return this._unit;
         },
@@ -231,7 +249,6 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
         value: []
     },
     units: {
-        serializable: true,
         get: function() {
             return this._units;
         },
@@ -267,32 +284,23 @@ var TextSlider = exports.TextSlider = Montage.create(Component, /** @lends modul
     // private
 
     _inputElement: {
-        serializable: true,
-        enumerable: false,
         value: null
     },
 
     _pressComposer: {
-        serializable: true,
-        enumerable: false,
         value: null
     },
     _translateComposer: {
-        serializable: true,
-        enumerable: false,
         value: null
     },
 
     _startX: {
-        enumerable: false,
         value: null
     },
     _startY: {
-        enumerable: false,
         value: null
     },
     _direction: {
-        enumerable: false,
         value: null
     },
 

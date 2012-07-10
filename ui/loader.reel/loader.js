@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 
  /**
     @module montage/ui/loader
@@ -35,8 +60,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The main module to require
 */
     mainModule: {
-        enumerable: false,
-        serializable: true,
         value: "ui/main.reel"
     },
 
@@ -44,8 +67,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The name of the object to read from the mainModule exports
 */
     mainName: {
-        enumerable: false,
-        serializable: true,
         value: "Main"
     },
 
@@ -53,8 +74,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Whether or not to include framework modules in the collection of required and initialized modules
 */
     includeFrameworkModules: {
-        enumerable: false,
-        serializable: true,
         value: false
     },
 
@@ -62,8 +81,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The minimum amount of time the bootstrapping indicator must be shown for
 */
     minimumBootstrappingDuration: {
-        enumerable: false,
-        serializable: true,
         value: 1500
     },
 
@@ -71,13 +88,10 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     The minimum amount of time the loading indicator must be shown for
 */
     minimumLoadingDuration: {
-        enumerable: false,
-        serializable: true,
         value: 2000
     },
 
     _initializedModules: {
-        enumerable: false,
         value: null
     },
 
@@ -100,7 +114,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     },
 
     _requiredModules: {
-        enumerable: false,
         value: null
     },
 
@@ -125,7 +138,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     // States
 
     _currentStage: {
-        enumerable: false,
         value: PRELOADING
     },
 
@@ -133,7 +145,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Current loading stage.
 */
     currentStage: {
-        enumerable: false,
         get: function() {
             return this._currentStage;
         },
@@ -151,7 +162,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     },
 
     _readyToShowLoader: {
-        enumerable: false,
         value: false
     },
 
@@ -159,7 +169,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Boolean that specifies whether the loader is loading the application's main component.
 */
     isLoadingMainComponent: {
-        enumerable: false,
         value: null
     },
 
@@ -167,7 +176,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Specifies whether the loader is ready to show the loading graphic...FIXME
 */
     readyToShowLoader: {
-        enumerable: false,
         get: function() {
             return this._readyToShowLoader;
         },
@@ -185,7 +193,6 @@ exports.Loader = Montage.create(Component, /** @lends module:montage/ui/loader.L
     Specifies whether the main component is ready to be displayed.
 */
     readyToShowMainComponent: {
-        enumerable: false,
         get: function() {
             return !!this._mainComponent;
         }

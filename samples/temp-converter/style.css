@@ -1,0 +1,163 @@
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+
+
+/* Base ----------------------------- */
+
+html {
+    background-color: hsl(0,0%,85%);
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-pack: center;
+}
+
+
+/* Converter ----------------------------- */
+
+.converter {
+   padding: 10px;
+   text-shadow: #fff 0 1px 0;
+   border-radius: 8px;
+   background-color: hsl(0,0%,95%);
+   box-shadow: 	inset 0px 1px 2px 1px hsla(0,0%,100%,1), 0px 2px 5px hsla(0,0%,0%,.1);
+}
+
+.converter .title {
+   margin: 0 0 5px 0;
+   text-align: center;
+   font: 24px/40px "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
+
+.converter .controls {
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    display: -moz-box;
+    -moz-box-align: center;
+    -moz-box-pack: center;    
+    padding: 20px;
+    text-shadow: #fff 0 1px 0;
+    border-radius: 6px;
+    background-color: hsl(0,0%,98%);
+    box-shadow: 	inset 0px 1px 2px 1px hsla(0,0%,100%,1), 0px 2px 5px hsla(0,0%,0%,.1);
+}
+
+
+/* Number ----------------------------- */
+
+.converter label {
+    display: block;
+    text-align: right;
+    margin-bottom: 15px;
+    color: hsl(0,0%,50%);
+    font: 18px/1.4em "Lucida Grande", "Trebuchet MS", Verdana, sans-serif;
+}
+.converter label:last-child {
+    margin-bottom: 0px;
+}
+
+.converter input[type="number"] {
+    display: inline-block;
+    width: 163px;
+    box-sizing: border-box;
+    font: inherit;
+    text-shadow: hsl(0,0%,95%) 0 1px 0;
+    padding: 10px;
+    border-radius: 8px;
+    border: 1px solid hsl(0,0%,70%);
+    background-color: hsl(0,0%,90%);
+    box-shadow: inset 0px 1px 2px hsla(0,0%,0%,.2), 0 2px 0 hsla(0,0%,100%,1);
+}
+.converter input[type="number"]:focus {
+    outline: none;
+
+    border: 1px solid hsl(200,100%,50%);
+    background-color: hsl(200,50%,95%);
+    box-shadow: inset 0px 1px 2px hsla(200,50%,30%,.3), 0 2px 0 hsla(0,0%,100%,1);
+}
+
+/* Spin button */
+.converter input[type="number"]::-webkit-outer-spin-button {
+    margin-left: 5px;
+}
+
+
+/* Barometer ----------------------------- */
+
+.converter .barometerTrack {
+    width: 24px;
+    text-align: center;
+    margin-left: 20px;
+    padding: 8px 5px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    box-shadow: inset 0px 1px 2px hsla(0,0%,0%,.5), 0 2px 0 hsla(0,0%,100%,1);
+    background: -webkit-linear-gradient(bottom,  hsl(200,100%,50%),
+                                                 hsl(200,100%,80%) 30%,
+                                                 hsl(60,100%,65%) 50%,
+                                                 hsl(0,100%,80%) 70%,
+                                                 hsl(0,100%,50%) );
+    background: -moz-linear-gradient(bottom,     hsl(200,100%,50%),
+                                                 hsl(200,100%,80%) 30%,
+                                                 hsl(60,100%,65%) 50%,
+                                                 hsl(0,100%,80%) 70%,
+                                                 hsl(0,100%,50%) );
+}
+
+.converter .barometerTrack input[type="range"] {
+    -webkit-appearance: slider-vertical;
+    /*-moz-appearance: scale-vertical; Looked promising, but doesn't work*/
+    border: none;
+    width: 16px;
+    height: 100px;
+    margin: 0;
+    background: transparent;
+    box-sizing: border-box;
+    vertical-align: middle;
+}
+
+.converter .barometerTrack input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    border-radius: 15px;
+    box-shadow: inset 0 -1px 4px hsla(0,0%,0%,.2), inset 0 0 0 10px hsla(0,0%,100%,1), 0px 1px 2px 2px hsla(0,0%,0%,.2);
+}
+
