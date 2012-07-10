@@ -61,6 +61,18 @@ var testPage = TestPageLoader.queueTest("native-control-test", function() {
                 });
 
             });
+            it("has the title attribute only if the title is set (gh-684)", function() {
+                var txt = test.txt1;
+                expect(txt.title).toBeFalsy();
+                expect(txt.element.title).toBeFalsy();
+
+                txt.title = 'hello';
+                testPage.waitForDraw();
+                runs(function() {
+                    expect(txt.element.title).toBe('hello');
+                });
+
+            });
 
         });
 
