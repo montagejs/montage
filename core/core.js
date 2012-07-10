@@ -31,11 +31,15 @@ POSSIBILITY OF SUCH DAMAGE.
 /*global Element */
 /**
  @module montage/core/core
- @requires montage/core/shim
- @requires montage/core/uuid
- @requires montage/core/event/binding
- @requires montage/core/event/event-manager
- */
+ @requires core/shim/object
+ @requires core/shim/array
+ @requires core/shim/string
+ @requires core/extras/object
+ @requires core/extras/array
+ @requires core/extras/string
+ @requires core/extras/function
+ @requires core/extras/date
+*/
 require("core/shim/object");
 require("core/shim/array");
 require("core/shim/string");
@@ -70,22 +74,22 @@ var Object_prototype = Object.prototype;
 var Montage = exports.Montage = {};
 
 /**
-     Creates a new Montage object.
-     @function module:montage/core/core.Montage.create
-     @param {Object} aPrototype The prototype object to create the new object from. If not specified, the prototype is the Montage prototype.
-     @param {Object} [propertyDescriptor] An object that contains the initial properties and values for the new object.
-     @returns The new object
-     @example
-     <caption>Creating a "empty" Montage object, using Montage as the prototype</caption>
-     var alpha = Montage.create();
-     @example
-     <caption>Creating a new Montage component with a property descriptor object.</caption>
-     var Button = Montage.create(Component , {
+    Creates a new Montage object.
+    @function module:montage/core/core.Montage.create
+    @param {Object} aPrototype The prototype object to create the new object from. If not specified, the prototype is the Montage prototype.
+    @param {Object} [propertyDescriptor] An object that contains the initial properties and values for the new object.
+    @returns The new object
+    @example
+    <caption>Creating a "empty" Montage object, using Montage as the prototype</caption>
+    var alpha = Montage.create();
+    @example
+    <caption>Creating a new Montage component with a property descriptor object.</caption>
+    var Button = Montage.create(Component , {
         state: {
             value: null
         }
-     });
-     */
+    });
+*/
 Object.defineProperty(Montage, "create", {
     configurable: true,
     value: function(aPrototype, propertyDescriptor) {
@@ -122,19 +126,19 @@ extendedPropertyAttributes.forEach(function(name) {
 });
 
 /**
-     Defines a property on a Montage object.
-     @function module:montage/core/core.Montage.defineProperty
-     @param {Object} obj The object on which to define the property.
-     @param {String} prop The name of the property to define, or modify.
-     @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
-     @example
-     Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
-     enumerable: true | false,
-     serializable: "reference" | "value" | "auto" | false,
-     value: null,
-     writable: true | false
-     });
-     */
+    Defines a property on a Montage object.
+    @function module:montage/core/core.Montage.defineProperty
+    @param {Object} obj The object on which to define the property.
+    @param {String} prop The name of the property to define, or modify.
+    @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
+    @example
+    Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
+        enumerable: true | false,
+        serializable: "reference" | "value" | "auto" | false,
+        value: null,
+        writable: true | false
+    });
+*/
 Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
@@ -381,11 +385,11 @@ Object.defineProperty(Montage, "defineProperty", {
     }});
 
 /**
-     Description Defines one or more new properties to an object, or modifies existing properties on the object.
-     @function module:montage/core/core.Montage.defineProperties
-     @param {Object} obj The object to which the properties are added.
-     @param {Object} properties An object that contains one or more property descriptor objects.
-     */
+    Description Defines one or more new properties to an object, or modifies existing properties on the object.
+    @function module:montage/core/core.Montage.defineProperties
+    @param {Object} obj The object to which the properties are added.
+    @param {Object} properties An object that contains one or more property descriptor objects.
+*/
 Object.defineProperty(Montage, "defineProperties", {value: function(obj, properties) {
     for (var property in properties) {
         if ("_bindingDescriptors" !== property) {
@@ -414,13 +418,13 @@ var _defaultFunctionValueProperty = {
 };
 
 /**
-     Adds a dependent property to another property's collection of dependencies.
-     When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
-     @function module:montage/core/core.Montage.addDependencyToProperty
-     @param {Object} obj The object containing the dependent and independent properties.
-     @param {String} independentProperty The name of the object's independent property.
-     @param {String} dependentProperty The name of the object's dependent property.
-     */
+    Adds a dependent property to another property's collection of dependencies.
+    When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
+    @function module:montage/core/core.Montage.addDependencyToProperty
+    @param {Object} obj The object containing the dependent and independent properties.
+    @param {String} independentProperty The name of the object's independent property.
+    @param {String} dependentProperty The name of the object's dependent property.
+*/
 Montage.defineProperty(Montage, "addDependencyToProperty", { value: function(obj, independentProperty, dependentProperty) {
 
     // TODO optimize this so we don't keep checking over and over again
@@ -439,13 +443,13 @@ Montage.defineProperty(Montage, "addDependencyToProperty", { value: function(obj
 
 
 /**
-     Removes a dependent property from another property's collection of dependent properties.
-     When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
-     @function module:montage/core/core.Montage.removeDependencyFromProperty
-     @param {Object} obj The object containing the dependent and independent properties.
-     @param {String} independentProperty The name of the object's independent property.
-     @param {String} dependentProperty The name of the object's dependent property that you want to remove.
-     */
+    Removes a dependent property from another property's collection of dependent properties.
+    When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
+    @function module:montage/core/core.Montage.removeDependencyFromProperty
+    @param {Object} obj The object containing the dependent and independent properties.
+    @param {String} independentProperty The name of the object's independent property.
+    @param {String} dependentProperty The name of the object's dependent property that you want to remove.
+*/
 Montage.defineProperty(Montage, "removeDependencyFromProperty", {value: function(obj, independentProperty, dependentProperty) {
     if (!obj._dependenciesForProperty) {
         return;
@@ -474,11 +478,11 @@ function getAttributeProperties(proto, attributeName) {
 }
 
 /**
-     Returns the names of serializable properties belonging to Montage object.
-     @function module:montage/core/core.Montage.getSerializablePropertyNames
-     @param {Object} anObject A Montage object.
-     @returns {Array} An array containing the names of the serializable properties belonging to <code>anObject</code>.
-     */
+    Returns the names of serializable properties belonging to Montage object.
+    @function module:montage/core/core.Montage.getSerializablePropertyNames
+    @param {Object} anObject A Montage object.
+    @returns {Array} An array containing the names of the serializable properties belonging to <code>anObject</code>.
+*/
 Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function(anObject) {
 
     var propertyNames = [],
@@ -496,13 +500,13 @@ Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function
 }});
 
 /**
-     Returns the attribute of a property belonging to an object.
-     @function module:montage/core/core.Montage.getPropertyAttribute
-     @param {Object} anObject A object.
-     @param {String} propertyName The name of a property belonging to <code>anObject</code>.
-     @param {String} attributeName The name of a property's attribute.
-     @returns attributes array
-     */
+    Returns the attribute of a property belonging to an object.
+    @function module:montage/core/core.Montage.getPropertyAttribute
+    @param {Object} anObject A object.
+    @param {String} propertyName The name of a property belonging to <code>anObject</code>.
+    @param {String} attributeName The name of a property's attribute.
+    @returns attributes array
+*/
 Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObject, propertyName, attributeName) {
 
     var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
@@ -513,12 +517,12 @@ Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObjec
     }
 }});
 
- /**
-     @function module:montage/core/core.Montage.getPropertyAttributes
-     @param {Object} anObject An object.
-     @param {String} attributeName The attribute name.
-     @returns {Object} TODO getPropertyAttributes returns description
-     */
+/**
+    @function module:montage/core/core.Montage.getPropertyAttributes
+    @param {Object} anObject An object.
+    @param {String} attributeName The attribute name.
+    @returns {Object} TODO getPropertyAttributes returns description
+*/
 Montage.defineProperty(Montage, "getPropertyAttributes", {value: function(anObject, attributeName) {
     var attributeValues = {},
         attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
@@ -545,10 +549,11 @@ var _functionInstanceMetadataDescriptor = {
 };
 
 /**
-     @function module:montage/core/core.Montage.getInfoForObject
-     @param {Object} object An object.
-     @returns {Object} object._montage_metadata
-     */
+    Get the metadata Montage has on the given object
+    @function module:montage/core/core.Montage.getInfoForObject
+    @param {Object} object An object.
+    @returns {Object} object._montage_metadata
+*/
 Montage.defineProperty(Montage, "getInfoForObject", {
     value: function(object) {
         var metadata;
@@ -578,21 +583,21 @@ Montage.defineProperty(Montage, "getInfoForObject", {
         }
     }
 });
+
 /**
     @function module:montage/core/core.Montage.doNothing
     @default function
-    */
-
+*/
 Object.defineProperty(Montage, "doNothing", {
     value: function() {
     }
 });
 
 /**
-    @function module:montage/core/core.Montage#self
+    @function module:montage/core/core.Montage.self
     @default function
     @returns itself
-    */
+*/
 Object.defineProperty(Montage, "self", {
     value: function() {
         return this;
@@ -601,7 +606,7 @@ Object.defineProperty(Montage, "self", {
 
 /**
     @private
-    */
+*/
 Object.defineProperty(Montage, "__OBJECT_COUNT", {
     value: 0,
     writable: true
@@ -665,8 +670,8 @@ var defaultUuidGet = function defaultUuidGet() {
 };
 
 /**
-     @private
-     */
+    @private
+*/
 Object.defineProperty(Object.prototype, "_uuid", {
     enumerable: false,
     value: null,
@@ -674,10 +679,10 @@ Object.defineProperty(Object.prototype, "_uuid", {
 });
 
 /**
-     Contains an object's unique ID.
-     @member external:Object#uuid
-     @default null
-     */
+    Contains an object's unique ID.
+    @member external:Object#uuid
+    @default null
+*/
 Object.defineProperty(Object.prototype, "uuid", {
     configurable: true,
     get: defaultUuidGet,
@@ -691,29 +696,24 @@ Montage.defineProperty(Montage, "identifier", {
 });
 
 /**
-     Returns true if two objects are equal, otherwise returns false.
-     @function module:montage/core/core.Montage#equals
-     @param {Object} anObject The object to compare for equality.
-     @returns {Boolean} Returns <code>true</code> if the calling object and <code>anObject</code> are identical and their <code>uuid</code> properties are also equal. Otherwise, returns <code>false</code>.
-     */
+    Returns true if two objects are equal, otherwise returns false.
+    @function module:montage/core/core.Montage.equals
+    @param {Object} anObject The object to compare for equality.
+    @returns {Boolean} Returns <code>true</code> if the calling object and <code>anObject</code> are identical and their <code>uuid</code> properties are also equal. Otherwise, returns <code>false</code>.
+*/
 Object.defineProperty(Montage, "equals", {
     value: function(anObject) {
         return this === anObject || this.uuid === anObject.uuid;
     }
 });
 
-
-
 /*
- * If it exists this method calls the method named with the identifier prefix.
- * Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
- * this method will try and call "bobShouldDoSomething"
+    This method calls the method named with the identifier prefix if it exists.
+    Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
+    this method will try and call "bobShouldDoSomething"
+    @function module:montage/core/core.Montage.callDelegateMethod
+    @param {string} name
 */
-
-/**
- * @function module:montage/core/core.Montage#callDelegateMethod
- * @param {string} name
- */
 Object.defineProperty(Montage, "callDelegateMethod", {
     value: function(name) {
         var delegate = this.delegate, delegateFunctionName, delegateFunction;
