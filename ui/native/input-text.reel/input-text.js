@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 /**
-    @module "montage/ui/input-text.reel"
+    @module "montage/ui/native/input-text.reel"
     @requires montage/ui/component
     @requires montage/ui/text-input
 */
@@ -39,7 +39,7 @@ var Montage = require("montage").Montage,
     TextInput = require("ui/text-input").TextInput;
 /**
  * Wraps the a &lt;input type="text"> element with binding support for the element's standard attributes.
-   @class module:"montage/ui/input-text.reel".InputText
+   @class module:"montage/ui/native/input-text.reel".InputText
    @extends module:montage/ui/text-input.TextInput
 
  */

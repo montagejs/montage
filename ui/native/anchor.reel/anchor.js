@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 /**
-	@module "montage/ui/anchor.reel"
+    @module "montage/ui/native/anchor.reel"
     @requires montage/core/core
     @requires montage/ui/native-control
 */
@@ -39,7 +39,7 @@ var Montage = require("montage").Montage,
     NativeControl = require("ui/native-control").NativeControl;
 /**
   The Anchor component wraps a native <code>&lt;a&gt;</code> element and exposes its standard attributes as bindable properties.
-  @class module:"montage/ui/anchor.reel".Anchor
+  @class module:"montage/ui/native/anchor.reel".Anchor
   @extends module:montage/ui/native-control.NativeControl
 
 */
@@ -52,7 +52,7 @@ var Anchor = exports.Anchor = Montage.create(NativeControl, {
 
 });
 
-Anchor.addAttributes( /** @lends module:"montage/ui/anchor.reel".Anchor# */ {
+Anchor.addAttributes( /** @lends module:"montage/ui/native/anchor.reel".Anchor# */ {
 
 /**
     The text displayed by the link.
