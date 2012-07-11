@@ -1,0 +1,548 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+    <head>
+        <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+        <script type="text/montage-serialization">{
+
+                "checkbox1": {
+                    "prototype": "montage/ui/input-checkbox.reel",
+                    "properties": {
+                        "element": {"#": "checkbox1"}
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "logger"}
+                        }
+                    ]
+                },
+
+                "checkbox2": {
+                    "prototype": "montage/ui/input-checkbox.reel",
+                    "properties": {
+                        "element": {"#": "checkbox2"},
+                        "checked": true
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "logger"}
+                        }
+                    ]
+                },
+
+                "agreeCheckbox": {
+                    "prototype": "montage/ui/input-checkbox.reel",
+                    "properties": {
+                        "element": {"#": "agreeCheckbox"}
+                    }
+                },
+                "continueButton": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "continueButton"}
+                    },
+                    "bindings": {
+                        "disabled": {"<-": "@agreeCheckbox.checked", "converter": {"@": "invertConverter"}}
+                    }
+                },
+
+                "invertConverter": {
+                    "prototype": "ui/components/converters.reel[InvertConverter]"
+                },
+
+                "logger": {
+                    "prototype": "ui/logger.reel",
+                    "properties": {
+                        "element": {"#": "logger"}
+                    }
+                },
+
+
+                "controller": {
+                    "prototype": "montage/ui/controller/array-controller",
+                    "properties": {
+                        "selectObjectsOnAddition": true,
+                        "automaticallyOrganizeObjects": true
+                    },
+                    "bindings": {
+                        "content": {"<-": "@owner.data"}
+                    }
+                },
+
+                "list1": {
+                    "prototype": "montage/ui/repetition.reel",
+                    "properties": {
+                        "element": {
+                            "#": "table-row"
+                        },
+                        "isSelectionEnabled": false,
+                        "contentController": {"@": "controller"}
+                    }
+                },
+
+                "link": {
+                    "prototype": "montage/ui/anchor.reel",
+                    "properties": {
+                        "element": {"#": "link"}
+                    },
+                    "bindings": {
+                        "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+                        "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
+                    }
+                },
+
+                "desc": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "desc"}
+                    },
+                    "bindings": {
+                        "value": {"<-": "@list1.objectAtCurrentIteration.description"}
+                    }
+                },
+
+
+                "selection": {
+                    "prototype": "montage/ui/input-checkbox.reel",
+                    "properties": {
+                        "element": {"#": "selection"}
+                    },
+                    "bindings": {
+                        "checked": {"<->": "@list1.selectionAtCurrentIteration"}
+                    }
+                },
+
+                "selectedValue": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "selectedValue"}
+                    },
+                    "bindings": {
+                        "value": {"<->": "@owner.jsonSelectedItems"}
+                    }
+                },
+                "checkboxAccordion1": {
+                    "prototype": "ui/accordion.reel",
+                    "properties": {
+                        "element": {"#": "checkboxAccordion1"}
+                    }
+                },
+                "checkboxAccordion2": {
+                    "prototype": "ui/accordion.reel",
+                    "properties": {
+                        "element": {"#": "checkboxAccordion2"}
+                    }
+                },
+                "checkboxAccordion3": {
+                    "prototype": "ui/accordion.reel",
+                    "properties": {
+                        "element": {"#": "checkboxAccordion3"}
+                    }
+                },
+
+
+                "owner": {
+                    "prototype": "ui/components/checkbox-example.reel",
+                    "properties": {
+                        "element": {"#": "checkbox-example"},
+                        "data": [
+                        {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+                        {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+                        {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+                        ]
+                    },
+                    "bindings": {
+                        "selectedItems": {"<->": "@controller.selectedObjects"}
+                    }
+                }
+
+    }</script>
+
+        <style>
+           .checkbox-example tr.selected {
+               background-color: hsl(50,80%,95%);
+           }
+        </style>
+    </head>
+    <body>
+        <div data-montage-id="checkbox-example" class="checkbox-example">
+            <div class="row">
+                <div class="span12">
+                    <h3>Input Checkbox</h3>
+                    <p>
+                        The InputCheckbox component wraps an HTML checkbox input type with custom styles and functionality.
+                    </p>
+                </div>
+            </div>
+
+            <h4>Examples</h4>
+
+            <div class="demo cb1">
+
+                <form class="form-stacked">
+                    <label class="checkbox inline"><input data-montage-id="checkbox1" type="checkbox" /> Milk</label>
+                    <label class="checkbox inline"><input data-montage-id="checkbox2" type="checkbox" /> Eggs</label>
+                </form>
+
+            </div>
+
+            <section>
+                <ul data-montage-id="checkboxAccordion1" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;form class="form-stacked"&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox1" type="checkbox" /&gt; Milk&lt;/label&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input data-montage-id="checkbox2" type="checkbox" /&gt; Eggs&lt;/label&gt;
+&lt;/form&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "checkbox1": {
+        "prototype": "montage/ui/input-checkbox.reel",
+        "properties": {
+            "element": {"#": "checkbox1"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
+    "checkbox2": {
+        "prototype": "montage/ui/input-checkbox.reel",
+        "properties": {
+            "element": {"#": "checkbox2"},
+            "checked": true
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "logger"}
+            }
+        ]
+    },
+
+    "logger": {
+        "prototype": "ui/logger.reel",
+        "properties": {
+            "element": {"#": "logger"}
+        }
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                </ul>
+
+            </section>
+
+
+
+                <h4>Binding the InputCheckbox to a Button's disabled state</h4>
+
+
+            <div class="demo cb2">
+                <form class="form-stacked">
+                    <label class="checkbox inline"><input type="checkbox" data-montage-id="agreeCheckbox"/> I agree to something</label><br/>
+                    <input type="submit" data-montage-id="continueButton" value="Continue" class="btn" disabled />
+                </form>
+            </div>
+            <section>
+                <ul data-montage-id="checkboxAccordion2" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;form class="form-stacked"&gt;
+    &lt;label class="checkbox inline"&gt;&lt;input type="checkbox" data-montage-id="agreeCheckbox"/&gt; I agree to something&lt;/label&gt;&lt;br/&gt;
+    &lt;input type="submit" data-montage-id="continueButton" value="Continue" class="btn" disabled /&gt;
+&lt;/form&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "agreeCheckbox": {
+        "prototype": "montage/ui/input-checkbox.reel",
+        "properties": {
+            "element": {"#": "agreeCheckbox"}
+        }
+    },
+    "continueButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "continueButton"}
+        },
+        "bindings": {
+            "disabled": {"&lt;-": "@agreeCheckbox.checked", "converter": {"@": "invertConverter"}}
+        }
+    },
+
+    "invertConverter": {
+        "prototype": "ui/components/converters.reel[InvertConverter]"
+    }
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
+                       <div class="accordion-inner montage-hidden">
+                           <pre class="prettyprint" >
+
+var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
+
+   allowPartialConversion: {
+       value: true
+   },
+
+   convert: {
+       enumerable: false,
+       value: function(v) {
+           return !v;
+       }
+   },
+
+   revert: {
+       value: function(v) {
+           return !v;
+       }
+   }
+});
+                           </pre>
+                       </div>
+                   </li>
+                </ul>
+
+            </section>
+
+
+
+            <h4>Using InputCheckbox to select multiple items within a Repetition </h4>
+            <div class="demo cb3">
+                <table data-montage-id="list1" class="bordered-table">
+                    <thead>
+                        <tr>
+                            <th>Selection</th>
+                            <th>Name</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody data-montage-id="table-row">
+                        <tr>
+                             <td><input type="checkbox" data-montage-id="selection" /></td>
+                            <td><a data-montage-id="link" target="_blank"></a></td>
+                            <td><span data-montage-id="desc"></span></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div>
+                    <h5>Your selections:</h5>
+                    <p data-montage-id="selectedValue" class="echo"></p>
+                </div>
+            </div>
+
+            <section>
+                <ul data-montage-id="checkboxAccordion3" class="accordion">
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                       <div class="accordion-inner montage-hidden" >
+                            <pre class="prettyprint" >
+&lt;table data-montage-id="list1" class="bordered-table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Selection&lt;/th&gt;
+            &lt;th&gt;Name&lt;/th&gt;
+            &lt;th&gt;Description&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody data-montage-id="table-row"&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;input type="checkbox" data-montage-id="selection" /&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+
+&lt;div&gt;
+    &lt;h5&gt;Your selections: &lt;/h5&gt;
+    &lt;p data-montage-id="selectedValue" class="echo"&gt;&lt;/p&gt;
+&lt;/div&gt;
+                            </pre>
+                       </div>
+                   </li>
+                   <li class="accordion-group">
+                       <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                       <div class="accordion-inner montage-hidden">
+                        <pre class="prettyprint" >
+{
+    "owner": {
+        "prototype": "ui/components/checkbox-example.reel",
+        "properties": {
+            "element": {"#": "checkbox-example"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        },
+        "bindings": {
+            "selectedItems": {"&lt;&lt;-&gt;": "@controller.selectedObjects"}
+        }
+    },
+
+    "controller": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"&lt;-": "@owner.data"}
+        }
+    },
+
+    "list1": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": false,
+            "contentController": {"@": "controller"}
+        }
+    },
+
+    "link": {
+        "prototype": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {"&lt;-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"&lt;-": "@list1.objectAtCurrentIteration.src"}
+        }
+    },
+
+    "desc": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@list1.objectAtCurrentIteration.description"}
+        }
+    },
+
+
+    "selection": {
+        "prototype": "montage/ui/input-checkbox.reel",
+        "properties": {
+            "element": {"#": "selection"}
+        },
+        "bindings": {
+            "checked": {"&lt;&lt;-&gt;": "@list1.selectionAtCurrentIteration"}
+        }
+    },
+
+    "selectedValue": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "selectedValue"}
+        },
+        "bindings": {
+            "value": {"&lt;&lt;-&gt;": "@owner.jsonSelectedItems"}
+        }
+    }
+
+}
+                        </pre>
+
+                       </div>
+                   </li>
+                </ul>
+            </section>
+
+
+            <section>
+                <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/checkbox-example.reel" target="_blank">View source on GitHub</a>
+            </section>
+<!--
+            <section>
+                <h4>Component Properties</h4>
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Name</th>
+                      <th>Description</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                      <tr>
+                        <td>checked</td>
+                        <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                      </tr>
+                    <tr>
+                      <td>name</td>
+                      <td>Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium</td>
+                    </tr>
+
+                  </tbody>
+                </table>
+                <p>
+                    <a href="" target="_blank">View full Documentation</a>
+                </p>
+            </section>
+ -->
+            <div data-montage-id="logger"></div>
+
+        </div>
+    </body>
+</html>

@@ -1,0 +1,171 @@
+#!/usr/bin/env node
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+/*jshint node:true */
+
+var fs = require("fs"),
+    path = require("path"),
+    JSHINT = require("./lib/jshint").JSHINT;
+var linters = require("./linters"),
+    linterNames = Object.keys(linters);
+
+global.debug = false;
+
+/**
+    @function
+    @param filenames {Array[String]} An array of filenames to lint
+    @param [ignore] {Array[String]} An array of filenames to ignore, by default
+                                    "node_modules" and "test" are ignored
+    @param [problems] {Object} The object to insert the problems into
+    @param [callback] {Function} Get the result of each file as it is linted.
+                                 Is called with two arguments, the filename and
+                                 and array with the problems.
+    @returns {Object} An object mapping filenames to an array of objects containing problems.
+                      Each object has "problem", "line" and "solution" properties. e.g.
+                      {"file.js": [{problem: "...", line: 1, solution: "..."}, ...], ...}
+*/
+var run = exports.run = function(filenames, ignore, problems, callback) {
+    ignore = ignore || ["node_modules", "test"];
+    problems = problems || {};
+
+    for (var i = 0, len = filenames.length; i < len; i++) {
+        var filename = filenames[i],
+            filePath = path.resolve(filename),
+            basename = path.basename(filename);
+
+        if (!path.existsSync(filename)) {
+            if (global.debug){ console.error("Info: '" + filename + "' does not exist. Skipping."); }
+            continue;
+        }
+
+        // Skip dotfiles.
+        // fs.readdirSync doesn't include "." and ".." in its output, so if we
+        // have them it's because the user passed them in explicitly. It's
+        // likely they want to check the current or parent directory so don't
+        // skip in that case.
+        if (basename.indexOf(".") === 0 && basename !== "." && basename !== "..") {
+            if (global.debug){ console.error("Info: " + filename + " is a dotfile. Skipping."); }
+            continue;
+        }
+        if (ignore.indexOf(basename) !== -1) {
+            if (global.debug){ console.error("Info: Ignoring " + filename); }
+            continue;
+        }
+
+        // recurse into sub-directories
+        if (fs.statSync(filename).isDirectory()) {
+            var subProblems = run(fs.readdirSync(filename).map(function(f) {
+                // prefix filename with the path
+                return path.join(filename, f);
+            }), ignore, problems, callback);
+            continue;
+        }
+
+        if (path.extname(filename) !== ".js") {
+            if (global.debug){ console.error("Info: " + filename + " is not a JavaScript file. Skipping."); }
+            continue;
+        }
+
+        var p = lint(filePath, fs.readFileSync(filePath, "utf8"));
+        problems[filename] = p;
+        if (typeof callback === "function") {
+            callback(filename, p);
+        }
+    }
+
+    return problems;
+};
+
+var lint = exports.lint = function(filePath, source) {
+    JSHINT(source, {browser: true, node: true, trailing: true, strict: false});
+    var jshint = JSHINT.data();
+    // todo esprima
+
+    var fileProblems = [];
+
+    for (var i = 0, len = linterNames.length; i < len; i++) {
+        var linter = linterNames[i];
+        var linterProblems = linters[linter](filePath, source, jshint);
+        if (linterProblems) {
+            fileProblems = fileProblems.concat(linters[linter](filePath, source, jshint));
+        }
+    }
+    return fileProblems;
+};
+
+function usage() {
+    console.log("Usage: mint [ options ] filenames...");
+    console.log();
+    console.log("mint checks Montage Javascript files for coding errors.");
+    console.log();
+    console.log("\t--solution\tshow solutions along with problems");
+    console.log("\t--ignore  \tcomma-separated list of filenames to ignore. Ignores node_modules and test by default");
+    console.log("\t--debug   \tshow debug messages, such as skipped files");
+}
+
+if (!module.parent) {
+    // this is the main module
+    var args = process.argv.slice(2),
+        solution = false,
+        ignore = null;
+
+    if (args.length === 0) {
+        usage();
+        process.exit();
+    }
+
+    var argPos = 0;
+    if ((argPos = args.indexOf("--solution")) !== -1) {
+        solution = true;
+        args.splice(argPos, 1);
+    }
+    if ((argPos = args.indexOf("--debug")) !== -1) {
+        global.debug = true;
+        args.splice(argPos, 1);
+    }
+    if ((argPos = args.indexOf("--ignore")) !== -1) {
+        ignore = args.splice(argPos, 2)[1].split(",");
+    }
+
+    var colors = require("./lib/termcolors").colors;
+    var codeRe = /`([^`]+)`/g;
+
+    run(args, ignore, null, function(filename, problems) {
+        for (var i = 0, len = problems.length; i < len; i++) {
+            var p = problems[i];
+            console.log(colors.brown(filename + ":" + p.line, true) + " " + p.problem);
+            if (solution) {
+
+                console.log(colors.green("> ", true) + p.solution.replace(codeRe, "`" + colors.dgray("$1", true) + "`" ));
+            }
+        }
+    });
+}

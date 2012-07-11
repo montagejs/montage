@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /*global Element */
 /**
  @module montage/core/core
@@ -104,10 +129,10 @@ extendedPropertyAttributes.forEach(function(name) {
      @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
      @example
      Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
-     enumerable: false,
-     serializable: true,
+     enumerable: true | false,
+     serializable: "reference" | "value" | "auto" | false,
      value: null,
-     writable: true
+     writable: true | false
      });
      */
 Object.defineProperty(Montage, "defineProperty", {
@@ -147,6 +172,16 @@ Object.defineProperty(Montage, "defineProperty", {
         if (!descriptor.hasOwnProperty(ENUMERABLE) && prop.charAt(0) === UNDERSCORE) {
             descriptor.enumerable = false;
         }
+        if (!descriptor.hasOwnProperty(SERIALIZABLE)) {
+            if (! descriptor.enumerable) {
+                descriptor.serializable = false;
+            } else if (descriptor.get && !descriptor.set) {
+                descriptor.serializable = false;
+            } else if (descriptor.writable === false) {
+                descriptor.serializable = false;
+            }
+        }
+
         if (dependencies) {
             var i = 0,
                 independentProperty;
@@ -165,12 +200,14 @@ Object.defineProperty(Montage, "defineProperty", {
         //this is added to enable value properties with [] or Objects that are new for every instance
         if (descriptor.distinct === true && typeof descriptor.value === "object") {
             (function(prop,internalProperty, value, obj) {
-                Object.defineProperty(obj, internalProperty, {
-                    enumerable: false,
-                    configurable: true,
-                    writable: true,
-                    value: null
-                });
+                var defineInternalProperty = function(obj, internalProperty, value) {
+                    Object.defineProperty(obj, internalProperty, {
+                        enumerable: false,
+                        configurable: true,
+                        writable: true,
+                        value: value
+                    });
+                };
                 if (value.constructor === Object && Object.getPrototypeOf(value) === Object_prototype) {
                     // we have an object literal {...}
                     if (Object.keys(value).length !== 0) {
@@ -185,22 +222,43 @@ Object.defineProperty(Montage, "defineProperty", {
                                     for (k in value) {
                                         returnValue[k] = value[k];
                                     }
-                                    this[internalProperty] = returnValue;
+                                    if(!this.hasOwnProperty(internalProperty)) {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    } else {
+                                        this[internalProperty] = returnValue;
+                                    }
                                 }
                                 return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     } else {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
                             get: function() {
-                                return this[internalProperty] || (this[internalProperty] = {});
+                                var returnValue = this[internalProperty];
+                                if (!returnValue) {
+                                    returnValue = {};
+                                    if (this.hasOwnProperty(internalProperty))  {
+                                        this[internalProperty] = returnValue
+                                    } else {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    }
+                                }
+                                return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     }
@@ -219,12 +277,20 @@ Object.defineProperty(Montage, "defineProperty", {
                                     for (i = 0; typeof (k = value[i]) !== "undefined"; i++) {
                                         returnValue[i] = k;
                                     }
-                                    this[internalProperty] = returnValue;
+                                    if(!this.hasOwnProperty(internalProperty)) {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    } else {
+                                        this[internalProperty] = returnValue;
+                                    }
                                 }
                                 return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
 
@@ -232,12 +298,23 @@ Object.defineProperty(Montage, "defineProperty", {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
                             get: function() {
-                                //Special case for array as isArray fails
-                                //Object_prototype.toString.call(Object.create([].__proto)) !== "[object Array]"
-                                return this[internalProperty] || (this[internalProperty] = []);
+                                var returnValue = this[internalProperty];
+                                if (!returnValue) {
+                                    returnValue = [];
+                                    if (this.hasOwnProperty(internalProperty))  {
+                                        this[internalProperty] = returnValue
+                                    } else {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    }
+                                }
+                                return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     }
@@ -254,12 +331,20 @@ Object.defineProperty(Montage, "defineProperty", {
                                 for (k in value) {
                                     returnValue[k] = value[k];
                                 }
-                                this[internalProperty] = returnValue;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, returnValue);
+                                } else {
+                                    this[internalProperty] = returnValue;
+                                }
                             }
                             return returnValue;
                         },
                         set: function(value) {
-                            this[internalProperty] = value;
+                            if(!this.hasOwnProperty(internalProperty)) {
+                                defineInternalProperty(this, internalProperty, value);
+                            } else {
+                                this[internalProperty] = value;
+                            }
                         }
                     });
 
@@ -268,10 +353,23 @@ Object.defineProperty(Montage, "defineProperty", {
                     Object.defineProperty(obj, prop, {
                         configurable: true,
                         get: function() {
-                            return this[internalProperty] || (this[internalProperty] = Object.create(value.__proto__ || Object.getPrototypeOf(value)));
+                            var returnValue = this[internalProperty];
+                            if (!returnValue) {
+                                returnValue = Object.create(value.__proto__ || Object.getPrototypeOf(value));
+                                if (this.hasOwnProperty(internalProperty))  {
+                                    this[internalProperty] = returnValue
+                                } else {
+                                    defineInternalProperty(this, internalProperty, returnValue);
+                                }
+                            }
+                            return returnValue;
                         },
                         set: function(value) {
-                            this[internalProperty] = value;
+                            if(!this.hasOwnProperty(internalProperty)) {
+                                defineInternalProperty(this, internalProperty, value)
+                            } else {
+                                this[internalProperty] = value;
+                            }
                         }
                     });
                 }
@@ -297,29 +395,22 @@ Object.defineProperty(Montage, "defineProperties", {value: function(obj, propert
     return obj;
 }});
 
-/**
- @private
- */
 var _defaultAccessorProperty = {
     enumerable: true,
-    configurable: true
+    configurable: true,
+    serializable: "reference"
 };
-/**
- @private
- */
 var _defaultObjectValueProperty = {
     writable: true,
     enumerable: true,
-    configurable: true
+    configurable: true,
+    serializable: "reference"
 };
-
-/**
- @private
- */
 var _defaultFunctionValueProperty = {
     writable: true,
     enumerable: false,
-    configurable: true
+    configurable: true,
+    serializable: false
 };
 
 /**
@@ -334,7 +425,9 @@ Montage.defineProperty(Montage, "addDependencyToProperty", { value: function(obj
 
     // TODO optimize this so we don't keep checking over and over again
     if (!obj._dependenciesForProperty) {
-        obj._dependenciesForProperty = {};
+        Montage.defineProperty(obj, "_dependenciesForProperty", {
+            value: {}
+        });
     }
 
     if (!obj._dependenciesForProperty[dependentProperty]) {

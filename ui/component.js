@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /*global Element */
 /**
 	@module montage/ui/component
@@ -31,12 +56,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     delegate: {
-        serializable: "reference",
+        value: null
+    },
+
+    templateObjects: {
         value: null
     },
 
     parentProperty: {
-        serializable: true,
         value: "parentComponent"
     },
 
@@ -76,7 +103,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 this._canDrawGate.setField("componentTreeLoaded", false);
             }
             return this._canDrawGate;
-        }
+        },
+        enumerable: false
     },
 /**
   Description TODO
@@ -91,6 +119,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @returns this._blockDrawGate
     */
     blockDrawGate: {
+        enumerable: false,
         get: function() {
             if (!this._blockDrawGate) {
                 this._blockDrawGate = Gate.create().initWithDelegate(this);
@@ -130,8 +159,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     element: {
-        serializable: true,
-        enumerable: true,
         get: function() {
             return this._element;
         },
@@ -187,6 +214,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @returns document.application
     */
     application: {
+        enumerable: false,
         get: function() {
             return document.application;
         }
@@ -197,6 +225,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @returns defaultEventManager
     */
     eventManager: {
+        enumerable: false,
         get: function() {
             return defaultEventManager;
         }
@@ -207,6 +236,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     @returns rootComponent
     */
     rootComponent: {
+        enumerable: false,
         get: function() {
             return rootComponent;
         }
@@ -335,7 +365,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     querySelectorAllComponent: {
-        value: function(selector) {
+        value: function(selector, owner) {
             if (typeof selector !== "string") {
                 throw "querySelectorComponent: Selector needs to be a string.";
             }
@@ -359,21 +389,21 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             if (leftHandOperand) {
                 rest = rightHandOperand ? "@"+rightHandOperand + rest : "";
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                    if (leftHandOperand === Montage.getInfoForObject(childComponent).label) {
+                    if (leftHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
                             found = found.concat(childComponent.querySelectorAllComponent(rest));
                         } else {
                             found.push(childComponent);
                         }
                     } else {
-                        found = found.concat(childComponent.querySelectorAllComponent(selector));
+                        found = found.concat(childComponent.querySelectorAllComponent(selector, owner));
                     }
                 }
             } else {
                 for (var i = 0, childComponent; (childComponent = childComponents[i]); i++) {
-                    if (rightHandOperand === Montage.getInfoForObject(childComponent).label) {
+                    if (rightHandOperand === Montage.getInfoForObject(childComponent).label && (!owner || owner === childComponent.ownerComponent)) {
                         if (rest) {
-                            found = found.concat(childComponent.querySelectorAllComponent(rest));
+                            found = found.concat(childComponent.querySelectorAllComponent(rest, owner));
                         } else {
                             found.push(childComponent);
                         }
@@ -391,6 +421,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
     */
     template: {
+        enumerable: false,
         value: null
     },
 
@@ -400,6 +431,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default {Boolean} true
 */
     hasTemplate: {
+        enumerable: false,
         value: true
     },
 
@@ -409,6 +441,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         @default null
 */
     templateModuleId: {
+        serializable: false,
         value: null
     },
 
@@ -558,6 +591,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     originalContent: {
+        serializable: false,
         value: null
     },
 
@@ -567,6 +601,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     domContent: {
+        serializable: false,
         get: function() {
             if (this._element) {
                 return Array.prototype.slice.call(this._element.childNodes, 0);
@@ -630,6 +665,11 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: false
     },
 
+    clonesChildComponents: {
+        writable: false,
+        value: false
+    },
+
 /**
     Description TODO
     @function
@@ -638,7 +678,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         value: function() {
             this.attachToParentComponent();
             if (this._element) {
-                this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+                // the DOM content of the component was dynamically modified
+                // but it hasn't been drawn yet, we're going to assume that
+                // this new DOM content is the desired original content for
+                // this component since it has been set at deserialization
+                // time.
+                if (this._newDomContent) {
+                    this.originalContent = this._newDomContent;
+                } else {
+                    this.originalContent = Array.prototype.slice.call(this._element.childNodes, 0);
+                }
             }
             if (! this.hasOwnProperty("identifier")) {
                 this.identifier = Montage.getInfoForObject(this).label;
@@ -880,9 +929,17 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
 
         if (!this._isTemplateInstantiated) {
             this._loadTemplate(function(template) {
+                var instances = self.templateObjects;
+
+                if (instances) {
+                    instances.owner = self;
+                } else {
+                    instances = {owner: self};
+                }
+
                 // this actually also serves as isTemplateInstantiating
                 self._isTemplateInstantiated = true;
-                template.instantiateWithComponent(self, function() {
+                template.instantiateWithInstancesAndDocument(instances, self._element.ownerDocument, function() {
                     if (callback) {
                         callback();
                     }
@@ -949,10 +1006,14 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
         Template.templateWithModuleId(info.require, templateModuleId, onTemplateLoad);
     }},
 
-    templateDidDeserializeObject: {
-        value: function(object) {
-            if (Component.isPrototypeOf(object)) {
-                object.ownerComponent = this;
+    _deserializedFromTemplate: {
+        value: function(owner) {
+            if (!this.ownerComponent) {
+                if (Component.isPrototypeOf(owner)) {
+                    this.ownerComponent = owner;
+                } else {
+                    this.ownerComponent = this.rootComponent;
+                }
             }
         }
     },
@@ -1110,6 +1171,16 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
             this.eventManager.registerEventHandlerForElement(this, template);
             this._element = template;
             this._templateElement = null;
+
+            // if the DOM content of the component was changed before the
+            // template has been drawn then we assume that this change is
+            // meant to set the original content of the component and not to
+            // replace the entire template with it, that wouldn't make much
+            // sense.
+            if (this._newDomContent) {
+                this._newDomContent = null;
+                this._shouldClearDomContentOnNextDraw = false;
+            }
         }
     },
 
@@ -1279,7 +1350,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      @default {Boolean} false
      */
     needsDraw: {
-        enumerable: true,
+        enumerable: false,
         get: function() {
             return !!this._needsDraw;
         },
@@ -1311,7 +1382,6 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      @private
      */
     _drawList: {
-        enumerable: true,
         value: null
     },
 /**
@@ -1377,7 +1447,8 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
      */
     composerList: {
         value: [],
-        distinct: true
+        distinct: true,
+        serializable: false
     },
 
     /**

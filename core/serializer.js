@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /**
  @module montage/core/serializer
  @requires montage
@@ -26,7 +51,7 @@ if (typeof window !== "undefined") {
  @classdesc Serialized objects are indexed by uuid.
  @extends module:montage/core/core.Montage
  */
-var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Serializer# */ {
+var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializer.Serializer# */ {
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
     _serializedObjects: {value: {}}, // label -> string
     _serializedReferences: {value: {}}, // uuid -> string
@@ -41,6 +66,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     _serializationUnitsIndex: {value: {}},
 
     serializeNullValues: {value: false},
+
+    delegate: {value: null},
 
     /**
      Defines a serialization unit for an object.
@@ -116,7 +143,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 }
             }
 
-            serialization = this._getSerialization(this._serializedObjects);
+            this._cleanupExternalObjects();
+            serialization = this._getSerialization(this._serializedObjects, this._externalObjects);
             //console.log(serialization);
             // save the require used for this serialization
             this._require = require;
@@ -285,23 +313,32 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
         return this._objectStack.pop();
     }},
 
+    _peekContextObject: {value: function() {
+        return this._objectStack[this._objectStack.length-1];
+    }},
+
     /**
      Returns a dictionary of the external objects that were referenced in the last serialization.
      @function
      @returns {object} The dictionary of external objects {label: object}
      */
     getExternalObjects: {value: function() {
-        var externalObjects = this._externalObjects;
+        return this._externalObjects;
+    }},
 
-        for (var label in externalObjects) {
-            var object = externalObjects[label];
-            if (this._serializedObjects[label]) {
-                delete externalObjects[label];
+    _cleanupExternalObjects: {
+        value: function() {
+            var externalObjects = this._externalObjects,
+                serializedObjects = this._serializedObjects;
+
+            for (var label in externalObjects) {
+                var object = externalObjects[label];
+                if (serializedObjects[label]) {
+                    delete externalObjects[label];
+                }
             }
         }
-
-        return externalObjects;
-    }},
+    },
 
     /**
      Returns a list of the external elements that were referenced in the last serialization.
@@ -315,7 +352,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
     /**
      @private
      */
-    _getSerialization: {value: function(objects) {
+    _getSerialization: {value: function(objects, externalObjects) {
         var objectsString = [],
             propsString,
             serialization = "",
@@ -335,6 +372,10 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 propsString.push('"' + prop + '":' + object[prop]);
             }
             objectsString.push('"' + key + '":{\n    ' + propsString.join(",\n    ") + '}');
+        }
+
+        for (var key in externalObjects) {
+            objectsString.push('"' + key + '":{}');
         }
 
         if (objectsString.length > 0) {
@@ -444,7 +485,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             serializedUnits,
             propertyNames,
             objectInfo,
-            label, moduleId, name, defaultName;
+            label, moduleId, name, defaultName,
+            delegate;
 
         if (serializedReference) {
             return serializedReference;
@@ -458,6 +500,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 this._externalObjects[label] = object;
             }
         } else {
+            delegate = this.delegate;
             this._serializedReferences[uuid] = serializedReference;
 
             serializedUnits = {};
@@ -492,6 +535,11 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                 this._pushContextObject(object);
                 this._pushContextObject({});
                 object.serializeProperties(this, Montage.getSerializablePropertyNames(object));
+                // handle delegate.serializeProperties for objects that
+                // implement their own serializeProperties
+                if (delegate && typeof delegate.serializeObjectProperties === "function") {
+                    delegate.serializeObjectProperties(this, object,  Object.keys(this._peekContextObject()));
+                }
                 serializedUnits.properties = this._serializeObjectLiteral(this._popContextObject(), null, 3);
                 this._popContextObject();
             } else {
@@ -501,7 +549,18 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
                     properties = object;
                     propertyNames = Montage.getSerializablePropertyNames(object);
                 }
-                serializedUnits.properties = this._serializeObjectLiteral(properties, propertyNames, 3);
+                // handle delegate.serializeProperties for objects that
+                // do NOT implement their own serializeProperties
+                if (delegate && typeof delegate.serializeObjectProperties === "function") {
+                    this._pushContextObject(object);
+                    this._pushContextObject({});
+                    this.setAll(propertyNames);
+                    delegate.serializeObjectProperties(this, object, propertyNames);
+                    serializedUnits.properties = this._serializeObjectLiteral(this._popContextObject(), null, 3);
+                    this._popContextObject();
+                } else {
+                    serializedUnits.properties = this._serializeObjectLiteral(properties, propertyNames, 3);
+                }
             }
 
             this._applySerializationUnits(serializedUnits, object);
@@ -648,7 +707,8 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
 
     _serializeValueWithDescriptor: {
         value: function(object, objectDescriptor, indent) {
-            var label;
+            var label,
+                delegate = this.delegate;
 
             if (!("prototype" in objectDescriptor || "object" in objectDescriptor || "value" in objectDescriptor)) {
                 this._applyTypeUnit(objectDescriptor, object);
@@ -657,6 +717,15 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/serializer.Se
             if ("value" in objectDescriptor) {
                 return this._serializeValue(objectDescriptor.value);
             } else {
+                // handle delegate.serializeProperties for objects that
+                // implement their own serializeSelf
+                if (delegate && typeof delegate.serializeObjectProperties === "function") {
+                    this._pushContextObject(object);
+                    this._pushContextObject(objectDescriptor.properties);
+                    delegate.serializeObjectProperties(this, object,  Object.keys(objectDescriptor.properties));
+                    this._popContextObject();
+                    this._popContextObject();
+                }
                 objectDescriptor.properties = this._serializeObjectLiteral(objectDescriptor.properties, null, 3);
                 var units;
                 if (units = /* assignment */ objectDescriptor._units) {

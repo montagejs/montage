@@ -1,0 +1,7 @@
+{
+    "name": "{{name}}",
+    "version": "0.0.0",
+    "mappings": {
+        "montage": "./node_modules/montage/"
+    }
+}

@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 
 /**
     @module montage/core/event/binding
@@ -211,7 +236,6 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
 */
     boundObject: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -222,7 +246,6 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
 */
     boundObjectPropertyPath: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -231,7 +254,6 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
 */
     oneway: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -240,7 +262,6 @@ var BindingDescriptor = exports.BindingDescriptor = Montage.create(Montage, /** 
 */
     deferred: {
         enumerable: false,
-        serializable: true,
         value: null
     },
 
@@ -297,6 +318,9 @@ Deserializer.defineDeserializationUnit("bindings", function(object, bindings, de
     }
 });
 
+var __bindingCount = exports.Stats = {count: 0};
+console.log(__bindingCount);
+
 /**
     @function external:Object.defineBinding
     @param {object} sourceObject The source object of the data binding. This object establishes the binding between itself and the "bound object" specified by the <code>bindingDescriptor</code> parameter.
@@ -317,7 +341,7 @@ Object.defineProperty(Object, "defineBinding", {value: function(sourceObject, so
         //TODO should we throw an error here? the binding descriptor wasn't valid
         return;
     }
-
+    __bindingCount.count++;
     if (!_bindingDescriptors) {
         // To ensure the binding descriptor collection is serializable, it needs all the expected properties
         //of an object in our framework; a UUID in particular
@@ -431,6 +455,7 @@ Object.defineProperty(Object, "deleteBinding", {value: function(sourceObject, so
         oneway;
 
     if (sourceObjectPropertyBindingPath in _bindingDescriptors) {
+        __bindingCount.count--;
         bindingDescriptor = _bindingDescriptors[sourceObjectPropertyBindingPath];
         oneway = typeof bindingDescriptor.oneway === "undefined" ? true : bindingDescriptor.oneway;
 
