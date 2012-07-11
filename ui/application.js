@@ -47,7 +47,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Provides a reference to the parent application (in multi-window environment).
+     Provides a reference to the parent application.
      @type {module:montage/ui/application.Application}
      @default null
      */
@@ -56,13 +56,13 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Provides a reference to the main application (in multi-window environment).
+     Provides a reference to the main application.
      @type {module:montage/ui/application.Application}
      @default this
      */
     mainApplication: {
         get: function() {
-            // JFD TODO: We should cache the result, would need to update it when the window is detached
+            // JFD TODO: We should cache the result, would need to update it when the window is detached or attached
             var mainApplication = this;
             while (mainApplication.parentApplication) {
                 mainApplication = mainApplication.parentApplication;
@@ -103,8 +103,9 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Provides a reference to all the windows opened by the main application or any of its descendents.
-     The list is kept sorted, the sort order is determined by the Application.windowsSortOrder property     @type {array}
+     Provides a reference to all the windows opened by the main application or any of its descendents, including the main
+     window itself The list is kept sorted, the sort order is determined by the Application.windowsSortOrder property
+     @type {array}
      @type {Array}
      */
     windows: {
@@ -133,7 +134,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Provides a reference to the MontageWindow attached to this application.
+     Provides a reference to the MontageWindow associated with the application.
      @type {module:montage/ui/montage-windows.js/MontageWindow}
      */
     window: {
@@ -150,18 +151,6 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         set: function(value) {
             if (!this._window) {
                 this._window = value;
-            }
-        }
-    },
-
-    dumpWindows: {
-        value: function() {
-            var windows = this.windows,
-                aWindow;
-
-            for (var i in windows) {
-                aWindow = windows[i];
-                console.log("WINDOW:", aWindow.title, aWindow.closed ? "--closed--" : "");
             }
         }
     },
@@ -187,7 +176,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Contains the window associated with the document.
+     Return the top most window of any of the Montage Windows.
      @type {Property}
      @default document.defaultView
      */
@@ -211,7 +200,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     An array of the windows associated with the application.
+     An array of the child windows attached to the application.
      @type {Array}
      @default {Array} []
      */
@@ -220,8 +209,10 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Attach a window
+     Attach a window to a parent application. When a window open, it's automatically attach to the Application used to
+     create the window.
      @function
+     @param {module:montage/ui/montage-windows.js/MontageWindow} window to detach.
      */
     attachWindow: {
         value: function(montageWindow) {
@@ -249,8 +240,10 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Detach a window
+     Detach the window from its parent application. If no montageWindow is specified, the current application's windows
+     will be detached
      @function
+     @param {module:montage/ui/montage-windows.js/MontageWindow} window to detach.
      */
     detachWindow: {
         value: function(montageWindow) {
@@ -281,15 +274,15 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Opens a URL in a new browser window, and registers the window with the Montage event manager.<br>
-     The document URL must be in the same domain as the calling script.
+     Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
+     The component URL must be in the same domain as the calling script. Can be relative to the main application
      @function
      @param {PATH} component, the path to the reel component to open in the new window.
      @param {STRING} name, the component main class name.
      @param {OBJECT} parameters, the new window parameters (accept same parameters than window.open).
      @example
      var app = document.application;
-     app.openWindow("docs/help.reel", "width=300, height=500");
+     app.openWindow("docs/help.reel", "Help", "{width=300, height=500}");
      */
     openWindow: {
         value: function(component, name, parameters) {

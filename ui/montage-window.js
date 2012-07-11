@@ -35,7 +35,7 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
     },
 
     /**
-     Provides a reference to the application.
+     Provides the Application associated with the window.
      @type {module:montage/ui/application.Application}
      */
     application: {
@@ -58,8 +58,8 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
     },
 
     /**
-     Provides a reference to the DOM window.
-     @type {window object}
+     Provides a reference to the native window.
+     @type {Window object}
      */
     window: {
         get: function() { return this._window },
@@ -98,7 +98,7 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
     },
 
     /**
-     Provides a reference to the main component of the window.
+     Provides a reference to the main Montage component loaded in the window.
      @type {component}
      */
     component: {
@@ -111,7 +111,8 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
     },
 
     /**
-     Allow to set or get the window's title.
+     The window title. Make sure to use MontageWindow.title to access the window's title rather than directly accessing
+     directly the title by the document, else you will not be able to use binding with the window's title.
      @type {string}
      */
     title: {
@@ -121,10 +122,18 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
         }
     },
 
+    /**
+     True if the window is currently the topmost Montage Window and has focus.
+     @type {boolean}
+     */
     focused: {
           value: false
     },
 
+    /**
+     Set the focus on the window, move it to the front.
+     @function
+     */
     focus: {
         value: function() {
             if (this._window) {
@@ -133,6 +142,9 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
         }
     },
 
+    /**
+     @private
+     */
     _setFocusedWindow: {
         value: function(aWindow) {
             var application = this.application,
@@ -165,6 +177,11 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
         }
     },
 
+    /**
+     True is the window has been closed. Once a window has been close, the MontageWindow object still exist but you
+     cannot use it anymore.
+     @type {boolean}
+     */
     closed: {
         get: function() { return this._window ? this._window.closed : false }
     },
@@ -182,6 +199,37 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
         }
     },
 
+    /**
+     Resize the window to the specified width and height
+     @function
+     @param {Integer} width The window's width desired.
+     @param {Integer} height The window's height desired.
+     */
+    resizeTo: {
+        value: function(width, height) {
+            if (this._window) {
+                this._window.resizeTo(width, height);
+            }
+        }
+    },
+
+    /**
+     Move the window to the specified screen coordinate x and y
+     @function
+     @param {Integer} x The window's x screen position.
+     @param {Integer} y The window's y screen position.
+     */
+    moveTo: {
+        value: function(x, y) {
+            if (this._window) {
+                this._window.moveTo(x, y);
+            }
+        }
+    },
+
+    /**
+     @private
+     */
     captureFocus: {
         value: function(event) {
             var application = this.application;
@@ -202,6 +250,9 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
         }
     },
 
+    /**
+     @private
+     */
     captureMousedown: {
         value: function(event) {
             // Sometime, for some reason, we do not receive anymore a focus event... let presume that if we get a mouse click, we should have focus
@@ -209,6 +260,9 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
         }
     },
 
+    /**
+     @private
+     */
     captureBeforeunload: {
         value: function(event) {
 
