@@ -120,3 +120,50 @@ var statement='/* <copyright>\n'+
     }
     return false;
 };
+
+exports.jsdoc = function(path, source) {
+    var problems = [], line;
+    // from Deserializer
+    var findObjectNameRegExp =/([^\/]+?)(\.reel)?$/;
+    var toCamelCaseRegExp = /(?:^|-)([^\-])/g;
+    var replaceToCamelCase = function(_, g1) { return g1.toUpperCase(); };
+
+    var module = source.match(/@module "([^"]+)"/);
+    if (!module || module.length != 2) {
+        return [{line: 0, problem: "no module JSDoc found. Cannot complete JSDoc linting", solution: 'Add `@module "..."` JSDoc comment'}];
+    }
+
+    if (path.indexOf(module[1]) === -1) {
+        line = source.substring(0, module.index).match(/\n/g).length + 1;
+        return [{
+            line: line,
+            problem: "@module JSDoc does not match file location",
+            solution: "correct `"+module[0]+"` JSDoc to match file location"
+        }];
+    }
+
+    ///
+
+    module = module[1];
+    findObjectNameRegExp.test(module);
+    var klass = RegExp.$1.replace(toCamelCaseRegExp, replaceToCamelCase),
+    atKlass = '@class module:"'+ module +'".'+ klass;
+
+    if (source.indexOf(atKlass)  === -1) {
+        problems.push({line: 0, problem: "cannot find @class JSDoc", solution: 'add `'+ atKlass +'` JSDoc'});
+    }
+
+    ///
+
+    var classes = source.match(/@class .*/g);
+    for (var i = 0, len = classes.length; i < len; i++) {
+        klass = classes[i];
+        if (klass.indexOf(module) === -1) {
+            line = source.substring(0, source.indexOf(klass)).match(/\n/g).length + 1;
+            problems.push({line: line, problem: "@class is not in module '" + module + "'", solution: 'correct module of `' + klass + '` to `'+ module + '`'});
+
+        }
+    }
+
+    return problems;
+};
