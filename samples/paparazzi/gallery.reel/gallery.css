@@ -30,6 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 .gallery {
+    overflow: hidden;
     position: relative;
     background: hsl(0,0%,90%);
     box-shadow: inset 0px 2px 4px hsl(0,0%,85%);
@@ -37,5 +38,11 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .gallery .flow {
     white-space: nowrap;
-    overflow-x: auto;
+    height: 180px;
+}
+
+.gallery .flow .snapshot {
+    position: relative;
+    left: -80px;
+    top: -60px;
 }

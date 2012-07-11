@@ -41,7 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "properties": {
                         "element": {"#": "gallery" },
                         "snapshotController": {"@": "snapshotController"},
-                        "flow": {"@": "list"}
+                        "list": {"@": "list"}
                     }
                 },
 
@@ -53,11 +53,47 @@ POSSIBILITY OF SUCH DAMAGE.
                 },
 
                 "list": {
-                    "prototype": "montage/ui/list.reel",
+                    "prototype": "montage/ui/flow.reel",
                     "properties": {
                         "element": {"#": "flow"},
                         "contentController": {"@": "snapshotController"},
-                        "axis": "horizontal"
+                        "axis": "horizontal",
+                        "isSelectionEnabled": true,
+                        "hasSelectedIndexScrolling": true,
+                        "selectedIndexScrollingOffset": 0,
+                        "stride": 1,
+
+                        "cameraFov": 90,
+                        "cameraPosition": [0, 0, 85],
+                        
+                        "paths": [
+                            {
+                                "knots": [
+                                    {
+                                        "knotPosition": [-780.0, -15, -128],
+                                        "nextHandlerPosition": [-520.0, -15, 0],
+                                        "previousDensity": 7,
+                                        "nextDensity": 7
+                                    },
+                                    {
+                                        "previousHandlerPosition": [-450.0, -15, 0],
+                                        "knotPosition": [0, -15, 0],
+                                        "nextHandlerPosition": [450.0, -15, 0],
+                                        "previousDensity": 7,
+                                        "nextDensity": 7
+                                    },
+                                    {
+                                        "knotPosition": [780.0, -15, -128],
+                                        "previousHandlerPosition": [520.0, -15, 0],
+                                        "previousDensity": 7,
+                                        "nextDensity": 7
+                                    }
+                                ],
+                                "headOffset": 7,
+                                "tailOffset": 7,
+                                "units": {}
+                            }
+                        ]
                     }
                 },
 
