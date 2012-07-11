@@ -138,14 +138,17 @@ var Components = {
             button.addEventListener("click", function() {
                 var object = JSON.parse(Mfiddle.serialization.getValue()||"{}"),
                     htmlString = Mfiddle.html.getValue(),
+                    name,
                     id;
 
-                do {id = componentName + ++Components.componentId} while (id in object);
+                name = componentName.replace(/(?:^|-)([^-])/g, function(_, g1) { return g1.toUpperCase() });
+                name = name[0].toLowerCase() + name.slice(1);
+                do {id = name + ++Components.componentId} while (id in object);
 
                 object[id] = JSON.parse(Components.data[componentName]);
                 object[id].properties.element = {"#": id};
 
-                htmlString += "\n" + (object[id].html || '<div id=""></div>').replace('id=""', 'id="' + id + '"');
+                htmlString += "\n" + (object[id].html || '<div data-montage-id=""></div>').replace('data-montage-id=""', 'data-montage-id="' + id + '"');
                 delete object[id].html;
 
                 Mfiddle.load(JSON.stringify(object, null, "  "), htmlString);
@@ -155,47 +158,41 @@ var Components = {
 
     data: {
         "dynamic-text": JSON.stringify({
-            "module": "montage/ui/dynamic-text.reel",
-            "name": "DynamicText",
+            "prototype": "montage/ui/dynamic-text.reel",
             "properties": {
                 "value": "Text"
             },
-            "html": '<p id=""></p>'
+            "html": '<p data-montage-id=""></p>'
         }),
         "button": JSON.stringify({
-            "module": "montage/ui/bluemoon/button.reel",
-            "name": "Button",
+            "prototype": "montage/ui/bluemoon/button.reel",
             "properties": {
                 "value": "Button",
                 "enabled": true
             },
-            "html": '<div id="" class="text"></div>'
+            "html": '<div data-montage-id="" class="text"></div>'
         }),
         "textfield": JSON.stringify({
-            "module": "montage/ui/bluemoon/textfield.reel",
-            "name": "Textfield",
+            "prototype": "montage/ui/bluemoon/textfield.reel",
             "properties": {
                 "value": "Editable text"
             },
-            "html": '<input id="" type="text">'
+            "html": '<input data-montage-id="" type="text">'
         }),
         "checkbox": JSON.stringify({
-            "module": "montage/ui/bluemoon/checkbox.reel",
-            "name": "Checkbox",
+            "prototype": "montage/ui/bluemoon/checkbox.reel",
             "properties": {
                 "checked": true
             }
         }),
         "toggle": JSON.stringify({
-            "module": "montage/ui/bluemoon/toggle.reel",
-            "name": "Toggle",
+            "prototype": "montage/ui/bluemoon/toggle.reel",
             "properties": {
                 "value": true
             }
         }),
         "slider": JSON.stringify({
-            "module": "montage/ui/bluemoon/slider.reel",
-            "name": "Slider",
+            "prototype": "montage/ui/bluemoon/slider.reel",
             "properties": {
                 "minValue": 0,
                 "maxValue": 100,
@@ -203,12 +200,11 @@ var Components = {
             }
         }),
         "repetition": JSON.stringify({
-            "module": "montage/ui/repetition.reel",
-            "name": "Repetition",
+            "prototype": "montage/ui/repetition.reel",
             "properties": {
                 "objects": [1, 2, 3]
             },
-            "html": '<ul id=""><li>Item</li></ul>'
+            "html": '<ul data-montage-id=""><li>Item</li></ul>'
         })
     }
 };
@@ -234,51 +230,43 @@ var Examples = {
         "A simple Button": {
             serialization: {
                 "button": {
-                    "module": "montage/ui/bluemoon/button.reel",
-                    "name": "Button",
+                    "prototype": "montage/ui/bluemoon/button.reel",
                     "properties": {
                         "element": {"#": "button"},
                         "value": "Click Me!"
                     }
                 }
             },
-            html: '<div id="button" class="text"></div>'
+            html: '<div data-montage-id="button" class="text"></div>'
         },
 
         "A simple Binding": {
             serialization: {
                 "slider": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
+                    "prototype": "montage/ui/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider"},
                         "value": 50
                     }
                 },
 
-                "dynamic-text": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                "dynamicText": {
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
-                        "element": {"#": "dynamic-text"}
+                        "element": {"#": "dynamicText"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "slider"},
-                            "boundObjectPropertyPath": "value",
-                            "oneway": true
-                        }
+                        "value": {"<-": "@slider.value"}
                     }
                 }
             },
-            html: '<div data-montage-id="slider"></div>\n<h2 data-montage-id="dynamic-text"></h2>'
+            html: '<div data-montage-id="slider"></div>\n<h2 data-montage-id="dynamicText"></h2>'
         },
 
         "Two way Bindings": {
             serialization: {
                 "number": {
-                    "module": "montage/ui/number-input.reel",
-                    "name": "NumberInput",
+                    "prototype": "montage/ui/input-number.reel",
                     "properties": {
                         "element": {"#": "number"},
                         "value": 50
@@ -286,30 +274,22 @@ var Examples = {
                 },
 
                 "slider1": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
+                    "prototype": "montage/ui/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider1"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "number"},
-                            "boundObjectPropertyPath": "value"
-                        }
+                        "value": {"<->": "@number.value"}
                     }
                 },
 
                 "slider2": {
-                    "module": "montage/ui/bluemoon/slider.reel",
-                    "name": "Slider",
+                    "prototype": "montage/ui/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider2"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "number"},
-                            "boundObjectPropertyPath": "value"
-                        }
+                        "value": {"<->": "@number.value"}
                     }
                 }
             },
@@ -322,25 +302,22 @@ var Examples = {
                     "module": "montage/ui/repetition.reel",
                     "name": "Repetition",
                     "properties": {
-                        "objects": ["Mike", "François", "Afonso", "Heather"],
+                        "objects": ["Mike", "Francois", "Afonso", "Heather"],
                         "element": {"#": "repetition"}
                     }
                 },
-                "dynamic-text": {
+                "dynamicText": {
                     "module": "montage/ui/dynamic-text.reel",
                     "name": "DynamicText",
                     "properties": {
-                        "element": {"#": "dynamic-text"}
+                        "element": {"#": "dynamicText"}
                     },
                     "bindings": {
-                        "value": {
-                            "boundObject": {"@": "repetition"},
-                            "boundObjectPropertyPath": "objectAtCurrentIteration"
-                        }
+                        "value": {"<-": "@repetition.objectAtCurrentIteration"}
                     }
                 }
             },
-            html: '<ul data-montage-id="repetition">\n  <li>\n    Hello there <span data-montage-id="dynamic-text"></span>!\n  </li>\n</ul>'
+            html: '<ul data-montage-id="repetition">\n  <li>\n    Hello there <span data-montage-id="dynamicText"></span>!\n  </li>\n</ul>'
         },
 
         "HTML5 video player": {
