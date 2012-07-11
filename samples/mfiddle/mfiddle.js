@@ -119,7 +119,7 @@ var Mfiddle = {
 
         var montageScript = doc.head.appendChild(doc.createElement("script"));
         montageScript.src = "../../montage.js";
-        montageScript.setAttribute("data-package", location);
+        montageScript.setAttribute("data-auto-package", "");
 
         var serializationScript = doc.head.appendChild(doc.createElement("script"));
         serializationScript.type = "text/montage-serialization";
