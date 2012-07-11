@@ -302,7 +302,7 @@ var Examples = {
                     "module": "montage/ui/repetition.reel",
                     "name": "Repetition",
                     "properties": {
-                        "objects": ["Mike", "Francois", "Afonso", "Heather"],
+                        "objects": ["Mike", "François", "Afonso", "Heather"],
                         "element": {"#": "repetition"}
                     }
                 },
