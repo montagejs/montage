@@ -318,24 +318,6 @@ var Examples = {
                 }
             },
             html: '<ul data-montage-id="repetition">\n  <li>\n    Hello there <span data-montage-id="dynamicText"></span>!\n  </li>\n</ul>'
-        },
-
-        "HTML5 video player": {
-            serialization: {
-                "videoplayer1": {
-                    "module": "montage/ui/video-player.reel",
-                    "name": "VideoPlayer",
-                    "properties": {
-                        "element": {
-                            "#": "video-player"
-                        },
-                        "src": "http://download.blender.org/peach/trailer/trailer_480p.mov",
-                        "autoHide": true,
-                        "supportsFullScreen": true
-                    }
-                }
-            },
-            html: '<small>Currently works best in Chrome browsers.</small>\n<div id="video-player" class="video-player"></div>'
         }
     }
 };
