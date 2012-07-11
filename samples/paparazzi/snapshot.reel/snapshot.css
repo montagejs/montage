@@ -62,5 +62,5 @@ POSSIBILITY OF SUCH DAMAGE.
 
 .snapshot:hover .download {
     opacity: 1;
-    -webkit-transition: opacity .2s .5s linear;
+    -webkit-transition: opacity .2s .1s linear;
 }
