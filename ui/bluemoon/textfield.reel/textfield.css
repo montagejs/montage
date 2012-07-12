@@ -45,7 +45,7 @@ POSSIBILITY OF SUCH DAMAGE.
     border: 2px solid hsl(0, 0%, 40%);
 }
 
-.montage--invalid-text {
+.montage--invalidText {
     border: 2px solid #E73525;
     border-style: dashed;
 }

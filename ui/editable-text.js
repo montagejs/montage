@@ -268,10 +268,10 @@ var EditableText = exports.EditableText = Montage.create(Component, /** @lends m
             }
 
             if (this.error) {
-                t.classList.add('montage--invalid-text');
+                t.classList.add('montage--invalidText');
                 t.title = this.error.message || '';
             } else {
-                t.classList.remove("montage--invalid-text");
+                t.classList.remove("montage--invalidText");
                 t.title = '';
             }
 

@@ -138,7 +138,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
     },
 
 /**
-    If an error is thrown by the converter object during a new value assignment, this property is set to <code>true</code>, and schedules a new draw cycle so the the UI can be updated to indicate the error state. the <code>montage--invalid-text</code> CSS class is assigned to the component's DOM element during the next draw cycle.
+    If an error is thrown by the converter object during a new value assignment, this property is set to <code>true</code>, and schedules a new draw cycle so the the UI can be updated to indicate the error state. the <code>montage--invalidText</code> CSS class is assigned to the component's DOM element during the next draw cycle.
     @type {boolean}
     @default false
 */
@@ -226,10 +226,10 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
             }
 
             if (this.error) {
-                el.classList.add('montage--invalid-text');
+                el.classList.add('montage--invalidText');
                 el.title = this.error.message || '';
             } else {
-                el.classList.remove("montage--invalid-text");
+                el.classList.remove("montage--invalidText");
                 el.title = '';
             }
         }
