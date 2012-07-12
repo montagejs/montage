@@ -41,13 +41,6 @@ POSSIBILITY OF SUCH DAMAGE.
 	height: 0;
 }
 
-
-.montage-off-left {
-    position: absolute;
-    top: 0px;
-    left: -10000px;
-}
-
 .montage-Popup-modal-mask {
     position: fixed;
     left: 0;
