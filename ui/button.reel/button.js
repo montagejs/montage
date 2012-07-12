@@ -37,14 +37,14 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
-    NativeButton = require("ui/native/button.reel/button").Button;
+    NativeButton = require("ui/native/button.reel").Button;
 
 /**
  * Montage Button
  @class module:"montage/ui/button.reel".Button
  @extends module:"montage/ui/native/button.reel".Button
 */
-exports.Button = Montage.create(NativeButton, /** @lends module:"montage/ui/native/button.reel".Button# */ {
+exports.Button = Montage.create(NativeButton, /** @lends module:"montage/ui/button.reel".Button# */ {
 
     hasTemplate: {value: true},
 

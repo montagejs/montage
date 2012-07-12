@@ -28,10 +28,21 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+
+/**
+    @module "montage/ui/autocomplete/result-item.reel"
+    @requires montage
+    @requires montage/ui/component
+    @requires "montage/ui/dynamic-text.reel"
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
     DynamicText = require("ui/dynamic-text.reel").DynamicText;
 
+/**
+    @class module:"montage/ui/autocomplete/result-item.reel".ResultItem
+    @extends module:"montage/ui/dynamic-text.reel".DynamicText
+*/
 exports.ResultItem = Montage.create(DynamicText, {
 
     textPropertyPath: {value: null},

@@ -31,8 +31,8 @@ POSSIBILITY OF SUCH DAMAGE.
 /*global Element */
 /**
 	@module montage/ui/component
-    @requires montage/core/core
-    @requires montage/ui/reel
+    @requires montage
+    @requires montage/ui/template
     @requires montage/core/gate
     @requires montage/core/logger | component
     @requires montage/core/logger | drawing

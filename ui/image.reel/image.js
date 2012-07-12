@@ -43,7 +43,7 @@ var Montage = require("montage").Montage,
  * @class module:"montage/ui/image.reel".Image
  * @extends module:"montage/ui/native/image.reel".Image
  */
-exports.Image = Montage.create(NativeImage, /** @lends module:"montage/ui/native/image.reel".Image */ {
+exports.Image = Montage.create(NativeImage, /** @lends module:"montage/ui/image.reel".Image */ {
 
     didSetElement: {
         value: function() {

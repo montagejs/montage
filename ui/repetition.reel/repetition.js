@@ -35,6 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/ui/template
     @requires montage/core/logger
     @requires montage/core/gate
+    @requires montage/core/change-notification
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,

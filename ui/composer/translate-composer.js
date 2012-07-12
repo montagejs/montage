@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
     @module montage/ui/composer/translate-composer
     @requires montage/core/core
     @requires montage/ui/composer/composer
+    @requires montage/core/event/event-manager
 */
 var Montage = require("montage").Montage,
     Composer = require("ui/composer/composer").Composer,
