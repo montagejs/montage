@@ -131,6 +131,9 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
                 if (objects[label] != null) {
                     this._objectLabels[objects[label].uuid] = label;
                 }
+                // need to store the labels in the object names index to
+                // avoid conflicts when generating labels for other objects
+                this._objectNamesIndex[label] = 2;
             }
 
             for (label in objects) {
