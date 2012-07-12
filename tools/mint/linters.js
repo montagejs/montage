@@ -122,13 +122,19 @@ var statement='/* <copyright>\n'+
 };
 
 exports.jsdoc = function(path, source) {
+    var indexToLine = function(string, index) {
+        return string.substring(0, index).match(/\n/g).length + 1;
+    };
+
     var problems = [], line;
+    var i, len;
+
     // from Deserializer
     var findObjectNameRegExp =/([^\/]+?)(\.reel)?$/;
     var toCamelCaseRegExp = /(?:^|-)([^\-])/g;
     var replaceToCamelCase = function(_, g1) { return g1.toUpperCase(); };
 
-    var module = source.match(/@module "([^"]+)"/);
+    var module = source.match(/@module "?([a-z0-9\-\.\/]+)/i);
     if (!module || module.length != 2) {
         return [{line: 0, problem: "no module JSDoc found. Cannot complete JSDoc linting", solution: 'Add `@module "..."` JSDoc comment'}];
     }
@@ -136,7 +142,7 @@ exports.jsdoc = function(path, source) {
     if (path.indexOf(module[1]) === -1) {
         line = source.substring(0, module.index).match(/\n/g).length + 1;
         return [{
-            line: line,
+            line: indexToLine(source, module.index),
             problem: "@module JSDoc does not match file location",
             solution: "correct `"+module[0]+"` JSDoc to match file location"
         }];
@@ -146,24 +152,70 @@ exports.jsdoc = function(path, source) {
 
     module = module[1];
     findObjectNameRegExp.test(module);
-    var klass = RegExp.$1.replace(toCamelCaseRegExp, replaceToCamelCase),
-    atKlass = '@class module:"'+ module +'".'+ klass;
+    var klass = RegExp.$1.replace(toCamelCaseRegExp, replaceToCamelCase);
+    var atKlass;
+    if (module.indexOf(".") !== -1) {
+        atKlass = '@class module:"'+ module +'".'+ klass;
+    } else {
+        atKlass = '@class module:'+ module +'.'+ klass;
+    }
 
     if (source.indexOf(atKlass)  === -1) {
-        problems.push({line: 0, problem: "cannot find @class JSDoc", solution: 'add `'+ atKlass +'` JSDoc'});
+        problems.push({
+            line: 0,
+            problem: "cannot find "+klass+" @class JSDoc",
+            solution: 'add `'+ atKlass +'` JSDoc'});
     }
 
     ///
 
-    var classes = source.match(/@class .*/g);
-    for (var i = 0, len = classes.length; i < len; i++) {
+    var classes = source.match(/@class [^ ]*/g) || [];
+    for (i = 0, len = classes.length; i < len; i++) {
         klass = classes[i];
         if (klass.indexOf(module) === -1) {
-            line = source.substring(0, source.indexOf(klass)).match(/\n/g).length + 1;
-            problems.push({line: line, problem: "@class is not in module '" + module + "'", solution: 'correct module of `' + klass + '` to `'+ module + '`'});
+            line = indexToLine(source, source.indexOf(klass));
+            problems.push({
+                line: line,
+                problem: "@class is not in module '" + module + "'",
+                solution: 'correct module of `' + klass + '` to `'+ module + '`'});
 
         }
     }
+    var lends = source.match(/@lends [^ ]*/g) || [];
+    for (i = 0, len = lends.length; i < len; i++) {
+        var lend = lends[i];
+        if (lend.indexOf(module) === -1) {
+            line = indexToLine(source, source.indexOf(lend));
+            problems.push({
+                line: line,
+                problem: "@lends is not in module '" + module + "'",
+                solution: 'correct module of `' + lend + '` to `'+ module + '`'});
+
+        }
+    }
+
+    var unquotedReelIndex = source.indexOf(".reel.");
+    if (unquotedReelIndex !== -1) {
+        problems.push({
+            line: indexToLine(source, unquotedReelIndex),
+            problem: ".reel is not quoted",
+            solution: 'Quote .reel paths in JSDoc, e.g. module:"montage/ui/button.reel".Button'
+        });
+    }
+
+    source.replace(/(?:^|[^\w\$_.])require\s*\(\s*["']([^"']*)["']\s*\)/g, function(_, id, index) {
+        var req = (id.indexOf(".") !== -1) ? '@requires "montage/'+id+'"' : '@requires montage/'+id;
+        if (id === "montage") {
+            req = "@requires montage";
+        }
+        if (source.indexOf(req) === -1) {
+            problems.push({
+                line: indexToLine(source, index),
+                problem: "no @requires for " + id,
+                solution: "add `" + req + "`"
+            });
+        }
+    });
 
     return problems;
 };
