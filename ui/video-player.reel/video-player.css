@@ -53,7 +53,7 @@ MARK:    media
     height: 100%;
 }
 
-.montage-VideoPlayer .video {
+.montage-VideoPlayer .montage-VideoPlayer-video {
     display: block; /* Get rid of the bottom space */
     position: relative;
     width: 100%;
