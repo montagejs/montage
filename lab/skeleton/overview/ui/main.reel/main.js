@@ -33,36 +33,4 @@ var Montage = require("montage/core/core").Montage,
 
 exports.Main = Montage.create(Component, {
 
-    templateDidLoad: {
-        value: function() {
-            //console.log("main templateDidLoad")
-        }
-    },
-
-    prepareForDraw: {
-        value: function() {
-            //console.log("main prepareForDraw")
-        }
-    },
-
-    log: {
-        value: function(msg) {
-            this.logger.log(msg);
-        }
-    },
-
-    // Event handling
-
-    handleMontageButtonAction: {
-        value: function() {
-            this.log('Montage button action event');
-        }
-    },
-    handleNativeButtonAction: {
-        value: function() {
-            this.log('Native button action event');
-        }
-    }
-
-
 });
