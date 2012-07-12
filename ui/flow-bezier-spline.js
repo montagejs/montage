@@ -34,17 +34,14 @@ var Montage = require("montage").Montage,
 
     init: {
         value: function() {
+            this._knots = [];
             this._densities = [];
-            this._densitySummation = [];
             return this;
         }
     },
 
     knots: {
         get: function () {
-            if (!this._knots) {
-                this._knots = [];
-            }
             return this._knots;
         },
         set: function (value) {
@@ -88,30 +85,12 @@ var Montage = require("montage").Montage,
         set: function (value) {
             this._densities = value;
             this._densitiesLength = this._densities.length;
-            this._densitySummation.wipe();
             this._maxTime = null;
         }
     },
 
     _parameters: {
-        value: {
-            rotateX: {
-                data: [0],
-                units: "rad"
-            },
-            rotateY: {
-                data: [0],
-                units: "rad"
-            },
-            rotateZ: {
-                data: [0],
-                units: "rad"
-            },
-            opacity: {
-                data: [1],
-                units: ""
-            }
-        }
+        value: {}
     },
 
     parameters: {
@@ -127,56 +106,21 @@ var Montage = require("montage").Montage,
         }
     },
 
-    knotsLength: {
-        get: function () {
-            if (!this._knots) {
-                return 0;
-            }
-            return this._knots.length;
-        },
-        set: function () {}
-    },
-
-    getKnot: {
-        value: function (index) {
-            return this._knots[index];
-        }
-    },
-
-    getPreviousHandler: {
-        value: function (index) {
-            return this._previousHandlers[index];
-        }
-    },
-
-    getNextHandler: {
-        value: function (index) {
-            return this._nextHandlers[index];
-        }
-    },
-
-    removeKnot: {
-        value: function (index) {
-            this._knots.splice(index, 1);
-            this._nextHandlers.splice(index, 1);
-            this._previousHandlers.splice(index, 1);
-            this._densities.splice(index, 1);
-        }
-    },
-
     _maxTime: {
         enumerable: false,
         value: null
     },
 
-    maxTime: {
-        get: function () {
-            if ((this._densitySummation === null) || this._densitySummation.length) {
-                this._computeDensitySummation();
+    computeMaxTime: {
+        value: function () {
+            this._computeDensitySummation();
+            if (this._densitySummation.length) {
+                this._maxTime = this._densitySummation[this._densitySummation.length - 1];
+            } else {
+                this._maxTime = 0;
             }
-            return this._densitySummation[this._densitySummation.length - 1];
-        },
-        set: function () {}
+            return this._maxTime;
+        }
     },
 
     _densitySummation: {
@@ -189,82 +133,134 @@ var Montage = require("montage").Montage,
         value: function () {
             var densities = this.densities, length = densities.length - 1,
                 sum = 0,
-                i,
-                densitySummation = this._densitySummation;
+                i;
 
-            densitySummation.wipe();
+            this._densitySummation = [];
             for (i = 0; i < length; i++) {
                 sum += (densities[i] + densities[i + 1]) / 2;
-                densitySummation[i] = sum;
+                this._densitySummation[i] = sum;
             }
+            this._maxTime = null;
         }
     },
 
-    getPositionAtTime: {
-        value: function (time, position, parameters) {
-            var p0, p1, p2, p3,
-                a, b, c,
-                t, y,
-                start,
-                _parameters = this._parameters,
-                i, j,
-                parameterKeys,
-                parameterKeyCount,
-                jParameter,
-                jParameterData,
-                densitySummation = this._densitySummation;
-
-            position.length = 0;
-            parameters.wipe();
-
-            if ((time >= 0) && (time < this.maxTime)) {
-                if (this._previousIndex && (time >= densitySummation[this._previousIndex - 1])) {
-                    i = this._previousIndex;
-                } else {
-                    i = 0;
-                }
-                while (time >= densitySummation[i]) {
-                    i++;
-                }
-                this._previousIndex = i;
-                start = i ? densitySummation[i - 1] : 0;
-                p0 = this._knots[i],
-                p1 = this._nextHandlers[i],
-                p2 = this._previousHandlers[i + 1],
-                p3 = this._knots[i + 1],
-                a = this._densities[i],
-                b = this._densities[i + 1],
-                c = a - b;
-                if ((c < -1e-10) || (c > 1e-10)) {
-                    t = (a - Math.sqrt(a * a + (b - a) * 2 * (time - start))) / c;
-                } else {
-                    t = (time - start) / a;
-                }
-                y = 1 - t;
-                // TODO: Redo this and create getParametersAtTime or getPositionAndParametersAtTime
-
-                parameterKeys = Object.keys(_parameters);
-                parameterKeyCount = parameterKeys.length;
-
-                for (j = 0; j < parameterKeyCount; j++) {
-                    jParameter = _parameters[parameterKeys[j]];
-                    jParameterData = jParameter.data;
-                    if ((typeof jParameterData[i] !== "undefined") && (typeof jParameterData[i + 1] !== "undefined")) {
-                        parameters[parameterKeys[j]] = (jParameterData[i] * y + jParameterData[i + 1] * t).toFixed(5) + jParameter.units;
-                    } else {
-                        parameters[parameterKeys[j]] = jParameterData[jParameterData.length - 1].toFixed(5) + jParameter.units;
-                    }
-
-                }
-
-                position.push(p0[0]*(y*y*y)+p1[0]*(y*y*t*3)+p2[0]*(y*t*t*3)+p3[0]*(t*t*t));
-                position.push(p0[1]*(y*y*y)+p1[1]*(y*y*t*3)+p2[1]*(y*t*t*3)+p3[1]*(t*t*t));
-                position.push(p0[2]*(y*y*y)+p1[2]*(y*y*t*3)+p2[2]*(y*t*t*3)+p3[2]*(t*t*t));
-                position.push(parameters);
-
+    _convertSplineTimeToBezierIndexTime: {
+        enumerable: false,
+        value: function (splineTime) {
+            if (splineTime < 0) {
+                return null;
             }
+            if (this._maxTime === null) {
+                this.computeMaxTime();
+            }
+            if (splineTime >= this._maxTime) {
+                return null;
+            }
+            var densitySummation = this._densitySummation,
+                length = densitySummation.length,
+                index = length - 1,
+                add = length >> 1,
+                remainder,
+                time,
+                a, b, c;
 
-            return position;
+            while (add) {
+                if (((index - add) >= 0) && (densitySummation[index - add] > splineTime)) {
+                    index -= add;
+                } else {
+                    add >>= 1;
+                }
+            }
+            remainder = splineTime - (index ? densitySummation[index - 1] : 0);
+            a = this._densities[index];
+            b = this._densities[index + 1];
+            c = a - b;
+            if ((c < -1e-10) || (c > 1e-10)) {
+                time = (a - Math.sqrt(a * a + (b - a) * 2 * remainder)) / c;
+            } else {
+                time = remainder / a;
+            }
+            return [index, time];
+        }
+    },
+
+    getPositionAtIndexTime: {
+        value: function (indexTime) {
+            var index = indexTime[0],
+                time = indexTime[1],
+                p0 = this._knots[index],
+                p1 = this._nextHandlers[index],
+                p2 = this._previousHandlers[index + 1],
+                p3 = this._knots[index + 1],
+                y = 1 - time,
+                coef1 = y * y * y, // cubic bezier coefficients
+                coef2 = y * y * time * 3,
+                coef3 = y * time * time * 3,
+                coef4 = time * time * time;
+
+            return [
+                p0[0] * coef1 + p1[0] * coef2 + p2[0] * coef3 + p3[0] * coef4,
+                p0[1] * coef1 + p1[1] * coef2 + p2[1] * coef3 + p3[1] * coef4,
+                p0[2] * coef1 + p1[2] * coef2 + p2[2] * coef3 + p3[2] * coef4
+            ]
+        }
+    },
+
+    getRotationAtIndexTime: {
+        value: function (indexTime) {
+            var index = indexTime[0],
+                time = indexTime[1],
+                rotateX,
+                rotateY,
+                rotateZ,
+                y = 1 - time,
+                parameters = this._parameters;
+
+            if (typeof parameters.rotateX !== "undefined") {
+                rotateX = parameters.rotateX.data[index] * y + parameters.rotateX.data[index + 1] * time;
+            } else {
+                rotateX = 0;
+            }
+            if (typeof parameters.rotateY !== "undefined") {
+                rotateY = parameters.rotateY.data[index] * y + parameters.rotateY.data[index + 1] * time;
+            } else {
+                rotateY = 0;
+            }
+            if (typeof parameters.rotateZ !== "undefined") {
+                rotateZ = parameters.rotateZ.data[index] * y + parameters.rotateZ.data[index + 1] * time;
+            } else {
+                rotateZ = 0;
+            }
+            return [rotateX, rotateY, rotateZ];
+        }
+    },
+
+    getStyleAtIndexTime: {
+        value: function (indexTime) {
+            var index = indexTime[0],
+                time = indexTime[1],
+                _parameters = this._parameters,
+                y = 1 - time,
+                j,
+                parameterName,
+                style = "";
+
+            parameterKeys = Object.keys(_parameters);
+            parameterKeyCount = parameterKeys.length;
+            for (j = 0; j < parameterKeyCount; j++) {
+                parameterName = parameterKeys[j];
+                jParameter = _parameters[parameterName];
+                jParameterData = jParameter.data;
+                if (
+                    (parameterName !== "rotateX") &&
+                    (parameterName !== "rotateY") &&
+                    (parameterName !== "rotateZ") &&
+                    (typeof jParameterData[index] !== "undefined") &&
+                    (typeof jParameterData[index + 1] !== "undefined")) {
+                    style += parameterName + ":" + ((((jParameterData[index] * y + jParameterData[index + 1] * time)  * 100000) >> 0) * .00001) + jParameter.units + ";";
+                }
+            }
+            return style;
         }
     },
 
@@ -277,11 +273,13 @@ var Montage = require("montage").Montage,
 
             for (i = 0; i < length; i++) {
                 iVector = vectors[i];
-                out[i] = [
-                    iVector[0] * matrix[0] + iVector[1] * matrix[4] + iVector[2] * matrix [8] + matrix[12],
-                    iVector[0] * matrix[1] + iVector[1] * matrix[5] + iVector[2] * matrix [9] + matrix[13],
-                    iVector[0] * matrix[2] + iVector[1] * matrix[6] + iVector[2] * matrix [10] + matrix[14]
-                ];
+                if (iVector) {
+                    out[i] = [
+                        iVector[0] * matrix[0] + iVector[1] * matrix[4] + iVector[2] * matrix [8] + matrix[12],
+                        iVector[0] * matrix[1] + iVector[1] * matrix[5] + iVector[2] * matrix [9] + matrix[13],
+                        iVector[0] * matrix[2] + iVector[1] * matrix[6] + iVector[2] * matrix [10] + matrix[14]
+                    ];
+                }
             }
             return out;
         }
@@ -396,7 +394,7 @@ var Montage = require("montage").Montage,
 
     _halfPI: {
         enumerable: false,
-        value: Math.PI*0.5
+        value: Math.PI * .5
     },
 
     reflectionMatrix: {
@@ -423,27 +421,9 @@ var Montage = require("montage").Montage,
         }
     },
 
-    planeBezierIntersection: {
-        enumerable: false,
-        value: function (planeOrigin, planeNormal, b0, b1, b2, b3) {
-            var matrix = this.reflectionMatrix(planeNormal), // TODO: cache for matrix and cache for cubicRealRoots
-                d = this.reflectedY(b0[0] - planeOrigin[0], b0[1] - planeOrigin[1], b0[2] - planeOrigin[2], matrix),
-                r1 = this.reflectedY(b1[0] - planeOrigin[0], b1[1] - planeOrigin[1], b1[2] - planeOrigin[2], matrix),
-                r2 = this.reflectedY(b2[0] - planeOrigin[0], b2[1] - planeOrigin[1], b2[2] - planeOrigin[2], matrix),
-                r3 = this.reflectedY(b3[0] - planeOrigin[0], b3[1] - planeOrigin[1], b3[2] - planeOrigin[2], matrix);
-
-            return this.cubicRealRoots(
-                (r1 - r2) * 3 + r3 - d,
-                (d + r2) * 3 - 6 * r1,
-                (r1 - d) * 3,
-                d
-            );
-        }
-    },
-
     directedPlaneBezierIntersection: {
         enumerable: false,
-        value: function (planeOrigin0, planeOrigin1, planeOrigin2, planeNormal, b0, b1, b2, b3, reflectionMatrixBuffer, segments) {
+        value: function (planeOrigin0, planeOrigin1, planeOrigin2, planeNormal, b0, b1, b2, b3, reflectionMatrixBuffer) {
             var matrix = this.reflectionMatrix(planeNormal[0],planeNormal[1],planeNormal[2],reflectionMatrixBuffer), // TODO: cache for matrix and cache for cubicRealRoots
                 d = this.reflectedY(b0[0] - planeOrigin0, b0[1] - planeOrigin1, b0[2] - planeOrigin2, matrix),
                 r1 = this.reflectedY(b1[0] - planeOrigin0, b1[1] - planeOrigin1, b1[2] - planeOrigin2, matrix),
@@ -456,9 +436,8 @@ var Montage = require("montage").Montage,
                 min,
                 max = 0,
                 mid,
-                i = 0;
-
-            segments.wipe();
+                i = 0,
+                segments = [];
 
             while ((i < r.length) && (r[i] <= 0)) {
                 i++;
@@ -476,7 +455,6 @@ var Montage = require("montage").Montage,
             if (this.cubic(a, b, c, d, mid) >= 0) {
                 segments.push([max, 1]);
             }
-
             return segments;
         }
     }

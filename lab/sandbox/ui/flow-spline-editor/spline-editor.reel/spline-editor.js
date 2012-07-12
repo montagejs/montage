@@ -222,7 +222,10 @@ exports.SplineEditor = Montage.create(Component, {
             this.topView.isHighlightingCloserKnot = this.frontView.isHighlightingCloserKnot = true;
             this.topView.mousedownDelegate = this.frontView.mousedownDelegate = function (x, y, knot, handler, isScrolling) {
                 if (knot !== null) {
-                    self.spline.removeKnot(knot);
+                    self.spline._knots.splice(knot, 1);
+                    self.spline._nextHandlers.splice(knot, 1);
+                    self.spline._previousHandlers.splice(knot, 1);
+                    self.spline._densities.splice(knot, 1);
                     self.frontView.updateSpline();
                     self.topView.updateSpline();
                     self.hasSplineUpdated = true;

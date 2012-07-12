@@ -34,49 +34,55 @@ POSSIBILITY OF SUCH DAMAGE.
     <meta charset="utf-8">
     <link rel="stylesheet" href="flow.css">
     <script type="text/montage-serialization">
-{
-    "repetition": {
-        "prototype": "ui/repetition.reel",
-        "properties": {
-            "element": {
-                "#": "montage-flow-repetition"
+        {
+            "repetition": {
+                "prototype": "ui/repetition.reel",
+                "properties": {
+                    "element": {
+                        "#": "montage-flow-repetition"
+                    }
+                },
+                "bindings": {
+                    "objects": {"<-": "@owner.objects"},
+                    "contentController": {"<-": "@owner.contentController"},
+                    "isSelectionEnabled": {"<-": "@owner.isSelectionEnabled"}
+                }
+            },
+            "flowTranslateComposer": {
+                "prototype": "ui/composer/flow-translate-composer",
+                "properties": {
+                    "flow": {"@": "owner"},
+                    "invertAxis": true,
+                    "allowFloats": true,
+                    "minScroll": 0
+                },
+                "bindings": {
+                    "maxScroll": {"<-": "@owner.length"},
+                    "_momentumDuration": {"<-": "@owner.momentumDuration"},
+                    "translateStride": {"<-": "@owner.stride"},
+                    "scrollingMode": {"<-": "@owner.scrollingMode"},
+                    "linearScrollingVector": {"<-": "@owner.linearScrollingVector"}
+                }
+            },
+            "owner": {
+                "properties": {
+                    "element": {
+                        "#": "montage-flow"
+                    },
+                    "_repetition": {
+                        "@": "repetition"
+                    },
+                    "_flowTranslateComposer": {
+                        "@": "flowTranslateComposer"
+                    }
+                },
+                "bindings": {
+                    "scroll": {"<->": "@flowTranslateComposer.scroll"},
+                    "selectedIndexes": {"<-": "@repetition.selectedIndexes"},
+                    "activeIndexes": {"<-": "@repetition.activeIndexes"}
+                }
             }
         }
-    },
-    "translateComposer": {
-        "prototype": "ui/composer/translate-composer",
-        "properties": {
-            "component": {"@": "owner"},
-            "minTranslateX": 0,
-            "invertAxis": true,
-            "allowFloats": true
-        },
-        "bindings": {
-            "element": {"<-": "@owner._element"},
-            "maxTranslateX": {"<-": "@owner.maxTranslateX"}
-        }
-    },
-    "owner": {
-        "properties": {
-            "element": {
-                "#": "montage-flow"
-            },
-            "_repetition": {
-                "@": "repetition"
-            },
-            "_translateComposer": {
-                "@": "translateComposer"
-            }
-        },
-        "bindings": {
-            "isSelectionEnabled": {
-                "boundObject": {"@": "repetition"},
-                "boundObjectPropertyPath": "isSelectionEnabled"
-            },
-            "translateX": {"<-": "@translateComposer.translateX"}
-        }
-    }
-}
     </script>
 </head>
 <body>

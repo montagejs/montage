@@ -33,35 +33,77 @@ POSSIBILITY OF SUCH DAMAGE.
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
-    <title>Picasa Carousel Test</title>
+    <title>Flow Book Test</title>
     <script src="../../../../montage.js" data-package="."></script>
     <script type="text/montage-serialization">
         {
             "owner": {
-                "prototype": "picasa-carousel-test",
+                "prototype": "flow-book-test",
                 "properties": {
-                    "picasa": {"@": "picasa"}
+                    "flowBook": {"@": "flowBook"}
                 }
             },
-            "picasa": {
-                "prototype": "montage/lab/sandbox/ui/picasa-carousel.reel",
+            "flowBook": {
+                "prototype": "montage/ui/flow.reel",
                 "properties": {
-                    "element": {"#": "picasa"}
+                    "element": {"#": "flow-book"},
+                    "objects": ["Book", 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, "The End"],
+                    "isSelectionEnabled": false,
+                    "cameraFov": 40,
+                    "cameraPosition": [0, 500, 1500],
+                    "cameraTargetPoint": [0, -40, 0],
+                    "boundingBoxSize": [512, 724, 0],
+                    "stride": 1,
+                    "momentumDuration": 180,
+                    "linearScrollingVector": [-400, 0, 0]
+                }
+            },
+            "page": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "page"}
+                },
+                "bindings": {
+                    "value": {
+                        "boundObject": {"@": "flowBook"},
+                        "boundObjectPropertyPath": "objectAtCurrentIteration",
+                        "oneway": true
+                    }
                 }
             }
         }
     </script>
     <style>
-        .picasa {
+        html {
+            background: #555;
+        }
+        .flow-book {
             position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            left: 0;
+            top: 0px;
+            right: 0px;
+            bottom: 0px;
+            left: 0px;
+        }
+        .page {
+            width: 512px;
+            height: 724px;
+            margin-left: -256px;
+            margin-top: -362px;
+            line-height: 140px;
+            text-align: center;
+            background: #fff;
+            font-family: sans-serif;
+            font-size: 52px;
+            color: #666;
+        }
+        .flow-book > div > div {
+            -webkit-backface-visibility: hidden;
         }
     </style>
 </head>
 <body>
-    <div data-montage-id="picasa" class="picasa"></div>
+    <div data-montage-id="flow-book" class="flow-book">
+        <div data-montage-id="page" class="page"></div>
+    </div>
 </body>
 </html>
