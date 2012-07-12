@@ -747,9 +747,9 @@ exports.Button = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
 
 }, module);
 /**
-    @class module:montage/ui/button.ToggleButton
+    @class module:"montage/ui/bluemoon/button.reel".ToggleButton
 */
-exports.ToggleButton = Montage.create(exports.Button,/** @lends module:montage/ui/button.ToggleButton# */ {
+exports.ToggleButton = Montage.create(exports.Button,/** @lends module:"montage/ui/bluemoon/button.reel".ToggleButton# */ {
 /**
   Description TODO
   @private

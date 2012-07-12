@@ -29,6 +29,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
+/**
+    @module "montage/ui/scroller.reel"
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 

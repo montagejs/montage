@@ -31,8 +31,12 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /**
     @module montage/ui/application
-    @require montage/core/event/event-manager
-    @require montage/ui/template
+    @requires montage/core/core
+    @requires montage/core/event/event-manager
+    @requires montage/ui/template
+    @requires montage/ui/component
+
+    @requires montage/ui/dom
 */
 
 var Montage = require("core/core").Montage,

@@ -31,6 +31,9 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /**
     @module "montage/ui/anchor.reel"
+    @requires montage
+    @requires montage/ui/component
+    @requires "montage/ui/native/anchor.reel"
 */
 
 /*global require,exports */

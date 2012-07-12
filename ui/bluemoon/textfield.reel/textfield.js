@@ -29,17 +29,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-	@module "montage/ui/bluemoon/input-text.reel"
+	@module "montage/ui/bluemoon/textfield.reel"
     @requires montage/core/core
     @requires montage/ui/editable-text
 */
 var Montage = require("montage").Montage,
     EditableText = require("ui/editable-text").EditableText;
 /**
-    @class module:"montage/ui/bluemoon/input-text.reel".Textfield
+    @class module:"montage/ui/bluemoon/textfield.reel".Textfield
     @extends module:montage/ui/editable-text.EditableText
 */
-var Textfield = exports.Textfield = Montage.create(EditableText,/** @lends module:"montage/ui/bluemoon/input-text.reel".Textfield# */ {
+var Textfield = exports.Textfield = Montage.create(EditableText,/** @lends module:"montage/ui/bluemoon/textfield.reel".Textfield# */ {
 /**
         Description TODO
         @type {Property}

@@ -36,7 +36,7 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 /**
-    @class module:montage/ui/progress.Progress
+    @class module:"montage/ui/bluemoon/progress.reel".Progress
     @extends module:montage/ui/component.Component
 */
 exports.Progress = Montage.create(Component,/** @lends module:"montage/ui/bluemoon/progress.reel".Progress# */ {

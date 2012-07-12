@@ -39,7 +39,7 @@ var Montage = require("montage").Montage,
 /**
  * Input Text
  * @class module:"montage/ui/input-text.reel".InputText
- * @extends module:montage/ui/native/input-text.reel.InputText
+ * @extends module:"montage/ui/native/input-text.reel".InputText
  */
 exports.InputText = Montage.create(NativeInputText, /** @lends module:"montage/ui/input-text.reel".InputText# */ {
 
