@@ -299,16 +299,14 @@ var Examples = {
         "Accessing Repetition objects": {
             serialization: {
                 "repetition": {
-                    "module": "montage/ui/repetition.reel",
-                    "name": "Repetition",
+                    "prototype": "montage/ui/repetition.reel",
                     "properties": {
                         "objects": ["Mike", "François", "Afonso", "Heather"],
                         "element": {"#": "repetition"}
                     }
                 },
                 "dynamicText": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "dynamicText"}
                     },
