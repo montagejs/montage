@@ -52,6 +52,6 @@ POSSIBILITY OF SUCH DAMAGE.
     -webkit-transform: translateZ(0);
     -webkit-transform-style: preserve-3d;
 }
-.montage-Flow-pointer-events-none {
+.montage-Flow--pointerEventsNone {
     pointer-events: none;
 }
