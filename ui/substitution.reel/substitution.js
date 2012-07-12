@@ -30,10 +30,9 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
 	@module "montage/ui/substitution.reel"
-    @requires montage/core/core
     @requires montage/ui/component
-    @requires montage/ui/slot
-    @requires core/logger
+    @requires "montage/ui/slot.reel"
+    @requires montage/core/logger
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,

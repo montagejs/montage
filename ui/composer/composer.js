@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-	@module montage/ui/event/composer/composer
+	@module montage/ui/composer/composer
     @requires montage/core/core
 */
 var Montage = require("montage").Montage;

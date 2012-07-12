@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
  /*global require, exports*/
 
 /**
-    @module "montage/ui/button.reel"
+    @module "montage/ui/native/button.reel"
     @requires montage/core/core
     @requires montage/ui/component
     @requires montage/ui/native-control
@@ -44,8 +44,10 @@ var Montage = require("montage").Montage,
 
 /**
     Wraps a native <code>&lt;button></code> or <code>&lt;input[type="button"]></code> HTML element. The element's standard attributes are exposed as bindable properties.
-    @class module:"montage/ui/button.reel".Button
+    @class module:"montage/ui/native/button.reel".Button
     @extends module:montage/ui/native-control.NativeControl
+    @fires action
+    @fires hold
     @example
 <caption>JavaScript example</caption>
 var b1 = Button.create();
@@ -57,7 +59,7 @@ b1.addEventListener("action", function(event) {
 <caption>Serialized example</caption>
 {
     "aButton": {
-        "prototype": "montage/ui/button.reel",
+        "prototype": "montage/ui/native/button.reel",
         "properties": {
             "element": {"#": "btnElement"}
         },
@@ -74,7 +76,25 @@ b1.addEventListener("action", function(event) {
 }
 &lt;button data-montage-id="btnElement"></button>
 */
-var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"montage/ui/button.reel".Button# */ {
+var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"montage/ui/native/button.reel".Button# */ {
+
+    /**
+        Dispatched when the button is activated through a mouse click, finger tap,
+        or when focused and the spacebar is pressed.
+
+        @event action
+        @memberof module:"montage/ui/native/button.reel".Button
+        @param {Event} event
+    */
+
+    /**
+        Dispatched when the button is pressed for a period of time, set by
+        {@link holdThreshold}.
+
+        @event hold
+        @memberof module:"montage/ui/native/button.reel".Button
+        @param {Event} event
+    */
 
     _preventFocus: {
         enumerable: false,
@@ -134,7 +154,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     _label: { value: undefined, enumerable: false },
 
     /**
-        The label for the button. In an &lt;input> element this is taken from the element's <code>value</code> attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
+        The displayed text on the button. In an &lt;input> element this is taken from the element's <code>value</code> attribute. On any other element (including &lt;button>) this is the first child node which is a text node. If one isn't found then it will be created.
 
         If the button has a non-null <code>converter</code> property, the converter object's <code>convert()</code> method is called on the value before being assigned to the button instance.
 
@@ -390,26 +410,7 @@ var Button = exports.Button = Montage.create(NativeControl, /** @lends module:"m
     }
 });
 
-// TODO: Display events in JSDoc output
- /**
- @event
- @name action
- @param {Event} event
-
- Dispatched when the button is activated through a mouse click, finger tap,
- or when focused and the spacebar is pressed.
- */
-
- /**
- @event
- @name hold
- @param {Event} event
-
- Dispatched when the button is pressed for a period of time, set by
- {@link holdThreshold}.
- */
-
-Button.addAttributes( /** @lends module:"montage/ui/button.reel".Button# */{
+Button.addAttributes( /** @lends module:"montage/ui/native/button.reel".Button# */{
 
 /**
     Specifies whether the button should be focused as soon as the page is loaded.
@@ -482,9 +483,12 @@ Button.addAttributes( /** @lends module:"montage/ui/button.reel".Button# */{
     name: null,
 
 /**
-    The value associated with the element.
+    <strong>Use <code>label</code> to set the displayed text on the button</strong>
+    The value associated with the element. This sets the value attribute of
+    the button that gets sent when the form is submitted.
     @type {string}
     @default null
+    @see label
 */
     value: null
 });

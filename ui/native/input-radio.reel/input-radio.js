@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 /**
-    @module "montage/ui/input-radio.reel"
+    @module "montage/ui/native/input-radio.reel"
     @requires montage/ui/component
     @requires montage/ui/check-input
 */
@@ -39,7 +39,7 @@ var Montage = require("montage").Montage,
     CheckInput = require("ui/check-input").CheckInput;
 /**
  * Wraps the a &lt;input type="radio"> element with binding support for the element's standard attributes.
-   @class module:"montage/ui/input-radio.reel".InputRadio
+   @class module:"montage/ui/native/input-radio.reel".InputRadio
    @extends module:montage/ui/check-input.CheckInput
  */
 var InputRadio = exports.InputRadio = Montage.create(CheckInput, {
@@ -134,7 +134,7 @@ var InputRadio = exports.InputRadio = Montage.create(CheckInput, {
         }
     }
 });
-InputRadio.addAttributes(/** @lends module:"montage/ui/input-radio.reel".InputRadio */ {
+InputRadio.addAttributes(/** @lends module:"montage/ui/native/input-radio.reel".InputRadio */ {
 
 /**
     Specifies whether the radio button should be focused as soon as the page is loaded.

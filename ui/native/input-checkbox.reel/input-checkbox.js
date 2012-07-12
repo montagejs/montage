@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-    @module "montage/ui/input-checkbox.reel"
+    @module "montage/ui/native/input-checkbox.reel"
     @requires montage/core/core
     @requires montage/ui/check-input
 */
@@ -39,11 +39,11 @@ var Montage = require("montage").Montage,
 
 /**
 
-    @class module:"montage/ui/input-checkbox.reel".InputCheckbox
+    @class module:"montage/ui/native/input-checkbox.reel".InputCheckbox
     @extends module:montage/ui/check-input.CheckInput
 */
 var InputCheckbox = exports.InputCheckbox = Montage.create(CheckInput, {});
-InputCheckbox.addAttributes( /** @lends module:"montage/ui/input-checkbox.reel".InputCheckbox# */ {
+InputCheckbox.addAttributes( /** @lends module:"montage/ui/native/input-checkbox.reel".InputCheckbox# */ {
 
 /**
     Specifies if the checkbox control should receive focus when the document loads. Because Montage components are loaded asynchronously after the document has loaded, setting this property has no effect on the element's focus state.

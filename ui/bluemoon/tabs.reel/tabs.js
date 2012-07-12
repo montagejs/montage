@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-	@module "montage/ui/tabs.reel"
+	@module "montage/ui/bluemoon/tabs.reel"
     @requires montage/core/core
     @requires montage/ui/component
     @requires "montage/ui/repetition.reel"
@@ -47,10 +47,10 @@ var Montage = require("montage").Montage,
     Uuid = require("core/uuid").Uuid;
 
 /**
-    @class module:"montage/ui/tabs.reel".Tabs
+    @class module:"montage/ui/bluemoon/tabs.reel".Tabs
 */
 
-var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/ui/tabs.reel".Tabs# */ {
+var Tabs = exports.Tabs = Montage.create(Component, /** @lends module:"montage/ui/bluemoon/tabs.reel".Tabs# */ {
 
     _repetition: {
         value: null

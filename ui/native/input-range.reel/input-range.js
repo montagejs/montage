@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 /*global require,exports */
 
 /**
-    @module "montage/ui/input-range.reel"
+    @module "montage/ui/native/input-range.reel"
     @requires montage/ui/component
     @requires montage/ui/text-input
     @requires montage/ui/composer/press-composer
@@ -44,7 +44,7 @@ var Montage = require("montage").Montage,
 
 /**
  * Wraps the a &lt;input type="range"> element with binding support for the element's standard attributes.
-   @class module:"montage/ui/input-range.reel".InputRange
+   @class module:"montage/ui/native/input-range.reel".InputRange
    @extends module:montage/ui/text-input.TextInput
  */
 var InputRange = exports.InputRange = Montage.create(TextInput, {
@@ -84,7 +84,7 @@ var InputRange = exports.InputRange = Montage.create(TextInput, {
     }
 });
 
-InputRange.addAttributes( /** @lends module:"montage/ui/input-range.reel".InputRange# */ {
+InputRange.addAttributes( /** @lends module:"montage/ui/native/input-range.reel".InputRange# */ {
 /**
     The maximum value displayed but the input control.
     @type {number}

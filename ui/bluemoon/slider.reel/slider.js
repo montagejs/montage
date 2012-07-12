@@ -32,7 +32,9 @@ POSSIBILITY OF SUCH DAMAGE.
 /**
     @module "montage/ui/bluemoon/slider.reel"
     @requires montage/core/core
+    @requires montage/ui/dom
     @requires montage/ui/component
+    @requires montage/core/geometry/point
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,

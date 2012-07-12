@@ -29,17 +29,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-	@module "montage/ui/bluemoon/input-checkbox.reel"
+	@module "montage/ui/bluemoon/checkbox.reel"
     @requires montage/core/core
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 /**
-    @class module:"montage/ui/bluemoon/input-checkbox.reel".Checkbox
+    @class module:"montage/ui/bluemoon/checkbox.reel".Checkbox
     @extends module:montage/ui/component.Component
 */
-exports.Checkbox = Montage.create(Component,/** @lends "module:montage/ui/bluemoon/input-checkbox.reel".Checkbox# */ {
+exports.Checkbox = Montage.create(Component,/** @lends "module:montage/ui/bluemoon/checkbox.reel".Checkbox# */ {
     // Configuration
     /**
         The distance (squared) beyond which a touch will be considered.
