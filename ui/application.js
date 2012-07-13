@@ -184,12 +184,13 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         }
     },
 
-    didCreate: {
-        value: function() {
-            if (window.loadInfo && !this.parentApplication) {
-                this.parentApplication = window.loadInfo.parent.document.application;
-            }
-        }
+    /**
+     An array of the child windows attached to the application.
+     @type {Array}
+     @default {Array} []
+     */
+    attachedWindows: {
+        value: []
     },
 
     /**
@@ -229,12 +230,144 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     An array of the child windows attached to the application.
-     @type {Array}
-     @default {Array} []
+     Registers an event listener on the application instance.
+     @function
+     @param {Property} type The event type to listen for.
+     @param {Object} listener A listener object that defines an event handler function, or a function to handle the event.
+     @param {Function} useCapture If <code>true</code>, the listener will only be notified during the event's capture phase.<br>
+     If <code>false</code> (the default) the listener will be notified during the event's bubble phase.
      */
-    attachedWindows: {
-        value: []
+    addEventListener: {
+        value: function(type, listener, useCapture) {
+            Object.getPrototypeOf(Application)["addEventListener"].call(this, type, listener, useCapture);
+        }
+    },
+
+    /**
+     Removes a previously registered event listener on the application instance.
+     @function
+     @param {Property} type The event type that was originally registered.
+     @param {Object} listener The listener object or function that was registered to handle the event.
+     @param {Function} useCapture TODO
+     */
+    removeEventListener: {
+        value: function(type, listener, useCapture) {
+            Object.getPrototypeOf(Application)["removeEventListener"].call(this, type, listener, useCapture);
+        }
+    },
+
+    /**
+     The application's delegate object.<br>
+     The application delegate is notified of events during the application's life cycle.
+     @type {Object}
+     @default null
+     */
+    delegate: {
+        value: null
+    },
+
+    /**
+     Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
+     The component URL must be in the same domain as the calling script. Can be relative to the main application
+     @function
+     @param {PATH} component, the path to the reel component to open in the new window.
+     @param {STRING} name, the component main class name.
+     @param {OBJECT} parameters, the new window parameters (accept same parameters than window.open).
+     @example
+     var app = document.application;
+     app.openWindow("docs/help.reel", "Help", "{width=300, height=500}");
+     */
+    openWindow: {
+        value: function(component, name, parameters) {
+            var thisRef = this,
+                childWindow = MontageWindow.create(),
+                childApplication,
+                event,
+                windowParams = {
+                    location: false,
+//                  height: <pixels>,
+//                  width: <pixels>,
+//                  left: <pixels>,
+//                  top: <pixels>,
+                    menubar: false,
+                    resizable: true,
+                    scrollbars: true,
+                    status: false,
+                    titlebar: true,
+                    toolbar: false
+                };
+
+            var loadInfo = {
+                module: component,
+                name: name,
+                parent: window,
+                callback: function(aWindow, aComponent) {
+                    var sortOrder;
+
+                    // Finishing the window object initialization and let the consumer knows the window is loaded and ready
+                    childApplication = aWindow.document.application;
+                    childWindow.window = aWindow;
+                    childWindow.application = childApplication;
+                    childWindow.component = aComponent;
+                    childApplication.window = childWindow;
+
+                    thisRef.attachedWindows.push(childWindow);
+
+                    sortOrder = thisRef.mainApplication.windowsSortOrder;
+                    if (sortOrder == "z-order" || sortOrder == "reverse-open-order") {
+                        thisRef.windows.unshift(childWindow);
+                    } else {
+                        thisRef.windows.push(childWindow);
+                    }
+
+                    event = document.createEvent("CustomEvent");
+                    event.initCustomEvent("load", true, true, null);
+                    childWindow.dispatchEvent(event);
+                }
+            };
+
+            // If this is the first time we open a window, let's install a focus listener and make sure the body element is focusable
+            // Applicable only on the main application
+            if (this === this.mainApplication && !this._multipleWindow) {
+                var montageWindow = this.window;    // Will cause to create a Montage Window for the mainApplication and install the needed event handlers
+            }
+
+            if (typeof parameters == "object") {
+                var param, value, separator = "", stringParamaters = "";
+
+                // merge the windowParams with the parameters
+                for (param in parameters) {
+                    if (parameters.hasOwnProperty(param)) {
+                        windowParams[param] = parameters[param];
+                    }
+                }
+            }
+
+            // now convert the windowParams into a string
+            var excludedParams = ["name"];
+            for (param in windowParams) {
+                if (excludedParams.indexOf(param) == -1) {
+                    value = windowParams[param];
+                    if (typeof value == "boolean") {
+                        value = value ? "yes" : "no";
+                    } else {
+                        value = String(value);
+                        if (value.match(/[ ,"]/)) {
+                            value = '"' + value.replace(/"/g, "\\\"") + '"';
+                        }
+                    }
+                    stringParamaters += separator + param + "=" + value;
+                    separator = ",";
+                }
+            }
+
+            window.require.loadPackage({name: "montage"}).then(function(require) {
+                var newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", stringParamaters);
+                newWindow.loadInfo = loadInfo;
+            }).end();
+
+            return childWindow;
+        }
     },
 
     /**
@@ -303,142 +436,14 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
     },
 
     /**
-     Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
-     The component URL must be in the same domain as the calling script. Can be relative to the main application
-     @function
-     @param {PATH} component, the path to the reel component to open in the new window.
-     @param {STRING} name, the component main class name.
-     @param {OBJECT} parameters, the new window parameters (accept same parameters than window.open).
-     @example
-     var app = document.application;
-     app.openWindow("docs/help.reel", "Help", "{width=300, height=500}");
+     @private
      */
-    openWindow: {
-        value: function(component, name, parameters) {
-            var thisRef = this,
-                childWindow = MontageWindow.create(),
-                childApplication,
-                event,
-                windowParams = {
-                    name: "_blank",
-                    location: false,
-//                  height: <pixels>,
-//                  width: <pixels>,
-//                  left: <pixels>,
-//                  top: <pixels>,
-                    menubar: false,
-                    resizable: true,
-                    scrollbars: true,
-                    status: false,
-                    titlebar: true,
-                    toolbar: false
-                };
-
-            var loadInfo = {
-                module: component,
-                name: name,
-                parent: window,
-                callback: function(aWindow, aComponent) {
-                    var sortOrder;
-
-                    // Finishing the window object initialization and let the consumer knows the window is loaded and ready
-                    childApplication = aWindow.document.application;
-                    childWindow.window = aWindow;
-                    childWindow.application = childApplication;
-                    childWindow.component = aComponent;
-                    childApplication.window = childWindow;
-
-                    thisRef.attachedWindows.push(childWindow);
-
-                    sortOrder = thisRef.mainApplication.windowsSortOrder;
-                    if (sortOrder == "z-order" || sortOrder == "reverse-open-order") {
-                        thisRef.windows.unshift(childWindow);
-                    } else {
-                        thisRef.windows.push(childWindow);
-                    }
-
-                    event = document.createEvent("CustomEvent");
-                    event.initCustomEvent("load", true, true, null);
-                    childWindow.dispatchEvent(event);
-                }
-            };
-
-            // If this is the first time we open a window, let's install a focus listener and make sure the body element is focusable
-            // Applicable only on the main application
-            if (this === this.mainApplication && !this._multipleWindow) {
-                var montageWindow = this.window;    // Will cause to create a Montage Window for the mainApplication and install the needed event handlers
+    didCreate: {
+        value: function() {
+            if (window.loadInfo && !this.parentApplication) {
+                this.parentApplication = window.loadInfo.parent.document.application;
             }
-
-            if (typeof parameters == "object") {
-                var param, value, separator = "", stringParamaters = "";
-
-                // merge the windowParams with the parameters
-                for (param in parameters) {
-                    if (parameters.hasOwnProperty(param)) {
-                        windowParams[param] = parameters[param];
-                    }
-                }
-            }
-
-            // now convert the windowParams into a string
-            for (param in windowParams) {
-                value = windowParams[param];
-                if (typeof value == "boolean") {
-                    value = value ? "yes" : "no";
-                } else {
-                    value = String(value);
-                    if (value.match(/[ ,"]/)) {
-                        value = '"' + value.replace(/"/g, "\\\"") + '"';
-                    }
-                }
-                stringParamaters += separator + param + "=" + value;
-                separator = ",";
-            }
-
-            window.require.loadPackage({name: "montage"}).then(function(require) {
-                var newWindow = window.open(require.location + "ui/window-loader/index.html", "_blank", stringParamaters);
-                newWindow.loadInfo = loadInfo;
-            }).end();
-
-            return childWindow;
         }
-    },
-
-    /**
-     Registers an event listener on the application instance.
-     @function
-     @param {Property} type The event type to listen for.
-     @param {Object} listener A listener object that defines an event handler function, or a function to handle the event.
-     @param {Function} useCapture If <code>true</code>, the listener will only be notified during the event's capture phase.<br>
-     If <code>false</code> (the default) the listener will be notified during the event's bubble phase.
-     */
-    addEventListener: {
-        value: function(type, listener, useCapture) {
-            Object.getPrototypeOf(Application)["addEventListener"].call(this, type, listener, useCapture);
-        }
-    },
-
-    /**
-     Removes a previously registered event listener on the application instance.
-     @function
-     @param {Property} type The event type that was originally registered.
-     @param {Object} listener The listener object or function that was registered to handle the event.
-     @param {Function} useCapture TODO
-     */
-    removeEventListener: {
-        value: function(type, listener, useCapture) {
-            Object.getPrototypeOf(Application)["removeEventListener"].call(this, type, listener, useCapture);
-        }
-    },
-
-    /**
-     The application's delegate object.<br>
-     The application delegate is notified of events during the application's life cycle.
-     @type {Object}
-     @default null
-     */
-    delegate: {
-        value: null
     },
 
     _load: {
