@@ -33,6 +33,7 @@ POSSIBILITY OF SUCH DAMAGE.
 	@module montage/ui/composer/press-composer
     @requires montage
     @requires montage/ui/composer/composer
+    @requires montage/core/event/mutable-event
 */
 var Montage = require("montage").Montage,
     Composer = require("ui/composer/composer").Composer,
@@ -40,42 +41,46 @@ var Montage = require("montage").Montage,
 /**
     @class module:montage/ui/composer/press-composer.PressComposer
     @extends module:montage/ui/composer/composer.Composer
+    @fires pressStart
+    @fires press
+    @fires longPress
+    @fires pressCancel
 */
-var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/event/composer/press-composer.PressComposer# */ {
+var PressComposer = exports.PressComposer = Montage.create(Composer,/** @lends module:montage/ui/composer/press-composer.PressComposer# */ {
 
     /**
-    @event
-    @name pressStart
-    @param {Event} event
+        Dispatched when a press begins. It is ended by either a {@link press} or
+        {@link pressCancel} event.
 
-    Dispatched when a press begins. It is ended by either a {@link press} or
-    {@link pressCancel} event.
+        @event pressStart
+        @memberof module:montage/ui/composer/press-composer.PressComposer
+        @param {PressEvent} event
     */
 
     /**
-    @event
-    @name press
-    @param {Event} event
+        Dispatched when a press is complete.
 
-    Dispatched when a press is complete.
+        @event press
+        @memberof module:montage/ui/composer/press-composer.PressComposer
+        @param {PressEvent} event
     */
 
     /**
-    @event
-    @name longPress
-    @param {Event} event
+        Dispatched when a press lasts for longer than (@link longPressThreshold}
 
-    Dispatched when a press lasts for longer than (@link longPressThreshold}
+        @event longPress
+        @memberof module:montage/ui/composer/press-composer.PressComposer
+        @param {PressEvent} event
     */
 
     /**
-    @event
-    @name pressCancel
-    @param {Event} event
+        Dispatched when a press is canceled. This could be because the pointer
+        left the element, was claimed by another component or maybe a phone call
+        came in.
 
-    Dispatched when a press is canceled. This could be because the pointer
-    left the element, was claimed by another component or maybe a phone call
-    came in.
+        @event pressCancel
+        @memberof module:montage/ui/composer/press-composer.PressComposer
+        @param {PressEvent} event
     */
 
     // Load/unload

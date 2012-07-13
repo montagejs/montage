@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 /**
-    @module "montage/ui/input-date.reel"
+    @module "montage/ui/native/input-date.reel"
     @requires montage/core/core
     @requires montage/ui/component
     @requires montage/ui/text-input
@@ -41,13 +41,13 @@ var Montage = require("montage").Montage,
 
 /**
   	Wraps an &lt;input type="date"> element as a component.
-    @class module:"montage/ui/input-date.reel".InputDate
+    @class module:"montage/ui/native/input-date.reel".InputDate
     @extends module:montage/ui/text-input.TextInput
  */
 var InputDate = exports.InputDate = Montage.create(TextInput, {
 });
 
-InputDate.addAttributes( /** @lends module:"montage/ui/input-date.reel".InputDate# */{
+InputDate.addAttributes( /** @lends module:"montage/ui/native/input-date.reel".InputDate# */{
 
 /**
 	The upper bound for the element’s value represented in the "full-date" format, (for example, 2001-05-24).

@@ -31,10 +31,10 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>Montage Components Overview</title>
+    <title>Skeleton Overview</title>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="assets/style/base.css">
     <script src="../../../montage.js" data-auto-package></script>
-
     <script type="text/montage-serialization">
         {
             "owner": {
@@ -42,60 +42,7 @@ POSSIBILITY OF SUCH DAMAGE.
             }
         }
     </script>
-
-    <style type="text/css">
-
-        html {
-            background-color: hsl(0,0%,95%);
-            font: 1.2em "Helvetica Neue", Arial, Helvetica, Geneva, sans-serif;
-        }
-        body {
-            padding: 10px 50px;                        
-        }
-
-        h1 {
-            margin: 20px 0 0 0;
-        }
-
-        .montage-app-bootstrapper {
-            display: none;
-            color: red;
-        }
-        .montage-app-bootstrapping .montage-app-bootstrapper {
-            display: block;
-        }
-
-        .montage-app-loader {
-            color: green;
-            display: none;
-        }
-        .montage-app-loading .montage-app-loader {
-            display: block;
-        }
-
-        .main {
-            display: none;
-        }
-        .montage-app-loaded .main {
-            display: block;
-        }
-
-    </style>
-
 </head>
 <body>
-    <!--<div>
-        <h1>Loader Example</h1>
-        <p>This is the loader example. This text here will be present until the main component is drawn as it is not part
-            of any of the loader elements. If the main component is not drawable within <strong>1000ms</strong> you'll see the bootstrapper.</p>
-    </div>-->
-    <div data-montage-id="montage-app-bootstrapper" class="montage-app-bootstrapper">
-        <h1>Bootstrapper</h1>
-        <p>This is the bootstrapper content which will now be shown for at least <strong>1500ms</strong>.</p>
-    </div>
-    <div data-montage-id="montage-app-loader" class="montage-app-loader">
-        <h1>Loader</h1>
-        <p>This is the loader content which will now be shown for at least <strong>2000ms</strong>.</p>
-    </div>
 </body>
 </html>

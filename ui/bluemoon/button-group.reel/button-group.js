@@ -31,7 +31,7 @@ POSSIBILITY OF SUCH DAMAGE.
 /**
 	@module "montage/ui/bluemoon/button-group.reel"
     @requires montage/core/core
-    @requires "ui/component-group.reel"
+    @requires "montage/ui/component-group.reel"
 */
 var Montage = require("montage").Montage,
     ComponentGroup = require("ui/component-group.reel").ComponentGroup;

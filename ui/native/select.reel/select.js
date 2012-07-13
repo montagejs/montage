@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 /**
-    @module "montage/ui/select.reel"
+    @module "montage/ui/native/select.reel"
     @requires montage/ui/component
     @requires montage/ui/controller/array-controller
     @requires montage/ui/native-control
@@ -50,7 +50,7 @@ var Montage = require("montage").Montage,
    @summary
    If the &lt;select> markup contains <option> is provided in the markup and <code>contentController</code> is not, the <code>contentController</code> collection is populated with the options from the markup. If <code>contentController</code> is present, any options in the markup are overwritten by the values from the <code>contentController</code> when they are available.
  */
-var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"montage/ui/select.reel".Select */ {
+var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"montage/ui/native/select.reel".Select */ {
 
     _fromInput: {value: null},
     _synching: {value: null},
@@ -463,7 +463,7 @@ var Select = exports.Select =  Montage.create(NativeControl, /** @lends module:"
 
 //http://www.w3.org/TR/html5/the-button-element.html#the-select-element
 
-Select.addAttributes( /** @lends module:"montage/ui/select.reel".Select */ {
+Select.addAttributes( /** @lends module:"montage/ui/native/select.reel".Select */ {
 /**
     Specifies whether the element should be focused as soon as the page is loaded.
     @type {boolean}
