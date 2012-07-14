@@ -122,6 +122,10 @@ POSSIBILITY OF SUCH DAMAGE.
             border: 6px solid white;
             box-shadow: 0px 1px 2px hsla(0,0%,0%,.2);
         }
+        .input-range-example .chip div {
+            width: 0;
+            height: 0;
+        }
         .input-range-example .controls  {
             display: inline-block;
             margin: 0 0 0 20px;
@@ -168,7 +172,7 @@ POSSIBILITY OF SUCH DAMAGE.
     <h4>Example - Color changer</h4>
     <div class="demo">
 
-                <div data-montage-id="chip" class="chip"></div>
+                <div data-montage-id="chip" class="chip"><div></div></div>
                 <ul data-montage-id="controls" class="controls">
                     <li class="slider-item">
                         <input class="color-slider" data-montage-id="red" type="range" min="0" max="255" step="1" value="255" />

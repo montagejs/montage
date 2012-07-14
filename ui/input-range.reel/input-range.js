@@ -247,6 +247,7 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     prepareForActivationEvents: {
         value: function() {
             this._translateComposer.addEventListener('translateStart', this, false);
+            this._translateComposer.addEventListener('translate', this, false);
             this._translateComposer.addEventListener('translateEnd', this, false);
             this._addEventListeners();
         }
@@ -276,10 +277,37 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
+    _startTranslateX: {
+        enumerable: false,
+        value: null
+    },
+
+    _startPositionX: {
+        enumerable: false,
+        value: null
+    },
+
     handleTranslateStart: {
         value: function(e) {
+            this._startTranslateX = e.translateX;
+            this._startPositionX = this.__positionX;
             this._removeEventListeners();
             this._valueSyncedWithPosition = false;
+        }
+    },
+
+    handleTranslate: {
+        value: function (event) {
+            var x = this._startPositionX + event.translateX - this._startTranslateX;
+
+            if (x < 0) {
+                x = 0;
+            } else {
+                if (x > this._sliderWidth) {
+                    x = this._sliderWidth;
+                }
+            }
+            this._positionX = x;
         }
     },
 
@@ -337,7 +365,7 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
             if(x > 0) {
                 this._sliderLeft = x;
             }
-            console.log('willDraw element position', this._sliderLeft, this._sliderWidth);
+            //console.log('willDraw element position', this._sliderLeft, this._sliderWidth);
             if(!this._valueSyncedWithPosition) {
                 this._calculatePositionFromValue();
             }
@@ -351,11 +379,11 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
             var el = this._handleEl;
             if(el.style.webkitTransform != null) {
                 // detection for webkitTransform to use Hardware acceleration where available
-                el.style.webkitTransform = 'translate(' + this._positionX + 'px)';
+                el.style.webkitTransform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else if(el.style.MozTransform != null) {
-                el.style.MozTransform = 'translate(' + this._positionX + 'px)';
+                el.style.MozTransform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else if(el.style.transform != null) {
-                el.style.transform = 'translate(' + this._positionX + 'px)';
+                el.style.transform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else {
                 // fallback
                 el.style['left'] = this._positionX + 'px';
