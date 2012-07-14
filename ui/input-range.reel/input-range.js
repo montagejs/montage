@@ -227,8 +227,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
                 height: curHt,
                 width: curWd
             };
-            //return [curleft,curtop, curHt, curWd];
-
         }
     },
 
@@ -255,25 +253,19 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     _addEventListeners: {
         value: function() {
-
-            if(window.Touch) {
-                this.element.addEventListener('touchstart', this, false);
-            } else {
+            // support touching the scale to select only in Desktop
+            if(!window.Touch) {
                 this.element.addEventListener('mousedown', this, false);
             }
-
         }
     },
 
     _removeEventListeners: {
         value: function() {
-
-            if(window.Touch) {
-                this.element.removeEventListener('touchstart', this, false);
-            } else {
+            // support touching the scale to select only in Desktop
+            if(!window.Touch) {
                 this.element.removeEventListener('mousedown', this, false);
             }
-
         }
     },
 
@@ -328,7 +320,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
                 }
             }
             var positionX = (position - (this._sliderLeft + InputRange.HANDLE_ADJUST));
-            //console.log('handleClick positionX', positionX);
             if(positionX < 0) {
                 positionX = 0;
             }
@@ -359,7 +350,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     willDraw: {
         value: function() {
             this._sliderWidth = this.element.offsetWidth - (1.5*InputRange.HANDLE_ADJUST);
-
             //var x = this._positionOfElement(this.element).x;
             var x = this._getElementPosition(this.element).left;
             if(x > 0) {
@@ -375,7 +365,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     draw: {
         value: function() {
-            //console.log('inputrange draw', this._positionX, this.value);
             var el = this._handleEl;
             if(el.style.webkitTransform != null) {
                 // detection for webkitTransform to use Hardware acceleration where available
