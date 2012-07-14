@@ -32,12 +32,16 @@ POSSIBILITY OF SUCH DAMAGE.
 var Montage = require("montage").Montage,
     FlowBezierSpline = exports.FlowBezierSpline = Montage.create(Montage, {
 
-    init: {
-        value: function() {
-            this._knots = [];
-            this._densities = [];
-            return this;
-        }
+    _knots: {
+        enumerable: false,
+        distinct: true,
+        value: []
+    },
+
+    _densities: {
+        enumerable: false,
+        distinct: true,
+        value: []
     },
 
     knots: {
@@ -71,11 +75,6 @@ var Montage = require("montage").Montage,
         set: function (value) {
             this._nextHandlers = value;
         }
-    },
-
-    _densities: {
-        enumerable: false,
-        value: null
     },
 
     densities: {
@@ -287,7 +286,7 @@ var Montage = require("montage").Montage,
 
     transform: {
         value: function (matrix) {
-            var spline = Montage.create(FlowBezierSpline).init();
+            var spline = Montage.create(FlowBezierSpline);
 
             spline._densities = this._densities;
             spline._densitySummation = this._densitySummation;
