@@ -52,6 +52,7 @@ if (typeof window !== "undefined") {
  @extends module:montage/core/core.Montage
  */
 var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializer.Serializer# */ {
+    _INITIAL_LABEL_SEQUENCE_NUMBER: {value: 2}, // labels generation sequence is "label", "label2", "label3", ..., hence starting at 2
     _MONTAGE_ID_ATTRIBUTE: {value: "data-montage-id"},
     _serializedObjects: {value: {}}, // label -> string
     _serializedReferences: {value: {}}, // uuid -> string
@@ -131,6 +132,9 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
                 if (objects[label] != null) {
                     this._objectLabels[objects[label].uuid] = label;
                 }
+                // need to store the labels in the object names index to
+                // avoid conflicts when generating labels for other objects
+                this._objectNamesIndex[label] = this._INITIAL_LABEL_SEQUENCE_NUMBER;
             }
 
             for (label in objects) {
@@ -409,7 +413,7 @@ var Serializer = Montage.create(Montage, /** @lends module:montage/core/serializ
             this._objectNamesIndex[objectName] = index + 1;
             return objectName + index;
         } else {
-            this._objectNamesIndex[objectName] = 2;
+            this._objectNamesIndex[objectName] = this._INITIAL_LABEL_SEQUENCE_NUMBER;
             return objectName;
         }
     }},
