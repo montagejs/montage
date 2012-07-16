@@ -30,14 +30,21 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
 var TemplateBase = require("../lib/template-base.js").TemplateBase;
-var childProcess = require('child_process');
+var childProcess = require('child_process'),
+    fs = require('fs');
+
+var _firstCapRe = new RegExp('(.)([A-Z][a-z]+)'),
+    _allCapRe = new RegExp('([a-z0-9])([A-Z])'),
+    _fromCamelToDashes = function (name){
+        var s1 = name.replace(_firstCapRe, "$1-$2");
+        return s1.replace(_allCapRe, "$1-$2").toLowerCase();
+    };
 
 exports.Template = Object.create(TemplateBase, {
 
-
     usage: {
         value: function() {
-            return TemplateBase.usage.apply(this, arguments) + " <exportedName>";
+            return TemplateBase.usage.apply(this, arguments) + " [jsdoc module] [copyright file]";
         }
     },
 
@@ -45,10 +52,32 @@ exports.Template = Object.create(TemplateBase, {
     processArguments: {
         value: function(args) {
             TemplateBase.processArguments.apply(this, arguments);
-            this.variables.exportedName = args[1];
-            if (!this.variables.exportedName) {
-                this.variables.exportedName = this.variables.name.replace(/(?:^|-)([^-])/g, function(_, g1) { return g1.toUpperCase() });
+
+            // We accept the name in any format, dashed, spaced or camelcased
+            // We then convert to to camelcase and back to get the consistent
+            // naming used in Montage
+            var name = this.variables.name;
+            // remove spaces
+            name = name.replace(" ", "-");
+            // convert to camelcase
+            var exportedName = name.replace(/(?:^|-)([^\-])/g, function(_, g1) { return g1.toUpperCase(); });
+            // convert back from camelcase to dashes
+            name = _fromCamelToDashes(exportedName);
+
+            var jsdocModule = args[1];
+            if (jsdocModule && jsdocModule.length && jsdocModule.substring(jsdocModule.length - 1) !== "/") {
+                jsdocModule += "/";
             }
+
+            var copyright, copyrightFile = args[2];
+            if (copyrightFile) {
+                copyright = fs.readFileSync(copyrightFile, "utf-8");
+            }
+
+            this.variables.name = name;
+            this.variables.exportedName = exportedName;
+            this.variables.jsdocModule = jsdocModule;
+            this.variables.copyright = copyright;
         }
     },
 
