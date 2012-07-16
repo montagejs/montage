@@ -136,27 +136,3 @@ exports.TempConverter = Montage.create(Converter, {
     }
 
 });
-
-var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
-    /**
-     Specifies whether the converter allows partial conversion.
-     @type {Property}
-     @default {Boolean} true
-     */
-    allowPartialConversion: {
-        value: true
-    },
-
-    convert: {
-        enumerable: false,
-        value: function(v) {
-            return !v;
-        }
-    },
-
-    revert: {
-        value: function(v) {
-            return !v;
-        }
-    }
-});
