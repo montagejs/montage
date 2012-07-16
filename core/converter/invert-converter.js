@@ -43,12 +43,7 @@ var Converter = require('core/converter/converter').Converter;
     @extends module:montage/core/converter.Converter
 */
 var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
-    allowPartialConversion: {
-        value: true
-    },
-
     convert: {
-        enumerable: false,
         value: function(v) {
             return !v;
         }
