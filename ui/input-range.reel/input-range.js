@@ -43,14 +43,6 @@ var Montage = require("montage").Montage,
  */
 var InputRange = exports.InputRange = Montage.create(Component, /** @lends module:"montage/ui/input-range.reel".InputRange */  {
 
-    DEFAULT_WIDTH: {
-        value: 100
-    },
-
-    HANDLE_ADJUST: {
-        value: 13
-    },
-
     // public API
     _min: {
         value: null
@@ -146,10 +138,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         value: null
     },
 
-    _sliderLeft: {
-        value: null
-    },
-
     _sliderWidth: {
         value: null
     },
@@ -175,6 +163,8 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     },
 
     _touchOnHandle: {value: null},
+
+    _handleWidth: {value: null},
 
     _calculateValueFromPosition: {
         value: function() {
@@ -211,27 +201,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
             return dom.convertPointFromNodeToPage(element);
         }
     },
-
-    _getElementPosition: {
-        value: function(obj) {
-            var curleft = 0, curtop = 0, curHt = 0, curWd = 0;
-            if (obj.offsetParent) {
-                do {
-                    curleft += obj.offsetLeft;
-                    curtop += obj.offsetTop;
-                    curHt += obj.offsetHeight;
-                    curWd += obj.offsetWidth;
-                } while ((obj = obj.offsetParent));
-            }
-            return {
-                top: curtop,
-                left: curleft,
-                height: curHt,
-                width: curWd
-            };
-        }
-    },
-
 
     prepareForDraw: {
         value: function() {
@@ -322,13 +291,8 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     // handle user clicking the slider scale directly instead of moving the knob
     _handleClick: {
         value: function(position) {
-            if(this._sliderLeft <= 0) {
-                var x = this._getElementPosition(this.element).left;
-                if(x > 0) {
-                    this._sliderLeft = x;
-                }
-            }
-            var positionX = (position - (this._sliderLeft + InputRange.HANDLE_ADJUST));
+            var x = this._positionOfElement(this.element).x;
+            var positionX = (position - (x + (this._handleWidth/2)));
             if(positionX < 0) {
                 positionX = 0;
             }
@@ -361,17 +325,13 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     willDraw: {
         value: function() {
-            this._sliderWidth = this.element.offsetWidth - (1.5*InputRange.HANDLE_ADJUST);
-            //var x = this._positionOfElement(this.element).x;
-            var x = this._getElementPosition(this.element).left;
-            if(x > 0) {
-                this._sliderLeft = x;
+            if(!this._handleWidth) {
+                this._handleWidth = this._handleEl.offsetWidth;
             }
-            //console.log('willDraw element position', this._sliderLeft, this._sliderWidth);
+            this._sliderWidth = this.element.offsetWidth - (1.5*(this._handleWidth/2));
             if(!this._valueSyncedWithPosition) {
                 this._calculatePositionFromValue();
             }
-
         }
     },
 
