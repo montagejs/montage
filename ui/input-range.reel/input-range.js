@@ -174,6 +174,8 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
+    _touchOnHandle: {value: null},
+
     _calculateValueFromPosition: {
         value: function() {
             if(this._sliderWidth > 0) {
@@ -254,16 +256,22 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     _addEventListeners: {
         value: function() {
             // support touching the scale to select only in Desktop
-            if(!window.Touch) {
+            if(window.Touch) {
+                this.element.addEventListener('touchstart', this, false);
+            } else {
                 this.element.addEventListener('mousedown', this, false);
             }
+            this._touchOnHandle = false;
+
         }
     },
 
     _removeEventListeners: {
         value: function() {
             // support touching the scale to select only in Desktop
-            if(!window.Touch) {
+            if(window.Touch) {
+                this.element.removeEventListener('touchstart', this, false);
+            } else {
                 this.element.removeEventListener('mousedown', this, false);
             }
         }
@@ -290,16 +298,18 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     handleTranslate: {
         value: function (event) {
-            var x = this._startPositionX + event.translateX - this._startTranslateX;
-
-            if (x < 0) {
-                x = 0;
-            } else {
-                if (x > this._sliderWidth) {
-                    x = this._sliderWidth;
+            // handle translate on Touch devices only if initial touch was on the knob/handle
+            if(!window.Touch || (window.Touch && this._touchOnHandle)) {
+                var x = this._startPositionX + event.translateX - this._startTranslateX;
+                if (x < 0) {
+                    x = 0;
+                } else {
+                    if (x > this._sliderWidth) {
+                        x = this._sliderWidth;
+                    }
                 }
+                this._positionX = x;
             }
-            this._positionX = x;
         }
     },
 
@@ -312,7 +322,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     // handle user clicking the slider scale directly instead of moving the knob
     _handleClick: {
         value: function(position) {
-            //console.log('handleClick requested position',position, this._sliderLeft);
             if(this._sliderLeft <= 0) {
                 var x = this._getElementPosition(this.element).left;
                 if(x > 0) {
@@ -335,7 +344,10 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     handleTouchstart: {
         value: function(e) {
-            this._handleClick(e.targetTouches[0].clientX);
+
+            var target = e.targetTouches[0];
+            // handle the translate only if touch target is the knob
+            this._touchOnHandle = (target.target === this._handleEl);
         }
     },
 
