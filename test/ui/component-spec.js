@@ -527,5 +527,17 @@ var testPage = TestPageLoader.queueTest("draw", function() {
         it("should have templateObjects object", function() {
             expect(testPage.test.componentOwner.templateObjects).not.toBeNull();
         });
+
+        it("should maintain the placeholder data-montage-id and not the one from the template", function() {
+           var element = testPage.test.componentList.element;
+
+           expect(element.getAttribute("data-montage-id")).toBe("componentList");
+        });
+
+        it("should maintain the placeholder id and not the one from the template", function() {
+           var element = testPage.test.componentList.element;
+
+           expect(element.getAttribute("id")).toBe("componentList");
+        });
     });
 });
