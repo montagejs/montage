@@ -60,6 +60,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
     },
 
     templateObjects: {
+        serializable: false,
         value: null
     },
 
@@ -934,7 +935,7 @@ var Component = exports.Component = Montage.create(Montage,/** @lends module:mon
                 if (instances) {
                     instances.owner = self;
                 } else {
-                    instances = {owner: self};
+                    self.templateObjects = instances = {owner: self};
                 }
 
                 // this actually also serves as isTemplateInstantiating

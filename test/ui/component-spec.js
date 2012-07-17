@@ -522,6 +522,10 @@ var testPage = TestPageLoader.queueTest("draw", function() {
                 serialization = serializer.serializeObject(testPage.test.componentWithDelegate);
 
             expect(stripPP(serialization)).toBe('{"root":{"prototype":"montage/ui/component","properties":{"delegate":{"@":"application"},"parentProperty":"parentComponent","identifier":"componentWithDelegate"}},"application":{}}');
-        })
+        });
+
+        it("should have templateObjects object", function() {
+            expect(testPage.test.componentOwner.templateObjects).not.toBeNull();
+        });
     });
 });
