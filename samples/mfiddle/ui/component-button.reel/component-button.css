@@ -1,0 +1,9 @@
+.component-button {
+    position: absolute;
+    top: 6px;
+    left: 13px;
+    width: 43px;
+    height: 23px;
+    background-image: url(../../mfiddle-ui.png);
+    background-repeat: no-repeat;
+}

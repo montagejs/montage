@@ -1,0 +1,29 @@
+.content-view > div {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.content-view h2 {
+    position: absolute;
+    right: 24px;
+    z-index: 2;
+    margin: 0;
+    padding: 0 12px 2px 12px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-weight: normal;
+    font-size: 14px;
+    color: white;
+    line-height: 22px;
+    background: #11BDFB;
+    border-radius: 0 0 6px 6px;
+    opacity: 1;
+    -webkit-transition: opacity 400ms;
+    pointer-events: none;
+}
+
+.content-view:hover h2 {
+    opacity: 0;
+}
