@@ -22,8 +22,9 @@
     },
     
     "barometer": {
-        "prototype": "montage/ui/native/input-range.reel",
+        "prototype": "montage/ui/input-range.reel",
         "properties": {
+            "axis": "vertical",
             "element": {"#": "barometer"}
         },
         "bindings": {

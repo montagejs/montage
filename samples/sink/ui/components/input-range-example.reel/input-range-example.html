@@ -60,6 +60,50 @@ POSSIBILITY OF SUCH DAMAGE.
                 "element": {"#": "alpha"}
             }
         },
+
+        "vred": {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "axis": "vertical",
+                "element": {"#": "v-red"}
+            },
+            "bindings": {
+                "value": {"<->": "@red.value"}
+            }
+        },
+
+        "vgreen": {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "axis": "vertical",
+                "element": {"#": "v-green"}
+            },
+            "bindings": {
+                "value": {"<->": "@green.value"}
+            }
+        },
+
+        "vblue": {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "axis": "vertical",
+                "element": {"#": "v-blue"}
+            },
+            "bindings": {
+                "value": {"<->": "@blue.value"}
+            }
+        },
+        "valpha": {
+            "prototype": "montage/ui/input-range.reel",
+            "properties": {
+                "axis": "vertical",
+                "element": {"#": "v-alpha"}
+            },
+            "bindings": {
+                "value": {"<->": "@alpha.value"}
+            }
+        },
+
         "rangeInputAccordion1": {
             "prototype": "ui/accordion.reel",
             "properties": {
@@ -131,13 +175,24 @@ POSSIBILITY OF SUCH DAMAGE.
             margin: 0 0 0 20px;
             list-style: none;
         }
-        .input-range-example .montage-inputRange {
+        .input-range-example .vertical-controls  {
+            display: inline-block;
+            margin: 20px 0 0 0;
+            list-style: none;
+        }
+        .input-range-example .montage-inputRange.horizontal {
             width: 130px;
         }
         .input-range-example .slider-item {
             position: relative;
             margin: 0px;
             padding: 12px 0;
+        }
+        .input-range-example .vertical-slider-item {
+            position: relative;
+            float: left;
+            margin: 0px;
+            padding: 0 12px;
         }
         .input-range-example .label {
             position: relative;
@@ -147,6 +202,15 @@ POSSIBILITY OF SUCH DAMAGE.
             border-radius: 4px;
             color: hsl(0,0%,100%);
             background-color: hsl(0,0%,80%);
+        }
+        .input-range-example .vertical-slider-item .label {
+            position: relative;
+            top: 5px;
+            left: -10px;
+            padding: 3px 6px;
+            border-radius: 4px;
+            display: block;
+            color: hsl(0,0%,100%);
         }
         .label.red { background-color: hsl(0,100%,80%); }
         .label.green { background-color: hsl(130,70%,70%); }
@@ -191,6 +255,27 @@ POSSIBILITY OF SUCH DAMAGE.
                     </li>
                     <li class="slider-item">
                         <input class="color-slider" data-montage-id="alpha" type="range" min="0" max="1" step="0.1" value="1"/>
+                        <span class="label">Opacity</span>
+                    </li>
+                </ul>
+
+                <h5>Vertical Slider</h5>
+
+                <ul data-montage-id="vertical-controls" class="vertical-controls">
+                    <li class="vertical-slider-item">
+                        <input class="color-slider" data-montage-id="v-red" type="range" min="0" max="255" step="1" value="255" />
+                        <span class="label red">Red</span>
+                    </li>
+                    <li class="vertical-slider-item">
+                        <input class="color-slider" data-montage-id="v-green" type="range" min="0" max="255" step="1" value="0"/>
+                        <span class="label green">Green</span>
+                    </li>
+                    <li class="vertical-slider-item">
+                        <input class="color-slider" data-montage-id="v-blue" type="range" min="0" max="255" step="1" value="0"/>
+                        <span class="label blue">Blue</span>
+                    </li>
+                    <li class="vertical-slider-item">
+                        <input class="color-slider" data-montage-id="v-alpha" type="range" min="0" max="1" step="0.1" value="1"/>
                         <span class="label">Opacity</span>
                     </li>
                 </ul>
