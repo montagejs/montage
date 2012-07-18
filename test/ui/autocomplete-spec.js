@@ -72,13 +72,16 @@ var testPage = TestPageLoader.queueTest("autocomplete-test", function() {
                 });
 
                 describe ("suggestions popup tests", function() {
+                    afterEach(function() {
+                        test.autocomplete1.suggestions = [];
+                    });
+
                     it("can show suggestions", function() {
                         runs(function(){
                             test.autocomplete1.element.value = 'Cal';
                             // simulate the 'input' event on the textfield
                             test.autocomplete1._setValue();
-
-                            waits(1000);
+                            testPage.waitForDraw(3);
                             runs(function() {
                                 //console.log('test.autocomplete1', test.autocomplete1);
                                 expect(test.autocomplete1.suggestions.count()).toBe(1);
@@ -93,10 +96,9 @@ var testPage = TestPageLoader.queueTest("autocomplete-test", function() {
                             test.autocomplete1.element.value = 'ABCD';
                             // simulate the 'input' event on the textfield
                             test.autocomplete1._setValue();
-
-                            waits(1000);
+                            testPage.waitForDraw(3);
                             runs(function() {
-                                //console.log('test.autocomplete1', test.autocomplete1);
+                                console.log('test.autocomplete1', test.autocomplete1.suggestions);
                                 expect(test.autocomplete1.suggestions.count()).toBe(0);
                                 expect(test.autocomplete1.showPopup).toBe(false);
                             });
@@ -109,8 +111,7 @@ var testPage = TestPageLoader.queueTest("autocomplete-test", function() {
                             test.autocomplete1.element.value = 'Cal';
                             // simulate the 'input' event on the textfield
                             test.autocomplete1._setValue();
-
-                            waits(1000);
+                            testPage.waitForDraw(3);
 
                             runs(function() {
                                 expect(test.autocomplete1.suggestions.count()).toBe(1);
@@ -142,9 +143,7 @@ var testPage = TestPageLoader.queueTest("autocomplete-test", function() {
                         test.autocomplete1.element.value = 'Cal';
                         // simulate the 'input' event on the textfield
                         test.autocomplete1._setValue();
-
-                        waits(1000);
-
+                        testPage.waitForDraw(3);
                         runs(function() {
                             var event = document.createEvent('CustomEvent');
                             event.initEvent('keyup', true, true);
@@ -164,18 +163,18 @@ var testPage = TestPageLoader.queueTest("autocomplete-test", function() {
 
                 describe ("read only testing", function() {
                     it("set the autocomplete read only", function() {
-                        test.autocomplete1.readOnly = true;
-                        waits(150);
+                        test.autocomplete1.readonly = true;
+                        testPage.waitForDraw();
                         runs(function() {
-                            expect(test.autocomplete1.readOnly).toBeTruthy();
+                            expect(test.autocomplete1.readonly).toBeTruthy();
                         });
                     });
 
                     it("set the autocomplete writable", function() {
-                        test.autocomplete1.readOnly = false;
-                        waits(150);
+                        test.autocomplete1.readonly = false;
+                        testPage.waitForDraw();
                         runs(function() {
-                            expect(test.autocomplete1.readOnly).toBeFalsy();
+                            expect(test.autocomplete1.readonly).toBeFalsy();
                         });
                     });
 
