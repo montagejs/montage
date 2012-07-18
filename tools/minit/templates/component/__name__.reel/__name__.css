@@ -1,3 +1,6 @@
-.{{name}} {
+{{#copyright}}/* {{{copyright}}} */
+
+{{/copyright}}
+.{{exportedName}} {
 
 }
