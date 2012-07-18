@@ -275,7 +275,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      @param {OBJECT} parameters, the new window parameters (accept same parameters than window.open).
      @example
      var app = document.application;
-     app.openWindow("docs/help.reel", "Help", "{width=300, height=500}");
+     app.openWindow("docs/help.reel", "Help", "{width:300, height:500}");
      */
     openWindow: {
         value: function(component, name, parameters) {
