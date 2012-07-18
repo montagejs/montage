@@ -41,30 +41,33 @@ var Montage = require("montage").Montage,
     ChangeNotification = require("core/change-notification").ChangeNotification,
     defaultUndoManager = require("core/undo-manager").defaultUndoManager;
 
-
-/** static variables, constants
- */
-var COMMANDS = [
-        {property: "bold"},
-        {property: "underline"},
-        {property: "italic"},
-        {property: "strikeThrough"},
-        {property: "baselineShift", method: this._baselineShiftGetState},
-        {property: "justify", method: this._justifyGetState},
-        {property: "listStyle", method: this._listStyleGetState},
-        {property: "fontName", method: this._fontNameGetState},
-        {property: "fontSize"},
-        {property: "backColor"},
-        {property: "foreColor"}
-    ],
-    NBR_COMMANDS = COMMANDS.length;
-
-
 /**
     @class module:"montage/ui/rich-text-editor.reel".RichTextEditorBase
     @extends module:montage/ui/component.Component
 */
 exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage/ui/rich-text-editor.reel".RichTextEditor# */ {
+    /**
+      Description TODO
+      @private
+    */
+    COMMANDS: {
+        enumerable: false,
+        get: function() {
+            return [
+                {property: "bold"},
+                {property: "underline"},
+                {property: "italic"},
+                {property: "strikeThrough"},
+                {property: "baselineShift", method: this._baselineShiftGetState},
+                {property: "justify", method: this._justifyGetState},
+                {property: "listStyle", method: this._listStyleGetState},
+                {property: "fontName", method: this._fontNameGetState},
+                {property: "fontSize"},
+                {property: "backColor"},
+                {property: "foreColor"}
+            ]
+        }
+    },
 
     /**
       Description TODO
@@ -550,7 +553,9 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
                 descriptor,
                 i;
 
-            for (i = 0; i < NBR_COMMANDS; i ++) {
+            var COMMANDS = this.COMMANDS;
+            var numCommands = COMMANDS.length;
+            for (i = 0; i < numCommands; i ++) {
                 command = COMMANDS[i];
 
                 if (typeof command == "object") {
