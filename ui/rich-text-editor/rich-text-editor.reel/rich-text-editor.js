@@ -463,8 +463,8 @@ exports.RichTextEditor = Montage.create(RichTextEditorBase,/** @lends module:"mo
     listStyle: {
         enumerable: true,
         get: function() {
-            this._liststyle = this._listStyleGetState();
-            return this._liststyle;
+            this._listStyle = this._listStyleGetState();
+            return this._listStyle;
         },
         set: function(value) {
             var state = this._listStyleGetState();
