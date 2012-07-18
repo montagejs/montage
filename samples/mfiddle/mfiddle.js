@@ -170,7 +170,7 @@ var Components = {
             "html": '<p data-montage-id=""></p>'
         }),
         "button": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/button.reel",
+            "prototype": "montage/ui/button.reel",
             "properties": {
                 "value": "Button",
                 "enabled": true
@@ -178,26 +178,26 @@ var Components = {
             "html": '<div data-montage-id="" class="text"></div>'
         }),
         "textfield": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/textfield.reel",
+            "prototype": "montage/ui/input-text.reel",
             "properties": {
                 "value": "Editable text"
             },
             "html": '<input data-montage-id="" type="text">'
         }),
         "checkbox": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/checkbox.reel",
+            "prototype": "montage/ui/input-checkbox.reel",
             "properties": {
                 "checked": true
             }
         }),
         "toggle": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/toggle.reel",
+            "prototype": "montage/samples/components/bluemoon/toggle.reel",
             "properties": {
                 "value": true
             }
         }),
         "slider": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/slider.reel",
+            "prototype": "montage/samples/components/bluemoon/slider.reel",
             "properties": {
                 "minValue": 0,
                 "maxValue": 100,
@@ -235,7 +235,7 @@ var Examples = {
         "A simple Button": {
             serialization: {
                 "button": {
-                    "prototype": "montage/ui/bluemoon/button.reel",
+                    "prototype": "montage/ui/button.reel",
                     "properties": {
                         "element": {"#": "button"},
                         "value": "Click Me!"
@@ -248,7 +248,7 @@ var Examples = {
         "A simple Binding": {
             serialization: {
                 "slider": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
+                    "prototype": "montage/samples/components/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider"},
                         "value": 50
@@ -279,7 +279,7 @@ var Examples = {
                 },
 
                 "slider1": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
+                    "prototype": "montage/samples/components/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider1"}
                     },
@@ -289,7 +289,7 @@ var Examples = {
                 },
 
                 "slider2": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
+                    "prototype": "montage/samples/components/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider2"}
                     },

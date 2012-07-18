@@ -29,17 +29,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-	@module "montage/ui/bluemoon/toggle.reel"
+	@module "montage/samples/components/bluemoon/toggle.reel"
     @requires montage/core/core
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 /**
- @class module:"montage/ui/bluemoon/toggle.reel".Toggle
+ @class module:"montage/samples/components/bluemoon/toggle.reel".Toggle
  @extends module:montage/ui/component.Component
  */
-var Toggle = exports.Toggle = Montage.create(Component, /** @lends module:"montage/ui/bluemoon/toggle.reel".Toggle# */ {
+var Toggle = exports.Toggle = Montage.create(Component, /** @lends module:"montage/samples/components/bluemoon/toggle.reel".Toggle# */ {
 
     _value: {
         enumerable: false,
