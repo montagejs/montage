@@ -1,4 +1,4 @@
-
+/* @override http://localhost:8082/montage/ui/rich-text-editor/rich-text-editor.reel/rich-text-editor.css */
 
 header {
     color: #0CAAE5;
@@ -8,13 +8,27 @@ article.hideSource {
     margin-top: 20px;
 }
 
+.rte-controls  {
+    padding-bottom: 5px;
+}
+
+.rte-controls .montage-buttonGroup { 
+    margin-right: 4px;
+}
+
+.rte-controls select { 
+    margin: 0 4px 0 0;
+    vertical-align: middle;
+}
+
+
 .editor {
     height: 350px;
     overflow: auto;
     background-color: #FFFFFF;
     border: 1px solid #B9B9B9;
     outline: none;
-
+    border-radius: 3px;
 }
 
 .editor .montage-editor {
@@ -95,7 +109,6 @@ article.hideSource {
     /right: 10px;
 }
 
-.montage-buttonGroup { margin: .2em 0;  display: inline-block;}
 button.font-styles.pressed {
     background: hsl(0,0%,85%);
     border: 1px solid hsla(0,0%,0%,.1);
