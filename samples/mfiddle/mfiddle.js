@@ -172,10 +172,10 @@ var Components = {
         "button": JSON.stringify({
             "prototype": "montage/ui/button.reel",
             "properties": {
-                "value": "Button",
+                "label": "Button",
                 "enabled": true
             },
-            "html": '<div data-montage-id="" class="text"></div>'
+            "html": '<button data-montage-id="" class="text"></button>'
         }),
         "textfield": JSON.stringify({
             "prototype": "montage/ui/input-text.reel",
@@ -188,7 +188,8 @@ var Components = {
             "prototype": "montage/ui/input-checkbox.reel",
             "properties": {
                 "checked": true
-            }
+            },
+            "html": '<input data-montage-id="" type="checkbox">'
         }),
         "toggle": JSON.stringify({
             "prototype": "montage/samples/components/bluemoon/toggle.reel",
@@ -238,11 +239,11 @@ var Examples = {
                     "prototype": "montage/ui/button.reel",
                     "properties": {
                         "element": {"#": "button"},
-                        "value": "Click Me!"
+                        "label": "Click Me!"
                     }
                 }
             },
-            html: '<div data-montage-id="button" class="text"></div>'
+            html: '<button data-montage-id="button" class="text"></button>'
         },
 
         "A simple Binding": {
