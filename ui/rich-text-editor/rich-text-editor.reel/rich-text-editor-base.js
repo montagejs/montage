@@ -50,22 +50,34 @@ exports.RichTextEditorBase = Montage.create(Component,/** @lends module:"montage
       Description TODO
       @private
     */
+    _COMMANDS: {
+        enumerable: false,
+        value: null
+    },
+
+    /**
+      Description TODO
+      @private
+    */
     COMMANDS: {
         enumerable: false,
         get: function() {
-            return [
-                {property: "bold"},
-                {property: "underline"},
-                {property: "italic"},
-                {property: "strikeThrough"},
-                {property: "baselineShift", method: this._baselineShiftGetState},
-                {property: "justify", method: this._justifyGetState},
-                {property: "listStyle", method: this._listStyleGetState},
-                {property: "fontName", method: this._fontNameGetState},
-                {property: "fontSize"},
-                {property: "backColor"},
-                {property: "foreColor"}
-            ]
+            if (!this._COMMANDS) {
+                this._COMMANDS = [
+                    {property: "bold"},
+                    {property: "underline"},
+                    {property: "italic"},
+                    {property: "strikeThrough"},
+                    {property: "baselineShift", method: this._baselineShiftGetState},
+                    {property: "justify", method: this._justifyGetState},
+                    {property: "listStyle", method: this._listStyleGetState},
+                    {property: "fontName", method: this._fontNameGetState},
+                    {property: "fontSize"},
+                    {property: "backColor"},
+                    {property: "foreColor"}
+                ];
+            }
+            return this._COMMANDS;
         }
     },
 
