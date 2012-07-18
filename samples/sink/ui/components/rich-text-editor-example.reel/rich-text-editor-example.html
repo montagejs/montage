@@ -36,7 +36,6 @@
                     }
                 ],
                 "bindings": {
-                    "justify": {"<->": "@justify.contentController.selectedIndexes", "converter": {"@": "indexesConverter"}},
                     "fontName": {"<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
                     "fontSize": {"<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}}
                 }
@@ -83,6 +82,7 @@
                 }
             },
 
+
             "unorderedlistToggle": {
                 "prototype": "montage/ui/toggle-button.reel",
                 "properties": {
@@ -113,32 +113,51 @@
                 }
             },
 
-            "justificationController": {
-                "prototype": "montage/ui/controller/array-controller",
+            "justifyComparatorLeft": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
                 "properties": {
-                    "selectObjectsOnAddition": false,
-                    "content": [
-                        {"text" : "Left", "value": "left"},
-                        {"text" : "Center", "value": "center"},
-                        {"text" : "Right", "value": "right"},
-                        {"text" : "Full", "value": "full"}
-                    ]
+                    "value": "left"
+                }
+            },
+            "leftJustify": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "justify-left"}
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorLeft"}}
                 }
             },
 
-            "indexesConverter": {
-                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
+            "justifyComparatorCenter": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
                 "properties": {
-                    "component": {"@": "justify"}
+                    "value": "center"
+                }
+            },
+            "centerJustify": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "justify-center"}
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorCenter"}}
                 }
             },
 
-            "justify": {
-                "prototype": "montage/ui/select.reel",
+            "justifyComparatorRight": {
+                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
                 "properties": {
-                    "element": {"#": "justification"},
-                    "preventFocus": true,
-                    "contentController": {"@": "justificationController"}
+                    "value": "right"
+                }
+            },
+            "rightJustify": {
+                "prototype": "montage/ui/toggle-button.reel",
+                "properties": {
+                    "element": {"#": "justify-right"}
+                },
+                "bindings": {
+                    "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorRight"}}
                 }
             },
 
@@ -299,7 +318,9 @@
                            <button data-montage-id="orderedlistToggle" class="btn font-styles" title="Ordered List">1.</button>
                        </span>
                        <span class="montage-buttonGroup">
-                           <select data-montage-id="justification" class="font-styles" style="min-width: 70px" title="Justification"></select>
+                           <button data-montage-id="justify-left" class="btn font-styles" title="justify left">L</button>
+                           <button data-montage-id="justify-center" class="btn font-styles" title="justify center">C</button>
+                           <button data-montage-id="justify-right" class="btn font-styles" title="justify right">R</button>
                        </span>
                        <span class="montage-buttonGroup">
                            <select data-montage-id="fontname" class="font-styles"  title="Font Name"></select>
@@ -329,7 +350,8 @@
                                            <li class="accordion-group">
                                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                                <div class="accordion-inner montage-hidden" >
-                                                    <pre class="prettyprint" >&lt;div&gt;<br/>               &lt;h4&gt;EDITOR&lt;/h4&gt;<br/>               &lt;header&gt;<br/>                   &lt;nav&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;boldToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-weight: bold;&quot; title=&quot;Bold&quot;&gt;B&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;italicToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-family: serif; font-style: italic;&quot; title=&quot;Italic&quot;&gt;I&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;underlineToggle&quot; class=&quot;btn font-styles&quot; style=&quot;text-decoration: underline;&quot; title=&quot;Underline&quot;&gt;U&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;unorderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Unordered List&quot;&gt;&#x2022;&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;orderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Ordered List&quot;&gt;1.&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;justification&quot; class=&quot;font-styles&quot; style=&quot;min-width: 70px&quot; title=&quot;Justification&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;fontname&quot; class=&quot;font-styles&quot;  title=&quot;Font Name&quot;&gt;&lt;/select&gt;<br/>                           &lt;select data-montage-id=&quot;fontsize&quot; class=&quot;font-styles&quot;  title=&quot;Font Size&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/>                       <br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;                              <br/>                           &lt;button data-montage-id=&quot;undoButton&quot; class=&quot;btn&quot; title=&quot;Undo&quot; disabled=&quot;disabled&quot;&gt;Undo&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;redoButton&quot; class=&quot;btn&quot; title=&quot;Redo&quot; disabled=&quot;disabled&quot;&gt;Redo&lt;/button&gt;                              <br/>                       &lt;/span&gt;<br/>                   &lt;/nav&gt;<br/>               &lt;/header&gt;<br/>               &lt;section class=&quot;editor&quot;&gt;<br/>                   &lt;div data-montage-id=&quot;editor-frame&quot;&gt;&lt;/div&gt;<br/>               &lt;/section&gt;<br/>           &lt;/div&gt;</pre>
+                                                    <pre class="prettyprint" >
+&lt;div&gt;<br/>               &lt;h4&gt;EDITOR&lt;/h4&gt;<br/>               &lt;header&gt;<br/>                   &lt;nav&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;boldToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-weight: bold;&quot; title=&quot;Bold&quot;&gt;B&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;italicToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-family: serif; font-style: italic;&quot; title=&quot;Italic&quot;&gt;I&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;underlineToggle&quot; class=&quot;btn font-styles&quot; style=&quot;text-decoration: underline;&quot; title=&quot;Underline&quot;&gt;U&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;unorderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Unordered List&quot;&gt;&#x2022;&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;orderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Ordered List&quot;&gt;1.&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;justify-left&quot; class=&quot;btn font-styles&quot; title=&quot;justify left&quot;&gt;L&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;justify-center&quot; class=&quot;btn font-styles&quot; title=&quot;justify center&quot;&gt;C&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;justify-right&quot; class=&quot;btn font-styles&quot; title=&quot;justify right&quot;&gt;R&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;fontname&quot; class=&quot;font-styles&quot;  title=&quot;Font Name&quot;&gt;&lt;/select&gt;<br/>                           &lt;select data-montage-id=&quot;fontsize&quot; class=&quot;font-styles&quot;  title=&quot;Font Size&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/><br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;undoButton&quot; class=&quot;btn&quot; title=&quot;Undo&quot; disabled=&quot;disabled&quot;&gt;Undo&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;redoButton&quot; class=&quot;btn&quot; title=&quot;Redo&quot; disabled=&quot;disabled&quot;&gt;Redo&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                   &lt;/nav&gt;<br/>               &lt;/header&gt;<br/>               &lt;section class=&quot;editor&quot;&gt;<br/>                   &lt;div data-montage-id=&quot;editor-frame&quot;&gt;&lt;/div&gt;<br/>               &lt;/section&gt;<br/>           &lt;/div&gt;</pre>
                                                </div>
                                            </li>
                                            <li class="accordion-group">
@@ -337,262 +359,282 @@
                                                <div class="accordion-inner montage-hidden">
                                                 <pre class="prettyprint" >
 {
-        "undoManager": {
-            "object": "montage/core/undo-manager[defaultUndoManager]"
-        },
+    "undoManager": {
+        "object": "montage/core/undo-manager[defaultUndoManager]"
+    },
 
-        "editor": {
-            "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
-            "properties": {
-                "element": {"#": "editor-frame"},
-                "delegate": {"@": "owner"},
-                "undoManager": {"@": "undoManager"}
+    "editor": {
+        "prototype": "montage/ui/rich-text-editor/rich-text-editor.reel",
+        "properties": {
+            "element": {"#": "editor-frame"},
+            "delegate": {"@": "owner"},
+            "undoManager": {"@": "undoManager"}
+        },
+        "listeners": [
+            {
+                "type": "editorChange",
+                "listener": {"@": "owner"},
+                "capture": false
             },
-            "listeners": [
-                {
-                    "type": "editorChange",
-                    "listener": {"@": "owner"},
-                    "capture": false
-                },
-                {
-                    "type": "editorSelect",
-                    "listener": {"@": "owner"},
-                    "capture": false
-                }
-            ],
-            "bindings": {
-                "justify": {"<->": "@justify.contentController.selectedIndexes", "converter": {"@": "indexesConverter"}},
-                "fontName": {"<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
-                "fontSize": {"<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}}
+            {
+                "type": "editorSelect",
+                "listener": {"@": "owner"},
+                "capture": false
             }
-        },
-
-        "boldToggle": {
-            "prototype": "montage/ui/toggle-button.reel",
-            "properties": {
-                "element": {"#": "boldToggle"},
-                "preventFocus": true
-            },
-            "bindings": {
-                "pressed": {"<->": "@editor.bold"}
-            }
-        },
-
-        "underlineToggle": {
-            "prototype": "montage/ui/toggle-button.reel",
-            "properties": {
-                "element": {"#": "underlineToggle" },
-                "preventFocus": true
-            },
-            "bindings": {
-                "pressed": {"<->": "@editor.underline"}
-            }
-        },
-
-        "italicToggle": {
-            "prototype": "montage/ui/toggle-button.reel",
-            "properties": {
-                "element": {"#": "italicToggle" },
-                "preventFocus": true
-            },
-            "bindings": {
-                "pressed": {"<->": "@editor.italic"}
-            }
-        },
-
-        "unorderedListConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
-            "properties": {
-                "value": "unordered",
-                "defaultValue": "none"
-            }
-        },
-
-        "unorderedlistToggle": {
-            "prototype": "montage/ui/toggle-button.reel",
-            "properties": {
-                "element": {"#": "unorderedlistToggle" },
-                "preventFocus": true
-            },
-            "bindings": {
-                "pressed": {"<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
-            }
-        },
-
-        "orderedListConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
-            "properties": {
-                "value": "ordered",
-                "defaultValue": "none"
-            }
-        },
-
-        "orderedlistToggle": {
-            "prototype": "montage/ui/toggle-button.reel",
-            "properties": {
-                "element": {"#": "orderedlistToggle" },
-                "preventFocus": true
-            },
-            "bindings": {
-                "pressed": {"<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
-            }
-        },
-
-        "justificationController": {
-            "prototype": "montage/ui/controller/array-controller",
-            "properties": {
-                "selectObjectsOnAddition": false,
-                "content": [
-                    {"text" : "Left", "value": "left"},
-                    {"text" : "Center", "value": "center"},
-                    {"text" : "Right", "value": "right"},
-                    {"text" : "Full", "value": "full"}
-                ]
-            }
-        },
-
-        "indexesConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
-            "properties": {
-                "component": {"@": "justify"}
-            }
-        },
-
-        "justify": {
-            "prototype": "montage/ui/select.reel",
-            "properties": {
-                "element": {"#": "justification"},
-                "preventFocus": true,
-                "contentController": {"@": "justificationController"}
-            }
-        },
-
-        "fontnameController": {
-            "prototype": "montage/ui/controller/array-controller",
-            "properties": {
-                "selectObjectsOnAddition": false,
-                "content": [
-                    {"text" : "Arial", "value": "Arial"},
-                    {"text" : "Arial Black", "value": "Arial Black"},
-                    {"text" : "Courier New", "value": "Courier New"},
-                    {"text" : "Garamond", "value": "Garamond"},
-                    {"text" : "Georgia", "value": "Georgia"},
-                    {"text" : "Open Sans", "value": "Open Sans"},
-                    {"text" : "Tahoma", "value": "Tahoma"},
-                    {"text" : "Times", "value": "Times New Roman"},
-                    {"text" : "Trebuchet", "value": "Trebuchet MS"},
-                    {"text" : "Verdana", "value": "Verdana"}
-                ]
-            }
-        },
-
-        "fontnameConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[FontnameConverter]",
-            "properties": {
-                "component": {"@": "fontname"}
-            }
-        },
-
-        "fontname": {
-            "prototype": "montage/ui/select.reel",
-            "properties": {
-                "element": {"#": "fontname"},
-                "preventFocus": true,
-                "contentController": {"@": "fontnameController"}
-            }
-        },
-
-        "fontsizeController": {
-            "prototype": "montage/ui/controller/array-controller",
-            "properties": {
-                "selectObjectsOnAddition": false,
-                "content": [
-                    {"text" : "8pt", "value": "1"},
-                    {"text" : "10pt", "value": "2"},
-                    {"text" : "12pt", "value": "3"},
-                    {"text" : "14pt", "value": "4"},
-                    {"text" : "18pt", "value": "5"},
-                    {"text" : "24pt", "value": "6"},
-                    {"text" : "36pt", "value": "7"}
-                ]
-            }
-        },
-
-        "fontsizeConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
-            "properties": {
-                "component": {"@": "fontsize"}
-            }
-        },
-
-        "fontsize": {
-            "prototype": "montage/ui/select.reel",
-            "properties": {
-                "element": {"#": "fontsize"},
-                "preventFocus": true,
-                "contentController": {"@": "fontsizeController"}
-            }
-        },
-
-
-        "undoButton": {
-            "prototype": "montage/ui/button.reel",
-            "properties": {
-                "element": {"#": "undoButton" },
-                "identifier": "undo",
-                "preventFocus": true
-            },
-            "bindings": {
-                "enabled": {"<-": "@owner.undoManager.canUndo"},
-                "title": {"<-": "@owner.undoManager.undoLabel"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"},
-                    "capture": false
-                }
-            ]
-        },
-
-        "redoButton": {
-            "prototype": "montage/ui/button.reel",
-            "properties": {
-                "element": {"#": "redoButton" },
-                "identifier": "redo",
-                "preventFocus": true
-            },
-            "bindings": {
-                "enabled": {"<-": "@owner.undoManager.canRedo"},
-                "title": {"<-": "@owner.undoManager.redoLabel"}
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"},
-                    "capture": false
-                }
-            ]
-        },
-
-
-        "accordion1": {
-            "prototype": "ui/accordion.reel",
-            "properties": {
-                "element": {"#": "rich-text-editor-accordion1"}
-            }
-        },
-
-        "owner": {
-            "prototype": "ui/components/rich-text-editor-example.reel",
-            "properties": {
-                "element": {"#": "rich-text-editor-example"},
-                "editor": {"@": "editor"},
-                "undoManager": {"@": "undoManager"},
-                "source": {"#": "source-frame"},
-                "showSource": true
-            }
+        ],
+        "bindings": {
+            "fontName": {"<->": "@fontname.contentController.selectedIndexes", "converter": {"@": "fontnameConverter"}},
+            "fontSize": {"<->": "@fontsize.contentController.selectedIndexes", "converter": {"@": "fontsizeConverter"}}
         }
+    },
+
+    "boldToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "boldToggle"},
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.bold"}
+        }
+    },
+
+    "underlineToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "underlineToggle" },
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.underline"}
+        }
+    },
+
+    "italicToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "italicToggle" },
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.italic"}
+        }
+    },
+
+    "unorderedListConverter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "unordered",
+            "defaultValue": "none"
+        }
+    },
+
+
+    "unorderedlistToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "unorderedlistToggle" },
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.listStyle", "converter": {"@": "unorderedListConverter"}}
+        }
+    },
+
+    "orderedListConverter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "ordered",
+            "defaultValue": "none"
+        }
+    },
+
+    "orderedlistToggle": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "orderedlistToggle" },
+            "preventFocus": true
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.listStyle", "converter": {"@": "orderedListConverter"}}
+        }
+    },
+
+    "justifyComparatorLeft": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "left"
+        }
+    },
+    "leftJustify": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "justify-left"}
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorLeft"}}
+        }
+    },
+
+    "justifyComparatorCenter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "center"
+        }
+    },
+    "centerJustify": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "justify-center"}
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorCenter"}}
+        }
+    },
+
+    "justifyComparatorRight": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
+        "properties": {
+            "value": "right"
+        }
+    },
+    "rightJustify": {
+        "prototype": "montage/ui/toggle-button.reel",
+        "properties": {
+            "element": {"#": "justify-right"}
+        },
+        "bindings": {
+            "pressed": {"<->": "@editor.justify", "converter": {"@": "justifyComparatorRight"}}
+        }
+    },
+
+    "fontnameController": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": false,
+            "content": [
+                {"text" : "Arial", "value": "Arial"},
+                {"text" : "Arial Black", "value": "Arial Black"},
+                {"text" : "Courier New", "value": "Courier New"},
+                {"text" : "Garamond", "value": "Garamond"},
+                {"text" : "Georgia", "value": "Georgia"},
+                {"text" : "Open Sans", "value": "Open Sans"},
+                {"text" : "Tahoma", "value": "Tahoma"},
+                {"text" : "Times", "value": "Times New Roman"},
+                {"text" : "Trebuchet", "value": "Trebuchet MS"},
+                {"text" : "Verdana", "value": "Verdana"}
+            ]
+        }
+    },
+
+    "fontnameConverter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[FontnameConverter]",
+        "properties": {
+            "component": {"@": "fontname"}
+        }
+    },
+
+    "fontname": {
+        "prototype": "montage/ui/select.reel",
+        "properties": {
+            "element": {"#": "fontname"},
+            "preventFocus": true,
+            "contentController": {"@": "fontnameController"}
+        }
+    },
+
+    "fontsizeController": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": false,
+            "content": [
+                {"text" : "8pt", "value": "1"},
+                {"text" : "10pt", "value": "2"},
+                {"text" : "12pt", "value": "3"},
+                {"text" : "14pt", "value": "4"},
+                {"text" : "18pt", "value": "5"},
+                {"text" : "24pt", "value": "6"},
+                {"text" : "36pt", "value": "7"}
+            ]
+        }
+    },
+
+    "fontsizeConverter": {
+        "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
+        "properties": {
+            "component": {"@": "fontsize"}
+        }
+    },
+
+    "fontsize": {
+        "prototype": "montage/ui/select.reel",
+        "properties": {
+            "element": {"#": "fontsize"},
+            "preventFocus": true,
+            "contentController": {"@": "fontsizeController"}
+        }
+    },
+
+
+    "undoButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "undoButton" },
+            "identifier": "undo",
+            "preventFocus": true
+        },
+        "bindings": {
+            "enabled": {"<-": "@owner.undoManager.canUndo"},
+            "title": {"<-": "@owner.undoManager.undoLabel"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"},
+                "capture": false
+            }
+        ]
+    },
+
+    "redoButton": {
+        "prototype": "montage/ui/button.reel",
+        "properties": {
+            "element": {"#": "redoButton" },
+            "identifier": "redo",
+            "preventFocus": true
+        },
+        "bindings": {
+            "enabled": {"<-": "@owner.undoManager.canRedo"},
+            "title": {"<-": "@owner.undoManager.redoLabel"}
+        },
+        "listeners": [
+            {
+                "type": "action",
+                "listener": {"@": "owner"},
+                "capture": false
+            }
+        ]
+    },
+
+
+    "accordion1": {
+        "prototype": "ui/accordion.reel",
+        "properties": {
+            "element": {"#": "rich-text-editor-accordion1"}
+        }
+    },
+
+    "owner": {
+        "prototype": "ui/components/rich-text-editor-example.reel",
+        "properties": {
+            "element": {"#": "rich-text-editor-example"},
+            "editor": {"@": "editor"},
+            "undoManager": {"@": "undoManager"},
+            "source": {"#": "source-frame"},
+            "showSource": true
+        }
+    }
+
 }
                                                 </pre>
 
