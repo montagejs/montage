@@ -88,6 +88,11 @@ var Mfiddle = {
     },
 
     load: function(serialization, html) {
+        serialization = serialization.replace(/\{\s*(\"[#@]\")\s*:\s*(\"[^\"]+\")\s*\}/g, "{$1: $2}")
+            .replace(/\{\s*(\"(?:<-|<->)\")\s*:\s*(\"[^\"]+\"\s*(?:,\s*\"converter\"\s*:\s*\{\s*\"@\"\s*:\s*\"[^\"]+\"\s*\}\s*|,\s*\"deferred\"\s*:\s*(true|false)\s*)*)\}/g, function(_, g1, g2) {
+                return "{" + g1 + ": " + g2.replace(/,\s*/, ", ").replace(/\n\s*/, "") + "}";
+            });
+
         Mfiddle.serialization.setValue(serialization);
         Mfiddle.html.setValue(html);
     },
@@ -299,16 +304,14 @@ var Examples = {
         "Accessing Repetition objects": {
             serialization: {
                 "repetition": {
-                    "module": "montage/ui/repetition.reel",
-                    "name": "Repetition",
+                    "prototype": "montage/ui/repetition.reel",
                     "properties": {
                         "objects": ["Mike", "François", "Afonso", "Heather"],
                         "element": {"#": "repetition"}
                     }
                 },
                 "dynamicText": {
-                    "module": "montage/ui/dynamic-text.reel",
-                    "name": "DynamicText",
+                    "prototype": "montage/ui/dynamic-text.reel",
                     "properties": {
                         "element": {"#": "dynamicText"}
                     },
