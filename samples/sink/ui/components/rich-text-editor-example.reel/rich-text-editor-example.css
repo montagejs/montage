@@ -1,15 +1,7 @@
 
 
 header {
-    height: 54px;
-    padding: 10px 4px;
-    border-bottom: 1px solid hsl(0,0%,95%);
     color: #0CAAE5;
-}
-
-footer {
-    height: 40px;
-    padding: 0 10px 10px 10px;
 }
 
 article.hideSource {
@@ -17,7 +9,6 @@ article.hideSource {
 }
 
 .editor {
-    margin: 10px 5px 10px 10px;
     height: 350px;
     overflow: auto;
     background-color: #FFFFFF;
@@ -36,10 +27,6 @@ article.hideSource {
 }
 .readonly {
     background-color: #F0F0F0;
-}
-
-.hideSource .editor {
-    margin: 10px;
 }
 
 .source {
@@ -85,26 +72,6 @@ article.hideSource {
 }
 
 
-
-
-/* Format Buttons */
-.btn-group button {
-    margin-bottom: 5px;
-}
-button.font-styles  {
-    height: 2.2em;
-    width: 3em;
-    padding: 0;
-    outline: none;
-}
-
-button.font-styles.pressed {
-    background: hsl(0,0%,85%);
-    border: 1px solid hsla(0,0%,0%,.1);
-    box-shadow: none;
-}
-
-
 /* other controls */
 
 #resetButton {
@@ -127,3 +94,11 @@ button.font-styles.pressed {
     /top: 0;
     /right: 10px;
 }
+
+.montage-buttonGroup { margin: .2em 0;  display: inline-block;}
+
+/* Individual buttons */
+
+[data-montage-id=bold] { font-weight: bold; }
+[data-montage-id=italic] { font-style: italic; }
+[data-montage-id=underline] { text-decoration: underline; }

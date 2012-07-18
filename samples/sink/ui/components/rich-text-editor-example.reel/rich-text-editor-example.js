@@ -117,7 +117,7 @@ exports.FontnameConverter = Montage.create(Converter, {
 });
 
 exports.RichTextEditorExample = Montage.create(Component, {
-    
+
     __initvalue: {value: null},
     _initValue: {
         get: function() {
@@ -129,11 +129,11 @@ exports.RichTextEditorExample = Montage.create(Component, {
             if(this.editor) {
                 this.editor.value = this.__initValue;
             }
-            
+
             this.needsDraw = true;
         }
     },
-    
+
     deserializedFromTemplate: {
         value: function() {
             var savedValue = null; //localStorage.getItem("savedValue");
@@ -143,7 +143,7 @@ exports.RichTextEditorExample = Montage.create(Component, {
                 this.loadDefaultContent();
             }
             if(this.editor) {
-                
+
             }
         }
     },
@@ -207,7 +207,7 @@ exports.RichTextEditorExample = Montage.create(Component, {
             }
         }
     },
-    
+
     prepareForDraw: {
         value: function() {
             if(this._initValue) {

@@ -6,11 +6,11 @@
  </copyright> -->
 <html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-	<meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <meta name="viewport" content="initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
     <title>RichText Editor Test</title>
     <link rel="stylesheet" href="rich-text-editor-example.css">
-    
+
     <script type="text/montage-serialization">{
             "undoManager": {
                 "object": "montage/core/undo-manager[defaultUndoManager]"
@@ -75,87 +75,6 @@
                 "bindings": {
                     "pressed": {"<->": "@editor.italic"}
                 }
-            },
-
-            "strikeToggle": {
-                "prototype": "montage/ui/toggle-button.reel",
-                "properties": {
-                    "element": {"#": "strikeToggle" },
-                    "preventFocus": true
-                },
-                "bindings": {
-                    "pressed": {"<->": "@editor.strikeThrough"}
-                }
-            },
-
-            "subscriptConverter": {
-                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
-                "properties": {
-                    "value": "subscript",
-                    "defaultValue": "baseline"
-                }
-            },
-
-            "subToggle": {
-                "prototype": "montage/ui/toggle-button.reel",
-                "properties": {
-                    "element": {"#": "subToggle" },
-                    "preventFocus": true
-                },
-                "bindings": {
-                    "pressed": {"<->": "@editor.baselineShift", "converter": {"@": "subscriptConverter"}}
-                }
-            },
-
-            "superscriptConverter": {
-                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
-                "properties": {
-                    "value": "superscript",
-                    "defaultValue": "baseline"
-                }
-            },
-
-            "supToggle": {
-                "prototype": "montage/ui/toggle-button.reel",
-                "properties": {
-                    "element": {"#": "supToggle" },
-                    "preventFocus": true
-                },
-                "bindings": {
-                    "pressed": {"<->": "@editor.baselineShift", "converter": {"@": "superscriptConverter"}}
-                }
-            },
-
-            "indentButton": {
-                "prototype": "montage/ui/button.reel",
-                "properties": {
-                    "element": {"#": "indentButton" },
-                    "preventFocus": true,
-                    "action": "indent"
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
-            },
-
-            "outdentButton": {
-                "prototype": "montage/ui/button.reel",
-                "properties": {
-                    "element": {"#": "outdentButton" },
-                    "preventFocus": true,
-                    "action": "outdent"
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "editor"},
-                        "capture": false
-                    }
-                ]
             },
 
             "unorderedListConverter": {
@@ -292,87 +211,6 @@
                 }
             },
 
-            "backcolorController": {
-                "prototype": "montage/ui/controller/array-controller",
-                "properties": {
-                    "selectObjectsOnAddition": false,
-                    "content": [
-                        {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
-                        {"text" : "Black", "value": "rgb(0, 0, 0)"},
-                        {"text" : "Blue", "value": "rgb(0, 0, 139)"},
-                        {"text" : "Gray", "value": "rgb(139, 139, 139)"},
-                        {"text" : "Green", "value": "rgb(0, 139, 0)"},
-                        {"text" : "Red", "value": "rgb(139, 0, 0)"},
-                        {"text" : "Yellow", "value": "rgb(255, 255, 0)"},
-                        {"text" : "White", "value": "rgb(255, 255, 255)"}
-                    ]
-                }
-            },
-
-            "backcolorConverter": {
-                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
-                "properties": {
-                    "component": {"@": "backcolor"}
-                }
-            },
-
-            "backcolor": {
-                "prototype": "montage/ui/select.reel",
-                "properties": {
-                    "element": {"#": "backcolor"},
-                    "preventFocus": true,
-                    "contentController": {"@": "backcolorController"}
-                }
-            },
-
-            "forecolorController": {
-                "prototype": "montage/ui/controller/array-controller",
-                "properties": {
-                    "selectObjectsOnAddition": false,
-                    "content": [
-                    {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
-                    {"text" : "Black", "value": "rgb(0, 0, 0)"},
-                    {"text" : "Blue", "value": "rgb(0, 0, 255)"},
-                    {"text" : "Gray", "value": "rgb(51, 51, 51)"},
-                    {"text" : "Green", "value": "rgb(0, 255, 0)"},
-                    {"text" : "Red", "value": "rgb(255, 0, 0)"},
-                    {"text" : "Yellow", "value": "rgb(255, 255, 0)"},
-                    {"text" : "White", "value": "rgb(255, 255, 255)"}
-                    ]
-                }
-            },
-
-            "forecolorConverter": {
-                "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
-                "properties": {
-                    "component": {"@": "forecolor"}
-                }
-            },
-
-            "forecolor": {
-                "prototype": "montage/ui/select.reel",
-                "properties": {
-                    "element": {"#": "forecolor"},
-                    "preventFocus": true,
-                    "contentController": {"@": "forecolorController"}
-                }
-            },
-
-            "resetButton": {
-                "prototype": "montage/ui/button.reel",
-                "properties": {
-                    "element": {"#": "resetButton" },
-                    "identifier": "reset",
-                    "preventFocus": true
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "owner"},
-                        "capture": false
-                    }
-                ]
-            },
 
             "undoButton": {
                 "prototype": "montage/ui/button.reel",
@@ -414,16 +252,6 @@
                 ]
             },
 
-            "checkboxReadonly": {
-                "prototype": "montage/ui/input-checkbox.reel",
-                "properties": {
-                    "element": {"#": "checkbox-readonly"}
-                },
-                "bindings": {
-                    "checked": {"<->": "@editor.readOnly"}
-                }
-            },
-
 
             "accordion1": {
                 "prototype": "ui/accordion.reel",
@@ -440,9 +268,6 @@
                     "undoManager": {"@": "undoManager"},
                     "source": {"#": "source-frame"},
                     "showSource": true
-                },
-                "bindings": {
-                    "readOnly": {"<-": "@checkboxReadonly.checked"}
                 }
             }
 
@@ -458,71 +283,55 @@
                 </p>
             </div>
         </div>
-        
-        
+
+
         <article class="hideSource">
 
            <div>
                <h4>EDITOR</h4>
                <header>
                    <nav>
-                       <span class="btn-group">
+                       <span class="montage-buttonGroup">
                            <button data-montage-id="boldToggle" class="btn font-styles" style="font-weight: bold;" title="Bold">B</button>
                            <button data-montage-id="italicToggle" class="btn font-styles" style="font-family: serif; font-style: italic;" title="Italic">I</button>
                            <button data-montage-id="underlineToggle" class="btn font-styles" style="text-decoration: underline;" title="Underline">U</button>
-                           <button data-montage-id="strikeToggle" class="btn font-styles" style="text-decoration: line-through; " title="Strike Through">ABC</button>
                        </span>
-                       <span class="btn-group">
-                           <button data-montage-id="subToggle" class="btn font-styles" title="Subscript">sub</button>
-                           <button data-montage-id="supToggle" class="btn font-styles" title="Superscript">sup</button>
-                       </span>
-                       <span class="btn-group">
-                           <button data-montage-id="outdentButton" class="btn font-styles" title="Outdent">&lt;</button>
-                           <button data-montage-id="indentButton" class="btn font-styles" title="indent">&gt;</button>
+                       <span class="montage-buttonGroup">
                            <button data-montage-id="unorderedlistToggle" class="btn font-styles" title="Unordered List">•</button>
                            <button data-montage-id="orderedlistToggle" class="btn font-styles" title="Ordered List">1.</button>
                        </span>
-                       <span class="btn-group">
+                       <span class="montage-buttonGroup">
                            <select data-montage-id="justification" class="font-styles" style="min-width: 70px" title="Justification"></select>
                        </span>
-                       <span class="btn-group">
-                           <select data-montage-id="fontname" class="font-styles" style="min-width: 70px" title="Font Name"></select>
-                           <select data-montage-id="fontsize" class="font-styles" style="min-width: 70px" title="Font Size"></select>
+                       <span class="montage-buttonGroup">
+                           <select data-montage-id="fontname" class="font-styles"  title="Font Name"></select>
+                           <select data-montage-id="fontsize" class="font-styles"  title="Font Size"></select>
                        </span>
-                       <span class="btn-group">
-                           <select data-montage-id="forecolor" class="font-styles" style="min-width: 70px" title="Fore Color"></select>
-                           <select data-montage-id="backcolor" class="font-styles" style="min-width: 70px" title="Back Color"></select>
+
+                       <span class="montage-buttonGroup">
+                           <button data-montage-id="undoButton" class="btn" title="Undo" disabled="disabled">Undo</button>
+                           <button data-montage-id="redoButton" class="btn" title="Redo" disabled="disabled">Redo</button>
                        </span>
-                       
-                       <span class="btn-group">
-                              <button data-montage-id="resetButton" class="btn" title="Reset">Reset</button>
-                              <button data-montage-id="undoButton" class="btn" title="Undo" disabled="disabled">Undo</button>
-                              <button data-montage-id="redoButton" class="btn" title="Redo" disabled="disabled">Redo</button>
-                              <label class="checkbox inline" data-montage-id="read-only"><input data-montage-id="checkbox-readonly" type="checkbox" /> Read only </label>
-                          </span>
                    </nav>
                </header>
                <section class="editor">
                    <div data-montage-id="editor-frame"></div>
                </section>
            </div>
-        
+
             <h4>SOURCE</h4>
             <section class="source" data-montage-id="source-frame"></section>
-             
-        
+
+
         </article>
-        
-        
+
+
         <!-- Source Code -->
                                         <ul id="rich-text-editor-accordion1" class="accordion">
                                            <li class="accordion-group">
                                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
                                                <div class="accordion-inner montage-hidden" >
-                                                    <pre class="prettyprint" >
-        &lt;article class=&quot;hideSource&quot;&gt;<br/><br/>           &lt;div&gt;<br/>               &lt;h4&gt;EDITOR&lt;/h4&gt;<br/>               &lt;header&gt;<br/>                   &lt;nav&gt;<br/>                       &lt;span class=&quot;btn-group&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;boldToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-weight: bold;&quot; title=&quot;Bold&quot;&gt;B&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;italicToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-family: serif; font-style: italic;&quot; title=&quot;Italic&quot;&gt;I&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;underlineToggle&quot; class=&quot;btn font-styles&quot; style=&quot;text-decoration: underline;&quot; title=&quot;Underline&quot;&gt;U&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;strikeToggle&quot; class=&quot;btn font-styles&quot; style=&quot;text-decoration: line-through; &quot; title=&quot;Strike Through&quot;&gt;ABC&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;btn-group&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;subToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Subscript&quot;&gt;sub&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;supToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Superscript&quot;&gt;sup&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;btn-group&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;outdentButton&quot; class=&quot;btn font-styles&quot; title=&quot;Outdent&quot;&gt;&amp;lt;&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;indentButton&quot; class=&quot;btn font-styles&quot; title=&quot;indent&quot;&gt;&amp;gt;&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;unorderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Unordered List&quot;&gt;&#x2022;&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;orderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Ordered List&quot;&gt;1.&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;btn-group&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;justification&quot; class=&quot;font-styles&quot; style=&quot;min-width: 70px&quot; title=&quot;Justification&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;btn-group&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;fontname&quot; class=&quot;font-styles&quot; style=&quot;min-width: 70px&quot; title=&quot;Font Name&quot;&gt;&lt;/select&gt;<br/>                           &lt;select data-montage-id=&quot;fontsize&quot; class=&quot;font-styles&quot; style=&quot;min-width: 70px&quot; title=&quot;Font Size&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;btn-group&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;forecolor&quot; class=&quot;font-styles&quot; style=&quot;min-width: 70px&quot; title=&quot;Fore Color&quot;&gt;&lt;/select&gt;<br/>                           &lt;select data-montage-id=&quot;backcolor&quot; class=&quot;font-styles&quot; style=&quot;min-width: 70px&quot; title=&quot;Back Color&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/>                       <br/>                       &lt;span class=&quot;btn-group&quot;&gt;<br/>                              &lt;button data-montage-id=&quot;resetButton&quot; class=&quot;btn&quot; title=&quot;Reset&quot;&gt;Reset&lt;/button&gt;<br/>                              &lt;button data-montage-id=&quot;undoButton&quot; class=&quot;btn&quot; title=&quot;Undo&quot; disabled=&quot;disabled&quot;&gt;Undo&lt;/button&gt;<br/>                              &lt;button data-montage-id=&quot;redoButton&quot; class=&quot;btn&quot; title=&quot;Redo&quot; disabled=&quot;disabled&quot;&gt;Redo&lt;/button&gt;<br/>                              &lt;label class=&quot;checkbox inline&quot; data-montage-id=&quot;read-only&quot;&gt;&lt;input data-montage-id=&quot;checkbox-readonly&quot; type=&quot;checkbox&quot; /&gt; Read only &lt;/label&gt;<br/>                          &lt;/span&gt;<br/>                   &lt;/nav&gt;<br/>               &lt;/header&gt;<br/>               &lt;section class=&quot;editor&quot;&gt;<br/>                   &lt;div data-montage-id=&quot;editor-frame&quot;&gt;&lt;/div&gt;<br/>               &lt;/section&gt;<br/>           &lt;/div&gt;<br/>        <br/>            &lt;h4&gt;SOURCE&lt;/h4&gt;<br/>            &lt;section class=&quot;source&quot; data-montage-id=&quot;source-frame&quot;&gt;&lt;/section&gt;<br/>             <br/>        <br/>        &lt;/article&gt;
-
-                                                    </pre>
+                                                    <pre class="prettyprint" >&lt;div&gt;<br/>               &lt;h4&gt;EDITOR&lt;/h4&gt;<br/>               &lt;header&gt;<br/>                   &lt;nav&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;boldToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-weight: bold;&quot; title=&quot;Bold&quot;&gt;B&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;italicToggle&quot; class=&quot;btn font-styles&quot; style=&quot;font-family: serif; font-style: italic;&quot; title=&quot;Italic&quot;&gt;I&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;underlineToggle&quot; class=&quot;btn font-styles&quot; style=&quot;text-decoration: underline;&quot; title=&quot;Underline&quot;&gt;U&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;button data-montage-id=&quot;unorderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Unordered List&quot;&gt;&#x2022;&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;orderedlistToggle&quot; class=&quot;btn font-styles&quot; title=&quot;Ordered List&quot;&gt;1.&lt;/button&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;justification&quot; class=&quot;font-styles&quot; style=&quot;min-width: 70px&quot; title=&quot;Justification&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;<br/>                           &lt;select data-montage-id=&quot;fontname&quot; class=&quot;font-styles&quot;  title=&quot;Font Name&quot;&gt;&lt;/select&gt;<br/>                           &lt;select data-montage-id=&quot;fontsize&quot; class=&quot;font-styles&quot;  title=&quot;Font Size&quot;&gt;&lt;/select&gt;<br/>                       &lt;/span&gt;<br/>                       <br/>                       &lt;span class=&quot;montage-buttonGroup&quot;&gt;                              <br/>                           &lt;button data-montage-id=&quot;undoButton&quot; class=&quot;btn&quot; title=&quot;Undo&quot; disabled=&quot;disabled&quot;&gt;Undo&lt;/button&gt;<br/>                           &lt;button data-montage-id=&quot;redoButton&quot; class=&quot;btn&quot; title=&quot;Redo&quot; disabled=&quot;disabled&quot;&gt;Redo&lt;/button&gt;                              <br/>                       &lt;/span&gt;<br/>                   &lt;/nav&gt;<br/>               &lt;/header&gt;<br/>               &lt;section class=&quot;editor&quot;&gt;<br/>                   &lt;div data-montage-id=&quot;editor-frame&quot;&gt;&lt;/div&gt;<br/>               &lt;/section&gt;<br/>           &lt;/div&gt;</pre>
                                                </div>
                                            </li>
                                            <li class="accordion-group">
@@ -593,87 +402,6 @@
             "bindings": {
                 "pressed": {"<->": "@editor.italic"}
             }
-        },
-
-        "strikeToggle": {
-            "prototype": "montage/ui/toggle-button.reel",
-            "properties": {
-                "element": {"#": "strikeToggle" },
-                "preventFocus": true
-            },
-            "bindings": {
-                "pressed": {"<->": "@editor.strikeThrough"}
-            }
-        },
-
-        "subscriptConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
-            "properties": {
-                "value": "subscript",
-                "defaultValue": "baseline"
-            }
-        },
-
-        "subToggle": {
-            "prototype": "montage/ui/toggle-button.reel",
-            "properties": {
-                "element": {"#": "subToggle" },
-                "preventFocus": true
-            },
-            "bindings": {
-                "pressed": {"<->": "@editor.baselineShift", "converter": {"@": "subscriptConverter"}}
-            }
-        },
-
-        "superscriptConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[ValueConverter]",
-            "properties": {
-                "value": "superscript",
-                "defaultValue": "baseline"
-            }
-        },
-
-        "supToggle": {
-            "prototype": "montage/ui/toggle-button.reel",
-            "properties": {
-                "element": {"#": "supToggle" },
-                "preventFocus": true
-            },
-            "bindings": {
-                "pressed": {"<->": "@editor.baselineShift", "converter": {"@": "superscriptConverter"}}
-            }
-        },
-
-        "indentButton": {
-            "prototype": "montage/ui/button.reel",
-            "properties": {
-                "element": {"#": "indentButton" },
-                "preventFocus": true,
-                "action": "indent"
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "editor"},
-                    "capture": false
-                }
-            ]
-        },
-
-        "outdentButton": {
-            "prototype": "montage/ui/button.reel",
-            "properties": {
-                "element": {"#": "outdentButton" },
-                "preventFocus": true,
-                "action": "outdent"
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "editor"},
-                    "capture": false
-                }
-            ]
         },
 
         "unorderedListConverter": {
@@ -810,87 +538,6 @@
             }
         },
 
-        "backcolorController": {
-            "prototype": "montage/ui/controller/array-controller",
-            "properties": {
-                "selectObjectsOnAddition": false,
-                "content": [
-                    {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
-                    {"text" : "Black", "value": "rgb(0, 0, 0)"},
-                    {"text" : "Blue", "value": "rgb(0, 0, 139)"},
-                    {"text" : "Gray", "value": "rgb(139, 139, 139)"},
-                    {"text" : "Green", "value": "rgb(0, 139, 0)"},
-                    {"text" : "Red", "value": "rgb(139, 0, 0)"},
-                    {"text" : "Yellow", "value": "rgb(255, 255, 0)"},
-                    {"text" : "White", "value": "rgb(255, 255, 255)"}
-                ]
-            }
-        },
-
-        "backcolorConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
-            "properties": {
-                "component": {"@": "backcolor"}
-            }
-        },
-
-        "backcolor": {
-            "prototype": "montage/ui/select.reel",
-            "properties": {
-                "element": {"#": "backcolor"},
-                "preventFocus": true,
-                "contentController": {"@": "backcolorController"}
-            }
-        },
-
-        "forecolorController": {
-            "prototype": "montage/ui/controller/array-controller",
-            "properties": {
-                "selectObjectsOnAddition": false,
-                "content": [
-                {"text" : "none", "value": "rgba(0, 0, 0, 0)"},
-                {"text" : "Black", "value": "rgb(0, 0, 0)"},
-                {"text" : "Blue", "value": "rgb(0, 0, 255)"},
-                {"text" : "Gray", "value": "rgb(51, 51, 51)"},
-                {"text" : "Green", "value": "rgb(0, 255, 0)"},
-                {"text" : "Red", "value": "rgb(255, 0, 0)"},
-                {"text" : "Yellow", "value": "rgb(255, 255, 0)"},
-                {"text" : "White", "value": "rgb(255, 255, 255)"}
-                ]
-            }
-        },
-
-        "forecolorConverter": {
-            "prototype": "ui/components/rich-text-editor-example.reel/rich-text-editor-example[IndexesConverter]",
-            "properties": {
-                "component": {"@": "forecolor"}
-            }
-        },
-
-        "forecolor": {
-            "prototype": "montage/ui/select.reel",
-            "properties": {
-                "element": {"#": "forecolor"},
-                "preventFocus": true,
-                "contentController": {"@": "forecolorController"}
-            }
-        },
-
-        "resetButton": {
-            "prototype": "montage/ui/button.reel",
-            "properties": {
-                "element": {"#": "resetButton" },
-                "identifier": "reset",
-                "preventFocus": true
-            },
-            "listeners": [
-                {
-                    "type": "action",
-                    "listener": {"@": "owner"},
-                    "capture": false
-                }
-            ]
-        },
 
         "undoButton": {
             "prototype": "montage/ui/button.reel",
@@ -932,21 +579,11 @@
             ]
         },
 
-        "checkboxReadonly": {
-            "prototype": "montage/ui/input-checkbox.reel",
-            "properties": {
-                "element": {"#": "checkbox-readonly"}
-            },
-            "bindings": {
-                "checked": {"<->": "@editor.readOnly"}
-            }
-        },
-
 
         "accordion1": {
             "prototype": "ui/accordion.reel",
             "properties": {
-                "element": {"#": "accordion1"}
+                "element": {"#": "rich-text-editor-accordion1"}
             }
         },
 
@@ -958,12 +595,8 @@
                 "undoManager": {"@": "undoManager"},
                 "source": {"#": "source-frame"},
                 "showSource": true
-            },
-            "bindings": {
-                "readOnly": {"<-": "@checkboxReadonly.checked"}
             }
         }
-
 }
                                                 </pre>
 
@@ -973,374 +606,382 @@
                                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">JavaScript</a></div>
                                                <div class="accordion-inner montage-hidden">
                                                    <pre class="prettyprint" >
-/**
-* Converter to Turn a justify value into boolean string
-*/
-exports.ValueConverter = Montage.create(Converter, {
-   value: {value: null},
-   defaultValue: {value: undefined},
-
-   convert: {
-       enumerable: false,
-       value: function(value) {
-           return value === this.value ? true : false;
-       }
-   },
-
-   revert: {
-       enumerable: false,
-       value: function(value) {
-           return value === true ? this.value : this.defaultValue;
-       }
-   }
-});
-
-/**
-* Converter to Turn a value into a array controller index
-*/
-exports.IndexesConverter = Montage.create(Converter, {
-   component : { value: null },
-   debug : { value: false },
-
-   convert: {
-       enumerable: false,
-       value: function(indexes) {
-           var index = indexes &amp;&amp; indexes.length ? indexes[0] : 0,
-               value = this.component.content[index].value;
-           if (this.debug) {console.log("CONVERT:", indexes, value);}
-           return value;
-       }
-   },
-
-   revert: {
-       enumerable: false,
-       value: function(value) {
-           var index = this.component._indexOf(value);
-           if (this.debug) {console.log("REVERT:", value, index != -1 ? [index] : [0]);}
-           return index != -1 ? [index] : [0];
-       }
-   }
-});
-
-exports.RIndexesConverter = Montage.create(Converter, {
-   component : { value: null },
+   var Montage = require("montage").Montage,
+       Component = require("montage/ui/component").Component,
+       Converter = require("montage/core/converter/converter").Converter;
 
 
-   convert: {
-       enumerable: false,
-       value: function(value) {
-           var index = this.component._indexOf(value);
-           if (this.debug) {console.log("CONVERT:", value, index);}
-           return index != -1 ? [index] : [0];
-       }
-   },
+   /**
+   * Converter to Turn a justify value into boolean string
+   */
+   exports.ValueConverter = Montage.create(Converter, {
+       value: {value: null},
+       defaultValue: {value: undefined},
 
-   revert: {
-       enumerable: false,
-       value: function(indexes) {
-           if (this.debug) {console.log("REVERT:", value);}
-           var index = indexes && indexes.length ? indexes[0] : 0,
-               value = this.component.content[index].value;
-           return value;
-       }
-   }
-});
-
-exports.FontnameConverter = Montage.create(Converter, {
-   component : { value: null },
-   debug : { value: false },
-
-   convert: {
-       enumerable: false,
-       value: function(indexes) {
-           var index = indexes && indexes.length ? indexes[0] : 0,
-               value = this.component.content[index].value;
-           if (this.debug) {console.log("CONVERT:", indexes, value);}
-           return value;
-       }
-   },
-
-   revert: {
-       enumerable: false,
-       value: function(value) {
-           var fontNames = value ? value.replace(" ,", ",").split(",") : null ,
-               nbrFontnames = fontNames ? fontNames.length : 0,
-               i,
-               index = -1;
-
-           for (i = 0; i < nbrFontnames; i ++) {
-               index = this.component._indexOf(fontNames[i]);
-               if (index !== -1) {
-                   break;
-               }
+       convert: {
+           enumerable: false,
+           value: function(value) {
+               return value === this.value ? true : false;
            }
-
-           if (this.debug) {console.log("REVERT:", value, index != -1 ? [index] : [0]);}
-           return index != -1 ? [index] : [0];
-       }
-   }
-});
-
-exports.RichTextEditorExample = Montage.create(Component, {
-
-   __initvalue: {value: null},
-   _initValue: {
-       get: function() {
-           return this.__initValue;
        },
-       set: function(value) {
-           this.__initValue = value;
-           console.log('initValue ', value, this.editor);
-           if(this.editor) {
-               this.editor.value = this.__initValue;
-           }
 
-           this.needsDraw = true;
-       }
-   },
-
-   deserializedFromTemplate: {
-       value: function() {
-           var savedValue = null; //localStorage.getItem("savedValue");
-           if (savedValue) {
-               this._initValue = savedValue;
-           } else {
-               this.loadDefaultContent();
-           }
-           if(this.editor) {
-
+       revert: {
+           enumerable: false,
+           value: function(value) {
+               return value === true ? this.value : this.defaultValue;
            }
        }
-   },
+   });
 
-   loadDefaultContent: {
-       value: function() {
-           var editor = this.editor;
+   /**
+   * Converter to Turn a value into a array controller index
+   */
+   exports.IndexesConverter = Montage.create(Converter, {
+       component : { value: null },
+       debug : { value: false },
 
-           // Restore the editor content
-           var xhr = new XMLHttpRequest();
-           xhr.open('GET', 'ui/components/rich-text-editor-example.reel/assets/default-text.html', true);
-           xhr.responseType = 'text';
-           var self = this;
+       convert: {
+           enumerable: false,
+           value: function(indexes) {
+               var index = indexes && indexes.length ? indexes[0] : 0,
+                   value = this.component.content[index].value;
+               if (this.debug) {console.log("CONVERT:", indexes, value);}
+               return value;
+           }
+       },
 
-           xhr.onload = function(event) {
-               if (this.status == 200) {
-                   self._initValue = this.response;
-               } else {
-                   self._initValue = "";
-               }
-           };
-
-           xhr.send();
-       }
-   },
-
-   _readOnly: { value: false },
-   readOnly: {
-       get: function() { return this._readOnly;},
-       set: function(value) {
-           this._readOnly = value;
-           if (value) {
-               this.editor.element.parentNode.classList.add("readonly");
-           } else {
-               this.editor.element.parentNode.classList.remove("readonly");
+       revert: {
+           enumerable: false,
+           value: function(value) {
+               var index = this.component._indexOf(value);
+               if (this.debug) {console.log("REVERT:", value, index != -1 ? [index] : [0]);}
+               return index != -1 ? [index] : [0];
            }
        }
-   },
+   });
 
-   handleAction: {
-       value: function(event) {
-           var target = event.target;
+   exports.RIndexesConverter = Montage.create(Converter, {
+       component : { value: null },
 
-           switch (target.identifier) {
-               case "reset":
-                   this.loadDefaultContent();
-                   break;
 
-               case "undo":
-                   this.undoManager.undo();
-                   break;
+       convert: {
+           enumerable: false,
+           value: function(value) {
+               var index = this.component._indexOf(value);
+               if (this.debug) {console.log("CONVERT:", value, index);}
+               return index != -1 ? [index] : [0];
+           }
+       },
 
-               case "redo":
-                   this.undoManager.redo();
-                   break;
-
-               case "showRawSource":
-                   localStorage.setItem("savedShowSource", this.showSource.checked);
-                   this.draw();
-                   break;
+       revert: {
+           enumerable: false,
+           value: function(indexes) {
+               if (this.debug) {console.log("REVERT:", value);}
+               var index = indexes && indexes.length ? indexes[0] : 0,
+                   value = this.component.content[index].value;
+               return value;
            }
        }
-   },
+   });
 
-   prepareForDraw: {
-       value: function() {
-           if(this._initValue) {
-               this.editor.value = this._initValue;
+   exports.FontnameConverter = Montage.create(Converter, {
+       component : { value: null },
+       debug : { value: false },
+
+       convert: {
+           enumerable: false,
+           value: function(indexes) {
+               var index = indexes && indexes.length ? indexes[0] : 0,
+                   value = this.component.content[index].value;
+               if (this.debug) {console.log("CONVERT:", indexes, value);}
+               return value;
            }
-       }
-   },
+       },
 
-   draw: {
-       value: function() {
-           /*
-           if (this.showSource.checked) {
-               this.source.parentNode.classList.remove("hideSource");
-           } else {
-               this.source.parentNode.classList.add("hideSource");
-           }
-           */
-       }
-   },
+       revert: {
+           enumerable: false,
+           value: function(value) {
+               var fontNames = value ? value.replace(" ,", ",").split(",") : null ,
+                   nbrFontnames = fontNames ? fontNames.length : 0,
+                   i,
+                   index = -1;
 
-
-   // Rich Textfield event & delegate methods
-   handleEditorChange: {
-       enumerable: false,
-       value: function(event) {
-           var value = this.editor.value,
-               selfClosingTags = ["area", "base", "basefont", "br", "bgsound", "col", "command", "embed", "frame", "hr",
-                   "input", "img", "isindex", "keygen", "link", "meta", "param", "source", "track", "wbr"],
-               indent = 0,
-               lastType,
-               padding = "                                ",
-               div = document.createElement("div"),
-               output = "";
-
-           localStorage.setItem("savedValue", value);
-
-           // Reformat the value for the source panel
-           value = value.replace(/[\n\r]+/g, "");
-           value.replace(/\<(\/?)([a-z0-9]+)[^>]*>|([^<>]+)/g, function(match, closed, tag, text) {
-               var currentPadding = padding.substr(0, Math.min(indent * 2, 32));
-
-               if (text) {
-                   lastType = "text";
-               } else {
-                   lastType = tag;
-                   if (selfClosingTags.indexOf(tag.toLowerCase()) == -1) {
-                       if (closed) {
-                           indent --;
-                           if (indent < 0) {
-                               indent = 0;
-                           }
-                           currentPadding = padding.substr(0, Math.min(indent * 2, 32));
-                       } else {
-                           indent ++;
-                       }
+               for (i = 0; i < nbrFontnames; i ++) {
+                   index = this.component._indexOf(fontNames[i]);
+                   if (index !== -1) {
+                       break;
                    }
                }
 
-               // Convert plain-text to HTML
-               div.textContent = match;
-               match = div.innerHTML;
-
-               output += '<pre class="type-' + lastType+ '">' + currentPadding + match +'</pre>';
-           });
-
-           this.source.innerHTML = output;
-
-//           this.source.innerText = this.editor.textValue;
-
-       }
-   },
-
-   handleEditorSelect: {
-       enumerable: false,
-       value: function(editor) {
-           /*
-               the delegate provide a change for the consumer to do something when the selection has changed
-            */
-       }
-   },
-
-   editorCanDrag: {
-       enumerable: false,
-       value: function(editor, event) {
-           return true;
-       }
-   },
-
-   editorCanDrop: {
-       enumerable: false,
-       value: function(editor, event, source) {
-           return true;
-       }
-   },
-
-   editorShouldDropFile: {
-       enumerable: false,
-       value: function(editor, file, data) {
-           /*
-               the delegate provide a change for the consumer to handle the drop itself, refuse the drop or accept it
-
-               possible return values:
-
-               true: the richtext field will handle the drop itself
-               false or null: the drop is canceled
-            */
-
-           console.log("DROP FILE:", file);
-           if (!data) {
-               data = '<html><body><div style="padding: 4px; border: 1px solid gray;">' + file.name + ' (FileReader not supported)</div></body></html>';
-               console.log("DATA:", data);
-               return data;
+               if (this.debug) {console.log("REVERT:", value, index != -1 ? [index] : [0]);}
+               return index != -1 ? [index] : [0];
            }
-           return true;
        }
-   },
+   });
 
-   editorShouldDrop: {
-       enumerable: false,
-       value: function(editor, event, data, contentType) {
-           /*
-               the delegate provide a change for the consumer to handle the drop itself, refuse the drop, accept the
-               drop or change the drop data
+   exports.RichTextEditorExample = Montage.create(Component, {
 
-               possible return values:
+       __initvalue: {value: null},
+       _initValue: {
+           get: function() {
+               return this.__initValue;
+           },
+           set: function(value) {
+               this.__initValue = value;
+               console.log('initValue ', value, this.editor);
+               if(this.editor) {
+                   this.editor.value = this.__initValue;
+               }
 
-               true: the richtext field will handle the drop itself
-               false or null: the drop is canceled
-               <string>: the richtext field will insert the string as html
-            */
-           return true;
+               this.needsDraw = true;
+           }
+       },
+
+       deserializedFromTemplate: {
+           value: function() {
+               var savedValue = null; //localStorage.getItem("savedValue");
+               if (savedValue) {
+                   this._initValue = savedValue;
+               } else {
+                   this.loadDefaultContent();
+               }
+               if(this.editor) {
+
+               }
+           }
+       },
+
+       loadDefaultContent: {
+           value: function() {
+               var editor = this.editor;
+
+               // Restore the editor content
+               var xhr = new XMLHttpRequest();
+               xhr.open('GET', 'ui/components/rich-text-editor-example.reel/assets/default-text.html', true);
+               xhr.responseType = 'text';
+               var self = this;
+
+               xhr.onload = function(event) {
+                   if (this.status == 200) {
+                       self._initValue = this.response;
+                   } else {
+                       self._initValue = "";
+                   }
+               };
+
+               xhr.send();
+           }
+       },
+
+       _readOnly: { value: false },
+       readOnly: {
+           get: function() { return this._readOnly;},
+           set: function(value) {
+               this._readOnly = value;
+               if (value) {
+                   this.editor.element.parentNode.classList.add("readonly");
+               } else {
+                   this.editor.element.parentNode.classList.remove("readonly");
+               }
+           }
+       },
+
+       handleAction: {
+           value: function(event) {
+               var target = event.target;
+
+               switch (target.identifier) {
+                   case "reset":
+                       this.loadDefaultContent();
+                       break;
+
+                   case "undo":
+                       this.undoManager.undo();
+                       break;
+
+                   case "redo":
+                       this.undoManager.redo();
+                       break;
+
+                   case "showRawSource":
+                       localStorage.setItem("savedShowSource", this.showSource.checked);
+                       this.draw();
+                       break;
+               }
+           }
+       },
+
+       prepareForDraw: {
+           value: function() {
+               if(this._initValue) {
+                   this.editor.value = this._initValue;
+               }
+           }
+       },
+
+       draw: {
+           value: function() {
+               /*
+               if (this.showSource.checked) {
+                   this.source.parentNode.classList.remove("hideSource");
+               } else {
+                   this.source.parentNode.classList.add("hideSource");
+               }
+               */
+           }
+       },
+
+
+       // Rich Textfield event & delegate methods
+       handleEditorChange: {
+           enumerable: false,
+           value: function(event) {
+               var value = this.editor.value,
+                   selfClosingTags = ["area", "base", "basefont", "br", "bgsound", "col", "command", "embed", "frame", "hr",
+                       "input", "img", "isindex", "keygen", "link", "meta", "param", "source", "track", "wbr"],
+                   indent = 0,
+                   lastType,
+                   padding = "                                ",
+                   div = document.createElement("div"),
+                   output = "";
+
+               localStorage.setItem("savedValue", value);
+
+               // Reformat the value for the source panel
+               value = value.replace(/[\n\r]+/g, "");
+               value.replace(/\<(\/?)([a-z0-9]+)[^>]*>|([^<>]+)/g, function(match, closed, tag, text) {
+                   var currentPadding = padding.substr(0, Math.min(indent * 2, 32));
+
+                   if (text) {
+                       lastType = "text";
+                   } else {
+                       lastType = tag;
+                       if (selfClosingTags.indexOf(tag.toLowerCase()) == -1) {
+                           if (closed) {
+                               indent --;
+                               if (indent < 0) {
+                                   indent = 0;
+                               }
+                               currentPadding = padding.substr(0, Math.min(indent * 2, 32));
+                           } else {
+                               indent ++;
+                           }
+                       }
+                   }
+
+                   // Convert plain-text to HTML
+                   div.textContent = match;
+                   match = div.innerHTML;
+
+                   output += '<pre class="type-' + lastType+ '">' + currentPadding + match +'</pre>';
+               });
+
+               this.source.innerHTML = output;
+
+    //           this.source.innerText = this.editor.textValue;
+
+           }
+       },
+
+       handleEditorSelect: {
+           enumerable: false,
+           value: function(editor) {
+               /*
+                   the delegate provide a change for the consumer to do something when the selection has changed
+                */
+           }
+       },
+
+       editorCanDrag: {
+           enumerable: false,
+           value: function(editor, event) {
+               return true;
+           }
+       },
+
+       editorCanDrop: {
+           enumerable: false,
+           value: function(editor, event, source) {
+               return true;
+           }
+       },
+
+       editorShouldDropFile: {
+           enumerable: false,
+           value: function(editor, file, data) {
+               /*
+                   the delegate provide a change for the consumer to handle the drop itself, refuse the drop or accept it
+
+                   possible return values:
+
+                   true: the richtext field will handle the drop itself
+                   false or null: the drop is canceled
+                */
+
+               console.log("DROP FILE:", file);
+               if (!data) {
+                   data = '<html><body><div style="padding: 4px; border: 1px solid gray;">' + file.name + ' (FileReader not supported)</div></body></html>';
+                   console.log("DATA:", data);
+                   return data;
+               }
+               return true;
+           }
+       },
+
+       editorShouldDrop: {
+           enumerable: false,
+           value: function(editor, event, data, contentType) {
+               /*
+                   the delegate provide a change for the consumer to handle the drop itself, refuse the drop, accept the
+                   drop or change the drop data
+
+                   possible return values:
+
+                   true: the richtext field will handle the drop itself
+                   false or null: the drop is canceled
+                   <string>: the richtext field will insert the string as html
+                */
+               return true;
+           }
+       },
+
+       editorShouldPaste: {
+           enumerable: false,
+           value: function(editor, event, data, contentType) {
+               /*
+                   the delegate provide a change for the consumer to handle the paste itself, refuse the paste, accept the
+                   paste or change the paste data.
+
+                   possible return values:
+
+                   true: the richtext field will handle the paste itself
+                   false or null: the paste is canceled
+                   <string>: the richtext field will insert the string as html
+                */
+               return true;
+           }
+       },
+
+       editorShouldPasteFile: {
+           enumerable: false,
+           value: function(editor, file, data) {
+               /*
+                   the delegate provide a change for the consumer to handle the paste itself, refuse the paste or accept the
+                   paste.
+
+                   possible return values:
+
+                   true: the richtext field will handle the paste itself
+                   false or null: the paste is canceled
+                   <string>: the richtext field will insert the string as html
+                */
+               return true;
+           }
        }
-   },
+   });
 
-   editorShouldPaste: {
-       enumerable: false,
-       value: function(editor, event, data, contentType) {
-           /*
-               the delegate provide a change for the consumer to handle the paste itself, refuse the paste, accept the
-               paste or change the paste data.
 
-               possible return values:
 
-               true: the richtext field will handle the paste itself
-               false or null: the paste is canceled
-               <string>: the richtext field will insert the string as html
-            */
-           return true;
-       }
-   },
-
-   editorShouldPasteFile: {
-       enumerable: false,
-       value: function(editor, file, data) {
-           /*
-               the delegate provide a change for the consumer to handle the paste itself, refuse the paste or accept the
-               paste.
-
-               possible return values:
-
-               true: the richtext field will handle the paste itself
-               false or null: the paste is canceled
-               <string>: the richtext field will insert the string as html
-            */
-           return true;
-       }
-   }
-});
 
 
 
@@ -1353,8 +994,8 @@ exports.RichTextEditorExample = Montage.create(Component, {
                     <section>
                         <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/rich-text-editor-example.reel" target="_blank">View Demo Source</a>
                     </section>
-                    
-                    
+
+
     </div>
 </body>
 </html>
