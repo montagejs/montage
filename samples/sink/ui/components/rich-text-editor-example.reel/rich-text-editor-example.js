@@ -125,7 +125,6 @@ exports.RichTextEditorExample = Montage.create(Component, {
         },
         set: function(value) {
             this.__initValue = value;
-            console.log('initValue ', value, this.editor);
             if(this.editor) {
                 this.editor.value = this.__initValue;
             }
@@ -170,27 +169,11 @@ exports.RichTextEditorExample = Montage.create(Component, {
         }
     },
 
-    _readOnly: { value: false },
-    readOnly: {
-        get: function() { return this._readOnly;},
-        set: function(value) {
-            this._readOnly = value;
-            if (value) {
-                this.editor.element.parentNode.classList.add("readonly");
-            } else {
-                this.editor.element.parentNode.classList.remove("readonly");
-            }
-        }
-    },
-
     handleAction: {
         value: function(event) {
             var target = event.target;
 
             switch (target.identifier) {
-                case "reset":
-                    this.loadDefaultContent();
-                    break;
 
                 case "undo":
                     this.undoManager.undo();
@@ -198,11 +181,6 @@ exports.RichTextEditorExample = Montage.create(Component, {
 
                 case "redo":
                     this.undoManager.redo();
-                    break;
-
-                case "showRawSource":
-                    localStorage.setItem("savedShowSource", this.showSource.checked);
-                    this.draw();
                     break;
             }
         }
@@ -215,19 +193,6 @@ exports.RichTextEditorExample = Montage.create(Component, {
             }
         }
     },
-
-    draw: {
-        value: function() {
-            /*
-            if (this.showSource.checked) {
-                this.source.parentNode.classList.remove("hideSource");
-            } else {
-                this.source.parentNode.classList.add("hideSource");
-            }
-            */
-        }
-    },
-
 
     // Rich Textfield event & delegate methods
     handleEditorChange: {
@@ -274,105 +239,6 @@ exports.RichTextEditorExample = Montage.create(Component, {
             });
 
             this.source.innerHTML = output;
-
- //           this.source.innerText = this.editor.textValue;
-
-        }
-    },
-
-    handleEditorSelect: {
-        enumerable: false,
-        value: function(editor) {
-            /*
-                the delegate provide a change for the consumer to do something when the selection has changed
-             */
-        }
-    },
-
-    editorCanDrag: {
-        enumerable: false,
-        value: function(editor, event) {
-            return true;
-        }
-    },
-
-    editorCanDrop: {
-        enumerable: false,
-        value: function(editor, event, source) {
-            return true;
-        }
-    },
-
-    editorShouldDropFile: {
-        enumerable: false,
-        value: function(editor, file, data) {
-            /*
-                the delegate provide a change for the consumer to handle the drop itself, refuse the drop or accept it
-
-                possible return values:
-
-                true: the richtext field will handle the drop itself
-                false or null: the drop is canceled
-             */
-
-            console.log("DROP FILE:", file);
-            if (!data) {
-                data = '<html><body><div style="padding: 4px; border: 1px solid gray;">' + file.name + ' (FileReader not supported)</div></body></html>';
-                console.log("DATA:", data);
-                return data;
-            }
-            return true;
-        }
-    },
-
-    editorShouldDrop: {
-        enumerable: false,
-        value: function(editor, event, data, contentType) {
-            /*
-                the delegate provide a change for the consumer to handle the drop itself, refuse the drop, accept the
-                drop or change the drop data
-
-                possible return values:
-
-                true: the richtext field will handle the drop itself
-                false or null: the drop is canceled
-                <string>: the richtext field will insert the string as html
-             */
-            return true;
-        }
-    },
-
-    editorShouldPaste: {
-        enumerable: false,
-        value: function(editor, event, data, contentType) {
-            /*
-                the delegate provide a change for the consumer to handle the paste itself, refuse the paste, accept the
-                paste or change the paste data.
-
-                possible return values:
-
-                true: the richtext field will handle the paste itself
-                false or null: the paste is canceled
-                <string>: the richtext field will insert the string as html
-             */
-            return true;
-        }
-    },
-
-    editorShouldPasteFile: {
-        enumerable: false,
-        value: function(editor, file, data) {
-            /*
-                the delegate provide a change for the consumer to handle the paste itself, refuse the paste or accept the
-                paste.
-
-                possible return values:
-
-                true: the richtext field will handle the paste itself
-                false or null: the paste is canceled
-                <string>: the richtext field will insert the string as html
-             */
-            return true;
         }
     }
 });

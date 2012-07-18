@@ -29,6 +29,9 @@ article.hideSource {
     background-color: #F0F0F0;
 }
 
+.source pre {
+    font-size: 0.9em;
+}
 .source {
     height: 300px;
     margin: 10px 10px 10px 5px;
@@ -36,10 +39,7 @@ article.hideSource {
     color: green;
     background-color: #E0E0E0;
     border: 1px solid #B9B9B9;
-
     font-family: "courier monaco";
-    font-size: 1.5rem;
-
     -moz-user-select: -moz-text;
     -webkit-user-select: text;
     user-select: text;
@@ -96,6 +96,11 @@ article.hideSource {
 }
 
 .montage-buttonGroup { margin: .2em 0;  display: inline-block;}
+button.font-styles.pressed {
+    background: hsl(0,0%,85%);
+    border: 1px solid hsla(0,0%,0%,.1);
+    box-shadow: none;
+}
 
 /* Individual buttons */
 
