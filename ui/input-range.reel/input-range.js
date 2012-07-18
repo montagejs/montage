@@ -164,6 +164,17 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     _touchOnHandle: {value: null},
 
+    __clickTarget: {value: null},
+    _clickTarget: {
+        get: function() {
+            return this.__clickTarget;
+        },
+        set: function(value) {
+            this.__clickTarget = value;
+            this.needsDraw = true;
+        }
+    },
+
     _handleWidth: {value: null},
 
     _calculateValueFromPosition: {
@@ -193,12 +204,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
             } else {
                 this._valueSyncedWithPosition = false;
             }
-        }
-    },
-
-    _positionOfElement: {
-        value: function(element) {
-            return dom.convertPointFromNodeToPage(element);
         }
     },
 
@@ -288,27 +293,14 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
-    // handle user clicking the slider scale directly instead of moving the knob
-    _handleClick: {
-        value: function(position) {
-            var x = this._positionOfElement(this.element).x;
-            var positionX = (position - (x + (this._handleWidth/2)));
-            if(positionX < 0) {
-                positionX = 0;
-            }
-            this._positionX = positionX;
-        }
-    },
-
     handleMousedown: {
         value: function(e) {
-            this._handleClick(e.clientX);
+            this._clickTarget = {x: e.pageX, y: e.pageY};
         }
     },
 
     handleTouchstart: {
         value: function(e) {
-
             var target = e.targetTouches[0];
             // handle the translate only if touch target is the knob
             this._touchOnHandle = (target.target === this._handleEl);
@@ -329,6 +321,16 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
                 this._handleWidth = this._handleEl.offsetWidth;
             }
             this._sliderWidth = this.element.offsetWidth - (1.5*(this._handleWidth/2));
+            if(this._clickTarget) {
+                // the slider scale was clicked
+                var x = dom.convertPointFromNodeToPage(this.element).x;
+                var positionX = (this._clickTarget.x - (x + (this._handleWidth/2)));
+                if(positionX < 0) {
+                    positionX = 0;
+                }
+                this._positionX = positionX;
+                this._clickTarget = null;
+            }
             if(!this._valueSyncedWithPosition) {
                 this._calculatePositionFromValue();
             }

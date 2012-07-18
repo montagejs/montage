@@ -61,8 +61,11 @@ var testPage = TestPageLoader.queueTest("input-range-test", function() {
                 };
 
                 testPage.clickOrTouch(eventInfo);
+                testPage.waitForDraw();
+                runs(function() {
+                    expect(test.range_input1.value).toBeGreaterThan(0);
+                });
 
-                expect(test.range_input1.value).toBeGreaterThan(0);
             });
 
             describe("inside a scroller", function() {
@@ -76,8 +79,10 @@ var testPage = TestPageLoader.queueTest("input-range-test", function() {
                     };
 
                     testPage.clickOrTouch(eventInfo);
-
-                    expect(test.range_input1.value).toBeGreaterThan(0);
+                    testPage.waitForDraw();
+                    runs(function() {
+                        expect(test.range_input1.value).toBeGreaterThan(0);
+                    });
                 });
 
                 it("doesn't surrender the pointer", function() {
