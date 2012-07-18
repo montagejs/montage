@@ -52,8 +52,8 @@ require.loadPackage(parentWindow.require.location).then(function(require) {
             mainComponent.needsDraw = true;
 
             if (callback) {
-                mainComponent.addEventListener("load", function(event) {
-                    mainComponent.removeEventListener("load", arguments.callee);
+                mainComponent.addEventListener("componentLoaded", function(event) {
+                    mainComponent.removeEventListener("componentLoaded", arguments.callee);
                     callback(window, event.detail);
                 });
             }
