@@ -28,40 +28,30 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+/**
+    @module montage/core/converter/invert-converter
+    @requires montage/core/core
+    @requires montage/core/converter/converter
+*/
+var Montage = require("montage").Montage;
+var Converter = require('core/converter/converter').Converter;
 
-.logger {
-  background-color: rgba(0, 0, 0, 0.5);
-  color: #FFF;
-  -webkit-transition-property: background-color;
-  -webkit-transition-duration: 300ms;
-  -webkit-transition-timing-function: ease-in-out;
-  -o-transition-property: background-color;
-  -o-transition-duration: 300ms;
-  -o-transition-timing-function: ease-in-out;
-  -moz-transition-property: background-color;
-  -moz-transition-duration: 300ms;
-  -moz-transition-timing-function: ease-in-out;
-  transition-property: background-color;
-  transition-duration: 300ms;
-  transition-timing-function: ease-in-out;
-}
+/**
+    Inverts the value of a boolean value.
 
-.logger:hover {
-  background-color: rgba(0, 0, 0, 0.7);
-}
+    @class module:montage/core/converter/invert-converter.InvertConverter
+    @extends module:montage/core/converter.Converter
+*/
+var InvertConverter = exports.InvertConverter = Montage.create(Converter, {
+    convert: {
+        value: function(v) {
+            return !v;
+        }
+    },
 
-.logger h2 {
-  font-size: 1em;
-  color: #FFF;
-  margin: 0;
-}
-
-.logger-output {
-  font-family: monospace;
-  white-space: pre;
-  padding: 0.5em;
-}
-
-.logger.logger-hilight {
-  background-color: rgba(219, 205, 0, 0.7);
-}
+    revert: {
+        value: function(v) {
+            return !v;
+        }
+    }
+});

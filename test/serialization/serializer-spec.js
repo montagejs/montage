@@ -425,6 +425,22 @@ describe("serialization/serializer-spec", function() {
 
             expect(Object.keys(externalObjects).length).toBe(0);
         });
+
+        it("should avoid name clashes between given labels and generated labels", function() {
+            var object = objects.OneProp.create(),
+                oneProp = objects.OneProp.create(),
+                twoProp = objects.TwoProps.create(),
+                serialization;
+
+
+            oneProp.identifier = "generated";
+            object.prop = oneProp;
+
+            serialization = serializer.serialize({root: object, generated: twoProp});
+
+            // oneProp should be serialized under "generated2" label
+            expect(Object.keys(JSON.parse(serialization)).length).toBe(3);
+        });
     });
 
     describe("Custom serialization", function() {

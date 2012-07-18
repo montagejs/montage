@@ -34,6 +34,9 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/core/serializer
     @requires montage/core/deserializer
     @requires montage/core/logger
+    @requires montage/core/event/event-manager
+
+    @requires montage/ui/application
 */
 
 exports = typeof exports !== "undefined" ? exports : {};
