@@ -158,6 +158,17 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     _touchOnHandle: {value: null},
 
+    __clickTarget: {value: null},
+    _clickTarget: {
+        get: function() {
+            return this.__clickTarget;
+        },
+        set: function(value) {
+            this.__clickTarget = value;
+            this.needsDraw = true;
+        }
+    },
+
     _handleSize: {value: null},
 
     _calculateValueFromPosition: {
@@ -306,25 +317,9 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     },
 
     // handle user clicking the slider scale directly instead of moving the knob
-    _handleClick: {
-        value: function(position) {
-            var isVertical = (this.axis === 'vertical');
-
-            var point = this._positionOfElement(this.element);
-            var reference = (isVertical ? point.y : point.x);
-
-            var relativePosition = (position - (reference + (this._handleSize/2)));
-            if(relativePosition < 0) {
-                relativePosition = 0;
-            }
-            this._position = relativePosition;
-        }
-    },
-
     handleMousedown: {
         value: function(e) {
-            var isVertical = (this.axis === 'vertical');
-            this._handleClick(isVertical ? e.clientY : e.clientX);
+            this._clickTarget = {x: e.pageX, y: e.pageY};
         }
     },
 
@@ -353,15 +348,22 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
             }
             this.element.classList.add(isVertical ? 'vertical' : 'horizontal');
 
-            var handleAdjust = 1.5*(this._handleSize/2);
+            var handleAdjust = (this._handleSize);
             if(isVertical) {
-                if(!this._sliderHeight) {
-                    this._sliderHeight = (this.element.offsetHeight - handleAdjust);
-                }
+                this._sliderHeight = (this.element.offsetHeight - handleAdjust);
             } else {
-                if(!this._sliderWidth) {
-                    this._sliderWidth = (this.element.offsetWidth - handleAdjust);
+                this._sliderWidth = (this.element.offsetWidth - handleAdjust);
+            }
+            if(this._clickTarget) {
+                // the slider scale was clicked
+                var pt = dom.convertPointFromNodeToPage(this.element);
+                var coordinate = (isVertical ? pt.y : pt.x);
+                var pos = (this._clickTarget[isVertical ? 'y' : 'x'] - (coordinate) - (this._handleSize/2));
+                if(pos < 0) {
+                    pos = 0;
                 }
+                this._position = pos;
+                this._clickTarget = null;
             }
 
             if(!this._valueSyncedWithPosition) {
