@@ -35,10 +35,13 @@ exports.Mfiddle = Montage.create(Component, {
     hasTemplate: {value: false},
     templateObjects: {value: {}},
     _componentId: {value: 1},
+    _logger: {value: null},
 
     templateDidLoad: {
         value: function() {
             var example = this.examples[0];
+
+            this._logger = this.templateObjects.logger;
 
             this.addEventListener("action", this, false);
             this.loadExample(example);
@@ -92,23 +95,112 @@ exports.Mfiddle = Montage.create(Component, {
 
     addComponentToFiddle: {
         value: function(component) {
-            // TODO: need to add a serialization checker
-            var serializationObject = JSON.parse(this.templateObjects.serializationCodeMirror.value),
-                html = this.templateObjects.htmlCodeMirror.value,
-                name = component.name,
+            var id = this._generateComponentId(component.name);
+
+            component.serialization.properties.element = {"#": id};
+            this._addSerialization(id, component.serialization);
+            this._addHtml(component.html.replace('data-montage-id=""', 'data-montage-id="' + id + '"'));
+
+            this.executeFiddle();
+        }
+    },
+
+    _addHtmlDiv: {value: document.createElement("div")},
+    _addHtml: {
+        value: function(htmlPiece) {
+            var serializationObject = this._getSerializationObject(),
+                htmlCodeMirror = this.templateObjects.htmlCodeMirror,
+                html = htmlCodeMirror.value,
+                ownerMontageId = serializationObject && serializationObject.getProperty("owner.properties.element.#"),
+                div = this._addHtmlDiv,
+                addHtmlAtTheEnd = true,
+                root;
+
+            if (ownerMontageId) {
+                if (htmlCodeMirror.hasModeErrors()) {
+                    this._logger.log("Add component warning: The HTML code seems to be invalid, appending element at the end.");
+                } else {
+                    div.innerHTML = html;
+                    root = div.querySelector("*[data-montage-id='" + ownerMontageId + "']");
+
+                    // this is the basic case, the owner's element is the root
+                    // of the body and has no siblings, we only address this case
+                    if (root && root.parentNode == div && !root.nextSibling) {
+                        // tries to figure out the indentation level of the previous
+                        // line to match it
+                        var matches = /([\t ]*)[^\n]*\n\s*<\/[^>]+>\s*$/.exec(html);
+                        var indentation = RegExp.$1 || "";
+                        // insert html before the last closing tag
+                        html = html.replace(/<\/[^>]+>\s*$/, indentation + htmlPiece + "\n$&");
+                        addHtmlAtTheEnd = false;
+                    } else {
+                        this._logger.log("Add component warning: The owner's element is not the single root element, appending element at the end.");
+                    }
+                }
+            }
+
+            if (addHtmlAtTheEnd) {
+                html += "\n" + htmlPiece;
+            }
+
+            this.loadFiddle(null, null, html, null);
+        }
+    },
+
+    _addSerialization: {
+        value: function(label, serializationPiece) {
+            var serialization,
+                serializationObject = this._getSerializationObject();
+
+            if (serializationObject) {
+                serializationObject[label] = serializationPiece;
+                serialization = this._stringifySerialization(serializationObject);
+            } else {
+                serializationObject = {};
+                serializationObject[label] = serializationPiece;
+                serialization = this.templateObjects.serializationCodeMirror.value + "\n" + this._stringifySerialization(serializationPiece);
+
+                this._logger.log("Add component warning: The serialization seems to be invalid, appending component at the end.");
+            }
+
+            this.loadFiddle(null, serialization, null, null);
+        }
+    },
+
+    // properties used to cache the serialization object
+    _serializationObject: {value: null},
+    _lastSerialization: {value: null},
+    _getSerializationObject: {
+        value: function() {
+            var serialization = this.templateObjects.serializationCodeMirror.value;
+
+            if (serialization === this._lastSerialization) {
+                return this._serializationObject;
+            } else {
+                this._lastSerialization = serialization;
+                try {
+                    return this._serializationObject = JSON.parse(serialization);
+                } catch(ex) {
+                    return this._serializationObject = null;
+                }
+            }
+        }
+    },
+
+    _generateComponentId: {
+        value: function(name) {
+            var serializationObject = this._getSerializationObject(),
                 id;
 
-            do {
+            if (serializationObject) {
+                do {
+                    id = name + this._componentId++;
+                } while (id in serializationObject);
+            } else {
                 id = name + this._componentId++;
-            } while (id in serializationObject);
+            }
 
-            serializationObject[id] = component.serialization;
-            serializationObject[id].properties.element = {"#": id};
-
-            html += "\n" + component.html.replace('data-montage-id=""', 'data-montage-id="' + id + '"');
-
-            this.loadFiddle(null, this._stringifySerialization(serializationObject), html, null);
-            this.executeFiddle();
+            return id;
         }
     },
 
@@ -182,27 +274,6 @@ var Mfiddle = {
 
     getParameter: function(name) {
         return this.queryString[name];
-    },
-
-    executeIframe: document.createElement("iframe"),
-    execute: function() {
-        var iframe = Mfiddle.executeIframe;
-
-        if (iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
-        }
-
-        document.getElementById("result").appendChild(iframe);
-        Mfiddle.createMontageApplication(iframe.contentDocument);
-
-        // hijacks iframe's console.debug
-        iframe.contentWindow.console.debug = function() {
-            if (arguments[0].indexOf("Syntax error") == 0) {
-                iframe.contentDocument.body.innerHTML = "<pre>" + arguments[0] + "</pre>";
-            } else {
-                console.debug.apply(console, arguments);
-            }
-        }
     }
 }
 

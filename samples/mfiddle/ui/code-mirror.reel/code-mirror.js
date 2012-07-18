@@ -80,5 +80,11 @@ exports.CodeMirror = Montage.create(Component, /** @lends module:"montage/ui/cod
             this._newValue = value;
             this.needsDraw = true;
         }
+    },
+
+    hasModeErrors: {
+        value: function() {
+            return !!this._element.querySelector("*[class~='cm-error']");
+        }
     }
 });
