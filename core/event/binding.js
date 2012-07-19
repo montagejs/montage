@@ -294,7 +294,7 @@ Deserializer.defineDeserializationUnit("bindings", function(object, bindings, de
             var targetPath = binding["<-"] || binding["<->"] || binding["<<->"];
 
             if ("<<->" in binding) {
-                console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.")
+                console.warn("WARNING: <<-> in bindings is deprectated, use <-> only, please update now.");
             }
 
             if (targetPath) {
@@ -319,7 +319,6 @@ Deserializer.defineDeserializationUnit("bindings", function(object, bindings, de
 });
 
 var __bindingCount = exports.Stats = {count: 0};
-console.log(__bindingCount);
 
 /**
     @function external:Object.defineBinding
