@@ -43,7 +43,8 @@ var Montage = require("montage").Montage,
 */
 exports.CodeMirror = Montage.create(Component, /** @lends module:"montage/ui/code-mirror.reel".CodeMirror# */ {
     _codeMirror: {value: null},
-    tabSize: {value: 2},
+    tabSize: {value: 4},
+    indentUnit: {value: 4},
     matchBrackets: {value: false},
     lineNumbers: {value: false},
     mode: {value: null},
@@ -56,6 +57,7 @@ exports.CodeMirror = Montage.create(Component, /** @lends module:"montage/ui/cod
             this._codeMirror = CodeMirror(this._element, {
                 mode: mode,
                 tabSize: this.tabSize,
+                indentUnit: this.indentUnit,
                 matchBrackets: this.matchBracket,
                 lineNumbers: this.lineNumbers,
                 value: this.value
