@@ -840,7 +840,7 @@ var DefaultStateDelegate = Montage.create(Montage, {
                            route = this._activeRoute.replace(token, appState[i]);
                        }
                    }
-                   var newUrl = this.contextPath + route;
+                   var newUrl = '.' + route;
                    options.url = newUrl;
                }
 
