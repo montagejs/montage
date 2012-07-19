@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("core/core").Montage,
     Template = require("ui/template").Template,
+    logger = require("core/logger").logger("application"),
     Component = require("ui/component").Component,
     MontageWindow = require("ui/montage-window").MontageWindow,
     Slot;
@@ -302,7 +303,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
      Description TODO
      @function
      @param {Function} callback A function to invoke after the method has completed.
-     */ 
+     */
      _load: {
          value: function(applicationRequire, callback) {
              var template = Template.create().initWithDocument(window.document, applicationRequire),
@@ -347,7 +348,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
              }).end();
          }
      },
-         
+
     /**
      Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
      The component URL must be in the same domain as the calling script. Can be relative to the main application
@@ -804,7 +805,9 @@ var DefaultStateDelegate = Montage.create(Montage, {
                 if(arr != null) {
                     params = {};
                     // get the values matching the tokens
-                    //console.log('valuesArr ', valuesArr);
+                    if (logger.isDebug) {
+                        logger.debug('valuesArr ', valuesArr);
+                    }
                     for(var i=0; i< arr.length; i++) {
                         param = arr[i].substring(1); // remove :
                         if(valuesArr.length > i) {
@@ -813,7 +816,9 @@ var DefaultStateDelegate = Montage.create(Montage, {
                     }
                 }
             } else {
-                console.log('unable to match the URL with specified routes');
+                if (logger.isDebug) {
+                    logger.debug('unable to match the URL with specified routes');
+                }
             }
             return params;
         }
@@ -859,7 +864,9 @@ var DefaultStateDelegate = Montage.create(Montage, {
                        appState[i] = params[i];
                    }
                }
-               //console.log('appState after applying url values ', appState);
+               if(logger.isDebug) {
+                   logger.debug('appState after applying url values ', appState);
+               }
            }
 
        }
