@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Generator: Adobe Illustrator 15.0.0, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px" width="150px"
+	 height="30px" viewBox="0 0 150 30" enable-background="new 0 0 150 30" xml:space="preserve">
+<g id="bullets">
+	<rect x="12" y="10" fill="#444444" width="12" height="1"/>
+	<rect x="12" y="14" fill="#444444" width="12" height="1"/>
+	<rect x="12" y="18" fill="#444444" width="12" height="1"/>
+	<circle fill="#444444" cx="8.5" cy="10.5" r="1.5"/>
+	<circle fill="#444444" cx="8.5" cy="14.5" r="1.5"/>
+	<circle fill="#444444" cx="8.5" cy="18.5" r="1.5"/>
+</g>
+<g id="nr">
+	<rect x="42" y="10" fill="#444444" width="12" height="1"/>
+	<rect x="42" y="14" fill="#444444" width="12" height="1"/>
+	<rect x="42" y="18" fill="#444444" width="12" height="1"/>
+	<rect x="38" y="9" fill="#444444" width="1" height="3"/>
+	<rect x="37" y="9" fill="#444444" width="1" height="1"/>
+	<rect x="38" y="17" fill="#444444" width="1" height="3"/>
+	<rect x="37" y="19" fill="#444444" width="1" height="1"/>
+	<rect x="37" y="17" fill="#444444" width="1" height="1"/>
+	<rect x="37" y="13" fill="#444444" width="2" height="1"/>
+	
+		<rect x="37.576" y="14.285" transform="matrix(0.6053 -0.796 0.796 0.6053 3.339 36.0825)" fill="#444444" width="0.955" height="0.778"/>
+	<rect x="37" y="15" fill="#444444" width="2" height="1"/>
+</g>
+<g id="left">
+	<rect x="68" y="9" fill="#444444" width="14" height="1"/>
+	<rect x="68" y="11" fill="#444444" width="10" height="1"/>
+	<rect x="68" y="13" fill="#444444" width="12" height="1"/>
+	<rect x="68" y="15" fill="#444444" width="6" height="1"/>
+	<rect x="68" y="17" fill="#444444" width="10" height="1"/>
+	<rect x="68" y="19" fill="#444444" width="14" height="1"/>
+</g>
+<g id="center">
+	<rect x="98" y="9" fill="#444444" width="14" height="1"/>
+	<rect x="100" y="11" fill="#444444" width="10" height="1"/>
+	<rect x="99" y="13" fill="#444444" width="12" height="1"/>
+	<rect x="102" y="15" fill="#444444" width="6" height="1"/>
+	<rect x="100" y="17" fill="#444444" width="10" height="1"/>
+	<rect x="98" y="19" fill="#444444" width="14" height="1"/>
+</g>
+<g id="right">
+	<rect x="128" y="9" fill="#444444" width="14" height="1"/>
+	<rect x="132" y="11" fill="#444444" width="10" height="1"/>
+	<rect x="130" y="13" fill="#444444" width="12" height="1"/>
+	<rect x="136" y="15" fill="#444444" width="6" height="1"/>
+	<rect x="132" y="17" fill="#444444" width="10" height="1"/>
+	<rect x="128" y="19" fill="#444444" width="14" height="1"/>
+</g>
+</svg>
