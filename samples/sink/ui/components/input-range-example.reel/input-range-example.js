@@ -104,9 +104,9 @@ exports.InputRangeExample = Montage.create(Component, {
 
     draw: {
         value: function() {
-            this.colorchip.style.background = "rgb(" + this.red + "," + this.green + ", " + this.blue + ")";
-            this.colorchip.style.opacity = this.opacity;
-            console.log(this.colorchip.style.background);
+            // border is faster than background in Chrome mobile
+            this.colorchip.firstChild.style.border = "100px solid rgba(" + this.red + "," + this.green + "," + this.blue + "," + this.opacity + ")";
+            // console.log(this.colorchip.style.background);
         }
     },
 
