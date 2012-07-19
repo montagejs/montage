@@ -840,8 +840,14 @@ var DefaultStateDelegate = Montage.create(Montage, {
                            route = this._activeRoute.replace(token, appState[i]);
                        }
                    }
-                   var newUrl = '.' + route;
-                   options.url = newUrl;
+                   var index = options.url.indexOf(this.contextPath);
+                   if(index >= 0) {
+                       var newUrl = options.url.substring(0, index) + this.contextPath + route;
+                       if(logger.isDebug) {
+                           logger.debug('willPushState: new URL pushed ', newUrl);
+                       }
+                       options.url = newUrl;
+                   }
                }
 
            }
