@@ -65,3 +65,12 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-inputRange-thumb:focus {
     border-color: #7f7f7f;
 }
+.montage-inputRange-thumb:before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    right: -7px;
+    bottom: -7px;
+    border-radius: 50%;
+}
