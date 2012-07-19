@@ -1,0 +1,88 @@
+{
+    "owner": {
+        "prototype": "ui/main.reel",
+        "properties": {
+            "element": {"#": "main"}
+        }
+    },
+   
+
+    
+    "button": {
+        "prototype": "montage/ui/button.reel",
+        "properties": { "element": {"#": "button"} } },
+    "buttonSkin": {
+        "prototype": "montage/ui/button.reel",
+        "properties": { "element": {"#": "buttonSkin"} } },
+    
+    "inputCheckbox": {
+        "prototype": "montage/ui/input-checkbox.reel",
+        "properties": { "element": {"#": "inputCheckbox"} } },
+    "inputCheckboxSkin": {
+        "prototype": "montage/ui/input-checkbox.reel",
+        "properties": { "element": {"#": "inputCheckboxSkin"} } },
+
+    "inputRadio1": {
+        "prototype": "montage/ui/input-radio.reel",
+        "properties": { "element": {"#": "inputRadio1"} } },
+    "inputRadio2": {
+        "prototype": "montage/ui/input-radio.reel",
+        "properties": { "element": {"#": "inputRadio2"} } },
+    "inputRadio3": {
+        "prototype": "montage/ui/input-radio.reel",
+        "properties": { "element": {"#": "inputRadio3"} } },
+    "inputRadio1Skin": {
+        "prototype": "montage/ui/input-radio.reel",
+        "properties": { "element": {"#": "inputRadio1Skin"} } },
+    "inputRadio2Skin": {
+        "prototype": "montage/ui/input-radio.reel",
+        "properties": { "element": {"#": "inputRadio2Skin"} } },
+    "inputRadio3Skin": {
+        "prototype": "montage/ui/input-radio.reel",
+        "properties": { "element": {"#": "inputRadio3Skin"} } },
+   
+    "inputText": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": { "element": {"#": "inputText"} } },
+    "inputTextSkin": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": { "element": {"#": "inputTextSkin"} } },
+    
+    "textarea": {
+        "prototype": "montage/ui/textarea.reel",
+        "properties": { "element": {"#": "textarea"} } },
+    "textareaSkin": {
+        "prototype": "montage/ui/textarea.reel",
+        "properties": { "element": {"#": "textareaSkin"} } },
+    
+    "select": {
+        "prototype": "montage/ui/select.reel",
+        "properties": { "element": {"#": "select"} } },
+    "selectSkin": {
+        "prototype": "montage/ui/select.reel",
+        "properties": { "element": {"#": "selectSkin"} } },
+    
+    "textSlider": {
+        "prototype": "montage/ui/text-slider.reel",
+        "properties": { "element": {"#": "textSlider"} } },
+    "textSliderSkin": {
+        "prototype": "montage/ui/text-slider.reel",
+        "properties": { "element": {"#": "textSliderSkin"} } },
+    
+    "inputRange": {
+        "prototype": "montage/ui/input-range.reel",
+        "properties": { "element": {"#": "inputRange"} } },
+    "inputRangeSkin": {
+        "prototype": "montage/ui/input-range.reel",
+        "properties": { "element": {"#": "inputRangeSkin"} } },
+    
+    "progress": {
+        "prototype": "montage/ui/progress.reel",
+        "properties": { "element": {"#": "progress"} } },
+    "progressSkin": {
+        "prototype": "montage/ui/progress.reel",
+        "properties": { "element": {"#": "progressSkin"} } }
+    
+
+    
+}

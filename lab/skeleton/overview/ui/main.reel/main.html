@@ -1,416 +1,216 @@
 <!DOCTYPE html>
 <!-- <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> -->
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
 <html>
 <head>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link rel="stylesheet" href="main.css" />
-
-    <title>Main Component</title>
-
-    <script type="text/montage-serialization">
-        {
-            "owner": {
-                "properties": {
-                    "element": {"#": "main"},
-                    "logger": {"@": "logger"}
-                }
-            },
-            "logger": {
-               "prototype": "ui/logger.reel",
-               "properties": {
-                   "element": {"#": "logger"}
-               }
-           },
-
-           "nativeAnchor": {
-               "prototype": "montage/ui/native/anchor.reel",
-               "properties": {
-                   "element": {"#": "native-anchor"},
-                   "identifier": "nativeAnchor"
-               }
-           },
-           "montageAnchor": {
-               "prototype": "montage/ui/anchor.reel",
-               "properties": {
-                   "element": {"#": "montage-anchor"},
-                   "identifier": "montageAnchor"
-               }
-           },
-
-            "nativeButton": {
-                "prototype": "montage/ui/native/button.reel",
-                "properties": {
-                    "element": {"#": "native-button"},
-                    "identifier": "nativeButton"
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "logger"}
-                    }
-                ]
-            },
-
-            "montageButton": {
-                "prototype": "montage/ui/button.reel",
-                "properties": {
-                    "element": {"#": "montage-button"},
-                    "identifier": "montageButton"
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "logger"}
-                    }
-                ]
-            },
-
-            "nativeInputCheckbox": {
-                "prototype": "montage/ui/native/input-checkbox.reel",
-                "properties": {
-                    "element": {"#": "native-input-checkbox"},
-                    "identifier": "nativeInputCheckbox"
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "logger"}
-                    }
-                ]
-            },
-            "montageInputCheckbox": {
-                "prototype": "montage/ui/input-checkbox.reel",
-                "properties": {
-                    "element": {"#": "montage-input-checkbox"},
-                    "identifier": "montageInputCheckbox"
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "logger"}
-                    }
-                ]
-            },
-
-            "nativeInputText": {
-                "prototype": "montage/ui/native/input-text.reel",
-                "properties": {
-                    "element": {"#": "native-input-text"},
-                    "identifier": "nativeInputText"
-                }
-            },
-            "montageInputText": {
-                "prototype": "montage/ui/input-text.reel",
-                "properties": {
-                    "element": {"#": "montage-input-text"},
-                    "identifier": "montageInputText"
-                }
-            },
-
-            "nativeTextarea": {
-                "prototype": "montage/ui/native/textarea.reel",
-                "properties": {
-                    "element": {"#": "native-textarea"},
-                    "identifier": "nativeTextarea"
-                }
-            },
-            "montageTextarea": {
-                "prototype": "montage/ui/textarea.reel",
-                "properties": {
-                    "element": {"#": "montage-textarea"},
-                    "identifier": "montageTextarea"
-                }
-            },
-
-            "nativeInputNumber": {
-                "prototype": "montage/ui/native/input-number.reel",
-                "properties": {
-                    "element": {"#": "native-input-number"},
-                    "identifier": "nativeInputNumber"
-                }
-            },
-            "montageInputNumber": {
-                "prototype": "montage/ui/input-number.reel",
-                "properties": {
-                    "element": {"#": "montage-input-number"},
-                    "identifier": "montageInputNumber"
-                }
-            },
-
-            "nativeInputDate": {
-                "prototype": "montage/ui/native/input-date.reel",
-                "properties": {
-                    "element": {"#": "native-input-date"},
-                    "identifier": "nativeInputDate"
-                }
-            },
-            "montageInputDate": {
-                "prototype": "montage/ui/input-date.reel",
-                "properties": {
-                    "element": {"#": "montage-input-date"},
-                    "identifier": "montageInputDate"
-                }
-            },
-
-
-            "nativeInputRadio": {
-                "prototype": "montage/ui/native/input-radio.reel",
-                "properties": {
-                    "element": {"#": "native-input-radio"},
-                    "identifier": "nativeInputRadio"
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "logger"}
-                    }
-                ]
-            },
-            "montageInputRadio": {
-                "prototype": "montage/ui/input-radio.reel",
-                "properties": {
-                    "element": {"#": "montage-input-radio"},
-                    "identifier": "montageInputRadio"
-                },
-                "listeners": [
-                    {
-                        "type": "action",
-                        "listener": {"@": "logger"}
-                    }
-                ]
-            },
-
-            "nativeInputRange": {
-                "prototype": "montage/ui/native/input-range.reel",
-                "properties": {
-                    "element": {"#": "native-input-range"},
-                    "identifier": "nativeInputRange"
-                }
-            },
-            "montageInputRange": {
-                "prototype": "montage/ui/input-range.reel",
-                "properties": {
-                    "element": {"#": "montage-input-range"}
-                }
-            },
-
-
-            "nativeProgress": {
-                "prototype": "montage/ui/native/progress.reel",
-                "properties": {
-                    "element": {"#": "native-progress"},
-                    "identifier": "nativeProgress"
-                }
-            },
-            "montageProgress": {
-                "prototype": "montage/ui/progress.reel",
-                "properties": {
-                    "element": {"#": "montage-progress"},
-                    "identifier": "montageProgress"
-                }
-            },
-
-            "nativeSelect": {
-                "prototype": "montage/ui/native/select.reel",
-                "properties": {
-                    "element": {"#": "native-select"},
-                    "identifier": "nativeSelect"
-                }
-            },
-            "montageSelect": {
-                "prototype": "montage/ui/select.reel",
-                "properties": {
-                    "element": {"#": "montage-select"},
-                    "identifier": "montageSelect"
-                }
-            }
-
-        }
-    </script>
-
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="main.css">
+    <link rel="stylesheet" href="../../assets/style/skin.css">
+    <link rel="serialization" type="text/montage-serialization" href="main.json">
 </head>
-<body>
+<body data-montage-id="main">
 
-    <div data-montage-id="main" class="main">
-        <h1>Montage Components Overview</h1>
-
-        <table class="bordered-table">
-            <thead>
-                <tr>
-                    <th>Component</th>
-                    <th>Native</th>
-                    <th>Montage</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>
-                        Anchor
-                    </td>
-                    <td>
-                        <a target="_blank" data-montage-id="native-anchor" href="http://www.google.com">Native</a>
-                    </td>
-                    <td>
-                        <a target="_blank" data-montage-id="montage-anchor" href="http://www.google.com">Montage</a>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Button
-                    </td>
-                    <td>
-                        <button data-montage-id="native-button">Native Button</button>
-                    </td>
-                    <td>
-                        <button data-montage-id="montage-button">Montage Button</button>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Input Text
-                    </td>
-                    <td>
-                        <input type="text" data-montage-id="native-input-text" placeholder="Native InputText" />
-                    </td>
-                    <td>
-                        <input type="text" data-montage-id="montage-input-text" placeholder="Montage InputText" />
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Textarea
-                    </td>
-                    <td>
-                        <textarea data-montage-id="native-textarea" placeholder="Native InputText" style="width: 200px; height: 50px;">Native Textarea</textarea>
-                    </td>
-                    <td>
-                        <textarea data-montage-id="montage-textarea" placeholder="Montage InputText" style="width: 200px; height: 50px;">Montage Textarea</textarea>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Input Number
-                    </td>
-                    <td>
-                        <input type="number" data-montage-id="native-input-number" value="100" />
-                    </td>
-                    <td>
-                        <input type="number" data-montage-id="montage-input-number" value="100" />
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Input Date
-                    </td>
-                    <td>
-                        <input type="date" data-montage-id="native-input-date" value="" />
-                    </td>
-                    <td>
-                        <input type="date" data-montage-id="montage-input-date" value="" />
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Input Checkbox
-                    </td>
-                    <td>
-                        <label><input type="checkbox" data-montage-id="native-input-checkbox" />Native Checkbox</label>
-                    </td>
-                    <td>
-                        <label><input type="checkbox" data-montage-id="montage-input-checkbox" />Montage Checkbox</label>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Input Radio
-                    </td>
-                    <td>
-                        <label><input type="radio" data-montage-id="native-input-radio" />Native RadioButton</label>
-                    </td>
-                    <td>
-                        <label><input type="radio" data-montage-id="montage-input-radio" />Montage RadioButton</label>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Input Range
-                    </td>
-                    <td>
-                        <input type="range" id="native-input-range" data-montage-id="native-input-range" value="50" min="0" max="100" />
-                    </td>
-                    <td>
-                        <input type="range" id="montage-input-range" data-montage-id="montage-input-range" value="50" min="0" max="100" />
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Select
-                    </td>
-                    <td>
-                        <select data-montage-id="native-select">
-                            <option value="AZ">Arizona</option>
-                            <option value="AL">Alabama</option>
-                            <option value="CA">California</option>
-                            <option value="HI">Hawaii</option>
-                            <option value="NY">New York</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select data-montage-id="montage-select">
-                            <option value="AZ">Arizona</option>
-                            <option value="AL">Alabama</option>
-                            <option value="CA">California</option>
-                            <option value="HI">Hawaii</option>
-                            <option value="NY">New York</option>
-                        </select>
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Progress
-                    </td>
-                    <td>
-                        <progress data-montage-id="native-progress" value="80" max="100">Not supported</progress>
-                    </td>
-                    <td>
-                        <progress data-montage-id="montage-progress" value="80" max="100" style="width: 300px;" />
-                    </td>
-                </tr>
-
-                <tr>
-                    <td>
-                        Image
-                    </td>
-                    <td>
-                        <img  data-montage-id="native-image" src="montage-logo.png" style="width: 200px; height: 200px;" />
-                    </td>
-                    <td>
-                        <img  data-montage-id="native-image" src="montage-logo.png" style="width: 200px; height: 200px;" />
-                    </td>
-                </tr>
-
-            </tbody>
-        </table>
-
-
-        <div data-montage-id="logger" class="logger"></div>
-
-
-    </div>
-
+    <h1>Skeleton<span class="logo"></span><span class="txt">Overview</span></h1>
+        
+    <table>
+        <thead>
+            <tr>
+                <th>montage/ui/<span class="hl">xxx</span>.reel</th>
+                <th><span class="hl">Skeleton</span></th>
+                <th>Skeleton + <span class="hl">Skin</span></th>
+                <th>montage/ui/<span class="hl">native</span>/</th>
+            </tr>
+        </thead>
+        <tbody>
+                        
+            <tr>
+                <td>
+                    button
+                </td>
+                <td>
+                    <button data-montage-id="button">Button</button>
+                </td>
+                <td>
+                    <button data-montage-id="buttonSkin" class="skin">Button</button>
+                </td>
+                <td>
+                    <button>Button</button>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    input-checkbox
+                </td>
+                <td>
+                    <input type="checkbox" checked data-montage-id="inputCheckbox" />
+                </td>
+                <td>
+                    <input type="checkbox" checked data-montage-id="inputCheckboxSkin" class="skin" />
+                </td>
+                <td>
+                    <input type="checkbox" checked />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    input-radio
+                </td>
+                <td>
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio1" checked />
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio2" />
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio3" />
+                </td>
+                <td>
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio1Skin" checked class="skin" />
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio2Skin" class="skin" />
+                    <input type="radio" name="radio-montage" data-montage-id="inputRadio3Skin" class="skin" />
+                </td>
+                <td>
+                    <input type="radio" name="radio-native" checked />
+                    <input type="radio" name="radio-native" />
+                    <input type="radio" name="radio-native" />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    select
+                </td>
+                <td>
+                    <select data-montage-id="select">
+                        <option value="AZ">Arizona</option>
+                        <option value="AL">Alabama</option>
+                        <option value="CA">California</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="NY">New York</option>
+                    </select>
+                </td>
+                <td>
+                    <select data-montage-id="selectSkin" class="skin">
+                        <option value="AZ">Arizona</option>
+                        <option value="AL">Alabama</option>
+                        <option value="CA">California</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="NY">New York</option>
+                    </select>
+                </td>
+                <td>
+                    <select>
+                        <option value="AZ">Arizona</option>
+                        <option value="AL">Alabama</option>
+                        <option value="CA">California</option>
+                        <option value="HI">Hawaii</option>
+                        <option value="NY">New York</option>
+                    </select>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    input-text
+                </td>
+                <td>
+                    <input data-montage-id="inputText" type="text" placeholder="Text Input" />
+                </td>
+                <td>
+                    <input data-montage-id="inputTextSkin" type="text" placeholder="Text Input" class="skin" />
+                </td>
+                <td>
+                    <input type="text" placeholder="Text Input" />
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    textarea
+                </td>
+                <td>
+                    <textarea data-montage-id="textarea" placeholder="Textarea">Textarea</textarea>
+                </td>
+                <td>
+                    <textarea data-montage-id="textareaSkin" placeholder="Textarea" class="skin">Textarea</textarea>
+                </td>
+                <td>
+                    <textarea placeholder="Textarea">Textarea</textarea>
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    text-slider
+                </td>
+                <td>
+                    <span data-montage-id="textSlider"></span>
+                </td>
+                <td>
+                    <span data-montage-id="textSliderSkin" class="skin"></span>
+                </td>
+                <td>                    
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    input-range
+                </td>
+                <td>
+                    <input type="range" data-montage-id="inputRange" value="50" min="0" max="100" />
+                </td>
+                <td>
+                    <input type="range" data-montage-id="inputRangeSkin" value="50" min="0" max="100" class="skin" />
+                </td>
+                <td>
+                    <input type="range" value="50" min="0" max="100" /> 
+                </td>
+            </tr>
+            
+            <tr>
+                <td>
+                    progress
+                </td>
+                <td>
+                    <progress data-montage-id="progress" value="30" max="100" />
+                </td>
+                <td>
+                    <progress data-montage-id="progressSkin" value="30" max="100" class="skin" />
+                </td>
+                <td>
+                    <progress value="30" max="100" />
+                </td>
+            </tr>
+                        
+        </tbody>
+    </table>
+        
 </body>
 </html>

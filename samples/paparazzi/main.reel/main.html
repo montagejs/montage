@@ -1,0 +1,188 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <head>
+        <link rel="stylesheet" href="main.css" />
+        <link rel="stylesheet" href="button.css" />
+        <link rel="stylesheet" href="select.css" />
+
+        <script type="text/montage-serialization">
+            {
+                "owner": {
+                    "prototype": "main.reel",
+                    "properties": {
+                        "element": {"#": "paparazzi" },
+                        "flash": {"#": "flash"},
+                        "countdown": {"@": "countdown"},
+                        "camera": {"@": "camera"},
+                        "gallery": {"@": "gallery"},
+                        "filterGallery": {"@": "filterGallery"},
+                        "filterSelect": {"@": "filterSelect"}
+                    }
+                },
+
+                "camera": {
+                    "prototype": "filtered-camera.reel",
+                    "properties": {
+                        "element": {"#": "camera" }
+                    },
+                    "bindings": {
+                        "filterIndex": { "<->": "@filterGallery.selectedFilterIndex" }
+                    },
+                    "listeners": [
+                        {
+                            "type": "filtersloaded",
+                            "listener": {"@": "owner"},
+                            "capture": false
+                        }
+                    ]
+                },
+
+                "filterGallery": {
+                    "prototype": "filter-gallery.reel",
+                    "properties": {
+                        "element": {"#": "filterGallery" }
+                    },
+                    "bindings": {
+                        "filters": { "<-": "@camera.filters" }
+                    }
+                },
+
+                "snapshotButton": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "snapshotButton"},
+                        "identifier": "snapshot"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"},
+                            "capture": false
+                        }
+                    ]
+                },
+
+                "filterSelect": {
+                    "prototype": "montage/ui/select.reel",
+                    "properties": {
+                        "element": {"#": "filterSelect"},
+                        "identifier": "filterSelect",
+                        "textPropertyPath": "name",
+                        "valuePropertyPath": "name"
+                    },
+                    "bindings": {
+                        "contentController": { "<-": "@filterGallery.filterController" }
+                    }
+                },
+
+                "gallery": {
+                    "prototype": "gallery.reel",
+                    "properties": {
+                        "element": {"#": "gallery"}
+                    }
+                },
+
+                "flashCheckbox": {
+                    "prototype": "montage/ui/input-checkbox.reel",
+                    "properties": {
+                        "element": {"#": "flashCheckbox"}
+                    },
+                    "bindings": {
+                        "checked": { "<->": "@owner.doFlash" }
+                    }
+                },
+
+                "countdown": {
+                    "prototype": "montage/ui/dynamic-text.reel",
+                    "properties": {
+                        "element": {"#": "countdown"}
+                    }
+                },
+
+                "nextFilter": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "nextFilter"},
+                        "identifier": "nextFilter"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"},
+                            "capture": false
+                        }
+                    ]
+                },
+
+                "prevFilter": {
+                    "prototype": "montage/ui/button.reel",
+                    "properties": {
+                        "element": {"#": "prevFilter"},
+                        "identifier": "prevFilter"
+                    },
+                    "listeners": [
+                        {
+                            "type": "action",
+                            "listener": {"@": "owner"},
+                            "capture": false
+                        }
+                    ]
+                }
+            }
+        </script>
+    </head>
+    <body>
+        <section id="paparazzi" class="paparazzi">
+            <section class="screen">
+                <div data-montage-id="camera" class="camera"></div>
+                <div data-montage-id="filterGallery" class="filterGallery"></div>
+            </section>
+
+            <section class="controls">
+                <button data-montage-id="prevFilter" class="button prevFilter">&larr;</button>
+                <select data-montage-id="filterSelect" class="select"></select>
+                <button data-montage-id="nextFilter" class="button nextFilter">&rarr;</button>
+                <input type="checkbox" data-montage-id="flashCheckbox" id="flashCheckbox"><label for="flashCheckbox">Flash?</label>
+                <div class="divider"></div>
+                <button data-montage-id="snapshotButton" class="button action">Snapshot!</button>
+            </section>
+
+            <section data-montage-id="gallery"></section>
+
+            <section data-montage-id="flash" class="flash-overlay">
+                <div data-montage-id="countdown" class="countdown">3</div>
+            </section>
+        </section>
+    </body>
+</html>

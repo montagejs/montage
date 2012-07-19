@@ -1,0 +1,377 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+    <head>
+    	<meta charset="utf-8">
+        <link rel="stylesheet" href="calculator.css"/>
+        <script type="text/montage-serialization">
+        {
+            "memoryClearRecallButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_MR_MC"},
+                    "identifier": "memoryClearRecall"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    },
+                    {
+                        "type": "hold",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "MemoryAddButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_M_add"},
+                    "identifier": "memoryAdd"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "nineButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_9"},
+                    "identifier": "nine"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "eightButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_8"},
+                    "identifier": "eight"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "sevenButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_7"},
+                    "identifier": "seven"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "sixButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_6"},
+                    "identifier": "six"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "fiveButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_5"},
+                    "identifier": "five"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "fourButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_4"},
+                    "identifier": "four"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "threeButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_3"},
+                    "identifier": "three"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "twoButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_2"},
+                    "identifier": "two"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "oneButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_1"},
+                    "identifier": "one"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "zeroButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_0"},
+                    "identifier": "zero"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "decimalButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_dot"},
+                    "identifier": "decimal"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "clearButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_DEL"},
+                    "identifier": "clear"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    },
+                    {
+                        "type": "hold",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "plusButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_plus"},
+                    "identifier": "plus"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "divideButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_divide"},
+                    "identifier": "divide"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "minusButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_minus"},
+                    "identifier": "minus"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "multiplyButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_x"},
+                    "identifier": "multiply"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "equalButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_equal"},
+                    "identifier": "equal"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "memoryMinusButton": {
+                "prototype": "montage/ui/button.reel",
+                "properties": {
+                    "element": {"#": "_M_min"},
+                    "identifier": "memoryMinus"
+                },
+                "listeners": [
+                    {
+                        "type": "action",
+                        "listener": {"@": "owner"}
+                    }
+                ]
+            },
+            "memoryCondition": {
+                "prototype": "montage/ui/condition.reel",
+                "properties": {
+                    "element": {"#": "MEM-indicator"}
+                },
+                "bindings": {
+                    "condition": {"<-": "@owner.memoryHasValue"}
+                }
+            },
+            "owner": {
+                "prototype": "components/calculator.reel",
+                "properties": {
+                    "element": {"#": "calculator"},
+                    "LEDElement": {"#": "led"},
+                    "currentNumberElement": {"#": "currentEntry"},
+                    "currentResultElement": {"#": "ledRes"}
+                }
+            }
+        }
+        </script>
+    </head>
+    <body>
+        <div data-montage-id="calculator" >
+            <div  class="calc-container" >
+                <div class="cal-display">
+                    <div data-montage-id="MEM-indicator" class="memory-value">
+                        M
+                    </div>
+                    <div class="cal-displayfield1" data-montage-id="currentEntry">0</div>
+                    <div class="led-container">
+                        <div class="led-entries" data-montage-id="ledRes"></div>
+                        <div class="led-entries" data-montage-id="led">0</div>
+                    </div>
+                </div>
+                <div class="table-container">
+                    <div  class="table-style">
+                        <div class="calc-row">
+                            <div class="calc-cell" ><div data-montage-id="_M_add" class="button MEM cal-button-operators">m+</div></div>
+                            <div class="calc-cell" ><div data-montage-id="_M_min" class="button MEM cal-button-operators">m-</div></div>
+                            <div class="calc-cell" ><div data-montage-id="_MR_MC" class="button MEM cal-button-operators MR-MC"><span class="MR">mr</span><span class="MC">mc</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_divide" class="button ARITH cal-button-operators divide">÷</div></div>
+                        </div>
+                        <div class="calc-row">
+                            <div class="calc-cell" ><div data-montage-id="_1" class="button cal-button-digits"><span class="fontGradient">1</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_2" class="button cal-button-digits"><span class="fontGradient">2</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_3" class="button cal-button-digits"><span class="fontGradient">3</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_x" class="button ARITH cal-button-operators">×</div></div>
+                        </div>
+                        <div class="calc-row">
+                            <div class="calc-cell" ><div data-montage-id="_4" class="button cal-button-digits"><span class="fontGradient">4</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_5" class="button cal-button-digits"><span class="fontGradient">5</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_6" class="button cal-button-digits"><span class="fontGradient">6</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_plus" class="button ARITH cal-button-operators">+</div></div>
+                        </div>
+                        <div class="calc-row">
+                            <div class="calc-cell" ><div data-montage-id="_7" class="button cal-button-digits"><span class="fontGradient">7</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_8" class="button cal-button-digits"><span class="fontGradient">8</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_9" class="button cal-button-digits"><span class="fontGradient">9</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_minus" class="button ARITH cal-button-operators">−</div></div>
+                        </div>
+                        <div class="calc-row">
+                            <div class="calc-cell" ><div data-montage-id="_DEL" class="button DEL cal-button-operators"><span class="CLEAR fontGradient">C</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_0" class="button cal-button-digits"><span class="fontGradient">0</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_dot" class="button cal-button-digits"><span class="fontGradient">•</span></div></div>
+                            <div class="calc-cell" ><div data-montage-id="_equal" class="button EQUAL cal-button-operators">=</div></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

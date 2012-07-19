@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /*global Element,Components,Touch */
 /**
  *
@@ -137,17 +162,14 @@ Montage.defineProperty(Object.prototype, "dispatchEventNamed", {
 
 var EventListenerDescriptor = Montage.create(Montage, {
     type: {
-        serializable: true,
         value: null
     },
 
     listener: {
-        serializable: "reference",
         value: null
     },
 
     capture: {
-        serializable: true,
         value: null
     }
 });
@@ -412,66 +434,82 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             // Note I think it may be implementation specific how these are implemented
             // so I'd rather preserve any native optimizations a browser has for
             // adding listeners to the document versus and element etc.
-            Element.prototype.nativeAddEventListener = Element.prototype.addEventListener;
+            aWindow.Element.prototype.nativeAddEventListener = aWindow.Element.prototype.addEventListener;
             Object.defineProperty(aWindow, "nativeAddEventListener", {
                 enumerable: false,
                 value: aWindow.addEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeAddEventListener = aWindow.document.addEventListener;
-            XMLHttpRequest.prototype.nativeAddEventListener = XMLHttpRequest.prototype.addEventListener;
+            aWindow.XMLHttpRequest.prototype.nativeAddEventListener = aWindow.XMLHttpRequest.prototype.addEventListener;
+            if (Worker) {
+                Worker.prototype.nativeAddEventListener = Worker.prototype.addEventListener;
+            }
 
-            Element.prototype.nativeRemoveEventListener = Element.prototype.removeEventListener;
+            aWindow.Element.prototype.nativeRemoveEventListener = aWindow.Element.prototype.removeEventListener;
             Object.defineProperty(aWindow, "nativeRemoveEventListener", {
                 enumerable: false,
                 value: aWindow.removeEventListener
             });
             Object.getPrototypeOf(aWindow.document).nativeRemoveEventListener = aWindow.document.removeEventListener;
-            XMLHttpRequest.prototype.nativeRemoveEventListener = XMLHttpRequest.prototype.removeEventListener;
+            aWindow.XMLHttpRequest.prototype.nativeRemoveEventListener = aWindow.XMLHttpRequest.prototype.removeEventListener;
+            if (Worker) {
+                Worker.prototype.nativeRemoveEventListener = Worker.prototype.removeEventListener;
+            }
 
             Object.defineProperty(aWindow, "addEventListener", {
                 enumerable: false,
-                value: (XMLHttpRequest.prototype.addEventListener =
-                        Element.prototype.addEventListener =
+                value: (aWindow.XMLHttpRequest.prototype.addEventListener =
+                        aWindow.Element.prototype.addEventListener =
                             Object.getPrototypeOf(aWindow.document).addEventListener =
                                 function(eventType, listener, useCapture) {
-                                    return defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
+                                    return aWindow.defaultEventManager.registerEventListener(this, eventType, listener, !!useCapture);
                                 })
             });
 
+            if (Worker) {
+                Worker.prototype.addEventListener = aWindow.addEventListener;
+            }
+
             Object.defineProperty(aWindow, "removeEventListener", {
                 enumerable: false,
-                value: (XMLHttpRequest.prototype.removeEventListener =
-                        Element.prototype.removeEventListener =
+                value: (aWindow.XMLHttpRequest.prototype.removeEventListener =
+                        aWindow.Element.prototype.removeEventListener =
                             Object.getPrototypeOf(aWindow.document).removeEventListener =
                                 function(eventType, listener, useCapture) {
-                                    return defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
+                                    return aWindow.defaultEventManager.unregisterEventListener(this, eventType, listener, !!useCapture);
                                 })
             });
+
+            if (Worker) {
+                Worker.prototype.removeEventListener = aWindow.removeEventListener;
+            }
+
             // In some browsers each element has their own addEventLister/removeEventListener
             // Methodology to find all elements found in Chainvas
-            if(HTMLDivElement.prototype.addEventListener !== Element.prototype.nativeAddEventListener) {
-                if (window.HTMLElement &&
-                    'addEventListener' in window.HTMLElement.prototype &&
-                    window.Components &&
-                    window.Components.interfaces
+            if(aWindow.HTMLDivElement.prototype.addEventListener !== aWindow.Element.prototype.nativeAddEventListener) {
+                if (aWindow.HTMLElement &&
+                    'addEventListener' in aWindow.HTMLElement.prototype &&
+                    aWindow.Components &&
+                    aWindow.Components.interfaces
                 ) {
                     var candidate, candidatePrototype;
+
                     for(candidate in Components.interfaces) {
                         if(candidate.match(/^nsIDOMHTML\w*Element$/)) {
                             candidate = candidate.replace(/^nsIDOM/, '');
                             if(candidate = window[candidate]) {
                                 candidatePrototype = candidate.prototype;
                                 candidatePrototype.nativeAddEventListener = candidatePrototype.addEventListener;
-                                candidatePrototype.addEventListener = Element.prototype.addEventListener;
+                                candidatePrototype.addEventListener = aWindow.Element.prototype.addEventListener;
                                 candidatePrototype.nativeRemoveEventListener = candidatePrototype.removeEventListener;
-                                candidatePrototype.removeEventListener = Element.prototype.removeEventListener;
+                                candidatePrototype.removeEventListener = aWindow.Element.prototype.removeEventListener;
                             }
                         }
                     }
                 }
             }
 
-            defaultEventManager = exports.defaultEventManager = this;
+            defaultEventManager = aWindow.defaultEventManager = exports.defaultEventManager = this;
             this._registeredWindows.push(aWindow);
 
             this._windowsAwaitingFinalRegistration[aWindow.uuid] = aWindow;
@@ -595,10 +633,16 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
     */
     registeredEventListenersForEventType_onTarget_: {
         enumerable: false,
-        value: function(eventType, target) {
+        value: function(eventType, target, application) {
 
-            var eventRegistration = this.registeredEventListeners[eventType],
+            var eventRegistration,
                 targetRegistration;
+
+            if (target === application) {
+                eventRegistration = application.eventManager.registeredEventListeners[eventType];
+            } else {
+                eventRegistration = this.registeredEventListeners[eventType];
+            }
 
             if (!eventRegistration) {
                 return null;
@@ -1786,7 +1830,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                     } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                         jListener.handleEvent(mutableEvent);
                     } else if (typeof jListener === FUNCTION_TYPE) {
-                        jListener.call(jListener, mutableEvent);
+                        jListener.call(iTarget, mutableEvent);
                     }
                 }
             }
@@ -1812,7 +1856,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                             } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                                 jListener.handleEvent(mutableEvent);
                             } else if (typeof jListener === FUNCTION_TYPE) {
-                                jListener.call(jListener, mutableEvent);
+                                jListener.call(iTarget, mutableEvent);
                             }
                         }
 
@@ -1824,7 +1868,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                             } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                                 jListener.handleEvent(mutableEvent);
                             } else if (typeof jListener === FUNCTION_TYPE) {
-                                jListener.call(jListener, mutableEvent);
+                                jListener.call(iTarget, mutableEvent);
                             }
                         }
 
@@ -1857,7 +1901,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                         jListener[bubbleMethodName](mutableEvent);
                     } else if (typeof jListener.handleEvent === FUNCTION_TYPE) {
                         jListener.handleEvent(mutableEvent);
-                    } else if (typeof iTarget === FUNCTION_TYPE) {
+                    } else if (typeof jListener === FUNCTION_TYPE) {
                         jListener.call(iTarget, mutableEvent);
                     }
                 }
@@ -1949,6 +1993,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
             var targetCandidate  = target,
                 targetView = targetCandidate && targetCandidate.defaultView ? targetCandidate.defaultView : window,
                 targetDocument = targetView.document ? targetView.document : document,
+                targetApplication = this.application,
                 previousBubblingTarget,
                 eventPath = [];
 
@@ -1962,11 +2007,14 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
                 // use the structural DOM hierarchy until we run out of that and need
                 // to give listeners on document, window, and application a chance to respond
                 switch (targetCandidate) {
-                    case this.application:
-                        targetCandidate = null;
+                    case targetApplication:
+                        targetCandidate = targetCandidate.parentApplication;
+                        if (targetCandidate) {
+                            targetApplication = targetCandidate;
+                        }
                         break;
                     case targetView:
-                        targetCandidate = this.application;
+                        targetCandidate = targetApplication;
                         break;
                     case targetDocument:
                         targetCandidate = targetView;
@@ -1979,7 +2027,7 @@ var EventManager = exports.EventManager = Montage.create(Montage,/** @lends modu
 
                         // Run out of hierarchy candidates? go up to the application
                         if (!targetCandidate) {
-                            targetCandidate = this.application;
+                            targetCandidate = targetApplication;
                         }
 
                         break;

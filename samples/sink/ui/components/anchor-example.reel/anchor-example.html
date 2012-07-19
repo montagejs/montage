@@ -1,0 +1,367 @@
+<!doctype html>
+<!-- <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> -->
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Anchor Example</title>
+    <script type="text/montage-serialization">{
+
+
+    "link1" : {
+        "prototype": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "link1"}
+        },
+        "bindings": {
+            "textContent": {"<-": "@linkTextInput.value"},
+            "href": {"<-": "@urlTextInput.value"}
+        }
+    },
+
+    "linkTextInput": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "linkText"},
+            "value": "Motorola"
+        }
+    },
+
+    "urlTextInput": {
+        "prototype": "montage/ui/input-text.reel",
+        "properties": {
+            "element": {"#": "linkURL"},
+            "value": "http://www.motorola.com"
+        }
+    },
+
+    "data": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"<-": "@owner.data"}
+        }
+    },
+
+    "list1": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "data"}
+        }
+    },
+
+    "link": {
+        "prototype": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {"<-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"<-": "@list1.objectAtCurrentIteration.src"}
+        }
+    },
+
+    "desc": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {"<-": "@list1.objectAtCurrentIteration.description"}
+        }
+    },
+
+    "anchorAccordion1": {
+        "prototype": "ui/accordion.reel",
+        "properties": {
+            "element": {"#": "anchorAccordion1"}
+        }
+    },
+    "anchorAccordion2": {
+        "prototype": "ui/accordion.reel",
+        "properties": {
+            "element": {"#": "anchorAccordion2"}
+        }
+    },
+
+
+    "owner": {
+        "prototype": "ui/components/image-example.reel[AnchorExample]",
+        "properties": {
+            "element": {"#": "example-root"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        }
+    }
+
+    }</script>
+
+    <style>
+        .thumb {
+            width: 48px;
+            height: 48px;
+            border: 5px solid #fff;
+        }
+        .thumbs-list .selected {
+            border: 5px solid #FE4365;
+        }
+        .img-main {
+            width: 480px;
+            height: 480px;
+        }
+
+        a[icon="external"] {
+           padding-right: 20px;
+           background: transparent url(../sink/images/external.gif) no-repeat center right;
+           color: red;
+        }
+    </style>
+
+
+</head>
+<body>
+    <div data-montage-id="example-root">
+        <div class="row">
+            <div class="span12">
+                <h3>Anchor</h3>
+                <p>
+                    The Anchor component wraps an <a href="http://dev.w3.org/html5/spec/the-a-element.html#the-a-element" target="_blank">&lt;a> element</a> and exposes its standard attributes as component properties.
+                    </p>
+            </div>
+        </div>
+
+
+
+                <div class="row">
+                    <div class="span12">
+
+                        <h4>Example - binding to Anchor properties</h4>
+<!--                                     <p>
+                                        The <code>textContent</code> and <code>href</code> properties of the Anchor component below are bound to the values of the two input text fields. Changing the text in either field updates the anchor's text and link. </p> -->
+                        <div class="demo">
+                            Link text: <input data-montage-id="linkText" autofocus type="text" name="" value="">
+                            URL: <input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://...">
+                            <p style="margin-top: 10px;"><a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external" style="font-size: 14pt;">Motorola</a></p>
+                        </div>
+
+
+                        <ul data-montage-id="anchorAccordion1" class="accordion">
+                            <li class="accordion-group">
+                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                 <div class="accordion-inner montage-hidden" >
+                                     <pre class="prettyprint" >
+Link text: &lt;input data-montage-id="linkText" autofocus type="text" name="" value=""&gt;
+URL: &lt;input data-montage-id="linkURL" type="text" name="" value="" placeholder="http://..."&gt;
+
+&lt;p&gt;&lt;a href="http://www.motorola.com" data-montage-id="link1" target="_blank" icon="external"&gt;Motorola&lt;/a&gt;&lt;/p&gt;
+                                    </pre>
+                                 </div>
+                             </li>
+                             <li class="accordion-group">
+                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                 <div class="accordion-inner montage-hidden">
+                                     <pre class="prettyprint" >
+{
+"link1" : {
+   "prototype": "montage/ui/anchor.reel",
+   "properties": {
+       "element": {"#": "link1"}
+   },
+   "bindings": {
+       "textContent": {"&lt;&lt;-&gt;": "@linkTextInput.value"},
+       "href": {"&lt;&lt;-&gt;": "@urlTextInput.value"}
+   }
+},
+
+"linkTextInput": {
+   "prototype": "montage/ui/input-text.reel",
+   "properties": {
+       "element": {"#": "linkText"},
+       "value": "Motorola"
+   }
+},
+
+"urlTextInput": {
+   "prototype": "montage/ui/input-text.reel",
+   "properties": {
+       "element": {"#": "linkURL"},
+       "value": "http://www.motorola.com"
+   }
+}
+}
+              </pre>
+
+                                 </div>
+                             </li>
+                             <li class="accordion-group">
+                                 <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
+                                 <div class="accordion-inner montage-hidden">
+                                     <pre class="prettyprint" >
+a[icon="external"] {
+  padding-right: 20px;
+  background: transparent url(../sink/images/external.gif) no-repeat center right;
+  color: red;
+}
+                                     </pre>
+                                 </div>
+                             </li>
+                         </ul>
+
+
+                        <h4>Generating a list of links</h4>
+                        <p>This example generates uses the Anchor and Repetition components to generate a table of links.</p>
+
+                        <div class="demo">
+                            <table data-montage-id="list1" class="bordered-table">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Description</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-montage-id="table-row">
+                                    <tr>
+                                        <td><a data-montage-id="link" target="_blank"></a></td>
+                                        <td><span data-montage-id="desc"></span></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <ul data-montage-id="anchorAccordion2" class="accordion">
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
+                                <div class="accordion-inner montage-hidden" >
+                                    <pre class="prettyprint" >
+&lt;table data-montage-id="list1" class="bordered-table"&gt;
+    &lt;thead&gt;
+        &lt;tr&gt;
+            &lt;th&gt;Name&lt;/th&gt;
+            &lt;th&gt;Description&lt;/th&gt;
+        &lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody data-montage-id="table-row"&gt;
+        &lt;tr&gt;
+            &lt;td&gt;&lt;a data-montage-id="link" target="_blank"&gt;&lt;/a&gt;&lt;/td&gt;
+            &lt;td&gt;&lt;span data-montage-id="desc"&gt;&lt;/span&gt;&lt;/td&gt;
+        &lt;/tr&gt;
+    &lt;/tbody&gt;
+&lt;/table&gt;
+            </pre>
+                                </div>
+                            </li>
+                            <li class="accordion-group">
+                                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
+                                <div class="accordion-inner montage-hidden">
+                                    <pre class="prettyprint" >
+{
+    "data": {
+        "prototype": "montage/ui/controller/array-controller",
+        "properties": {
+            "selectObjectsOnAddition": true,
+            "automaticallyOrganizeObjects": true
+        },
+        "bindings": {
+            "content": {"&lt;-": "@owner.data"}
+        }
+    },
+
+    "list1": {
+        "prototype": "montage/ui/repetition.reel",
+        "properties": {
+            "element": {
+                "#": "table-row"
+            },
+            "isSelectionEnabled": true,
+            "contentController": {"@": "data"},
+            "axis": "horizontal"
+        }
+    },
+
+    "link": {
+        "prototype": "montage/ui/anchor.reel",
+        "properties": {
+            "element": {"#": "link"}
+        },
+        "bindings": {
+            "href": {"&lt;-": "@list1.objectAtCurrentIteration.href"},
+            "textContent": {"&lt;-": "@list1.objectAtCurrentIteration.src"}
+        }
+    },
+
+    "desc": {
+        "prototype": "montage/ui/dynamic-text.reel",
+        "properties": {
+            "element": {"#": "desc"}
+        },
+        "bindings": {
+            "value": {"&lt;-": "@list1.objectAtCurrentIteration.description"}
+        }
+    },
+
+
+    "owner": {
+        "prototype": "ui/components/image-example.reel[AnchorExample]",
+        "properties": {
+            "element": {"#": "example-root"},
+            "data": [
+            {"src": "images/IMG_1.jpg", "description": "Lorem ipsum dolor sit amet", "href": "http://en.wikipedia.org/wiki/Denver_and_Rio_Grande_Western_Railroad"},
+            {"src": "images/IMG_2.jpg", "description": "Sed ut perspiciatis unde omnis iste natus", "href": "http://rgsrr.home.comcast.net/~rgsrr/"},
+            {"src": "images/IMG_3.jpg", "description": "At vero eos et accusamus et iusto odio dignissimos", "href": "http://www.riograndescenicrailroad.com/aboutus/history.html"}
+            ]
+        }
+    }
+}
+             </pre>
+
+                                </div>
+                            </li>
+                        </ul>
+
+
+                    <section>
+                        <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/anchor-example.reel" target="_blank">View source on GitHub</a>
+                    </section>
+
+    </div>
+
+</body>
+</html>

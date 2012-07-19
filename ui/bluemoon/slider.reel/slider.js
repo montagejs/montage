@@ -1,13 +1,40 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /*global WebKitPoint */
 /**
     @module "montage/ui/bluemoon/slider.reel"
     @requires montage/core/core
+    @requires montage/ui/dom
     @requires montage/ui/component
+    @requires montage/core/geometry/point
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component,
@@ -22,58 +49,47 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
     // Extra elements for rendering
 
     _bghl: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handlerbg: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _bg: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handler: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _line: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _scale: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _line2: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handler2: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handler3: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handler4: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _handlerDragArea: {
-        value: null,
-        serializable: true
+        value: null
     },
     // Slider properties
 
@@ -108,8 +124,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             this._hasTapBarToScroll = !!value;
-        },
-        serializable: true
+        }
     },
 
     _hasClickBarToScroll: {
@@ -126,8 +141,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
         },
         set: function (value) {
             this._hasClickBarToScroll = !!value;
-        },
-        serializable: true
+        }
     },
 /**
         Description TODO
@@ -147,8 +161,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 this._valueRange = null;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _maxValue: {
@@ -173,8 +186,7 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                 this._valueRange = null;
                 this.needsDraw = true;
             }
-        },
-        serializable: true
+        }
     },
 
     _valueRange: {
@@ -227,13 +239,11 @@ exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon
                     this.needsDraw = true;
                 }
             }
-        },
-        serializable: true
+        }
     },
 
     step: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     _pressed: {

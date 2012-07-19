@@ -1,8 +1,33 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /**
  @module montage/ui/controller/array-controller
  @requires montage/core/core
@@ -75,8 +100,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
             this._content = value;
 
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -96,8 +120,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      })
      */
     delegate: {
-        value: null,
-        serializable: true
+        value: null
     },
 
     /**
@@ -125,8 +148,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} true
      */
     automaticallyOrganizeObjects: {
-        value: true,
-        serializable: true
+        value: true
     },
 
     /**
@@ -157,8 +179,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this.automaticallyOrganizeObjects) {
                 this.organizeObjects();
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -189,8 +210,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             if (this.automaticallyOrganizeObjects) {
                 this.organizeObjects();
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -207,7 +227,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @version 1.0
     */
     startIndex: {
-        serializable: true,
         get: function() {
             return this._startIndex;
         },
@@ -240,7 +259,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
         @version 1.0
     */
     endIndex: {
-        serializable: true,
+
         get: function() {
             return this._endIndex;
         },
@@ -315,15 +334,15 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
 
                 // _selectedIndexes is assigned in the dispatcher because "selectedContentIndexes", "selectedObjects" and "selections" depend on _selectedIndexes, so in order to have a correct "minus" (and prevent the premature creation of those values) in the notification we need to hold back the change.
-                this.dispatchPropertyChange("selectedContentIndexes", "selectedObjects", "selections", function() {
+                this.dispatchPropertyChange("selections", "selectedContentIndexes", "selectedObjects", function() {
                     this._selectedIndexes = value;
                     this._selectedContentIndexes = newIndexes;
                     this._selectedObjects = null;
+                    console.log("selectedIndexes this._selections = null;");
                     this._selections = null;
                 });
             }
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -562,14 +581,13 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
             }
 
             // _selectedObjects is assigned in the dispatcher because "selectedContentIndexes", "selectedIndexes" and "selections" depend on _selectedObjects, so in order to have a correct "minus" (and prevent the premature creation of those values) in the notification we need to hold back the change.
-            this.dispatchPropertyChange("selectedContentIndexes", "selectedIndexes", "selections", function() {
+            this.dispatchPropertyChange("selections", "selectedContentIndexes", "selectedIndexes", function() {
                 this._selectedObjects = value;
                 this._selectedContentIndexes = null;
                 this._selectedIndexes = null;
                 this._selections = null;
             });
-        },
-        serializable: true
+        }
     },
 
     /**
@@ -638,7 +656,7 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
 
             this._selectedContentIndexes = value;
 
-            this.dispatchPropertyChange("selectedIndexes", "selectedObjects", "selections", function() {
+            this.dispatchPropertyChange("selections", "selectedIndexes", "selectedObjects", function() {
                 this._selectedIndexes = null;
                 this._selectedObjects = null;
                 this._selections = null;
@@ -697,7 +715,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} false
      */
     selectObjectsOnAddition: {
-        serializable: true,
         value: false
     },
 
@@ -707,7 +724,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
      @default {Boolean} true
      */
     clearFilterFunctionOnAddition: {
-        serializable: true,
         value: true
     },
 
@@ -791,14 +807,16 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
     remove: {
         value: function() {
 
+            var removedObjects;
+
             if (this.selectedObjects && this.selectedObjects.length > 0) {
-                this.removeObjects.apply(this, this.selectedObjects);
+                removedObjects = this.removeObjects.apply(this, this.selectedObjects);
 
                 if (this.automaticallyOrganizeObjects) {
                     this.organizeObjects();
                 }
             }
-            // TODO what do we want to do otherwise?
+            return removedObjects;
         }
     },
 
@@ -825,27 +843,39 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                 this.organizeObjects();
             }
 
+            return objectsToRemove;
+
         }
     },
 
     removeObjectsAtSelectedIndexes: {
         value: function() {
-            this.removeObjectsAtIndexes(this.selectedIndexes);
+            return this.removeObjectsAtIndexes(this.selectedIndexes);
         }
     },
 
     removeObjectsAtIndexes: {
         value: function(indices) {
-            var remainingObjects;
+            var removedObjects,
+                remainingObjects;
+
             if(indices && indices.length > 0) {
+                removedObjects = [];
                 remainingObjects = this.content.filter(function(value, index) {
-                    return indices.indexOf(index) < 0;
+                    if (indices.indexOf(index) < 0) {
+                        return true;
+                    } else {
+                        removedObjects.push(value);
+                        return false
+                    };
                 });
                 this.content = remainingObjects;
                 if (this.automaticallyOrganizeObjects) {
                     this.organizeObjects();
                 }
             }
+
+            return removedObjects;
         }
     }
 

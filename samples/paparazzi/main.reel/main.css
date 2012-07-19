@@ -1,0 +1,162 @@
+/* <copyright>
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+/* @override http://localhost:8082/paparazzi/main.reel/main.css */
+
+html {
+    height: 100%;
+}
+
+body {
+    margin: 0;
+    height: 100%;
+    font-family: sans-serif;
+}
+
+.paparazzi {
+    height: 100%;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+}
+
+
+/* Controls ------------------------ */
+
+.controls {
+    position: relative;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    padding: 5px;
+    background: hsl(0,0%,100%);
+}
+
+.controls select {
+    margin: 0 3px;
+}
+
+.controls .prevFilter,
+.controls .nextFilter {
+    font-size: 15px;
+}
+
+.controls > input[type="checkbox"] {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin: 0 6px 0 20px;
+    border-radius: 2px;
+    border: 1px solid gainsboro;
+    background-image: -webkit-linear-gradient(top,whiteSmoke,#F1F1F1);
+    background-position: center center;
+}
+.controls > input[type="checkbox"]:hover {
+    box-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    background-color: #F8F8F8;
+    background-image: -webkit-linear-gradient(top,#f8f8f8,#f1f1f1);
+    border: 1px solid #C6C6C6;
+    color: #333;
+}
+
+.controls > input[type="checkbox"]:active {
+    background-image: -webkit-linear-gradient(top,#f6f6f6,#f1f1f1);
+    box-shadow: inset 0px 1px 2px rgba(0,0,0,0.1);
+}
+.controls > input[type="checkbox"]:checked {
+    background-image: url(icons.png), -webkit-linear-gradient(top,whiteSmoke,#F1F1F1);
+}
+
+.controls > label {
+    font-size: 13px;
+    color: #555;
+    vertical-align: middle;
+}
+
+.controls > .divider {
+    width: 0px;
+    height: 29px;
+    margin: 0 50px;
+    border-left: 1px solid hsl(0,0%,85%);
+}
+
+
+
+/* Screen ------------------------ */
+
+.screen {
+    -webkit-box-flex: 1;
+    display: -webkit-box;
+    -webkit-box-align: center;
+    -webkit-box-pack: center;
+    background: hsl(0,0%,90%);
+    box-shadow: inset 0px -2px 4px hsl(0,0%,85%);
+}
+
+
+/* Flash ------------------------ */
+
+.flash-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    pointer-events: none;
+    background-color: rgba(255, 255, 255, 0.0);
+    -webkit-transition: background-color 1s;
+}
+
+.flash-overlay.flash {
+    background-color: rgba(255, 255, 255, 1.0);
+    -webkit-transition: background-color 0s;
+}
+
+.countdown {
+    position: absolute;
+    position: relative;
+    top: 0;
+    width: 100px;
+    height: 80px;
+    margin: 0 auto;
+    border-top: none;
+    border-radius: 0 0 50% 50%;
+    text-align: center;
+    color: #fff;
+    font-weight: bold;
+    font-size: 60px;
+    background: #222;
+    -webkit-transform: translateY(-100%);
+}
+
+.showCountdown .countdown {
+    -webkit-transform: translateY(0);
+    -webkit-transition: -webkit-transform .218s cubic-bezier(0, .40, .10, 1);
+}

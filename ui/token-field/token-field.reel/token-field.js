@@ -1,8 +1,36 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
+/**
+    @module "montage/ui/token-field/token-field.reel"
+*/
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
@@ -13,23 +41,27 @@ KEY_UP = 38,
 KEY_RIGHT = 39,
 KEY_DOWN = 40;
 
-exports.TokenField = Montage.create(Component, {
+/**
+    @class module:"montage/ui/token-field/token-field.reel".TokenField
+    @extends module:montage/ui/component.Component
+*/
+exports.TokenField = Montage.create(Component, /** @lends module:"montage/ui/token-field/token-field.reel".TokenField */ {
 
-    delegate: {value: null, serializable: true},
+    delegate: {value: null},
 
-    values: {value: null, serializable: true},
+    values: {value: null},
 
     /**
     * Path to a String within an Object that is representative of the Object
     */
-    textPropertyPath: {value: null, serializable: true},
+    textPropertyPath: {value: null},
 
     /**
     * Allow ad-hoc strings (strings that do not have corresponding represented object) to be entered.
     */
-    allowAdHocValues: {value: null, serializable: true},
+    allowAdHocValues: {value: null},
 
-    placeholder: {value: null, serializable: true},
+    placeholder: {value: null},
 
 
     // private
@@ -47,12 +79,11 @@ exports.TokenField = Montage.create(Component, {
         }
     },
 
-    _tokensController: {value: null, serializable: true},
-    _tokenList: {value: null, serializable: true},
-    _autocomplete: {value: null, serializable: true},
+    _tokensController: {value: null},
+    _tokenList: {value: null},
+    _autocomplete: {value: null},
     __autocompleteValue: {value: null},
     _autocompleteValue: {
-        serializable: true,
         get: function() {
             return this.__autocompleteValue;
         },
@@ -63,7 +94,6 @@ exports.TokenField = Montage.create(Component, {
 
     __suggestedValue: {value: null},
     _suggestedValue: {
-        serializable: true,
         get: function() {
             return this.__suggestedValue;
         },

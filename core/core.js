@@ -1,16 +1,45 @@
 /* <copyright>
- This file contains proprietary software owned by Motorola Mobility, Inc.<br/>
- No rights, expressed or implied, whatsoever to this software are provided by Motorola Mobility, Inc. hereunder.<br/>
- (c) Copyright 2012 Motorola Mobility, Inc.  All Rights Reserved.
- </copyright> */
+Copyright (c) 2012, Motorola Mobility LLC.
+All Rights Reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice,
+  this list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of Motorola Mobility LLC nor the names of its
+  contributors may be used to endorse or promote products derived from this
+  software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
+LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
+CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
+SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
+INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
+CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
+ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+POSSIBILITY OF SUCH DAMAGE.
+</copyright> */
 /*global Element */
 /**
  @module montage/core/core
- @requires montage/core/shim
- @requires montage/core/uuid
- @requires montage/core/event/binding
- @requires montage/core/event/event-manager
- */
+ @requires core/shim/object
+ @requires core/shim/array
+ @requires core/shim/string
+ @requires core/extras/object
+ @requires core/extras/array
+ @requires core/extras/string
+ @requires core/extras/function
+ @requires core/extras/date
+*/
 require("core/shim/object");
 require("core/shim/array");
 require("core/shim/string");
@@ -45,22 +74,22 @@ var Object_prototype = Object.prototype;
 var Montage = exports.Montage = {};
 
 /**
-     Creates a new Montage object.
-     @function module:montage/core/core.Montage.create
-     @param {Object} aPrototype The prototype object to create the new object from. If not specified, the prototype is the Montage prototype.
-     @param {Object} [propertyDescriptor] An object that contains the initial properties and values for the new object.
-     @returns The new object
-     @example
-     <caption>Creating a "empty" Montage object, using Montage as the prototype</caption>
-     var alpha = Montage.create();
-     @example
-     <caption>Creating a new Montage component with a property descriptor object.</caption>
-     var Button = Montage.create(Component , {
+    Creates a new Montage object.
+    @function module:montage/core/core.Montage.create
+    @param {Object} aPrototype The prototype object to create the new object from. If not specified, the prototype is the Montage prototype.
+    @param {Object} [propertyDescriptor] An object that contains the initial properties and values for the new object.
+    @returns The new object
+    @example
+    <caption>Creating a "empty" Montage object, using Montage as the prototype</caption>
+    var alpha = Montage.create();
+    @example
+    <caption>Creating a new Montage component with a property descriptor object.</caption>
+    var Button = Montage.create(Component , {
         state: {
             value: null
         }
-     });
-     */
+    });
+*/
 Object.defineProperty(Montage, "create", {
     configurable: true,
     value: function(aPrototype, propertyDescriptor) {
@@ -97,19 +126,19 @@ extendedPropertyAttributes.forEach(function(name) {
 });
 
 /**
-     Defines a property on a Montage object.
-     @function module:montage/core/core.Montage.defineProperty
-     @param {Object} obj The object on which to define the property.
-     @param {String} prop The name of the property to define, or modify.
-     @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
-     @example
-     Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
-     enumerable: false,
-     serializable: true,
-     value: null,
-     writable: true
-     });
-     */
+    Defines a property on a Montage object.
+    @function module:montage/core/core.Montage.defineProperty
+    @param {Object} obj The object on which to define the property.
+    @param {String} prop The name of the property to define, or modify.
+    @param {Object} descriptor A descriptor object that defines the properties being defined or modified.
+    @example
+    Montage.defineProperty(Object.prototype, "_eventListenerDescriptors", {
+        enumerable: true | false,
+        serializable: "reference" | "value" | "auto" | false,
+        value: null,
+        writable: true | false
+    });
+*/
 Object.defineProperty(Montage, "defineProperty", {
 
     value: function(obj, prop, descriptor) {
@@ -147,6 +176,16 @@ Object.defineProperty(Montage, "defineProperty", {
         if (!descriptor.hasOwnProperty(ENUMERABLE) && prop.charAt(0) === UNDERSCORE) {
             descriptor.enumerable = false;
         }
+        if (!descriptor.hasOwnProperty(SERIALIZABLE)) {
+            if (! descriptor.enumerable) {
+                descriptor.serializable = false;
+            } else if (descriptor.get && !descriptor.set) {
+                descriptor.serializable = false;
+            } else if (descriptor.writable === false) {
+                descriptor.serializable = false;
+            }
+        }
+
         if (dependencies) {
             var i = 0,
                 independentProperty;
@@ -165,12 +204,14 @@ Object.defineProperty(Montage, "defineProperty", {
         //this is added to enable value properties with [] or Objects that are new for every instance
         if (descriptor.distinct === true && typeof descriptor.value === "object") {
             (function(prop,internalProperty, value, obj) {
-                Object.defineProperty(obj, internalProperty, {
-                    enumerable: false,
-                    configurable: true,
-                    writable: true,
-                    value: null
-                });
+                var defineInternalProperty = function(obj, internalProperty, value) {
+                    Object.defineProperty(obj, internalProperty, {
+                        enumerable: false,
+                        configurable: true,
+                        writable: true,
+                        value: value
+                    });
+                };
                 if (value.constructor === Object && Object.getPrototypeOf(value) === Object_prototype) {
                     // we have an object literal {...}
                     if (Object.keys(value).length !== 0) {
@@ -185,22 +226,43 @@ Object.defineProperty(Montage, "defineProperty", {
                                     for (k in value) {
                                         returnValue[k] = value[k];
                                     }
-                                    this[internalProperty] = returnValue;
+                                    if(!this.hasOwnProperty(internalProperty)) {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    } else {
+                                        this[internalProperty] = returnValue;
+                                    }
                                 }
                                 return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     } else {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
                             get: function() {
-                                return this[internalProperty] || (this[internalProperty] = {});
+                                var returnValue = this[internalProperty];
+                                if (!returnValue) {
+                                    returnValue = {};
+                                    if (this.hasOwnProperty(internalProperty))  {
+                                        this[internalProperty] = returnValue
+                                    } else {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    }
+                                }
+                                return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     }
@@ -219,12 +281,20 @@ Object.defineProperty(Montage, "defineProperty", {
                                     for (i = 0; typeof (k = value[i]) !== "undefined"; i++) {
                                         returnValue[i] = k;
                                     }
-                                    this[internalProperty] = returnValue;
+                                    if(!this.hasOwnProperty(internalProperty)) {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    } else {
+                                        this[internalProperty] = returnValue;
+                                    }
                                 }
                                 return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
 
@@ -232,12 +302,23 @@ Object.defineProperty(Montage, "defineProperty", {
                         Object.defineProperty(obj, prop, {
                             configurable: true,
                             get: function() {
-                                //Special case for array as isArray fails
-                                //Object_prototype.toString.call(Object.create([].__proto)) !== "[object Array]"
-                                return this[internalProperty] || (this[internalProperty] = []);
+                                var returnValue = this[internalProperty];
+                                if (!returnValue) {
+                                    returnValue = [];
+                                    if (this.hasOwnProperty(internalProperty))  {
+                                        this[internalProperty] = returnValue
+                                    } else {
+                                        defineInternalProperty(this, internalProperty, returnValue);
+                                    }
+                                }
+                                return returnValue;
                             },
                             set: function(value) {
-                                this[internalProperty] = value;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, value);
+                                } else {
+                                    this[internalProperty] = value;
+                                }
                             }
                         });
                     }
@@ -254,12 +335,20 @@ Object.defineProperty(Montage, "defineProperty", {
                                 for (k in value) {
                                     returnValue[k] = value[k];
                                 }
-                                this[internalProperty] = returnValue;
+                                if(!this.hasOwnProperty(internalProperty)) {
+                                    defineInternalProperty(this, internalProperty, returnValue);
+                                } else {
+                                    this[internalProperty] = returnValue;
+                                }
                             }
                             return returnValue;
                         },
                         set: function(value) {
-                            this[internalProperty] = value;
+                            if(!this.hasOwnProperty(internalProperty)) {
+                                defineInternalProperty(this, internalProperty, value);
+                            } else {
+                                this[internalProperty] = value;
+                            }
                         }
                     });
 
@@ -268,10 +357,23 @@ Object.defineProperty(Montage, "defineProperty", {
                     Object.defineProperty(obj, prop, {
                         configurable: true,
                         get: function() {
-                            return this[internalProperty] || (this[internalProperty] = Object.create(value.__proto__ || Object.getPrototypeOf(value)));
+                            var returnValue = this[internalProperty];
+                            if (!returnValue) {
+                                returnValue = Object.create(value.__proto__ || Object.getPrototypeOf(value));
+                                if (this.hasOwnProperty(internalProperty))  {
+                                    this[internalProperty] = returnValue
+                                } else {
+                                    defineInternalProperty(this, internalProperty, returnValue);
+                                }
+                            }
+                            return returnValue;
                         },
                         set: function(value) {
-                            this[internalProperty] = value;
+                            if(!this.hasOwnProperty(internalProperty)) {
+                                defineInternalProperty(this, internalProperty, value)
+                            } else {
+                                this[internalProperty] = value;
+                            }
                         }
                     });
                 }
@@ -283,11 +385,11 @@ Object.defineProperty(Montage, "defineProperty", {
     }});
 
 /**
-     Description Defines one or more new properties to an object, or modifies existing properties on the object.
-     @function module:montage/core/core.Montage.defineProperties
-     @param {Object} obj The object to which the properties are added.
-     @param {Object} properties An object that contains one or more property descriptor objects.
-     */
+    Description Defines one or more new properties to an object, or modifies existing properties on the object.
+    @function module:montage/core/core.Montage.defineProperties
+    @param {Object} obj The object to which the properties are added.
+    @param {Object} properties An object that contains one or more property descriptor objects.
+*/
 Object.defineProperty(Montage, "defineProperties", {value: function(obj, properties) {
     for (var property in properties) {
         if ("_bindingDescriptors" !== property) {
@@ -297,44 +399,39 @@ Object.defineProperty(Montage, "defineProperties", {value: function(obj, propert
     return obj;
 }});
 
-/**
- @private
- */
 var _defaultAccessorProperty = {
     enumerable: true,
-    configurable: true
+    configurable: true,
+    serializable: "reference"
 };
-/**
- @private
- */
 var _defaultObjectValueProperty = {
     writable: true,
     enumerable: true,
-    configurable: true
+    configurable: true,
+    serializable: "reference"
 };
-
-/**
- @private
- */
 var _defaultFunctionValueProperty = {
     writable: true,
     enumerable: false,
-    configurable: true
+    configurable: true,
+    serializable: false
 };
 
 /**
-     Adds a dependent property to another property's collection of dependencies.
-     When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
-     @function module:montage/core/core.Montage.addDependencyToProperty
-     @param {Object} obj The object containing the dependent and independent properties.
-     @param {String} independentProperty The name of the object's independent property.
-     @param {String} dependentProperty The name of the object's dependent property.
-     */
+    Adds a dependent property to another property's collection of dependencies.
+    When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
+    @function module:montage/core/core.Montage.addDependencyToProperty
+    @param {Object} obj The object containing the dependent and independent properties.
+    @param {String} independentProperty The name of the object's independent property.
+    @param {String} dependentProperty The name of the object's dependent property.
+*/
 Montage.defineProperty(Montage, "addDependencyToProperty", { value: function(obj, independentProperty, dependentProperty) {
 
     // TODO optimize this so we don't keep checking over and over again
     if (!obj._dependenciesForProperty) {
-        obj._dependenciesForProperty = {};
+        Montage.defineProperty(obj, "_dependenciesForProperty", {
+            value: {}
+        });
     }
 
     if (!obj._dependenciesForProperty[dependentProperty]) {
@@ -346,13 +443,13 @@ Montage.defineProperty(Montage, "addDependencyToProperty", { value: function(obj
 
 
 /**
-     Removes a dependent property from another property's collection of dependent properties.
-     When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
-     @function module:montage/core/core.Montage.removeDependencyFromProperty
-     @param {Object} obj The object containing the dependent and independent properties.
-     @param {String} independentProperty The name of the object's independent property.
-     @param {String} dependentProperty The name of the object's dependent property that you want to remove.
-     */
+    Removes a dependent property from another property's collection of dependent properties.
+    When the value of a dependent property changes, it generates a <code>change@independentProperty</code> event.
+    @function module:montage/core/core.Montage.removeDependencyFromProperty
+    @param {Object} obj The object containing the dependent and independent properties.
+    @param {String} independentProperty The name of the object's independent property.
+    @param {String} dependentProperty The name of the object's dependent property that you want to remove.
+*/
 Montage.defineProperty(Montage, "removeDependencyFromProperty", {value: function(obj, independentProperty, dependentProperty) {
     if (!obj._dependenciesForProperty) {
         return;
@@ -381,11 +478,11 @@ function getAttributeProperties(proto, attributeName) {
 }
 
 /**
-     Returns the names of serializable properties belonging to Montage object.
-     @function module:montage/core/core.Montage.getSerializablePropertyNames
-     @param {Object} anObject A Montage object.
-     @returns {Array} An array containing the names of the serializable properties belonging to <code>anObject</code>.
-     */
+    Returns the names of serializable properties belonging to Montage object.
+    @function module:montage/core/core.Montage.getSerializablePropertyNames
+    @param {Object} anObject A Montage object.
+    @returns {Array} An array containing the names of the serializable properties belonging to <code>anObject</code>.
+*/
 Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function(anObject) {
 
     var propertyNames = [],
@@ -403,13 +500,13 @@ Montage.defineProperty(Montage, "getSerializablePropertyNames", {value: function
 }});
 
 /**
-     Returns the attribute of a property belonging to an object.
-     @function module:montage/core/core.Montage.getPropertyAttribute
-     @param {Object} anObject A object.
-     @param {String} propertyName The name of a property belonging to <code>anObject</code>.
-     @param {String} attributeName The name of a property's attribute.
-     @returns attributes array
-     */
+    Returns the attribute of a property belonging to an object.
+    @function module:montage/core/core.Montage.getPropertyAttribute
+    @param {Object} anObject A object.
+    @param {String} propertyName The name of a property belonging to <code>anObject</code>.
+    @param {String} attributeName The name of a property's attribute.
+    @returns attributes array
+*/
 Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObject, propertyName, attributeName) {
 
     var attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
@@ -420,12 +517,12 @@ Montage.defineProperty(Montage, "getPropertyAttribute", {value: function(anObjec
     }
 }});
 
- /**
-     @function module:montage/core/core.Montage.getPropertyAttributes
-     @param {Object} anObject An object.
-     @param {String} attributeName The attribute name.
-     @returns {Object} TODO getPropertyAttributes returns description
-     */
+/**
+    @function module:montage/core/core.Montage.getPropertyAttributes
+    @param {Object} anObject An object.
+    @param {String} attributeName The attribute name.
+    @returns {Object} TODO getPropertyAttributes returns description
+*/
 Montage.defineProperty(Montage, "getPropertyAttributes", {value: function(anObject, attributeName) {
     var attributeValues = {},
         attributePropertyName = UNDERSCORE + attributeName + ATTRIBUTE_PROPERTIES,
@@ -452,10 +549,11 @@ var _functionInstanceMetadataDescriptor = {
 };
 
 /**
-     @function module:montage/core/core.Montage.getInfoForObject
-     @param {Object} object An object.
-     @returns {Object} object._montage_metadata
-     */
+    Get the metadata Montage has on the given object
+    @function module:montage/core/core.Montage.getInfoForObject
+    @param {Object} object An object.
+    @returns {Object} object._montage_metadata
+*/
 Montage.defineProperty(Montage, "getInfoForObject", {
     value: function(object) {
         var metadata;
@@ -485,21 +583,21 @@ Montage.defineProperty(Montage, "getInfoForObject", {
         }
     }
 });
+
 /**
     @function module:montage/core/core.Montage.doNothing
     @default function
-    */
-
+*/
 Object.defineProperty(Montage, "doNothing", {
     value: function() {
     }
 });
 
 /**
-    @function module:montage/core/core.Montage#self
+    @function module:montage/core/core.Montage.self
     @default function
     @returns itself
-    */
+*/
 Object.defineProperty(Montage, "self", {
     value: function() {
         return this;
@@ -508,7 +606,7 @@ Object.defineProperty(Montage, "self", {
 
 /**
     @private
-    */
+*/
 Object.defineProperty(Montage, "__OBJECT_COUNT", {
     value: 0,
     writable: true
@@ -572,8 +670,8 @@ var defaultUuidGet = function defaultUuidGet() {
 };
 
 /**
-     @private
-     */
+    @private
+*/
 Object.defineProperty(Object.prototype, "_uuid", {
     enumerable: false,
     value: null,
@@ -581,10 +679,10 @@ Object.defineProperty(Object.prototype, "_uuid", {
 });
 
 /**
-     Contains an object's unique ID.
-     @member external:Object#uuid
-     @default null
-     */
+    Contains an object's unique ID.
+    @member external:Object#uuid
+    @default null
+*/
 Object.defineProperty(Object.prototype, "uuid", {
     configurable: true,
     get: defaultUuidGet,
@@ -598,29 +696,24 @@ Montage.defineProperty(Montage, "identifier", {
 });
 
 /**
-     Returns true if two objects are equal, otherwise returns false.
-     @function module:montage/core/core.Montage#equals
-     @param {Object} anObject The object to compare for equality.
-     @returns {Boolean} Returns <code>true</code> if the calling object and <code>anObject</code> are identical and their <code>uuid</code> properties are also equal. Otherwise, returns <code>false</code>.
-     */
+    Returns true if two objects are equal, otherwise returns false.
+    @function module:montage/core/core.Montage.equals
+    @param {Object} anObject The object to compare for equality.
+    @returns {Boolean} Returns <code>true</code> if the calling object and <code>anObject</code> are identical and their <code>uuid</code> properties are also equal. Otherwise, returns <code>false</code>.
+*/
 Object.defineProperty(Montage, "equals", {
     value: function(anObject) {
         return this === anObject || this.uuid === anObject.uuid;
     }
 });
 
-
-
 /*
- * If it exists this method calls the method named with the identifier prefix.
- * Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
- * this method will try and call "bobShouldDoSomething"
+    This method calls the method named with the identifier prefix if it exists.
+    Example: If the name parameter is "shouldDoSomething" and the caller's identifier is "bob", then
+    this method will try and call "bobShouldDoSomething"
+    @function module:montage/core/core.Montage.callDelegateMethod
+    @param {string} name
 */
-
-/**
- * @function module:montage/core/core.Montage#callDelegateMethod
- * @param {string} name
- */
 Object.defineProperty(Montage, "callDelegateMethod", {
     value: function(name) {
         var delegate = this.delegate, delegateFunctionName, delegateFunction;
