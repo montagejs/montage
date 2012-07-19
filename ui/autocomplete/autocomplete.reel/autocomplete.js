@@ -499,6 +499,7 @@ var Autocomplete = exports.Autocomplete = Montage.create(TextInput, /** @lends m
             fn.call(this);
 
             if (!this._valueSyncedWithInputField) {
+
                 if(this.tokens) {
                     this.value = this.tokens.join(this.separator);
                 }

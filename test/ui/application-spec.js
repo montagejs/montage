@@ -41,7 +41,7 @@ var testPage = TestPageLoader.queueTest("application-as-application", {src: "ui/
             it("should be THE application", function() {
                 expect(testPage.test.theOne).toEqual("true");
             });
-        });
+        });        
    });
 });
 
@@ -92,4 +92,58 @@ var testPage = TestPageLoader.queueTest("application-test-subtype", {src: "ui/ap
             });
         });
     });
+});
+
+var testPage = TestPageLoader.queueTest("application-test-routing", {src: "ui/application-test/application-test-routing.html#!/weather/94087"}, function() {
+    var contentWindowLocation = testPage.iframe.contentWindow.location;
+
+    describe("ui/application-spec", function() {
+        describe("URL Routing tests", function() {
+            var application = testPage.window.document.application;
+
+            afterEach(function() {
+                application.state = {
+                    zip: null,
+                    userId: null,
+                    tag: null
+                };
+            });
+
+            it("should get data from URL fragment ", function() {
+                var state = application.state;
+                expect(state.zip).toBe("94087");
+                state.zip = "30030";
+                expect(contentWindowLocation.hash.indexOf(state.zip) >= 0).toBe(true);
+
+            });
+
+            it("should change state.userId and state.tag if url changes to /photos", function() {
+                // change the URL
+                var state = application.state;
+                contentWindowLocation.hash = "!/photos/foo/tags/SFO";
+                expect(state.userId).toBe("foo");
+                expect(state.tag).toBe("SFO");
+            });
+
+            it("should not change state if url changes to something that is not defined in the routes", function() {
+                var state = application.state;
+                // change the URL
+                contentWindowLocation.hash = "!/pictures/foo/tags/SFO";
+                // url does not match any route
+                expect(state.userId).toBeNull();
+                expect(state.tag).toBeNull();
+            });
+
+            it("should update state.userId if url matches /lists", function() {
+                // change the URL
+                var state = application.state;
+                contentWindowLocation.hash = "!/lists/john";
+                expect(state.userId).toBe("john");
+                // change to david's list
+                contentWindowLocation.hash = "!/lists/david";
+                expect(state.userId).toBe("david");
+            });
+
+        });
+   });
 });

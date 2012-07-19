@@ -55,31 +55,21 @@ POSSIBILITY OF SUCH DAMAGE.
         {
             "owner": {
                 "properties": {
-                    "element": {"#": "main"},
-                    "content": {"@": "content"},
-                    "sidebar": {"@": "sidebar"}
+                    "element": {"#": "main"}
                 }
             },
 
             "sidebar": {
                 "prototype": "ui/sidebar.reel",
                 "properties": {
-                    "element": {"#": "sidebar"},
-                    "sandbox": {"@": "owner"}
-                },
-                "bindings": {
-                    "selectedItem": {"<->": "@owner.selectedItem"}
+                    "element": {"#": "sidebar"}
                 }
             },
 
             "content": {
                 "prototype": "ui/content.reel",
                 "properties": {
-                    "element": {"#": "content"},
-                    "sandbox": {"@": "owner"}
-                },
-                "bindings": {
-                    "selectedItem": {"<->": "@owner.selectedItem"}
+                    "element": {"#": "content"}
                 }
             }
         }

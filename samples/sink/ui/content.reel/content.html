@@ -148,11 +148,20 @@ POSSIBILITY OF SUCH DAMAGE.
                 "properties": {}
             },
 
+            "defaultText": {
+                "prototype": "montage/ui/dynamic-text.reel",
+                "properties": {
+                    "element": {"#": "default-text"},
+                    "value": "← Please select a Component"
+                }
+            },
+
             "content": {
                 "prototype": "montage/ui/substitution.reel",
                 "properties": {
-                    "element": {"#": "content"},
+                    "element": {"#": "content-deck"},
                     "switchComponents": {
+                        "defaultText": {"@": "defaultText"},
                         "toggleButton": {"@": "toggleButton"},
                         "button": {"@": "button"},
                         "checkbox": {"@": "checkbox"},
@@ -164,7 +173,6 @@ POSSIBILITY OF SUCH DAMAGE.
                         "converters": {"@": "converters"},
                         "list": {"@": "list"},
                         "repetition": {"@": "repetition"},
-                        "tabs": {"@": "tabs"},
                         "inputText": {"@": "inputText"},
                         "textarea": {"@": "textarea"},
                         "numberInput": {"@": "numberInput"},
@@ -174,8 +182,6 @@ POSSIBILITY OF SUCH DAMAGE.
                         "anchor": {"@": "anchor"},
                         "substitution": {"@": "substitution"},
                         "scroller": {"@": "scroller"},
-                        "montageSlider": {"@": "montageSlider"},
-                        "nativeInputRange": {"@": "nativeInputRange"},
                         "translateComposer": {"@": "translateComposer"},
                         "autocomplete": {"@": "autocomplete"},
                         "tokenField": {"@": "tokenField"}
@@ -183,7 +189,7 @@ POSSIBILITY OF SUCH DAMAGE.
                     "delegate": {"@": "owner"}
                 },
                 "bindings": {
-                    "switchValue": {"<-": "@owner.selectedItem"}
+                    "switchValue": {"<->": "@owner.selectedItem"}
                 }
             },
 
@@ -191,15 +197,20 @@ POSSIBILITY OF SUCH DAMAGE.
                 "properties": {
                     "element": {"#": "content"},
                     "contentDeck": {"@": "content"}
+                },
+                "bindings": {
+                    "selectedItem": {"<->": "@application.state.page"}
                 }
             }
 
     }</script>
 </head>
 <body>
-
     <div data-montage-id="content" class="content">
-        <h5 class="firstrun">← Please select a Component</h5>
+        <div data-montage-id="content-deck" class="content">
+            <h5 data-montage-id="default-text" class="firstrun">← Please select a Component</h5>
+        </div>
+
     </div>
 
 </body>

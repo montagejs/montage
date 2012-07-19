@@ -41,6 +41,7 @@ POSSIBILITY OF SUCH DAMAGE.
 
 var Montage = require("core/core").Montage,
     Template = require("ui/template").Template,
+    logger = require("core/logger").logger("application"),
     Component = require("ui/component").Component,
     MontageWindow = require("ui/montage-window").MontageWindow,
     Slot;
@@ -266,6 +267,88 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         value: null
     },
 
+    /** The application State. This is created by Application from properties defined in stateKeys.
+    */
+    state: {
+        serializable: true,
+        value: null
+    },
+
+    /**
+    * An array of keys (eg:  ["zip", "city"] ) of the Application State object
+    */
+    stateKeys: {
+        serializable: true,
+        value: null
+    },
+
+    /**
+    * An array of possible routes that must be handled by this Application to automatically retrieve values
+    * and update the state.
+    */
+    routes: {
+        serializable: true,
+        value: null
+    },
+
+    /**
+    * The part of the URL.pathname that defines the invariant part of the URL for the Application.
+    */
+    contextPath: {
+        value: null,
+        serializable: true
+    },
+
+    /**
+     Description TODO
+     @function
+     @param {Function} callback A function to invoke after the method has completed.
+     */
+     _load: {
+         value: function(applicationRequire, callback) {
+             var template = Template.create().initWithDocument(window.document, applicationRequire),
+                 rootComponent,
+                 self = this;
+
+             // assign to the exports so that it is available in the deserialization of the template
+             exports.application = self;
+
+             require.async("ui/component").then(function(exports) {
+                 rootComponent = exports.__root__;
+                 rootComponent.element = document;
+                 template.instantiateWithOwnerAndDocument(null, window.document, function() {
+                     self.callDelegateMethod("willFinishLoading", self);
+                     rootComponent.needsDraw = true;
+                     if(self.stateKeys) {
+                         self._createState();
+                         if(!self._defaultStateDelegate) {
+                             self._defaultStateDelegate = self._createDefaultStateDelegate();
+                         }
+
+                         if(typeof window.history.pushState !== "undefined") {
+                             window.onpopstate = function(event) {
+                                 var state = event.state;
+                                 self._willPopState(event);
+                             };
+                         } else {
+                             window.onhashchange = function(event) {
+                                 event.preventDefault();
+                                 self._willPopState(event);
+                             };
+                         }
+
+                         // initial state from URL
+                         self._willPopState();
+                     }
+                     if (callback) {
+                         callback(self);
+                     }
+
+                 });
+             }).end();
+         }
+     },
+
     /**
      Opens a component in a new browser window, and registers the window with the Montage event manager.<br>
      The component URL must be in the same domain as the calling script. Can be relative to the main application
@@ -395,7 +478,7 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
                 } else {
                     this.windows.push(montageWindow);
                 }
-                montageWindow.focus()
+                montageWindow.focus();
             }
             return montageWindow;
         }
@@ -446,27 +529,96 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
         }
     },
 
-    _load: {
-        value: function(applicationRequire, callback) {
-            var template = Template.create().initWithDocument(window.document, applicationRequire),
-                rootComponent,
-                self = this;
+    _defineStateProperty: {
+        value: function(name) {
+            var _name = '_' + name, self = this, stateDelegate = this.stateDelegate;
+            var newDescriptor = {
+                configurable: true,
+                enumerable: true,
+                serializable: true,
+                set: (function(name, attrName) {
+                    return function(value) {
+                        if((typeof value !== 'undefined') && this[attrName] !== value) {
+                            // this = state
+                            this[attrName] = value;
+                            self._willPushState();
+                        }
+                    };
+                }(name, _name)),
+                get: (function(name, attrName) {
+                    return function() {
+                        return this[attrName];
+                    };
+                }(name, _name))
+            };
 
-            // assign to the exports so that it is available in the deserialization of the template
-            exports.application = self;
+            // Define _ property
+            Montage.defineProperty(this.state, _name, {value: null});
+            // Define property getter and setter
+            Montage.defineProperty(this.state, name, newDescriptor);
+        }
+    },
 
-            require.async("ui/component").then(function(exports) {
-                rootComponent = exports.__root__;
-                rootComponent.element = document;
-                template.instantiateWithOwnerAndDocument(null, window.document, function() {
-                    self.callDelegateMethod("willFinishLoading", self);
-                    rootComponent.needsDraw = true;
-                    if (callback) {
-                        callback(self);
-                    }
+    _createState: {
+        value: function() {
+            this.state = Montage.create(Montage, {});
+            if(this.stateKeys && this.stateKeys.length > 0) {
+                var i, len = this.stateKeys.length;
+                for(i=0; i< len; i++) {
+                    this._defineStateProperty(this.stateKeys[i]);
+                }
+            }
+        }
+    },
 
-                });
-            }).end();
+    _synching : {value: null},
+
+    _defaultStateDelegate: {value: null},
+
+    _willPopState: {
+        value: function(event) {
+            if(!this._synching) {
+                this._synching = true;
+                var options = {
+                    location: window.location,
+                    url: window.location.href,
+                    title: window.title,
+                    state: event ? event.state : null
+                };
+                if(this.delegate && typeof this.delegate["willPopState"] === 'function') {
+                    this.delegate["willPopState"].call(this.delegate, options, this.state);
+                } else {
+                    // update state using default mechanism
+                    this._defaultStateDelegate.willPopState(options, this.state);
+                }
+                this._synching = false;
+            }
+
+        }
+    },
+
+    _willPushState: {
+        value: function() {
+            if(!this._synching) {
+                this._synching = true;
+                var options = {
+                    url: window.location.href,
+                    location: window.location,
+                    title: window.title
+                };
+
+                if(this.delegate && typeof this.delegate["willPushState"] === 'function') {
+                    this.delegate["willPushState"].call(this.delegate, options, this.state);
+                } else {
+                    this._defaultStateDelegate.willPushState(options, this.state);
+                }
+                if(typeof window.history.pushState !== 'undefined') {
+                    window.history.pushState(this.state, options.title, options.url);
+                } else {
+                    window.location.hash = options.url;
+                }
+                this._synching = false;
+            }
         }
     },
 
@@ -569,6 +721,161 @@ var Application = exports.Application = Montage.create(Montage, /** @lends monta
             }
             return arr;
         }
+    },
+
+    _createDefaultStateDelegate: {
+        value: function() {
+            this._defaultStateDelegate = Montage.create(DefaultStateDelegate);
+            this._defaultStateDelegate.routes = this.routes;
+            this._defaultStateDelegate.contextPath = this.contextPath || window.location.pathname;
+            return this._defaultStateDelegate;
+        }
+    }
+
+});
+
+/**
+* A default strategy to update Application state from URL and vice-versa.
+*/
+var DefaultStateDelegate = Montage.create(Montage, {
+
+    // Credit: some basic Regex and operations for URL tokens inspired by http://backbonejs.org/backbone.js
+
+    _namedParam: {
+        value: /:\w+/g
+    },
+    _wildcardParam: {
+        value: /\*/g
+    },
+    _escapeRegExp: {
+        value: /[-[\]{}()+?.,\\^$|#\s]/g
+    },
+
+    _activeRoute: {value: null},
+
+    /** all possible routes from the contextPath */
+    routes: {value: null},
+
+    /** part of the URL that the current application is rooted in */
+    contextPath: {value: null},
+
+    didCreate: {
+       value: function(routes) {
+           this.routes = [];
+       }
+    },
+
+    _convertRouteToRegExp: {
+        value: function(route) {
+            route = route.slice(); // create a copy
+            route = route.replace(this._escapeRegExp, '\\$&')
+                        .replace(this._namedParam, '([^\/]+)')
+                        .replace(this._wildcardParam, '(.*?)');
+            return new RegExp('^' + route + '$');
+        }
+    },
+
+    _extractParameterValues: {
+        value: function(regex, fragment) {
+            var tmp = regex.exec(fragment);
+            if(tmp && tmp.length > 1) {
+                return tmp.slice(1);
+            }
+            return null;
+        }
+    },
+
+    _parseFragment: {
+        value: function(routes, fragment) {
+            var i, valuesArr, regex, route, params;
+            for(i=0; i< routes.length; i++) {
+                route =  routes[i];
+                regex = this._convertRouteToRegExp(route);
+                if(valuesArr = this._extractParameterValues(regex, fragment)) {
+                    break;
+                }
+            }
+            if(valuesArr) {
+                // if there is a match
+                // save the route for later
+                this._activeRoute = route;
+
+                // get the named param names from the route
+                var arr = route.match(this._namedParam), param;
+                if(arr != null) {
+                    params = {};
+                    // get the values matching the tokens
+                    if (logger.isDebug) {
+                        logger.debug('valuesArr ', valuesArr);
+                    }
+                    for(var i=0; i< arr.length; i++) {
+                        param = arr[i].substring(1); // remove :
+                        if(valuesArr.length > i) {
+                            params[param] = valuesArr[i];
+                        }
+                    }
+                }
+            } else {
+                if (logger.isDebug) {
+                    logger.debug('unable to match the URL with specified routes');
+                }
+            }
+            return params;
+        }
+    },
+
+    // push application state to URL
+    willPushState: {
+       value: function(options, appState) {
+           //console.log('DefaultStateDelegate: willPushState ', this._activeRoute, appState, options.url);
+           if(appState) {
+               var token, route;
+               if(!this._activeRoute) {
+                   this._activeRoute = this.routes && this.routes.length > 0 ? this.routes[0] : null;
+               }
+               if(this._activeRoute) {
+                   for(var i in appState) {
+                       token = ':' + i;
+                       if(this._activeRoute.indexOf(token) >= 0) {
+                           route = this._activeRoute.replace(token, appState[i]);
+                       }
+                   }
+                   var index = options.url.indexOf(this.contextPath);
+                   if(index >= 0) {
+                       var newUrl = options.url.substring(0, index) + this.contextPath + route;
+                       if(logger.isDebug) {
+                           logger.debug('willPushState: new URL pushed ', newUrl);
+                       }
+                       options.url = newUrl;
+                   }
+               }
+
+           }
+       }
+    },
+
+    // pop state from URL and update Application state
+    willPopState: {
+       value: function(options, appState) {
+           //console.log('DefaultStateDelegate: willPopState : updating AppState from URL', options.url, options.location);
+           var index = options.url.indexOf(this.contextPath), fragment;
+
+           if(index >= 0) {
+               fragment = options.url.substring(index + this.contextPath.length);
+           }
+           var params = this._parseFragment(this.routes, fragment);
+           if(params) {
+               for(var i in params) {
+                   if(params.hasOwnProperty(i) && typeof appState[i] !== 'undefined') {
+                       appState[i] = params[i];
+                   }
+               }
+               if(logger.isDebug) {
+                   logger.debug('appState after applying url values ', appState);
+               }
+           }
+
+       }
     }
 
 });

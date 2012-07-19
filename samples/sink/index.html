@@ -33,7 +33,6 @@ POSSIBILITY OF SUCH DAMAGE.
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     <title>Montage Kitchen Sink</title>
-
     <link rel="stylesheet" href="lib/google-code-prettify/prettify.css" />
     <link rel="stylesheet" href="assets/style/bootstrap.min.css" />
 
@@ -45,6 +44,16 @@ POSSIBILITY OF SUCH DAMAGE.
         {
             "owner": {
                 "prototype": "montage/ui/loader.reel"
+            },
+            "application": {
+                "prototype": "montage/ui/application",
+                "properties": {
+                    "stateKeys": ["page"],
+                    "contextPath": "/sink",
+                    "routes": [
+                        "/#!/:page"
+                    ]
+                }
             }
         }
     </script>
