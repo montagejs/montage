@@ -11,6 +11,9 @@
                 "lab/sandbox",
                 "samples",
                 "tools",
+                "examples",
+                "require/test",
+                "require/tests",
                 "etc",
                 "node.js"
             ],
