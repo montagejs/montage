@@ -251,6 +251,19 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
                         });
 
                     });
+                    it("should set the existing value even if Converter throws an error (with _setValue)", function() {
+                        var field = testPage.test.txt4;
+                        field.element.value = 'hello world again';
+                        field._setValue();
+
+                        testPage.waitForDraw();
+
+                        runs(function() {
+                           expect(field.value).toBe('hello world again');
+                           expect(field.error).not.toBe(null);
+                        });
+
+                    });
                 });
 
 
