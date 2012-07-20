@@ -46,8 +46,10 @@ exports.Scroller = Montage.create(Component, {
             return this._scrollX;
         },
         set: function (value) {
-            this._scrollX = value;
-            this.needsDraw = true;
+            if (this._scrollX !== value) {
+                this._scrollX = value;
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -60,8 +62,10 @@ exports.Scroller = Montage.create(Component, {
             return this._scrollY;
         },
         set: function (value) {
-            this._scrollY = value;
-            this.needsDraw = true;
+            if (this._scrollY !== value) {
+                this._scrollY = value;
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -171,6 +175,9 @@ exports.Scroller = Montage.create(Component, {
                 this._maxTranslateX = delegateValue.x;
                 this._maxTranslateY = delegateValue.y;
             }
+
+            this.scrollX = Math.min(this._scrollX, this._maxTranslateX);
+            this.scrollY = Math.min(this._scrollY, this._maxTranslateY);
 
             switch (this._displayScrollbars) {
                 case "horizontal":
