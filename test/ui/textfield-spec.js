@@ -29,7 +29,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-        TestPageLoader = require("support/testpageloader").TestPageLoader;
+TestPageLoader = require("support/testpageloader").TestPageLoader;
+
 
 var testPage = TestPageLoader.queueTest("textfieldtest", function() {
 
@@ -229,6 +230,38 @@ var testPage = TestPageLoader.queueTest("textfieldtest", function() {
                         expect(field.src).toBe("src");
                         expect(field.multiple).toBe(true);
                         expect(field.list).toBe("list1");
+
+                    });
+                });
+
+                describe("when using Converter", function() {
+                    // gh-970
+                    it("should set the existing value even if Converter throws an error", function() {
+                        var field = testPage.test.txt4;
+
+                        expect(field.value).toBe("hello");
+                        expect(field.error).toBe(null);
+
+                        field.value = 'hello world';
+                        testPage.waitForDraw();
+
+                        runs(function() {
+                           expect(field.value).toBe('hello world');
+                           expect(field.error).not.toBe(null);
+                        });
+
+                    });
+                    it("should set the existing value even if Converter throws an error (with _setValue)", function() {
+                        var field = testPage.test.txt4;
+                        field.element.value = 'hello world again';
+                        field._setValue();
+
+                        testPage.waitForDraw();
+
+                        runs(function() {
+                           expect(field.value).toBe('hello world again');
+                           expect(field.error).not.toBe(null);
+                        });
 
                     });
                 });
