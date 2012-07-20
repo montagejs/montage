@@ -29,11 +29,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 
-.logger {
-    padding: 10px 15px;
-    color: hsl(200,100%,65%);
-    background-color: hsl(0,0%,15%);
-    cursor: pointer;
+.Logger {
+    color: #EEEEEE;
+    background-color: rgba(0, 0, 0, 0.8);
     -webkit-transition: background-color .2s ease-in-out;
        -moz-transition: background-color .2s ease-in-out;
         -ms-transition: background-color .2s ease-in-out;
@@ -41,7 +39,7 @@ POSSIBILITY OF SUCH DAMAGE.
             transition: background-color .2s ease-in-out;
 }
 
-.logger .montage-list-scroller {
+.Logger-scroller {
     position: absolute;
     top: 0px;
     left: 0;
@@ -49,17 +47,58 @@ POSSIBILITY OF SUCH DAMAGE.
     bottom: 0;
 }
 
-.logger:hover {
-    background-color: hsl(0,0%,18%);
+.Logger .Logger-toggle {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 30px;
+
+    border-right: 0;
+    border-bottom: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+    border-bottom-left-radius: 0;
 }
 
-.logger-output {
+.Logger .montage-button {
+    color: #EEEEEE;
+    margin: 0;
+
+    background: #45484d; /* Old browsers */
+    background: -moz-linear-gradient(top, #45484d 0%, #000000 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#45484d), color-stop(100%,#000000)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #45484d 0%,#000000 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #45484d 0%,#000000 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #45484d 0%,#000000 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #45484d 0%,#000000 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#45484d', endColorstr='#000000',GradientType=0 ); /* IE6-9 */
+}
+
+.Logger .montage-button:hover {
+   color: #EEEEEE;
+}
+
+.Logger .montage-button.pressed {
+    color: #EEEEEE;
+
+    background: #000000; /* Old browsers */
+    background: -moz-linear-gradient(top, #000000 0%, #45484d 100%); /* FF3.6+ */
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#000000), color-stop(100%,#45484d)); /* Chrome,Safari4+ */
+    background: -webkit-linear-gradient(top, #000000 0%,#45484d 100%); /* Chrome10+,Safari5.1+ */
+    background: -o-linear-gradient(top, #000000 0%,#45484d 100%); /* Opera 11.10+ */
+    background: -ms-linear-gradient(top, #000000 0%,#45484d 100%); /* IE10+ */
+    background: linear-gradient(to bottom, #000000 0%,#45484d 100%); /* W3C */
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#000000', endColorstr='#45484d',GradientType=0 ); /* IE6-9 */
+}
+
+.Logger-output {
     font-family: monospace;
     white-space: pre;
     padding-top: 5px;
     padding-left: 5px;
+    padding-bottom: 0.75em;
 }
 
-.logger.logger-hilight {
-    background-color: hsl(0,0%,30%);
+.Logger.Logger-hilight {
+    background-color: rgba(75, 70, 0, 1);
 }

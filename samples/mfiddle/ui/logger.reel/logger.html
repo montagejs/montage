@@ -36,7 +36,20 @@ POSSIBILITY OF SUCH DAMAGE.
     <script type="text/montage-serialization">{
         "owner": {
             "properties": {
-                "element": {"#": "logger"}
+                "element": {"#": "logger"},
+                "_scroller": {"@": "scroller"},
+                "_output": {"#": "output"}
+            },
+            "bindings": {
+                "isOpen": {"<-": "@toggle.pressed"}
+            }
+        },
+
+        "toggle": {
+            "prototype": "montage/ui/toggle-button.reel",
+            "properties": {
+                "element": {"#": "toggle"},
+                "pressedLabel": "▲ Console"
             }
         },
 
@@ -46,22 +59,15 @@ POSSIBILITY OF SUCH DAMAGE.
                 "element": {"#": "scroller"},
                 "axis": "both"
             }
-        },
-
-        "output": {
-            "prototype": "montage/ui/dynamic-text.reel",
-            "properties": {
-                "element": {"#": "output"},
-                "value": ""
-            }
         }
     }</script>
 </head>
 <body>
-    <div data-montage-id="logger" class="logger">
-        <div data-montage-id="scroller" class="montage-list-scroller">
-            <div data-montage-id="output" class="logger-output"></div>
+    <div data-montage-id="logger" class="Logger">
+        <div data-montage-id="scroller" class="Logger-scroller">
+            <div data-montage-id="output" class="Logger-output"></div>
         </div>
+        <button data-montage-id="toggle" class="Logger-toggle">◀ Console</button>
     </div>
   </div>
 </body>

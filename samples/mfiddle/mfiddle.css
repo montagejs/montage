@@ -327,10 +327,11 @@ html {
     left: 0;
     right: 0;
     bottom: 0;
-    height: 15px;
+    height: 30px;
 }
+
 #logger.open {
-    height: 90%;
+    height: 100%;
 }
 
 /* CodeMirror customizations */
