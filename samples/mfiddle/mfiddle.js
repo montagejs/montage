@@ -325,7 +325,7 @@ exports.Mfiddle = Montage.create(Component, {
         value: function() {
             var gistId = location.hash.slice(3);
 
-            if (gistId) {
+            if (gistId && gist.id != gistId) {
                 this.loadGist(gistId);
             }
         }
