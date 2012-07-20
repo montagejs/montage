@@ -62,7 +62,9 @@ exports.ComponentButton = Montage.create(Component, /** @lends module:"ui/compon
                 component = this.component;
 
             element.setAttribute("title", "Add " + component.label);
-            element.style.backgroundPosition = component.x + "px " + component.y +"px"
+            element.style.backgroundPosition = component.x + "px " + component.y +"px";
+            element.style.width = component.width + "px";
+            element.style.height = component.height + "px";
         }
     }
 });
