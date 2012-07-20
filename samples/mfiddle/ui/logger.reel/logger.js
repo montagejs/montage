@@ -61,6 +61,10 @@ exports.Logger = Montage.create(Component, {
         }
     },
 
+    _value: {
+        value: ""
+    },
+
     _newMessages: {
         distinct: true,
         value: []
@@ -84,7 +88,7 @@ exports.Logger = Montage.create(Component, {
             var newMessages = this._newMessages;
 
             if (newMessages.length > 0) {
-                this._output.textContent += newMessages.join("\n") + "\n";
+                this._value += newMessages.join("\n") + "\n";
                 newMessages.length = 0;
                 this._element.classList.add("Logger-hilight");
 
@@ -105,6 +109,8 @@ exports.Logger = Montage.create(Component, {
                 this._element.classList.remove("open");
                 this._scroller.scrollY = Number.MAX_VALUE;
             }
+
+            this._output.textContent = this._value;
         }
     },
 
@@ -115,6 +121,14 @@ exports.Logger = Montage.create(Component, {
             for (var i = 0, message; (message = newMessages[i]); i++) {
                 this.log(message);
             }
+        }
+    },
+
+    handleClearAction: {
+        value: function(event) {
+            console.log("handleAction");
+            this._value = "";
+            this.needsDraw = true;
         }
     }
 });
