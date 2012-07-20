@@ -86,24 +86,19 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
                     var convertedValue;
                     try {
                         convertedValue = this.converter.revert(value);
-                        if (this.error) {
-                            this.error = null;
-                        }
+                        this.error = null;
                         this._value = convertedValue;
-
                     } catch(e) {
                         // unable to convert - maybe error
+                        this._value = value;
                         this.error = e;
-                        this._valueSyncedWithInputField = false;
                     }
-
                 } else {
                     this._value = value;
                 }
 
                 if(fromInput) {
                     this._valueSyncedWithInputField = true;
-                    //this.needsDraw = true;
                 } else {
                     this._valueSyncedWithInputField = false;
                     this.needsDraw = true;
@@ -134,7 +129,7 @@ var TextInput = exports.TextInput =  Montage.create(NativeControl, /** @lends mo
     },
 
     _error: {
-        value: false
+        value: null
     },
 
 /**
