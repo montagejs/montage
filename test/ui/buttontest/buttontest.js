@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
-    Button = require("montage/ui/bluemoon/button.reel").Button;
+    Button = require("montage/ui/button.reel").Button;
 
 var ButtonTest = exports.ButtonTest = Montage.create(Montage, {
   handleAction: {

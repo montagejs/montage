@@ -85,30 +85,7 @@ POSSIBILITY OF SUCH DAMAGE.
                 "blue": {"<->": "@blue.value"},
                 "opacity": {"<->": "@alpha.value"}
             }
-        },
-
-        "bluemoonSlider": {
-            "prototype": "montage/ui/bluemoon/slider.reel",
-            "properties": {
-                "element": {"#": "bluemoonSlider"},
-                "minValue": "0",
-                "maxValue": "255",
-                "step": "1",
-                "value": "0"
-            }
-        },
-
-        "bluemoonNumber": {
-            "prototype": "montage/ui/input-text.reel",
-            "properties": {
-                "element": {"#": "bluemoonNumber"}
-            },
-            "bindings": {
-                "value": {"<->": "@bluemoonSlider.value"}
-            }
         }
-
-
 
     }</script>
     <style>
@@ -373,66 +350,6 @@ exports.RangeInputExample2 = Montage.create(Component, {
 
 
     </section>
-
-
-
-
-
-    <!-- Bluemoon Slider -->
-
-    <div class="row bluemoon-slider-example">
-        <div class="span12">
-            <h3>Bluemoon Slider</h3>
-            <p>A slider that is more optimized for touch screens and part of the bluemoon theme.</p>
-        </div>
-    </div>
-
-    <h4>Demo</h4>
-    <div class="demo range2">
-        <div data-montage-id="bluemoonSlider"></div>
-        <input data-montage-id="bluemoonNumber" class="bluemoonNumber" type="number" />
-    </div>
-
-    <section>
-       <ul data-montage-id="rangeInputAccordion2" class="accordion">
-            <li class="accordion-group">
-                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
-                <div class="accordion-inner montage-hidden" >
-                    <pre class="prettyprint" >
-&lt;div data-montage-id="bluemoonSlider"&gt;&lt;/div&gt;
-&lt;input data-montage-id="bluemoonNumber" type="number" /&gt;
-                    </pre>
-                </div>
-            </li>
-            <li class="accordion-group">
-                <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
-                <div class="accordion-inner montage-hidden">
-                    <pre class="prettyprint">
-"bluemoonSlider": {
-    "prototype": "montage/ui/bluemoon/slider.reel",
-    "properties": {
-        "element": {"#": "bluemoonSlider"},
-        "minValue": "0",
-        "maxValue": "255",
-        "step": "1",
-        "value": "0"
-    }
-},
-"bluemoonNumber": {
-    "prototype": "montage/ui/input-text.reel",
-    "properties": {
-        "element": {"#": "bluemoonNumber"}
-    },
-    "bindings": {
-        "value": {"<->": "@bluemoonSlider.value"}
-    }
-}
-                    </pre>
-                </div>
-            </li>
-        </ul>
-    </section>
-
 
 </body>
 </html>

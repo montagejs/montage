@@ -29,7 +29,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-    @module "montage/ui/bluemoon/progress.reel"
+    @module "montage/ui/progress.reel"
     @requires montage/core/core
     @requires montage/ui/component
 */
@@ -40,7 +40,7 @@ var Montage = require("montage").Montage,
     @class module:montage/ui/progress.Progress
     @extends module:montage/ui/component.Component
 */
-exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/bluemoon/progress.reel".Progress# */ {
+exports.Progress = Montage.create(NativeProgress,/** @lends module:"montage/ui/progress.reel".Progress# */ {
 
     hasTemplate: {value: true},
 

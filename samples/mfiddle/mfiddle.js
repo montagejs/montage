@@ -170,34 +170,35 @@ var Components = {
             "html": '<p data-montage-id=""></p>'
         }),
         "button": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/button.reel",
+            "prototype": "montage/ui/button.reel",
             "properties": {
-                "value": "Button",
+                "label": "Button",
                 "enabled": true
             },
-            "html": '<div data-montage-id="" class="text"></div>'
+            "html": '<button data-montage-id="" class="text"></button>'
         }),
         "textfield": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/textfield.reel",
+            "prototype": "montage/ui/input-text.reel",
             "properties": {
                 "value": "Editable text"
             },
             "html": '<input data-montage-id="" type="text">'
         }),
         "checkbox": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/checkbox.reel",
+            "prototype": "montage/ui/input-checkbox.reel",
             "properties": {
                 "checked": true
-            }
+            },
+            "html": '<input data-montage-id="" type="checkbox">'
         }),
         "toggle": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/toggle.reel",
+            "prototype": "montage/samples/components/bluemoon/toggle.reel",
             "properties": {
                 "value": true
             }
         }),
         "slider": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/slider.reel",
+            "prototype": "montage/samples/components/bluemoon/slider.reel",
             "properties": {
                 "minValue": 0,
                 "maxValue": 100,
@@ -235,20 +236,20 @@ var Examples = {
         "A simple Button": {
             serialization: {
                 "button": {
-                    "prototype": "montage/ui/bluemoon/button.reel",
+                    "prototype": "montage/ui/button.reel",
                     "properties": {
                         "element": {"#": "button"},
-                        "value": "Click Me!"
+                        "label": "Click Me!"
                     }
                 }
             },
-            html: '<div data-montage-id="button" class="text"></div>'
+            html: '<button data-montage-id="button" class="text"></button>'
         },
 
         "A simple Binding": {
             serialization: {
                 "slider": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
+                    "prototype": "montage/samples/components/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider"},
                         "value": 50
@@ -279,7 +280,7 @@ var Examples = {
                 },
 
                 "slider1": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
+                    "prototype": "montage/samples/components/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider1"}
                     },
@@ -289,7 +290,7 @@ var Examples = {
                 },
 
                 "slider2": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
+                    "prototype": "montage/samples/components/bluemoon/slider.reel",
                     "properties": {
                         "element": {"#": "slider2"}
                     },

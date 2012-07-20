@@ -30,7 +30,7 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /*global WebKitPoint */
 /**
-    @module "montage/ui/bluemoon/slider.reel"
+    @module "montage/samples/components/bluemoon/slider.reel"
     @requires montage/core/core
     @requires montage/ui/dom
     @requires montage/ui/component
@@ -42,10 +42,10 @@ var Montage = require("montage").Montage,
     Point = require("core/geometry/point").Point;
 
 /**
- @class module:"montage/ui/bluemoon/slider.reel".Slider
+ @class module:"montage/samples/components/bluemoon/slider.reel".Slider
  @extends module:montage/ui/component.Component
  */
-exports.Slider = Montage.create(Component,/** @lends module:"montage/ui/bluemoon/slider.reel".Slider# */ {
+exports.Slider = Montage.create(Component,/** @lends module:"montage/samples/components/bluemoon/slider.reel".Slider# */ {
     // Extra elements for rendering
 
     _bghl: {

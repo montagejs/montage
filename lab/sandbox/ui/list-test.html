@@ -53,9 +53,9 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "slider1": {
-        "prototype": "montage/ui/bluemoon/slider.reel",
+        "prototype": "montage/ui/input-range.reel",
         "properties": {
-            "maxValue": 2,
+            "max": 2,
             "element": {"#": "horizontalContent"}
         },
         "bindings": {
@@ -84,9 +84,9 @@ POSSIBILITY OF SUCH DAMAGE.
         }
     },
     "slider2": {
-        "prototype": "montage/ui/bluemoon/slider.reel",
+        "prototype": "montage/ui/input-range.reel",
         "properties": {
-            "maxValue": 4,
+            "max": 4,
             "element": {"#": "verticalContent"}
         },
         "bindings": {
@@ -115,6 +115,10 @@ POSSIBILITY OF SUCH DAMAGE.
             height: 200px;
         }
 
+        .horizontalList .item {
+            padding: 20px;
+        }
+
         .verticalList {
             width: 300px;
             height: 400px;
@@ -125,19 +129,20 @@ POSSIBILITY OF SUCH DAMAGE.
             height: 400px;
         }
 
+
     </style>
 
 </head>
 <body>
 
 <div data-montage-id="horizontalList" class="list horizontalList">
-    Horizontal [<span data-montage-id="horizontalValueString" class="horizontalValueString"></span>]
-    <span data-montage-id="horizontalContent" class="horizontalContent"></span>
+    <div class="item">Horizontal [<span data-montage-id="horizontalValueString" class="horizontalValueString"></span>]
+    <div><input type="range" data-montage-id="horizontalContent" class="horizontalContent"></div></div>
 </div>
 
 <div data-montage-id="verticalList" class="list verticalList">
     Vertical [<span data-montage-id="verticalValueString" class="verticalValueString"></span>]
-    <span data-montage-id="verticalContent" class="verticalContent"></span>
+    <div><input type="range" data-montage-id="verticalContent" class="verticalContent"></div>
 </div>
 
 </body>

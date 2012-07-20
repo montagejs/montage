@@ -52,11 +52,11 @@ POSSIBILITY OF SUCH DAMAGE.
             },
 
             "itemsPerPage": {
-                "prototype": "montage/ui/bluemoon/slider.reel",
+                "prototype": "montage/ui/input-range.reel",
                 "properties": {
                     "element": {"#": "itemsPerPage"},
-                    "minValue": 0,
-                    "maxValue": 50
+                    "min": 0,
+                    "max": 50
                 },
                 "bindings": {
                     "value": {"<->": "@owner.itemsPerPageCount", "converter": {"@": "floorConverter"}}
@@ -160,7 +160,7 @@ POSSIBILITY OF SUCH DAMAGE.
         <p><span data-montage-id="itemCount"></span> Items Available</p>
 
         <div>
-            <div data-montage-id="itemsPerPage"></div>
+            <input type="range" data-montage-id="itemsPerPage">
             <p><span data-montage-id="itemsPerPageCount"></span> Items Per Page</p>
         </div>
 
