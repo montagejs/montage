@@ -109,6 +109,11 @@ exports.MontageFrame = Montage.create(Component, /** @lends module:"montage/ui/m
     draw: {
         value: function() {
             if (this._iframeReady) {
+                var oldSerialization = this._iframeDocument.head.querySelector("script[type='text/montage-serialization']");
+                if (oldSerialization) {
+                    oldSerialization.parentNode.removeChild(oldSerialization);
+                }
+
                 this._serializationElement = this._iframeDocument.createElement("script");
                 this._serializationElement.setAttribute("type", "text/montage-serialization");
                 this._iframeDocument.head.appendChild(this._serializationElement);
