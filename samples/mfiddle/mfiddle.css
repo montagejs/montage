@@ -87,20 +87,8 @@ html {
 #components > li:first-child > div {
     border-left: none;
 }
-#components > li:first-child:hover > div:before {
-    left: 6px;
-}
 #components > li:last-child > div {
     border-right: none;
-}
-#components > li:hover > div > div:before {
-    content: "";
-    position: absolute;
-    top: -6px;
-    left: -5px;
-    width: 54px;
-    height: 34px;
-    background: url(mfiddle-ui.png) -60px -126px no-repeat;
 }
 
 .component-button-holder {

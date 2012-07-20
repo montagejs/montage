@@ -43,13 +43,14 @@ var Montage = require("montage").Montage,
 */
 exports.ComponentButton = Montage.create(Component, /** @lends module:"ui/component-button.reel".ComponentButton# */ {
     component: {value: null},
+    _iconStyle: {value: null},
 
     prepareForDraw: {
         value: function() {
             var self = this,
                 element = this._element;
 
-            element.classList.add("component-button");
+            this._iconStyle = this.templateObjects.icon.style;
             element.addEventListener("click", function() {
                 self._dispatchActionEvent();
             }, false);
@@ -62,9 +63,9 @@ exports.ComponentButton = Montage.create(Component, /** @lends module:"ui/compon
                 component = this.component;
 
             element.setAttribute("title", "Add " + component.label);
-            element.style.backgroundPosition = component.x + "px " + component.y +"px";
-            element.style.width = component.width + "px";
-            element.style.height = component.height + "px";
+            this._iconStyle.backgroundPosition = component.x + "px " + component.y +"px";
+            this._iconStyle.width = component.width + "px";
+            this._iconStyle.left = component.left + "px";
         }
     }
 });
