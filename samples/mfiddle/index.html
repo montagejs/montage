@@ -141,6 +141,20 @@ POSSIBILITY OF SUCH DAMAGE.
             }
         },
 
+        "save": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "save"}
+            }
+        },
+
+        "new": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "new"}
+            }
+        },
+
         "run": {
             "prototype": "montage/ui/button.reel",
             "properties": {
@@ -195,7 +209,9 @@ POSSIBILITY OF SUCH DAMAGE.
             </li>
         </ul>
         <ul id="menu">
-            <li><div id="run" data-montage-id="run">Run</div></li>
+            <li><div class="menu-button" data-montage-id="save">Save</div></li>
+            <li><div class="menu-button" data-montage-id="new">New</div></li>
+            <li><div id="run" class="menu-button" data-montage-id="run">Run</div></li>
             <li>
                 <div id="examples">
                     <h2>Examples</h2>

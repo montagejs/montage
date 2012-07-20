@@ -144,11 +144,11 @@ html {
     height: 46px;
     background: url(mfiddle-ui.png) -115px -101px no-repeat;
 }
-#run {
+.menu-button {
     position: relative;
     border: none;
     margin: 6px 0 0 0;
-    padding: 0 12px 0 25px;
+    padding: 0 12px 0 12px;
     background: none;
     border-right: 1px solid #404040;
     cursor: pointer;
@@ -157,16 +157,20 @@ html {
     color: white;
     font-family: Helvetica, Arial, sans-serif;
 }
-#run:after {
+.menu-button:after {
     content: "";
     position: absolute;
     top: 11px;
     left: 12px;
     width: 8px;
     height: 11px;
-    background: url(mfiddle-ui.png) 0 -147px no-repeat;
 }
-#run:hover:before {
+/* override Button defaults */
+.menu-button.montage-button:hover {
+    color: white;
+    background-color: transparent;
+}
+.menu-button:hover:before {
     content: "";
     position: absolute;
     top: 0;
@@ -174,6 +178,12 @@ html {
     right: 6px;
     border: 1px solid #11BDFB;
     height: 32px;
+}
+#run {
+    padding: 0 12px 0 25px;
+}
+#run:after {
+    background: url(mfiddle-ui.png) 0 -147px no-repeat;
 }
 #examples {
     position: relative;
