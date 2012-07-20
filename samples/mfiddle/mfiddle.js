@@ -29,7 +29,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage;
-var Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    Template = require("montage/ui/template").Template,
+    gist = require("gist").gist;
 
 exports.Mfiddle = Montage.create(Component, {
     hasTemplate: {value: false},
@@ -44,8 +46,15 @@ exports.Mfiddle = Montage.create(Component, {
             this._logger = this.templateObjects.logger;
 
             this.addEventListener("action", this, false);
-            this.loadExample(example);
-            this.executeFiddle();
+            window.addEventListener("hashchange", this, false);
+
+            var gistId = location.hash.slice(3);
+            if (gistId) {
+                this.loadGist(gistId);
+            } else {
+                this.loadExample(example);
+                this.executeFiddle();
+            }
         }
     },
 
@@ -54,6 +63,34 @@ exports.Mfiddle = Montage.create(Component, {
     },
     examples: {
         value: require("examples").examples
+    },
+
+    loadGist: {
+        value: function(id) {
+            var self = this;
+
+            gist.load(id, null, function(settings, cssFile, htmlFile, jsFile) {
+                var htmlDocument,
+                    css = cssFile && cssFile.content,
+                    html = htmlFile && htmlFile.content,
+                    javascript = jsFile && jsFile.content,
+                    serialization;
+
+                if (html) {
+                    // extract body and serialization
+                    htmlDocument = Template.createHtmlDocumentFromString(html);
+                    serialization = Template.getInlineSerialization(htmlDocument);
+                    html = htmlDocument.body.innerHTML;
+
+                    // clean up a bit
+                    serialization = serialization.replace(/\n    /g, "\n");
+                    html = html.replace(/\n    /g, "\n").replace(/^\s*\n|\n\s*$/g, "");
+                }
+
+                self.loadFiddle(css, serialization, html, javascript);
+                self.executeFiddle();
+            });
+        }
     },
 
     loadFiddle: {
@@ -88,6 +125,7 @@ exports.Mfiddle = Montage.create(Component, {
 
     loadExample: {
         value: function(example) {
+            location.hash = "";
             this.loadFiddle(example.css, this._stringifySerialization(example.serialization), example.html, example.javascript);
             this.executeFiddle();
         }
@@ -105,14 +143,27 @@ exports.Mfiddle = Montage.create(Component, {
         }
     },
 
-    _addHtmlDiv: {value: document.createElement("div")},
+    clear: {
+        value: function() {
+            var templateObjects = this.templateObjects;
+
+            templateObjects.cssCodeMirror.value = "";
+            templateObjects.serializationCodeMirror.value = "";
+            templateObjects.htmlCodeMirror.value = "";
+            templateObjects.javascriptCodeMirror.value = "";
+
+            location.hash = "";
+        }
+    },
+
+    _tmpDiv: {value: document.createElement("div")},
     _addHtml: {
         value: function(htmlPiece) {
             var serializationObject = this._getSerializationObject(),
                 htmlCodeMirror = this.templateObjects.htmlCodeMirror,
                 html = htmlCodeMirror.value,
                 ownerMontageId = serializationObject && serializationObject.getProperty("owner.properties.element.#"),
-                div = this._addHtmlDiv,
+                div = this._tmpDiv,
                 addHtmlAtTheEnd = true,
                 root;
 
@@ -204,9 +255,57 @@ exports.Mfiddle = Montage.create(Component, {
         }
     },
 
+    /**
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>MFiddle</title>
+        <script type="text/montage-serialization"><!-- serialization -->}</script>
+    </head>
+    <body>
+        <!-- html -->
+    </body>
+    </html>
+    */
+    _htmlPageTemplate: {
+        value: '<!DOCTYPE html>\n<html>\n<head>\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n    <title>MFiddle</title>\n    <script type="text/montage-serialization"><!-- serialization --></script></head>\n<body>\n    <!-- html -->\n</body>\n</html>'
+    },
+    _generateHtmlPage: {
+        value: function() {
+            var templateObjects = this.templateObjects,
+                serialization = templateObjects.serializationCodeMirror.value,
+                html = templateObjects.htmlCodeMirror.value;
+
+            serialization = serialization.replace(/\n/gm, "\n    ");
+            html = html.replace(/\n/gm, "\n    ");
+
+            return this._htmlPageTemplate
+                .replace("<!-- serialization -->", serialization)
+                .replace("<!-- html -->", html);
+        }
+    },
+
     handleComponentButtonAction: {
         value: function(action) {
             this.addComponentToFiddle(action.target.component);
+        }
+    },
+
+    handleSaveAction: {
+        value: function() {
+            gist.save({
+                anon: true,
+                cssCode: this.templateObjects.cssCodeMirror.value,
+                htmlMarkup: this._generateHtmlPage(),
+                jsCode: this.templateObjects.javascriptCodeMirror.value
+            });
+        }
+    },
+
+    handleNewAction: {
+        value: function() {
+            this.clear();
         }
     },
 
@@ -222,6 +321,16 @@ exports.Mfiddle = Montage.create(Component, {
         }
     },
 
+    handleHashchange: {
+        value: function() {
+            var gistId = location.hash.slice(3);
+
+            if (gistId) {
+                this.loadGist(gistId);
+            }
+        }
+    },
+
     _stringifySerialization: {
         value: function(object) {
             return JSON.stringify(object, null, 4)
@@ -231,50 +340,5 @@ exports.Mfiddle = Montage.create(Component, {
                 });
         }
     }
-
-});
-
-(function() {
-
-var Mfiddle = {
-    init: function() {
-        Mfiddle.setup();
-        Examples.setup();
-        Components.setup();
-
-        var serialization = Mfiddle.getParameter("serialization") || "",
-            html = Mfiddle.getParameter("html") || "",
-            example = Mfiddle.getParameter("example") || "A simple Button";
-
-        if (serialization || html) {
-            Mfiddle.load(serialization, html);
-            Mfiddle.execute();
-        } else {
-            Examples.loadExample(example);
-        }
-    },
-
-    setup: function() {
-        Mfiddle.queryString = {};
-        window.location.hash.slice(1).split("&").forEach(function(item) {
-            var param = item.split("="),
-                key = decodeURIComponent(param[0]),
-                value = decodeURIComponent(param[1]);
-
-            Mfiddle.queryString[key] = value;
-        });
-
-        document.addEventListener("keydown", function(event) {
-            if ((event.metaKey || event.ctrlKey) && event.keyCode == 83) {
-                event.preventDefault();
-                    Mfiddle.execute();
-            }
-        }, false);
-    },
-
-    getParameter: function(name) {
-        return this.queryString[name];
-    }
-}
 
 });
