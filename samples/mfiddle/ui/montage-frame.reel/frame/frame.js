@@ -61,8 +61,8 @@ window.Frame = {
             var exports = {};
 
             factory(require, exports);
-            require.inject("owner", exports);
-            callback(require/*avoid being parsed*/("owner"));
+            require.inject("mfiddle", exports);
+            callback(require/*avoid being parsed*/("mfiddle"));
         });
     },
     _parseDependencies: function(moduleCode) {
