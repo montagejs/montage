@@ -105,7 +105,6 @@ var Flow = exports.Flow = Montage.create(Component, {
 
     appendPath: {
         value: function (path) {
-            var splinePath = Object.create(FlowBezierSpline),
             var splinePath = FlowBezierSpline.create(),
                 pathKnots = path.knots,
                 length = path.knots.length,
