@@ -1,0 +1,24 @@
+.component-button {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.component-button > .icon {
+    position: absolute;
+    left: 11px;
+    top: 6px;
+    width: 43px;
+    height: 23px;
+    background: url(../../mfiddle-ui.png);
+}
+
+.component-button:hover > .highlighter {
+    position: absolute;
+    left: 7px;
+    width: 54px;
+    height: 34px;
+    background: url(../../mfiddle-ui.png) -60px -126px no-repeat;
+}

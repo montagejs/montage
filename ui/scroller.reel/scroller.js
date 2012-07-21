@@ -31,37 +31,64 @@ POSSIBILITY OF SUCH DAMAGE.
 
 /**
     @module "montage/ui/scroller.reel"
+    @requires montage
+    @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 
-exports.Scroller = Montage.create(Component, {
+/**
+    Provides scrolling for the contained elements.
+
+    @class module:"montage/ui/scroller.reel".Scroller
+    @extends module:montage/ui/component.Component
+    @example
+    <caption>HTML needed for the scroller</caption>
+&lt;div data-montage-id=&quot;scroller&quot; style=&quot;height: 400px; width: 500px;&quot;&gt;
+    &lt;p&gt;A large paragraph...&lt;/p&gt;
+    &lt;img src=&quot;...&quot; alt=&quot;...&quot;&gt;
+    &lt;p&gt;Another large paragraph...&lt;/p&gt;
+&lt;/div&gt;
+*/
+exports.Scroller = Montage.create(Component, /** @lends module:"montage/ui/scroller.reel".Scroller */ {
 
     _scrollX: {
         value: 0
     },
-
+    /**
+        Scroll distance from the left
+        @type Number
+        @default 0
+    */
     scrollX: {
         get: function () {
             return this._scrollX;
         },
         set: function (value) {
-            this._scrollX = value;
-            this.needsDraw = true;
+            if (this._scrollX !== value) {
+                this._scrollX = value;
+                this.needsDraw = true;
+            }
         }
     },
 
     _scrollY: {
         value: 0
     },
-
+    /**
+        Scroll distance from the top
+        @type Number
+        @default 0
+    */
     scrollY: {
         get: function () {
             return this._scrollY;
         },
         set: function (value) {
-            this._scrollY = value;
-            this.needsDraw = true;
+            if (this._scrollY !== value) {
+                this._scrollY = value;
+                this.needsDraw = true;
+            }
         }
     },
 
@@ -76,7 +103,13 @@ exports.Scroller = Montage.create(Component, {
     _axis: {
         value: "auto"
     },
+    /**
+        Which axis scrolling is restricted to.
 
+        Can be "vertical", "horizontal" or "auto".
+        @type {String}
+        @default "auto"
+    */
     axis: {
         get: function () {
             return this._axis;
@@ -90,7 +123,13 @@ exports.Scroller = Montage.create(Component, {
     _displayScrollbars: {
         value: "auto"
     },
+    /**
+        Which axis to display scrollbars for.
 
+        Can be "vertical", "horizontal", "both", "auto" or "none"
+        @type {String}
+        @default "auto"
+    */
     displayScrollbars: {
         get: function () {
             return this._displayScrollbars;
@@ -114,7 +153,11 @@ exports.Scroller = Montage.create(Component, {
     _hasMomentum: {
         value: true
     },
-
+    /**
+        Whether to keep translating after the user has releases their cursor/finger.
+        @type {Boolean}
+        @default true
+    */
     hasMomentum: {
         get: function () {
             return this._hasMomentum;
@@ -171,6 +214,9 @@ exports.Scroller = Montage.create(Component, {
                 this._maxTranslateX = delegateValue.x;
                 this._maxTranslateY = delegateValue.y;
             }
+
+            this.scrollX = Math.min(this._scrollX, this._maxTranslateX);
+            this.scrollY = Math.min(this._scrollY, this._maxTranslateY);
 
             switch (this._displayScrollbars) {
                 case "horizontal":

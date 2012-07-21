@@ -34,45 +34,211 @@ POSSIBILITY OF SUCH DAMAGE.
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8">
     <title>Motorola Mobility - MFiddle</title>
     <link rel="stylesheet" href="mfiddle.css">
-    <link rel="stylesheet" href="codemirror.css">
-    <script src="mfiddle.js"></script>
-    <script src="codemirror.min.js"></script>
+    <script src="../../montage.js" data-auto-package></script>
+    <script type="text/montage-serialization">{
+        "owner": {
+            "prototype": "mfiddle",
+            "properties": {
+                "element": {"#": "body"}
+            }
+        },
+
+        "cssView": {
+            "prototype": "ui/content-view.reel",
+            "properties": {
+                "element": {"#": "css"},
+                "title": "CSS"
+            }
+        },
+
+        "serializationView": {
+            "prototype": "ui/content-view.reel",
+            "properties": {
+                "element": {"#": "serialization"},
+                "title": "Serialization"
+            }
+        },
+
+        "htmlView": {
+            "prototype": "ui/content-view.reel",
+            "properties": {
+                "element": {"#": "html"},
+                "title": "HTML"
+            }
+        },
+
+        "javascriptView": {
+            "prototype": "ui/content-view.reel",
+            "properties": {
+                "element": {"#": "javascript"},
+                "title": "JavaScript"
+            }
+        },
+
+        "previewView": {
+            "prototype": "ui/content-view.reel",
+            "properties": {
+                "element": {"#": "preview"},
+                "title": "Preview"
+            }
+        },
+
+        "cssCodeMirror": {
+            "prototype": "ui/code-mirror.reel",
+            "properties": {
+                "element": {"#": "cssCodeMirror"},
+                "mode": "css",
+                "matchBrackets": true,
+                "lineNumbers": true
+            }
+        },
+
+        "serializationCodeMirror": {
+            "prototype": "ui/code-mirror.reel",
+            "properties": {
+                "element": {"#": "serializationCodeMirror"},
+                "mode": "json",
+                "matchBrackets": true,
+                "lineNumbers": true
+            }
+        },
+
+        "htmlCodeMirror": {
+            "prototype": "ui/code-mirror.reel",
+            "properties": {
+                "element": {"#": "htmlCodeMirror"},
+                "mode": "htmlmixed",
+                "lineNumbers": true
+            }
+        },
+
+        "javascriptCodeMirror": {
+            "prototype": "ui/code-mirror.reel",
+            "properties": {
+                "element": {"#": "javascriptCodeMirror"},
+                "mode": "javascript",
+                "lineNumbers": true
+            }
+        },
+
+        "components": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "components"}
+            },
+            "bindings": {
+                "objects": {"<-": "@owner.components"}
+            }
+        },
+
+        "componentButton": {
+            "prototype": "ui/component-button.reel",
+            "properties": {
+                "element": {"#": "componentButton"}
+            },
+            "bindings": {
+                "component": {"<-": "@components.objectAtCurrentIteration"}
+            }
+        },
+
+        "save": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "save"}
+            }
+        },
+
+        "new": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "new"}
+            }
+        },
+
+        "run": {
+            "prototype": "montage/ui/button.reel",
+            "properties": {
+                "element": {"#": "run"}
+            }
+        },
+
+        "examples": {
+            "prototype": "montage/ui/repetition.reel",
+            "properties": {
+                "element": {"#": "examples"}
+            },
+            "bindings": {
+                "objects": {"<-": "@owner.examples"}
+            }
+        },
+
+        "exampleButton": {
+            "prototype": "ui/example-button.reel",
+            "properties": {
+                "element": {"#": "exampleButton"}
+            },
+            "bindings": {
+                "example": {"<-": "@examples.objectAtCurrentIteration"}
+            }
+        },
+
+        "montageFrame": {
+            "prototype": "ui/montage-frame.reel",
+            "properties": {
+                "element": {"#": "montageFrame"}
+            }
+        },
+
+        "logger": {
+            "prototype": "ui/logger.reel",
+            "properties": {
+                "element": {"#": "logger"}
+            },
+            "bindings": {
+                "input": {"<-": "@montageFrame.logMessages"}
+            }
+        }
+    }</script>
 </head>
-<body>
+<body data-montage-id="body">
     <div id="header">
         <h1 id="logo">MFiddle</h1>
-        <ul id="components">
-            <li><div id="button" data-component="button" title="Add Button">Button</div></li>
-            <li><div id="slider" data-component="slider" title="Add Slider">Slider</div></li>
-            <li><div id="toggle" data-component="toggle" title="Add Toggle">Toggle</div></li>
-            <li><div id="checkbox" data-component="checkbox" title="Add Checkbox">Checkbox</div></li>
-            <li><div id="text-field" data-component="textfield" title="Add Text Field">Text Field</div></li>
-            <li><div id="dynamic-text" data-component="dynamic-text" title="Add Dynamic Text">Dynamic Text</div></li>
-            <li><div id="repetition" data-component="repetition" title="Add Repetition">Repetition</div></li>
+        <ul id="components" data-montage-id="components">
+            <li>
+                <div class="component-button-holder"><div data-montage-id="componentButton"></div></div>
+            </li>
         </ul>
         <ul id="menu">
-            <li><div id="run">Run</div></li>
+            <li><div class="menu-button" data-montage-id="save">Save</div></li>
+            <li><div class="menu-button" data-montage-id="new">New</div></li>
+            <li><div id="run" class="menu-button" data-montage-id="run">Run</div></li>
             <li>
                 <div id="examples">
                     <h2>Examples</h2>
-                    <ul>
-                        <li>A simple Button</li>
-                        <li>A simple Binding</li>
-                        <li>Two way Bindings</li>
-                        <li>Accessing Repetition objects</li>
+                    <ul data-montage-id="examples">
+                        <li><span data-montage-id="exampleButton"></span></li>
                     </ul>
                 </div>
             </li>
         </ul>
     </div>
-    <div id="serialization">
-        <h2>Serialization</h2>
+    <div id="css" data-montage-id="css">
+        <div data-montage-id="cssCodeMirror"></div>
     </div>
-    <div id="html">
-        <h2>HTML</h2>
+    <div id="serialization" data-montage-id="serialization">
+        <div data-montage-id="serializationCodeMirror"></div>
     </div>
-    <div id="result">
-        <h2>Result</h2>
+    <div id="html" data-montage-id="html">
+        <div data-montage-id="htmlCodeMirror"></div>
+    </div>
+    <div id="javascript" data-montage-id="javascript">
+        <div data-montage-id="javascriptCodeMirror"></div>
+    </div>
+    <div id="preview" data-montage-id="preview">
+        <div id="iframe-wrapper">
+            <div data-montage-id="montageFrame"></div>
+        </div>
+        <div id="logger" data-montage-id="logger"></div>
     </div>
 <body>
 </html>
