@@ -4,6 +4,7 @@ var Template = require("montage/ui/template").Template,
     rootComponent = require("montage/ui/component").__root__;
 
 window.Frame = {
+    _MODULE_ID: "mfiddle",
     _javascript: document.querySelector('script[type="text/montage-javascript"]'),
     reset: function() {
         var childComponents = rootComponent.childComponents,
@@ -55,15 +56,42 @@ window.Frame = {
 
     // HACK: until this functionality is ready in require
     _defineModule: function(moduleCode, callback) {
-        var dependencies = this._parseDependencies(moduleCode);
-        var factory = new Function("require", "exports", "module", moduleCode);
+        var self = this,
+            dependencies = this._parseDependencies(moduleCode),
+            factory = new Function("require", "exports", "module", moduleCode);
+
         Promise.all(dependencies.map(require.deepLoad)).then(function () {
             var exports = {};
 
             factory(require, exports);
-            require.inject("mfiddle", exports);
-            callback(require/*avoid being parsed*/("mfiddle"));
+            self._addMontageMetadata(exports);
+            require.inject(self._MODULE_ID, exports);
+            callback(require/*avoid being parsed*/(self._MODULE_ID));
         });
+    },
+    _addMontageMetadata: function(exports) {
+        // mostly a copy paste of SerializationCompiler
+        for (var name in exports) {
+            var object = exports[name]
+            if (!(object instanceof Object)) {
+            // avoid attempting to reinitialize an aliased property
+            } else if (object.hasOwnProperty("_montage_metadata") && !object._montage_metadata.isInstance) {
+                object._montage_metadata.aliases.push(name);
+                object._montage_metadata.objectName = name;
+            } else if (!Object.isSealed(object)) {
+                Object.defineProperty(exports[name], "_montage_metadata", {
+                    value: {
+                        require: require,
+                        module: this._MODULE_ID,
+                        moduleId: this._MODULE_ID,
+                        property: name,
+                        objectName: name,
+                        aliases: [name],
+                        isInstance: false
+                    }
+                });
+            }
+        }
     },
     _parseDependencies: function(moduleCode) {
         var o = {};
