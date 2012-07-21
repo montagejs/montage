@@ -28,303 +28,317 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
-(function() {
+var Montage = require("montage").Montage;
+    Component = require("montage/ui/component").Component,
+    Template = require("montage/ui/template").Template,
+    gist = require("gist").gist;
 
-var Mfiddle = {
-    init: function() {
-        Mfiddle.setup();
-        Examples.setup();
-        Components.setup();
+exports.Mfiddle = Montage.create(Component, {
+    hasTemplate: {value: false},
+    templateObjects: {value: {}},
+    _componentId: {value: 1},
+    _logger: {value: null},
 
-        var serialization = Mfiddle.getParameter("serialization") || "",
-            html = Mfiddle.getParameter("html") || "",
-            example = Mfiddle.getParameter("example") || "A simple Button";
+    templateDidLoad: {
+        value: function() {
+            var example = this.examples[0];
 
-        if (serialization || html) {
-            Mfiddle.load(serialization, html);
-            Mfiddle.execute();
-        } else {
-            Examples.loadExample(example);
-        }
-    },
+            this._logger = this.templateObjects.logger;
 
-    setup: function() {
-        Mfiddle.serialization = CodeMirror(document.getElementById("serialization"), {
-            mode: {
-                name: "javascript",
-                json: true
-            },
-            tabSize: 2,
-            matchBrackets: true,
-            lineNumbers: true
-        });
+            this.addEventListener("action", this, false);
+            window.addEventListener("hashchange", this, false);
 
-        Mfiddle.html = CodeMirror(document.getElementById("html"), {
-            mode:  "htmlmixed",
-            tabSize: 2,
-            lineNumbers: true
-        });
-
-        Mfiddle.queryString = {};
-        window.location.hash.slice(1).split("&").forEach(function(item) {
-            var param = item.split("="),
-                key = decodeURIComponent(param[0]),
-                value = decodeURIComponent(param[1]);
-
-            Mfiddle.queryString[key] = value;
-        });
-
-        document.addEventListener("keydown", function(event) {
-            if ((event.metaKey || event.ctrlKey) && event.keyCode == 83) {
-                event.preventDefault();
-                    Mfiddle.execute();
-            }
-        }, false);
-        document.getElementById("run").addEventListener("click", Mfiddle.execute, false);
-    },
-
-    getParameter: function(name) {
-        return this.queryString[name];
-    },
-
-    load: function(serialization, html) {
-        serialization = serialization.replace(/\{\s*(\"[#@]\")\s*:\s*(\"[^\"]+\")\s*\}/g, "{$1: $2}")
-            .replace(/\{\s*(\"(?:<-|<->)\")\s*:\s*(\"[^\"]+\"\s*(?:,\s*\"converter\"\s*:\s*\{\s*\"@\"\s*:\s*\"[^\"]+\"\s*\}\s*|,\s*\"deferred\"\s*:\s*(true|false)\s*)*)\}/g, function(_, g1, g2) {
-                return "{" + g1 + ": " + g2.replace(/,\s*/, ", ").replace(/\n\s*/, "") + "}";
-            });
-
-        Mfiddle.serialization.setValue(serialization);
-        Mfiddle.html.setValue(html);
-    },
-
-    executeIframe: document.createElement("iframe"),
-    execute: function() {
-        var iframe = Mfiddle.executeIframe;
-
-        if (iframe.parentNode) {
-            iframe.parentNode.removeChild(iframe);
-        }
-
-        document.getElementById("result").appendChild(iframe);
-        Mfiddle.createMontageApplication(iframe.contentDocument);
-
-        // hijacks iframe's console.debug
-        iframe.contentWindow.console.debug = function() {
-            if (arguments[0].indexOf("Syntax error") == 0) {
-                iframe.contentDocument.body.innerHTML = "<pre>" + arguments[0] + "</pre>";
+            var gistId = location.hash.slice(3);
+            if (gistId) {
+                this.loadGist(gistId);
             } else {
-                console.debug.apply(console, arguments);
+                this.loadExample(example);
+                this.executeFiddle();
             }
         }
     },
 
-
-    createMontageApplication: function(doc) {
-        doc.head.innerHTML = "";
-
-        var montageScript = doc.head.appendChild(doc.createElement("script"));
-        montageScript.src = "../../montage.js";
-        montageScript.setAttribute("data-auto-package", "");
-
-        var serializationScript = doc.head.appendChild(doc.createElement("script"));
-        serializationScript.type = "text/montage-serialization";
-        serializationScript.textContent = Mfiddle.serialization.getValue();
-
-        doc.body.innerHTML = Mfiddle.html.getValue();
-    }
-}
-
-var Components = {
-    componentId: 0,
-
-    setup: function() {
-        Array.prototype.map.call(document.querySelectorAll("*[data-component]"), function(button) {
-            var componentName = button.getAttribute("data-component");
-            button.addEventListener("click", function() {
-                var object = JSON.parse(Mfiddle.serialization.getValue()||"{}"),
-                    htmlString = Mfiddle.html.getValue(),
-                    name,
-                    id;
-
-                name = componentName.replace(/(?:^|-)([^-])/g, function(_, g1) { return g1.toUpperCase() });
-                name = name[0].toLowerCase() + name.slice(1);
-                do {id = name + ++Components.componentId} while (id in object);
-
-                object[id] = JSON.parse(Components.data[componentName]);
-                object[id].properties.element = {"#": id};
-
-                htmlString += "\n" + (object[id].html || '<div data-montage-id=""></div>').replace('data-montage-id=""', 'data-montage-id="' + id + '"');
-                delete object[id].html;
-
-                Mfiddle.load(JSON.stringify(object, null, "  "), htmlString);
-            }, false);
-        });
+    components: {
+        value: require("components").components
+    },
+    examples: {
+        value: require("examples").examples
     },
 
-    data: {
-        "dynamic-text": JSON.stringify({
-            "prototype": "montage/ui/dynamic-text.reel",
-            "properties": {
-                "value": "Text"
-            },
-            "html": '<p data-montage-id=""></p>'
-        }),
-        "button": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/button.reel",
-            "properties": {
-                "value": "Button",
-                "enabled": true
-            },
-            "html": '<div data-montage-id="" class="text"></div>'
-        }),
-        "textfield": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/textfield.reel",
-            "properties": {
-                "value": "Editable text"
-            },
-            "html": '<input data-montage-id="" type="text">'
-        }),
-        "checkbox": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/checkbox.reel",
-            "properties": {
-                "checked": true
-            }
-        }),
-        "toggle": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/toggle.reel",
-            "properties": {
-                "value": true
-            }
-        }),
-        "slider": JSON.stringify({
-            "prototype": "montage/ui/bluemoon/slider.reel",
-            "properties": {
-                "minValue": 0,
-                "maxValue": 100,
-                "value": 50
-            }
-        }),
-        "repetition": JSON.stringify({
-            "prototype": "montage/ui/repetition.reel",
-            "properties": {
-                "objects": [1, 2, 3]
-            },
-            "html": '<ul data-montage-id=""><li>Item</li></ul>'
-        })
-    }
-};
+    loadGist: {
+        value: function(id) {
+            var self = this;
 
-var Examples = {
-    setup: function() {
-        Array.prototype.map.call(document.querySelectorAll("#examples li"), function(button) {
-            var name = button.textContent;
-            button.addEventListener("click", function() {
-                Examples.loadExample(name);
+            gist.load(id, null, function(settings, cssFile, htmlFile, jsFile) {
+                var htmlDocument,
+                    css = cssFile && cssFile.content,
+                    html = htmlFile && htmlFile.content,
+                    javascript = jsFile && jsFile.content,
+                    serialization;
+
+                if (html) {
+                    // extract body and serialization
+                    htmlDocument = Template.createHtmlDocumentFromString(html);
+                    serialization = Template.getInlineSerialization(htmlDocument);
+                    html = htmlDocument.body.innerHTML;
+
+                    // clean up a bit
+                    serialization = serialization.replace(/\n    /g, "\n");
+                    html = html.replace(/\n    /g, "\n").replace(/^\s*\n|\n\s*$/g, "");
+                }
+
+                self.loadFiddle(css, serialization, html, javascript);
+                self.executeFiddle();
             });
-        });
+        }
     },
 
-    loadExample: function(name) {
-        var example = Examples.data[name];
-
-        Mfiddle.load(JSON.stringify(example.serialization, null, "  "), example.html);
-        Mfiddle.execute();
+    loadFiddle: {
+        value: function(css, serialization, html, javascript) {
+            if (css != null) {
+                this.templateObjects.cssCodeMirror.value = css;
+            }
+            if (serialization != null) {
+                this.templateObjects.serializationCodeMirror.value = serialization;
+            }
+            if (html != null) {
+                this.templateObjects.htmlCodeMirror.value = html;
+            }
+            if (javascript != null) {
+                this.templateObjects.javascriptCodeMirror.value = javascript;
+            }
+        }
     },
 
-    data: {
-        "A simple Button": {
-            serialization: {
-                "button": {
-                    "prototype": "montage/ui/bluemoon/button.reel",
-                    "properties": {
-                        "element": {"#": "button"},
-                        "value": "Click Me!"
+    executeFiddle: {
+        value: function() {
+            var templateObjects = this.templateObjects;
+
+            templateObjects.montageFrame.load(
+                templateObjects.cssCodeMirror.value,
+                templateObjects.serializationCodeMirror.value,
+                templateObjects.htmlCodeMirror.value,
+                templateObjects.javascriptCodeMirror.value
+            );
+        }
+    },
+
+    loadExample: {
+        value: function(example) {
+            location.hash = "";
+            this.loadFiddle(example.css, this._stringifySerialization(example.serialization), example.html, example.javascript);
+            this.executeFiddle();
+        }
+    },
+
+    addComponentToFiddle: {
+        value: function(component) {
+            var id = this._generateComponentId(component.name);
+
+            component.serialization.properties.element = {"#": id};
+            this._addSerialization(id, component.serialization);
+            this._addHtml(component.html.replace('data-montage-id=""', 'data-montage-id="' + id + '"'));
+
+            this.executeFiddle();
+        }
+    },
+
+    clear: {
+        value: function() {
+            var templateObjects = this.templateObjects;
+
+            templateObjects.cssCodeMirror.value = "";
+            templateObjects.serializationCodeMirror.value = "";
+            templateObjects.htmlCodeMirror.value = "";
+            templateObjects.javascriptCodeMirror.value = "";
+
+            location.hash = "";
+        }
+    },
+
+    _tmpDiv: {value: document.createElement("div")},
+    _addHtml: {
+        value: function(htmlPiece) {
+            var serializationObject = this._getSerializationObject(),
+                htmlCodeMirror = this.templateObjects.htmlCodeMirror,
+                html = htmlCodeMirror.value,
+                ownerMontageId = serializationObject && serializationObject.getProperty("owner.properties.element.#"),
+                div = this._tmpDiv,
+                addHtmlAtTheEnd = true,
+                root;
+
+            if (ownerMontageId) {
+                if (htmlCodeMirror.hasModeErrors()) {
+                    this._logger.log("Add component warning: The HTML code seems to be invalid, appending element at the end.");
+                } else {
+                    div.innerHTML = html;
+                    root = div.querySelector("*[data-montage-id='" + ownerMontageId + "']");
+
+                    // this is the basic case, the owner's element is the root
+                    // of the body and has no siblings, we only address this case
+                    if (root && root.parentNode == div && !root.nextSibling) {
+                        // tries to figure out the indentation level of the previous
+                        // line to match it
+                        var matches = /([\t ]*)[^\n]*\n\s*<\/[^>]+>\s*$/.exec(html);
+                        var indentation = RegExp.$1 || "";
+                        // insert html before the last closing tag
+                        html = html.replace(/<\/[^>]+>\s*$/, indentation + htmlPiece + "\n$&");
+                        addHtmlAtTheEnd = false;
+                    } else {
+                        this._logger.log("Add component warning: The owner's element is not the single root element, appending element at the end.");
                     }
                 }
-            },
-            html: '<div data-montage-id="button" class="text"></div>'
-        },
+            }
 
-        "A simple Binding": {
-            serialization: {
-                "slider": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
-                    "properties": {
-                        "element": {"#": "slider"},
-                        "value": 50
-                    }
-                },
+            if (addHtmlAtTheEnd) {
+                html += "\n" + htmlPiece;
+            }
 
-                "dynamicText": {
-                    "prototype": "montage/ui/dynamic-text.reel",
-                    "properties": {
-                        "element": {"#": "dynamicText"}
-                    },
-                    "bindings": {
-                        "value": {"<-": "@slider.value"}
-                    }
+            this.loadFiddle(null, null, html, null);
+        }
+    },
+
+    _addSerialization: {
+        value: function(label, serializationPiece) {
+            var serialization,
+                serializationObject = this._getSerializationObject();
+
+            if (serializationObject) {
+                serializationObject[label] = serializationPiece;
+                serialization = this._stringifySerialization(serializationObject);
+            } else {
+                serializationObject = {};
+                serializationObject[label] = serializationPiece;
+                serialization = this.templateObjects.serializationCodeMirror.value + "\n" + this._stringifySerialization(serializationPiece);
+
+                this._logger.log("Add component warning: The serialization seems to be invalid, appending component at the end.");
+            }
+
+            this.loadFiddle(null, serialization, null, null);
+        }
+    },
+
+    // properties used to cache the serialization object
+    _serializationObject: {value: null},
+    _lastSerialization: {value: null},
+    _getSerializationObject: {
+        value: function() {
+            var serialization = this.templateObjects.serializationCodeMirror.value;
+
+            if (serialization === this._lastSerialization) {
+                return this._serializationObject;
+            } else {
+                this._lastSerialization = serialization;
+                try {
+                    return this._serializationObject = JSON.parse(serialization);
+                } catch(ex) {
+                    return this._serializationObject = null;
                 }
-            },
-            html: '<div data-montage-id="slider"></div>\n<h2 data-montage-id="dynamicText"></h2>'
-        },
+            }
+        }
+    },
 
-        "Two way Bindings": {
-            serialization: {
-                "number": {
-                    "prototype": "montage/ui/input-number.reel",
-                    "properties": {
-                        "element": {"#": "number"},
-                        "value": 50
-                    }
-                },
+    _generateComponentId: {
+        value: function(name) {
+            var serializationObject = this._getSerializationObject(),
+                id;
 
-                "slider1": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
-                    "properties": {
-                        "element": {"#": "slider1"}
-                    },
-                    "bindings": {
-                        "value": {"<->": "@number.value"}
-                    }
-                },
+            if (serializationObject) {
+                do {
+                    id = name + this._componentId++;
+                } while (id in serializationObject);
+            } else {
+                id = name + this._componentId++;
+            }
 
-                "slider2": {
-                    "prototype": "montage/ui/bluemoon/slider.reel",
-                    "properties": {
-                        "element": {"#": "slider2"}
-                    },
-                    "bindings": {
-                        "value": {"<->": "@number.value"}
-                    }
-                }
-            },
-            html: '<input type="number" data-montage-id="number">\n<div data-montage-id="slider1" style="width: 20%"></div>\n<div data-montage-id="slider2"></div>'
-        },
+            return id;
+        }
+    },
 
-        "Accessing Repetition objects": {
-            serialization: {
-                "repetition": {
-                    "prototype": "montage/ui/repetition.reel",
-                    "properties": {
-                        "objects": ["Mike", "François", "Afonso", "Heather"],
-                        "element": {"#": "repetition"}
-                    }
-                },
-                "dynamicText": {
-                    "prototype": "montage/ui/dynamic-text.reel",
-                    "properties": {
-                        "element": {"#": "dynamicText"}
-                    },
-                    "bindings": {
-                        "value": {"<-": "@repetition.objectAtCurrentIteration"}
-                    }
-                }
-            },
-            html: '<ul data-montage-id="repetition">\n  <li>\n    Hello there <span data-montage-id="dynamicText"></span>!\n  </li>\n</ul>'
+    /**
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>MFiddle</title>
+        <script type="text/montage-serialization"><!-- serialization -->}</script>
+    </head>
+    <body>
+        <!-- html -->
+    </body>
+    </html>
+    */
+    _htmlPageTemplate: {
+        value: '<!DOCTYPE html>\n<html>\n<head>\n    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />\n    <title>MFiddle</title>\n    <script type="text/montage-serialization"><!-- serialization --></script></head>\n<body>\n    <!-- html -->\n</body>\n</html>'
+    },
+    _generateHtmlPage: {
+        value: function() {
+            var templateObjects = this.templateObjects,
+                serialization = templateObjects.serializationCodeMirror.value,
+                html = templateObjects.htmlCodeMirror.value;
+
+            serialization = serialization.replace(/\n/gm, "\n    ");
+            html = html.replace(/\n/gm, "\n    ");
+
+            return this._htmlPageTemplate
+                .replace("<!-- serialization -->", serialization)
+                .replace("<!-- html -->", html);
+        }
+    },
+
+    handleComponentButtonAction: {
+        value: function(action) {
+            this.addComponentToFiddle(action.target.component);
+        }
+    },
+
+    handleSaveAction: {
+        value: function() {
+            gist.save({
+                anon: true,
+                cssCode: this.templateObjects.cssCodeMirror.value,
+                htmlMarkup: this._generateHtmlPage(),
+                jsCode: this.templateObjects.javascriptCodeMirror.value
+            });
+        }
+    },
+
+    handleNewAction: {
+        value: function() {
+            this.clear();
+        }
+    },
+
+    handleRunAction: {
+        value: function() {
+            this.executeFiddle();
+        }
+    },
+
+    handleExampleButtonAction: {
+        value: function(action) {
+            this.loadExample(action.target.example);
+        }
+    },
+
+    handleHashchange: {
+        value: function() {
+            var gistId = location.hash.slice(3);
+
+            if (gistId && gist.id != gistId) {
+                this.loadGist(gistId);
+            }
+        }
+    },
+
+    _stringifySerialization: {
+        value: function(object) {
+            return JSON.stringify(object, null, 4)
+                .replace(/\{\s*(\"[#@]\")\s*:\s*(\"[^\"]+\")\s*\}/g, "{$1: $2}")
+                .replace(/\{\s*(\"(?:<-|<->)\")\s*:\s*(\"[^\"]+\"\s*(?:,\s*\"converter\"\s*:\s*\{\s*\"@\"\s*:\s*\"[^\"]+\"\s*\}\s*|,\s*\"deferred\"\s*:\s*(true|false)\s*)*)\}/g, function(_, g1, g2) {
+                    return "{" + g1 + ": " + g2.replace(/,\s*/, ", ").replace(/\n\s*/, "") + "}";
+                });
         }
     }
-};
 
-document.addEventListener("DOMContentLoaded", Mfiddle.init, false);
-
-})();
+});
