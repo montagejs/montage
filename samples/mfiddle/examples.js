@@ -24,24 +24,24 @@ exports.examples = [
         css: "",
         serialization: {
             "button": {
-                "prototype": "montage/ui/bluemoon/button.reel",
+                "prototype": "montage/ui/button.reel",
                 "properties": {
                     "element": {"#": "button"},
-                    "value": "Click Me!"
+                    "label": "Click Me!"
                 }
             }
         },
-        html: '<div data-montage-id="button" class="text"></div>',
+        html: '<button data-montage-id="button"></button>',
         javascript: ""
     },
     {
         label: "A simple Binding",
-        css: "",
+        css: ".range {\n    width: 100%;\n}",
         serialization: {
-            "slider": {
-                "prototype": "montage/ui/bluemoon/slider.reel",
+            "range": {
+                "prototype": "montage/ui/input-range.reel",
                 "properties": {
-                    "element": {"#": "slider"},
+                    "element": {"#": "range"},
                     "value": 50
                 }
             },
@@ -52,16 +52,16 @@ exports.examples = [
                     "element": {"#": "dynamicText"}
                 },
                 "bindings": {
-                    "value": {"<-": "@slider.value"}
+                    "value": {"<-": "@range.value"}
                 }
             }
         },
-        html: '<div data-montage-id="slider"></div>\n<h2 data-montage-id="dynamicText"></h2>',
+        html: '<input type="range" data-montage-id="range" class="range">\n<h2 data-montage-id="dynamicText"></h2>',
         javascript: ""
     },
     {
         label: "Two way Bindings",
-        css: "",
+        css: ".range2 {\n    width: 100%;\n}",
         serialization: {
             "number": {
                 "prototype": "montage/ui/input-number.reel",
@@ -71,27 +71,27 @@ exports.examples = [
                 }
             },
 
-            "slider1": {
-                "prototype": "montage/ui/bluemoon/slider.reel",
+            "range1": {
+                "prototype": "montage/ui/input-range.reel",
                 "properties": {
-                    "element": {"#": "slider1"}
+                    "element": {"#": "range1"}
                 },
                 "bindings": {
                     "value": {"<->": "@number.value"}
                 }
             },
 
-            "slider2": {
-                "prototype": "montage/ui/bluemoon/slider.reel",
+            "range2": {
+                "prototype": "montage/ui/input-range.reel",
                 "properties": {
-                    "element": {"#": "slider2"}
+                    "element": {"#": "range2"}
                 },
                 "bindings": {
                     "value": {"<->": "@number.value"}
                 }
             }
         },
-        html: '<input type="number" data-montage-id="number">\n<div data-montage-id="slider1" style="width: 20%"></div>\n<div data-montage-id="slider2"></div>',
+        html: '<input type="number" data-montage-id="number">\n<input type="range" data-montage-id="range1" class="range1">\n<input type="range" data-montage-id="range2" class="range2">',
         javascript: ""
     },
     {
