@@ -34,7 +34,8 @@ POSSIBILITY OF SUCH DAMAGE.
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
-    Component = require("montage/ui/component").Component;
+    Component = require("montage/ui/component").Component,
+    CodeMirror = require("ui/code-mirror.reel/codemirror/codemirror.min").CodeMirror;
 
 /**
     Description TODO
