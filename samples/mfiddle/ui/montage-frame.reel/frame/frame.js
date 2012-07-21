@@ -63,7 +63,7 @@ window.Frame = {
         Promise.all(dependencies.map(require.deepLoad)).then(function () {
             var exports = {};
 
-            factory(require, exports);
+            factory(require, exports, require.getModule(self._MODULE_ID));
             self._addMontageMetadata(exports);
             require.inject(self._MODULE_ID, exports);
             callback(require/*avoid being parsed*/(self._MODULE_ID));
