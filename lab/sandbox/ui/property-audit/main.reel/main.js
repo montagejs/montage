@@ -72,7 +72,6 @@ exports.Main = Montage.create(Component, {
             "montage/ui/text-slider.reel",
             "montage/ui/textarea.reel",
             "montage/ui/toggle-button.reel",
-            "montage/ui/toggle-switch.reel",
             "montage/ui/token-field/token-field.reel",
             "montage/ui/token-field/token.reel",
             "montage/ui/native/anchor.reel",

@@ -29,17 +29,17 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 /**
-
+    @module "montage/lab/sandbox/ui/picasa-carousel.reel"
     @requires montage/core/core
     @requires montage/ui/component
 */
 var Montage = require("montage").Montage,
     Component = require("ui/component").Component;
 /**
- @class module:"montage/ui/google/map.reel".Map
- @extends module:montage/ui/component.Component
+ @class module:"montage/lab/sandbox/ui/picasa-carousel.reel".PicasaCarousel
+@extends module:montage/ui/component.Component
  */
-var PicasaCarousel = exports.PicasaCarousel = Montage.create(Component, /** @lends module:"montage/ui/toggle-switch.reel".ToggleSwitch# */ {
+var PicasaCarousel = exports.PicasaCarousel = Montage.create(Component, /** @lends module:"montage/lab/sandbox/ui/picasa-carousel.reel".ToggleSwitch# */ {
         photoListController: {
             enumerable: false,
             value: null

@@ -41,12 +41,6 @@ POSSIBILITY OF SUCH DAMAGE.
             "pressedClass": "active"
         }
     },
-    "toggle": {
-        "prototype": "montage/ui/toggle-switch.reel",
-        "properties": {
-            "element": {"#": "toggle"}
-        }
-    },
     "italic": {
         "prototype": "montage/ui/toggle-button.reel",
         "properties": {
@@ -374,48 +368,6 @@ exports.StyleElement = Montage.create(Component, {
                                                 </div>
                                             </li>
                                         </ul>
-
-                </section>
-
-
-
-                <h3>ToggleSwitch component</h3>
-                <p>The ToggleSwitch component provides a styled toggle control common to touch interfaces. This component operates on a standard &lt;div> element, rather than a native HTML control.</p>
-
-                <!-- ToggleSwitch element -->
-                <div class="demo">
-                    <div data-montage-id="toggle" style="margin-bottom: 5px"></div>
-                </div>
-
-                <section>
-
-                                           <ul data-montage-id="toggleAccordion3" class="accordion">
-                                                <li class="accordion-group">
-                                                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
-                                                    <div class="accordion-inner montage-hidden" >
-                                                        <pre class="prettyprint" >
-&lt;div data-montage-id="toggle"&gt;&lt;/div&gt;
-                                </pre>
-                                                    </div>
-                                                </li>
-                                                <li class="accordion-group">
-                                                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
-                                                    <div class="accordion-inner montage-hidden">
-                                                        <pre class="prettyprint" >
-{
-    "toggle": {
-        "prototype": "montage/ui/toggle-switch.reel",
-        "properties": {
-            "element": {"#": "toggle"}
-        }
-    }
-}
-                                 </pre>
-
-                                                    </div>
-                                                </li>
-                                            </ul>
-
 
                 </section>
 
