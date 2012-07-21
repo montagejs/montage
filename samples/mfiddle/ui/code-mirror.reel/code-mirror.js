@@ -35,7 +35,7 @@ POSSIBILITY OF SUCH DAMAGE.
 */
 var Montage = require("montage").Montage,
     Component = require("montage/ui/component").Component,
-    CodeMirror = require("ui/code-mirror.reel/codemirror/codemirror.min").CodeMirror;
+    CodeMirror = require("ui/code-mirror.reel/codemirror/codemirror.min.js").CodeMirror;
 
 /**
     Description TODO
