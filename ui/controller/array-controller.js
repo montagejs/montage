@@ -338,7 +338,6 @@ var ArrayController = exports.ArrayController = Montage.create(ObjectController,
                     this._selectedIndexes = value;
                     this._selectedContentIndexes = newIndexes;
                     this._selectedObjects = null;
-                    console.log("selectedIndexes this._selections = null;");
                     this._selections = null;
                 });
             }
