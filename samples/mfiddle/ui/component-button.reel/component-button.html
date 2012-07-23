@@ -31,33 +31,24 @@ POSSIBILITY OF SUCH DAMAGE.
 </copyright> -->
 <html>
 <head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="input-range.css">
-    <script type="text/montage-serialization">
-{
-    "translateComposer1": {
-        "prototype": "ui/composer/translate-composer",
-        "properties": {
-            "component": {"@": "owner"},
-            "axis": "horizontal",
-            "hasMomentum": false
-        }
-    },
-    "owner": {
-        "properties": {
-            "element": {"#": "inputRange"},
-            "_handleEl": {"#": "inputRangeThumb"},
-            "_translateComposer": {"@": "translateComposer1"}
-        }
+    <title></title>
+    <link rel="stylesheet" type="text/css" href="component-button.css">
+    <script type="text/montage-serialization">{
+        "owner": {
+            "properties": {
+                "element": {"#": "owner"}
+            }
+        },
 
-    }
-}
-    </script>
+        "icon": {
+            "value": {"#": "icon"}
+        }
+    }</script>
 </head>
 <body>
-    <!-- inputRange needs to be a div to work in Firefox -->
-    <div data-montage-id="inputRange" class="montage-inputRange">
-        <div data-montage-id="inputRangeThumb" draggable="true" class="montage-inputRange-thumb"></div>
+    <div data-montage-id="owner" class="component-button">
+        <div data-montage-id="icon" class="icon"></div>
+        <div class="highlighter"></div>
     </div>
 </body>
 </html>

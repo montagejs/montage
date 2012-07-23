@@ -77,15 +77,22 @@ html {
     height: 36px;
     overflow: hidden;
 }
-#components li {
+#components > li {
     position: relative;
     top: 0;
     margin: 0;
     padding: 0;
     float: left;
 }
-#components div {
-    display: block;
+#components > li:first-child > div {
+    border-left: none;
+}
+#components > li:last-child > div {
+    border-right: none;
+}
+
+.component-button-holder {
+    display: inline-block;
     border: none;
     margin: 0;
     padding: 0;
@@ -98,88 +105,7 @@ html {
     border-right: 1px solid #404040;
     cursor: pointer;
 }
-#components li:first-child div {
-    border-left: none;
-}
-#components li:last-child div {
-    border-right: none;
-}
-#button:after {
-    content: "";
-    position: absolute;
-    top: 6px;
-    left: 11px;
-    width: 44px;
-    height: 22px;
-    background: url(mfiddle-ui.png) 0 -76px no-repeat;
-}
-#slider:after {
-    content: "";
-    position: absolute;
-    top: 6px;
-    left: 13px;
-    width: 43px;
-    height: 23px;
-    background: url(mfiddle-ui.png) -45px -76px no-repeat;
-}
-#toggle:after {
-    content: "";
-    position: absolute;
-    top: 6px;
-    left: 12px;
-    width: 44px;
-    height: 22px;
-    background: url(mfiddle-ui.png) 0 -99px no-repeat;
-}
-#checkbox:after {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 22px;
-    width: 28px;
-    height: 24px;
-    background: url(mfiddle-ui.png) -89px -76px no-repeat;
-}
-#text-field:after {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 19px;
-    width: 30px;
-    height: 24px;
-    background: url(mfiddle-ui.png) -71px -101px no-repeat;
-}
-#dynamic-text:after {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 20px;
-    width: 28px;
-    height: 24px;
-    background: url(mfiddle-ui.png) 0 -122px no-repeat;
-}
-#repetition:after {
-    content: "";
-    position: absolute;
-    top: 5px;
-    left: 19px;
-    width: 30px;
-    height: 24px;
-    background: url(mfiddle-ui.png) -29px -125px no-repeat;
-}
-#components li:hover div:before {
-    content: "";
-    position: absolute;
-    z-index: 2;
-    top: 0;
-    left: 7px;
-    width: 54px;
-    height: 34px;
-    background: url(mfiddle-ui.png) -60px -126px no-repeat;
-}
-#components li:first-child:hover div:before {
-    left: 6px;
-}
+
 #menu {
     position: absolute;
     list-style-type: none;
@@ -206,11 +132,11 @@ html {
     height: 46px;
     background: url(mfiddle-ui.png) -115px -101px no-repeat;
 }
-#run {
+.menu-button {
     position: relative;
     border: none;
     margin: 6px 0 0 0;
-    padding: 0 12px 0 25px;
+    padding: 0 12px 0 12px;
     background: none;
     border-right: 1px solid #404040;
     cursor: pointer;
@@ -219,16 +145,20 @@ html {
     color: white;
     font-family: Helvetica, Arial, sans-serif;
 }
-#run:after {
+.menu-button:after {
     content: "";
     position: absolute;
     top: 11px;
     left: 12px;
     width: 8px;
     height: 11px;
-    background: url(mfiddle-ui.png) 0 -147px no-repeat;
 }
-#run:hover:before {
+/* override Button defaults */
+.menu-button.montage-button:hover {
+    color: white;
+    background-color: transparent;
+}
+.menu-button:hover:before {
     content: "";
     position: absolute;
     top: 0;
@@ -236,6 +166,12 @@ html {
     right: 6px;
     border: 1px solid #11BDFB;
     height: 32px;
+}
+#run {
+    padding: 0 12px 0 25px;
+}
+#run:after {
+    background: url(mfiddle-ui.png) 0 -147px no-repeat;
 }
 #examples {
     position: relative;
@@ -315,12 +251,24 @@ html {
     border-top: 1px solid #227897;
     border-bottom: 1px solid #227897;
 }
-#serialization {
+#css {
     position: absolute;
     top: 57px;
     left: 10px;
     right: 50%;
-    bottom: 50%;
+    bottom: 68%;
+    margin-right: 5px;
+    margin-bottom: -19px;
+    background: white;
+    border: 1px solid #B9B9B9;
+}
+#serialization {
+    position: absolute;
+    top: 32%;
+    left: 10px;
+    right: 50%;
+    bottom: 34%;
+    margin-top: 29px;
     margin-right: 5px;
     margin-bottom: -19px;
     background: white;
@@ -330,56 +278,69 @@ html {
     position: absolute;
     margin-top: 29px;
     margin-right: 5px;
-    top: 50%;
+    top: 66%;
     left: 10px;
     right: 50%;
     bottom: 10px;
     background: white;
     border: 1px solid #B9B9B9;
 }
-#result {
+#javascript {
     position: absolute;
+    margin-left: 5px;
     top: 57px;
     left: 50%;
     right: 10px;
-    bottom: 10px;
-    margin-left: 5px;
+    bottom: 50%;
+    margin-bottom: -19px;
     background: rgba(0,0,0,.5);
     background: white;
     border: 1px solid #B9B9B9;
 }
-#serialization h2,
-#html h2,
-#result h2 {
+
+#preview {
     position: absolute;
-    right: 24px;
-    z-index: 2;
-    margin: 0;
-    padding: 0 12px 2px 12px;
-    font-family: Helvetica, Arial, sans-serif;
-    font-weight: normal;
-    font-size: 14px;
-    color: white;
-    line-height: 22px;
-    background: #11BDFB;
-    border-radius: 0 0 6px 6px;
-    opacity: 1;
-    -webkit-transition: opacity 400ms;
-    pointer-events: none;
+    top: 50%;
+    left: 50%;
+    right: 10px;
+    bottom: 10px;
+    margin-left: 5px;
+    margin-top: 29px;
+    background: rgba(0,0,0,.5);
+    background: white;
+    border: 1px solid #B9B9B9;
 }
-#serialization:hover h2,
-#html:hover h2,
-#result:hover h2 {
-    opacity: 0;
+#iframe-wrapper {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 15px;
 }
-#result iframe {
-    border: 0;
+#preview iframe {
+    position: absolute;
     width: 100%;
+    height: 100%;
+}
+#logger {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 30px;
+}
+
+#logger.open {
     height: 100%;
 }
 
 /* CodeMirror customizations */
 div.CodeMirror, div.CodeMirror-scroll {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     height: 100%;
     width: 100%;
 }

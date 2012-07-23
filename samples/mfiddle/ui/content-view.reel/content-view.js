@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<!-- <copyright>
+/* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
 
@@ -28,36 +27,15 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-</copyright> -->
-<html>
-<head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="input-range.css">
-    <script type="text/montage-serialization">
-{
-    "translateComposer1": {
-        "prototype": "ui/composer/translate-composer",
-        "properties": {
-            "component": {"@": "owner"},
-            "axis": "horizontal",
-            "hasMomentum": false
-        }
-    },
-    "owner": {
-        "properties": {
-            "element": {"#": "inputRange"},
-            "_handleEl": {"#": "inputRangeThumb"},
-            "_translateComposer": {"@": "translateComposer1"}
-        }
+</copyright> */
 
+var Montage = require("montage").Montage,
+    Component = require("montage/ui/component").Component;
+
+var ContentView = exports.ContentView = Montage.create(Component, {
+    draw: {
+        value: function() {
+
+        }
     }
-}
-    </script>
-</head>
-<body>
-    <!-- inputRange needs to be a div to work in Firefox -->
-    <div data-montage-id="inputRange" class="montage-inputRange">
-        <div data-montage-id="inputRangeThumb" draggable="true" class="montage-inputRange-thumb"></div>
-    </div>
-</body>
-</html>
+});

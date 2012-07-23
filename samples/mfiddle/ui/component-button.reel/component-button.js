@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<!-- <copyright>
+/* <copyright>
 Copyright (c) 2012, Motorola Mobility LLC.
 All Rights Reserved.
 
@@ -28,36 +27,45 @@ INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
 CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
-</copyright> -->
-<html>
-<head>
-    <meta charset="utf-8">
-    <link rel="stylesheet" href="input-range.css">
-    <script type="text/montage-serialization">
-{
-    "translateComposer1": {
-        "prototype": "ui/composer/translate-composer",
-        "properties": {
-            "component": {"@": "owner"},
-            "axis": "horizontal",
-            "hasMomentum": false
+</copyright> */
+/**
+    @module "montage/ui/component-button.reel"
+    @requires montage
+    @requires montage/ui/component
+*/
+var Montage = require("montage").Montage,
+    Component = require("montage/ui/component").Component;
+
+/**
+    Description TODO
+    @class module:"ui/component-button.reel".ComponentButton
+    @extends module:ui/component.Component
+*/
+exports.ComponentButton = Montage.create(Component, /** @lends module:"ui/component-button.reel".ComponentButton# */ {
+    component: {value: null},
+    _iconStyle: {value: null},
+
+    prepareForDraw: {
+        value: function() {
+            var self = this,
+                element = this._element;
+
+            this._iconStyle = this.templateObjects.icon.style;
+            element.addEventListener("click", function() {
+                self._dispatchActionEvent();
+            }, false);
         }
     },
-    "owner": {
-        "properties": {
-            "element": {"#": "inputRange"},
-            "_handleEl": {"#": "inputRangeThumb"},
-            "_translateComposer": {"@": "translateComposer1"}
-        }
 
+    draw: {
+        value: function() {
+            var element = this._element,
+                component = this.component;
+
+            element.setAttribute("title", "Add " + component.label);
+            this._iconStyle.backgroundPosition = component.x + "px " + component.y +"px";
+            this._iconStyle.width = component.width + "px";
+            this._iconStyle.left = component.left + "px";
+        }
     }
-}
-    </script>
-</head>
-<body>
-    <!-- inputRange needs to be a div to work in Firefox -->
-    <div data-montage-id="inputRange" class="montage-inputRange">
-        <div data-montage-id="inputRangeThumb" draggable="true" class="montage-inputRange-thumb"></div>
-    </div>
-</body>
-</html>
+});

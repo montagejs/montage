@@ -43,14 +43,6 @@ var Montage = require("montage").Montage,
  */
 var InputRange = exports.InputRange = Montage.create(Component, /** @lends module:"montage/ui/input-range.reel".InputRange */  {
 
-    DEFAULT_WIDTH: {
-        value: 100
-    },
-
-    HANDLE_ADJUST: {
-        value: 13
-    },
-
     // public API
     _min: {
         value: null
@@ -146,10 +138,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         value: null
     },
 
-    _sliderLeft: {
-        value: null
-    },
-
     _sliderWidth: {
         value: null
     },
@@ -173,6 +161,21 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
             }
         }
     },
+
+    _touchOnHandle: {value: null},
+
+    __clickTarget: {value: null},
+    _clickTarget: {
+        get: function() {
+            return this.__clickTarget;
+        },
+        set: function(value) {
+            this.__clickTarget = value;
+            this.needsDraw = true;
+        }
+    },
+
+    _handleWidth: {value: null},
 
     _calculateValueFromPosition: {
         value: function() {
@@ -204,35 +207,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
-    _positionOfElement: {
-        value: function(element) {
-            return dom.convertPointFromNodeToPage(element);
-        }
-    },
-
-    _getElementPosition: {
-        value: function(obj) {
-            var curleft = 0, curtop = 0, curHt = 0, curWd = 0;
-            if (obj.offsetParent) {
-                do {
-                    curleft += obj.offsetLeft;
-                    curtop += obj.offsetTop;
-                    curHt += obj.offsetHeight;
-                    curWd += obj.offsetWidth;
-                } while ((obj = obj.offsetParent));
-            }
-            return {
-                top: curtop,
-                left: curleft,
-                height: curHt,
-                width: curWd
-            };
-            //return [curleft,curtop, curHt, curWd];
-
-        }
-    },
-
-
     prepareForDraw: {
         value: function() {
             // read initial values from the input type=range
@@ -247,6 +221,7 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     prepareForActivationEvents: {
         value: function() {
             this._translateComposer.addEventListener('translateStart', this, false);
+            this._translateComposer.addEventListener('translate', this, false);
             this._translateComposer.addEventListener('translateEnd', this, false);
             this._addEventListeners();
         }
@@ -254,32 +229,61 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     _addEventListeners: {
         value: function() {
-
+            // support touching the scale to select only in Desktop
             if(window.Touch) {
                 this.element.addEventListener('touchstart', this, false);
             } else {
                 this.element.addEventListener('mousedown', this, false);
             }
+            this._touchOnHandle = false;
 
         }
     },
 
     _removeEventListeners: {
         value: function() {
-
+            // support touching the scale to select only in Desktop
             if(window.Touch) {
                 this.element.removeEventListener('touchstart', this, false);
             } else {
                 this.element.removeEventListener('mousedown', this, false);
             }
-
         }
+    },
+
+    _startTranslateX: {
+        enumerable: false,
+        value: null
+    },
+
+    _startPositionX: {
+        enumerable: false,
+        value: null
     },
 
     handleTranslateStart: {
         value: function(e) {
+            this._startTranslateX = e.translateX;
+            this._startPositionX = this.__positionX;
             this._removeEventListeners();
             this._valueSyncedWithPosition = false;
+        }
+    },
+
+    handleTranslate: {
+        value: function (event) {
+            // handle translate on Touch devices only if initial touch was on the knob/handle
+            if(!window.Touch || (window.Touch && this._touchOnHandle)) {
+                var x = this._startPositionX + event.translateX - this._startTranslateX;
+                if (x < 0) {
+                    x = 0;
+                } else {
+                    if (x > this._sliderWidth) {
+                        x = this._sliderWidth;
+                    }
+                }
+                this._positionX = x;
+            }
         }
     },
 
@@ -289,34 +293,17 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
-    // handle user clicking the slider scale directly instead of moving the knob
-    _handleClick: {
-        value: function(position) {
-            //console.log('handleClick requested position',position, this._sliderLeft);
-            if(this._sliderLeft <= 0) {
-                var x = this._getElementPosition(this.element).left;
-                if(x > 0) {
-                    this._sliderLeft = x;
-                }
-            }
-            var positionX = (position - (this._sliderLeft + InputRange.HANDLE_ADJUST));
-            //console.log('handleClick positionX', positionX);
-            if(positionX < 0) {
-                positionX = 0;
-            }
-            this._positionX = positionX;
-        }
-    },
-
     handleMousedown: {
         value: function(e) {
-            this._handleClick(e.clientX);
+            this._clickTarget = {x: e.pageX, y: e.pageY};
         }
     },
 
     handleTouchstart: {
         value: function(e) {
-            this._handleClick(e.targetTouches[0].clientX);
+            var target = e.targetTouches[0];
+            // handle the translate only if touch target is the knob
+            this._touchOnHandle = (target.target === this._handleEl);
         }
     },
 
@@ -330,32 +317,36 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     willDraw: {
         value: function() {
-            this._sliderWidth = this.element.offsetWidth - (1.5*InputRange.HANDLE_ADJUST);
-
-            //var x = this._positionOfElement(this.element).x;
-            var x = this._getElementPosition(this.element).left;
-            if(x > 0) {
-                this._sliderLeft = x;
+            if(!this._handleWidth) {
+                this._handleWidth = this._handleEl.offsetWidth;
             }
-            console.log('willDraw element position', this._sliderLeft, this._sliderWidth);
+            this._sliderWidth = this.element.offsetWidth - (1.5*(this._handleWidth/2));
+            if(this._clickTarget) {
+                // the slider scale was clicked
+                var x = dom.convertPointFromNodeToPage(this.element).x;
+                var positionX = (this._clickTarget.x - (x + (this._handleWidth/2)));
+                if(positionX < 0) {
+                    positionX = 0;
+                }
+                this._positionX = positionX;
+                this._clickTarget = null;
+            }
             if(!this._valueSyncedWithPosition) {
                 this._calculatePositionFromValue();
             }
-
         }
     },
 
     draw: {
         value: function() {
-            //console.log('inputrange draw', this._positionX, this.value);
             var el = this._handleEl;
             if(el.style.webkitTransform != null) {
                 // detection for webkitTransform to use Hardware acceleration where available
-                el.style.webkitTransform = 'translate(' + this._positionX + 'px)';
+                el.style.webkitTransform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else if(el.style.MozTransform != null) {
-                el.style.MozTransform = 'translate(' + this._positionX + 'px)';
+                el.style.MozTransform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else if(el.style.transform != null) {
-                el.style.transform = 'translate(' + this._positionX + 'px)';
+                el.style.transform = 'translate3d(' + this._positionX + 'px,0,0)';
             } else {
                 // fallback
                 el.style['left'] = this._positionX + 'px';

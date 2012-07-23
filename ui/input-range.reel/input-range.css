@@ -34,7 +34,7 @@ POSSIBILITY OF SUCH DAMAGE.
     display: inline-block;
     box-sizing: border-box;
     width: 100px;
-    height: 6px;
+    height: 10px;
     border-radius: 3px;
     border: 1px solid #b3b3b3;
     background-color: #d9d9d9;
@@ -44,12 +44,12 @@ POSSIBILITY OF SUCH DAMAGE.
     position: absolute;
     font-size: inherit;
     box-sizing: border-box;
-    margin: -8px 0 0 -1px;
-    border-radius: 10px;
-    width: 20px;
-    height: 20px;
+    margin: -14px 0 0 -1px;
+    border-radius: 14px;
+    width: 28px;
+    height: 28px;
     left: 0;
-    top: 0;
+    top: 50%;
     border: 1px solid #b3b3b3;
     background-color: #f2f2f2;
     cursor: pointer;
@@ -64,4 +64,13 @@ POSSIBILITY OF SUCH DAMAGE.
 }
 .montage-inputRange-thumb:focus {
     border-color: #7f7f7f;
+}
+.montage-inputRange-thumb:before {
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: -7px;
+    right: -7px;
+    bottom: -7px;
+    border-radius: 50%;
 }

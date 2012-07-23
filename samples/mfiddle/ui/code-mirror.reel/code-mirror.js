@@ -28,90 +28,66 @@ CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
 ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
+/**
+    @module "montage/ui/code-mirror.reel"
+    @requires montage
+    @requires montage/ui/component
+*/
+var Montage = require("montage").Montage,
+    Component = require("montage/ui/component").Component,
+    CodeMirror = require("ui/code-mirror.reel/codemirror/codemirror.min.js").CodeMirror;
 
-var Montage = require("montage/core/core").Montage;
-var Component = require("montage/ui/component").Component;
-
-exports.InputRangeExample = Montage.create(Component, {
-
-    _red: {
-        value: 125
-    },
-
-    _green: {
-        value: 125
-    },
-
-    _blue: {
-        value: 125
-    },
-
-    _opacity: {
-        value: 1.0
-    },
-
-    colorchip: {
-        value: null
-    },
-
-    red: {
-        get: function() {
-            return this._red;
-        },
-        set: function(value) {
-            this._red = Math.round(value);
-            this.needsDraw = true;
-        }
-    },
-
-    blue: {
-        get: function() {
-            return this._blue;
-        },
-        set: function(value) {
-            this._blue = Math.round(value);
-            this.needsDraw = true;
-        }
-    },
-
-    green: {
-        get: function() {
-            return this._green;
-        },
-        set: function(value) {
-            this._green = Math.round(value);
-            this.needsDraw = true;
-        }
-    },
-
-    opacity: {
-        get: function() {
-            return this._opacity;
-        },
-        set: function(value) {
-            this._opacity = value;
-            this.needsDraw = true;
-        }
-    },
+/**
+    Description TODO
+    @class module:"montage/ui/code-mirror.reel".CodeMirror
+    @extends module:montage/ui/component.Component
+*/
+exports.CodeMirror = Montage.create(Component, /** @lends module:"montage/ui/code-mirror.reel".CodeMirror# */ {
+    _codeMirror: {value: null},
+    tabSize: {value: 4},
+    indentUnit: {value: 4},
+    matchBrackets: {value: false},
+    lineNumbers: {value: false},
+    mode: {value: null},
+    _newValue: {value: null},
 
     prepareForDraw: {
         value: function() {
-            // Prettify code examples
-            prettyPrint();
+            var mode = this.mode === "json" ? {name: "javascript", json: true} : this.mode;
+
+            this._codeMirror = CodeMirror(this._element, {
+                mode: mode,
+                tabSize: this.tabSize,
+                indentUnit: this.indentUnit,
+                matchBrackets: this.matchBracket,
+                lineNumbers: this.lineNumbers,
+                value: this.value
+            });
         }
     },
-
 
     draw: {
         value: function() {
-            // border is faster than background in Chrome mobile
-            this.colorchip.firstChild.style.border = "100px solid rgba(" + this.red + "," + this.green + "," + this.blue + "," + this.opacity + ")";
-            // console.log(this.colorchip.style.background);
+            if (this._newValue != null) {
+                this._codeMirror.setValue(this._newValue);
+                this._newValue = null;
+            }
         }
     },
 
-    logger: {
-        value: null
-    }
+    value: {
+        get: function() {
+            return this._codeMirror ? (this._newValue != null ? this._newValue : this._codeMirror.getValue()) : this._newValue;
+        },
+        set: function(value) {
+            this._newValue = value;
+            this.needsDraw = true;
+        }
+    },
 
+    hasModeErrors: {
+        value: function() {
+            return !!this._element.querySelector("*[class~='cm-error']");
+        }
+    }
 });
