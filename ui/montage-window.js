@@ -69,7 +69,7 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
             if (this._application === null) {
                 this._application = value;
                 if (this.focused) {
-                    this._setFocusedWindow(this);
+                    this._setFocusedWindow(this.window);
                 }
             }
         }
@@ -177,7 +177,12 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
                 theWindow,
                 i;
 
-            if (application._multipleWindow) {
+            /*
+                Note: When opening a child window for the first time, we will receive a focus event before
+                application._multipleWindow is set to true. Therefore we need to not only test for application._multipleWindow
+                but also make sure aWindow is not the main window
+             */
+            if (application._multipleWindow || aWindow !== window) {
                 windows = application.windows;
                 for (i in windows) {
                     theWindow = windows[i];
@@ -259,7 +264,7 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
         value: function(event) {
             var application = this.application;
 
-            if (!this.application) {
+            if (!application) {
                 // the Application has not yet been set, just mark the windows has being focused
                 this.focused = true;
                 return;
@@ -269,7 +274,6 @@ var MontageWindow = exports.MontageWindow = Montage.create(Montage, /** @lends m
             } else {
                 var target = (event.target.ownerDocument ? event.target.ownerDocument.defaultView : null) ||
                                 event.target.defaultView || event.target;
-
                 this._setFocusedWindow(target);
             }
         }
