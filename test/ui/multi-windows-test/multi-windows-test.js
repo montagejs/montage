@@ -32,13 +32,4 @@ var Montage = require("montage").Montage;
 var Component = require("montage/ui/component").Component;
 
 var MultiWindowsTest = exports.MultiWindowsTest = Montage.create(Component, {
-    windowA: {
-        value: null
-    },
-
-    didCreate: {
-        value: function() {
-            console.log("MULTI-WINDOWS-TEST CREATED");
-        }
-    }
 });
