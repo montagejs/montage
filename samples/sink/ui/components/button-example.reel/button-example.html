@@ -64,20 +64,6 @@ POSSIBILITY OF SUCH DAMAGE.
         ]
     },
 
-    "settingsButton": {
-        "prototype": "montage/ui/button.reel",
-        "properties": {
-            "element": {"#": "settings"},
-            "identifier": "settings"
-        },
-        "listeners": [
-            {
-                "type": "action",
-                "listener": {"@": "owner"}
-            }
-        ]
-    },
-
     "copy": {
         "prototype": "montage/ui/button.reel",
         "properties": {
@@ -138,12 +124,6 @@ POSSIBILITY OF SUCH DAMAGE.
         "prototype": "ui/accordion.reel",
         "properties": {
             "element": {"#": "accordion3"}
-        }
-    },
-    "accordion4": {
-        "prototype": "ui/accordion.reel",
-        "properties": {
-            "element": {"#": "accordion4"}
         }
     },
 
@@ -419,84 +399,6 @@ exports.ButtonExample = Montage.create(Component, {
                 </ul>
 
 </section>
-
-
-
-
-            <!-- Will add icon support later
-
-            <h4>Adding an image icon</h4>
-
-            <p>To add an image icon to a Button use CSS, either by
-            setting a background image, or with the <code>:before</code> and
-            <code>:after</code> pseudo elements with the <code>content</code>
-            property:</p>
-
-
-            <div class="demo demo4">
-
-                <div class="app">
-                    <button class="btn settings" data-montage-id="settings">Settings</button>
-                </div>
-            </div>
-
-            <section>
-            <ul data-montage-id="accordion4" class="accordion">
-                <li class="accordion-group">
-                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">HTML</a></div>
-                    <div class="accordion-inner montage-hidden" >
-                        <pre class="prettyprint-dark-dark">
-&lt;button class="btn settings" data-montage-id="settings"&gt;Settings&lt;/button&gt;
-</pre>
-                    </div>
-                </li>
-                <li class="accordion-group">
-                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">Serialization</a></div>
-                    <div class="accordion-inner montage-hidden">
-                        <pre class="prettyprint">
-{
-    "settingsButton": {
-        "prototype": "montage/ui/button.reel",
-        "properties": {
-            "element": {"#": "settings"},
-            "identifier": "settings"
-        },
-        "listeners": [
-            {
-                "type": "action",
-                "listener": {"@": "owner"}
-            }
-        ]
-    },
-    "owner": {
-        "prototype": "ui/components/button-example.reel",
-        "properties": {
-            "element": {"#": "buttontest"},
-            "logger": {"@": "logger"}
-        }
-    }
-}
-</pre>
-
-                    </div>
-                </li>
-                <li class="accordion-group">
-                    <div class="accordion-heading"><a href="javascript: void(0);" class="accordion-toggle">CSS</a></div>
-                    <div class="accordion-inner montage-hidden">
-                        <pre class="prettyprint">
-.settings:before {
-    content: url(images/settings.png);
-    vertical-align: middle;
-    display: inline-block;
-    padding-right: 0.5em;
-}
-</pre>
-                    </div>
-                </li>
-            </ul>
-
-
-        </section>-->
 
                     <section>
                         <a href="https://github.com/Motorola-Mobility/montage/tree/v0.11/examples/sink/components/button-example.reel" target="_blank">View source on GitHub</a>
