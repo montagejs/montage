@@ -14,8 +14,15 @@ objects if there are. The objects must have the following properties:
     * problem: a statement of the problem
     * solution: what the developer can do to fix the problem. Use backquotes (`)
       around code snippets that the developer can use
-
 */
+
+/*
+This function converts an index to a line number. Use with indexOf and regexps
+that return an index.
+*/
+var indexToLine = function(string, index) {
+    return string.substring(0, index).match(/\n/g).length + 1;
+};
 
 // problem: a selection from jshint
 exports.jshint = function(path, source, jshint) {
@@ -122,10 +129,6 @@ var statement='/* <copyright>\n'+
 };
 
 exports.jsdoc = function(path, source) {
-    var indexToLine = function(string, index) {
-        return string.substring(0, index).match(/\n/g).length + 1;
-    };
-
     var problems = [], line;
     var i, len;
 
@@ -218,4 +221,13 @@ exports.jsdoc = function(path, source) {
     });
 
     return problems;
+};
+
+
+exports.tabs = function(path, source) {
+    var index;
+    if ((index = source.indexOf("\t")) !== -1) {
+        return [{line: indexToLine(source, index), problem: "Tab character found (there may be more)", solution: "Replace all tabs with four spaces `    `"}];
+    }
+    return false;
 };

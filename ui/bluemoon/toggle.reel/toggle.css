@@ -95,7 +95,8 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-toggle .handler:after {
     content: "";
     position: absolute;
-    margin: 6px 0 0 6px;
+    top: 6px;
+    left: 6px;
     width: 8px;
     height: 8px;
     border-radius: 4px;
@@ -128,7 +129,8 @@ POSSIBILITY OF SUCH DAMAGE.
 .montage-toggle .handleron:after {
     content: "";
     position: absolute;
-    margin: 6px 0 0 6px;
+    top: 6px;
+    left: 6px;
     height: 8px;
     width: 8px;
     border-radius: 4px;

@@ -207,12 +207,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
-    _positionOfElement: {
-        value: function(element) {
-            return dom.convertPointFromNodeToPage(element);
-        }
-    },
-
     prepareForDraw: {
         value: function() {
             // read initial values from the input type=range
@@ -363,9 +357,12 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
                     pos = 0;
                 }
                 this._position = pos;
+                console.log('scale size = ', this._sliderHeight);
+                console.log('click target, coord, pos ', this._clickTarget.x, this._clickTarget.y, coordinate, pos);
+                console.log('value = ', this.value);
+
                 this._clickTarget = null;
             }
-
             if(!this._valueSyncedWithPosition) {
                 this._calculatePositionFromValue();
             }
