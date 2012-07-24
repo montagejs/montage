@@ -64,7 +64,7 @@ POSSIBILITY OF SUCH DAMAGE.
         "vred": {
             "prototype": "montage/ui/input-range.reel",
             "properties": {
-                "axis": "vertical",
+                "orientation": "vertical",
                 "element": {"#": "v-red"}
             },
             "bindings": {
@@ -75,7 +75,7 @@ POSSIBILITY OF SUCH DAMAGE.
         "vgreen": {
             "prototype": "montage/ui/input-range.reel",
             "properties": {
-                "axis": "vertical",
+                "orientation": "vertical",
                 "element": {"#": "v-green"}
             },
             "bindings": {
@@ -86,7 +86,7 @@ POSSIBILITY OF SUCH DAMAGE.
         "vblue": {
             "prototype": "montage/ui/input-range.reel",
             "properties": {
-                "axis": "vertical",
+                "orientation": "vertical",
                 "element": {"#": "v-blue"}
             },
             "bindings": {
@@ -96,11 +96,20 @@ POSSIBILITY OF SUCH DAMAGE.
         "valpha": {
             "prototype": "montage/ui/input-range.reel",
             "properties": {
-                "axis": "vertical",
+                "orientation": "vertical",
                 "element": {"#": "v-alpha"}
             },
             "bindings": {
                 "value": {"<->": "@alpha.value"}
+            }
+        },
+        "rgba": {
+            "prototype": "montage/ui/dynamic-text.reel",
+            "properties": {
+                "element": {"#": "rgba"}
+            },
+            "bindings": {
+                "value": {"<-": "@owner.rgba"}
             }
         },
 
@@ -223,6 +232,11 @@ POSSIBILITY OF SUCH DAMAGE.
             width: 100px;
             margin: 10px 0 10px 18px;
         }
+        div.rgba {
+            padding-top: 5px;
+            line-height: 36px;
+            font-size: 1.6em;            
+        }
     </style>
 </head>
 <body>
@@ -246,7 +260,7 @@ POSSIBILITY OF SUCH DAMAGE.
                         <span class="label red">Red</span>
                     </li>
                     <li class="slider-item">
-                        <input class="color-slider" data-montage-id="green" type="range" min="0" max="255" step="1" value="0"/>
+                        <input class="color-slider" data-montage-id="green" type="range" min="0" max="255" step="1" value="125"/>
                         <span class="label green">Green</span>
                     </li>
                     <li class="slider-item">
@@ -258,6 +272,8 @@ POSSIBILITY OF SUCH DAMAGE.
                         <span class="label">Opacity</span>
                     </li>
                 </ul>
+                
+                <div data-montage-id="rgba" class="rgba"></div>
 
                 <h5>Vertical Slider</h5>
 

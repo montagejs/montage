@@ -45,7 +45,7 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
 
     // public API
     // 'horizontal' (default) or 'vertical'
-    axis: {
+    orientation: {
         value: null
     },
 
@@ -105,7 +105,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         },
         set: function(value, fromInput) {
             this._value =  String.isString(value) ? parseFloat(value) : value;
-            //console.log('value set', this._value);
             if(fromInput) {
                 this._valueSyncedWithPosition = true;
             } else {
@@ -120,7 +119,11 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         value: null
     },
 
-    _handleEl: {
+    _knobEl: {
+        value: null
+    },
+
+    _knobSize: {
         value: null
     },
 
@@ -128,11 +131,7 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         value: null
     },
 
-    _sliderWidth: {
-        value: null
-    },
-
-    _sliderHeight: {
+    _scaleSize: {
         value: null
     },
 
@@ -140,14 +139,22 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         value: null
     },
 
+    // position of the center of the knob
     _position: {
         get: function() {
             return this.__position;
         },
-        set: function(value, fromValue) {
-            //console.log('position', value);
-            if(value !== null && !isNaN(value)) {
-                this.__position = value;
+        set: function(position, fromValue) {
+            if(position !== null && !isNaN(position)) {
+                // position = position of Knob. But not the center of the knob
+                var threshold = (this._scaleSize - this._knobSize);
+                if(position < 0) {
+                    position = 0;
+                } else if(position > threshold) {
+                    position = threshold;
+                }
+
+                this.__position = position;
                 if(!fromValue) {
                     this._calculateValueFromPosition();
                 }
@@ -156,8 +163,10 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
+    // true if a touch was detected on the knob
     _touchOnHandle: {value: null},
 
+    // position on the scale where a click was detected
     __clickTarget: {value: null},
     _clickTarget: {
         get: function() {
@@ -169,16 +178,28 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
-    _handleSize: {value: null},
+    _startTranslate: {
+        enumerable: false,
+        value: null
+    },
+
+    _startPosition: {
+        enumerable: false,
+        value: null
+    },
+
+    // ----- Private methods
 
     _calculateValueFromPosition: {
         value: function() {
-            var scaleSize = (this.axis === 'vertical' ? this._sliderHeight : this._sliderWidth);
-            var isVertical = (this.axis === 'vertical');
+            var scaleSize = this._scaleSize;
+            var threshold = (this._scaleSize - this._knobSize);
+            var isVertical = (this.orientation === 'vertical');
 
             if(scaleSize > 0) {
-                var percent = this.percent = ((isVertical ? (scaleSize-this._position) : this._position) / scaleSize) * 100;
-                var value = (this.min + ((percent/100) * (this.max - this.min)));
+                this.percent = (isVertical ? ((threshold-this._position)/threshold) : (this._position/threshold)) * 100;
+                var value = (this.min + ((this.percent/100) * (this.max - this.min)));
+                //console.log('percent , value', this.percent, value);
                 Object.getPropertyDescriptor(this, "value").set.call(this, value, true);
                 this._valueSyncedWithPosition = true;
             }
@@ -189,17 +210,18 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
     _calculatePositionFromValue: {
         value: function() {
             // unless the element is ready, we cannot position the handle
-            var isVertical = (this.axis === 'vertical');
-            var scaleSize = (isVertical ? this._sliderHeight : this._sliderWidth);
+            var isVertical = (this.orientation === 'vertical');
+            var scaleSize = this._scaleSize;
+            var threshold = (this._scaleSize - this._knobSize);
+
             if(scaleSize) {
                 var percent, value = this.value;
                 var range = (this.max - this.min);
                 percent = ((this.value-this.min)/range) * 100;
-                var tmp = (percent/100)*scaleSize;
-                var position = isVertical ? (scaleSize-tmp) : tmp;
-                Object.getPropertyDescriptor(this, "_position").set.call(this, position, true);
-
                 this.percent = percent;
+
+                var position = (isVertical ? ((100-percent)/100) : (percent/100)) * threshold;
+                Object.getPropertyDescriptor(this, "_position").set.call(this, position, true);
                 this._valueSyncedWithPosition = true;
             } else {
                 this._valueSyncedWithPosition = false;
@@ -207,27 +229,6 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
-    prepareForDraw: {
-        value: function() {
-            // read initial values from the input type=range
-            this.min = this.min || this.element.getAttribute('min') || 0;
-            this.max = this.max || this.element.getAttribute('max') || 100;
-            this.step = this.step || this.element.getAttribute('step') || 1;
-            this.value = this.value || this.element.getAttribute('value') || 0;
-
-            this._translateComposer.axis = this.axis || 'horizontal';
-        }
-    },
-
-    // @todo: Without prepareForActivationEvents, the _translateComposer does not work
-    prepareForActivationEvents: {
-        value: function() {
-            this._translateComposer.addEventListener('translateStart', this, false);
-            this._translateComposer.addEventListener('translate', this, false);
-            this._translateComposer.addEventListener('translateEnd', this, false);
-            this._addEventListeners();
-        }
-    },
 
     _addEventListeners: {
         value: function() {
@@ -253,19 +254,106 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         }
     },
 
-    _startTranslate: {
-        enumerable: false,
-        value: null
+    // ---- Montage Component Callbacks
+
+    prepareForDraw: {
+        value: function() {
+            // read initial values from the input type=range
+            this.min = this.min || this.element.getAttribute('min') || 0;
+            this.max = this.max || this.element.getAttribute('max') || 100;
+            this.step = this.step || this.element.getAttribute('step') || 1;
+            this.value = this.value || this.element.getAttribute('value') || 0;
+
+            this._translateComposer.axis = this.orientation || 'horizontal';
+        }
     },
 
-    _startPosition: {
-        enumerable: false,
-        value: null
+    // @todo: Without prepareForActivationEvents, the _translateComposer does not work
+    prepareForActivationEvents: {
+        value: function() {
+            this._translateComposer.addEventListener('translateStart', this, false);
+            this._translateComposer.addEventListener('translate', this, false);
+            this._translateComposer.addEventListener('translateEnd', this, false);
+            this._addEventListeners();
+        }
     },
+
+
+    surrenderPointer: {
+        value: function(pointer, composer) {
+            // If the user is sliding us then we do not want anyone using
+            // the pointer
+            return false;
+        }
+    },
+
+    willDraw: {
+        value: function() {
+            var isVertical = (this.orientation === 'vertical');
+            this._knobEl.classList.add(isVertical ? 'vertical' : 'horizontal');
+            if(!this._knobSize) {
+                this._knobSize = this._knobEl.offsetWidth;
+            }
+            this.element.classList.add(isVertical ? 'vertical' : 'horizontal');
+
+            if(!this.scaleSize) {
+                this._scaleSize = (isVertical ? this.element.offsetHeight : this.element.offsetWidth);
+            }
+
+            if(this._clickTarget) {
+                // the slider scale was clicked
+                var pt = dom.convertPointFromNodeToPage(this.element);
+                var coordinate = (isVertical ? pt.y : pt.x);
+
+                var pos = (this._clickTarget[isVertical ? 'y' : 'x'] - (coordinate) - (this._knobSize/2));
+                if(pos < 0) {
+                    pos = 0;
+                }
+                this._position = pos;
+                this._clickTarget = null;
+            }
+            if(!this._valueSyncedWithPosition) {
+                this._calculatePositionFromValue();
+            }
+        }
+    },
+
+    draw: {
+        value: function() {
+            var el = this._knobEl;
+            var isVertical = (this.orientation === 'vertical');
+
+            var transformValue = this.orientation === 'vertical' ?
+            'translate3d(0,' + this._position + 'px,0)':
+            'translate3d(' + this._position + 'px,0,0)';
+
+            //console.log("inputRange draw value, percent = ", this.value, this.percent);
+
+            if(el.style.webkitTransform != null) {
+                // detection for webkitTransform to use Hardware acceleration where available
+                el.style.webkitTransform = transformValue;
+            } else if(el.style.MozTransform != null) {
+                el.style.MozTransform = transformValue;
+            } else if(el.style.transform != null) {
+                el.style.transform = transformValue;
+            } else {
+                // fallback
+                if(isVertical) {
+                    el.style['top'] = this._position + 'px';
+                } else {
+                    el.style['left'] = this._position + 'px';
+                }
+            }
+
+        }
+    },
+
+
+    // ------ Event Handlers
 
     handleTranslateStart: {
         value: function(e) {
-            this._startTranslate = (this.axis === 'vertical' ? e.translateY : e.translateX);
+            this._startTranslate = (this.orientation === 'vertical' ? e.translateY : e.translateX);
             this._startPosition = this.__position;
             this._removeEventListeners();
             this._valueSyncedWithPosition = false;
@@ -276,30 +364,9 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         value: function (event) {
             // handle translate on Touch devices only if initial touch was on the knob/handle
             if(!window.Touch || (window.Touch && this._touchOnHandle)) {
-                var isVertical = (this.axis === 'vertical');
-
-                if(isVertical) {
-                    var y = this._startPosition + event.translateY - this._startTranslate;
-                    if (y < 0) {
-                        y = 0;
-                    } else {
-                        if (y > this._sliderHeight) {
-                            y = this._sliderHeight;
-                        }
-                    }
-                    this._position = y;
-                } else {
-                    var x = this._startPosition + event.translateX - this._startTranslate;
-                    if (x < 0) {
-                        x = 0;
-                    } else {
-                        if (x > this._sliderWidth) {
-                            x = this._sliderWidth;
-                        }
-                    }
-                    this._position = x;
-                }
-
+                var isVertical = (this.orientation === 'vertical');
+                var position = this._startPosition + event[isVertical ? 'translateY': 'translateX'] - this._startTranslate;
+                this._position = position;
             }
         }
     },
@@ -321,79 +388,7 @@ var InputRange = exports.InputRange = Montage.create(Component, /** @lends modul
         value: function(e) {
             var target = e.targetTouches[0];
             // handle the translate only if touch target is the knob
-            this._touchOnHandle = (target.target === this._handleEl);
-        }
-    },
-
-    surrenderPointer: {
-        value: function(pointer, composer) {
-            // If the user is sliding us then we do not want anyone using
-            // the pointer
-            return false;
-        }
-    },
-
-    willDraw: {
-        value: function() {
-            var isVertical = (this.axis === 'vertical');
-            this._handleEl.classList.add(isVertical ? 'vertical' : 'horizontal');
-            if(!this._handleSize) {
-                this._handleSize = this._handleEl.offsetWidth;
-            }
-            this.element.classList.add(isVertical ? 'vertical' : 'horizontal');
-
-            var handleAdjust = (this._handleSize);
-            if(isVertical) {
-                this._sliderHeight = (this.element.offsetHeight - handleAdjust);
-            } else {
-                this._sliderWidth = (this.element.offsetWidth - handleAdjust);
-            }
-            if(this._clickTarget) {
-                // the slider scale was clicked
-                var pt = dom.convertPointFromNodeToPage(this.element);
-                var coordinate = (isVertical ? pt.y : pt.x);
-                var pos = (this._clickTarget[isVertical ? 'y' : 'x'] - (coordinate) - (this._handleSize/2));
-                if(pos < 0) {
-                    pos = 0;
-                }
-                this._position = pos;
-                console.log('scale size = ', this._sliderHeight);
-                console.log('click target, coord, pos ', this._clickTarget.x, this._clickTarget.y, coordinate, pos);
-                console.log('value = ', this.value);
-
-                this._clickTarget = null;
-            }
-            if(!this._valueSyncedWithPosition) {
-                this._calculatePositionFromValue();
-            }
-        }
-    },
-
-    draw: {
-        value: function() {
-            var el = this._handleEl;
-            var isVertical = (this.axis === 'vertical');
-
-            var transformValue = this.axis === 'vertical' ?
-            'translate3d(0,' + this._position + 'px,0)':
-            'translate3d(' + this._position + 'px,0,0)';
-
-            if(el.style.webkitTransform != null) {
-                // detection for webkitTransform to use Hardware acceleration where available
-                el.style.webkitTransform = transformValue;
-            } else if(el.style.MozTransform != null) {
-                el.style.MozTransform = transformValue;
-            } else if(el.style.transform != null) {
-                el.style.transform = transformValue;
-            } else {
-                // fallback
-                if(isVertical) {
-                    el.style['top'] = this._position + 'px';
-                } else {
-                    el.style['left'] = this._position + 'px';
-                }
-            }
-
+            this._touchOnHandle = (target.target === this._knobEl);
         }
     }
 });

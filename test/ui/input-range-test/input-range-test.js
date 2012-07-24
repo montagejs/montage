@@ -47,7 +47,11 @@ var Test = exports.TestController = Montage.create(TestController, {
 
     scroll_range: {
             value: null
-    }
+    },
+
+    verticalRange: {
+            value: null
+    },
 
 });
 exports.theTest = Test.create();

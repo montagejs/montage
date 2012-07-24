@@ -29,7 +29,15 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 POSSIBILITY OF SUCH DAMAGE.
 </copyright> */
 var Montage = require("montage").Montage,
+Component = require("montage/ui/component").Component,
 Converter = require("montage/core/converter/converter").Converter;
+
+exports.Main = Montage.create(Component, {
+
+    value: {
+        value: null
+    }
+});
 
 exports.TempConverter = Montage.create(Converter, {
 

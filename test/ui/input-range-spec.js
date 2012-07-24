@@ -43,12 +43,40 @@ var testPage = TestPageLoader.queueTest("input-range-test", function() {
         describe("RangeInput", function() {
             it("can be created", function() {
                 expect(test.range_input1).toBeDefined();
+                expect(test.verticalRange).toBeDefined();
             });
 
             describe("value", function() {
                 it("can be set from the serialization", function() {
                     expect(test.range_input2.value).toBe(1);
                 });
+            });
+
+            describe("VerticalRange", function() {
+                it("value can be set from the markup", function() {
+                    expect(test.verticalRange.value).toBe(100);
+                });
+                it("min can be set from the markup", function() {
+                    expect(test.verticalRange.min).toBe(0);
+                });
+                it("max can be set from the markup", function() {
+                    expect(test.verticalRange.max).toBe(255);
+                });
+
+                it("position changes when value changes", function() {
+                    var range = test.verticalRange;
+                    range.value = range.max; // max value
+                    testPage.waitForDraw();
+                    runs(function() {
+                        expect(test.verticalRange._position).toBe(0);
+                        range.value = range.min; // 0
+                        testPage.waitForDraw();
+                        runs(function() {
+                            expect(test.verticalRange._position).toBeGreaterThan(0);
+                        });
+                    });
+                });
+
             });
 
             it("can be changed", function() {
